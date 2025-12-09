@@ -637,247 +637,248 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
                 </div>
               </div>
 
-              {/* Therapeutic Suggestions Section */}
-              {(() => {
-                const suggestions = generateSuggestions(allEvaluations);
-                if (suggestions.length === 0) return null;
-                
-                return (
+            </>
+          );
+        })()}
+
+        {/* Therapeutic Suggestions Section - Works with 1+ evaluations */}
+        {allEvaluations.length >= 1 && (() => {
+          const suggestions = generateSuggestions(allEvaluations);
+          if (suggestions.length === 0) return null;
+          
+          return (
+            <div style={{ 
+              ...cardLargeStyle, 
+              marginTop: '24px',
+              pageBreakBefore: 'always',
+              background: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 50%, #e0e7ff 100%)',
+              border: '1px solid #c4b5fd'
+            }}>
+              <h3 style={{ 
+                fontSize: '18px', 
+                fontWeight: 700, 
+                marginBottom: '8px', 
+                color: '#5b21b6',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
+                <span style={{ fontSize: '20px' }}>&#x1F4A1;</span> Sugestões Terapêuticas
+              </h3>
+              <p style={{ fontSize: '13px', color: '#7c3aed', marginBottom: '20px' }}>
+                Baseadas nos 3 domínios prioritários para intervenção
+              </p>
+              
+              {suggestions.map((suggestion, index) => (
+                <div key={index} style={{ 
+                  backgroundColor: '#ffffff',
+                  borderRadius: '10px',
+                  padding: '16px',
+                  marginBottom: index < suggestions.length - 1 ? '16px' : '0',
+                  border: '1px solid #ddd6fe',
+                  boxShadow: '0 2px 4px rgba(139, 92, 246, 0.1)'
+                }}>
+                  {/* Domain Header */}
                   <div style={{ 
-                    ...cardLargeStyle, 
-                    marginTop: '24px',
-                    pageBreakBefore: 'always',
-                    background: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 50%, #e0e7ff 100%)',
-                    border: '1px solid #c4b5fd'
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '12px',
+                    paddingBottom: '10px',
+                    borderBottom: '1px solid #ede9fe'
                   }}>
-                    <h3 style={{ 
-                      fontSize: '18px', 
-                      fontWeight: 700, 
-                      marginBottom: '8px', 
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{
+                        width: '28px',
+                        height: '28px',
+                        borderRadius: '50%',
+                        backgroundColor: index === 0 ? '#ef4444' : index === 1 ? '#f59e0b' : '#3b82f6',
+                        color: '#ffffff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '14px',
+                        fontWeight: 700
+                      }}>
+                        {index + 1}
+                      </span>
+                      <span style={{ 
+                        fontSize: '15px', 
+                        fontWeight: 600, 
+                        color: '#1f2937' 
+                      }}>
+                        Domínio {suggestion.shortName}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        color: '#ffffff',
+                        backgroundColor: suggestion.score < 40 ? '#ef4444' : suggestion.score < 60 ? '#f59e0b' : '#22c55e',
+                        padding: '3px 10px',
+                        borderRadius: '12px'
+                      }}>
+                        {suggestion.score}%
+                      </span>
+                      <span style={{
+                        fontSize: '11px',
+                        color: suggestion.trend === 'improving' ? '#16a34a' : suggestion.trend === 'declining' ? '#dc2626' : '#6b7280'
+                      }}>
+                        {suggestion.trend === 'improving' ? '↑ Melhorando' : 
+                         suggestion.trend === 'declining' ? '↓ Declinando' : '→ Estável'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Therapeutic Objectives */}
+                  <div style={{ marginBottom: '14px' }}>
+                    <h5 style={{ 
+                      fontSize: '13px', 
+                      fontWeight: 600, 
                       color: '#5b21b6',
+                      marginBottom: '8px',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '8px'
+                      gap: '6px'
                     }}>
-                      <span style={{ fontSize: '20px' }}>&#x1F4A1;</span> Sugestões Terapêuticas
-                    </h3>
-                    <p style={{ fontSize: '13px', color: '#7c3aed', marginBottom: '20px' }}>
-                      Baseadas nos 3 domínios prioritários para intervenção
-                    </p>
-                    
-                    {suggestions.map((suggestion, index) => (
-                      <div key={index} style={{ 
-                        backgroundColor: '#ffffff',
-                        borderRadius: '10px',
-                        padding: '16px',
-                        marginBottom: index < suggestions.length - 1 ? '16px' : '0',
-                        border: '1px solid #ddd6fe',
-                        boxShadow: '0 2px 4px rgba(139, 92, 246, 0.1)'
+                      <span>&#x1F3AF;</span> Objetivos Terapêuticos
+                    </h5>
+                    {suggestion.objectives.slice(0, 2).map((obj, objIdx) => (
+                      <div key={objIdx} style={{ 
+                        backgroundColor: '#faf5ff',
+                        borderRadius: '6px',
+                        padding: '10px',
+                        marginBottom: objIdx < 1 ? '8px' : '0'
                       }}>
-                        {/* Domain Header */}
-                        <div style={{ 
-                          display: 'flex', 
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          marginBottom: '12px',
-                          paddingBottom: '10px',
-                          borderBottom: '1px solid #ede9fe'
+                        <p style={{ 
+                          fontSize: '12px', 
+                          fontWeight: 600, 
+                          color: '#7c3aed',
+                          marginBottom: '6px'
                         }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <span style={{
-                              width: '28px',
-                              height: '28px',
-                              borderRadius: '50%',
-                              backgroundColor: index === 0 ? '#ef4444' : index === 1 ? '#f59e0b' : '#3b82f6',
-                              color: '#ffffff',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              fontSize: '14px',
-                              fontWeight: 700
+                          {obj.objective}
+                        </p>
+                        <ul style={{ margin: 0, paddingLeft: '16px' }}>
+                          {obj.strategies.slice(0, 2).map((strategy, sIdx) => (
+                            <li key={sIdx} style={{ 
+                              fontSize: '11px', 
+                              color: '#4b5563',
+                              marginBottom: '2px'
                             }}>
-                              {index + 1}
-                            </span>
-                            <span style={{ 
-                              fontSize: '15px', 
-                              fontWeight: 600, 
-                              color: '#1f2937' 
-                            }}>
-                              Domínio {suggestion.shortName}
-                            </span>
-                          </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{
-                              fontSize: '12px',
-                              fontWeight: 600,
-                              color: '#ffffff',
-                              backgroundColor: suggestion.score < 40 ? '#ef4444' : suggestion.score < 60 ? '#f59e0b' : '#22c55e',
-                              padding: '3px 10px',
-                              borderRadius: '12px'
-                            }}>
-                              {suggestion.score}%
-                            </span>
-                            <span style={{
-                              fontSize: '11px',
-                              color: suggestion.trend === 'improving' ? '#16a34a' : suggestion.trend === 'declining' ? '#dc2626' : '#6b7280'
-                            }}>
-                              {suggestion.trend === 'improving' ? '↑ Melhorando' : 
-                               suggestion.trend === 'declining' ? '↓ Declinando' : '→ Estável'}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Therapeutic Objectives */}
-                        <div style={{ marginBottom: '14px' }}>
-                          <h5 style={{ 
-                            fontSize: '13px', 
-                            fontWeight: 600, 
-                            color: '#5b21b6',
-                            marginBottom: '8px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '6px'
-                          }}>
-                            <span>&#x1F3AF;</span> Objetivos Terapêuticos
-                          </h5>
-                          {suggestion.objectives.slice(0, 2).map((obj, objIdx) => (
-                            <div key={objIdx} style={{ 
-                              backgroundColor: '#faf5ff',
-                              borderRadius: '6px',
-                              padding: '10px',
-                              marginBottom: objIdx < 1 ? '8px' : '0'
-                            }}>
-                              <p style={{ 
-                                fontSize: '12px', 
-                                fontWeight: 600, 
-                                color: '#7c3aed',
-                                marginBottom: '6px'
-                              }}>
-                                {obj.objective}
-                              </p>
-                              <ul style={{ margin: 0, paddingLeft: '16px' }}>
-                                {obj.strategies.slice(0, 2).map((strategy, sIdx) => (
-                                  <li key={sIdx} style={{ 
-                                    fontSize: '11px', 
-                                    color: '#4b5563',
-                                    marginBottom: '2px'
-                                  }}>
-                                    {strategy}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
+                              {strategy}
+                            </li>
                           ))}
-                        </div>
-
-                        {/* Suggested Activities */}
-                        {suggestion.activities.length > 0 && (
-                          <div style={{ marginBottom: '14px' }}>
-                            <h5 style={{ 
-                              fontSize: '13px', 
-                              fontWeight: 600, 
-                              color: '#5b21b6',
-                              marginBottom: '8px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '6px'
-                            }}>
-                              <span>&#x1F4CB;</span> Atividades Sugeridas
-                            </h5>
-                            <div style={{ 
-                              display: 'flex', 
-                              flexWrap: 'wrap', 
-                              gap: '8px' 
-                            }}>
-                              {suggestion.activities.slice(0, 3).map((activity, actIdx) => (
-                                <div key={actIdx} style={{
-                                  backgroundColor: '#f0fdf4',
-                                  border: '1px solid #bbf7d0',
-                                  borderRadius: '6px',
-                                  padding: '8px 10px',
-                                  flex: '1 1 calc(33% - 8px)',
-                                  minWidth: '140px'
-                                }}>
-                                  <p style={{ 
-                                    fontSize: '11px', 
-                                    fontWeight: 600, 
-                                    color: '#15803d',
-                                    marginBottom: '2px'
-                                  }}>
-                                    {activity.title}
-                                  </p>
-                                  <p style={{ 
-                                    fontSize: '10px', 
-                                    color: '#4b5563',
-                                    lineHeight: 1.3
-                                  }}>
-                                    {activity.description}
-                                  </p>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* MuseTera Games */}
-                        {suggestion.games.length > 0 && (
-                          <div>
-                            <h5 style={{ 
-                              fontSize: '13px', 
-                              fontWeight: 600, 
-                              color: '#5b21b6',
-                              marginBottom: '8px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '6px'
-                            }}>
-                              <span>&#x1F3AE;</span> Jogos MuseTera Recomendados
-                            </h5>
-                            <div style={{ 
-                              display: 'flex', 
-                              flexWrap: 'wrap', 
-                              gap: '8px' 
-                            }}>
-                              {suggestion.games.slice(0, 3).map((game, gameIdx) => (
-                                <div key={gameIdx} style={{
-                                  backgroundColor: '#eff6ff',
-                                  border: '1px solid #bfdbfe',
-                                  borderRadius: '6px',
-                                  padding: '8px 10px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: '8px',
-                                  flex: '1 1 calc(33% - 8px)',
-                                  minWidth: '140px'
-                                }}>
-                                  <span style={{ fontSize: '18px' }}>{game.icon}</span>
-                                  <div>
-                                    <p style={{ 
-                                      fontSize: '11px', 
-                                      fontWeight: 600, 
-                                      color: '#1d4ed8'
-                                    }}>
-                                      {game.name}
-                                    </p>
-                                    <p style={{ 
-                                      fontSize: '9px', 
-                                      color: '#6b7280',
-                                      lineHeight: 1.2
-                                    }}>
-                                      {game.benefit}
-                                    </p>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
+                        </ul>
                       </div>
                     ))}
                   </div>
-                );
-              })()}
-            </>
+
+                  {/* Suggested Activities */}
+                  {suggestion.activities.length > 0 && (
+                    <div style={{ marginBottom: '14px' }}>
+                      <h5 style={{ 
+                        fontSize: '13px', 
+                        fontWeight: 600, 
+                        color: '#5b21b6',
+                        marginBottom: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}>
+                        <span>&#x1F4CB;</span> Atividades Sugeridas
+                      </h5>
+                      <div style={{ 
+                        display: 'flex', 
+                        flexWrap: 'wrap', 
+                        gap: '8px' 
+                      }}>
+                        {suggestion.activities.slice(0, 3).map((activity, actIdx) => (
+                          <div key={actIdx} style={{
+                            backgroundColor: '#f0fdf4',
+                            border: '1px solid #bbf7d0',
+                            borderRadius: '6px',
+                            padding: '8px 10px',
+                            flex: '1 1 calc(33% - 8px)',
+                            minWidth: '140px'
+                          }}>
+                            <p style={{ 
+                              fontSize: '11px', 
+                              fontWeight: 600, 
+                              color: '#15803d',
+                              marginBottom: '2px'
+                            }}>
+                              {activity.title}
+                            </p>
+                            <p style={{ 
+                              fontSize: '10px', 
+                              color: '#4b5563',
+                              lineHeight: 1.3
+                            }}>
+                              {activity.description}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* MuseTera Games */}
+                  {suggestion.games.length > 0 && (
+                    <div>
+                      <h5 style={{ 
+                        fontSize: '13px', 
+                        fontWeight: 600, 
+                        color: '#5b21b6',
+                        marginBottom: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}>
+                        <span>&#x1F3AE;</span> Jogos MuseTera Recomendados
+                      </h5>
+                      <div style={{ 
+                        display: 'flex', 
+                        flexWrap: 'wrap', 
+                        gap: '8px' 
+                      }}>
+                        {suggestion.games.slice(0, 3).map((game, gameIdx) => (
+                          <div key={gameIdx} style={{
+                            backgroundColor: '#eff6ff',
+                            border: '1px solid #bfdbfe',
+                            borderRadius: '6px',
+                            padding: '8px 10px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            flex: '1 1 calc(33% - 8px)',
+                            minWidth: '140px'
+                          }}>
+                            <span style={{ fontSize: '18px' }}>{game.icon}</span>
+                            <div>
+                              <p style={{ 
+                                fontSize: '11px', 
+                                fontWeight: 600, 
+                                color: '#1d4ed8'
+                              }}>
+                                {game.name}
+                              </p>
+                              <p style={{ 
+                                fontSize: '9px', 
+                                color: '#6b7280',
+                                lineHeight: 1.2
+                              }}>
+                                {game.benefit}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           );
         })()}
 
