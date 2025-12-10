@@ -18,11 +18,14 @@ export type Patient = {
 const calculateAge = (birthDate: string | null): number | null => {
   if (!birthDate) return null;
   
-  const today = new Date();
-  const birthDateObj = new Date(birthDate);
+  // Parsear data no timezone LOCAL (evita bug UTC que causa erro de 1 dia)
+  const [year, month, day] = birthDate.split('-').map(Number);
+  if (!year || !month || !day) return null;
   
+  const birthDateObj = new Date(year, month - 1, day); // month é 0-indexed
   if (isNaN(birthDateObj.getTime())) return null;
   
+  const today = new Date();
   let age = today.getFullYear() - birthDateObj.getFullYear();
   const monthDiff = today.getMonth() - birthDateObj.getMonth();
   
@@ -62,7 +65,7 @@ export const usePatientsData = () => {
       // Transform data to include calculated age and anamnesis status
       const patientsWithData = data?.map(patient => ({
         ...patient,
-        age: patient.age || calculateAge(patient.birth_date),
+        age: calculateAge(patient.birth_date),
         has_anamnesis: patient.anamnesis && patient.anamnesis.length > 0
       })) || [];
 
