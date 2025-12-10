@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { calculateAgeFromBirthDate } from "@/utils/dateUtils";
 
 export type Patient = {
   id: string;
@@ -13,27 +14,6 @@ export type Patient = {
   age: number | null;
   has_anamnesis?: boolean;
   professional_id: string;
-};
-
-const calculateAge = (birthDate: string | null): number | null => {
-  if (!birthDate) return null;
-  
-  // Parsear data no timezone LOCAL (evita bug UTC que causa erro de 1 dia)
-  const [year, month, day] = birthDate.split('-').map(Number);
-  if (!year || !month || !day) return null;
-  
-  const birthDateObj = new Date(year, month - 1, day); // month é 0-indexed
-  if (isNaN(birthDateObj.getTime())) return null;
-  
-  const today = new Date();
-  let age = today.getFullYear() - birthDateObj.getFullYear();
-  const monthDiff = today.getMonth() - birthDateObj.getMonth();
-  
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDateObj.getDate())) {
-    age--;
-  }
-  
-  return age;
 };
 
 export const usePatientsData = () => {
@@ -65,7 +45,7 @@ export const usePatientsData = () => {
       // Transform data to include calculated age and anamnesis status
       const patientsWithData = data?.map(patient => ({
         ...patient,
-        age: calculateAge(patient.birth_date),
+        age: calculateAgeFromBirthDate(patient.birth_date),
         has_anamnesis: patient.anamnesis && patient.anamnesis.length > 0
       })) || [];
 

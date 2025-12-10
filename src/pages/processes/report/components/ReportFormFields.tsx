@@ -27,6 +27,7 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Control } from "react-hook-form";
 import { FormValues } from "../hooks/useReportForm";
+import { getAgeOrFallback } from "@/utils/dateUtils";
 
 type Patient = {
   id: string;
@@ -42,27 +43,9 @@ interface ReportFormFieldsProps {
 }
 
 export function ReportFormFields({ control, patients, isLoadingPatients }: ReportFormFieldsProps) {
-  const calculateAge = (birthDate: string | null): number | null => {
-    if (!birthDate) return null;
-    
-    const today = new Date();
-    const birthDateObj = new Date(birthDate);
-    
-    if (isNaN(birthDateObj.getTime())) return null;
-    
-    let age = today.getFullYear() - birthDateObj.getFullYear();
-    const monthDiff = today.getMonth() - birthDateObj.getMonth();
-    
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDateObj.getDate())) {
-      age--;
-    }
-    
-    return age;
-  };
-
   const formatPatientDisplay = (patient: Patient): string => {
-    const age = patient.age || calculateAge(patient.birth_date);
-    return age !== null && age !== undefined ? `${patient.name} (${age} anos)` : patient.name;
+    const age = getAgeOrFallback(patient.birth_date, patient.age);
+    return age !== null ? `${patient.name} (${age} anos)` : patient.name;
   };
 
   return (

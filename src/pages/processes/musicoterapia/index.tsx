@@ -17,6 +17,7 @@ import { useReportData } from '../report/hooks/useReportData';
 import html2pdf from 'html2pdf.js';
 import { imageUrlToBase64 } from '@/utils/imageToBase64';
 import { DeleteReportDialog } from '../reports/components/DeleteReportDialog';
+import { formatAgeString } from '@/utils/dateUtils';
 
 export default function MusicoterapiaPage() {
   const [searchParams] = useSearchParams();
@@ -75,20 +76,8 @@ export default function MusicoterapiaPage() {
     if (patientIdFromQuery && patients.length > 0) {
       const selectedPatient = patients.find(p => p.id === patientIdFromQuery);
       if (selectedPatient) {
-        // Calculate age from birth_date if available
-        let age = '';
-        if ((selectedPatient as any).birth_date) {
-          const today = new Date();
-          const birthDate = new Date((selectedPatient as any).birth_date);
-          const ageYears = today.getFullYear() - birthDate.getFullYear();
-          const monthDiff = today.getMonth() - birthDate.getMonth();
-          
-          if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-            age = `${ageYears - 1} anos`;
-          } else {
-            age = `${ageYears} anos`;
-          }
-        }
+        // Calcular idade usando utilitário centralizado
+        const age = formatAgeString((selectedPatient as any).birth_date, (selectedPatient as any).age);
 
         updateReportData({
           selectedPatientId: patientIdFromQuery,

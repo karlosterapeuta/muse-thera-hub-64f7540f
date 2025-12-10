@@ -10,6 +10,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import type { ReportData } from '@/data/musicoterapiaTemplate';
+import { formatAgeString } from '@/utils/dateUtils';
 
 type Patient = {
   id: string;
@@ -60,22 +61,8 @@ export function BasicInformationSection({ reportData, onUpdateData, professional
       // Selecionar paciente existente
       const selectedPatient = patients.find(p => p.id === value);
       if (selectedPatient) {
-        // Calcular idade a partir da data de nascimento
-        let age = '';
-        if (selectedPatient.birth_date) {
-          const today = new Date();
-          const birthDate = new Date(selectedPatient.birth_date);
-          const ageYears = today.getFullYear() - birthDate.getFullYear();
-          const monthDiff = today.getMonth() - birthDate.getMonth();
-          
-          if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-            age = `${ageYears - 1} anos`;
-          } else {
-            age = `${ageYears} anos`;
-          }
-        } else if (selectedPatient.age) {
-          age = `${selectedPatient.age} anos`;
-        }
+        // Calcular idade usando utilitário centralizado
+        const age = formatAgeString(selectedPatient.birth_date, selectedPatient.age);
 
         onUpdateData({
           selectedPatientId: value,
