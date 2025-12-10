@@ -1,9 +1,8 @@
-
+import { useState } from "react";
 import { LogOut, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -19,8 +18,15 @@ interface ForceLogoutDialogProps {
 }
 
 export function ForceLogoutDialog({ onForceLogout, isLoading = false }: ForceLogoutDialogProps) {
+  const [open, setOpen] = useState(false);
+
+  const handleForceLogout = async () => {
+    await onForceLogout();
+    setOpen(false);
+  };
+
   return (
-    <AlertDialog>
+    <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
         <Button 
           variant="ghost" 
@@ -44,8 +50,8 @@ export function ForceLogoutDialog({ onForceLogout, isLoading = false }: ForceLog
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isLoading}>Cancelar</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={onForceLogout}
+          <Button
+            onClick={handleForceLogout}
             disabled={isLoading}
             className="bg-orange-500 text-white hover:bg-orange-600 disabled:opacity-50"
           >
@@ -57,7 +63,7 @@ export function ForceLogoutDialog({ onForceLogout, isLoading = false }: ForceLog
             ) : (
               "Forçar Logout"
             )}
-          </AlertDialogAction>
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
