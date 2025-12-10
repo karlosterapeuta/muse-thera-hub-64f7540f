@@ -11,6 +11,7 @@ export type Profile = {
   status: string;
   expires_at: string | null;
   user_roles: UserRole[];
+  email?: string;
 }
 
 export type StatusLog = {

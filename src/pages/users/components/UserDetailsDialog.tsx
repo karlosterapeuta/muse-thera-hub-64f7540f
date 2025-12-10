@@ -7,9 +7,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Activity, Settings } from "lucide-react";
+import { User, Activity, Settings, FileText } from "lucide-react";
 import { ActivityHistoryTab } from "./ActivityHistoryTab";
 import { AccessManagementTab } from "./AccessManagementTab";
+import { UserDataTab } from "./UserDataTab";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -59,10 +60,14 @@ export function UserDetailsDialog({ user, open, onOpenChange }: UserDetailsDialo
         </DialogHeader>
 
         <Tabs defaultValue="general" className="w-full">
-          <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 h-auto">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
             <TabsTrigger value="general" className="flex items-center gap-2 py-2">
               <User className="h-4 w-4" />
-              <span className="text-xs sm:text-sm">Informações Gerais</span>
+              <span className="text-xs sm:text-sm">Geral</span>
+            </TabsTrigger>
+            <TabsTrigger value="data" className="flex items-center gap-2 py-2">
+              <FileText className="h-4 w-4" />
+              <span className="text-xs sm:text-sm">Dados</span>
             </TabsTrigger>
             <TabsTrigger value="activity" className="flex items-center gap-2 py-2">
               <Activity className="h-4 w-4" />
@@ -70,7 +75,7 @@ export function UserDetailsDialog({ user, open, onOpenChange }: UserDetailsDialo
             </TabsTrigger>
             <TabsTrigger value="access" className="flex items-center gap-2 py-2">
               <Settings className="h-4 w-4" />
-              <span className="text-xs sm:text-sm">Gestão de Acesso</span>
+              <span className="text-xs sm:text-sm">Acesso</span>
             </TabsTrigger>
           </TabsList>
 
@@ -114,6 +119,10 @@ export function UserDetailsDialog({ user, open, onOpenChange }: UserDetailsDialo
                   </div>
                 </div>
               </div>
+            </TabsContent>
+
+            <TabsContent value="data" className="mt-2">
+              <UserDataTab user={user} />
             </TabsContent>
 
             <TabsContent value="activity" className="mt-2">
