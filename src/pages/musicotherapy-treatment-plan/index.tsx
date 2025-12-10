@@ -39,6 +39,7 @@ import { ResourcesSelector } from '@/components/musicotherapy/ResourcesSelector'
 import { EvaluationCriteriaSelector } from '@/components/musicotherapy/EvaluationCriteriaSelector';
 import { ValidationSummary } from '@/components/musicotherapy/ValidationSummary';
 import { imageUrlToBase64 } from '@/utils/imageToBase64';
+import { formatAgeString } from '@/utils/dateUtils';
 
 type Patient = {
   id: string;
@@ -128,21 +129,8 @@ export default function MusicotherapyTreatmentPlanPage() {
     setSelectedPatient(value);
     const patient = patients.find((p) => p.id === value);
     if (patient) {
-      let patientAge = "";
-      if (patient.age) {
-        patientAge = `${patient.age} anos`;
-      } else if (patient.birth_date) {
-        const birthDate = new Date(patient.birth_date);
-        const today = new Date();
-        const age = today.getFullYear() - birthDate.getFullYear();
-        const monthDiff = today.getMonth() - birthDate.getMonth();
-        
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-          patientAge = `${age - 1} anos`;
-        } else {
-          patientAge = `${age} anos`;
-        }
-      }
+      // Calcular idade usando utilitário centralizado
+      const patientAge = formatAgeString(patient.birth_date, patient.age);
 
       updatePlanData({
         patient_id: patient.id,
