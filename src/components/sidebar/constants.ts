@@ -3,7 +3,7 @@ import {
   BarChart2,
   Users,
   UserCircle,
-  FileText,
+  
   DollarSign,
   ListChecks,
   Stethoscope,
@@ -32,7 +32,6 @@ export const mainMenuItems = [
 
 export const clinicalMenuItems = [
   { icon: ClipboardList, text: "⭐ Processos Musicoterapia", path: "/processes", gradient: "from-purple-600 via-pink-600 to-red-600", isNew: true },
-  { icon: FileText, text: "📋 Planos de Intervenção", path: "/intervention-plans", gradient: "from-blue-500 to-indigo-600", isNew: true },
   { icon: ListChecks, text: "🎯 Atividades Terapêuticas", path: "/activities", gradient: "from-cyan-500 to-blue-600", isNew: true },
 ];
 
