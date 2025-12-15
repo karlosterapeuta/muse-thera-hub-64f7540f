@@ -147,6 +147,7 @@ export function useEvaluationStorage(patientId: string | null) {
 
       toast.success("Avaliação salva com sucesso!");
       await loadEvaluations();
+      await loadAllEvaluations();
       return true;
     } catch (error) {
       console.error("Erro ao salvar avaliação:", error);
@@ -192,6 +193,7 @@ export function useEvaluationStorage(patientId: string | null) {
 
       toast.success("Avaliação atualizada com sucesso!");
       await loadEvaluations();
+      await loadAllEvaluations();
       return true;
     } catch (error) {
       console.error("Erro ao atualizar avaliação:", error);
@@ -213,6 +215,7 @@ export function useEvaluationStorage(patientId: string | null) {
 
       toast.success("Avaliação excluída com sucesso!");
       setSavedEvaluations((prev) => prev.filter((e) => e.id !== evaluationId));
+      setAllEvaluations((prev) => prev.filter((e) => e.id !== evaluationId));
       return true;
     } catch (error) {
       console.error("Erro ao excluir avaliação:", error);
