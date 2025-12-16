@@ -1,5 +1,6 @@
 
 import { useState, useEffect, useMemo } from "react";
+import { calculateAgeFromBirthDate } from "@/utils/dateUtils";
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { 
@@ -161,7 +162,7 @@ export default function Evaluation() {
       return {
         patientId,
         patientName: patient?.name || sortedEvals[0]?.patient_name || "Paciente",
-        patientAge: patient?.age || null,
+        patientAge: calculateAgeFromBirthDate(patient?.birth_date) ?? patient?.age ?? null,
         totalEvaluations: evals.length,
         evaluationTypes: uniqueTypes,
         lastEvaluationDate: sortedEvals[0].date,
@@ -789,7 +790,7 @@ export default function Evaluation() {
             professionalSpecialty={professionalData?.specialty || undefined}
             professionalPhotoUrl={photoBase64 || undefined}
             patientData={{
-              age: selectedPatientData?.age || undefined,
+              age: calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age ?? undefined,
               birthDate: selectedPatientData?.birth_date || undefined
             }}
           />
@@ -1116,7 +1117,7 @@ export default function Evaluation() {
             professionalSpecialty={professionalData?.specialty || undefined}
             professionalPhotoUrl={photoBase64 || undefined}
             patientData={{
-              age: selectedPatientData?.age || undefined,
+              age: calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age ?? undefined,
               birthDate: selectedPatientData?.birth_date || undefined
             }}
           />
@@ -1297,7 +1298,7 @@ export default function Evaluation() {
       const { data, error } = await supabase.functions.invoke('generate-evaluation-text', {
         body: {
           patientName: patient.name,
-          patientAge: patient.age,
+          patientAge: calculateAgeFromBirthDate(patient.birth_date) ?? patient.age,
           evaluationDate: format(new Date(evaluation.date), 'dd/MM/yyyy'),
           achievements,
           developmentAreas,
@@ -1341,7 +1342,7 @@ export default function Evaluation() {
           <EvaluationTextPDF
             content={data.content}
             patientName={patient.name || 'Paciente'}
-            patientAge={patient.age || null}
+            patientAge={calculateAgeFromBirthDate(patient.birth_date) ?? patient.age ?? null}
             evaluationDate={format(new Date(evaluation.date), 'dd/MM/yyyy')}
             professionalName={professionalData?.name || 'Profissional'}
             professionalRegister={professionalData?.register || undefined}
@@ -1434,7 +1435,7 @@ export default function Evaluation() {
       const { data, error } = await supabase.functions.invoke('generate-evaluation-text', {
         body: {
           patientName: selectedPatientData?.name,
-          patientAge: selectedPatientData?.age,
+          patientAge: calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age,
           evaluationDate: format(evaluationDate, 'dd/MM/yyyy'),
           achievements,
           developmentAreas,
@@ -1478,7 +1479,7 @@ export default function Evaluation() {
           <EvaluationTextPDF
             content={data.content}
             patientName={selectedPatientData?.name || 'Paciente'}
-            patientAge={selectedPatientData?.age || null}
+            patientAge={calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age ?? null}
             evaluationDate={format(evaluationDate, 'dd/MM/yyyy')}
             professionalName={professionalData?.name || 'Profissional'}
             professionalRegister={professionalData?.register || undefined}
@@ -1632,7 +1633,10 @@ export default function Evaluation() {
               {selectedPatientData && (
                 <div className="bg-gradient-to-r from-emerald-50 to-teal-50 p-4 rounded-xl border border-emerald-200">
                   <p className="text-sm font-medium text-emerald-800">
-                    <span className="text-emerald-600">Idade:</span> {selectedPatientData.age ? `${selectedPatientData.age} anos` : 'Não informada'}
+                    <span className="text-emerald-600">Idade:</span> {(() => {
+                      const age = calculateAgeFromBirthDate(selectedPatientData.birth_date) ?? selectedPatientData.age;
+                      return age ? `${age} anos` : 'Não informada';
+                    })()}
                   </p>
                 </div>
               )}
