@@ -5,6 +5,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { X, User, FileText, Target, Music, Clock, CheckCircle, Activity, BarChart, Users, RefreshCw } from 'lucide-react';
 import { useSingleTreatmentPlan } from '@/hooks/useSingleTreatmentPlan';
+import { formatBirthDateForDisplay } from '@/utils/dateUtils';
 
 interface TreatmentPlanViewModalProps {
   planId: string | null;
@@ -99,7 +100,7 @@ export const TreatmentPlanViewModal: React.FC<TreatmentPlanViewModalProps> = ({
                   <div>
                     <p className="text-xs text-muted-foreground">Data de nascimento:</p>
                     <p className="text-sm font-medium">
-                      {plan.patient_birth_date ? new Date(plan.patient_birth_date).toLocaleDateString('pt-BR') : 'Não informado'}
+                      {formatBirthDateForDisplay(plan.patient_birth_date) || 'Não informado'}
                     </p>
                   </div>
                   <div>
@@ -117,7 +118,7 @@ export const TreatmentPlanViewModal: React.FC<TreatmentPlanViewModalProps> = ({
                   <div>
                     <p className="text-xs text-muted-foreground">Data de início:</p>
                     <p className="text-sm font-medium">
-                      {plan.plan_start_date ? new Date(plan.plan_start_date).toLocaleDateString('pt-BR') : 'Não informado'}
+                      {formatBirthDateForDisplay(plan.plan_start_date) || 'Não informado'}
                     </p>
                   </div>
                 </div>
