@@ -48,6 +48,7 @@ import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { useProfessionalData } from "@/hooks/useProfessionalData";
 import { useEvaluationPDF } from "@/hooks/useEvaluationPDF";
+import { MobileEvaluationCards } from "./components/MobileEvaluationCards";
 import { imageUrlToBase64 } from '@/utils/imageToBase64';
 import { useEvaluationStorage, SavedEvaluation } from "@/hooks/useEvaluationStorage";
 import { EvaluationHistory } from "./components/EvaluationHistory";
@@ -1953,7 +1954,18 @@ export default function Evaluation() {
                             )}
                           </div>
                           
-                          <div className="overflow-x-auto rounded-xl shadow-inner">
+                          {/* Mobile: Cards Colapsáveis */}
+                          <div className="block sm:hidden">
+                            <MobileEvaluationCards
+                              subdomain={subdomain}
+                              domain={domain}
+                              selections={selections}
+                              setSelections={setSelections}
+                            />
+                          </div>
+
+                          {/* Desktop: Tabela tradicional */}
+                          <div className="hidden sm:block overflow-x-auto rounded-xl shadow-inner">
                             <Table className="min-w-full">
                               <TableHeader>
                                 <TableRow className="bg-gradient-to-r from-purple-600 to-purple-700">
