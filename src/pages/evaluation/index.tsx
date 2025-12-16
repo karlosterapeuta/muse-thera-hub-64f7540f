@@ -1729,8 +1729,19 @@ export default function Evaluation() {
                 <TooltipComponent>
                   <TooltipTrigger asChild>
                     <Button
-                      onClick={handleGenerateParametersPDF}
-                      className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-0 hover:from-purple-600 hover:to-indigo-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                      onClick={() => {
+                        const patientEvaluations = selectedPatient 
+                          ? allEvaluations.filter(e => e.patient_id === selectedPatient)
+                          : savedEvaluations;
+                        
+                        if (patientEvaluations.length > 0) {
+                          handleGenerateParametersPDFFromSaved(patientEvaluations[0], patientEvaluations);
+                        } else {
+                          toast.error("Nenhuma avaliação salva encontrada para este paciente. Salve a avaliação primeiro.");
+                        }
+                      }}
+                      disabled={!selectedPatient}
+                      className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-0 hover:from-purple-600 hover:to-indigo-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50"
                     >
                       <FileText className="h-4 w-4" />
                       Baixar Gráfico
