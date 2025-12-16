@@ -49,3 +49,23 @@ export const getAgeOrFallback = (
 ): number | null => {
   return calculateAgeFromBirthDate(birthDate) ?? fallbackAge ?? null;
 };
+
+/**
+ * Formata a data de nascimento para exibição (formato dd/MM/yyyy)
+ * Parseia a data no timezone LOCAL para evitar erros de 1 dia causados por UTC
+ */
+export const formatBirthDateForDisplay = (
+  birthDate: string | null | undefined,
+  locale: string = 'pt-BR'
+): string => {
+  if (!birthDate) return '';
+  
+  // Parsear data no timezone LOCAL (evita bug UTC que causa erro de 1 dia)
+  const [year, month, day] = birthDate.split('-').map(Number);
+  if (!year || !month || !day) return '';
+  
+  const dateObj = new Date(year, month - 1, day); // month é 0-indexed
+  if (isNaN(dateObj.getTime())) return '';
+  
+  return dateObj.toLocaleDateString(locale);
+};

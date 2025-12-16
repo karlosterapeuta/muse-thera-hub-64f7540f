@@ -2,6 +2,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2, FileText, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { formatBirthDateForDisplay } from '@/utils/dateUtils';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -47,7 +48,7 @@ export function PatientCard({ patient, onEdit, onDelete, onViewAnamnesis, onEdit
                     {patient.age} anos
                     {patient.birth_date && (
                       <span className="text-xs ml-1 opacity-70">
-                        ({new Date(patient.birth_date).toLocaleDateString('pt-BR')})
+                        ({formatBirthDateForDisplay(patient.birth_date)})
                       </span>
                     )}
                   </>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { User, FileText, Target, Music, Users, Clock, CheckCircle, Activity, BarChart, RefreshCw } from 'lucide-react';
 import { MusicotherapyTreatmentPlan } from '@/types/musicotherapy-plan';
+import { formatBirthDateForDisplay } from '@/utils/dateUtils';
 
 interface MusicotherapyTreatmentPlanPDFProps {
   planData: MusicotherapyTreatmentPlan;
@@ -73,7 +74,7 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
           </div>
           <div>
             <p className="text-sm text-gray-600 font-medium">Data de nascimento:</p>
-            <p className="text-lg text-gray-800">{planData.patient_birth_date ? new Date(planData.patient_birth_date).toLocaleDateString('pt-BR') : 'Não informado'}</p>
+            <p className="text-lg text-gray-800">{formatBirthDateForDisplay(planData.patient_birth_date) || 'Não informado'}</p>
           </div>
           <div>
             <p className="text-sm text-gray-600 font-medium">Idade:</p>
@@ -89,7 +90,7 @@ export const MusicotherapyTreatmentPlanPDF: React.FC<MusicotherapyTreatmentPlanP
           </div>
           <div>
             <p className="text-sm text-gray-600 font-medium">Data de início do plano:</p>
-            <p className="text-lg text-gray-800">{planData.plan_start_date ? new Date(planData.plan_start_date).toLocaleDateString('pt-BR') : 'Não informado'}</p>
+            <p className="text-lg text-gray-800">{formatBirthDateForDisplay(planData.plan_start_date) || 'Não informado'}</p>
           </div>
         </div>
       ), "bg-blue-50")}

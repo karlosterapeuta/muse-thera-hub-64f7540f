@@ -7,6 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatBirthDateForDisplay } from '@/utils/dateUtils';
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2, FileText, Loader2 } from "lucide-react";
 import {
@@ -76,7 +77,7 @@ export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEdi
                   <span>{patient.age} anos</span>
                   {patient.birth_date && (
                     <span className="text-xs text-muted-foreground">
-                      {new Date(patient.birth_date).toLocaleDateString('pt-BR')}
+                      {formatBirthDateForDisplay(patient.birth_date)}
                     </span>
                   )}
                 </div>
