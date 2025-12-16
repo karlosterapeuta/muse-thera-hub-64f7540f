@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
+import { calculateAgeFromBirthDate } from "@/utils/dateUtils";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -105,9 +106,10 @@ export function PatientEvolutionDashboard({
                 <div className="flex items-center gap-2">
                   <User className="h-4 w-4 text-purple-600" />
                   <span>{patient.name}</span>
-                  {patient.age && (
-                    <span className="text-xs text-gray-500">({patient.age} anos)</span>
-                  )}
+                  {(() => {
+                    const age = calculateAgeFromBirthDate(patient.birth_date) ?? patient.age;
+                    return age && <span className="text-xs text-gray-500">({age} anos)</span>;
+                  })()}
                 </div>
               </SelectItem>
             ))}
@@ -126,11 +128,14 @@ export function PatientEvolutionDashboard({
               <h3 className="font-bold text-gray-900 dark:text-white">
                 {selectedPatient.name}
               </h3>
-              {selectedPatient.age && (
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {selectedPatient.age} anos
-                </p>
-              )}
+              {(() => {
+                const age = calculateAgeFromBirthDate(selectedPatient.birth_date) ?? selectedPatient.age;
+                return age && (
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {age} anos
+                  </p>
+                );
+              })()}
             </div>
           </div>
 
