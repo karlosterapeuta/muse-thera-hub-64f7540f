@@ -2018,14 +2018,18 @@ export default function Evaluation() {
                                               id={`${domain.title}-${subdomain.title}-${parameter}-${level}`}
                                               className="sr-only"
                                             />
-                                             <label
-                                               htmlFor={`${domain.title}-${subdomain.title}-${parameter}-${level}`}
-                                               className={`block w-3 h-3 sm:w-4 sm:h-4 rounded-full cursor-pointer border-2 ${getScoreColor(levelToScore(level))} ${
-                                                 selections[`${domain.title}-${subdomain.title}-${parameter}`] === level
-                                                   ? getScoreBgColor(levelToScore(level), true)
-                                                   : "bg-background"
-                                               }`}
-                                            />
+                                            <label
+                                              htmlFor={`${domain.title}-${subdomain.title}-${parameter}-${level}`}
+                                              className="flex items-center justify-center w-10 h-10 sm:w-8 sm:h-8 cursor-pointer touch-manipulation"
+                                            >
+                                              <span
+                                                className={`block w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 transition-all duration-200 ${getScoreColor(levelToScore(level))} ${
+                                                  selections[`${domain.title}-${subdomain.title}-${parameter}`] === level
+                                                    ? `${getScoreBgColor(levelToScore(level), true)} scale-110 shadow-md`
+                                                    : "bg-background hover:scale-105"
+                                                }`}
+                                              />
+                                            </label>
                                           </div>
                                         </RadioGroup>
                                       </TableCell>
