@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Eye, EyeOff, GraduationCap } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import bcrypt from "bcryptjs";
@@ -70,8 +70,13 @@ export default function CreatorLoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-            <GraduationCap className="h-8 w-8 text-primary" />
+          <div className="mx-auto w-24 h-24 mb-4 relative group">
+            <div className="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-full blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
+            <img 
+              src="/lovable-uploads/musetera-logo-new.png" 
+              alt="MuseTera Logo" 
+              className="relative w-full h-full object-cover rounded-full shadow-lg"
+            />
           </div>
           <CardTitle className="text-2xl">Painel do Criador</CardTitle>
           <CardDescription>
