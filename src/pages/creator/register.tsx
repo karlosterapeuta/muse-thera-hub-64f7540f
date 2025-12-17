@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Loader2, Eye, EyeOff, GraduationCap, ArrowLeft } from "lucide-react";
+import { Loader2, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import bcrypt from "bcryptjs";
@@ -127,8 +127,13 @@ export default function CreatorRegisterPage() {
           >
             <ArrowLeft className="h-5 w-5" />
           </Link>
-          <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-            <GraduationCap className="h-8 w-8 text-primary" />
+          <div className="mx-auto w-24 h-24 mb-4 relative group">
+            <div className="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-full blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
+            <img 
+              src="/lovable-uploads/musetera-logo-new.png" 
+              alt="MuseTera Logo" 
+              className="relative w-full h-full object-cover rounded-full shadow-lg"
+            />
           </div>
           <CardTitle className="text-2xl">Cadastro de Criador</CardTitle>
           <CardDescription>
