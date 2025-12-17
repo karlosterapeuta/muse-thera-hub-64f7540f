@@ -192,9 +192,19 @@ export default function CreatorDashboardPage() {
       {/* Header */}
       <header className="border-b bg-card">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Painel do Criador</h1>
-            <p className="text-muted-foreground">Olá, {creator?.name}!</p>
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 relative group">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-secondary rounded-full blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
+              <img 
+                src="/lovable-uploads/musetera-logo-new.png" 
+                alt="MuseTera Logo" 
+                className="relative w-full h-full object-cover rounded-full shadow-lg"
+              />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold">Painel do Criador</h1>
+              <p className="text-muted-foreground">Olá, {creator?.name}!</p>
+            </div>
           </div>
           <Button variant="outline" onClick={handleLogout} className="gap-2">
             <LogOut className="h-4 w-4" />
