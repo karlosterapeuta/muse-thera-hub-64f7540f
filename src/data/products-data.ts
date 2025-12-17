@@ -42,7 +42,7 @@ export const products: Product[] = [
       'Controle financeiro',
       'Relatórios PDF'
     ],
-    price: 'R$19,90/mês',
+    price: 'R$14,99/mês',
     priceType: 'paid',
     url: 'https://session-tracker-pro.onrender.com/',
     color: '#14b8a6',
