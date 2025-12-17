@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -127,10 +127,10 @@ export default function CreatorLoginPage() {
 
           <div className="mt-6 text-center text-sm text-muted-foreground">
             <p>
-              Quer ser um criador de cursos?{" "}
-              <a href="mailto:contato@musetera.com.br" className="text-primary hover:underline">
-                Entre em contato
-              </a>
+              Ainda não tem conta?{" "}
+              <Link to="/creator-register" className="text-primary hover:underline font-medium">
+                Cadastre-se como criador
+              </Link>
             </p>
           </div>
         </CardContent>
