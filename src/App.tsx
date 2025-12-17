@@ -78,6 +78,7 @@ import BackupPage from "./pages/backup";
 
 // Creator pages (separate from MuseTera)
 import CreatorLoginPage from "./pages/creator/login";
+import CreatorRegisterPage from "./pages/creator/register";
 import CreatorDashboardPage from "./pages/creator/dashboard";
 
 const queryClient = new QueryClient({
@@ -135,6 +136,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/creator-login" element={<CreatorLoginPage />} />
+          <Route path="/creator-register" element={<CreatorRegisterPage />} />
           <Route path="/creator-dashboard" element={<CreatorDashboardPage />} />
           <Route path="/" element={<Layout />}>
             <Route index element={<Navigate to="/dashboard" replace />} />
