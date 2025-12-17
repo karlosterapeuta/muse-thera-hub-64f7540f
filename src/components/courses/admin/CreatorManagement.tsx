@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,7 +10,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Pencil, User, Mail, Phone, Key, Percent, Loader2, Trash2, Search, Users, BookOpen, DollarSign, GraduationCap, ChevronDown, ChevronUp, Filter } from "lucide-react";
+import { Plus, Pencil, User, Mail, Phone, Key, Percent, Loader2, Trash2, Search, Users, BookOpen, DollarSign, GraduationCap, ChevronDown, ChevronUp, Filter, Eye } from "lucide-react";
 import { useAllCourseCreators, useCreateCreator, useUpdateCreator, useDeleteCreator, useCreatorStats } from "@/hooks/useCourseCreators";
 import { CourseCreator } from "@/types/courses";
 import { toast } from "sonner";
@@ -97,6 +98,7 @@ function CreatorStatsCard({ creatorId }: { creatorId: string }) {
 }
 
 export function CreatorManagement() {
+  const navigate = useNavigate();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingCreator, setEditingCreator] = useState<CourseCreator | null>(null);
   const [form, setForm] = useState<CreatorForm>(emptyForm);
@@ -327,7 +329,16 @@ export function CreatorManagement() {
                   <Button
                     variant="ghost"
                     size="icon"
+                    onClick={() => navigate(`/courses/admin/creator/${creator.id}`)}
+                    title="Ver Dashboard"
+                  >
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={() => handleOpenEdit(creator)}
+                    title="Editar"
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>

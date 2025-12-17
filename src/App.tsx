@@ -71,6 +71,7 @@ import ActivityCategory from "./pages/activities/category";
 // Courses pages
 import CoursesPage from "./pages/courses";
 import CoursePlayerPage from "./pages/courses/[courseId]";
+import CreatorDashboardAdmin from "./pages/courses/admin/creator/[creatorId]";
 import CourseAdminPage from "./pages/courses/admin";
 
 // Backup page
@@ -189,6 +190,7 @@ const App = () => {
             <Route path="courses" element={<CoursesPage />} />
             <Route path="courses/:courseId" element={<CoursePlayerPage />} />
             <Route path="courses/admin" element={<CourseAdminPage />} />
+            <Route path="courses/admin/creator/:creatorId" element={<CreatorDashboardAdmin />} />
             <Route path="backup" element={<BackupPage />} />
             <Route path="*" element={<NotFound />} />
           </Route>
