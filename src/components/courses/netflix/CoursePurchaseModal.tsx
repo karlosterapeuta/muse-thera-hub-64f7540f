@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Copy, Check, Clock, QrCode, AlertCircle, Loader2 } from "lucide-react";
+import { Copy, Check, Clock, QrCode, AlertCircle, Loader2, CheckCircle } from "lucide-react";
 import { CourseWithProgress, formatPrice, CoursePurchase } from "@/types/courses";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -64,6 +64,26 @@ export function CoursePurchaseModal({
         return;
       }
 
+      // Check if course is free
+      if (!course.price_cents || course.price_cents === 0) {
+        // Grant immediate access for free courses
+        const { error: accessError } = await supabase
+          .from('course_access')
+          .insert({
+            course_id: course.id,
+            user_id: user.id,
+            is_active: true,
+          });
+
+        if (accessError && !accessError.message.includes('duplicate')) {
+          throw accessError;
+        }
+
+        toast.success("Acesso liberado! Aproveite o curso.");
+        onSuccess();
+        return;
+      }
+
       // Get user profile for buyer info
       const { data: profile } = await supabase
         .from('profiles')
@@ -71,46 +91,32 @@ export function CoursePurchaseModal({
         .eq('id', user.id)
         .single();
 
-      // Calculate amounts
-      const amountCents = course.price_cents || 0;
-      const creatorPercentage = 70; // Default commission
-      const creatorAmount = Math.floor(amountCents * (creatorPercentage / 100));
-      const platformAmount = amountCents - creatorAmount;
-
-      // Generate PIX code (simplified - in production would use a payment gateway)
-      const pixCode = generateStaticPixCode(course.title, amountCents);
-      const expirationTime = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
-
-      // Create purchase record
-      const { data: newPurchase, error } = await supabase
-        .from('course_purchases')
-        .insert({
-          course_id: course.id,
-          user_id: user.id,
-          creator_id: course.creator_id,
-          amount_cents: amountCents,
-          creator_amount_cents: creatorAmount,
-          platform_amount_cents: platformAmount,
-          payment_status: 'pending',
-          payment_method: 'pix',
-          pix_code: pixCode,
-          pix_expiration: expirationTime.toISOString(),
-          buyer_name: profile?.name || user.email,
-          buyer_email: user.email
-        })
-        .select()
-        .single();
+      // Call edge function to generate PIX
+      const { data, error } = await supabase.functions.invoke('generate-pix-payment', {
+        body: {
+          courseId: course.id,
+          userId: user.id,
+          buyerName: profile?.name || user.email,
+          buyerEmail: user.email,
+        },
+      });
 
       if (error) throw error;
 
-      // Generate QR code
-      const qrDataUrl = await QRCode.toDataURL(pixCode, {
+      if (data.free) {
+        toast.success("Acesso liberado! Aproveite o curso.");
+        onSuccess();
+        return;
+      }
+
+      // Generate QR code from PIX code
+      const qrDataUrl = await QRCode.toDataURL(data.pixCode, {
         width: 256,
         margin: 2,
         color: { dark: '#000000', light: '#ffffff' }
       });
 
-      setPurchase(newPurchase as CoursePurchase);
+      setPurchase(data.purchase as CoursePurchase);
       setQrCodeDataUrl(qrDataUrl);
       setTimeLeft(30 * 60); // 30 minutes in seconds
 
@@ -120,14 +126,6 @@ export function CoursePurchaseModal({
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const generateStaticPixCode = (courseName: string, amountCents: number): string => {
-    // This is a simplified static PIX code generator
-    // In production, you would integrate with a payment gateway (Mercado Pago, Stripe, etc.)
-    const amount = (amountCents / 100).toFixed(2);
-    const cleanName = courseName.replace(/[^a-zA-Z0-9]/g, '').substring(0, 20);
-    return `00020126580014BR.GOV.BCB.PIX0136MUSETERA-CURSO-${cleanName}520400005303986540${amount}5802BR5925MuseTera Cursos6009SAO PAULO62070503***6304`;
   };
 
   const copyToClipboard = async () => {
@@ -157,20 +155,33 @@ export function CoursePurchaseModal({
 
   if (!course) return null;
 
+  const isFree = !course.price_cents || course.price_cents === 0;
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <QrCode className="h-5 w-5 text-primary" />
-            Pagamento via PIX
+            {isFree ? (
+              <>
+                <CheckCircle className="h-5 w-5 text-emerald-500" />
+                Curso Gratuito
+              </>
+            ) : (
+              <>
+                <QrCode className="h-5 w-5 text-primary" />
+                Pagamento via PIX
+              </>
+            )}
           </DialogTitle>
         </DialogHeader>
 
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-12 gap-4">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="text-muted-foreground">Gerando código PIX...</p>
+            <p className="text-muted-foreground">
+              {isFree ? "Liberando acesso..." : "Gerando código PIX..."}
+            </p>
           </div>
         ) : purchase ? (
           <div className="space-y-4">
