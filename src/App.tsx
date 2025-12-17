@@ -76,6 +76,10 @@ import CourseAdminPage from "./pages/courses/admin";
 // Backup page
 import BackupPage from "./pages/backup";
 
+// Creator pages (separate from MuseTera)
+import CreatorLoginPage from "./pages/creator/login";
+import CreatorDashboardPage from "./pages/creator/dashboard";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -130,6 +134,8 @@ const App = () => {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/creator-login" element={<CreatorLoginPage />} />
+          <Route path="/creator-dashboard" element={<CreatorDashboardPage />} />
           <Route path="/" element={<Layout />}>
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
