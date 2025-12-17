@@ -96,22 +96,29 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
                 
                 {!collapsed && (
                   <div className="flex items-center gap-2 flex-1 relative z-10">
-                    <span className={cn(
-                      "font-medium transition-all duration-200",
-                      isActive 
-                        ? "text-white" 
-                        : "text-foreground group-hover:text-foreground",
-                      isProcessesItem ? "text-base" : "text-sm"
-                    )}>
-                      {item.text.includes("em construção") ? (
-                        <>
-                          {item.text.split(" - em construção")[0]}
-                          <span className="text-red-500 font-bold ml-1">- em construção</span>
-                        </>
-                      ) : (
-                        item.text
-                      )}
-                    </span>
+                    {item.isNetflixStyle ? (
+                      <span 
+                        className="font-black text-base tracking-tight uppercase"
+                        style={{ 
+                          fontFamily: "'Bebas Neue', 'Arial Black', Impact, sans-serif",
+                          color: isActive ? '#ffffff' : '#E50914',
+                          textShadow: isActive ? 'none' : '1px 1px 2px rgba(0,0,0,0.3)',
+                          letterSpacing: '0.5px'
+                        }}
+                      >
+                        {item.text}
+                      </span>
+                    ) : (
+                      <span className={cn(
+                        "font-medium transition-all duration-200",
+                        isActive 
+                          ? "text-white" 
+                          : "text-foreground group-hover:text-foreground",
+                        isProcessesItem ? "text-base" : "text-sm"
+                      )}>
+                        {item.text}
+                      </span>
+                    )}
                     {item.isNew && (
                       <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-green-500 text-white shadow-sm animate-pulse">
                         NOVO

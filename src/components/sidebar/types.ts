@@ -10,6 +10,7 @@ export interface MenuItem {
   gradient: string;
   external?: boolean;
   isNew?: boolean;
+  isNetflixStyle?: boolean;
 }
 
 export interface MenuSectionProps {
