@@ -470,11 +470,11 @@ export default function CourseAdminPage() {
 
       {/* Course Dialog */}
       <Dialog open={courseDialogOpen} onOpenChange={setCourseDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] flex flex-col max-w-lg">
           <DialogHeader>
             <DialogTitle>{editingCourse?.id ? "Editar Curso" : "Novo Curso"}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4 overflow-y-auto max-h-[60vh] px-1 py-2">
             <div>
               <Label>Título *</Label>
               <Input
@@ -489,6 +489,7 @@ export default function CourseAdminPage() {
                 value={editingCourse?.description || ""}
                 onChange={(e) => setEditingCourse({ ...editingCourse, description: e.target.value })}
                 placeholder="Descrição do curso"
+                className="min-h-[80px]"
               />
             </div>
             <div>
@@ -507,7 +508,7 @@ export default function CourseAdminPage() {
                 placeholder="https://..."
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
                 <Label className="flex items-center gap-1">
                   <DollarSign className="h-3 w-3" /> Preço (R$)
@@ -527,7 +528,7 @@ export default function CourseAdminPage() {
                   Deixe em branco ou 0 para curso gratuito
                 </p>
               </div>
-              <div className="flex items-center gap-2 pt-6">
+              <div className="flex items-center gap-2 sm:pt-6">
                 <Switch
                   checked={editingCourse?.is_published || false}
                   onCheckedChange={(checked) => setEditingCourse({ ...editingCourse, is_published: checked })}
@@ -546,7 +547,7 @@ export default function CourseAdminPage() {
               </p>
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="flex-shrink-0">
             <Button variant="outline" onClick={() => setCourseDialogOpen(false)}>Cancelar</Button>
             <Button onClick={handleSaveCourse}>Salvar</Button>
           </DialogFooter>
