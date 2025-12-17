@@ -138,6 +138,80 @@ export function useUpdateCreator() {
   });
 }
 
+export function useDeleteCreator() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (creatorId: string) => {
+      // Check if creator has courses
+      const { data: courses } = await supabase
+        .from("courses")
+        .select("id")
+        .eq("creator_id", creatorId)
+        .limit(1);
+
+      if (courses && courses.length > 0) {
+        throw new Error("Este criador possui cursos associados. Remova os cursos primeiro.");
+      }
+
+      const { error } = await supabase
+        .from("course_creators")
+        .delete()
+        .eq("id", creatorId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["course-creators"] });
+      queryClient.invalidateQueries({ queryKey: ["course-creators-all"] });
+      queryClient.invalidateQueries({ queryKey: ["creator-stats"] });
+      toast.success("Criador excluído com sucesso!");
+    },
+    onError: (error: Error) => {
+      console.error("Error deleting creator:", error);
+      toast.error(error.message || "Erro ao excluir criador");
+    },
+  });
+}
+
+export function useCreatorStats(creatorId: string | undefined) {
+  return useQuery({
+    queryKey: ["creator-stats", creatorId],
+    queryFn: async () => {
+      if (!creatorId) return null;
+
+      // Get courses count
+      const { data: courses, error: coursesError } = await supabase
+        .from("courses")
+        .select("id")
+        .eq("creator_id", creatorId);
+
+      if (coursesError) throw coursesError;
+
+      // Get sales data
+      const { data: sales, error: salesError } = await supabase
+        .from("course_purchases")
+        .select("amount_cents, creator_amount_cents, user_id, payment_status")
+        .eq("creator_id", creatorId)
+        .eq("payment_status", "paid");
+
+      if (salesError) throw salesError;
+
+      const totalSales = sales?.length || 0;
+      const totalRevenue = sales?.reduce((acc, s) => acc + (s.creator_amount_cents || 0), 0) || 0;
+      const uniqueStudents = new Set(sales?.map(s => s.user_id)).size;
+
+      return {
+        coursesCount: courses?.length || 0,
+        totalSales,
+        totalRevenue: totalRevenue / 100, // Convert to reais
+        studentsCount: uniqueStudents,
+      };
+    },
+    enabled: !!creatorId,
+  });
+}
+
 export function useCreatorSales(creatorId: string | undefined) {
   return useQuery({
     queryKey: ["creator-sales", creatorId],
