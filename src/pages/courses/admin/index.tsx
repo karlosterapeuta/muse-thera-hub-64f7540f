@@ -9,7 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowLeft, Plus, Pencil, Trash2, GripVertical, Video, BookOpen, Settings, Loader2, ShieldAlert } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ArrowLeft, Plus, Pencil, Trash2, GripVertical, Video, BookOpen, Settings, Loader2, ShieldAlert, DollarSign, Users } from "lucide-react";
 import { useAdmin } from "@/hooks/use-admin";
 import { 
   useCourses, 
@@ -24,9 +25,11 @@ import {
   useUpdateLesson,
   useDeleteLesson
 } from "@/hooks/useCourses";
-import { Course, CourseModule, CourseLesson } from "@/types/courses";
+import { Course, CourseModule, CourseLesson, formatPrice } from "@/types/courses";
 import { toast } from "sonner";
 import { getYouTubeId } from "@/utils/youtubeUtils";
+import { CreatorManagement } from "@/components/courses/admin/CreatorManagement";
+import { CourseCreatorSelect } from "@/components/courses/admin/CourseCreatorSelect";
 
 // Convert YouTube URL to thumbnail URL
 const convertYouTubeUrlToThumbnail = (url: string | undefined): string | undefined => {
@@ -190,7 +193,7 @@ export default function CourseAdminPage() {
                 Gerenciar Cursos
               </h1>
               <p className="text-sm text-muted-foreground">
-                Crie e edite cursos, módulos e aulas
+                Crie e edite cursos, módulos, aulas e criadores
               </p>
             </div>
           </div>
@@ -198,7 +201,24 @@ export default function CourseAdminPage() {
       </div>
 
       <div className="container mx-auto px-4 py-6">
-        <div className="grid lg:grid-cols-3 gap-6">
+        <Tabs defaultValue="courses" className="space-y-6">
+          <TabsList className="grid w-full max-w-md grid-cols-2">
+            <TabsTrigger value="courses" className="flex items-center gap-2">
+              <BookOpen className="h-4 w-4" />
+              Cursos
+            </TabsTrigger>
+            <TabsTrigger value="creators" className="flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              Criadores
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="creators">
+            <CreatorManagement />
+          </TabsContent>
+
+          <TabsContent value="courses">
+            <div className="grid lg:grid-cols-3 gap-6">
           {/* Courses List */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -223,13 +243,22 @@ export default function CourseAdminPage() {
                     }`}
                     onClick={() => setSelectedCourseId(course.id)}
                   >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium truncate">{course.title}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {course.is_published ? "✅ Publicado" : "📝 Rascunho"}
-                        </p>
-                      </div>
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium truncate">{course.title}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-xs text-muted-foreground">
+                              {course.is_published ? "✅ Publicado" : "📝 Rascunho"}
+                            </span>
+                            {course.price_cents && course.price_cents > 0 ? (
+                              <span className="text-xs font-medium text-emerald-600">
+                                {formatPrice(course.price_cents)}
+                              </span>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">Grátis</span>
+                            )}
+                          </div>
+                        </div>
                       <div className="flex items-center gap-1">
                         <Button
                           variant="ghost"
@@ -435,6 +464,8 @@ export default function CourseAdminPage() {
             </CardContent>
           </Card>
         </div>
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Course Dialog */}
@@ -476,12 +507,43 @@ export default function CourseAdminPage() {
                 placeholder="https://..."
               />
             </div>
-            <div className="flex items-center gap-2">
-              <Switch
-                checked={editingCourse?.is_published || false}
-                onCheckedChange={(checked) => setEditingCourse({ ...editingCourse, is_published: checked })}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="flex items-center gap-1">
+                  <DollarSign className="h-3 w-3" /> Preço (R$)
+                </Label>
+                <Input
+                  type="number"
+                  min={0}
+                  step={0.01}
+                  value={editingCourse?.price_cents ? (editingCourse.price_cents / 100).toFixed(2) : ""}
+                  onChange={(e) => setEditingCourse({ 
+                    ...editingCourse, 
+                    price_cents: Math.round(parseFloat(e.target.value || "0") * 100) 
+                  })}
+                  placeholder="0.00 (grátis)"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Deixe em branco ou 0 para curso gratuito
+                </p>
+              </div>
+              <div className="flex items-center gap-2 pt-6">
+                <Switch
+                  checked={editingCourse?.is_published || false}
+                  onCheckedChange={(checked) => setEditingCourse({ ...editingCourse, is_published: checked })}
+                />
+                <Label>Publicado</Label>
+              </div>
+            </div>
+            <div>
+              <Label>Criador do Curso</Label>
+              <CourseCreatorSelect
+                value={editingCourse?.creator_id || undefined}
+                onChange={(value) => setEditingCourse({ ...editingCourse, creator_id: value })}
               />
-              <Label>Publicado</Label>
+              <p className="text-xs text-muted-foreground mt-1">
+                O criador receberá a comissão das vendas
+              </p>
             </div>
           </div>
           <DialogFooter>

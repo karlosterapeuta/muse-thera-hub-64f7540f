@@ -116,10 +116,7 @@ export default function CoursesPage() {
     );
   }
 
-  // Block non-admin users (temporary restriction)
-  if (!isAdmin) {
-    return <CourseAccessRestricted />;
-  }
+  // Courses are now available to all authenticated users
 
   return (
     <div className="min-h-screen bg-background">
