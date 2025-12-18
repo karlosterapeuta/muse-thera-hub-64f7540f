@@ -119,19 +119,19 @@ export const generateProfessionalAnamnesePDF = async (
       };
 
       // Mapeamento de cores por categoria temática
-      const sectionColors: Record<number, { gradient: string; iconBg: string }> = {
-        1:  { gradient: 'linear-gradient(135deg, #0d9488, #14b8a6)', iconBg: 'rgba(255,255,255,0.25)' },  // [ID] TEAL - Identificação
-        2:  { gradient: 'linear-gradient(135deg, #1e40af, #3b82f6)', iconBg: 'rgba(255,255,255,0.25)' },  // [HC] AZUL - Clínico
-        3:  { gradient: 'linear-gradient(135deg, #1e40af, #3b82f6)', iconBg: 'rgba(255,255,255,0.25)' },  // [MED] AZUL - Clínico
-        4:  { gradient: 'linear-gradient(135deg, #1e40af, #3b82f6)', iconBg: 'rgba(255,255,255,0.25)' },  // [TER] AZUL - Clínico
-        5:  { gradient: 'linear-gradient(135deg, #a21caf, #d946ef)', iconBg: 'rgba(255,255,255,0.25)' },  // ♪ ROSA - Musical
-        6:  { gradient: 'linear-gradient(135deg, #a21caf, #d946ef)', iconBg: 'rgba(255,255,255,0.25)' },  // [ISO] ROSA - Musical
-        7:  { gradient: 'linear-gradient(135deg, #a21caf, #d946ef)', iconBg: 'rgba(255,255,255,0.25)' },  // ♫ ROSA - Musical
-        8:  { gradient: 'linear-gradient(135deg, #c2410c, #f97316)', iconBg: 'rgba(255,255,255,0.25)' },  // [AUD] LARANJA - Sensorial
-        9:  { gradient: 'linear-gradient(135deg, #c2410c, #f97316)', iconBg: 'rgba(255,255,255,0.25)' },  // [NPM] LARANJA - Sensorial
-        10: { gradient: 'linear-gradient(135deg, #15803d, #22c55e)', iconBg: 'rgba(255,255,255,0.25)' },  // [EMO] VERDE - Emocional
-        11: { gradient: 'linear-gradient(135deg, #0d9488, #14b8a6)', iconBg: 'rgba(255,255,255,0.25)' },  // [ESC] TEAL - Identificação
-        12: { gradient: 'linear-gradient(135deg, #0d9488, #14b8a6)', iconBg: 'rgba(255,255,255,0.25)' },  // [OBJ] TEAL - Identificação
+      const sectionColors: Record<number, { gradient: string; iconBg: string; borderColor: string }> = {
+        1:  { gradient: 'linear-gradient(135deg, #0d9488, #14b8a6)', iconBg: 'rgba(255,255,255,0.25)', borderColor: '#14b8a6' },  // [ID] TEAL - Identificação
+        2:  { gradient: 'linear-gradient(135deg, #1e40af, #3b82f6)', iconBg: 'rgba(255,255,255,0.25)', borderColor: '#3b82f6' },  // [HC] AZUL - Clínico
+        3:  { gradient: 'linear-gradient(135deg, #1e40af, #3b82f6)', iconBg: 'rgba(255,255,255,0.25)', borderColor: '#3b82f6' },  // [MED] AZUL - Clínico
+        4:  { gradient: 'linear-gradient(135deg, #1e40af, #3b82f6)', iconBg: 'rgba(255,255,255,0.25)', borderColor: '#3b82f6' },  // [TER] AZUL - Clínico
+        5:  { gradient: 'linear-gradient(135deg, #a21caf, #d946ef)', iconBg: 'rgba(255,255,255,0.25)', borderColor: '#d946ef' },  // ♪ ROSA - Musical
+        6:  { gradient: 'linear-gradient(135deg, #a21caf, #d946ef)', iconBg: 'rgba(255,255,255,0.25)', borderColor: '#d946ef' },  // [ISO] ROSA - Musical
+        7:  { gradient: 'linear-gradient(135deg, #a21caf, #d946ef)', iconBg: 'rgba(255,255,255,0.25)', borderColor: '#d946ef' },  // ♫ ROSA - Musical
+        8:  { gradient: 'linear-gradient(135deg, #c2410c, #f97316)', iconBg: 'rgba(255,255,255,0.25)', borderColor: '#f97316' },  // [AUD] LARANJA - Sensorial
+        9:  { gradient: 'linear-gradient(135deg, #c2410c, #f97316)', iconBg: 'rgba(255,255,255,0.25)', borderColor: '#f97316' },  // [NPM] LARANJA - Sensorial
+        10: { gradient: 'linear-gradient(135deg, #15803d, #22c55e)', iconBg: 'rgba(255,255,255,0.25)', borderColor: '#22c55e' },  // [EMO] VERDE - Emocional
+        11: { gradient: 'linear-gradient(135deg, #0d9488, #14b8a6)', iconBg: 'rgba(255,255,255,0.25)', borderColor: '#14b8a6' },  // [ESC] TEAL - Identificação
+        12: { gradient: 'linear-gradient(135deg, #0d9488, #14b8a6)', iconBg: 'rgba(255,255,255,0.25)', borderColor: '#14b8a6' },  // [OBJ] TEAL - Identificação
       };
 
       // Cabeçalho da seção com cores diferenciadas
@@ -147,12 +147,15 @@ export const generateProfessionalAnamnesePDF = async (
         `;
       };
 
-      // Container da seção
-      const sectionContainer = (content: string) => `
-        <div style="background-color: #ffffff; border: 1px solid #99f6e4; border-top: none; border-radius: 0 0 10px 10px; padding: 16px;">
-          ${content}
-        </div>
-      `;
+      // Container da seção com borda lateral colorida
+      const sectionContainer = (sectionNumber: number, content: string) => {
+        const colors = sectionColors[sectionNumber] || sectionColors[1];
+        return `
+          <div style="background-color: #ffffff; border: 1px solid ${colors.borderColor}; border-left: 4px solid ${colors.borderColor}; border-top: none; border-radius: 0 0 10px 10px; padding: 16px;">
+            ${content}
+          </div>
+        `;
+      };
 
       return `
         <!DOCTYPE html>
@@ -211,7 +214,7 @@ export const generateProfessionalAnamnesePDF = async (
               <!-- SEÇÃO 1: IDENTIFICAÇÃO E ENCAMINHAMENTO -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
                 ${sectionHeader(1, 'IDENTIFICAÇÃO E ENCAMINHAMENTO', '[ID]')}
-                ${sectionContainer(`
+                ${sectionContainer(1, `
                   ${renderTextField('Profissional Encaminhador', 'referral_professional')}
                   ${renderTextField('Demanda Clínica Principal', 'main_clinical_demand')}
                   ${renderTextField('Detalhes do Diagnóstico', 'diagnosis_details')}
@@ -222,7 +225,7 @@ export const generateProfessionalAnamnesePDF = async (
               <!-- SEÇÃO 2: HISTÓRICO CLÍNICO E MÉDICO -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
                 ${sectionHeader(2, 'HISTÓRICO CLÍNICO E MÉDICO', '[HC]')}
-                ${sectionContainer(`
+                ${sectionContainer(2, `
                   <div style="margin-bottom: 16px;">
                     <div style="font-weight: 600; font-size: 11px; color: #0f766e; margin-bottom: 10px; text-transform: uppercase;">Diagnósticos / Condições</div>
                     ${renderCheckboxes([
@@ -247,7 +250,7 @@ export const generateProfessionalAnamnesePDF = async (
               <!-- SEÇÃO 3: MEDICAÇÃO EM USO -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
                 ${sectionHeader(3, 'MEDICAÇÃO EM USO', '[MED]')}
-                ${sectionContainer(`
+                ${sectionContainer(3, `
                   ${renderTextField('Medicações Atuais', 'current_medication')}
                   ${renderTextField('Horários e Dosagens', 'medication_schedule')}
                   ${renderTextField('Efeitos Observados', 'medication_effects')}
@@ -257,7 +260,7 @@ export const generateProfessionalAnamnesePDF = async (
               <!-- SEÇÃO 4: TERAPIAS E ACOMPANHAMENTOS -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
                 ${sectionHeader(4, 'TERAPIAS E ACOMPANHAMENTOS', '[TER]')}
-                ${sectionContainer(`
+                ${sectionContainer(4, `
                   <div style="margin-bottom: 16px;">
                     <div style="font-weight: 600; font-size: 11px; color: #0f766e; margin-bottom: 10px; text-transform: uppercase;">Acompanhamentos em Andamento</div>
                     ${renderCheckboxes([
@@ -281,7 +284,7 @@ export const generateProfessionalAnamnesePDF = async (
               <!-- SEÇÃO 5: PERFIL MUSICAL DO PACIENTE -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
                 ${sectionHeader(5, 'PERFIL MUSICAL DO PACIENTE', '♪')}
-                ${sectionContainer(`
+                ${sectionContainer(5, `
                   <div style="margin-bottom: 16px;">
                     <div style="font-weight: 600; font-size: 11px; color: #0f766e; margin-bottom: 10px; text-transform: uppercase;">Experiências Musicais</div>
                     ${renderCheckboxes([
@@ -315,7 +318,7 @@ export const generateProfessionalAnamnesePDF = async (
               <!-- SEÇÃO 6: IDENTIDADE SONORA (ISO) -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
                 ${sectionHeader(6, 'IDENTIDADE SONORA (ISO)', '[ISO]')}
-                ${sectionContainer(`
+                ${sectionContainer(6, `
                   <div style="background: linear-gradient(135deg, #f0fdfa, #ecfeff); padding: 12px; border-radius: 8px; border-left: 4px solid #14b8a6; margin-bottom: 16px;">
                     <span style="font-size: 11px; color: #0f766e; font-style: italic;">
                       Baseado na teoria de Rolando Benenzon - elementos sonoro-musicais que caracterizam a identidade do indivíduo
@@ -334,7 +337,7 @@ export const generateProfessionalAnamnesePDF = async (
               <!-- SEÇÃO 7: COMPORTAMENTO MUSICAL OBSERVADO -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
                 ${sectionHeader(7, 'COMPORTAMENTO MUSICAL OBSERVADO', '♫')}
-                ${sectionContainer(`
+                ${sectionContainer(7, `
                   <div style="margin-bottom: 16px;">
                     <div style="font-weight: 600; font-size: 11px; color: #0f766e; margin-bottom: 10px; text-transform: uppercase;">Comportamentos Observados</div>
                     ${renderCheckboxes([
@@ -354,7 +357,7 @@ export const generateProfessionalAnamnesePDF = async (
               <!-- SEÇÃO 8: PROCESSAMENTO AUDITIVO E SENSORIAL -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
                 ${sectionHeader(8, 'PROCESSAMENTO AUDITIVO E SENSORIAL', '[AUD]')}
-                ${sectionContainer(`
+                ${sectionContainer(8, `
                   <div style="margin-bottom: 16px;">
                     <div style="font-weight: 600; font-size: 11px; color: #0f766e; margin-bottom: 10px; text-transform: uppercase;">Características Auditivas</div>
                     ${renderCheckboxes([
@@ -375,7 +378,7 @@ export const generateProfessionalAnamnesePDF = async (
               <!-- SEÇÃO 9: DESENVOLVIMENTO NEUROPSICOMOTOR -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
                 ${sectionHeader(9, 'DESENVOLVIMENTO NEUROPSICOMOTOR', '[NPM]')}
-                ${sectionContainer(`
+                ${sectionContainer(9, `
                   <div style="margin-bottom: 16px;">
                     <div style="font-weight: 600; font-size: 11px; color: #0f766e; margin-bottom: 10px; text-transform: uppercase;">Marcos Motores</div>
                     ${renderCheckboxes([
@@ -404,7 +407,7 @@ export const generateProfessionalAnamnesePDF = async (
               <!-- SEÇÃO 10: ASPECTOS COMPORTAMENTAIS E EMOCIONAIS -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
                 ${sectionHeader(10, 'ASPECTOS COMPORTAMENTAIS E EMOCIONAIS', '[EMO]')}
-                ${sectionContainer(`
+                ${sectionContainer(10, `
                   <div style="margin-bottom: 16px;">
                     <div style="font-weight: 600; font-size: 11px; color: #0f766e; margin-bottom: 10px; text-transform: uppercase;">Comportamento e Interação</div>
                     ${renderCheckboxes([
@@ -434,7 +437,7 @@ export const generateProfessionalAnamnesePDF = async (
               <!-- SEÇÃO 11: CONTEXTO SOCIAL E ESCOLAR -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
                 ${sectionHeader(11, 'CONTEXTO SOCIAL E ESCOLAR', '[ESC]')}
-                ${sectionContainer(`
+                ${sectionContainer(11, `
                   ${renderTextField('Situação Escolar', 'school_enrollment')}
                   ${renderTextField('Adaptação Escolar', 'school_adaptation')}
                   ${renderTextField('Atividades Extracurriculares', 'extracurricular_activities')}
@@ -445,7 +448,7 @@ export const generateProfessionalAnamnesePDF = async (
               <!-- SEÇÃO 12: OBJETIVOS TERAPÊUTICOS -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
                 ${sectionHeader(12, 'OBJETIVOS TERAPÊUTICOS', '[OBJ]')}
-                ${sectionContainer(`
+                ${sectionContainer(12, `
                   <div style="background: linear-gradient(135deg, #f0fdfa, #ecfeff); padding: 12px; border-radius: 8px; border-left: 4px solid #14b8a6; margin-bottom: 16px;">
                     <span style="font-size: 11px; color: #0f766e; font-style: italic;">
                       Objetivos definidos em conjunto com a família e equipe multidisciplinar
