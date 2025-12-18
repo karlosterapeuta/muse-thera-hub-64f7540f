@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Check, ChevronLeft, ChevronRight } from "lucide-react";
 import { CourseLesson, Course, UserCourseProgress } from "@/types/courses";
-import { getYouTubeId } from "@/utils/youtubeUtils";
+import { MuseTeraPlayer } from "./MuseTeraPlayer";
 import { cn } from "@/lib/utils";
 
 interface CoursePlayerProps {
@@ -25,7 +25,6 @@ export function CoursePlayer({
   canNavigateNext 
 }: CoursePlayerProps) {
   const [isCompleted, setIsCompleted] = useState(false);
-  const youtubeId = getYouTubeId(lesson.youtube_url);
 
   useEffect(() => {
     const lessonProgress = progress.find(p => p.lesson_id === lesson.id);
@@ -53,21 +52,13 @@ export function CoursePlayer({
 
   return (
     <div className="flex-1 flex flex-col bg-background">
-      {/* Video Player */}
-      <div className="relative aspect-video bg-black">
-        {youtubeId ? (
-          <iframe
-            src={`https://www.youtube.com/embed/${youtubeId}?rel=0&modestbranding=1`}
-            title={lesson.title}
-            className="absolute inset-0 w-full h-full"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
-            <p>URL do YouTube inválida</p>
-          </div>
-        )}
+      {/* Video Player - MuseTera Custom Player */}
+      <div className="relative">
+        <MuseTeraPlayer
+          videoUrl={lesson.youtube_url}
+          title={lesson.title}
+          onComplete={handleMarkComplete}
+        />
       </div>
 
       {/* Lesson Info */}
