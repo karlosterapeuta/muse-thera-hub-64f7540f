@@ -43,7 +43,14 @@ export default function CreatorCoursePreview() {
       const creatorToken = localStorage.getItem("creatorToken");
       const creatorId = localStorage.getItem("creatorId");
 
+      console.log("🔍 Creator Preview Auth Check:", { 
+        hasToken: !!creatorToken, 
+        creatorId,
+        courseId 
+      });
+
       if (!creatorToken || !creatorId) {
+        console.log("❌ No creator token or ID found");
         setIsAuthorized(false);
         return;
       }
@@ -56,14 +63,28 @@ export default function CreatorCoursePreview() {
         .single();
 
       if (error || !courseData) {
+        console.log("❌ Course not found or error:", error);
         setIsAuthorized(false);
         return;
       }
 
-      setIsAuthorized(courseData.creator_id === creatorId);
+      // Ensure string comparison (UUID types might differ)
+      const courseCreatorId = String(courseData.creator_id || "");
+      const localCreatorId = String(creatorId || "");
+      const isMatch = courseCreatorId === localCreatorId;
+
+      console.log("🔍 Creator ID comparison:", { 
+        courseCreatorId, 
+        localCreatorId, 
+        isMatch 
+      });
+
+      setIsAuthorized(isMatch);
     };
 
-    verifyCreator();
+    if (courseId) {
+      verifyCreator();
+    }
   }, [courseId]);
 
   // Load course data
