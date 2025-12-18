@@ -281,15 +281,17 @@ export function CreatorCourseManager({ creatorId }: CreatorCourseManagerProps) {
 
       {/* New Course Dialog */}
       <Dialog open={showNewCourseDialog} onOpenChange={setShowNewCourseDialog}>
-        <DialogContent>
-          <DialogHeader>
+        <DialogContent className="max-h-[90vh] flex flex-col p-0 sm:max-w-md">
+          {/* Header fixo */}
+          <DialogHeader className="p-4 sm:p-6 pb-2">
             <DialogTitle>Criar Novo Curso</DialogTitle>
             <DialogDescription>
               Preencha as informações básicas do seu curso
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4">
+          {/* Conteúdo scrollável */}
+          <div className="flex-1 overflow-y-auto px-4 sm:px-6 space-y-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">Título do Curso *</label>
               <Input
@@ -345,7 +347,8 @@ export function CreatorCourseManager({ creatorId }: CreatorCourseManagerProps) {
             </div>
           </div>
 
-          <DialogFooter>
+          {/* Footer fixo */}
+          <DialogFooter className="p-4 sm:p-6 pt-4 gap-2 flex-col-reverse sm:flex-row">
             <Button variant="outline" onClick={() => setShowNewCourseDialog(false)}>
               Cancelar
             </Button>
