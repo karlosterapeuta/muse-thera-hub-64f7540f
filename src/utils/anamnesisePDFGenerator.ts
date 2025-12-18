@@ -185,6 +185,88 @@ export const generateProfessionalAnamnesePDF = async (
              </svg>`
       };
 
+      // Lista de seções com metadados para índice
+      const sectionsList = [
+        { number: 1,  title: 'Identificação e Encaminhamento', category: 'identificacao' },
+        { number: 2,  title: 'Histórico Clínico e Médico', category: 'clinico' },
+        { number: 3,  title: 'Medicação em Uso', category: 'clinico' },
+        { number: 4,  title: 'Terapias e Acompanhamentos', category: 'clinico' },
+        { number: 5,  title: 'Perfil Musical do Paciente', category: 'musical' },
+        { number: 6,  title: 'Identidade Sonora (ISO)', category: 'musical' },
+        { number: 7,  title: 'Comportamento Musical Observado', category: 'musical' },
+        { number: 8,  title: 'Processamento Auditivo e Sensorial', category: 'sensorial' },
+        { number: 9,  title: 'Desenvolvimento Neuropsicomotor', category: 'sensorial' },
+        { number: 10, title: 'Aspectos Comportamentais e Emocionais', category: 'emocional' },
+        { number: 11, title: 'Contexto Social e Escolar', category: 'identificacao' },
+        { number: 12, title: 'Objetivos Terapêuticos', category: 'identificacao' }
+      ];
+
+      // Cores das categorias para a legenda
+      const categoryColors: Record<string, { name: string; color: string }> = {
+        identificacao: { name: 'Identificação', color: '#14b8a6' },
+        clinico: { name: 'Clínico', color: '#3b82f6' },
+        musical: { name: 'Musical', color: '#d946ef' },
+        sensorial: { name: 'Sensorial', color: '#f97316' },
+        emocional: { name: 'Emocional', color: '#22c55e' }
+      };
+
+      // Gera o índice navegável
+      const generateTableOfContents = () => {
+        const leftColumn = sectionsList.slice(0, 6);
+        const rightColumn = sectionsList.slice(6, 12);
+
+        const renderSectionItem = (section: typeof sectionsList[0]) => {
+          const colors = sectionColors[section.number];
+          const icon = sectionIcons[section.number];
+          return `
+            <div style="display: flex; align-items: center; gap: 8px; padding: 6px 8px; background: #fafafa; border-radius: 6px; border-left: 3px solid ${colors.borderColor};">
+              <div style="background: ${colors.gradient}; padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center; min-width: 20px; height: 20px;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  ${icon.replace(/<svg[^>]*>|<\/svg>/g, '').trim()}
+                </svg>
+              </div>
+              <span style="font-size: 10px; color: #374151; font-weight: 500; line-height: 1.2;">${section.number}. ${section.title}</span>
+            </div>
+          `;
+        };
+
+        const legendItems = Object.entries(categoryColors).map(([_, cat]) => `
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <div style="width: 12px; height: 12px; background: ${cat.color}; border-radius: 2px;"></div>
+            <span style="font-size: 9px; color: #6b7280;">${cat.name}</span>
+          </div>
+        `).join('');
+
+        return `
+          <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; margin: 0 16px 24px 16px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+            <!-- Header do índice -->
+            <div style="background: linear-gradient(135deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%); color: white; padding: 10px 16px; text-align: center;">
+              <span style="font-weight: 700; font-size: 12px; letter-spacing: 1px;">SUMÁRIO DA ANAMNESE</span>
+            </div>
+            
+            <!-- Grid 2x6 -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px;">
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                ${leftColumn.map(renderSectionItem).join('')}
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                ${rightColumn.map(renderSectionItem).join('')}
+              </div>
+            </div>
+            
+            <!-- Legenda -->
+            <div style="background: #f9fafb; border-top: 1px solid #e5e7eb; padding: 8px 12px;">
+              <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 6px;">
+                <span style="font-size: 9px; font-weight: 600; color: #4b5563; text-transform: uppercase; letter-spacing: 0.5px;">Legenda de Cores:</span>
+              </div>
+              <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                ${legendItems}
+              </div>
+            </div>
+          </div>
+        `;
+      };
+
       // Cabeçalho da seção com cores diferenciadas e ícones SVG
       const sectionHeader = (number: number, title: string) => {
         const colors = sectionColors[number] || sectionColors[1];
@@ -259,6 +341,9 @@ export const generateProfessionalAnamnesePDF = async (
                 </div>
               </div>
             </div>
+
+            <!-- ÍNDICE NAVEGÁVEL -->
+            ${generateTableOfContents()}
 
             <!-- CONTEÚDO DAS SEÇÕES -->
             <div style="padding: 0 16px;">
