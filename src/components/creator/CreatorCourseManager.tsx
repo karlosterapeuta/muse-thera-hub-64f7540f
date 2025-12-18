@@ -407,6 +407,46 @@ export function CreatorCourseManager({ creatorId }: CreatorCourseManagerProps) {
                 }
                 courseId="new-course"
               />
+              
+              {/* Preview da thumbnail que será usada */}
+              {!newCourseData.thumbnail_url && (
+                <div className="mt-3">
+                  {(() => {
+                    const validVideos = importedVideos.filter((v) => v.isValid && v.videoId);
+                    if (validVideos.length > 0 && validVideos[0].videoId) {
+                      const autoThumbnail = getYouTubeThumbnail(validVideos[0].videoId, 'maxres');
+                      return (
+                        <div className="rounded-lg border border-dashed border-primary/50 bg-primary/5 p-3">
+                          <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+                            <ImageIcon className="h-3 w-3" />
+                            Thumbnail automática (do primeiro vídeo):
+                          </p>
+                          <div className="aspect-video rounded-md overflow-hidden bg-muted">
+                            <img
+                              src={autoThumbnail}
+                              alt="Thumbnail automática"
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                // Fallback para qualidade alta se maxres não existir
+                                const target = e.target as HTMLImageElement;
+                                if (target.src.includes('maxresdefault')) {
+                                  target.src = getYouTubeThumbnail(validVideos[0].videoId!, 'high');
+                                }
+                              }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    }
+                    return (
+                      <p className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                        <ImageIcon className="h-3 w-3" />
+                        Importe vídeos para usar a thumbnail automaticamente
+                      </p>
+                    );
+                  })()}
+                </div>
+              )}
             </div>
 
             <Separator />
