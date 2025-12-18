@@ -301,18 +301,29 @@ export function CreatorCourseManager({ creatorId }: CreatorCourseManagerProps) {
 
                 {/* Actions */}
                 <div className="flex items-center gap-2 mt-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="gap-1"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/courses/${course.id}`);
-                    }}
-                  >
-                    <Play className="h-4 w-4" />
-                    Assistir
-                  </Button>
+                  {(() => {
+                    const hasLessons = course.modules?.some(m => m.lessons?.length > 0) || false;
+                    return (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-1"
+                        disabled={!hasLessons}
+                        title={!hasLessons ? "Adicione aulas primeiro" : "Visualizar curso como aluno"}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (hasLessons) {
+                            navigate(`/courses/${course.id}`);
+                          } else {
+                            toast.info("Adicione módulos e aulas antes de assistir o curso");
+                          }
+                        }}
+                      >
+                        <Play className="h-4 w-4" />
+                        Assistir
+                      </Button>
+                    );
+                  })()}
                   <Button
                     variant="outline"
                     size="sm"
