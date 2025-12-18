@@ -101,34 +101,43 @@ export default function Login() {
           if (hashParams.type === 'recovery') {
             console.log("Este é um fluxo de recuperação de senha");
             
-            // Check if this recovery is for a creator by checking the access token user
             if (hashParams.access_token) {
               try {
-                // Set session first to get user info
+                // DECODE JWT locally WITHOUT consuming the token
+                // JWT format: header.payload.signature (base64 encoded)
+                const tokenParts = hashParams.access_token.split('.');
+                
+                if (tokenParts.length >= 2) {
+                  // Decode the payload (second part) to get user_id
+                  const payload = JSON.parse(atob(tokenParts[1]));
+                  const userId = payload.sub; // 'sub' contains the user_id in Supabase JWTs
+                  
+                  console.log("Decoded user_id from JWT:", userId);
+                  
+                  if (userId) {
+                    // Check if this user is a creator WITHOUT consuming the token
+                    const { data: creator } = await supabase
+                      .from('course_creators')
+                      .select('id')
+                      .eq('user_id', userId)
+                      .maybeSingle();
+                    
+                    if (creator) {
+                      // This is a creator - redirect with ORIGINAL hash (token NOT consumed)
+                      console.log("User is a creator, redirecting to /creator-login with intact token");
+                      window.location.replace(`/creator-login${window.location.hash}`);
+                      return;
+                    }
+                  }
+                }
+                
+                // NOT a creator - NOW we can consume the token
+                console.log("User is not a creator, consuming token for normal flow");
                 await supabase.auth.setSession({
                   access_token: hashParams.access_token,
                   refresh_token: hashParams.refresh_token || '',
                 });
                 
-                const { data: { user } } = await supabase.auth.getUser();
-                
-                if (user) {
-                  // Check if this user is a creator
-                  const { data: creator } = await supabase
-                    .from('course_creators')
-                    .select('id')
-                    .eq('user_id', user.id)
-                    .maybeSingle();
-                  
-                  if (creator) {
-                    // This is a creator - redirect to creator login with the hash
-                    console.log("User is a creator, redirecting to /creator-login");
-                    window.location.href = `/creator-login${window.location.hash}`;
-                    return;
-                  }
-                }
-                
-                // Not a creator, proceed with normal password reset
                 setIsSettingNewPassword(true);
                 
                 toast({
