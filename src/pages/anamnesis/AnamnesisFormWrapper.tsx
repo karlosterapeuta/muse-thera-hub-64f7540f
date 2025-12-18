@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
@@ -8,6 +8,8 @@ import { InitialEvaluationForm } from "./components/InitialEvaluationForm";
 import { ModernAnamnesisHeader } from "./components/ModernAnamnesisHeader";
 import { ModernTabsNavigation } from "./components/ModernTabsNavigation";
 import { ModernActionButtons } from "./components/ModernActionButtons";
+import { AnamnesisValidationSummary } from "./components/AnamnesisValidationSummary";
+import { useAnamnesisValidation } from "./hooks/useAnamnesisValidation";
 import { generateProfessionalAnamnesePDF } from "@/utils/anamnesisePDFGenerator";
 import { imageUrlToBase64 } from "@/utils/imageToBase64";
 
@@ -76,8 +78,12 @@ export default function AnamnesisFormWrapper({
   const [existingAnamnesisId, setExistingAnamnesisId] = useState<string | null>(editAnamnesisId || null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isExportingPDF, setIsExportingPDF] = useState(false);
+  const [showValidation, setShowValidation] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  
+  // Validation hook
+  const validation = useAnamnesisValidation(formData);
 
   const formatNameFromEmail = (email: string) => {
     const namePart = email.split('@')[0];
@@ -261,14 +267,28 @@ export default function AnamnesisFormWrapper({
     setFormData(newData);
   };
 
-  const saveAnamnesis = async () => {
+  const saveAnamnesis = async (skipValidation = false) => {
     if (!selectedPatient) {
       toast({
         title: "Atenção",
         description: "Por favor, selecione um paciente.",
         variant: "destructive",
       });
-      return;
+      return false;
+    }
+
+    // Validar campos obrigatórios (a menos que seja skip)
+    if (!skipValidation) {
+      const validationResult = validation.validate();
+      if (!validationResult.isValid) {
+        setShowValidation(true);
+        toast({
+          title: "Campos Obrigatórios",
+          description: `Preencha os ${validationResult.errors.length} campo(s) obrigatório(s) antes de salvar.`,
+          variant: "destructive",
+        });
+        return false;
+      }
     }
 
     if (!professionalId) {
@@ -277,7 +297,7 @@ export default function AnamnesisFormWrapper({
         description: "ID do profissional não encontrado.",
         variant: "destructive",
       });
-      return;
+      return false;
     }
 
     try {
@@ -322,10 +342,13 @@ export default function AnamnesisFormWrapper({
       }
 
       console.log("✅ Anamnese salva com sucesso!");
+      setShowValidation(false);
       toast({
         title: "Sucesso!",
         description: "Anamnese salva com sucesso no sistema.",
       });
+      
+      return true;
       
     } catch (error: any) {
       console.error("❌ Erro ao salvar anamnese:", error);
@@ -367,7 +390,7 @@ export default function AnamnesisFormWrapper({
             description: "Anamnese salva com campos básicos. Alguns campos avançados podem não ter sido salvos devido a limitações do banco de dados.",
             variant: "default",
           });
-          return;
+          return true;
 
         } catch (basicError) {
           console.error("❌ Erro mesmo com campos básicos:", basicError);
@@ -384,6 +407,7 @@ export default function AnamnesisFormWrapper({
         description: errorMessage,
         variant: "destructive",
       });
+      return false;
     } finally {
       setIsSubmitting(false);
     }
@@ -635,18 +659,30 @@ export default function AnamnesisFormWrapper({
                   <InitialEvaluationForm
                     content={formData}
                     onChange={updateFormData}
+                    fieldErrors={showValidation ? validation.fieldErrors : {}}
+                    getSectionErrors={validation.getSectionErrors}
                   />
                 </div>
               </ModernTabsNavigation>
 
+              {/* Validation Summary */}
+              {showValidation && !validation.isValid && (
+                <AnamnesisValidationSummary
+                  isValid={validation.isValid}
+                  errors={validation.errors}
+                />
+              )}
+
               {/* Action Buttons */}
               <ModernActionButtons
-                onSave={saveAnamnesis}
+                onSave={() => saveAnamnesis()}
                 onCancel={() => onBack ? onBack() : navigate("/processes")}
                 onExportPDF={exportPDF}
                 isSaving={isSubmitting}
                 isExportingPDF={isExportingPDF}
                 showBack={!!onBack}
+                isValid={validation.isValid}
+                validationMessage={!validation.isValid && showValidation ? `${validation.errors.length} campo(s) obrigatório(s) pendente(s)` : undefined}
               />
             </form>
           </CardContent>

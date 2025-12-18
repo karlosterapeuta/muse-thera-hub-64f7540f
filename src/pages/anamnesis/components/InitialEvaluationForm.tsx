@@ -9,12 +9,21 @@ import { AnamnesisProgressBar } from "./AnamnesisProgressBar";
 import { ModernCheckboxGrid } from "./ModernCheckboxCard";
 import { AutoExpandTextarea, ModernTextInput } from "./AutoExpandTextarea";
 
+interface ValidationError {
+  field: string;
+  label: string;
+  section: number;
+  sectionTitle: string;
+}
+
 type FormProps = {
   content: Record<string, any>;
   onChange: (content: Record<string, any>) => void;
+  fieldErrors?: Record<string, string>;
+  getSectionErrors?: (sectionNumber: number) => ValidationError[];
 };
 
-export function InitialEvaluationForm({ content, onChange }: FormProps) {
+export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, getSectionErrors }: FormProps) {
   const updateField = (field: string, value: string | boolean) => {
     onChange({ ...content, [field]: value });
   };
@@ -93,6 +102,8 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
         sectionNumber={1}
         defaultOpen={true}
         isComplete={isSectionComplete(section1Fields)}
+        hasErrors={getSectionErrors ? getSectionErrors(1).length > 0 : false}
+        errorCount={getSectionErrors ? getSectionErrors(1).length : 0}
       >
         <div className="space-y-6">
           <ModernTextInput
@@ -112,6 +123,8 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
             icon={Stethoscope}
             required
             hint="Inclua informações sobre as principais dificuldades observadas e expectativas terapêuticas"
+            error={fieldErrors["main_clinical_demand"]}
+            hasError={!!fieldErrors["main_clinical_demand"]}
           />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <AutoExpandTextarea
@@ -261,6 +274,8 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
         icon={Music}
         sectionNumber={5}
         isComplete={isSectionComplete(section5Fields)}
+        hasErrors={getSectionErrors ? getSectionErrors(5).length > 0 : false}
+        errorCount={getSectionErrors ? getSectionErrors(5).length : 0}
       >
         <div className="space-y-6">
           <ModernCheckboxGrid
@@ -297,6 +312,9 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
             onChange={(value) => updateField("patient_musical_history", value)}
             placeholder="Descreva a relação do paciente com a música, preferências, reações a estímulos musicais..."
             icon={Music}
+            required
+            error={fieldErrors["patient_musical_history"]}
+            hasError={!!fieldErrors["patient_musical_history"]}
           />
         </div>
       </CollapsibleSection>
@@ -307,6 +325,8 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
         icon={Volume2}
         sectionNumber={6}
         isComplete={isSectionComplete(section6Fields)}
+        hasErrors={getSectionErrors ? getSectionErrors(6).length > 0 : false}
+        errorCount={getSectionErrors ? getSectionErrors(6).length : 0}
       >
         <div className="space-y-6">
           <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 mb-4">
@@ -371,6 +391,9 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
             onChange={(value) => updateField("family_musical_history", value)}
             placeholder="Tradições musicais da família, músicas significativas, rituais com música..."
             icon={Users}
+            required
+            error={fieldErrors["family_musical_history"]}
+            hasError={!!fieldErrors["family_musical_history"]}
           />
           
           <ModernCheckboxGrid
@@ -589,6 +612,8 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
         sectionNumber={12}
         defaultOpen={false}
         isComplete={Boolean(getStringValue("therapeutic_goals"))}
+        hasErrors={getSectionErrors ? getSectionErrors(12).length > 0 : false}
+        errorCount={getSectionErrors ? getSectionErrors(12).length : 0}
       >
         <div className="space-y-6">
           <AutoExpandTextarea
@@ -600,6 +625,8 @@ export function InitialEvaluationForm({ content, onChange }: FormProps) {
             icon={Activity}
             required
             hint="Baseie-se nos dados coletados para traçar objetivos claros e mensuráveis"
+            error={fieldErrors["therapeutic_goals"]}
+            hasError={!!fieldErrors["therapeutic_goals"]}
           />
           <AutoExpandTextarea
             id="treatment_approach"
