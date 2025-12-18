@@ -38,6 +38,7 @@ import { CreatorCourseEditor } from "./CreatorCourseEditor";
 import { ThumbnailUploader } from "./ThumbnailUploader";
 import { YouTubeImporter, ImportedVideo } from "./YouTubeImporter";
 import { formatPrice } from "@/types/courses";
+import { getYouTubeThumbnail } from "@/utils/youtubeUtils";
 import { toast } from "sonner";
 
 interface CreatorCourseManagerProps {
@@ -89,12 +90,21 @@ export function CreatorCourseManager({ creatorId }: CreatorCourseManagerProps) {
     setIsCreating(true);
     
     try {
-      // Create the course first
+      // Determine thumbnail: custom or from first video
+      let thumbnailUrl = newCourseData.thumbnail_url;
+      const validVideos = importedVideos.filter((v) => v.isValid && v.videoId);
+      
+      // If no custom thumbnail but has videos, use first video's thumbnail
+      if (!thumbnailUrl && validVideos.length > 0 && validVideos[0].videoId) {
+        thumbnailUrl = getYouTubeThumbnail(validVideos[0].videoId, 'maxres');
+      }
+
+      // Create the course
       const course = await createCourse({
         title: newCourseData.title,
         description: newCourseData.description || undefined,
         price_cents: newCourseData.price_cents || 0,
-        thumbnail_url: newCourseData.thumbnail_url || undefined,
+        thumbnail_url: thumbnailUrl || undefined,
       });
 
       if (course) {
