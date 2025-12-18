@@ -10,7 +10,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import bcrypt from "bcryptjs";
 
 type PixKeyType = "cpf" | "email" | "phone" | "random";
 
@@ -74,39 +73,71 @@ export default function CreatorRegisterPage() {
 
     setIsLoading(true);
     try {
-      // Check if email already exists
+      const emailLower = formData.email.toLowerCase().trim();
+
+      // Check if email already exists in course_creators
       const { data: existing } = await supabase
         .from('course_creators')
         .select('id')
-        .eq('email', formData.email.toLowerCase().trim())
+        .eq('email', emailLower)
         .single();
 
       if (existing) {
-        toast.error("Este email já está cadastrado");
+        toast.error("Este email já está cadastrado como criador");
         return;
       }
 
-      // Hash password
-      const salt = await bcrypt.genSalt(10);
-      const passwordHash = await bcrypt.hash(formData.password, salt);
+      // Create user in Supabase Auth
+      const redirectUrl = `${window.location.origin}/creator-dashboard`;
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: emailLower,
+        password: formData.password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            name: formData.name.trim(),
+            is_creator: true,
+          }
+        }
+      });
 
-      // Insert new creator
-      const { error } = await supabase
+      if (authError) {
+        if (authError.message.includes('already registered')) {
+          toast.error("Este email já está cadastrado. Tente fazer login.");
+        } else {
+          toast.error(authError.message);
+        }
+        return;
+      }
+
+      if (!authData.user) {
+        toast.error("Erro ao criar conta");
+        return;
+      }
+
+      // Insert new creator with user_id linked
+      const { error: creatorError } = await supabase
         .from('course_creators')
         .insert({
+          user_id: authData.user.id,
           name: formData.name.trim(),
-          email: formData.email.toLowerCase().trim(),
+          email: emailLower,
           phone: formData.phone.trim() || null,
-          password_hash: passwordHash,
+          password_hash: 'supabase_auth', // Placeholder since we use Supabase Auth
           bio: formData.bio.trim() || null,
           pix_key_type: formData.pixKeyType,
           pix_key: formData.pixKey.trim(),
           is_active: true,
         });
 
-      if (error) throw error;
+      if (creatorError) {
+        // Rollback: delete auth user if creator insert fails
+        console.error('Creator insert error:', creatorError);
+        toast.error("Erro ao criar perfil de criador");
+        return;
+      }
 
-      toast.success("Cadastro realizado com sucesso! Faça login para acessar seu painel.");
+      toast.success("Cadastro realizado com sucesso! Verifique seu email para confirmar a conta.");
       navigate('/creator-login');
 
     } catch (error) {
