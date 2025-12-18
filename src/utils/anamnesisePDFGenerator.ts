@@ -189,7 +189,7 @@ export const generateProfessionalAnamnesePDF = async (
 
               <!-- SEÇÃO 1: IDENTIFICAÇÃO E ENCAMINHAMENTO -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
-                ${sectionHeader(1, 'IDENTIFICAÇÃO E ENCAMINHAMENTO', '📋')}
+                ${sectionHeader(1, 'IDENTIFICAÇÃO E ENCAMINHAMENTO', '[ID]')}
                 ${sectionContainer(`
                   ${renderTextField('Profissional Encaminhador', 'referral_professional')}
                   ${renderTextField('Demanda Clínica Principal', 'main_clinical_demand')}
@@ -200,7 +200,7 @@ export const generateProfessionalAnamnesePDF = async (
 
               <!-- SEÇÃO 2: HISTÓRICO CLÍNICO E MÉDICO -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
-                ${sectionHeader(2, 'HISTÓRICO CLÍNICO E MÉDICO', '🏥')}
+                ${sectionHeader(2, 'HISTÓRICO CLÍNICO E MÉDICO', '[HC]')}
                 ${sectionContainer(`
                   <div style="margin-bottom: 16px;">
                     <div style="font-weight: 600; font-size: 11px; color: #0f766e; margin-bottom: 10px; text-transform: uppercase;">Diagnósticos / Condições</div>
@@ -225,7 +225,7 @@ export const generateProfessionalAnamnesePDF = async (
 
               <!-- SEÇÃO 3: MEDICAÇÃO EM USO -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
-                ${sectionHeader(3, 'MEDICAÇÃO EM USO', '💊')}
+                ${sectionHeader(3, 'MEDICAÇÃO EM USO', '[MED]')}
                 ${sectionContainer(`
                   ${renderTextField('Medicações Atuais', 'current_medication')}
                   ${renderTextField('Horários e Dosagens', 'medication_schedule')}
@@ -235,7 +235,7 @@ export const generateProfessionalAnamnesePDF = async (
 
               <!-- SEÇÃO 4: TERAPIAS E ACOMPANHAMENTOS -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
-                ${sectionHeader(4, 'TERAPIAS E ACOMPANHAMENTOS', '🔧')}
+                ${sectionHeader(4, 'TERAPIAS E ACOMPANHAMENTOS', '[TER]')}
                 ${sectionContainer(`
                   <div style="margin-bottom: 16px;">
                     <div style="font-weight: 600; font-size: 11px; color: #0f766e; margin-bottom: 10px; text-transform: uppercase;">Acompanhamentos em Andamento</div>
@@ -259,7 +259,7 @@ export const generateProfessionalAnamnesePDF = async (
 
               <!-- SEÇÃO 5: PERFIL MUSICAL DO PACIENTE -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
-                ${sectionHeader(5, 'PERFIL MUSICAL DO PACIENTE', '🎵')}
+                ${sectionHeader(5, 'PERFIL MUSICAL DO PACIENTE', '♪')}
                 ${sectionContainer(`
                   <div style="margin-bottom: 16px;">
                     <div style="font-weight: 600; font-size: 11px; color: #0f766e; margin-bottom: 10px; text-transform: uppercase;">Experiências Musicais</div>
@@ -293,7 +293,7 @@ export const generateProfessionalAnamnesePDF = async (
 
               <!-- SEÇÃO 6: IDENTIDADE SONORA (ISO) -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
-                ${sectionHeader(6, 'IDENTIDADE SONORA (ISO)', '🎼')}
+                ${sectionHeader(6, 'IDENTIDADE SONORA (ISO)', '[ISO]')}
                 ${sectionContainer(`
                   <div style="background: linear-gradient(135deg, #f0fdfa, #ecfeff); padding: 12px; border-radius: 8px; border-left: 4px solid #14b8a6; margin-bottom: 16px;">
                     <span style="font-size: 11px; color: #0f766e; font-style: italic;">
@@ -312,7 +312,7 @@ export const generateProfessionalAnamnesePDF = async (
 
               <!-- SEÇÃO 7: COMPORTAMENTO MUSICAL OBSERVADO -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
-                ${sectionHeader(7, 'COMPORTAMENTO MUSICAL OBSERVADO', '🎶')}
+                ${sectionHeader(7, 'COMPORTAMENTO MUSICAL OBSERVADO', '♫')}
                 ${sectionContainer(`
                   <div style="margin-bottom: 16px;">
                     <div style="font-weight: 600; font-size: 11px; color: #0f766e; margin-bottom: 10px; text-transform: uppercase;">Comportamentos Observados</div>
@@ -332,7 +332,7 @@ export const generateProfessionalAnamnesePDF = async (
 
               <!-- SEÇÃO 8: PROCESSAMENTO AUDITIVO E SENSORIAL -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
-                ${sectionHeader(8, 'PROCESSAMENTO AUDITIVO E SENSORIAL', '👂')}
+                ${sectionHeader(8, 'PROCESSAMENTO AUDITIVO E SENSORIAL', '[AUD]')}
                 ${sectionContainer(`
                   <div style="margin-bottom: 16px;">
                     <div style="font-weight: 600; font-size: 11px; color: #0f766e; margin-bottom: 10px; text-transform: uppercase;">Características Auditivas</div>
@@ -353,7 +353,7 @@ export const generateProfessionalAnamnesePDF = async (
 
               <!-- SEÇÃO 9: DESENVOLVIMENTO NEUROPSICOMOTOR -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
-                ${sectionHeader(9, 'DESENVOLVIMENTO NEUROPSICOMOTOR', '🧠')}
+                ${sectionHeader(9, 'DESENVOLVIMENTO NEUROPSICOMOTOR', '[NPM]')}
                 ${sectionContainer(`
                   <div style="margin-bottom: 16px;">
                     <div style="font-weight: 600; font-size: 11px; color: #0f766e; margin-bottom: 10px; text-transform: uppercase;">Marcos Motores</div>
@@ -382,7 +382,7 @@ export const generateProfessionalAnamnesePDF = async (
 
               <!-- SEÇÃO 10: ASPECTOS COMPORTAMENTAIS E EMOCIONAIS -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
-                ${sectionHeader(10, 'ASPECTOS COMPORTAMENTAIS E EMOCIONAIS', '💚')}
+                ${sectionHeader(10, 'ASPECTOS COMPORTAMENTAIS E EMOCIONAIS', '[EMO]')}
                 ${sectionContainer(`
                   <div style="margin-bottom: 16px;">
                     <div style="font-weight: 600; font-size: 11px; color: #0f766e; margin-bottom: 10px; text-transform: uppercase;">Comportamento e Interação</div>
@@ -412,7 +412,7 @@ export const generateProfessionalAnamnesePDF = async (
 
               <!-- SEÇÃO 11: CONTEXTO SOCIAL E ESCOLAR -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
-                ${sectionHeader(11, 'CONTEXTO SOCIAL E ESCOLAR', '🏫')}
+                ${sectionHeader(11, 'CONTEXTO SOCIAL E ESCOLAR', '[ESC]')}
                 ${sectionContainer(`
                   ${renderTextField('Situação Escolar', 'school_enrollment')}
                   ${renderTextField('Adaptação Escolar', 'school_adaptation')}
@@ -423,7 +423,7 @@ export const generateProfessionalAnamnesePDF = async (
 
               <!-- SEÇÃO 12: OBJETIVOS TERAPÊUTICOS -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
-                ${sectionHeader(12, 'OBJETIVOS TERAPÊUTICOS', '🎯')}
+                ${sectionHeader(12, 'OBJETIVOS TERAPÊUTICOS', '[OBJ]')}
                 ${sectionContainer(`
                   <div style="background: linear-gradient(135deg, #f0fdfa, #ecfeff); padding: 12px; border-radius: 8px; border-left: 4px solid #14b8a6; margin-bottom: 16px;">
                     <span style="font-size: 11px; color: #0f766e; font-style: italic;">
