@@ -1,17 +1,24 @@
 
 import { useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 export default function AuthStatusChecker() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const checkIntervalRef = useRef<number | null>(null);
 
   // Função para verificar o status do usuário
   const checkUserStatus = async () => {
     try {
+      // Skip check for creator routes - creators use course_creators table, not profiles
+      if (location.pathname.startsWith('/creator')) {
+        console.log("🔍 AuthStatusChecker: Skipping check for creator route");
+        return;
+      }
+
       // Obtém o usuário atual
       const { data: { session } } = await supabase.auth.getSession();
       
