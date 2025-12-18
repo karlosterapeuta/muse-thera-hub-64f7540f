@@ -217,13 +217,10 @@ export const generateProfessionalAnamnesePDF = async (
 
         const renderSectionItem = (section: typeof sectionsList[0]) => {
           const colors = sectionColors[section.number];
-          const icon = sectionIcons[section.number];
           return `
             <div style="display: flex; align-items: center; gap: 8px; padding: 6px 8px; background: #fafafa; border-radius: 6px; border-left: 3px solid ${colors.borderColor};">
               <div style="background: ${colors.gradient}; padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center; min-width: 20px; height: 20px;">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  ${icon.replace(/<svg[^>]*>|<\/svg>/g, '').trim()}
-                </svg>
+                <span style="font-weight: 700; color: white; font-size: 11px;">${section.number}</span>
               </div>
               <span style="font-size: 10px; color: #374151; font-weight: 500; line-height: 1.2;">${section.number}. ${section.title}</span>
             </div>
@@ -267,14 +264,13 @@ export const generateProfessionalAnamnesePDF = async (
         `;
       };
 
-      // Cabeçalho da seção com cores diferenciadas e ícones SVG
+      // Cabeçalho da seção com cores diferenciadas e números estilizados
       const sectionHeader = (number: number, title: string) => {
         const colors = sectionColors[number] || sectionColors[1];
-        const icon = sectionIcons[number] || sectionIcons[1];
         return `
           <div style="background: ${colors.gradient}; color: white; padding: 10px 16px; border-radius: 10px 10px 0 0; display: flex; align-items: center; gap: 12px;">
-            <div style="background: ${colors.iconBg}; padding: 8px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-              ${icon}
+            <div style="background: ${colors.iconBg}; padding: 8px; border-radius: 8px; display: flex; align-items: center; justify-content: center; min-width: 36px; min-height: 36px;">
+              <span style="font-weight: 700; color: white; font-size: 16px;">${number}</span>
             </div>
             <span style="font-weight: 700; font-size: 13px; letter-spacing: 0.5px;">${number}. ${title}</span>
           </div>
