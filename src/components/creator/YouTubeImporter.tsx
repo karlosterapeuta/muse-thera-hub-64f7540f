@@ -15,6 +15,22 @@ import {
 } from "lucide-react";
 import { getYouTubeId, getYouTubeThumbnail } from "@/utils/youtubeUtils";
 import { cn } from "@/lib/utils";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { SortableVideoItem } from "./SortableVideoItem";
 
 export interface ImportedVideo {
   url: string;
@@ -44,6 +60,28 @@ export function YouTubeImporter({
 }: YouTubeImporterProps) {
   const [inputValue, setInputValue] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 8 },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = videos.findIndex((v) => v.videoId === active.id);
+      const newIndex = videos.findIndex((v) => v.videoId === over.id);
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        onVideosChange(arrayMove(videos, oldIndex, newIndex));
+      }
+    }
+  };
 
   const fetchVideoTitle = async (videoId: string): Promise<string> => {
     try {
@@ -197,69 +235,96 @@ export function YouTubeImporter({
         </div>
       )}
 
-      {/* Video List */}
+      {/* Video List with Drag and Drop */}
       {validVideos.length > 0 && (
         <div className="space-y-2">
           <Separator />
-          <div className="text-sm font-medium">Vídeos para importar:</div>
-          <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
-            {validVideos.map((video, index) => {
-              const realIndex = videos.findIndex((v) => v.videoId === video.videoId);
-              return (
-                <div
-                  key={video.videoId}
-                  className="flex items-start gap-3 p-2 rounded-lg border bg-card"
-                >
-                  <div className="flex items-center gap-1 text-muted-foreground pt-1">
-                    <GripVertical className="h-4 w-4" />
-                    <span className="text-xs font-mono w-4">{index + 1}</span>
-                  </div>
-                  
-                  {/* Thumbnail */}
-                  <div className="w-24 h-14 rounded overflow-hidden flex-shrink-0 bg-muted">
-                    {video.thumbnail && (
-                      <img
-                        src={video.thumbnail}
-                        alt={video.title}
-                        className="w-full h-full object-cover"
-                      />
-                    )}
-                  </div>
-
-                  {/* Info */}
-                  <div className="flex-1 min-w-0 space-y-1">
-                    {video.isLoading ? (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Loader2 className="h-3 w-3 animate-spin" />
-                        Carregando título...
-                      </div>
-                    ) : (
-                      <Input
-                        value={video.title}
-                        onChange={(e) => updateVideoTitle(realIndex, e.target.value)}
-                        className="h-7 text-sm"
-                        placeholder="Título da aula"
-                      />
-                    )}
-                    <p className="text-xs text-muted-foreground truncate">
-                      {video.url}
-                    </p>
-                  </div>
-
-                  {/* Remove */}
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeVideo(realIndex)}
-                    className="text-destructive hover:text-destructive h-7 w-7 p-0"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              );
-            })}
+          <div className="flex items-center justify-between">
+            <div className="text-sm font-medium">Vídeos para importar:</div>
+            <span className="text-xs text-muted-foreground">
+              Arraste para reordenar
+            </span>
           </div>
+          
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={validVideos.map((v) => v.videoId)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
+                {validVideos.map((video, index) => {
+                  const realIndex = videos.findIndex((v) => v.videoId === video.videoId);
+                  return (
+                    <SortableVideoItem key={video.videoId} id={video.videoId}>
+                      {({ listeners, isDragging }) => (
+                        <div
+                          className={cn(
+                            "flex items-start gap-3 p-2 rounded-lg border bg-card transition-colors",
+                            isDragging && "border-primary shadow-lg"
+                          )}
+                        >
+                          {/* Drag Handle */}
+                          <div
+                            {...listeners}
+                            className="flex items-center gap-1 text-muted-foreground pt-1 cursor-grab active:cursor-grabbing"
+                          >
+                            <GripVertical className="h-4 w-4" />
+                            <span className="text-xs font-mono w-4">{index + 1}</span>
+                          </div>
+                          
+                          {/* Thumbnail */}
+                          <div className="w-24 h-14 rounded overflow-hidden flex-shrink-0 bg-muted">
+                            {video.thumbnail && (
+                              <img
+                                src={video.thumbnail}
+                                alt={video.title}
+                                className="w-full h-full object-cover"
+                              />
+                            )}
+                          </div>
+
+                          {/* Info */}
+                          <div className="flex-1 min-w-0 space-y-1">
+                            {video.isLoading ? (
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                                Carregando título...
+                              </div>
+                            ) : (
+                              <Input
+                                value={video.title}
+                                onChange={(e) => updateVideoTitle(realIndex, e.target.value)}
+                                className="h-7 text-sm"
+                                placeholder="Título da aula"
+                              />
+                            )}
+                            <p className="text-xs text-muted-foreground truncate">
+                              {video.url}
+                            </p>
+                          </div>
+
+                          {/* Remove */}
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeVideo(realIndex)}
+                            className="text-destructive hover:text-destructive h-7 w-7 p-0"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      )}
+                    </SortableVideoItem>
+                  );
+                })}
+              </div>
+            </SortableContext>
+          </DndContext>
         </div>
       )}
 
