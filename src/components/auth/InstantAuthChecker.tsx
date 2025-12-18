@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { globalCacheManager } from "@/utils/cacheManager";
@@ -10,6 +10,7 @@ const CACHE_DURATION = 1 * 60 * 1000; // 1 minuto - reduzido para detectar mudan
 
 export default function InstantAuthChecker() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const lastCheckRef = useRef<number>(0);
 
@@ -97,6 +98,12 @@ export default function InstantAuthChecker() {
   // Check status on initial load for existing sessions
   useEffect(() => {
     const checkInitialSession = async () => {
+      // Skip check for creator routes - they use course_creators table, not profiles
+      if (location.pathname.startsWith('/creator')) {
+        console.log("🔍 InstantAuthChecker: Skipping check for creator route");
+        return;
+      }
+      
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
         console.log("🔍 InstantAuthChecker: Checking existing session on mount");
@@ -105,12 +112,19 @@ export default function InstantAuthChecker() {
     };
     
     checkInitialSession();
-  }, [checkUserStatus]);
+  }, [checkUserStatus, location.pathname]);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       // Limpa cache ao fazer login
       if (event === 'SIGNED_IN' && session?.user) {
+        // Skip check for creator routes - they use course_creators table, not profiles
+        if (location.pathname.startsWith('/creator')) {
+          console.log("🔍 InstantAuthChecker: Skipping auth state check for creator route");
+          clearCacheOnLogin();
+          return;
+        }
+        
         // Primeiro limpa o cache
         clearCacheOnLogin();
         
@@ -125,7 +139,7 @@ export default function InstantAuthChecker() {
       console.log("🔌 InstantAuthChecker: Cleaning up subscription");
       subscription.unsubscribe();
     };
-  }, [checkUserStatus, clearCacheOnLogin]);
+  }, [checkUserStatus, clearCacheOnLogin, location.pathname]);
 
   // This component renders nothing
   return null;
