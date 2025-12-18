@@ -399,14 +399,14 @@ export function CreatorManagement() {
 
       {/* Creator Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-lg max-h-[90vh] flex flex-col">
-          <DialogHeader>
+        <DialogContent className="max-h-[90vh] flex flex-col p-0 sm:max-w-lg">
+          <DialogHeader className="p-4 sm:p-6 pb-2">
             <DialogTitle>
               {editingCreator ? "Editar Criador" : "Novo Criador de Cursos"}
             </DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-4 overflow-y-auto flex-1 pr-2">
+          <div className="flex-1 overflow-y-auto px-4 sm:px-6 space-y-4">
             {/* Basic Info */}
             <div className="grid gap-4">
               <div>
@@ -527,7 +527,7 @@ export function CreatorManagement() {
             )}
           </div>
 
-          <DialogFooter className="flex-shrink-0">
+          <DialogFooter className="p-4 sm:p-6 pt-4 gap-2 flex-col-reverse sm:flex-row">
             <Button variant="outline" onClick={() => setDialogOpen(false)}>
               Cancelar
             </Button>
