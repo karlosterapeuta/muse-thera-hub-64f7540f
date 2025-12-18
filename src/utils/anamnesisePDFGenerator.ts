@@ -610,11 +610,8 @@ export const generateProfessionalAnamnesePDF = async (
                     <div style="padding: 16px;">
                       <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
                         ${professionalPhotoBase64 ? `
-                        <div style="position: relative; width: 56px; height: 56px; flex-shrink: 0;">
-                          <div style="position: absolute; inset: 0; border-radius: 50%; background: linear-gradient(135deg, #14b8a6, #22d3ee, #0d9488); filter: blur(3px); opacity: 0.75;"></div>
-                          <div style="position: relative; width: 100%; height: 100%; border-radius: 50%; overflow: hidden; border: 2px solid #fff;">
-                            <img src="${professionalPhotoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
-                          </div>
+                        <div style="width: 56px; height: 56px; flex-shrink: 0; border-radius: 50%; overflow: hidden; border: 3px solid #14b8a6; box-shadow: 0 0 12px 3px rgba(20, 184, 166, 0.4);">
+                          <img src="${professionalPhotoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
                         </div>
                         ` : ''}
                         <div style="flex: 1;">
