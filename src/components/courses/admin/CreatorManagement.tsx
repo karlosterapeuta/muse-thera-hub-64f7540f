@@ -10,10 +10,11 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Pencil, User, Mail, Phone, Key, Percent, Loader2, Trash2, Search, Users, BookOpen, DollarSign, GraduationCap, ChevronDown, ChevronUp, Filter, Eye } from "lucide-react";
+import { Plus, Pencil, User, Mail, Phone, Key, Loader2, Trash2, Search, Users, BookOpen, DollarSign, GraduationCap, ChevronDown, ChevronUp, Filter, Eye } from "lucide-react";
 import { useAllCourseCreators, useCreateCreator, useUpdateCreator, useDeleteCreator, useCreatorStats } from "@/hooks/useCourseCreators";
 import { CourseCreator } from "@/types/courses";
 import { toast } from "sonner";
+import { CommissionSelector, getCommissionBadgeVariant } from "./CommissionSelector";
 
 const PIX_KEY_TYPES = [
   { value: "cpf", label: "CPF" },
@@ -308,8 +309,11 @@ export function CreatorManagement() {
                     </div>
                     <p className="text-xs text-muted-foreground truncate">{creator.email}</p>
                     <div className="flex items-center gap-2 mt-1 flex-wrap">
-                      <Badge variant="outline" className="text-xs">
-                        {creator.commission_percentage}% comissão
+                      <Badge 
+                        variant="outline" 
+                        className={getCommissionBadgeVariant(creator.commission_percentage).className}
+                      >
+                        {getCommissionBadgeVariant(creator.commission_percentage).label}
                       </Badge>
                       <Badge variant="outline" className="text-xs">
                         PIX: {PIX_KEY_TYPES.find(t => t.value === creator.pix_key_type)?.label}
@@ -486,23 +490,10 @@ export function CreatorManagement() {
                   />
                 </div>
 
-                <div>
-                  <Label className="flex items-center gap-1">
-                    <Percent className="h-3 w-3" /> Comissão (%)
-                  </Label>
-                  <Input
-                    type="number"
-                    min={0}
-                    max={100}
-                    value={form.commission_percentage}
-                    onChange={(e) =>
-                      setForm({ ...form, commission_percentage: parseInt(e.target.value) || 70 })
-                    }
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Percentual do valor do curso que vai para o criador
-                  </p>
-                </div>
+                <CommissionSelector
+                  value={form.commission_percentage}
+                  onChange={(value) => setForm({ ...form, commission_percentage: value })}
+                />
               </div>
             </div>
 
