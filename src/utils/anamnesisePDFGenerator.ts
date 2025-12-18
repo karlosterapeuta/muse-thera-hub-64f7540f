@@ -642,9 +642,8 @@ export const generateProfessionalAnamnesePDF = async (
                   <!-- DIREITA: Carimbo Circular -->
                   <div style="display: flex; flex-direction: column; align-items: center;">
                     ${professionalPhotoBase64 ? `
-                    <div style="width: 180px; height: 180px; position: relative; display: flex; align-items: center; justify-content: center;">
-                      <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 2px dashed #14b8a6; opacity: 0.3;"></div>
-                      <div style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 3px solid #14b8a6; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; box-shadow: 0 6px 16px rgba(20,184,166,0.2);">
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                      <div style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 3px solid #14b8a6; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; box-shadow: 0 0 0 8px rgba(20, 184, 166, 0.1), 0 0 0 12px rgba(20, 184, 166, 0.05), 0 6px 16px rgba(20, 184, 166, 0.2);">
                         <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; border: 2px solid #14b8a6; margin-bottom: 8px;">
                           <img src="${professionalPhotoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
                         </div>
