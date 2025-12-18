@@ -54,9 +54,11 @@ export function CreatorCourseManager({ creatorId }: CreatorCourseManagerProps) {
     createModule,
     updateModule,
     deleteModule,
+    reorderModules,
     createLesson,
     updateLesson,
     deleteLesson,
+    reorderLessons,
   } = useCreatorCourses(creatorId);
 
   const [showNewCourseDialog, setShowNewCourseDialog] = useState(false);
@@ -110,9 +112,11 @@ export function CreatorCourseManager({ creatorId }: CreatorCourseManagerProps) {
         onCreateModule={createModule}
         onUpdateModule={updateModule}
         onDeleteModule={deleteModule}
+        onReorderModules={reorderModules}
         onCreateLesson={createLesson}
         onUpdateLesson={updateLesson}
         onDeleteLesson={deleteLesson}
+        onReorderLessons={reorderLessons}
       />
     );
   }

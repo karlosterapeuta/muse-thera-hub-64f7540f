@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import {
   Accordion,
@@ -40,14 +39,30 @@ import {
   Video,
   GripVertical,
   Save,
-  Check,
   Loader2,
   Play,
 } from "lucide-react";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { CreatorCourse, CreatorModule, CreatorLesson } from "@/hooks/useCreatorCourses";
 import { CreatorLessonForm } from "./CreatorLessonForm";
 import { MuseTeraPlayer } from "@/components/courses/MuseTeraPlayer";
 import { formatPrice } from "@/types/courses";
+import { SortableModule } from "./SortableModule";
+import { SortableLesson } from "./SortableLesson";
 import { cn } from "@/lib/utils";
 
 interface CreatorCourseEditorProps {
@@ -58,9 +73,11 @@ interface CreatorCourseEditorProps {
   onCreateModule: (courseId: string, title: string) => Promise<void>;
   onUpdateModule: (moduleId: string, data: Partial<CreatorModule>) => Promise<void>;
   onDeleteModule: (moduleId: string) => Promise<void>;
+  onReorderModules: (courseId: string, moduleIds: string[]) => Promise<void>;
   onCreateLesson: (moduleId: string, data: any) => Promise<void>;
   onUpdateLesson: (lessonId: string, data: Partial<CreatorLesson>) => Promise<void>;
   onDeleteLesson: (lessonId: string) => Promise<void>;
+  onReorderLessons: (moduleId: string, lessonIds: string[]) => Promise<void>;
 }
 
 export function CreatorCourseEditor({
@@ -71,9 +88,11 @@ export function CreatorCourseEditor({
   onCreateModule,
   onUpdateModule,
   onDeleteModule,
+  onReorderModules,
   onCreateLesson,
   onUpdateLesson,
   onDeleteLesson,
+  onReorderLessons,
 }: CreatorCourseEditorProps) {
   const [editingCourse, setEditingCourse] = useState(false);
   const [courseData, setCourseData] = useState({
@@ -141,6 +160,45 @@ export function CreatorCourseEditor({
     if (!lessonToDelete) return;
     await onDeleteLesson(lessonToDelete.id);
     setLessonToDelete(null);
+  };
+
+  // DnD sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 8 },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleModuleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id || !course.modules) return;
+
+    const oldIndex = course.modules.findIndex((m) => m.id === active.id);
+    const newIndex = course.modules.findIndex((m) => m.id === over.id);
+
+    if (oldIndex !== -1 && newIndex !== -1) {
+      const newModules = arrayMove(course.modules, oldIndex, newIndex);
+      await onReorderModules(course.id, newModules.map((m) => m.id));
+    }
+  };
+
+  const handleLessonDragEnd = async (moduleId: string, event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const module = course.modules?.find((m) => m.id === moduleId);
+    if (!module?.lessons) return;
+
+    const oldIndex = module.lessons.findIndex((l) => l.id === active.id);
+    const newIndex = module.lessons.findIndex((l) => l.id === over.id);
+
+    if (oldIndex !== -1 && newIndex !== -1) {
+      const newLessons = arrayMove(module.lessons, oldIndex, newIndex);
+      await onReorderLessons(moduleId, newLessons.map((l) => l.id));
+    }
   };
 
   const totalLessons = course.modules?.reduce(
@@ -294,121 +352,166 @@ export function CreatorCourseEditor({
               <p className="text-sm">Adicione módulos para organizar suas aulas</p>
             </div>
           ) : (
-            <Accordion type="multiple" className="space-y-2">
-              {course.modules.map((module, idx) => (
-                <AccordionItem
-                  key={module.id}
-                  value={module.id}
-                  className="border rounded-lg px-4"
-                >
-                  <AccordionTrigger className="hover:no-underline">
-                    <div className="flex items-center gap-3 flex-1">
-                      <GripVertical className="h-4 w-4 text-muted-foreground" />
-                      <Badge variant="outline" className="font-mono">
-                        {idx + 1}
-                      </Badge>
-                      <span className="font-semibold">{module.title}</span>
-                      <span className="text-sm text-muted-foreground ml-auto mr-4">
-                        {module.lessons?.length || 0} aulas
-                      </span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="pt-2 pb-4">
-                    {/* Module Actions */}
-                    <div className="flex gap-2 mb-4">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setEditingModule(module)}
-                      >
-                        <Edit className="h-4 w-4 mr-1" />
-                        Editar Módulo
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setSelectedModuleId(module.id);
-                          setShowLessonForm(true);
-                        }}
-                      >
-                        <Plus className="h-4 w-4 mr-1" />
-                        Nova Aula
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-destructive hover:text-destructive ml-auto"
-                        onClick={() => setModuleToDelete(module)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-
-                    {/* Lessons List */}
-                    {module.lessons?.length ? (
-                      <div className="space-y-2">
-                        {module.lessons.map((lesson, lessonIdx) => (
-                          <div
-                            key={lesson.id}
-                            className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg group"
-                          >
-                            <GripVertical className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                            <Video className="h-4 w-4 text-primary" />
-                            <span className="text-sm font-mono text-muted-foreground">
-                              {idx + 1}.{lessonIdx + 1}
-                            </span>
-                            <span className="flex-1 font-medium">{lesson.title}</span>
-                            {lesson.is_free_preview && (
-                              <Badge variant="secondary" className="text-xs">
-                                Preview
-                              </Badge>
-                            )}
-                            <span className="text-sm text-muted-foreground">
-                              {lesson.duration_minutes || 0} min
-                            </span>
-                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
-                                onClick={() => setPreviewLesson(lesson)}
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleModuleDragEnd}
+            >
+              <SortableContext
+                items={course.modules.map((m) => m.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <Accordion type="multiple" className="space-y-2">
+                  {course.modules.map((module, idx) => (
+                    <SortableModule key={module.id} id={module.id}>
+                      {({ listeners, isDragging }) => (
+                        <AccordionItem
+                          value={module.id}
+                          className={cn(
+                            "border rounded-lg px-4",
+                            isDragging && "shadow-lg bg-background"
+                          )}
+                        >
+                          <AccordionTrigger className="hover:no-underline">
+                            <div className="flex items-center gap-3 flex-1">
+                              <button
+                                {...listeners}
+                                className="cursor-grab active:cursor-grabbing touch-none"
+                                onClick={(e) => e.stopPropagation()}
                               >
-                                <Play className="h-4 w-4" />
+                                <GripVertical className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+                              </button>
+                              <Badge variant="outline" className="font-mono">
+                                {idx + 1}
+                              </Badge>
+                              <span className="font-semibold">{module.title}</span>
+                              <span className="text-sm text-muted-foreground ml-auto mr-4">
+                                {module.lessons?.length || 0} aulas
+                              </span>
+                            </div>
+                          </AccordionTrigger>
+                          <AccordionContent className="pt-2 pb-4">
+                            {/* Module Actions */}
+                            <div className="flex gap-2 mb-4">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setEditingModule(module)}
+                              >
+                                <Edit className="h-4 w-4 mr-1" />
+                                Editar Módulo
                               </Button>
                               <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
+                                variant="outline"
+                                size="sm"
                                 onClick={() => {
-                                  setEditingLesson(lesson);
                                   setSelectedModuleId(module.id);
                                   setShowLessonForm(true);
                                 }}
                               >
-                                <Edit className="h-4 w-4" />
+                                <Plus className="h-4 w-4 mr-1" />
+                                Nova Aula
                               </Button>
                               <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-destructive hover:text-destructive"
-                                onClick={() => setLessonToDelete(lesson)}
+                                variant="outline"
+                                size="sm"
+                                className="text-destructive hover:text-destructive ml-auto"
+                                onClick={() => setModuleToDelete(module)}
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
                             </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-sm text-muted-foreground text-center py-4">
-                        Nenhuma aula neste módulo
-                      </p>
-                    )}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
+
+                            {/* Lessons List with DnD */}
+                            {module.lessons?.length ? (
+                              <DndContext
+                                sensors={sensors}
+                                collisionDetection={closestCenter}
+                                onDragEnd={(e) => handleLessonDragEnd(module.id, e)}
+                              >
+                                <SortableContext
+                                  items={module.lessons.map((l) => l.id)}
+                                  strategy={verticalListSortingStrategy}
+                                >
+                                  <div className="space-y-2">
+                                    {module.lessons.map((lesson, lessonIdx) => (
+                                      <SortableLesson key={lesson.id} id={lesson.id}>
+                                        {({ listeners: lessonListeners, isDragging: lessonDragging }) => (
+                                          <div
+                                            className={cn(
+                                              "flex items-center gap-3 p-3 bg-muted/50 rounded-lg group",
+                                              lessonDragging && "shadow-lg bg-background opacity-80"
+                                            )}
+                                          >
+                                            <button
+                                              {...lessonListeners}
+                                              className="cursor-grab active:cursor-grabbing touch-none"
+                                            >
+                                              <GripVertical className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+                                            </button>
+                                            <Video className="h-4 w-4 text-primary" />
+                                            <span className="text-sm font-mono text-muted-foreground">
+                                              {idx + 1}.{lessonIdx + 1}
+                                            </span>
+                                            <span className="flex-1 font-medium">{lesson.title}</span>
+                                            {lesson.is_free_preview && (
+                                              <Badge variant="secondary" className="text-xs">
+                                                Preview
+                                              </Badge>
+                                            )}
+                                            <span className="text-sm text-muted-foreground">
+                                              {lesson.duration_minutes || 0} min
+                                            </span>
+                                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                              <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-8 w-8"
+                                                onClick={() => setPreviewLesson(lesson)}
+                                              >
+                                                <Play className="h-4 w-4" />
+                                              </Button>
+                                              <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-8 w-8"
+                                                onClick={() => {
+                                                  setEditingLesson(lesson);
+                                                  setSelectedModuleId(module.id);
+                                                  setShowLessonForm(true);
+                                                }}
+                                              >
+                                                <Edit className="h-4 w-4" />
+                                              </Button>
+                                              <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-8 w-8 text-destructive hover:text-destructive"
+                                                onClick={() => setLessonToDelete(lesson)}
+                                              >
+                                                <Trash2 className="h-4 w-4" />
+                                              </Button>
+                                            </div>
+                                          </div>
+                                        )}
+                                      </SortableLesson>
+                                    ))}
+                                  </div>
+                                </SortableContext>
+                              </DndContext>
+                            ) : (
+                              <p className="text-sm text-muted-foreground text-center py-4">
+                                Nenhuma aula neste módulo
+                              </p>
+                            )}
+                          </AccordionContent>
+                        </AccordionItem>
+                      )}
+                    </SortableModule>
+                  ))}
+                </Accordion>
+              </SortableContext>
+            </DndContext>
           )}
         </CardContent>
       </Card>

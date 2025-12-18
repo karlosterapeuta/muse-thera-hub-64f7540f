@@ -300,6 +300,42 @@ export function useCreatorCourses(creatorId: string | null) {
     }
   };
 
+  // Reorder modules
+  const reorderModules = async (courseId: string, moduleIds: string[]) => {
+    try {
+      await Promise.all(
+        moduleIds.map((id, index) =>
+          supabase
+            .from("course_modules")
+            .update({ order_index: index })
+            .eq("id", id)
+        )
+      );
+      await loadCourses();
+    } catch (error) {
+      console.error("Error reordering modules:", error);
+      toast.error("Erro ao reordenar módulos");
+    }
+  };
+
+  // Reorder lessons
+  const reorderLessons = async (moduleId: string, lessonIds: string[]) => {
+    try {
+      await Promise.all(
+        lessonIds.map((id, index) =>
+          supabase
+            .from("course_lessons")
+            .update({ order_index: index })
+            .eq("id", id)
+        )
+      );
+      await loadCourses();
+    } catch (error) {
+      console.error("Error reordering lessons:", error);
+      toast.error("Erro ao reordenar aulas");
+    }
+  };
+
   return {
     courses,
     isLoading,
@@ -313,9 +349,11 @@ export function useCreatorCourses(creatorId: string | null) {
     createModule,
     updateModule,
     deleteModule,
+    reorderModules,
     // Lesson
     createLesson,
     updateLesson,
     deleteLesson,
+    reorderLessons,
   };
 }
