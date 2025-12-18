@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Loader2, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import bcrypt from "bcryptjs";
 
 export default function CreatorLoginPage() {
   const navigate = useNavigate();
@@ -15,6 +14,27 @@ export default function CreatorLoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Check if already logged in
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        // Check if user is a creator
+        const { data: creator } = await supabase
+          .from('course_creators')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('is_active', true)
+          .single();
+        
+        if (creator) {
+          navigate('/creator-dashboard');
+        }
+      }
+    };
+    checkSession();
+  }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,34 +46,40 @@ export default function CreatorLoginPage() {
 
     setIsLoading(true);
     try {
-      // Find creator by email
-      const { data: creator, error } = await supabase
+      // Sign in with Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: email.toLowerCase().trim(),
+        password,
+      });
+
+      if (authError) {
+        if (authError.message.includes('Invalid login credentials')) {
+          toast.error("Email ou senha incorretos");
+        } else {
+          toast.error(authError.message);
+        }
+        return;
+      }
+
+      if (!authData.user) {
+        toast.error("Erro ao fazer login");
+        return;
+      }
+
+      // Check if user is an active creator
+      const { data: creator, error: creatorError } = await supabase
         .from('course_creators')
         .select('*')
-        .eq('email', email.toLowerCase().trim())
+        .eq('user_id', authData.user.id)
         .eq('is_active', true)
         .single();
 
-      if (error || !creator) {
-        toast.error("Email ou senha incorretos");
+      if (creatorError || !creator) {
+        // User exists in auth but is not a creator
+        await supabase.auth.signOut();
+        toast.error("Esta conta não está vinculada a um criador de cursos");
         return;
       }
-
-      // Verify password
-      const passwordMatch = await bcrypt.compare(password, creator.password_hash);
-      if (!passwordMatch) {
-        toast.error("Email ou senha incorretos");
-        return;
-      }
-
-      // Store creator session in localStorage
-      const session = {
-        creatorId: creator.id,
-        creatorName: creator.name,
-        creatorEmail: creator.email,
-        expiresAt: Date.now() + 24 * 60 * 60 * 1000 // 24 hours
-      };
-      localStorage.setItem('creator_session', JSON.stringify(session));
 
       toast.success(`Bem-vindo, ${creator.name}!`);
       navigate('/creator-dashboard');

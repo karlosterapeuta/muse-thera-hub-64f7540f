@@ -503,6 +503,7 @@ export type Database = {
           pix_key: string
           pix_key_type: string
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -518,6 +519,7 @@ export type Database = {
           pix_key: string
           pix_key_type: string
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -533,6 +535,7 @@ export type Database = {
           pix_key?: string
           pix_key_type?: string
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -1487,6 +1490,7 @@ export type Database = {
         Returns: string
       }
       generate_recurring_financial_records: { Args: never; Returns: undefined }
+      get_creator_id: { Args: never; Returns: string }
       get_user_sessions_count: {
         Args: { target_user_id: string }
         Returns: number
@@ -1495,6 +1499,8 @@ export type Database = {
         Args: { role: Database["public"]["Enums"]["app_role"] }
         Returns: boolean
       }
+      is_course_creator: { Args: { p_course_id: string }; Returns: boolean }
+      is_module_creator: { Args: { p_module_id: string }; Returns: boolean }
       is_user_access_expired: { Args: { user_id: string }; Returns: boolean }
       is_valid_uuid: { Args: { input_text: string }; Returns: boolean }
       set_default_expiration_for_users: {

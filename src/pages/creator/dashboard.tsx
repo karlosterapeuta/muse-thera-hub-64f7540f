@@ -14,9 +14,7 @@ import {
   TrendingUp, 
   Clock, 
   CheckCircle, 
-  AlertCircle,
   LogOut,
-  Eye,
   Loader2,
   LayoutDashboard,
   GraduationCap
@@ -51,48 +49,42 @@ export default function CreatorDashboardPage() {
   const [selectedCourse, setSelectedCourse] = useState<string>("all");
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check session and load data
+  // Check session and load data using Supabase Auth
   useEffect(() => {
-    const checkSession = () => {
-      const sessionStr = localStorage.getItem('creator_session');
-      if (!sessionStr) {
-        navigate('/creator-login');
-        return null;
-      }
-
-      const session = JSON.parse(sessionStr);
-      if (Date.now() > session.expiresAt) {
-        localStorage.removeItem('creator_session');
-        toast.error("Sessão expirada. Faça login novamente.");
-        navigate('/creator-login');
-        return null;
-      }
-
-      return session;
-    };
-
     const loadData = async () => {
-      const session = checkSession();
-      if (!session) return;
-
       setIsLoading(true);
+      
       try {
-        // Load creator data
-        const { data: creatorData } = await supabase
+        // Get authenticated user
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        
+        if (userError || !user) {
+          navigate('/creator-login');
+          return;
+        }
+
+        // Get creator data by user_id
+        const { data: creatorData, error: creatorError } = await supabase
           .from('course_creators')
           .select('*')
-          .eq('id', session.creatorId)
+          .eq('user_id', user.id)
+          .eq('is_active', true)
           .single();
 
-        if (creatorData) {
-          setCreator(creatorData as CourseCreator);
+        if (creatorError || !creatorData) {
+          toast.error("Conta de criador não encontrada");
+          await supabase.auth.signOut();
+          navigate('/creator-login');
+          return;
         }
+
+        setCreator(creatorData as CourseCreator);
 
         // Load creator's courses
         const { data: coursesData } = await supabase
           .from('courses')
           .select('*')
-          .eq('creator_id', session.creatorId);
+          .eq('creator_id', creatorData.id);
 
         if (coursesData) {
           setCourses(coursesData);
@@ -105,7 +97,7 @@ export default function CreatorDashboardPage() {
             *,
             course:courses(id, title, thumbnail_url)
           `)
-          .eq('creator_id', session.creatorId)
+          .eq('creator_id', creatorData.id)
           .order('created_at', { ascending: false });
 
         if (purchasesData) {
@@ -132,11 +124,22 @@ export default function CreatorDashboardPage() {
       }
     };
 
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === 'SIGNED_OUT' || !session) {
+          navigate('/creator-login');
+        }
+      }
+    );
+
     loadData();
+
+    return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('creator_session');
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     toast.success("Logout realizado com sucesso");
     navigate('/creator-login');
   };
@@ -323,7 +326,7 @@ export default function CreatorDashboardPage() {
               <div className="text-center py-8 text-muted-foreground">
                 <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-30" />
                 <p>Você ainda não tem cursos cadastrados.</p>
-                <p className="text-sm">Entre em contato com a administração para adicionar seus cursos.</p>
+                <p className="text-sm">Vá para a aba "Meus Cursos" para criar seu primeiro curso.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -456,8 +459,7 @@ export default function CreatorDashboardPage() {
                           >
                             {purchase.payment_status === 'paid' ? 'Pago' :
                              purchase.payment_status === 'pending' ? 'Pendente' :
-                             purchase.payment_status === 'expired' ? 'Expirado' :
-                             purchase.payment_status}
+                             'Cancelado'}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right">
@@ -467,15 +469,9 @@ export default function CreatorDashboardPage() {
                               onClick={() => handleConfirmPayment(purchase.id)}
                               className="gap-1"
                             >
-                              <CheckCircle className="h-4 w-4" />
+                              <CheckCircle className="h-3 w-3" />
                               Confirmar
                             </Button>
-                          )}
-                          {purchase.payment_status === 'paid' && (
-                            <Badge variant="outline" className="text-emerald-600 border-emerald-500">
-                              <CheckCircle className="h-3 w-3 mr-1" />
-                              Confirmado
-                            </Badge>
                           )}
                         </TableCell>
                       </TableRow>
@@ -492,7 +488,7 @@ export default function CreatorDashboardPage() {
           <CardHeader>
             <CardTitle>Seus Dados</CardTitle>
             <CardDescription>
-              Informações da sua conta de criador
+              Informações do seu perfil de criador
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -506,23 +502,23 @@ export default function CreatorDashboardPage() {
                 <p className="font-medium">{creator?.email}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Chave PIX</p>
-                <p className="font-medium">{creator?.pix_key}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Tipo da Chave</p>
-                <p className="font-medium uppercase">{creator?.pix_key_type}</p>
+                <p className="text-sm text-muted-foreground">Telefone</p>
+                <p className="font-medium">{creator?.phone || "Não informado"}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Comissão</p>
-                <p className="font-medium">{creator?.commission_percentage}%</p>
+                <p className="font-medium">{creator?.commission_percentage || 70}%</p>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Status</p>
-                <Badge variant={creator?.is_active ? "default" : "destructive"}>
-                  {creator?.is_active ? "Ativo" : "Inativo"}
-                </Badge>
+              <div className="md:col-span-2">
+                <p className="text-sm text-muted-foreground">Chave PIX ({creator?.pix_key_type?.toUpperCase()})</p>
+                <p className="font-medium">{creator?.pix_key}</p>
               </div>
+              {creator?.bio && (
+                <div className="md:col-span-2">
+                  <p className="text-sm text-muted-foreground">Bio</p>
+                  <p className="font-medium">{creator.bio}</p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
