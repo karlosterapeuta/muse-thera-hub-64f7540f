@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   DollarSign, 
   Users, 
@@ -16,13 +17,16 @@ import {
   AlertCircle,
   LogOut,
   Eye,
-  Loader2
+  Loader2,
+  LayoutDashboard,
+  GraduationCap
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { CourseCreator, CoursePurchase, Course, formatPrice } from "@/types/courses";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { CreatorCourseManager } from "@/components/creator/CreatorCourseManager";
 
 interface DashboardStats {
   totalRevenue: number;
@@ -213,7 +217,24 @@ export default function CreatorDashboardPage() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8 space-y-8">
+      <main className="container mx-auto px-4 py-8">
+        <Tabs defaultValue="dashboard" className="space-y-6">
+          <TabsList className="grid w-full max-w-md grid-cols-2">
+            <TabsTrigger value="dashboard" className="gap-2">
+              <LayoutDashboard className="h-4 w-4" />
+              Dashboard
+            </TabsTrigger>
+            <TabsTrigger value="courses" className="gap-2">
+              <GraduationCap className="h-4 w-4" />
+              Meus Cursos
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="courses" className="space-y-6">
+            {creator && <CreatorCourseManager creatorId={creator.id} />}
+          </TabsContent>
+
+          <TabsContent value="dashboard" className="space-y-8">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           <Card>
@@ -505,6 +526,8 @@ export default function CreatorDashboardPage() {
             </div>
           </CardContent>
         </Card>
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );

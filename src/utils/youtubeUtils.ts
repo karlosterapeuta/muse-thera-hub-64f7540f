@@ -48,3 +48,16 @@ export const checkYouTubeVideoExists = (youtubeId: string): Promise<boolean> => 
     img.src = `https://img.youtube.com/vi/${youtubeId}/0.jpg`;
   });
 };
+
+/**
+ * Get YouTube video thumbnail URL
+ */
+export const getYouTubeThumbnail = (videoId: string, quality: 'default' | 'medium' | 'high' | 'maxres' = 'high'): string => {
+  const qualityMap = {
+    default: 'default',
+    medium: 'mqdefault',
+    high: 'hqdefault',
+    maxres: 'maxresdefault',
+  };
+  return `https://img.youtube.com/vi/${videoId}/${qualityMap[quality]}.jpg`;
+};
