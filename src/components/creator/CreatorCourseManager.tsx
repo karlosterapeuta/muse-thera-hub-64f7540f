@@ -36,6 +36,7 @@ import {
 } from "lucide-react";
 import { useCreatorCourses, CreatorCourse } from "@/hooks/useCreatorCourses";
 import { CreatorCourseEditor } from "./CreatorCourseEditor";
+import { ThumbnailUploader } from "./ThumbnailUploader";
 import { formatPrice } from "@/types/courses";
 
 interface CreatorCourseManagerProps {
@@ -333,13 +334,13 @@ export function CreatorCourseManager({ creatorId }: CreatorCourseManagerProps) {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">URL da Thumbnail</label>
-              <Input
-                placeholder="https://..."
-                value={newCourseData.thumbnail_url}
-                onChange={(e) =>
-                  setNewCourseData({ ...newCourseData, thumbnail_url: e.target.value })
+              <label className="text-sm font-medium">Thumbnail do Curso</label>
+              <ThumbnailUploader
+                currentUrl={newCourseData.thumbnail_url}
+                onUpload={(url) =>
+                  setNewCourseData({ ...newCourseData, thumbnail_url: url })
                 }
+                courseId="new-course"
               />
             </div>
           </div>
