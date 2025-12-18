@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getYouTubeId, getYouTubeThumbnail } from "@/utils/youtubeUtils";
 
 export interface CreatorCourse {
   id: string;
@@ -240,12 +241,17 @@ export function useCreatorCourses(creatorId: string | null) {
     }
   ) => {
     try {
-      // Find module to get order index
+      // Find module to get order index and course info
       let orderIndex = 0;
+      let courseId: string | null = null;
+      let courseThumbnail: string | null = null;
+
       courses.forEach((course) => {
         const module = course.modules?.find((m) => m.id === moduleId);
         if (module) {
           orderIndex = module.lessons?.length || 0;
+          courseId = course.id;
+          courseThumbnail = course.thumbnail_url;
         }
       });
 
@@ -256,6 +262,18 @@ export function useCreatorCourses(creatorId: string | null) {
       });
 
       if (error) throw error;
+
+      // If course has no thumbnail, generate from this video
+      if (courseId && !courseThumbnail && data.youtube_url) {
+        const videoId = getYouTubeId(data.youtube_url);
+        if (videoId) {
+          const thumbnailUrl = getYouTubeThumbnail(videoId, 'maxres');
+          await supabase
+            .from("courses")
+            .update({ thumbnail_url: thumbnailUrl })
+            .eq("id", courseId);
+        }
+      }
 
       toast.success("Aula criada!");
       await loadCourses();
