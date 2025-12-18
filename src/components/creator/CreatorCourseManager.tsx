@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +33,7 @@ import {
   EyeOff,
   Loader2,
   Image as ImageIcon,
+  Play,
 } from "lucide-react";
 import { useCreatorCourses, CreatorCourse } from "@/hooks/useCreatorCourses";
 import { CreatorCourseEditor } from "./CreatorCourseEditor";
@@ -46,6 +48,7 @@ interface CreatorCourseManagerProps {
 }
 
 export function CreatorCourseManager({ creatorId }: CreatorCourseManagerProps) {
+  const navigate = useNavigate();
   const {
     courses,
     isLoading,
@@ -284,6 +287,18 @@ export function CreatorCourseManager({ creatorId }: CreatorCourseManagerProps) {
 
                 {/* Actions */}
                 <div className="flex items-center gap-2 mt-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/courses/${course.id}`);
+                    }}
+                  >
+                    <Play className="h-4 w-4" />
+                    Assistir
+                  </Button>
                   <Button
                     variant="outline"
                     size="sm"
