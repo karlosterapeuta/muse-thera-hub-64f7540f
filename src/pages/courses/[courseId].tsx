@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -12,6 +12,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useAdmin } from "@/hooks/use-admin";
 import { CourseAccessRestricted } from "@/components/courses/CourseAccessRestricted";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function CoursePlayerPage() {
   const { courseId } = useParams<{ courseId: string }>();
@@ -24,6 +25,24 @@ export default function CoursePlayerPage() {
   const { data: course, isLoading: courseLoading } = useCourse(courseId);
   const { data: progress = [], isLoading: progressLoading } = useCourseProgress(courseId);
   const markComplete = useMarkLessonComplete();
+  const viewTracked = useRef(false);
+
+  // Track course view (once per session)
+  useEffect(() => {
+    if (courseId && !viewTracked.current) {
+      viewTracked.current = true;
+      const sessionId = sessionStorage.getItem("session_id") || crypto.randomUUID();
+      sessionStorage.setItem("session_id", sessionId);
+      
+      supabase.from("course_views").insert({
+        course_id: courseId,
+        user_id: null, // Anonymous tracking or add auth.uid() if needed
+        session_id: sessionId,
+      }).then(() => {
+        console.log("Course view tracked");
+      });
+    }
+  }, [courseId]);
 
   // Get all lessons in order
   const allLessons: CourseLesson[] = course?.modules?.flatMap(m => m.lessons || []) || [];
