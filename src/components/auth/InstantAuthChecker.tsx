@@ -23,25 +23,38 @@ export default function InstantAuthChecker() {
     }
     lastCheckRef.current = now;
 
-    // Check cache first
-    const cached = profileStatusCache.get(userId);
-    if (cached && (now - cached.timestamp) < CACHE_DURATION) {
-      const isExpired = cached.expires_at ? new Date(cached.expires_at) < new Date() : false;
-      if (cached.status !== 'active' || isExpired) {
-        await supabase.auth.signOut();
-        navigate("/login");
-        toast({
-          title: isExpired ? "Acesso expirado" : "Conta desativada",
-          description: isExpired 
-            ? "Seu período de acesso ao sistema expirou. Entre em contato com o administrador para renovar."
-            : "Sua conta foi desativada. Entre em contato com o administrador.",
-          variant: "destructive",
-        });
-      }
-      return;
-    }
-
     try {
+      // Check if user is an active creator - if so, skip profile check
+      const { data: creator } = await supabase
+        .from('course_creators')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('is_active', true)
+        .maybeSingle();
+
+      if (creator) {
+        console.log("🔍 InstantAuthChecker: Skipping - user is an active creator");
+        return;
+      }
+
+      // Check cache first for regular users
+      const cached = profileStatusCache.get(userId);
+      if (cached && (now - cached.timestamp) < CACHE_DURATION) {
+        const isExpired = cached.expires_at ? new Date(cached.expires_at) < new Date() : false;
+        if (cached.status !== 'active' || isExpired) {
+          await supabase.auth.signOut();
+          navigate("/login");
+          toast({
+            title: isExpired ? "Acesso expirado" : "Conta desativada",
+            description: isExpired 
+              ? "Seu período de acesso ao sistema expirou. Entre em contato com o administrador para renovar."
+              : "Sua conta foi desativada. Entre em contato com o administrador.",
+            variant: "destructive",
+          });
+        }
+        return;
+      }
+
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('status, expires_at')
