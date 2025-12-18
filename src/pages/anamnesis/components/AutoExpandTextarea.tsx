@@ -14,6 +14,8 @@ interface AutoExpandTextareaProps {
   minRows?: number;
   maxRows?: number;
   hint?: string;
+  error?: string;
+  hasError?: boolean;
 }
 
 export function AutoExpandTextarea({
@@ -27,6 +29,8 @@ export function AutoExpandTextarea({
   minRows = 3,
   maxRows = 10,
   hint,
+  error,
+  hasError = false,
 }: AutoExpandTextareaProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -44,6 +48,8 @@ export function AutoExpandTextarea({
     const newHeight = Math.min(Math.max(textarea.scrollHeight, minHeight), maxHeight);
     textarea.style.height = `${newHeight}px`;
   }, [value, minRows, maxRows]);
+
+  const showError = hasError || !!error;
 
   return (
     <div className="space-y-2">
@@ -65,9 +71,11 @@ export function AutoExpandTextarea({
           className={cn(
             "w-full px-4 py-3 rounded-xl border-2 transition-all duration-300 resize-none",
             "bg-card text-foreground placeholder:text-muted-foreground",
-            "border-border focus:border-primary focus:ring-2 focus:ring-primary/20",
             "hover:border-primary/50",
-            "outline-none"
+            "outline-none",
+            showError 
+              ? "border-destructive focus:border-destructive focus:ring-2 focus:ring-destructive/20 animate-shake" 
+              : "border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
           )}
           style={{
             minHeight: `${24 * minRows}px`,
@@ -82,7 +90,13 @@ export function AutoExpandTextarea({
           </div>
         )}
       </div>
-      {hint && (
+      {error && (
+        <p className="text-xs text-destructive flex items-center gap-1">
+          <span className="inline-block w-1 h-1 rounded-full bg-destructive"></span>
+          {error}
+        </p>
+      )}
+      {hint && !error && (
         <p className="text-xs text-muted-foreground italic">{hint}</p>
       )}
     </div>
