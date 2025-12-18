@@ -60,6 +60,7 @@ import {
 import { CreatorCourse, CreatorModule, CreatorLesson } from "@/hooks/useCreatorCourses";
 import { CreatorLessonForm } from "./CreatorLessonForm";
 import { MuseTeraPlayer } from "@/components/courses/MuseTeraPlayer";
+import { ThumbnailUploader } from "./ThumbnailUploader";
 import { formatPrice } from "@/types/courses";
 import { SortableModule } from "./SortableModule";
 import { SortableLesson } from "./SortableLesson";
@@ -305,12 +306,13 @@ export function CreatorCourseEditor({
                 />
               </div>
               <div className="space-y-2 md:col-span-2">
-                <label className="text-sm font-medium">URL da Thumbnail</label>
-                <Input
-                  value={courseData.thumbnail_url}
-                  onChange={(e) =>
-                    setCourseData({ ...courseData, thumbnail_url: e.target.value })
+                <label className="text-sm font-medium">Thumbnail do Curso</label>
+                <ThumbnailUploader
+                  currentUrl={courseData.thumbnail_url}
+                  onUpload={(url) =>
+                    setCourseData({ ...courseData, thumbnail_url: url })
                   }
+                  courseId={course.id}
                 />
               </div>
             </div>
