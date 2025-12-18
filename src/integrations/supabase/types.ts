@@ -702,6 +702,38 @@ export type Database = {
           },
         ]
       }
+      course_views: {
+        Row: {
+          course_id: string
+          id: string
+          session_id: string | null
+          user_id: string | null
+          viewed_at: string | null
+        }
+        Insert: {
+          course_id: string
+          id?: string
+          session_id?: string | null
+          user_id?: string | null
+          viewed_at?: string | null
+        }
+        Update: {
+          course_id?: string
+          id?: string
+          session_id?: string | null
+          user_id?: string | null
+          viewed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_views_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       courses: {
         Row: {
           category: string | null

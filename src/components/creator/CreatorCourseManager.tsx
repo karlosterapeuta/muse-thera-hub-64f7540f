@@ -34,6 +34,7 @@ import {
   Loader2,
   Image as ImageIcon,
   Play,
+  Users,
 } from "lucide-react";
 import { useCreatorCourses, CreatorCourse } from "@/hooks/useCreatorCourses";
 import { CreatorCourseEditor } from "./CreatorCourseEditor";
@@ -267,8 +268,21 @@ export function CreatorCourseManager({ creatorId }: CreatorCourseManagerProps) {
                 <h3 className="font-semibold line-clamp-1 group-hover:text-primary transition-colors">
                   {course.title}
                 </h3>
+                
+                {/* Stats badges */}
+                <div className="flex items-center gap-3 mt-2">
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <Eye className="h-3.5 w-3.5" />
+                    <span>{course.view_count || 0} views</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <Users className="h-3.5 w-3.5" />
+                    <span>{course.enrolled_students || 0} alunos</span>
+                  </div>
+                </div>
+
                 {course.description && (
-                  <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                  <p className="text-sm text-muted-foreground line-clamp-2 mt-2">
                     {course.description}
                   </p>
                 )}

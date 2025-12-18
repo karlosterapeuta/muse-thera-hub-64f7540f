@@ -13,6 +13,9 @@ export interface CreatorCourse {
   creator_id: string;
   created_at: string;
   modules?: CreatorModule[];
+  // Stats
+  enrolled_students?: number;
+  view_count?: number;
 }
 
 export interface CreatorModule {
@@ -58,9 +61,39 @@ export function useCreatorCourses(creatorId: string | null) {
 
       if (error) throw error;
 
+      // Get stats for each course (enrolled students and views)
+      const courseIds = (data || []).map((c: any) => c.id);
+      
+      // Fetch enrolled students count (from course_access with is_active = true)
+      const { data: accessData } = await supabase
+        .from("course_access")
+        .select("course_id")
+        .in("course_id", courseIds)
+        .eq("is_active", true);
+
+      // Fetch view counts
+      const { data: viewsData } = await supabase
+        .from("course_views")
+        .select("course_id")
+        .in("course_id", courseIds);
+
+      // Count per course
+      const enrolledCount: Record<string, number> = {};
+      const viewCount: Record<string, number> = {};
+
+      (accessData || []).forEach((a: any) => {
+        enrolledCount[a.course_id] = (enrolledCount[a.course_id] || 0) + 1;
+      });
+
+      (viewsData || []).forEach((v: any) => {
+        viewCount[v.course_id] = (viewCount[v.course_id] || 0) + 1;
+      });
+
       // Sort modules and lessons by order_index
       const sortedData = (data || []).map((course: any) => ({
         ...course,
+        enrolled_students: enrolledCount[course.id] || 0,
+        view_count: viewCount[course.id] || 0,
         modules: (course.modules || [])
           .sort((a: any, b: any) => (a.order_index || 0) - (b.order_index || 0))
           .map((module: any) => ({
