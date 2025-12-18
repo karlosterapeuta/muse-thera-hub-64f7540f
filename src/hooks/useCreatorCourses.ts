@@ -173,19 +173,21 @@ export function useCreatorCourses(creatorId: string | null) {
       const course = courses.find((c) => c.id === courseId);
       const orderIndex = (course?.modules?.length || 0);
 
-      const { error } = await supabase.from("course_modules").insert({
+      const { data: module, error } = await supabase.from("course_modules").insert({
         course_id: courseId,
         title,
         order_index: orderIndex,
-      });
+      }).select().single();
 
       if (error) throw error;
 
       toast.success("Módulo criado!");
       await loadCourses();
+      return module;
     } catch (error) {
       console.error("Error creating module:", error);
       toast.error("Erro ao criar módulo");
+      return null;
     }
   };
 

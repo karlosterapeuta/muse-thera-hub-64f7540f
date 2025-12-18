@@ -36,6 +36,39 @@ declare global {
 
 const PLAYBACK_SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
 
+// CSS to inject to hide YouTube elements
+const YOUTUBE_HIDE_CSS = `
+  .ytp-chrome-top,
+  .ytp-chrome-bottom,
+  .ytp-watermark,
+  .ytp-youtube-button,
+  .ytp-title,
+  .ytp-title-channel,
+  .ytp-title-text,
+  .ytp-show-cards-title,
+  .ytp-pause-overlay,
+  .ytp-gradient-top,
+  .ytp-gradient-bottom,
+  .ytp-impression-link,
+  .ytp-share-button,
+  .ytp-watch-later-button,
+  .ytp-copylink-button,
+  .ytp-fullerscreen-edu-button,
+  .ytp-fullerscreen-edu-text,
+  .ytp-menuitem[aria-label*="YouTube"],
+  .ytp-button[aria-label*="YouTube"],
+  a[href*="youtube.com"],
+  a[href*="youtu.be"],
+  .annotation,
+  .iv-branding,
+  .branding-img-container {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+`;
+
 export function MuseTeraPlayer({ 
   videoUrl, 
   title,
@@ -59,6 +92,56 @@ export function MuseTeraPlayer({
   
   const videoId = getYouTubeId(videoUrl);
   const hideControlsTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  // Inject CSS to hide YouTube elements
+  useEffect(() => {
+    const styleId = "musetera-youtube-hide-style";
+    if (!document.getElementById(styleId)) {
+      const style = document.createElement("style");
+      style.id = styleId;
+      style.textContent = YOUTUBE_HIDE_CSS;
+      document.head.appendChild(style);
+    }
+    return () => {
+      const style = document.getElementById(styleId);
+      if (style) style.remove();
+    };
+  }, []);
+
+  // Block keyboard shortcuts for copying/downloading
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Block common download/copy shortcuts
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        (e.key === "s" || e.key === "S" || e.key === "u" || e.key === "U")
+      ) {
+        e.preventDefault();
+        return false;
+      }
+      // Block F12 developer tools
+      if (e.key === "F12") {
+        e.preventDefault();
+        return false;
+      }
+      // Block Ctrl+Shift+I (dev tools)
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "i" || e.key === "I")) {
+        e.preventDefault();
+        return false;
+      }
+    };
+
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener("keydown", handleKeyDown);
+    }
+
+    return () => {
+      if (container) {
+        container.removeEventListener("keydown", handleKeyDown);
+      }
+    };
+  }, []);
 
   // Load YouTube IFrame API
   useEffect(() => {
@@ -103,6 +186,8 @@ export function MuseTeraPlayer({
         modestbranding: 1,
         rel: 0,
         showinfo: 0,
+        playsinline: 1,
+        cc_load_policy: 0,
         origin: window.location.origin,
       },
       events: {
@@ -244,6 +329,11 @@ export function MuseTeraPlayer({
     e.preventDefault();
   };
 
+  // Prevent drag
+  const handleDragStart = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
   if (!videoId) {
     return (
       <div className="relative aspect-video bg-black rounded-xl flex items-center justify-center text-white">
@@ -255,21 +345,35 @@ export function MuseTeraPlayer({
   return (
     <div 
       ref={containerRef}
-      className="relative aspect-video bg-black rounded-xl overflow-hidden group"
+      className="relative aspect-video bg-black rounded-xl overflow-hidden group select-none"
       onMouseMove={handleMouseMove}
       onMouseLeave={() => isPlaying && setShowControls(false)}
       onContextMenu={handleContextMenu}
+      onDragStart={handleDragStart}
+      style={{ 
+        userSelect: "none",
+        WebkitUserSelect: "none",
+        MozUserSelect: "none",
+        msUserSelect: "none",
+      }}
+      tabIndex={0}
     >
-      {/* YouTube Player Container */}
+      {/* YouTube Player Container - with pointer-events disabled */}
       <div 
         id={`musetera-player-${videoId}`}
-        className="absolute inset-0 w-full h-full pointer-events-none"
+        className="absolute inset-0 w-full h-full"
+        style={{ pointerEvents: "none" }}
       />
 
-      {/* Invisible Overlay to capture clicks */}
+      {/* Full Invisible Overlay to capture ALL clicks and block YouTube interaction */}
       <div 
         className="absolute inset-0 z-10 cursor-pointer"
         onClick={togglePlay}
+        onContextMenu={handleContextMenu}
+        style={{ 
+          background: "transparent",
+          userSelect: "none",
+        }}
       />
 
       {/* Loading State */}
@@ -295,23 +399,33 @@ export function MuseTeraPlayer({
         </div>
       )}
 
-      {/* MuseTera Watermark */}
-      <div className="absolute top-4 right-4 z-20 opacity-60">
-        <div className="flex items-center gap-2 bg-black/30 backdrop-blur-sm rounded-full px-3 py-1.5">
+      {/* MuseTera Watermark - Always visible */}
+      <div className="absolute top-4 right-4 z-30 opacity-70 pointer-events-none">
+        <div className="flex items-center gap-2 bg-black/50 backdrop-blur-sm rounded-full px-3 py-1.5">
           <img 
             src="/lovable-uploads/musetera-logo-new.png" 
             alt="MuseTera" 
             className="w-6 h-6 rounded-full"
+            draggable={false}
           />
-          <span className="text-white text-xs font-medium">MuseTera</span>
+          <span className="text-white text-xs font-semibold tracking-wide">MuseTera</span>
         </div>
       </div>
+
+      {/* Anti-copy protection layer - blocks inspect element on video */}
+      <div 
+        className="absolute inset-0 z-5"
+        style={{
+          background: "transparent",
+          pointerEvents: "none",
+        }}
+      />
 
       {/* Controls Bar */}
       <div 
         className={cn(
           "absolute bottom-0 left-0 right-0 z-30 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-4 transition-opacity duration-300",
-          showControls || !isPlaying ? "opacity-100" : "opacity-0"
+          showControls || !isPlaying ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
       >
         {/* Progress Bar */}
