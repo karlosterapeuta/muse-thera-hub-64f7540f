@@ -21,11 +21,31 @@ export default function CreatorLoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("login");
 
-  // Check URL for recovery token
+  // Check URL for recovery token or error
   useEffect(() => {
     const checkRecoveryToken = async () => {
-      // Check hash params for recovery
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      
+      // Check for error in URL (e.g., expired link)
+      const error = hashParams.get("error");
+      const errorDescription = hashParams.get("error_description");
+      
+      if (error) {
+        // Clean the URL first
+        window.history.replaceState({}, document.title, window.location.pathname);
+        
+        if (error === "access_denied" || errorDescription?.includes("expired")) {
+          toast.error("Link expirado! Solicite um novo link de recuperação de senha.", {
+            duration: 6000,
+          });
+          setViewMode("forgot-password");
+        } else {
+          toast.error(errorDescription?.replace(/\+/g, ' ') || "Erro ao processar link");
+        }
+        return;
+      }
+      
+      // Check hash params for recovery
       const accessToken = hashParams.get("access_token");
       const type = hashParams.get("type");
       
@@ -33,17 +53,21 @@ export default function CreatorLoginPage() {
         // Set session from recovery token
         const refreshToken = hashParams.get("refresh_token");
         if (accessToken && refreshToken) {
-          const { error } = await supabase.auth.setSession({
+          const { error: sessionError } = await supabase.auth.setSession({
             access_token: accessToken,
             refresh_token: refreshToken,
           });
           
-          if (!error) {
+          if (!sessionError) {
             setViewMode("new-password");
             // Clean the URL
             window.history.replaceState({}, document.title, window.location.pathname);
           } else {
-            toast.error("Link de recuperação inválido ou expirado");
+            toast.error("Link de recuperação inválido ou expirado. Solicite um novo.", {
+              duration: 6000,
+            });
+            setViewMode("forgot-password");
+            window.history.replaceState({}, document.title, window.location.pathname);
           }
         }
       }
