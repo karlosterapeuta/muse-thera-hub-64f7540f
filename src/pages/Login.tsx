@@ -101,34 +101,53 @@ export default function Login() {
           if (hashParams.type === 'recovery') {
             console.log("Este é um fluxo de recuperação de senha");
             
-            try {
-              if (hashParams.access_token) {
-                console.log("Token de acesso encontrado, configurando sessão");
-                
+            // Check if this recovery is for a creator by checking the access token user
+            if (hashParams.access_token) {
+              try {
+                // Set session first to get user info
                 await supabase.auth.setSession({
                   access_token: hashParams.access_token,
                   refresh_token: hashParams.refresh_token || '',
                 });
                 
+                const { data: { user } } = await supabase.auth.getUser();
+                
+                if (user) {
+                  // Check if this user is a creator
+                  const { data: creator } = await supabase
+                    .from('course_creators')
+                    .select('id')
+                    .eq('user_id', user.id)
+                    .maybeSingle();
+                  
+                  if (creator) {
+                    // This is a creator - redirect to creator login with the hash
+                    console.log("User is a creator, redirecting to /creator-login");
+                    window.location.href = `/creator-login${window.location.hash}`;
+                    return;
+                  }
+                }
+                
+                // Not a creator, proceed with normal password reset
                 setIsSettingNewPassword(true);
                 
                 toast({
                   title: "Redefinição de senha",
                   description: "Agora você pode definir uma nova senha."
                 });
-              } else {
-                console.error("Token de acesso não encontrado nos parâmetros de hash da URL");
+              } catch (error: any) {
+                console.error("Erro ao processar redefinição de senha:", error);
                 toast({
                   title: "Erro na redefinição de senha",
-                  description: "Link inválido ou expirado. Por favor, solicite um novo link.",
+                  description: error.message || "Ocorreu um erro ao processar sua solicitação.",
                   variant: "destructive",
                 });
               }
-            } catch (error: any) {
-              console.error("Erro ao processar redefinição de senha:", error);
+            } else {
+              console.error("Token de acesso não encontrado nos parâmetros de hash da URL");
               toast({
                 title: "Erro na redefinição de senha",
-                description: error.message || "Ocorreu um erro ao processar sua solicitação.",
+                description: "Link inválido ou expirado. Por favor, solicite um novo link.",
                 variant: "destructive",
               });
             }
