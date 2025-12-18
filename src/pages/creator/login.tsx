@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,13 +7,50 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Loader2, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { CreatorPasswordResetForm } from "@/components/courses/CreatorPasswordResetForm";
+import { CreatorNewPasswordForm } from "@/components/courses/CreatorNewPasswordForm";
+
+type ViewMode = "login" | "forgot-password" | "new-password";
 
 export default function CreatorLoginPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("login");
+
+  // Check URL for recovery token
+  useEffect(() => {
+    const checkRecoveryToken = async () => {
+      // Check hash params for recovery
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const accessToken = hashParams.get("access_token");
+      const type = hashParams.get("type");
+      
+      if (accessToken && type === "recovery") {
+        // Set session from recovery token
+        const refreshToken = hashParams.get("refresh_token");
+        if (accessToken && refreshToken) {
+          const { error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+          
+          if (!error) {
+            setViewMode("new-password");
+            // Clean the URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+          } else {
+            toast.error("Link de recuperação inválido ou expirado");
+          }
+        }
+      }
+    };
+    
+    checkRecoveryToken();
+  }, []);
 
   // Check if already logged in
   useEffect(() => {
@@ -92,6 +129,33 @@ export default function CreatorLoginPage() {
     }
   };
 
+  const handlePasswordResetSuccess = () => {
+    setViewMode("login");
+    navigate('/creator-dashboard');
+  };
+
+  const getCardTitle = () => {
+    switch (viewMode) {
+      case "forgot-password":
+        return "Recuperar Senha";
+      case "new-password":
+        return "Nova Senha";
+      default:
+        return "Painel do Criador";
+    }
+  };
+
+  const getCardDescription = () => {
+    switch (viewMode) {
+      case "forgot-password":
+        return "Digite seu email para receber um link de recuperação";
+      case "new-password":
+        return "Digite sua nova senha para acessar sua conta";
+      default:
+        return "Acesse seu painel de criador de cursos MuseTera";
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
       <Card className="w-full max-w-md">
@@ -104,66 +168,88 @@ export default function CreatorLoginPage() {
               className="relative w-full h-full object-cover rounded-full shadow-lg"
             />
           </div>
-          <CardTitle className="text-2xl">Painel do Criador</CardTitle>
+          <CardTitle className="text-2xl">{getCardTitle()}</CardTitle>
           <CardDescription>
-            Acesse seu painel de criador de cursos MuseTera
+            {getCardDescription()}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="seu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
+          {viewMode === "login" && (
+            <>
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="seu@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={isLoading}
+                  />
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={isLoading}
-                />
-                <button
-                  type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Senha</Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setViewMode("forgot-password")}
+                    className="text-sm text-primary hover:underline"
+                  >
+                    Esqueci minha senha
+                  </button>
+                </div>
+
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Entrando...
+                    </>
+                  ) : (
+                    "Entrar"
+                  )}
+                </Button>
+              </form>
+
+              <div className="mt-6 text-center text-sm text-muted-foreground">
+                <p>
+                  Ainda não tem conta?{" "}
+                  <Link to="/creator-register" className="text-primary hover:underline font-medium">
+                    Cadastre-se como criador
+                  </Link>
+                </p>
               </div>
-            </div>
+            </>
+          )}
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Entrando...
-                </>
-              ) : (
-                "Entrar"
-              )}
-            </Button>
-          </form>
+          {viewMode === "forgot-password" && (
+            <CreatorPasswordResetForm onBack={() => setViewMode("login")} />
+          )}
 
-          <div className="mt-6 text-center text-sm text-muted-foreground">
-            <p>
-              Ainda não tem conta?{" "}
-              <Link to="/creator-register" className="text-primary hover:underline font-medium">
-                Cadastre-se como criador
-              </Link>
-            </p>
-          </div>
+          {viewMode === "new-password" && (
+            <CreatorNewPasswordForm onSuccess={handlePasswordResetSuccess} />
+          )}
         </CardContent>
       </Card>
     </div>
