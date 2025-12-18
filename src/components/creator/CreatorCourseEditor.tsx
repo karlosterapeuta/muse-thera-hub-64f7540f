@@ -71,7 +71,7 @@ interface CreatorCourseEditorProps {
   onBack: () => void;
   onUpdateCourse: (courseId: string, data: Partial<CreatorCourse>) => Promise<void>;
   onTogglePublish: (courseId: string, isPublished: boolean) => Promise<void>;
-  onCreateModule: (courseId: string, title: string) => Promise<void>;
+  onCreateModule: (courseId: string, title: string) => Promise<any>;
   onUpdateModule: (moduleId: string, data: Partial<CreatorModule>) => Promise<void>;
   onDeleteModule: (moduleId: string) => Promise<void>;
   onReorderModules: (courseId: string, moduleIds: string[]) => Promise<void>;

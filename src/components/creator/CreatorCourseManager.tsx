@@ -30,14 +30,15 @@ import {
   Trash2,
   Eye,
   EyeOff,
-  ChevronRight,
   Loader2,
   Image as ImageIcon,
 } from "lucide-react";
 import { useCreatorCourses, CreatorCourse } from "@/hooks/useCreatorCourses";
 import { CreatorCourseEditor } from "./CreatorCourseEditor";
 import { ThumbnailUploader } from "./ThumbnailUploader";
+import { YouTubeImporter, ImportedVideo } from "./YouTubeImporter";
 import { formatPrice } from "@/types/courses";
+import { toast } from "sonner";
 
 interface CreatorCourseManagerProps {
   creatorId: string;
@@ -73,6 +74,11 @@ export function CreatorCourseManager({ creatorId }: CreatorCourseManagerProps) {
   });
   const [isCreating, setIsCreating] = useState(false);
 
+  // YouTube Import states
+  const [importedVideos, setImportedVideos] = useState<ImportedVideo[]>([]);
+  const [createModuleWithVideos, setCreateModuleWithVideos] = useState(true);
+  const [moduleName, setModuleName] = useState("Módulo 1");
+
   useEffect(() => {
     loadCourses();
   }, [loadCourses]);
@@ -81,19 +87,63 @@ export function CreatorCourseManager({ creatorId }: CreatorCourseManagerProps) {
     if (!newCourseData.title.trim()) return;
 
     setIsCreating(true);
-    const course = await createCourse({
-      title: newCourseData.title,
-      description: newCourseData.description || undefined,
-      price_cents: newCourseData.price_cents || 0,
-      thumbnail_url: newCourseData.thumbnail_url || undefined,
-    });
-    setIsCreating(false);
+    
+    try {
+      // Create the course first
+      const course = await createCourse({
+        title: newCourseData.title,
+        description: newCourseData.description || undefined,
+        price_cents: newCourseData.price_cents || 0,
+        thumbnail_url: newCourseData.thumbnail_url || undefined,
+      });
 
-    if (course) {
-      setShowNewCourseDialog(false);
-      setNewCourseData({ title: "", description: "", price_cents: 0, thumbnail_url: "" });
-      setSelectedCourse(course);
+      if (course) {
+        const validVideos = importedVideos.filter((v) => v.isValid && v.videoId);
+
+        // If there are videos to import
+        if (validVideos.length > 0) {
+          let moduleId: string | null = null;
+
+          // Create module if requested
+          if (createModuleWithVideos) {
+            const module = await createModule(course.id, moduleName || "Módulo 1");
+            moduleId = module?.id || null;
+          } else {
+            // Create a default module anyway since lessons need a module
+            const module = await createModule(course.id, "Módulo Principal");
+            moduleId = module?.id || null;
+          }
+
+          // Create lessons for each video
+          if (moduleId) {
+            for (let i = 0; i < validVideos.length; i++) {
+              const video = validVideos[i];
+              await createLesson(moduleId, {
+                title: video.title || `Aula ${i + 1}`,
+                youtube_url: video.url,
+              });
+            }
+            toast.success(`${validVideos.length} aulas importadas com sucesso!`);
+          }
+        }
+
+        setShowNewCourseDialog(false);
+        resetForm();
+        setSelectedCourse(course);
+      }
+    } catch (error) {
+      console.error("Error creating course:", error);
+      toast.error("Erro ao criar o curso");
     }
+
+    setIsCreating(false);
+  };
+
+  const resetForm = () => {
+    setNewCourseData({ title: "", description: "", price_cents: 0, thumbnail_url: "" });
+    setImportedVideos([]);
+    setCreateModuleWithVideos(true);
+    setModuleName("Módulo 1");
   };
 
   const handleDeleteCourse = async () => {
@@ -280,13 +330,16 @@ export function CreatorCourseManager({ creatorId }: CreatorCourseManagerProps) {
       )}
 
       {/* New Course Dialog */}
-      <Dialog open={showNewCourseDialog} onOpenChange={setShowNewCourseDialog}>
-        <DialogContent className="max-h-[90vh] flex flex-col p-0 sm:max-w-md">
+      <Dialog open={showNewCourseDialog} onOpenChange={(open) => {
+        setShowNewCourseDialog(open);
+        if (!open) resetForm();
+      }}>
+        <DialogContent className="max-h-[90vh] flex flex-col p-0 sm:max-w-lg">
           {/* Header fixo */}
           <DialogHeader className="p-4 sm:p-6 pb-2">
             <DialogTitle>Criar Novo Curso</DialogTitle>
             <DialogDescription>
-              Preencha as informações básicas do seu curso
+              Preencha as informações básicas e importe vídeos do YouTube
             </DialogDescription>
           </DialogHeader>
 
@@ -345,6 +398,18 @@ export function CreatorCourseManager({ creatorId }: CreatorCourseManagerProps) {
                 courseId="new-course"
               />
             </div>
+
+            <Separator />
+
+            {/* YouTube Importer */}
+            <YouTubeImporter
+              videos={importedVideos}
+              onVideosChange={setImportedVideos}
+              createModule={createModuleWithVideos}
+              onCreateModuleChange={setCreateModuleWithVideos}
+              moduleName={moduleName}
+              onModuleNameChange={setModuleName}
+            />
           </div>
 
           {/* Footer fixo */}
@@ -362,7 +427,14 @@ export function CreatorCourseManager({ creatorId }: CreatorCourseManagerProps) {
                   Criando...
                 </>
               ) : (
-                "Criar Curso"
+                <>
+                  Criar Curso
+                  {importedVideos.filter(v => v.isValid).length > 0 && (
+                    <Badge variant="secondary" className="ml-2">
+                      +{importedVideos.filter(v => v.isValid).length} aulas
+                    </Badge>
+                  )}
+                </>
               )}
             </Button>
           </DialogFooter>
