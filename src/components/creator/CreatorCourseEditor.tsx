@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { getYouTubeId, getYouTubeThumbnail } from "@/utils/youtubeUtils";
+import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
@@ -103,6 +105,7 @@ export function CreatorCourseEditor({
     thumbnail_url: course.thumbnail_url || "",
   });
   const [isSaving, setIsSaving] = useState(false);
+  const [youtubeUrlForThumbnail, setYoutubeUrlForThumbnail] = useState("");
 
   // Module states
   const [showNewModuleDialog, setShowNewModuleDialog] = useState(false);
@@ -122,6 +125,18 @@ export function CreatorCourseEditor({
     await onUpdateCourse(course.id, courseData);
     setIsSaving(false);
     setEditingCourse(false);
+  };
+
+  const handleGenerateThumbnailFromYouTube = () => {
+    const videoId = getYouTubeId(youtubeUrlForThumbnail);
+    if (!videoId) {
+      toast.error("URL do YouTube inválida");
+      return;
+    }
+    const thumbnailUrl = getYouTubeThumbnail(videoId, 'maxres');
+    setCourseData({ ...courseData, thumbnail_url: thumbnailUrl });
+    setYoutubeUrlForThumbnail("");
+    toast.success("Thumbnail gerada com sucesso!");
   };
 
   const handleCreateModule = async () => {
@@ -314,6 +329,27 @@ export function CreatorCourseEditor({
                   }
                   courseId={course.id}
                 />
+                <div className="mt-3 p-3 border rounded-lg bg-muted/30">
+                  <label className="text-sm font-medium text-muted-foreground">
+                    Ou gere a partir de um vídeo do YouTube
+                  </label>
+                  <div className="flex gap-2 mt-2">
+                    <Input
+                      placeholder="Cole a URL do YouTube aqui..."
+                      value={youtubeUrlForThumbnail}
+                      onChange={(e) => setYoutubeUrlForThumbnail(e.target.value)}
+                      className="flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={handleGenerateThumbnailFromYouTube}
+                      disabled={!youtubeUrlForThumbnail.trim()}
+                    >
+                      Gerar
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
           ) : (
