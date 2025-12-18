@@ -76,9 +76,14 @@ export default function CreatorLoginPage() {
     checkRecoveryToken();
   }, []);
 
-  // Check if already logged in
+  // Check if already logged in (but NOT during password recovery)
   useEffect(() => {
     const checkSession = async () => {
+      // Skip redirect if we're in password recovery mode
+      if (viewMode === "new-password") {
+        return;
+      }
+      
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         // Check if user is a creator
@@ -95,7 +100,7 @@ export default function CreatorLoginPage() {
       }
     };
     checkSession();
-  }, [navigate]);
+  }, [navigate, viewMode]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
