@@ -175,6 +175,10 @@ export default function CreatorLoginPage() {
         return;
       }
 
+      // Save creator credentials to localStorage for Edge Function calls
+      localStorage.setItem("creatorId", creator.id);
+      localStorage.setItem("creatorToken", authData.session?.access_token || "");
+
       toast.success(`Bem-vindo, ${creator.name}!`);
       navigate('/creator-dashboard');
 
