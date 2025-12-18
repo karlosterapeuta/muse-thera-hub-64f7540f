@@ -23,6 +23,19 @@ export default function AuthStatusChecker() {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (session) {
+        // Check if user is an active creator - if so, skip all profile checks
+        const { data: creator } = await supabase
+          .from('course_creators')
+          .select('id')
+          .eq('user_id', session.user.id)
+          .eq('is_active', true)
+          .maybeSingle();
+
+        if (creator) {
+          console.log("🔍 AuthStatusChecker: Skipping - user is an active creator");
+          return;
+        }
+
         // Verifica se o usuário está expirado usando a função do banco
         const { data: isExpired, error: expiredError } = await supabase
           .rpc('is_user_access_expired', { user_id: session.user.id });
