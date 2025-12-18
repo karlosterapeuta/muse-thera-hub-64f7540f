@@ -118,13 +118,34 @@ export const generateProfessionalAnamnesePDF = async (
         `;
       };
 
-      // Cabeçalho da seção
-      const sectionHeader = (number: number, title: string, icon: string) => `
-        <div style="background: linear-gradient(135deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%); color: white; padding: 10px 16px; border-radius: 10px 10px 0 0; display: flex; align-items: center; gap: 10px;">
-          <span style="font-size: 16px;">${icon}</span>
-          <span style="font-weight: 700; font-size: 13px; letter-spacing: 0.5px;">${number}. ${title}</span>
-        </div>
-      `;
+      // Mapeamento de cores por categoria temática
+      const sectionColors: Record<number, { gradient: string; iconBg: string }> = {
+        1:  { gradient: 'linear-gradient(135deg, #0d9488, #14b8a6)', iconBg: 'rgba(255,255,255,0.25)' },  // [ID] TEAL - Identificação
+        2:  { gradient: 'linear-gradient(135deg, #1e40af, #3b82f6)', iconBg: 'rgba(255,255,255,0.25)' },  // [HC] AZUL - Clínico
+        3:  { gradient: 'linear-gradient(135deg, #1e40af, #3b82f6)', iconBg: 'rgba(255,255,255,0.25)' },  // [MED] AZUL - Clínico
+        4:  { gradient: 'linear-gradient(135deg, #1e40af, #3b82f6)', iconBg: 'rgba(255,255,255,0.25)' },  // [TER] AZUL - Clínico
+        5:  { gradient: 'linear-gradient(135deg, #a21caf, #d946ef)', iconBg: 'rgba(255,255,255,0.25)' },  // ♪ ROSA - Musical
+        6:  { gradient: 'linear-gradient(135deg, #a21caf, #d946ef)', iconBg: 'rgba(255,255,255,0.25)' },  // [ISO] ROSA - Musical
+        7:  { gradient: 'linear-gradient(135deg, #a21caf, #d946ef)', iconBg: 'rgba(255,255,255,0.25)' },  // ♫ ROSA - Musical
+        8:  { gradient: 'linear-gradient(135deg, #c2410c, #f97316)', iconBg: 'rgba(255,255,255,0.25)' },  // [AUD] LARANJA - Sensorial
+        9:  { gradient: 'linear-gradient(135deg, #c2410c, #f97316)', iconBg: 'rgba(255,255,255,0.25)' },  // [NPM] LARANJA - Sensorial
+        10: { gradient: 'linear-gradient(135deg, #15803d, #22c55e)', iconBg: 'rgba(255,255,255,0.25)' },  // [EMO] VERDE - Emocional
+        11: { gradient: 'linear-gradient(135deg, #0d9488, #14b8a6)', iconBg: 'rgba(255,255,255,0.25)' },  // [ESC] TEAL - Identificação
+        12: { gradient: 'linear-gradient(135deg, #0d9488, #14b8a6)', iconBg: 'rgba(255,255,255,0.25)' },  // [OBJ] TEAL - Identificação
+      };
+
+      // Cabeçalho da seção com cores diferenciadas
+      const sectionHeader = (number: number, title: string, icon: string) => {
+        const colors = sectionColors[number] || sectionColors[1];
+        return `
+          <div style="background: ${colors.gradient}; color: white; padding: 10px 16px; border-radius: 10px 10px 0 0; display: flex; align-items: center; gap: 12px;">
+            <div style="background: ${colors.iconBg}; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 700;">
+              ${icon}
+            </div>
+            <span style="font-weight: 700; font-size: 13px; letter-spacing: 0.5px;">${number}. ${title}</span>
+          </div>
+        `;
+      };
 
       // Container da seção
       const sectionContainer = (content: string) => `
