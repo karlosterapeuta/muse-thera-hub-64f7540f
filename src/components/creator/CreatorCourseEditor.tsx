@@ -500,15 +500,19 @@ export function CreatorCourseEditor({
                                             <span className="text-sm text-muted-foreground">
                                               {lesson.duration_minutes || 0} min
                                             </span>
+                                            {/* Botão Assistir - sempre visível */}
+                                            <Button
+                                              variant="outline"
+                                              size="sm"
+                                              className="h-7 gap-1 text-xs"
+                                              onClick={() => setPreviewLesson(lesson)}
+                                            >
+                                              <Play className="h-3 w-3" />
+                                              Assistir
+                                            </Button>
+                                            
+                                            {/* Edit/Delete - aparecem no hover */}
                                             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                              <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-8 w-8"
-                                                onClick={() => setPreviewLesson(lesson)}
-                                              >
-                                                <Play className="h-4 w-4" />
-                                              </Button>
                                               <Button
                                                 variant="ghost"
                                                 size="icon"
