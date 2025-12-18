@@ -80,6 +80,13 @@ export default function CreatorDashboardPage() {
 
         setCreator(creatorData as CourseCreator);
 
+        // Save creator credentials to localStorage for Edge Function calls
+        const { data: sessionData } = await supabase.auth.getSession();
+        if (sessionData.session) {
+          localStorage.setItem("creatorId", creatorData.id);
+          localStorage.setItem("creatorToken", sessionData.session.access_token);
+        }
+
         // Load creator's courses
         const { data: coursesData } = await supabase
           .from('courses')
@@ -139,6 +146,10 @@ export default function CreatorDashboardPage() {
   }, [navigate]);
 
   const handleLogout = async () => {
+    // Clear creator credentials from localStorage
+    localStorage.removeItem("creatorId");
+    localStorage.removeItem("creatorToken");
+    
     await supabase.auth.signOut();
     toast.success("Logout realizado com sucesso");
     navigate('/creator-login');
