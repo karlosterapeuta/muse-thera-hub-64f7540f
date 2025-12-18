@@ -204,8 +204,15 @@ export function useCreatorCourses(creatorId: string | null) {
   // Module CRUD
   const createModule = async (courseId: string, title: string) => {
     try {
-      const course = courses.find((c) => c.id === courseId);
-      const orderIndex = (course?.modules?.length || 0);
+      // Fetch module count directly from database to avoid race conditions
+      const { count, error: countError } = await supabase
+        .from("course_modules")
+        .select("*", { count: "exact", head: true })
+        .eq("course_id", courseId);
+
+      if (countError) throw countError;
+
+      const orderIndex = count || 0;
 
       const { data: module, error } = await supabase.from("course_modules").insert({
         course_id: courseId,
@@ -274,19 +281,27 @@ export function useCreatorCourses(creatorId: string | null) {
     }
   ) => {
     try {
-      // Find module to get order index and course info
-      let orderIndex = 0;
-      let courseId: string | null = null;
-      let courseThumbnail: string | null = null;
+      // Fetch lesson count directly from database to avoid race conditions
+      const { count, error: countError } = await supabase
+        .from("course_lessons")
+        .select("*", { count: "exact", head: true })
+        .eq("module_id", moduleId);
 
-      courses.forEach((course) => {
-        const module = course.modules?.find((m) => m.id === moduleId);
-        if (module) {
-          orderIndex = module.lessons?.length || 0;
-          courseId = course.id;
-          courseThumbnail = course.thumbnail_url;
-        }
-      });
+      if (countError) throw countError;
+
+      const orderIndex = count || 0;
+
+      // Fetch module info to get course details
+      const { data: moduleData, error: moduleError } = await supabase
+        .from("course_modules")
+        .select("course_id, courses(id, thumbnail_url)")
+        .eq("id", moduleId)
+        .single();
+
+      if (moduleError) throw moduleError;
+
+      const courseId = moduleData?.course_id;
+      const courseThumbnail = (moduleData?.courses as any)?.thumbnail_url;
 
       const { error } = await supabase.from("course_lessons").insert({
         ...data,
