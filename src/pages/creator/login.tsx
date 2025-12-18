@@ -132,15 +132,43 @@ export default function CreatorLoginPage() {
         return;
       }
 
-      // Check if user is an active creator
-      const { data: creator, error: creatorError } = await supabase
+      // Check if user is an active creator - first by user_id, then by email
+      let creator = null;
+
+      // Try to find creator by user_id
+      const { data: creatorByUserId } = await supabase
         .from('course_creators')
         .select('*')
         .eq('user_id', authData.user.id)
         .eq('is_active', true)
         .single();
 
-      if (creatorError || !creator) {
+      if (creatorByUserId) {
+        creator = creatorByUserId;
+      } else {
+        // Try to find creator by email (for old records without user_id)
+        const { data: creatorByEmail } = await supabase
+          .from('course_creators')
+          .select('*')
+          .eq('email', email.toLowerCase().trim())
+          .eq('is_active', true)
+          .single();
+        
+        if (creatorByEmail) {
+          // Link the user_id to the creator record
+          const { error: updateError } = await supabase
+            .from('course_creators')
+            .update({ user_id: authData.user.id })
+            .eq('id', creatorByEmail.id);
+          
+          if (!updateError) {
+            creator = creatorByEmail;
+            console.log("✅ Creator user_id linked automatically:", creatorByEmail.email);
+          }
+        }
+      }
+
+      if (!creator) {
         // User exists in auth but is not a creator
         await supabase.auth.signOut();
         toast.error("Esta conta não está vinculada a um criador de cursos");
