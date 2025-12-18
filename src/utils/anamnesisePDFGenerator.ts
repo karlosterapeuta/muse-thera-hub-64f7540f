@@ -134,12 +134,64 @@ export const generateProfessionalAnamnesePDF = async (
         12: { gradient: 'linear-gradient(135deg, #0d9488, #14b8a6)', iconBg: 'rgba(255,255,255,0.25)', borderColor: '#14b8a6' },  // [OBJ] TEAL - Identificação
       };
 
-      // Cabeçalho da seção com cores diferenciadas
-      const sectionHeader = (number: number, title: string, icon: string) => {
+      // Ícones SVG inline para cada seção
+      const sectionIcons: Record<number, string> = {
+        1: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>`,
+        2: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+            </svg>`,
+        3: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/>
+              <path d="m8.5 8.5 7 7"/>
+            </svg>`,
+        4: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+            </svg>`,
+        5: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18V5l12-2v13"/>
+              <circle cx="6" cy="18" r="3"/>
+              <circle cx="18" cy="16" r="3"/>
+            </svg>`,
+        6: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 10v3M6 6v11M10 3v18M14 8v7M18 5v13M22 10v3"/>
+            </svg>`,
+        7: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="8" cy="18" r="4"/>
+              <path d="M12 18V2l7 4"/>
+            </svg>`,
+        8: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 8.5a6.5 6.5 0 1 1 13 0c0 6-6.5 10-6.5 15.5 0-5.5-6.5-9.5-6.5-15.5Z"/>
+              <path d="M15 8.5a2.5 2.5 0 0 0-5 0"/>
+            </svg>`,
+        9: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/>
+              <path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/>
+              <path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/>
+            </svg>`,
+        10: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+               <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+             </svg>`,
+        11: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+               <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+               <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+             </svg>`,
+        12: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+               <circle cx="12" cy="12" r="10"/>
+               <circle cx="12" cy="12" r="6"/>
+               <circle cx="12" cy="12" r="2"/>
+             </svg>`
+      };
+
+      // Cabeçalho da seção com cores diferenciadas e ícones SVG
+      const sectionHeader = (number: number, title: string) => {
         const colors = sectionColors[number] || sectionColors[1];
+        const icon = sectionIcons[number] || sectionIcons[1];
         return `
           <div style="background: ${colors.gradient}; color: white; padding: 10px 16px; border-radius: 10px 10px 0 0; display: flex; align-items: center; gap: 12px;">
-            <div style="background: ${colors.iconBg}; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 700;">
+            <div style="background: ${colors.iconBg}; padding: 8px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
               ${icon}
             </div>
             <span style="font-weight: 700; font-size: 13px; letter-spacing: 0.5px;">${number}. ${title}</span>
@@ -213,7 +265,7 @@ export const generateProfessionalAnamnesePDF = async (
 
               <!-- SEÇÃO 1: IDENTIFICAÇÃO E ENCAMINHAMENTO -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
-                ${sectionHeader(1, 'IDENTIFICAÇÃO E ENCAMINHAMENTO', '[ID]')}
+                ${sectionHeader(1, 'IDENTIFICAÇÃO E ENCAMINHAMENTO')}
                 ${sectionContainer(1, `
                   ${renderTextField('Profissional Encaminhador', 'referral_professional')}
                   ${renderTextField('Demanda Clínica Principal', 'main_clinical_demand')}
@@ -224,7 +276,7 @@ export const generateProfessionalAnamnesePDF = async (
 
               <!-- SEÇÃO 2: HISTÓRICO CLÍNICO E MÉDICO -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
-                ${sectionHeader(2, 'HISTÓRICO CLÍNICO E MÉDICO', '[HC]')}
+                ${sectionHeader(2, 'HISTÓRICO CLÍNICO E MÉDICO')}
                 ${sectionContainer(2, `
                   <div style="margin-bottom: 16px;">
                     <div style="font-weight: 600; font-size: 11px; color: #0f766e; margin-bottom: 10px; text-transform: uppercase;">Diagnósticos / Condições</div>
@@ -249,7 +301,7 @@ export const generateProfessionalAnamnesePDF = async (
 
               <!-- SEÇÃO 3: MEDICAÇÃO EM USO -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
-                ${sectionHeader(3, 'MEDICAÇÃO EM USO', '[MED]')}
+                ${sectionHeader(3, 'MEDICAÇÃO EM USO')}
                 ${sectionContainer(3, `
                   ${renderTextField('Medicações Atuais', 'current_medication')}
                   ${renderTextField('Horários e Dosagens', 'medication_schedule')}
@@ -259,7 +311,7 @@ export const generateProfessionalAnamnesePDF = async (
 
               <!-- SEÇÃO 4: TERAPIAS E ACOMPANHAMENTOS -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
-                ${sectionHeader(4, 'TERAPIAS E ACOMPANHAMENTOS', '[TER]')}
+                ${sectionHeader(4, 'TERAPIAS E ACOMPANHAMENTOS')}
                 ${sectionContainer(4, `
                   <div style="margin-bottom: 16px;">
                     <div style="font-weight: 600; font-size: 11px; color: #0f766e; margin-bottom: 10px; text-transform: uppercase;">Acompanhamentos em Andamento</div>
@@ -283,7 +335,7 @@ export const generateProfessionalAnamnesePDF = async (
 
               <!-- SEÇÃO 5: PERFIL MUSICAL DO PACIENTE -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
-                ${sectionHeader(5, 'PERFIL MUSICAL DO PACIENTE', '♪')}
+                ${sectionHeader(5, 'PERFIL MUSICAL DO PACIENTE')}
                 ${sectionContainer(5, `
                   <div style="margin-bottom: 16px;">
                     <div style="font-weight: 600; font-size: 11px; color: #0f766e; margin-bottom: 10px; text-transform: uppercase;">Experiências Musicais</div>
@@ -317,7 +369,7 @@ export const generateProfessionalAnamnesePDF = async (
 
               <!-- SEÇÃO 6: IDENTIDADE SONORA (ISO) -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
-                ${sectionHeader(6, 'IDENTIDADE SONORA (ISO)', '[ISO]')}
+                ${sectionHeader(6, 'IDENTIDADE SONORA (ISO)')}
                 ${sectionContainer(6, `
                   <div style="background: linear-gradient(135deg, #f0fdfa, #ecfeff); padding: 12px; border-radius: 8px; border-left: 4px solid #14b8a6; margin-bottom: 16px;">
                     <span style="font-size: 11px; color: #0f766e; font-style: italic;">
@@ -336,7 +388,7 @@ export const generateProfessionalAnamnesePDF = async (
 
               <!-- SEÇÃO 7: COMPORTAMENTO MUSICAL OBSERVADO -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
-                ${sectionHeader(7, 'COMPORTAMENTO MUSICAL OBSERVADO', '♫')}
+                ${sectionHeader(7, 'COMPORTAMENTO MUSICAL OBSERVADO')}
                 ${sectionContainer(7, `
                   <div style="margin-bottom: 16px;">
                     <div style="font-weight: 600; font-size: 11px; color: #0f766e; margin-bottom: 10px; text-transform: uppercase;">Comportamentos Observados</div>
@@ -356,7 +408,7 @@ export const generateProfessionalAnamnesePDF = async (
 
               <!-- SEÇÃO 8: PROCESSAMENTO AUDITIVO E SENSORIAL -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
-                ${sectionHeader(8, 'PROCESSAMENTO AUDITIVO E SENSORIAL', '[AUD]')}
+                ${sectionHeader(8, 'PROCESSAMENTO AUDITIVO E SENSORIAL')}
                 ${sectionContainer(8, `
                   <div style="margin-bottom: 16px;">
                     <div style="font-weight: 600; font-size: 11px; color: #0f766e; margin-bottom: 10px; text-transform: uppercase;">Características Auditivas</div>
@@ -377,7 +429,7 @@ export const generateProfessionalAnamnesePDF = async (
 
               <!-- SEÇÃO 9: DESENVOLVIMENTO NEUROPSICOMOTOR -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
-                ${sectionHeader(9, 'DESENVOLVIMENTO NEUROPSICOMOTOR', '[NPM]')}
+                ${sectionHeader(9, 'DESENVOLVIMENTO NEUROPSICOMOTOR')}
                 ${sectionContainer(9, `
                   <div style="margin-bottom: 16px;">
                     <div style="font-weight: 600; font-size: 11px; color: #0f766e; margin-bottom: 10px; text-transform: uppercase;">Marcos Motores</div>
@@ -406,7 +458,7 @@ export const generateProfessionalAnamnesePDF = async (
 
               <!-- SEÇÃO 10: ASPECTOS COMPORTAMENTAIS E EMOCIONAIS -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
-                ${sectionHeader(10, 'ASPECTOS COMPORTAMENTAIS E EMOCIONAIS', '[EMO]')}
+                ${sectionHeader(10, 'ASPECTOS COMPORTAMENTAIS E EMOCIONAIS')}
                 ${sectionContainer(10, `
                   <div style="margin-bottom: 16px;">
                     <div style="font-weight: 600; font-size: 11px; color: #0f766e; margin-bottom: 10px; text-transform: uppercase;">Comportamento e Interação</div>
@@ -436,7 +488,7 @@ export const generateProfessionalAnamnesePDF = async (
 
               <!-- SEÇÃO 11: CONTEXTO SOCIAL E ESCOLAR -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
-                ${sectionHeader(11, 'CONTEXTO SOCIAL E ESCOLAR', '[ESC]')}
+                ${sectionHeader(11, 'CONTEXTO SOCIAL E ESCOLAR')}
                 ${sectionContainer(11, `
                   ${renderTextField('Situação Escolar', 'school_enrollment')}
                   ${renderTextField('Adaptação Escolar', 'school_adaptation')}
@@ -447,7 +499,7 @@ export const generateProfessionalAnamnesePDF = async (
 
               <!-- SEÇÃO 12: OBJETIVOS TERAPÊUTICOS -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
-                ${sectionHeader(12, 'OBJETIVOS TERAPÊUTICOS', '[OBJ]')}
+                ${sectionHeader(12, 'OBJETIVOS TERAPÊUTICOS')}
                 ${sectionContainer(12, `
                   <div style="background: linear-gradient(135deg, #f0fdfa, #ecfeff); padding: 12px; border-radius: 8px; border-left: 4px solid #14b8a6; margin-bottom: 16px;">
                     <span style="font-size: 11px; color: #0f766e; font-style: italic;">
