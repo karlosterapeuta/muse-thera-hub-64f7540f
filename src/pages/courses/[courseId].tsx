@@ -20,12 +20,42 @@ export default function CoursePlayerPage() {
   const isMobile = useIsMobile();
   const [currentLesson, setCurrentLesson] = useState<CourseLesson | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isCreatorOfCourse, setIsCreatorOfCourse] = useState<boolean | null>(null);
 
   const { data: isAdmin, isLoading: adminLoading } = useAdmin();
   const { data: course, isLoading: courseLoading } = useCourse(courseId);
   const { data: progress = [], isLoading: progressLoading } = useCourseProgress(courseId);
   const markComplete = useMarkLessonComplete();
   const viewTracked = useRef(false);
+
+  // Check if current user is the creator of this course
+  useEffect(() => {
+    const checkCreatorAccess = async () => {
+      if (!course) {
+        setIsCreatorOfCourse(false);
+        return;
+      }
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setIsCreatorOfCourse(false);
+        return;
+      }
+      
+      // Check if user is the creator of this specific course
+      const { data: creator } = await supabase
+        .from('course_creators')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .single();
+      
+      // Check if creator's id matches course's creator_id
+      setIsCreatorOfCourse(creator?.id === course.creator_id);
+    };
+    
+    checkCreatorAccess();
+  }, [course]);
 
   // Track course view (once per session)
   useEffect(() => {
@@ -95,7 +125,7 @@ export default function CoursePlayerPage() {
     setSidebarOpen(false);
   };
 
-  if (adminLoading || courseLoading || progressLoading) {
+  if (adminLoading || courseLoading || progressLoading || isCreatorOfCourse === null) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
@@ -103,8 +133,8 @@ export default function CoursePlayerPage() {
     );
   }
 
-  // Block non-admin users
-  if (!isAdmin) {
+  // Block users who are neither admin nor the course creator
+  if (!isAdmin && !isCreatorOfCourse) {
     return <CourseAccessRestricted />;
   }
 
