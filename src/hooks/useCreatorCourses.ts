@@ -38,6 +38,32 @@ export interface CreatorLesson {
   is_free_preview: boolean;
 }
 
+// Helper function to call the creator-operations edge function
+const callCreatorOperation = async (operation: string, params: Record<string, any>) => {
+  const creatorId = localStorage.getItem("creatorId");
+  const creatorToken = localStorage.getItem("creatorToken");
+
+  if (!creatorId || !creatorToken) {
+    throw new Error("Não autenticado como criador");
+  }
+
+  const response = await supabase.functions.invoke("creator-operations", {
+    body: {
+      operation,
+      creatorId,
+      creatorToken,
+      ...params,
+    },
+  });
+
+  if (response.error) {
+    console.error("Edge function error:", response.error);
+    throw new Error(response.error.message || "Erro na operação");
+  }
+
+  return response.data;
+};
+
 export function useCreatorCourses(creatorId: string | null) {
   const [courses, setCourses] = useState<CreatorCourse[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -113,7 +139,7 @@ export function useCreatorCourses(creatorId: string | null) {
     }
   }, [creatorId]);
 
-  // Course CRUD
+  // Course CRUD - Using Edge Function to bypass RLS
   const createCourse = async (data: {
     title: string;
     description?: string;
@@ -123,24 +149,17 @@ export function useCreatorCourses(creatorId: string | null) {
     if (!creatorId) return null;
 
     try {
-      const { data: course, error } = await supabase
-        .from("courses")
-        .insert({
-          ...data,
-          creator_id: creatorId,
-          is_published: false,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      toast.success("Curso criado com sucesso!");
-      await loadCourses();
-      return course;
-    } catch (error) {
+      const result = await callCreatorOperation("createCourse", data);
+      
+      if (result?.course) {
+        toast.success("Curso criado com sucesso!");
+        await loadCourses();
+        return result.course;
+      }
+      return null;
+    } catch (error: any) {
       console.error("Error creating course:", error);
-      toast.error("Erro ao criar curso");
+      toast.error(error.message || "Erro ao criar curso");
       return null;
     }
   };
@@ -201,33 +220,26 @@ export function useCreatorCourses(creatorId: string | null) {
     }
   };
 
-  // Module CRUD
+  // Module CRUD - Using Edge Function to bypass RLS
   const createModule = async (courseId: string, title: string) => {
     try {
-      // Fetch module count directly from database to avoid race conditions
-      const { count, error: countError } = await supabase
-        .from("course_modules")
-        .select("*", { count: "exact", head: true })
-        .eq("course_id", courseId);
-
-      if (countError) throw countError;
-
-      const orderIndex = count || 0;
-
-      const { data: module, error } = await supabase.from("course_modules").insert({
-        course_id: courseId,
+      console.log("📦 Creating module via Edge Function:", { courseId, title });
+      
+      const result = await callCreatorOperation("createModule", {
+        courseId,
         title,
-        order_index: orderIndex,
-      }).select().single();
+      });
 
-      if (error) throw error;
-
-      toast.success("Módulo criado!");
-      await loadCourses();
-      return module;
-    } catch (error) {
+      if (result?.module) {
+        console.log("✅ Module created:", result.module);
+        toast.success("Módulo criado!");
+        await loadCourses();
+        return result.module;
+      }
+      return null;
+    } catch (error: any) {
       console.error("Error creating module:", error);
-      toast.error("Erro ao criar módulo");
+      toast.error(error.message || "Erro ao criar módulo");
       return null;
     }
   };
@@ -269,7 +281,7 @@ export function useCreatorCourses(creatorId: string | null) {
     }
   };
 
-  // Lesson CRUD
+  // Lesson CRUD - Using Edge Function to bypass RLS
   const createLesson = async (
     moduleId: string,
     data: {
@@ -281,53 +293,21 @@ export function useCreatorCourses(creatorId: string | null) {
     }
   ) => {
     try {
-      // Fetch lesson count directly from database to avoid race conditions
-      const { count, error: countError } = await supabase
-        .from("course_lessons")
-        .select("*", { count: "exact", head: true })
-        .eq("module_id", moduleId);
-
-      if (countError) throw countError;
-
-      const orderIndex = count || 0;
-
-      // Fetch module info to get course details
-      const { data: moduleData, error: moduleError } = await supabase
-        .from("course_modules")
-        .select("course_id, courses(id, thumbnail_url)")
-        .eq("id", moduleId)
-        .single();
-
-      if (moduleError) throw moduleError;
-
-      const courseId = moduleData?.course_id;
-      const courseThumbnail = (moduleData?.courses as any)?.thumbnail_url;
-
-      const { error } = await supabase.from("course_lessons").insert({
+      console.log("📦 Creating lesson via Edge Function:", { moduleId, ...data });
+      
+      const result = await callCreatorOperation("createLesson", {
+        moduleId,
         ...data,
-        module_id: moduleId,
-        order_index: orderIndex,
       });
 
-      if (error) throw error;
-
-      // If course has no thumbnail, generate from this video
-      if (courseId && !courseThumbnail && data.youtube_url) {
-        const videoId = getYouTubeId(data.youtube_url);
-        if (videoId) {
-          const thumbnailUrl = getYouTubeThumbnail(videoId, 'maxres');
-          await supabase
-            .from("courses")
-            .update({ thumbnail_url: thumbnailUrl })
-            .eq("id", courseId);
-        }
+      if (result?.lesson) {
+        console.log("✅ Lesson created:", result.lesson);
+        toast.success("Aula criada!");
+        await loadCourses();
       }
-
-      toast.success("Aula criada!");
-      await loadCourses();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating lesson:", error);
-      toast.error("Erro ao criar aula");
+      toast.error(error.message || "Erro ao criar aula");
     }
   };
 

@@ -31,6 +31,9 @@ verify_jwt = true
 [functions.generate-pix-payment]
 verify_jwt = true
 
+[functions.creator-operations]
+verify_jwt = false
+
 # Add rate limiting and other security settings for edge functions
 [functions]
 timeout = 120
