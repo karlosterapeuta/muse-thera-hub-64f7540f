@@ -313,7 +313,7 @@ export function CreatorCourseManager({ creatorId }: CreatorCourseManagerProps) {
                         onClick={(e) => {
                           e.stopPropagation();
                           if (hasLessons) {
-                            navigate(`/courses/${course.id}`);
+                            navigate(`/creator-course-preview/${course.id}`);
                           } else {
                             toast.info("Adicione módulos e aulas antes de assistir o curso");
                           }

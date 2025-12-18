@@ -81,6 +81,7 @@ import BackupPage from "./pages/backup";
 import CreatorLoginPage from "./pages/creator/login";
 import CreatorRegisterPage from "./pages/creator/register";
 import CreatorDashboardPage from "./pages/creator/dashboard";
+import CreatorCoursePreview from "./pages/creator/course-preview";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -139,6 +140,7 @@ const App = () => {
           <Route path="/creator-login" element={<CreatorLoginPage />} />
           <Route path="/creator-register" element={<CreatorRegisterPage />} />
           <Route path="/creator-dashboard" element={<CreatorDashboardPage />} />
+          <Route path="/creator-course-preview/:courseId" element={<CreatorCoursePreview />} />
           <Route path="/" element={<Layout />}>
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
