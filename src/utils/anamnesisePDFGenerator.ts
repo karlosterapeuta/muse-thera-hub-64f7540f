@@ -109,7 +109,7 @@ export const generateProfessionalAnamnesePDF = async (
         return `
           <div style="display: flex; flex-wrap: wrap; gap: 8px;">
             ${checked.map(item => `
-              <div style="background: linear-gradient(135deg, #ccfbf1, #f0fdfa); border: 1px solid #14b8a6; border-radius: 20px; padding: 6px 14px; font-size: 10px; color: #0f766e; font-weight: 500; display: inline-flex; align-items: center; gap: 6px;">
+              <div style="background-color: #ccfbf1; border: 1px solid #14b8a6; border-radius: 20px; padding: 6px 14px; font-size: 10px; color: #0f766e; font-weight: 500; display: inline-block; min-width: 50px; min-height: 24px; line-height: 12px;">
                 <span style="color: #14b8a6; font-weight: bold;">✓</span>
                 ${item.label}
               </div>
@@ -643,14 +643,14 @@ export const generateProfessionalAnamnesePDF = async (
                   <div style="display: flex; flex-direction: column; align-items: center;">
                     ${professionalPhotoBase64 ? `
                     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                      <div style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 3px solid #14b8a6; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; box-shadow: 0 0 0 8px rgba(20, 184, 166, 0.1), 0 0 0 12px rgba(20, 184, 166, 0.05), 0 6px 16px rgba(20, 184, 166, 0.2);">
+                      <div style="width: 150px; height: 150px; border-radius: 50%; background-color: #f0fdfa; border: 3px solid #14b8a6; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; box-shadow: 0 0 0 8px rgba(20, 184, 166, 0.1), 0 0 0 12px rgba(20, 184, 166, 0.05), 0 6px 16px rgba(20, 184, 166, 0.2);">
                         <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; border: 2px solid #14b8a6; margin-bottom: 8px;">
                           <img src="${professionalPhotoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
                         </div>
                         <div style="font-size: 11px; font-weight: bold; color: #0f766e; text-align: center; margin-bottom: 4px; line-height: 1.1;">
                           ${professional.name || 'Profissional'}
                         </div>
-                        <div style="width: 50px; height: 1px; background: linear-gradient(to right, transparent, #14b8a6, transparent); margin-bottom: 4px;"></div>
+                        <div style="width: 50px; height: 1px; background-color: #14b8a6; margin-bottom: 4px;"></div>
                         <div style="background-color: #ccfbf1; border: 1px solid #99f6e4; border-radius: 12px; padding: 2px 8px;">
                           <span style="font-size: 8px; color: #0f766e; font-weight: 600;">Musicoterapeuta</span>
                         </div>
@@ -661,10 +661,8 @@ export const generateProfessionalAnamnesePDF = async (
                         ` : ''}
                       </div>
                     </div>
-                    <div style="margin-top: 12px; background: linear-gradient(135deg, #0d9488, #0891b2); color: white; padding: 6px 16px; border-radius: 16px; font-size: 9px; font-weight: 600; display: flex; align-items: center; gap: 4px; box-shadow: 0 3px 8px rgba(13,148,136,0.3);">
-                      <span>✔</span>
-                      <span>MuseTera Verified</span>
-                      <span>♪</span>
+                    <div style="margin-top: 12px; background-color: #0d9488; color: white; padding: 6px 16px; border-radius: 16px; font-size: 9px; font-weight: 600; display: inline-block; min-width: 120px; min-height: 24px; text-align: center; box-shadow: 0 3px 8px rgba(13,148,136,0.3);">
+                      MuseTera Verified
                     </div>
                     ` : `
                     <div style="width: 150px; height: 150px; border: 2px dashed #14b8a6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #6b7280; background-color: #f0fdfa;">
@@ -708,8 +706,11 @@ export const generateProfessionalAnamnesePDF = async (
       html2canvas: {
         scale: 1.5,
         useCORS: true,
-        allowTaint: false,
-        backgroundColor: '#ffffff'
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        imageTimeout: 15000,
+        removeContainer: true
       },
     };
 
