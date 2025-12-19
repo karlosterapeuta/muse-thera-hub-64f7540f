@@ -22,7 +22,7 @@ export function NetflixCourseCard({ course, onClick, onInfoClick, onPurchaseClic
   return (
     <div
       className={cn(
-        "relative flex-shrink-0 transition-all duration-300 ease-out cursor-pointer",
+        "relative flex-shrink-0 transition-all duration-300 ease-out cursor-pointer group",
         "w-[140px] sm:w-[180px] md:w-[220px] lg:w-[260px] xl:w-[280px]",
         isHovered && "z-50 scale-110 sm:scale-125 md:scale-150"
       )}
@@ -42,7 +42,7 @@ export function NetflixCourseCard({ course, onClick, onInfoClick, onPurchaseClic
             <img
               src={course.thumbnail_url}
               alt={course.title}
-              className="w-full h-full object-cover transition-transform duration-300"
+              className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
               loading="lazy"
             />
           ) : (
