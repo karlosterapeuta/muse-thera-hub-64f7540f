@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,8 @@ import {
   LayoutDashboard,
   GraduationCap,
   PieChart,
-  Building2
+  Building2,
+  BarChart3
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
@@ -28,6 +29,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CreatorCourseManager } from "@/components/creator/CreatorCourseManager";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 
 interface DashboardStats {
   totalRevenue: number;
@@ -213,6 +215,34 @@ export default function CreatorDashboardPage() {
   const filteredPurchases = selectedCourse === "all" 
     ? purchases 
     : purchases.filter(p => p.course_id === selectedCourse);
+
+  // Process sales data by month for chart
+  const salesByMonth = useMemo(() => {
+    const monthlyData: { [key: string]: { sales: number; revenue: number; month: Date } } = {};
+    
+    purchases.forEach(purchase => {
+      if (purchase.payment_status === 'paid' && purchase.created_at) {
+        const date = new Date(purchase.created_at);
+        const monthKey = format(date, 'yyyy-MM');
+        
+        if (!monthlyData[monthKey]) {
+          monthlyData[monthKey] = { sales: 0, revenue: 0, month: date };
+        }
+        monthlyData[monthKey].sales++;
+        monthlyData[monthKey].revenue += (purchase.creator_amount_cents || 0);
+      }
+    });
+    
+    // Convert to array, sort by date, and take last 6 months
+    return Object.entries(monthlyData)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .slice(-6)
+      .map(([_, data]) => ({
+        name: format(data.month, 'MMM/yy', { locale: ptBR }),
+        vendas: data.sales,
+        receita: data.revenue / 100
+      }));
+  }, [purchases]);
 
   if (isLoading) {
     return (
@@ -418,6 +448,82 @@ export default function CreatorDashboardPage() {
                   </div>
                 </div>
               </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Monthly Sales Evolution Chart */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5 text-primary" />
+              Evolução de Vendas
+            </CardTitle>
+            <CardDescription>
+              Vendas confirmadas nos últimos meses
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {salesByMonth.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-30" />
+                <p>Ainda não há vendas para exibir.</p>
+                <p className="text-sm">Quando você fizer sua primeira venda, ela aparecerá aqui!</p>
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={salesByMonth} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                  <XAxis 
+                    dataKey="name" 
+                    tick={{ fontSize: 12 }}
+                    tickLine={false}
+                  />
+                  <YAxis 
+                    yAxisId="left" 
+                    orientation="left" 
+                    tick={{ fontSize: 12 }}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis 
+                    yAxisId="right" 
+                    orientation="right" 
+                    tick={{ fontSize: 12 }}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => `R$${value}`}
+                  />
+                  <Tooltip 
+                    formatter={(value: number, name: string) => {
+                      if (name === 'receita') return [`R$ ${value.toFixed(2)}`, 'Sua Receita'];
+                      return [value, 'Vendas'];
+                    }}
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px'
+                    }}
+                  />
+                  <Legend 
+                    formatter={(value) => value === 'vendas' ? 'Quantidade de Vendas' : 'Sua Receita (R$)'}
+                  />
+                  <Bar 
+                    yAxisId="left" 
+                    dataKey="vendas" 
+                    fill="#10b981" 
+                    name="vendas"
+                    radius={[4, 4, 0, 0]}
+                  />
+                  <Bar 
+                    yAxisId="right" 
+                    dataKey="receita" 
+                    fill="#3b82f6" 
+                    name="receita"
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
             )}
           </CardContent>
         </Card>
