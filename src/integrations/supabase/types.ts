@@ -490,9 +490,13 @@ export type Database = {
       }
       course_creators: {
         Row: {
+          asaas_account_status: string | null
+          asaas_customer_id: string | null
+          asaas_wallet_id: string | null
           avatar_url: string | null
           bio: string | null
           commission_percentage: number | null
+          cpf_cnpj: string | null
           created_at: string | null
           email: string
           id: string
@@ -506,9 +510,13 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          asaas_account_status?: string | null
+          asaas_customer_id?: string | null
+          asaas_wallet_id?: string | null
           avatar_url?: string | null
           bio?: string | null
           commission_percentage?: number | null
+          cpf_cnpj?: string | null
           created_at?: string | null
           email: string
           id?: string
@@ -522,9 +530,13 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          asaas_account_status?: string | null
+          asaas_customer_id?: string | null
+          asaas_wallet_id?: string | null
           avatar_url?: string | null
           bio?: string | null
           commission_percentage?: number | null
+          cpf_cnpj?: string | null
           created_at?: string | null
           email?: string
           id?: string
@@ -627,6 +639,9 @@ export type Database = {
       course_purchases: {
         Row: {
           amount_cents: number
+          asaas_payment_id: string | null
+          asaas_pix_copy_paste: string | null
+          asaas_pix_qr_code: string | null
           buyer_email: string | null
           buyer_name: string | null
           confirmed_by_creator_at: string | null
@@ -647,6 +662,9 @@ export type Database = {
         }
         Insert: {
           amount_cents: number
+          asaas_payment_id?: string | null
+          asaas_pix_copy_paste?: string | null
+          asaas_pix_qr_code?: string | null
           buyer_email?: string | null
           buyer_name?: string | null
           confirmed_by_creator_at?: string | null
@@ -667,6 +685,9 @@ export type Database = {
         }
         Update: {
           amount_cents?: number
+          asaas_payment_id?: string | null
+          asaas_pix_copy_paste?: string | null
+          asaas_pix_qr_code?: string | null
           buyer_email?: string | null
           buyer_name?: string | null
           confirmed_by_creator_at?: string | null

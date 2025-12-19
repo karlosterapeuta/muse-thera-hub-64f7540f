@@ -7,7 +7,6 @@ import { Copy, Check, Clock, QrCode, AlertCircle, Loader2, CheckCircle } from "l
 import { CourseWithProgress, formatPrice, CoursePurchase } from "@/types/courses";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import QRCode from "qrcode";
 
 interface CoursePurchaseModalProps {
   course: CourseWithProgress | null;
@@ -24,7 +23,8 @@ export function CoursePurchaseModal({
 }: CoursePurchaseModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [purchase, setPurchase] = useState<CoursePurchase | null>(null);
-  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
+  const [pixQrCode, setPixQrCode] = useState<string>("");
+  const [pixCode, setPixCode] = useState<string>("");
   const [copied, setCopied] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number>(0);
 
@@ -53,6 +53,27 @@ export function CoursePurchaseModal({
     return () => clearInterval(interval);
   }, [purchase?.pix_expiration]);
 
+  // Poll for payment status
+  useEffect(() => {
+    if (!purchase?.id || purchase.payment_status === 'paid') return;
+
+    const interval = setInterval(async () => {
+      const { data, error } = await supabase
+        .from('course_purchases')
+        .select('payment_status')
+        .eq('id', purchase.id)
+        .single();
+
+      if (!error && data?.payment_status === 'paid') {
+        toast.success("Pagamento confirmado! Acesso liberado.");
+        onSuccess();
+        handleClose();
+      }
+    }, 5000); // Check every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [purchase?.id, purchase?.payment_status]);
+
   const generatePixPayment = async () => {
     if (!course) return;
     
@@ -66,7 +87,6 @@ export function CoursePurchaseModal({
 
       // Check if course is free
       if (!course.price_cents || course.price_cents === 0) {
-        // Grant immediate access for free courses
         const { error: accessError } = await supabase
           .from('course_access')
           .insert({
@@ -91,8 +111,8 @@ export function CoursePurchaseModal({
         .eq('id', user.id)
         .single();
 
-      // Call edge function to generate PIX
-      const { data, error } = await supabase.functions.invoke('generate-pix-payment', {
+      // Call Asaas edge function to generate PIX
+      const { data, error } = await supabase.functions.invoke('asaas-create-pix-payment', {
         body: {
           courseId: course.id,
           userId: user.id,
@@ -103,36 +123,38 @@ export function CoursePurchaseModal({
 
       if (error) throw error;
 
-      if (data.free) {
+      if (data.isFree) {
         toast.success("Acesso liberado! Aproveite o curso.");
         onSuccess();
         return;
       }
 
-      // Generate QR code from PIX code
-      const qrDataUrl = await QRCode.toDataURL(data.pixCode, {
-        width: 256,
-        margin: 2,
-        color: { dark: '#000000', light: '#ffffff' }
-      });
+      if (!data.success) {
+        throw new Error(data.error || 'Erro ao gerar pagamento');
+      }
 
       setPurchase(data.purchase as CoursePurchase);
-      setQrCodeDataUrl(qrDataUrl);
-      setTimeLeft(30 * 60); // 30 minutes in seconds
+      setPixQrCode(data.pixQrCode);
+      setPixCode(data.pixCode);
+      
+      // Calculate time left from expiration
+      const expiration = new Date(data.expiresAt).getTime();
+      const now = Date.now();
+      setTimeLeft(Math.max(0, Math.floor((expiration - now) / 1000)));
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating PIX:', error);
-      toast.error("Erro ao gerar pagamento PIX");
+      toast.error(error.message || "Erro ao gerar pagamento PIX");
     } finally {
       setIsLoading(false);
     }
   };
 
   const copyToClipboard = async () => {
-    if (!purchase?.pix_code) return;
+    if (!pixCode) return;
     
     try {
-      await navigator.clipboard.writeText(purchase.pix_code);
+      await navigator.clipboard.writeText(pixCode);
       setCopied(true);
       toast.success("Código PIX copiado!");
       setTimeout(() => setCopied(false), 3000);
@@ -142,14 +164,20 @@ export function CoursePurchaseModal({
   };
 
   const formatTimeLeft = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
+    const hours = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
+    
+    if (hours > 0) {
+      return `${hours}h ${mins.toString().padStart(2, '0')}m`;
+    }
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
   const handleClose = () => {
     setPurchase(null);
-    setQrCodeDataUrl("");
+    setPixQrCode("");
+    setPixCode("");
     onClose();
   };
 
@@ -200,18 +228,22 @@ export function CoursePurchaseModal({
             <div className="flex items-center justify-center gap-2 text-sm">
               <Clock className="h-4 w-4 text-muted-foreground" />
               <span className="text-muted-foreground">Expira em:</span>
-              <Badge variant={timeLeft < 300 ? "destructive" : "secondary"}>
+              <Badge variant={timeLeft < 3600 ? "destructive" : "secondary"}>
                 {formatTimeLeft(timeLeft)}
               </Badge>
             </div>
 
             <Separator />
 
-            {/* QR Code */}
+            {/* QR Code from Asaas (base64 image) */}
             <div className="flex flex-col items-center gap-4">
               <div className="bg-white p-4 rounded-lg">
-                {qrCodeDataUrl && (
-                  <img src={qrCodeDataUrl} alt="QR Code PIX" className="w-48 h-48" />
+                {pixQrCode && (
+                  <img 
+                    src={`data:image/png;base64,${pixQrCode}`} 
+                    alt="QR Code PIX" 
+                    className="w-48 h-48" 
+                  />
                 )}
               </div>
               
@@ -227,7 +259,7 @@ export function CoursePurchaseModal({
               <p className="text-sm font-medium">Ou copie o código PIX:</p>
               <div className="flex gap-2">
                 <code className="flex-1 bg-muted p-2 rounded text-xs break-all max-h-20 overflow-y-auto">
-                  {purchase.pix_code}
+                  {pixCode}
                 </code>
                 <Button
                   variant="outline"
@@ -244,13 +276,13 @@ export function CoursePurchaseModal({
               </div>
             </div>
 
-            {/* Info */}
-            <div className="flex items-start gap-2 bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
-              <AlertCircle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+            {/* Info - agora com confirmação automática */}
+            <div className="flex items-start gap-2 bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3">
+              <CheckCircle className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
               <div className="text-sm">
-                <p className="font-medium text-amber-600">Pagamento Manual</p>
+                <p className="font-medium text-emerald-600">Confirmação Automática</p>
                 <p className="text-muted-foreground">
-                  Após realizar o pagamento, aguarde a confirmação do criador do curso para liberar seu acesso.
+                  Após realizar o pagamento, seu acesso será liberado automaticamente em poucos segundos.
                 </p>
               </div>
             </div>

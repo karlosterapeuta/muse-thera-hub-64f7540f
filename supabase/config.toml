@@ -34,6 +34,19 @@ verify_jwt = true
 [functions.creator-operations]
 verify_jwt = false
 
+# Asaas integration functions
+[functions.asaas-create-subaccount]
+verify_jwt = true
+
+[functions.asaas-create-pix-payment]
+verify_jwt = true
+
+[functions.asaas-webhook]
+verify_jwt = false
+
+[functions.asaas-get-balance]
+verify_jwt = true
+
 # Add rate limiting and other security settings for edge functions
 [functions]
 timeout = 120
