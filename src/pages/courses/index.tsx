@@ -102,6 +102,11 @@ export default function CoursesPage() {
     setShowPreviewModal(true);
   };
 
+  const handleCoursePurchase = (course: CourseWithProgress) => {
+    setSelectedCourse(course);
+    setShowPurchaseModal(true);
+  };
+
   const handlePurchaseSuccess = () => {
     setShowPurchaseModal(false);
     refetch();
@@ -173,6 +178,7 @@ export default function CoursesPage() {
             course={featuredCourse}
             onPlay={() => handleCourseClick(featuredCourse)}
             onInfo={() => handleCourseInfo(featuredCourse)}
+            onPurchase={() => handleCoursePurchase(featuredCourse)}
           />
         )}
 
@@ -184,6 +190,7 @@ export default function CoursesPage() {
               courses={coursesByCategory.continueWatching}
               onCourseClick={handleCourseClick}
               onCourseInfo={handleCourseInfo}
+              onCoursePurchase={handleCoursePurchase}
             />
           )}
 
@@ -193,6 +200,7 @@ export default function CoursesPage() {
               courses={coursesByCategory.completed}
               onCourseClick={handleCourseClick}
               onCourseInfo={handleCourseInfo}
+              onCoursePurchase={handleCoursePurchase}
             />
           )}
 
@@ -202,6 +210,7 @@ export default function CoursesPage() {
               courses={coursesByCategory.freeCourses}
               onCourseClick={handleCourseClick}
               onCourseInfo={handleCourseInfo}
+              onCoursePurchase={handleCoursePurchase}
             />
           )}
 
@@ -211,6 +220,7 @@ export default function CoursesPage() {
               courses={coursesByCategory.paidCourses}
               onCourseClick={handleCourseClick}
               onCourseInfo={handleCourseInfo}
+              onCoursePurchase={handleCoursePurchase}
             />
           )}
 

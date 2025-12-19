@@ -2,8 +2,9 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Play, X, Clock, Layers, BookOpen, User, ShoppingCart } from "lucide-react";
+import { Play, X, Clock, Layers, BookOpen, User } from "lucide-react";
 import { CourseWithProgress, formatDuration, formatPrice } from "@/types/courses";
+import { PurchaseButton } from "@/components/courses/PurchaseButton";
 
 interface CoursePreviewModalProps {
   course: CourseWithProgress | null;
@@ -57,23 +58,24 @@ export function CoursePreviewModal({
 
           {/* Play button overlay */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <Button
-              size="lg"
-              className="gap-2 bg-white text-black hover:bg-white/90 font-semibold rounded-full px-8"
-              onClick={hasAccess || isFree ? onPlay : onPurchase}
-            >
-              {hasAccess || isFree ? (
-                <>
-                  <Play className="h-6 w-6 fill-current" />
-                  {hasStarted ? "Continuar" : "Assistir"}
-                </>
-              ) : (
-                <>
-                  <ShoppingCart className="h-6 w-6" />
-                  Comprar {formatPrice(course.price_cents || 0)}
-                </>
-              )}
-            </Button>
+            {hasAccess || isFree ? (
+              <Button
+                size="lg"
+                className="gap-2 bg-white text-black hover:bg-white/90 font-semibold rounded-full px-8"
+                onClick={onPlay}
+              >
+                <Play className="h-6 w-6 fill-current" />
+                {hasStarted ? "Continuar" : "Assistir"}
+              </Button>
+            ) : (
+              <PurchaseButton
+                priceCents={course.price_cents || 0}
+                onClick={onPurchase}
+                size="lg"
+                variant="hero"
+                showIcon={true}
+              />
+            )}
           </div>
         </div>
 
@@ -154,10 +156,12 @@ export function CoursePreviewModal({
                 {hasStarted ? "Continuar assistindo" : "Começar curso"}
               </Button>
             ) : (
-              <Button className="flex-1 gap-2" onClick={onPurchase}>
-                <ShoppingCart className="h-4 w-4" />
-                Comprar por {formatPrice(course.price_cents || 0)}
-              </Button>
+              <PurchaseButton
+                priceCents={course.price_cents || 0}
+                onClick={onPurchase}
+                variant="card"
+                className="flex-1"
+              />
             )}
           </div>
         </div>

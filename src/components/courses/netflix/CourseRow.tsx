@@ -6,12 +6,13 @@ import { NetflixCourseCard } from "./NetflixCourseCard";
 
 interface CourseRowProps {
   title: string;
-  courses: CourseWithProgress[];
+  courses: (CourseWithProgress & { hasAccess?: boolean })[];
   onCourseClick: (course: CourseWithProgress) => void;
   onCourseInfo: (course: CourseWithProgress) => void;
+  onCoursePurchase?: (course: CourseWithProgress) => void;
 }
 
-export function CourseRow({ title, courses, onCourseClick, onCourseInfo }: CourseRowProps) {
+export function CourseRow({ title, courses, onCourseClick, onCourseInfo, onCoursePurchase }: CourseRowProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const scroll = (direction: 'left' | 'right') => {
@@ -55,6 +56,7 @@ export function CourseRow({ title, courses, onCourseClick, onCourseInfo }: Cours
               course={course}
               onClick={() => onCourseClick(course)}
               onInfoClick={() => onCourseInfo(course)}
+              onPurchaseClick={() => onCoursePurchase?.(course)}
             />
           ))}
         </div>
