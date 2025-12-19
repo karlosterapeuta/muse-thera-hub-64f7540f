@@ -149,7 +149,6 @@ export default function CoursesPage() {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-xl md:text-2xl font-bold text-primary">MuseTera Cursos</h1>
             
             {/* Search on desktop */}
             <div className="hidden md:block relative w-64">
