@@ -1,10 +1,21 @@
-import { Lock, BookOpen, ArrowLeft } from "lucide-react";
+import { Lock, BookOpen, ArrowLeft, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
+import { Course } from "@/types/courses";
 
-export function CourseAccessRestricted() {
+interface CourseAccessRestrictedProps {
+  course?: Course | null;
+  onPurchase?: () => void;
+}
+
+export function CourseAccessRestricted({ course, onPurchase }: CourseAccessRestrictedProps) {
   const navigate = useNavigate();
+  
+  const hasPrice = course?.price_cents && course.price_cents > 0;
+  const priceFormatted = hasPrice 
+    ? `R$ ${(course.price_cents / 100).toFixed(2).replace('.', ',')}`
+    : null;
   
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-muted/20">
@@ -21,35 +32,43 @@ export function CourseAccessRestricted() {
         
         {/* Badge */}
         <Badge variant="outline" className="mb-4 border-amber-500/50 text-amber-600">
-          🎓 Em Construção
+          🔒 Acesso Restrito
         </Badge>
         
         {/* Title */}
         <h1 className="text-2xl font-bold mb-3">
-          Área de Cursos
+          {course?.title || "Curso Bloqueado"}
         </h1>
         
         {/* Message */}
         <p className="text-muted-foreground mb-6">
-          Nossos cursos de musicoterapia estão sendo preparados com muito carinho. 
-          Em breve você terá acesso a conteúdos exclusivos para aprimorar sua prática profissional.
+          {hasPrice 
+            ? "Para acessar este curso, você precisa realizar a compra. Após o pagamento, o conteúdo será liberado automaticamente."
+            : "Você não tem permissão para acessar este curso."}
         </p>
         
-        {/* Stats teaser */}
-        <div className="flex justify-center gap-6 mb-8 text-sm text-muted-foreground">
-          <span className="flex items-center gap-1">
-            <Lock className="h-4 w-4" /> Módulos exclusivos
-          </span>
-          <span className="flex items-center gap-1">
-            <BookOpen className="h-4 w-4" /> Videoaulas
-          </span>
-        </div>
+        {/* Price display */}
+        {hasPrice && priceFormatted && (
+          <div className="mb-6">
+            <span className="text-3xl font-bold text-primary">{priceFormatted}</span>
+            <span className="text-muted-foreground ml-2">acesso vitalício</span>
+          </div>
+        )}
         
-        {/* Back Button */}
-        <Button onClick={() => navigate("/dashboard")} variant="outline" className="gap-2">
-          <ArrowLeft className="h-4 w-4" />
-          Voltar ao Dashboard
-        </Button>
+        {/* Action Buttons */}
+        <div className="flex flex-col gap-3">
+          {hasPrice && onPurchase && (
+            <Button onClick={onPurchase} className="gap-2 w-full">
+              <ShoppingCart className="h-4 w-4" />
+              Comprar Acesso
+            </Button>
+          )}
+          
+          <Button onClick={() => navigate("/courses")} variant="outline" className="gap-2 w-full">
+            <ArrowLeft className="h-4 w-4" />
+            Voltar para Cursos
+          </Button>
+        </div>
       </div>
     </div>
   );

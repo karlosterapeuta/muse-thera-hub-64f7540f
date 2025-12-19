@@ -7,10 +7,11 @@ import { CourseSidebar } from "@/components/courses/CourseSidebar";
 import { CoursePlayer } from "@/components/courses/CoursePlayer";
 import { useCourse } from "@/hooks/useCourses";
 import { useCourseProgress, useMarkLessonComplete } from "@/hooks/useCourseProgress";
-import { CourseLesson } from "@/types/courses";
+import { CourseLesson, CourseWithProgress } from "@/types/courses";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAdmin } from "@/hooks/use-admin";
 import { CourseAccessRestricted } from "@/components/courses/CourseAccessRestricted";
+import { CoursePurchaseModal } from "@/components/courses/netflix/CoursePurchaseModal";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -20,7 +21,8 @@ export default function CoursePlayerPage() {
   const isMobile = useIsMobile();
   const [currentLesson, setCurrentLesson] = useState<CourseLesson | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isCreatorOfCourse, setIsCreatorOfCourse] = useState<boolean | null>(null);
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+  const [purchaseModalOpen, setPurchaseModalOpen] = useState(false);
 
   const { data: isAdmin, isLoading: adminLoading } = useAdmin();
   const { data: course, isLoading: courseLoading } = useCourse(courseId);
@@ -28,34 +30,64 @@ export default function CoursePlayerPage() {
   const markComplete = useMarkLessonComplete();
   const viewTracked = useRef(false);
 
-  // Check if current user is the creator of this course
+  // Check if current user has access to this course
   useEffect(() => {
-    const checkCreatorAccess = async () => {
-      if (!course) {
-        setIsCreatorOfCourse(false);
+    const checkAccess = async () => {
+      if (!course || !courseId) {
+        setHasAccess(false);
         return;
       }
-      
+
+      // Admin always has access
+      if (isAdmin) {
+        setHasAccess(true);
+        return;
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setIsCreatorOfCourse(false);
+      
+      // Check if user is the creator of this course
+      if (user) {
+        const { data: creator } = await supabase
+          .from('course_creators')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('is_active', true)
+          .single();
+        
+        if (creator?.id === course.creator_id) {
+          setHasAccess(true);
+          return;
+        }
+      }
+
+      // Free course - everyone has access
+      if (!course.price_cents || course.price_cents === 0) {
+        setHasAccess(true);
         return;
       }
-      
-      // Check if user is the creator of this specific course
-      const { data: creator } = await supabase
-        .from('course_creators')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('is_active', true)
-        .single();
-      
-      // Check if creator's id matches course's creator_id
-      setIsCreatorOfCourse(creator?.id === course.creator_id);
+
+      // Check purchased access in course_access table
+      if (user) {
+        const { data: access } = await supabase
+          .from('course_access')
+          .select('id')
+          .eq('course_id', courseId)
+          .eq('user_id', user.id)
+          .eq('is_active', true)
+          .maybeSingle();
+        
+        if (access) {
+          setHasAccess(true);
+          return;
+        }
+      }
+
+      setHasAccess(false);
     };
     
-    checkCreatorAccess();
-  }, [course]);
+    checkAccess();
+  }, [course, courseId, isAdmin]);
 
   // Track course view (once per session)
   useEffect(() => {
@@ -66,7 +98,7 @@ export default function CoursePlayerPage() {
       
       supabase.from("course_views").insert({
         course_id: courseId,
-        user_id: null, // Anonymous tracking or add auth.uid() if needed
+        user_id: null,
         session_id: sessionId,
       }).then(() => {
         console.log("Course view tracked");
@@ -80,7 +112,6 @@ export default function CoursePlayerPage() {
   // Set initial lesson
   useEffect(() => {
     if (course && allLessons.length > 0 && !currentLesson) {
-      // Find last incomplete lesson or first lesson
       const completedIds = progress.filter(p => p.is_completed).map(p => p.lesson_id);
       const firstIncomplete = allLessons.find(l => !completedIds.includes(l.id));
       setCurrentLesson(firstIncomplete || allLessons[0]);
@@ -109,7 +140,6 @@ export default function CoursePlayerPage() {
       await markComplete.mutateAsync({ lessonId, courseId });
       toast.success("Aula marcada como concluída!");
       
-      // Auto-advance to next lesson if available
       if (canNavigateNext) {
         setTimeout(() => {
           handleNavigate("next");
@@ -125,7 +155,13 @@ export default function CoursePlayerPage() {
     setSidebarOpen(false);
   };
 
-  if (adminLoading || courseLoading || progressLoading || isCreatorOfCourse === null) {
+  const handlePurchaseSuccess = () => {
+    setPurchaseModalOpen(false);
+    setHasAccess(true);
+    toast.success("Acesso liberado! Aproveite o curso.");
+  };
+
+  if (adminLoading || courseLoading || progressLoading || hasAccess === null) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
@@ -133,9 +169,34 @@ export default function CoursePlayerPage() {
     );
   }
 
-  // Block users who are neither admin nor the course creator
-  if (!isAdmin && !isCreatorOfCourse) {
-    return <CourseAccessRestricted />;
+  // Block users without access
+  if (!hasAccess) {
+    // Convert Course to CourseWithProgress for the modal
+    const courseWithProgress: CourseWithProgress | null = course ? {
+      ...course,
+      totalLessons: allLessons.length,
+      completedLessons: 0,
+      progressPercentage: 0,
+      totalModules: course.modules?.length || 0,
+      totalDurationMinutes: allLessons.reduce((acc, l) => acc + (l.duration_minutes || 0), 0),
+    } : null;
+
+    return (
+      <>
+        <CourseAccessRestricted 
+          course={course} 
+          onPurchase={() => setPurchaseModalOpen(true)} 
+        />
+        {courseWithProgress && (
+          <CoursePurchaseModal
+            course={courseWithProgress}
+            isOpen={purchaseModalOpen}
+            onClose={() => setPurchaseModalOpen(false)}
+            onSuccess={handlePurchaseSuccess}
+          />
+        )}
+      </>
+    );
   }
 
   if (!course) {
