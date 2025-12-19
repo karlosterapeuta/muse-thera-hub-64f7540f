@@ -768,6 +768,7 @@ export type Database = {
           price_cents: number | null
           thumbnail_url: string | null
           title: string
+          trailer_url: string | null
           updated_at: string | null
         }
         Insert: {
@@ -782,6 +783,7 @@ export type Database = {
           price_cents?: number | null
           thumbnail_url?: string | null
           title: string
+          trailer_url?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -796,6 +798,7 @@ export type Database = {
           price_cents?: number | null
           thumbnail_url?: string | null
           title?: string
+          trailer_url?: string | null
           updated_at?: string | null
         }
         Relationships: [

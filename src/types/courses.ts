@@ -14,6 +14,7 @@ export interface Course {
   price_cents?: number;
   category?: string;
   creator?: CourseCreator;
+  trailer_url?: string | null;
 }
 
 export interface CourseModule {
