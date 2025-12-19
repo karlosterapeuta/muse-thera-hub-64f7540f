@@ -1,11 +1,12 @@
-import { useState } from "react";
-import { Play, Plus, ChevronDown, Clock, Check, ShoppingCart, Flame, Star, Zap } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Play, Plus, ChevronDown, Clock, Check, ShoppingCart, Flame, Star, Zap, Volume2, VolumeX } from "lucide-react";
 import { CourseWithProgress, formatDuration, formatPrice } from "@/types/courses";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import { getYouTubeId } from "@/utils/youtubeUtils";
 
 interface NetflixCourseCardProps {
-  course: CourseWithProgress & { hasAccess?: boolean };
+  course: CourseWithProgress & { hasAccess?: boolean; trailer_url?: string | null; modules?: Array<{ lessons?: Array<{ youtube_url: string; is_free_preview: boolean }> }> };
   onClick: () => void;
   onInfoClick: () => void;
   onPurchaseClick?: () => void;
@@ -13,11 +14,67 @@ interface NetflixCourseCardProps {
 
 export function NetflixCourseCard({ course, onClick, onInfoClick, onPurchaseClick }: NetflixCourseCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
   const isFree = !course.price_cents || course.price_cents === 0;
   const hasStarted = course.progressPercentage > 0;
   const isComplete = course.progressPercentage === 100;
   const hasAccess = course.hasAccess ?? (isFree || false);
   const isPremium = course.price_cents && course.price_cents > 5000; // > R$50
+
+  // Get preview video URL - prioritize trailer_url, fallback to first free preview lesson
+  const getPreviewUrl = (): { type: 'mp4' | 'youtube'; url: string } | null => {
+    if (course.trailer_url) {
+      return { type: 'mp4', url: course.trailer_url };
+    }
+    
+    // Find first lesson with is_free_preview
+    if (course.modules) {
+      for (const module of course.modules) {
+        if (module.lessons) {
+          const previewLesson = module.lessons.find(lesson => lesson.is_free_preview);
+          if (previewLesson) {
+            const youtubeId = getYouTubeId(previewLesson.youtube_url);
+            if (youtubeId) {
+              return { type: 'youtube', url: youtubeId };
+            }
+          }
+        }
+      }
+    }
+    return null;
+  };
+
+  const previewInfo = getPreviewUrl();
+
+  // Clear timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    if (previewInfo) {
+      hoverTimeoutRef.current = setTimeout(() => {
+        setShowPreview(true);
+      }, 1500);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setShowPreview(false);
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+  };
 
   return (
     <div
@@ -26,8 +83,8 @@ export function NetflixCourseCard({ course, onClick, onInfoClick, onPurchaseClic
         "w-[140px] sm:w-[180px] md:w-[220px] lg:w-[260px] xl:w-[280px]",
         isHovered && "z-50 scale-110 sm:scale-125 md:scale-150"
       )}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       {/* Main Card */}
       <div
@@ -36,9 +93,28 @@ export function NetflixCourseCard({ course, onClick, onInfoClick, onPurchaseClic
           isHovered && "shadow-2xl shadow-primary/20"
         )}
       >
-        {/* Thumbnail */}
+        {/* Thumbnail / Video Preview */}
         <div className="aspect-video relative">
-          {course.thumbnail_url ? (
+          {showPreview && previewInfo ? (
+            previewInfo.type === 'mp4' ? (
+              <video
+                src={previewInfo.url}
+                autoPlay
+                muted={isMuted}
+                loop
+                playsInline
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <iframe
+                src={`https://www.youtube.com/embed/${previewInfo.url}?autoplay=1&mute=${isMuted ? 1 : 0}&controls=0&loop=1&playlist=${previewInfo.url}&modestbranding=1&rel=0&showinfo=0`}
+                allow="autoplay; encrypted-media"
+                allowFullScreen
+                className="w-full h-full"
+                title={`Preview: ${course.title}`}
+              />
+            )
+          ) : course.thumbnail_url ? (
             <img
               src={course.thumbnail_url}
               alt={course.title}
@@ -49,6 +125,16 @@ export function NetflixCourseCard({ course, onClick, onInfoClick, onPurchaseClic
             <div className="w-full h-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center">
               <span className="text-4xl">🎵</span>
             </div>
+          )}
+
+          {/* Mute/Unmute button when preview is playing */}
+          {showPreview && previewInfo && (
+            <button
+              onClick={(e) => { e.stopPropagation(); setIsMuted(!isMuted); }}
+              className="absolute bottom-2 right-2 w-7 h-7 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center hover:bg-background transition-colors z-10"
+            >
+              {isMuted ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
+            </button>
           )}
 
           {/* Progress bar overlay */}
