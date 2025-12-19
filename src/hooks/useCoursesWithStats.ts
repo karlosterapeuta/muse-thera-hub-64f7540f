@@ -22,11 +22,19 @@ export function useCoursesWithStats() {
         .select(`
           id,
           course_id,
+          title,
+          description,
+          order_index,
           course_lessons (
             id,
-            duration_minutes
+            duration_minutes,
+            youtube_url,
+            is_free_preview,
+            title,
+            order_index
           )
-        `);
+        `)
+        .order("order_index", { ascending: true });
 
       if (modulesError) throw modulesError;
 
@@ -43,6 +51,31 @@ export function useCoursesWithStats() {
       }
 
       const completedLessonIds = new Set(userProgress.map(p => p.lesson_id));
+
+      // Group modules by course_id
+      const modulesByCourse = new Map<string, any[]>();
+      
+      (modules || []).forEach((module: any) => {
+        const courseId = module.course_id;
+        if (!modulesByCourse.has(courseId)) {
+          modulesByCourse.set(courseId, []);
+        }
+        modulesByCourse.get(courseId)!.push({
+          id: module.id,
+          course_id: module.course_id,
+          title: module.title,
+          description: module.description,
+          order_index: module.order_index,
+          lessons: (module.course_lessons || []).map((l: any) => ({
+            id: l.id,
+            duration_minutes: l.duration_minutes,
+            youtube_url: l.youtube_url,
+            is_free_preview: l.is_free_preview,
+            title: l.title,
+            order_index: l.order_index,
+          })).sort((a: any, b: any) => a.order_index - b.order_index),
+        });
+      });
 
       // Build stats per course
       const courseStats = new Map<string, {
@@ -83,7 +116,7 @@ export function useCoursesWithStats() {
         });
       });
 
-      // Map courses with stats
+      // Map courses with stats and modules
       const coursesWithProgress: CourseWithProgress[] = (courses || []).map((course: any) => {
         const stats = courseStats.get(course.id) || {
           totalModules: 0,
@@ -96,8 +129,13 @@ export function useCoursesWithStats() {
           ? (stats.completedLessons / stats.totalLessons) * 100 
           : 0;
 
+        // Get modules for this course sorted by order_index
+        const courseModules = (modulesByCourse.get(course.id) || [])
+          .sort((a: any, b: any) => a.order_index - b.order_index);
+
         return {
           ...course,
+          modules: courseModules,
           totalModules: stats.totalModules,
           totalLessons: stats.totalLessons,
           totalDurationMinutes: stats.totalDurationMinutes,
