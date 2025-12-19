@@ -3,7 +3,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Copy, Check, Clock, QrCode, AlertCircle, Loader2, CheckCircle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Copy, Check, Clock, QrCode, AlertCircle, Loader2, CheckCircle, User } from "lucide-react";
 import { CourseWithProgress, formatPrice, CoursePurchase } from "@/types/courses";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,12 +17,49 @@ interface CoursePurchaseModalProps {
   onSuccess: () => void;
 }
 
+// Função para formatar CPF
+function formatCpf(value: string): string {
+  const numbers = value.replace(/\D/g, '').slice(0, 11);
+  if (numbers.length <= 3) return numbers;
+  if (numbers.length <= 6) return `${numbers.slice(0, 3)}.${numbers.slice(3)}`;
+  if (numbers.length <= 9) return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6)}`;
+  return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6, 9)}-${numbers.slice(9)}`;
+}
+
+// Função para validar CPF
+function isValidCpf(cpf: string): boolean {
+  const numbers = cpf.replace(/\D/g, '');
+  if (numbers.length !== 11) return false;
+  if (/^(\d)\1+$/.test(numbers)) return false;
+  
+  let sum = 0;
+  for (let i = 0; i < 9; i++) {
+    sum += parseInt(numbers.charAt(i)) * (10 - i);
+  }
+  let remainder = (sum * 10) % 11;
+  if (remainder === 10 || remainder === 11) remainder = 0;
+  if (remainder !== parseInt(numbers.charAt(9))) return false;
+  
+  sum = 0;
+  for (let i = 0; i < 10; i++) {
+    sum += parseInt(numbers.charAt(i)) * (11 - i);
+  }
+  remainder = (sum * 10) % 11;
+  if (remainder === 10 || remainder === 11) remainder = 0;
+  if (remainder !== parseInt(numbers.charAt(10))) return false;
+  
+  return true;
+}
+
 export function CoursePurchaseModal({
   course,
   isOpen,
   onClose,
   onSuccess
 }: CoursePurchaseModalProps) {
+  const [step, setStep] = useState<'form' | 'payment'>('form');
+  const [cpf, setCpf] = useState("");
+  const [buyerName, setBuyerName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [purchase, setPurchase] = useState<CoursePurchase | null>(null);
   const [pixQrCode, setPixQrCode] = useState<string>("");
@@ -28,10 +67,16 @@ export function CoursePurchaseModal({
   const [copied, setCopied] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number>(0);
 
-  // Generate PIX code when modal opens
+  // Reset state when modal opens
   useEffect(() => {
-    if (isOpen && course && !purchase) {
-      generatePixPayment();
+    if (isOpen && course) {
+      // Check if free
+      if (!course.price_cents || course.price_cents === 0) {
+        handleFreeCourse();
+      } else {
+        // Load saved name from profile
+        loadUserProfile();
+      }
     }
   }, [isOpen, course]);
 
@@ -69,10 +114,74 @@ export function CoursePurchaseModal({
         onSuccess();
         handleClose();
       }
-    }, 5000); // Check every 5 seconds
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [purchase?.id, purchase?.payment_status]);
+
+  const loadUserProfile = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('name')
+        .eq('id', user.id)
+        .single();
+      
+      if (profile?.name) {
+        setBuyerName(profile.name);
+      }
+    }
+  };
+
+  const handleFreeCourse = async () => {
+    if (!course) return;
+    
+    setIsLoading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Você precisa estar logado");
+        return;
+      }
+
+      const { error: accessError } = await supabase
+        .from('course_access')
+        .insert({
+          course_id: course.id,
+          user_id: user.id,
+          is_active: true,
+        });
+
+      if (accessError && !accessError.message.includes('duplicate')) {
+        throw accessError;
+      }
+
+      toast.success("Acesso liberado! Aproveite o curso.");
+      onSuccess();
+      handleClose();
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao liberar acesso");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSubmitForm = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!buyerName.trim()) {
+      toast.error("Por favor, informe seu nome completo");
+      return;
+    }
+    
+    if (!isValidCpf(cpf)) {
+      toast.error("CPF inválido. Por favor, verifique o número informado.");
+      return;
+    }
+    
+    await generatePixPayment();
+  };
 
   const generatePixPayment = async () => {
     if (!course) return;
@@ -85,39 +194,14 @@ export function CoursePurchaseModal({
         return;
       }
 
-      // Check if course is free
-      if (!course.price_cents || course.price_cents === 0) {
-        const { error: accessError } = await supabase
-          .from('course_access')
-          .insert({
-            course_id: course.id,
-            user_id: user.id,
-            is_active: true,
-          });
-
-        if (accessError && !accessError.message.includes('duplicate')) {
-          throw accessError;
-        }
-
-        toast.success("Acesso liberado! Aproveite o curso.");
-        onSuccess();
-        return;
-      }
-
-      // Get user profile for buyer info
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('name')
-        .eq('id', user.id)
-        .single();
-
       // Call Asaas edge function to generate PIX
       const { data, error } = await supabase.functions.invoke('asaas-create-pix-payment', {
         body: {
           courseId: course.id,
           userId: user.id,
-          buyerName: profile?.name || user.email,
+          buyerName: buyerName.trim(),
           buyerEmail: user.email,
+          buyerCpfCnpj: cpf.replace(/\D/g, ''),
         },
       });
 
@@ -126,6 +210,7 @@ export function CoursePurchaseModal({
       if (data.isFree) {
         toast.success("Acesso liberado! Aproveite o curso.");
         onSuccess();
+        handleClose();
         return;
       }
 
@@ -136,6 +221,7 @@ export function CoursePurchaseModal({
       setPurchase(data.purchase as CoursePurchase);
       setPixQrCode(data.pixQrCode);
       setPixCode(data.pixCode);
+      setStep('payment');
       
       // Calculate time left from expiration
       const expiration = new Date(data.expiresAt).getTime();
@@ -178,6 +264,8 @@ export function CoursePurchaseModal({
     setPurchase(null);
     setPixQrCode("");
     setPixCode("");
+    setStep('form');
+    setCpf("");
     onClose();
   };
 
@@ -195,6 +283,11 @@ export function CoursePurchaseModal({
                 <CheckCircle className="h-5 w-5 text-emerald-500" />
                 Curso Gratuito
               </>
+            ) : step === 'form' ? (
+              <>
+                <User className="h-5 w-5 text-primary" />
+                Dados para Pagamento
+              </>
             ) : (
               <>
                 <QrCode className="h-5 w-5 text-primary" />
@@ -211,6 +304,68 @@ export function CoursePurchaseModal({
               {isFree ? "Liberando acesso..." : "Gerando código PIX..."}
             </p>
           </div>
+        ) : step === 'form' && !isFree ? (
+          <form onSubmit={handleSubmitForm} className="space-y-4">
+            {/* Course info */}
+            <div className="bg-muted/50 rounded-lg p-4">
+              <h3 className="font-semibold line-clamp-1">{course.title}</h3>
+              <div className="flex items-center justify-between mt-2">
+                <span className="text-muted-foreground">Valor</span>
+                <span className="text-xl font-bold text-primary">
+                  {formatPrice(course.price_cents || 0)}
+                </span>
+              </div>
+            </div>
+
+            <Separator />
+
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="buyerName">Nome Completo *</Label>
+                <Input
+                  id="buyerName"
+                  placeholder="Seu nome completo"
+                  value={buyerName}
+                  onChange={(e) => setBuyerName(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="cpf">CPF *</Label>
+                <Input
+                  id="cpf"
+                  placeholder="000.000.000-00"
+                  value={cpf}
+                  onChange={(e) => setCpf(formatCpf(e.target.value))}
+                  maxLength={14}
+                  required
+                />
+                <p className="text-xs text-muted-foreground">
+                  Necessário para emissão do comprovante fiscal
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-2 bg-primary/10 border border-primary/30 rounded-lg p-3">
+              <CheckCircle className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+              <div className="text-sm">
+                <p className="font-medium text-primary">Pagamento Seguro</p>
+                <p className="text-muted-foreground">
+                  Seus dados são protegidos e utilizados apenas para processamento do pagamento.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <Button type="button" variant="outline" className="flex-1" onClick={handleClose}>
+                Cancelar
+              </Button>
+              <Button type="submit" className="flex-1">
+                Continuar
+              </Button>
+            </div>
+          </form>
         ) : purchase ? (
           <div className="space-y-4">
             {/* Course info */}
@@ -276,7 +431,7 @@ export function CoursePurchaseModal({
               </div>
             </div>
 
-            {/* Info - agora com confirmação automática */}
+            {/* Info */}
             <div className="flex items-start gap-2 bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3">
               <CheckCircle className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
               <div className="text-sm">
@@ -295,7 +450,7 @@ export function CoursePurchaseModal({
           <div className="flex flex-col items-center justify-center py-12 gap-4">
             <AlertCircle className="h-8 w-8 text-destructive" />
             <p className="text-muted-foreground">Erro ao gerar pagamento</p>
-            <Button onClick={generatePixPayment}>Tentar novamente</Button>
+            <Button onClick={() => setStep('form')}>Tentar novamente</Button>
           </div>
         )}
       </DialogContent>
