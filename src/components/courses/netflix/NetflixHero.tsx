@@ -2,14 +2,16 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Play, Info, Clock, Layers, BookOpen } from "lucide-react";
 import { CourseWithProgress, formatDuration, formatPrice } from "@/types/courses";
+import { PurchaseButton } from "@/components/courses/PurchaseButton";
 
 interface NetflixHeroProps {
-  course: CourseWithProgress;
+  course: CourseWithProgress & { hasAccess?: boolean };
   onPlay: () => void;
   onInfo: () => void;
+  onPurchase?: () => void;
 }
 
-export function NetflixHero({ course, onPlay, onInfo }: NetflixHeroProps) {
+export function NetflixHero({ course, onPlay, onInfo, onPurchase }: NetflixHeroProps) {
   const isFree = !course.price_cents || course.price_cents === 0;
   
   return (
@@ -87,14 +89,23 @@ export function NetflixHero({ course, onPlay, onInfo }: NetflixHeroProps) {
 
           {/* Buttons */}
           <div className="flex flex-wrap gap-3 pt-2">
-            <Button
-              size="lg"
-              className="gap-2 bg-white text-black hover:bg-white/90 font-semibold"
-              onClick={onPlay}
-            >
-              <Play className="h-5 w-5 fill-current" />
-              {course.progressPercentage > 0 ? "Continuar" : "Assistir"}
-            </Button>
+            {course.hasAccess || isFree ? (
+              <Button
+                size="lg"
+                className="gap-2 bg-white text-black hover:bg-white/90 font-semibold"
+                onClick={onPlay}
+              >
+                <Play className="h-5 w-5 fill-current" />
+                {course.progressPercentage > 0 ? "Continuar" : "Assistir"}
+              </Button>
+            ) : (
+              <PurchaseButton
+                priceCents={course.price_cents || 0}
+                onClick={onPurchase || onPlay}
+                size="lg"
+                variant="hero"
+              />
+            )}
             <Button
               size="lg"
               variant="outline"

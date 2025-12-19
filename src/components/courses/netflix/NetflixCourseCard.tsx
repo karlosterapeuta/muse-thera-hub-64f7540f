@@ -1,20 +1,22 @@
 import { useState } from "react";
-import { Play, Plus, ChevronDown, Clock, Check } from "lucide-react";
+import { Play, Plus, ChevronDown, Clock, Check, ShoppingCart } from "lucide-react";
 import { CourseWithProgress, formatDuration, formatPrice } from "@/types/courses";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 
 interface NetflixCourseCardProps {
-  course: CourseWithProgress;
+  course: CourseWithProgress & { hasAccess?: boolean };
   onClick: () => void;
   onInfoClick: () => void;
+  onPurchaseClick?: () => void;
 }
 
-export function NetflixCourseCard({ course, onClick, onInfoClick }: NetflixCourseCardProps) {
+export function NetflixCourseCard({ course, onClick, onInfoClick, onPurchaseClick }: NetflixCourseCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const isFree = !course.price_cents || course.price_cents === 0;
   const hasStarted = course.progressPercentage > 0;
   const isComplete = course.progressPercentage === 100;
+  const hasAccess = course.hasAccess ?? (isFree || false);
 
   return (
     <div
@@ -86,12 +88,22 @@ export function NetflixCourseCard({ course, onClick, onInfoClick }: NetflixCours
           <div className="absolute top-full left-0 right-0 bg-card border border-border rounded-b-md p-3 space-y-2 shadow-xl">
             {/* Action buttons */}
             <div className="flex items-center gap-2">
-              <button
-                onClick={(e) => { e.stopPropagation(); onClick(); }}
-                className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center hover:bg-white/90 transition-colors"
-              >
-                <Play className="h-4 w-4 fill-current ml-0.5" />
-              </button>
+              {hasAccess ? (
+                <button
+                  onClick={(e) => { e.stopPropagation(); onClick(); }}
+                  className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center hover:bg-white/90 transition-colors"
+                >
+                  <Play className="h-4 w-4 fill-current ml-0.5" />
+                </button>
+              ) : (
+                <button
+                  onClick={(e) => { e.stopPropagation(); onPurchaseClick?.(); }}
+                  className="w-8 h-8 rounded-full bg-gradient-to-r from-emerald-500 to-green-500 text-white flex items-center justify-center hover:from-emerald-400 hover:to-green-400 transition-all shadow-lg hover:shadow-emerald-500/30"
+                  title={`Comprar por ${formatPrice(course.price_cents || 0)}`}
+                >
+                  <ShoppingCart className="h-4 w-4" />
+                </button>
+              )}
               <button
                 className="w-8 h-8 rounded-full border-2 border-muted-foreground/50 flex items-center justify-center hover:border-white transition-colors"
               >
