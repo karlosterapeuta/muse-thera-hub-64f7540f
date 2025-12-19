@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Settings, Loader2 } from "lucide-react";
+import { Search, Settings, Loader2, ArrowLeft } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useCoursesWithStats } from "@/hooks/useCoursesWithStats";
@@ -138,8 +138,17 @@ export default function CoursesPage() {
     <div className="min-h-screen bg-background">
       {/* Fixed navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-background via-background/80 to-transparent">
-        <div className="flex items-center justify-between px-6 md:px-12 py-4">
-          <div className="flex items-center gap-4 md:gap-8">
+        <div className="flex items-center justify-between px-4 md:px-12 py-4">
+          <div className="flex items-center gap-2 md:gap-8">
+            {/* Back button - mobile only */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden h-9 w-9"
+              onClick={() => navigate("/dashboard")}
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
             <h1 className="text-xl md:text-2xl font-bold text-primary">MuseTera Cursos</h1>
             
             {/* Search on desktop */}
