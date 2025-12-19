@@ -183,6 +183,13 @@ serve(async (req) => {
       case "createCourse": {
         const { title, description, price_cents, thumbnail_url } = params;
 
+        // Get creator's user_id for created_by field
+        const { data: creatorInfo } = await supabaseAdmin
+          .from("course_creators")
+          .select("user_id")
+          .eq("id", creatorId)
+          .single();
+
         // Create course using admin client (bypasses RLS)
         const { data: course, error } = await supabaseAdmin
           .from("courses")
@@ -192,6 +199,7 @@ serve(async (req) => {
             price_cents: price_cents || null,
             thumbnail_url: thumbnail_url || null,
             creator_id: creatorId,
+            created_by: creatorInfo?.user_id || null,
             is_published: false,
           })
           .select()
