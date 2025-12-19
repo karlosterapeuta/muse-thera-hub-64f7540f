@@ -17,8 +17,11 @@ import {
   LogOut,
   Loader2,
   LayoutDashboard,
-  GraduationCap
+  GraduationCap,
+  PieChart,
+  Building2
 } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { CourseCreator, CoursePurchase, Course, formatPrice } from "@/types/courses";
 import { toast } from "sonner";
@@ -32,6 +35,11 @@ interface DashboardStats {
   totalStudents: number;
   pendingPayments: number;
   pendingRevenue: number;
+  // Novos campos para divisão de receita
+  grossRevenue: number;
+  platformRevenue: number;
+  grossPendingRevenue: number;
+  pendingPlatformRevenue: number;
 }
 
 export default function CreatorDashboardPage() {
@@ -44,7 +52,11 @@ export default function CreatorDashboardPage() {
     totalSales: 0,
     totalStudents: 0,
     pendingPayments: 0,
-    pendingRevenue: 0
+    pendingRevenue: 0,
+    grossRevenue: 0,
+    platformRevenue: 0,
+    grossPendingRevenue: 0,
+    pendingPlatformRevenue: 0
   });
   const [selectedCourse, setSelectedCourse] = useState<string>("all");
   const [isLoading, setIsLoading] = useState(true);
@@ -111,17 +123,22 @@ export default function CreatorDashboardPage() {
           setPurchases(purchasesData as any[]);
 
           // Calculate stats
-          const paid = purchasesData.filter(p => p.payment_status === 'paid');
-          const pending = purchasesData.filter(p => p.payment_status === 'pending');
-          
-          setStats({
-            totalRevenue: paid.reduce((acc, p) => acc + (p.creator_amount_cents || 0), 0),
-            totalSales: paid.length,
-            totalStudents: new Set(paid.map(p => p.user_id)).size,
-            pendingPayments: pending.length,
-            pendingRevenue: pending.reduce((acc, p) => acc + (p.creator_amount_cents || 0), 0)
-          });
-        }
+            const paid = purchasesData.filter(p => p.payment_status === 'paid');
+            const pending = purchasesData.filter(p => p.payment_status === 'pending');
+            
+            setStats({
+              totalRevenue: paid.reduce((acc, p) => acc + (p.creator_amount_cents || 0), 0),
+              totalSales: paid.length,
+              totalStudents: new Set(paid.map(p => p.user_id)).size,
+              pendingPayments: pending.length,
+              pendingRevenue: pending.reduce((acc, p) => acc + (p.creator_amount_cents || 0), 0),
+              // Novos campos
+              grossRevenue: paid.reduce((acc, p) => acc + (p.amount_cents || 0), 0),
+              platformRevenue: paid.reduce((acc, p) => acc + (p.platform_amount_cents || 0), 0),
+              grossPendingRevenue: pending.reduce((acc, p) => acc + (p.amount_cents || 0), 0),
+              pendingPlatformRevenue: pending.reduce((acc, p) => acc + (p.platform_amount_cents || 0), 0)
+            });
+          }
 
       } catch (error) {
         console.error('Error loading dashboard:', error);
@@ -321,6 +338,90 @@ export default function CreatorDashboardPage() {
           </Card>
         </div>
 
+        {/* Revenue Split Card */}
+        <Card className="border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <PieChart className="h-5 w-5 text-primary" />
+              Divisão de Receita
+            </CardTitle>
+            <CardDescription>
+              Como suas vendas são divididas entre você e a plataforma Musetera
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Gross Revenue */}
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground mb-1">Receita Bruta Total (Confirmada)</p>
+              <p className="text-3xl font-bold">{formatPrice(stats.grossRevenue)}</p>
+            </div>
+
+            {/* Visual Progress Bar */}
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-emerald-600 font-medium">Sua Comissão ({creator?.commission_percentage || 70}%)</span>
+                <span className="text-blue-600 font-medium">Musetera ({100 - (creator?.commission_percentage || 70)}%)</span>
+              </div>
+              <div className="relative h-6 bg-blue-500/20 rounded-full overflow-hidden">
+                <div 
+                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-l-full transition-all duration-500"
+                  style={{ width: `${creator?.commission_percentage || 70}%` }}
+                />
+                <div className="absolute inset-0 flex items-center justify-center text-xs font-medium">
+                  <span className="text-white drop-shadow-sm">
+                    {formatPrice(stats.totalRevenue)} | {formatPrice(stats.platformRevenue)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Split Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4 text-center">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <DollarSign className="h-5 w-5 text-emerald-600" />
+                  <span className="font-semibold text-emerald-700">Sua Comissão</span>
+                </div>
+                <p className="text-2xl font-bold text-emerald-600">{formatPrice(stats.totalRevenue)}</p>
+                <p className="text-sm text-muted-foreground mt-1">({creator?.commission_percentage || 70}% das vendas)</p>
+              </div>
+
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 text-center">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Building2 className="h-5 w-5 text-blue-600" />
+                  <span className="font-semibold text-blue-700">Musetera</span>
+                </div>
+                <p className="text-2xl font-bold text-blue-600">{formatPrice(stats.platformRevenue)}</p>
+                <p className="text-sm text-muted-foreground mt-1">({100 - (creator?.commission_percentage || 70)}% das vendas)</p>
+              </div>
+            </div>
+
+            {/* Pending Section */}
+            {(stats.grossPendingRevenue > 0) && (
+              <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Clock className="h-4 w-4 text-amber-600" />
+                  <span className="font-semibold text-amber-700">Valores Pendentes</span>
+                </div>
+                <div className="grid grid-cols-3 gap-4 text-sm">
+                  <div className="text-center">
+                    <p className="text-muted-foreground">Bruto</p>
+                    <p className="font-medium">{formatPrice(stats.grossPendingRevenue)}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-muted-foreground">Você receberá</p>
+                    <p className="font-medium text-emerald-600">{formatPrice(stats.pendingRevenue)}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-muted-foreground">Musetera</p>
+                    <p className="font-medium text-blue-600">{formatPrice(stats.pendingPlatformRevenue)}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* My Courses */}
         <Card>
           <CardHeader>
@@ -430,8 +531,9 @@ export default function CreatorDashboardPage() {
                       <TableHead>Data</TableHead>
                       <TableHead>Cliente</TableHead>
                       <TableHead>Curso</TableHead>
-                      <TableHead>Valor</TableHead>
-                      <TableHead>Sua Comissão</TableHead>
+                      <TableHead>Valor Total</TableHead>
+                      <TableHead className="text-emerald-600">Sua Comissão</TableHead>
+                      <TableHead className="text-blue-600">Taxa Musetera</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
@@ -454,6 +556,9 @@ export default function CreatorDashboardPage() {
                         <TableCell>{formatPrice(purchase.amount_cents)}</TableCell>
                         <TableCell className="font-medium text-emerald-600">
                           {formatPrice(purchase.creator_amount_cents)}
+                        </TableCell>
+                        <TableCell className="font-medium text-blue-600">
+                          {formatPrice(purchase.platform_amount_cents)}
                         </TableCell>
                         <TableCell>
                           <Badge
