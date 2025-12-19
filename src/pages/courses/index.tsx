@@ -1,17 +1,32 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Settings, Loader2 } from "lucide-react";
+import { Search, Settings, Loader2, ArrowLeft } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useCoursesWithStats } from "@/hooks/useCoursesWithStats";
 import { useAdmin } from "@/hooks/use-admin";
-import { CourseAccessRestricted } from "@/components/courses/CourseAccessRestricted";
-import { NetflixHero } from "@/components/courses/netflix/NetflixHero";
-import { CourseRow } from "@/components/courses/netflix/CourseRow";
 import { CoursePreviewModal } from "@/components/courses/netflix/CoursePreviewModal";
 import { CoursePurchaseModal } from "@/components/courses/netflix/CoursePurchaseModal";
 import { CourseWithProgress } from "@/types/courses";
 import { supabase } from "@/integrations/supabase/client";
+
+// Landing page components
+import {
+  LandingHero,
+  SocialProofBar,
+  TargetAudience,
+  BenefitsGrid,
+  CourseModules,
+  TestimonialsCarousel,
+  PricingSection,
+  FAQSection,
+  FinalCTA,
+  TrustBadges,
+} from "@/components/courses/landing";
+
+// Netflix browse components
+import { NetflixHero } from "@/components/courses/netflix/NetflixHero";
+import { CourseRow } from "@/components/courses/netflix/CourseRow";
 
 export default function CoursesPage() {
   const navigate = useNavigate();
@@ -20,6 +35,7 @@ export default function CoursesPage() {
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [userAccess, setUserAccess] = useState<Set<string>>(new Set());
+  const [viewMode, setViewMode] = useState<"landing" | "browse">("landing");
   
   const { data: isAdmin, isLoading: adminLoading } = useAdmin();
   const { data: courses, isLoading, refetch } = useCoursesWithStats();
@@ -121,15 +137,119 @@ export default function CoursesPage() {
     );
   }
 
-  // Courses are now available to all authenticated users
+  // Landing Page View (High Conversion)
+  if (viewMode === "landing" && featuredCourse) {
+    return (
+      <div className="min-h-screen bg-background">
+        {/* Fixed navbar */}
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-background via-background/95 to-transparent">
+          <div className="flex items-center justify-between px-6 md:px-12 py-4">
+            <div className="flex items-center gap-4">
+              <h1 className="text-xl md:text-2xl font-bold text-primary">MuseTera Cursos</h1>
+            </div>
 
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setViewMode("browse")}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                Ver todos os cursos
+              </Button>
+              {isAdmin && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate("/courses/admin")}
+                  className="gap-2"
+                >
+                  <Settings className="h-4 w-4" />
+                  <span className="hidden sm:inline">Gerenciar</span>
+                </Button>
+              )}
+            </div>
+          </div>
+        </nav>
+
+        {/* Landing Page Sections */}
+        <main>
+          <LandingHero
+            course={featuredCourse}
+            onPlay={() => handleCourseClick(featuredCourse)}
+            onPurchase={() => handleCoursePurchase(featuredCourse)}
+          />
+          <SocialProofBar />
+          <TargetAudience />
+          <BenefitsGrid />
+          <CourseModules course={featuredCourse} />
+          <TestimonialsCarousel />
+          <PricingSection
+            course={featuredCourse}
+            onPurchase={() => handleCoursePurchase(featuredCourse)}
+            onPlay={() => handleCourseClick(featuredCourse)}
+          />
+          <FAQSection />
+          <FinalCTA
+            course={featuredCourse}
+            onPurchase={() => handleCoursePurchase(featuredCourse)}
+            onPlay={() => handleCourseClick(featuredCourse)}
+          />
+          <TrustBadges />
+        </main>
+
+        {/* Footer */}
+        <footer className="py-8 bg-muted/30 border-t border-border">
+          <div className="container mx-auto px-6 md:px-12 text-center text-muted-foreground text-sm">
+            <p>© 2024 MuseTera Cursos. Todos os direitos reservados.</p>
+          </div>
+        </footer>
+
+        {/* Modals */}
+        <CoursePreviewModal
+          course={selectedCourse}
+          isOpen={showPreviewModal}
+          onClose={() => setShowPreviewModal(false)}
+          onPlay={() => {
+            setShowPreviewModal(false);
+            if (selectedCourse) handleCourseClick(selectedCourse);
+          }}
+          onPurchase={() => {
+            setShowPreviewModal(false);
+            setShowPurchaseModal(true);
+          }}
+          hasAccess={selectedCourse ? userAccess.has(selectedCourse.id) || !selectedCourse.price_cents : false}
+        />
+
+        <CoursePurchaseModal
+          course={selectedCourse}
+          isOpen={showPurchaseModal}
+          onClose={() => setShowPurchaseModal(false)}
+          onSuccess={handlePurchaseSuccess}
+        />
+      </div>
+    );
+  }
+
+  // Browse Mode (Netflix-style)
   return (
     <div className="min-h-screen bg-background">
       {/* Fixed navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-background via-background/80 to-transparent">
         <div className="flex items-center justify-between px-6 md:px-12 py-4">
-          <div className="flex items-center gap-8">
-            <h1 className="text-2xl font-bold text-primary">MuseTera Cursos</h1>
+          <div className="flex items-center gap-4 md:gap-8">
+            {featuredCourse && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setViewMode("landing")}
+                className="gap-2 text-muted-foreground hover:text-foreground"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                <span className="hidden sm:inline">Voltar</span>
+              </Button>
+            )}
+            <h1 className="text-xl md:text-2xl font-bold text-primary">MuseTera Cursos</h1>
             
             {/* Search on desktop */}
             <div className="hidden md:block relative w-64">
