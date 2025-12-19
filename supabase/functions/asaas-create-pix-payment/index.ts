@@ -122,12 +122,41 @@ serve(async (req) => {
     if (searchResult.data && searchResult.data.length > 0) {
       customerId = searchResult.data[0].id;
       console.log('Found existing customer:', customerId);
+      
+      // Atualizar cliente existente com CPF se não tiver
+      const existingCustomer = searchResult.data[0];
+      if (!existingCustomer.cpfCnpj && body.buyerCpfCnpj) {
+        console.log('Updating existing customer with CPF');
+        const updateResponse = await fetch(`${ASAAS_BASE_URL}/customers/${customerId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'access_token': ASAAS_API_KEY,
+          },
+          body: JSON.stringify({
+            cpfCnpj: body.buyerCpfCnpj.replace(/\D/g, ''),
+            name: body.buyerName || existingCustomer.name,
+          }),
+        });
+        
+        if (!updateResponse.ok) {
+          const updateError = await updateResponse.json();
+          console.error('Error updating customer:', updateError);
+          throw new Error(updateError.errors?.[0]?.description || 'Erro ao atualizar cliente com CPF');
+        }
+        console.log('Customer updated with CPF');
+      }
     } else {
       // Criar novo cliente
+      const cpfCnpj = body.buyerCpfCnpj?.replace(/\D/g, '');
+      if (!cpfCnpj) {
+        throw new Error('CPF é obrigatório para pagamento PIX');
+      }
+      
       const customerPayload = {
         name: customerName,
         email: customerEmail,
-        cpfCnpj: body.buyerCpfCnpj?.replace(/\D/g, ''),
+        cpfCnpj: cpfCnpj,
       };
 
       const createCustomerResponse = await fetch(`${ASAAS_BASE_URL}/customers`, {
