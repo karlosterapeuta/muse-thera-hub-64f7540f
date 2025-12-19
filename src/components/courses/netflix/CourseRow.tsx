@@ -30,7 +30,7 @@ export function CourseRow({ title, courses, onCourseClick, onCourseInfo, onCours
   return (
     <div className="relative group py-4">
       {/* Title */}
-      <h2 className="text-xl md:text-2xl font-bold mb-4 px-6 md:px-12">{title}</h2>
+      <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-3 sm:mb-4 px-4 sm:px-6 md:px-12">{title}</h2>
 
       {/* Scroll container */}
       <div className="relative">
@@ -47,7 +47,7 @@ export function CourseRow({ title, courses, onCourseClick, onCourseInfo, onCours
         {/* Cards container */}
         <div
           ref={scrollContainerRef}
-          className="flex gap-2 md:gap-3 overflow-x-auto scrollbar-hide px-6 md:px-12 pb-32"
+          className="flex gap-1.5 sm:gap-2 md:gap-3 lg:gap-4 overflow-x-auto scrollbar-hide px-4 sm:px-6 md:px-12 pb-32"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {courses.map((course) => (
