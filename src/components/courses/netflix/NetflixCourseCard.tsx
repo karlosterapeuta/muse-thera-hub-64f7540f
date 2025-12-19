@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Play, Plus, ChevronDown, Clock, Check, ShoppingCart } from "lucide-react";
+import { Play, Plus, ChevronDown, Clock, Check, ShoppingCart, Flame, Star, Zap } from "lucide-react";
 import { CourseWithProgress, formatDuration, formatPrice } from "@/types/courses";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -17,6 +17,7 @@ export function NetflixCourseCard({ course, onClick, onInfoClick, onPurchaseClic
   const hasStarted = course.progressPercentage > 0;
   const isComplete = course.progressPercentage === 100;
   const hasAccess = course.hasAccess ?? (isFree || false);
+  const isPremium = course.price_cents && course.price_cents > 5000; // > R$50
 
   return (
     <div
@@ -32,7 +33,7 @@ export function NetflixCourseCard({ course, onClick, onInfoClick, onPurchaseClic
       <div
         className={cn(
           "relative rounded-md overflow-hidden transition-all duration-300",
-          isHovered && "shadow-2xl"
+          isHovered && "shadow-2xl shadow-primary/20"
         )}
       >
         {/* Thumbnail */}
@@ -59,26 +60,52 @@ export function NetflixCourseCard({ course, onClick, onInfoClick, onPurchaseClic
             </div>
           )}
 
-          {/* Price badge */}
-          <div className="absolute top-2 right-2">
-            {isFree ? (
-              <span className="bg-emerald-500 text-white text-xs font-bold px-2 py-0.5 rounded">
-                GRÁTIS
-              </span>
-            ) : (
-              <span className="bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded">
-                {formatPrice(course.price_cents || 0)}
-              </span>
-            )}
+          {/* Top badges row */}
+          <div className="absolute top-2 left-2 right-2 flex justify-between items-start">
+            {/* Left badges */}
+            <div className="flex flex-col gap-1">
+              {isPremium && !hasAccess && (
+                <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                  <Flame className="h-2.5 w-2.5" />
+                  POPULAR
+                </span>
+              )}
+              {isComplete && (
+                <span className="bg-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                  <Check className="h-2.5 w-2.5" />
+                  CONCLUÍDO
+                </span>
+              )}
+            </div>
+
+            {/* Price badge */}
+            <div>
+              {isFree ? (
+                <span className="bg-emerald-500 text-white text-xs font-bold px-2 py-0.5 rounded shadow-lg">
+                  GRÁTIS
+                </span>
+              ) : (
+                <div className="flex flex-col items-end gap-0.5">
+                  {!hasAccess && (
+                    <span className="bg-red-500/80 text-white text-[9px] px-1 rounded">
+                      -30%
+                    </span>
+                  )}
+                  <span className="bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded shadow-lg">
+                    {formatPrice(course.price_cents || 0)}
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Completed badge */}
-          {isComplete && (
-            <div className="absolute top-2 left-2">
-              <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-0.5 rounded flex items-center gap-1">
-                <Check className="h-3 w-3" />
-                Concluído
-              </span>
+          {/* Quick benefit badge (bottom) */}
+          {!isHovered && !isFree && !hasAccess && (
+            <div className="absolute bottom-2 left-2 right-2">
+              <div className="bg-background/80 backdrop-blur-sm text-[10px] text-foreground px-2 py-1 rounded flex items-center gap-1 justify-center">
+                <Zap className="h-3 w-3 text-amber-400" />
+                <span>Acesso imediato + Certificado</span>
+              </div>
             </div>
           )}
         </div>
@@ -118,6 +145,15 @@ export function NetflixCourseCard({ course, onClick, onInfoClick, onPurchaseClic
               </button>
             </div>
 
+            {/* Rating */}
+            <div className="flex items-center gap-2 text-xs">
+              <div className="flex items-center gap-1 text-amber-400">
+                <Star className="h-3 w-3 fill-current" />
+                <span className="font-bold">4.9</span>
+              </div>
+              <span className="text-muted-foreground">• 98% aprovação</span>
+            </div>
+
             {/* Title */}
             <h3 className="font-semibold text-sm line-clamp-1">{course.title}</h3>
 
@@ -136,6 +172,14 @@ export function NetflixCourseCard({ course, onClick, onInfoClick, onPurchaseClic
                 </>
               )}
             </div>
+
+            {/* Quick benefit on hover */}
+            {!isFree && !hasAccess && (
+              <div className="text-xs text-emerald-400 flex items-center gap-1">
+                <Check className="h-3 w-3" />
+                Garantia de 7 dias
+              </div>
+            )}
 
             {/* Instructor */}
             {course.instructor_name && (
