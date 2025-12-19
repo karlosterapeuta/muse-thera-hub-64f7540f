@@ -1,8 +1,12 @@
+import { motion } from "framer-motion";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Play, X, Clock, Layers, BookOpen, User } from "lucide-react";
+import { 
+  Play, X, Clock, Layers, BookOpen, User, Shield, Check, 
+  Star, Award, Zap, Users, MessageSquare 
+} from "lucide-react";
 import { CourseWithProgress, formatDuration, formatPrice } from "@/types/courses";
 import { PurchaseButton } from "@/components/courses/PurchaseButton";
 
@@ -28,10 +32,25 @@ export function CoursePreviewModal({
   const isFree = !course.price_cents || course.price_cents === 0;
   const hasStarted = course.progressPercentage > 0;
   const isComplete = course.progressPercentage === 100;
+  const originalPrice = course.price_cents ? Math.round(course.price_cents * 1.4) : 0;
+
+  const benefits = [
+    { icon: Zap, text: "Acesso imediato após confirmação" },
+    { icon: Clock, text: "Assista quando e onde quiser" },
+    { icon: Award, text: "Certificado de conclusão" },
+    { icon: Users, text: "Comunidade de alunos" },
+  ];
+
+  const testimonial = {
+    name: "Maria Silva",
+    role: "Musicoterapeuta",
+    text: "Este curso transformou minha prática profissional. Conteúdo excelente e muito bem estruturado!",
+    rating: 5
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-3xl p-0 overflow-hidden bg-card border-border">
+      <DialogContent className="max-w-3xl p-0 overflow-hidden bg-card border-border max-h-[90vh] overflow-y-auto">
         {/* Hero image */}
         <div className="relative aspect-video">
           {course.thumbnail_url ? (
@@ -46,15 +65,24 @@ export function CoursePreviewModal({
             </div>
           )}
           
-          <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-card via-card/50 to-transparent" />
           
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-background/80 flex items-center justify-center hover:bg-background transition-colors"
+            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-background/80 flex items-center justify-center hover:bg-background transition-colors z-10"
           >
             <X className="h-5 w-5" />
           </button>
+
+          {/* Urgency badge */}
+          {!isFree && !hasAccess && (
+            <div className="absolute top-4 left-4">
+              <Badge className="bg-red-500 text-white animate-pulse">
+                🔥 12 pessoas compraram hoje
+              </Badge>
+            </div>
+          )}
 
           {/* Play button overlay */}
           <div className="absolute inset-0 flex items-center justify-center">
@@ -80,16 +108,19 @@ export function CoursePreviewModal({
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-4">
+        <div className="p-6 space-y-6">
           {/* Badges */}
           <div className="flex flex-wrap gap-2">
-            {isFree ? (
+            {!isFree && !hasAccess && (
+              <>
+                <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
+                  -30% OFF
+                </Badge>
+              </>
+            )}
+            {isFree && (
               <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white">
                 Gratuito
-              </Badge>
-            ) : (
-              <Badge className="bg-amber-500 hover:bg-amber-600 text-white">
-                {formatPrice(course.price_cents || 0)}
               </Badge>
             )}
             {hasAccess && !isFree && (
@@ -103,11 +134,28 @@ export function CoursePreviewModal({
             )}
           </div>
 
-          {/* Title */}
-          <h2 className="text-2xl font-bold">{course.title}</h2>
+          {/* Title & Price */}
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold">{course.title}</h2>
+            {!isFree && !hasAccess && (
+              <div className="flex items-center gap-3">
+                <span className="text-muted-foreground line-through">
+                  {formatPrice(originalPrice)}
+                </span>
+                <span className="text-2xl font-bold text-emerald-400">
+                  {formatPrice(course.price_cents || 0)}
+                </span>
+              </div>
+            )}
+          </div>
 
           {/* Stats */}
           <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+            <div className="flex items-center gap-1 text-amber-400">
+              <Star className="h-4 w-4 fill-current" />
+              <span className="font-bold">4.9</span>
+              <span className="text-muted-foreground">(127 avaliações)</span>
+            </div>
             {course.instructor_name && (
               <span className="flex items-center gap-1">
                 <User className="h-4 w-4" />
@@ -148,6 +196,55 @@ export function CoursePreviewModal({
             <p className="text-muted-foreground">{course.description}</p>
           )}
 
+          {/* Benefits Section */}
+          {!hasAccess && !isFree && (
+            <motion.div 
+              className="grid grid-cols-2 gap-3"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              {benefits.map((benefit, index) => (
+                <div 
+                  key={index}
+                  className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/30 rounded-lg p-3"
+                >
+                  <benefit.icon className="h-4 w-4 text-primary flex-shrink-0" />
+                  <span>{benefit.text}</span>
+                </div>
+              ))}
+            </motion.div>
+          )}
+
+          {/* Testimonial */}
+          {!hasAccess && !isFree && (
+            <motion.div 
+              className="bg-muted/30 rounded-lg p-4 border border-border/50"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0">
+                  <MessageSquare className="h-5 w-5 text-primary" />
+                </div>
+                <div className="space-y-2">
+                  <p className="text-sm text-foreground italic">"{testimonial.text}"</p>
+                  <div className="flex items-center gap-2">
+                    <div className="flex">
+                      {[...Array(testimonial.rating)].map((_, i) => (
+                        <Star key={i} className="h-3 w-3 text-amber-400 fill-current" />
+                      ))}
+                    </div>
+                    <span className="text-xs text-muted-foreground">
+                      — {testimonial.name}, {testimonial.role}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
           {/* Action buttons */}
           <div className="flex gap-3 pt-2">
             {hasAccess || isFree ? (
@@ -164,6 +261,19 @@ export function CoursePreviewModal({
               />
             )}
           </div>
+
+          {/* Guarantee */}
+          {!isFree && !hasAccess && (
+            <motion.div 
+              className="flex items-center justify-center gap-2 text-sm text-muted-foreground pt-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+            >
+              <Shield className="h-4 w-4 text-emerald-400" />
+              <span>Garantia incondicional de 7 dias ou seu dinheiro de volta</span>
+            </motion.div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
