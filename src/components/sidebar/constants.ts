@@ -51,6 +51,10 @@ export const managementMenuItems = [
   { icon: DollarSign, text: "💰 Gestão Financeira", path: "/finance", gradient: "from-yellow-500 to-orange-600", isNew: true },
 ];
 
+export const communityMenuItems = [
+  { icon: UsersRound, text: "🌐 Comunidade MuseTera", path: "https://comunidade.musetera.com.br/", gradient: "from-indigo-500 to-blue-600", isNew: true, external: true },
+];
+
 export const getAdminMenuItems = (userEmail: string | null, isAdmin: boolean | undefined) => {
   const adminMenuItems = [];
   if (userEmail === "musicoterapeutakarlos@gmail.com" || userEmail === "marcia.jacira@hotmail.com" || isAdmin) {
