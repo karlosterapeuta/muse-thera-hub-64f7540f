@@ -1,6 +1,9 @@
 project_id = "jztbkimlcrfndooyhohg"
 
 # Ensure JWT verification is enabled for functions
+[functions.musicotherapy-chat]
+verify_jwt = true
+
 [functions.create-admin-user]
 verify_jwt = true
 

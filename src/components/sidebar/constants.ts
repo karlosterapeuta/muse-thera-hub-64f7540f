@@ -3,7 +3,6 @@ import {
   BarChart2,
   Users,
   UserCircle,
-  
   DollarSign,
   ListChecks,
   Stethoscope,
@@ -22,6 +21,7 @@ import {
   GraduationCap,
   Database,
   LayoutDashboard,
+  Bot,
 } from "lucide-react";
 
 export const mainMenuItems = [
@@ -44,6 +44,7 @@ export const musicalGamesMenuItems = [
 ];
 
 export const toolsMenuItems = [
+  { icon: Bot, text: "🤖 Assistente IA", path: "/ai-assistant", gradient: "from-violet-500 to-purple-600", isNew: true },
   { icon: Waves, text: "🧠 Frequências Binaurais", path: "/binaural-frequencies", gradient: "from-green-500 to-emerald-600" },
   { icon: GraduationCap, text: "Curso Flix", path: "/courses", gradient: "from-red-600 to-red-700", isNew: true, isNetflixStyle: true },
 ];

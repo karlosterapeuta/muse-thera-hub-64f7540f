@@ -77,6 +77,9 @@ import CourseAdminPage from "./pages/courses/admin";
 // Backup page
 import BackupPage from "./pages/backup";
 
+// AI Assistant
+import AIAssistant from "./pages/ai-assistant";
+
 // Creator pages (separate from MuseTera)
 import CreatorLoginPage from "./pages/creator/login";
 import CreatorRegisterPage from "./pages/creator/register";
@@ -194,6 +197,7 @@ const App = () => {
             <Route path="courses/admin" element={<CourseAdminPage />} />
             <Route path="courses/admin/creator/:creatorId" element={<CreatorDashboardAdmin />} />
             <Route path="backup" element={<BackupPage />} />
+            <Route path="ai-assistant" element={<AIAssistant />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
