@@ -32,7 +32,7 @@ const ChatMessage = ({ role, content, isStreaming }: ChatMessageProps) => {
       
       <div className="flex-1 min-w-0">
         <p className="text-xs font-medium text-muted-foreground mb-1">
-          {isUser ? "Você" : "🎵 MusiAssist"}
+          {isUser ? "Você" : "🎵 Assistente MuseTera"}
         </p>
         <div className="text-sm text-foreground whitespace-pre-wrap break-words">
           {content}
