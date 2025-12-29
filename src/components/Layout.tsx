@@ -15,6 +15,7 @@ import { ProfessionalAvatar } from "./ProfessionalAvatar";
 import ThemeToggle from "./ThemeToggle";
 import { Separator } from "./ui/separator";
 import { logPageView } from "@/utils/activityLogger";
+import FloatingChat from "./ai-chat/FloatingChat";
 
 interface LayoutProps {
   children?: React.ReactNode;
@@ -173,6 +174,9 @@ function LayoutContent({ children }: LayoutProps) {
             © 2025 MuseTera
           </div>
         </footer>
+        
+        {/* Floating Chat Button */}
+        <FloatingChat />
       </div>
     </div>
   );
