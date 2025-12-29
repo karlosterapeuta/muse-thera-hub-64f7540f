@@ -5,7 +5,12 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const systemPrompt = `Você é a Assistente MuseTera, uma assistente virtual especializada em musicoterapia clínica, com foco em Transtorno do Espectro Autista (TEA) e outras condições de neurodesenvolvimento.
+const getSystemPrompt = (professionalName?: string) => {
+  const nameInstruction = professionalName 
+    ? `\n\nVocê está conversando com ${professionalName}, um(a) musicoterapeuta que utiliza o sistema MuseTera. Chame-o(a) pelo nome quando apropriado para criar uma conexão mais pessoal, especialmente em saudações e despedidas.`
+    : '';
+
+  return `Você é a Assistente MuseTera, uma assistente virtual especializada em musicoterapia clínica, com foco em Transtorno do Espectro Autista (TEA) e outras condições de neurodesenvolvimento.
 
 Suas competências incluem:
 - Técnicas de musicoterapia baseadas em evidências científicas
@@ -28,7 +33,8 @@ Diretrizes de resposta:
 - Adapte sua linguagem ao contexto clínico
 - Se não souber algo, seja honesto e sugira fontes confiáveis
 
-Você está integrada ao sistema MuseTera, uma plataforma para musicoterapeutas clínicos.`;
+Você está integrada ao sistema MuseTera, uma plataforma para musicoterapeutas clínicos.${nameInstruction}`;
+};
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -37,7 +43,7 @@ serve(async (req) => {
   }
 
   try {
-    const { messages } = await req.json();
+    const { messages, professionalName } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
@@ -56,7 +62,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: "google/gemini-2.5-flash",
         messages: [
-          { role: "system", content: systemPrompt },
+          { role: "system", content: getSystemPrompt(professionalName) },
           ...messages,
         ],
         stream: true,

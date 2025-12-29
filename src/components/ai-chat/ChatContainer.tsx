@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Trash2, Bot } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
 import SuggestedQuestions from "./SuggestedQuestions";
@@ -17,8 +18,30 @@ const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/musicotherap
 const ChatContainer = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [professionalName, setProfessionalName] = useState<string>("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+
+  // Fetch professional name
+  useEffect(() => {
+    const fetchProfessionalName = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: professional } = await supabase
+          .from('professionals')
+          .select('name')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        
+        if (professional?.name) {
+          // Get first name only
+          const firstName = professional.name.split(' ')[0];
+          setProfessionalName(firstName);
+        }
+      }
+    };
+    fetchProfessionalName();
+  }, []);
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -41,7 +64,7 @@ const ChatContainer = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ messages: [...messages, userMsg] }),
+        body: JSON.stringify({ messages: [...messages, userMsg], professionalName }),
       });
 
       if (!response.ok) {
@@ -189,7 +212,7 @@ const ChatContainer = () => {
               <Bot className="w-8 h-8 text-white" />
             </div>
             <h3 className="text-lg font-semibold text-foreground mb-2">
-              Olá! Sou a Assistente MuseTera 🎵
+              {professionalName ? `Olá, ${professionalName}!` : "Olá!"} Sou a Assistente MuseTera 🎵
             </h3>
             <p className="text-sm text-muted-foreground max-w-md mb-6">
               Sua assistente virtual especializada em musicoterapia clínica. 
