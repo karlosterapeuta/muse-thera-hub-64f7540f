@@ -7,7 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
 import SuggestedQuestions from "./SuggestedQuestions";
-import museteraAssistantBot from "@/assets/musetera-assistant-bot.png";
+import museteraBotGreeting from "@/assets/musetera-bot-greeting.png";
+import museteraBotHappy from "@/assets/musetera-bot-happy.png";
 
 interface Message {
   role: "user" | "assistant";
@@ -186,7 +187,7 @@ const ChatContainer = () => {
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-purple-500/30">
             <img 
-              src={museteraAssistantBot} 
+              src={museteraBotHappy} 
               alt="Assistente MuseTera"
               className="w-full h-full object-cover"
             />
@@ -215,7 +216,7 @@ const ChatContainer = () => {
           <div className="flex flex-col items-center justify-center h-full text-center py-8">
             <div className="w-16 h-16 rounded-full overflow-hidden mb-4 ring-2 ring-purple-500/30">
               <img 
-                src={museteraAssistantBot} 
+                src={museteraBotGreeting} 
                 alt="Assistente MuseTera"
                 className="w-full h-full object-cover"
               />
