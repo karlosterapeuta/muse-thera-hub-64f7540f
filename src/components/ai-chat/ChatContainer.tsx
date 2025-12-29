@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Trash2 } from "lucide-react";
+import { Trash2, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import ChatMessage from "./ChatMessage";
@@ -21,6 +21,7 @@ const ChatContainer = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [professionalName, setProfessionalName] = useState<string>("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -246,10 +247,31 @@ const ChatContainer = () => {
 
       {/* Input */}
       <div className="p-4 border-t border-border space-y-3">
-        {messages.length > 0 && !isLoading && (
-          <SuggestedQuestions onSelect={streamChat} disabled={isLoading} />
+        {messages.length > 0 && !isLoading && showSuggestions && (
+          <SuggestedQuestions 
+            onSelect={(question) => {
+              streamChat(question);
+              setShowSuggestions(false);
+            }} 
+            disabled={isLoading} 
+          />
         )}
-        <ChatInput onSend={streamChat} isLoading={isLoading} />
+        <div className="flex items-center gap-2">
+          {messages.length > 0 && !isLoading && !showSuggestions && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowSuggestions(true)}
+              className="text-xs text-muted-foreground hover:text-violet-500 hover:border-violet-500/50 shrink-0"
+            >
+              <Sparkles className="w-3 h-3 mr-1" />
+              Sugestões
+            </Button>
+          )}
+          <div className="flex-1">
+            <ChatInput onSend={streamChat} isLoading={isLoading} />
+          </div>
+        </div>
       </div>
     </div>
   );
