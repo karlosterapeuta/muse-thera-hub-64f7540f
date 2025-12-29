@@ -5,7 +5,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import museteraAssistantBot from "@/assets/musetera-assistant-bot.png";
+import museteraBotGreeting from "@/assets/musetera-bot-greeting.png";
 
 interface FloatingChatButtonProps {
   onClick: () => void;
@@ -22,7 +22,7 @@ const FloatingChatButton = ({ onClick }: FloatingChatButtonProps) => {
             size="icon"
           >
             <img 
-              src={museteraAssistantBot} 
+              src={museteraBotGreeting} 
               alt="Assistente MuseTera"
               className="h-12 w-12 rounded-full object-cover"
             />

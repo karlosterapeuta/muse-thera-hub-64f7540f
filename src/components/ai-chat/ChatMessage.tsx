@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import { User } from "lucide-react";
-import museteraAssistantBot from "@/assets/musetera-assistant-bot.png";
+import museteraBotHappy from "@/assets/musetera-bot-happy.png";
+import museteraBotThinking from "@/assets/musetera-bot-thinking.png";
 
 interface ChatMessageProps {
   role: "user" | "assistant";
@@ -32,7 +33,7 @@ const ChatMessage = ({ role, content, isStreaming }: ChatMessageProps) => {
           <User className="w-4 h-4" />
         ) : (
           <img 
-            src={museteraAssistantBot} 
+            src={isStreaming ? museteraBotThinking : museteraBotHappy} 
             alt="MuseBot"
             className="w-full h-full object-cover rounded-full"
           />
