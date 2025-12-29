@@ -30,7 +30,7 @@ const FloatingChatButton = ({ onClick }: FloatingChatButtonProps) => {
           </Button>
         </TooltipTrigger>
         <TooltipContent side="left" className="bg-popover text-popover-foreground">
-          <p>Assistente MuseTera</p>
+          <p>MuseBot</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
