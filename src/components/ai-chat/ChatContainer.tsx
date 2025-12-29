@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Trash2, Bot } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
 import SuggestedQuestions from "./SuggestedQuestions";
+import museteraAssistantBot from "@/assets/musetera-assistant-bot.png";
 
 interface Message {
   role: "user" | "assistant";
@@ -183,8 +184,12 @@ const ChatContainer = () => {
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
-            <Bot className="w-5 h-5 text-white" />
+          <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-purple-500/30">
+            <img 
+              src={museteraAssistantBot} 
+              alt="Assistente MuseTera"
+              className="w-full h-full object-cover"
+            />
           </div>
           <div>
             <h2 className="font-semibold text-foreground">🎵 Assistente MuseTera</h2>
@@ -208,8 +213,12 @@ const ChatContainer = () => {
       <ScrollArea className="flex-1 p-4" ref={scrollRef}>
         {showWelcome ? (
           <div className="flex flex-col items-center justify-center h-full text-center py-8">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center mb-4">
-              <Bot className="w-8 h-8 text-white" />
+            <div className="w-16 h-16 rounded-full overflow-hidden mb-4 ring-2 ring-purple-500/30">
+              <img 
+                src={museteraAssistantBot} 
+                alt="Assistente MuseTera"
+                className="w-full h-full object-cover"
+              />
             </div>
             <h3 className="text-lg font-semibold text-foreground mb-2">
               {professionalName ? `Olá, ${professionalName}!` : "Olá!"} Sou a Assistente MuseTera 🎵

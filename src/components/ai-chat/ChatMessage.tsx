@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
-import { Bot, User } from "lucide-react";
+import { User } from "lucide-react";
+import museteraAssistantBot from "@/assets/musetera-assistant-bot.png";
 
 interface ChatMessageProps {
   role: "user" | "assistant";
@@ -27,7 +28,15 @@ const ChatMessage = ({ role, content, isStreaming }: ChatMessageProps) => {
             : "bg-gradient-to-br from-violet-500 to-purple-600 text-white"
         )}
       >
-        {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+        {isUser ? (
+          <User className="w-4 h-4" />
+        ) : (
+          <img 
+            src={museteraAssistantBot} 
+            alt="MuseBot"
+            className="w-full h-full object-cover rounded-full"
+          />
+        )}
       </div>
       
       <div className="flex-1 min-w-0">
