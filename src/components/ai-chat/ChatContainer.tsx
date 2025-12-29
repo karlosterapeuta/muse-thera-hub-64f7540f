@@ -193,7 +193,7 @@ const ChatContainer = () => {
             />
           </div>
           <div>
-            <h2 className="font-semibold text-foreground">🎵 Assistente MuseTera</h2>
+            <h2 className="font-semibold text-foreground">🎵 MuseBot</h2>
             <p className="text-xs text-muted-foreground">Assistente de Musicoterapia</p>
           </div>
         </div>
@@ -222,7 +222,7 @@ const ChatContainer = () => {
               />
             </div>
             <h3 className="text-lg font-semibold text-foreground mb-2">
-              {professionalName ? `Olá, ${professionalName}!` : "Olá!"} Sou a Assistente MuseTera 🎵
+              {professionalName ? `Olá, ${professionalName}!` : "Olá!"} Sou o MuseBot 🎵
             </h3>
             <p className="text-sm text-muted-foreground max-w-md mb-6">
               Sua assistente virtual especializada em musicoterapia clínica. 
