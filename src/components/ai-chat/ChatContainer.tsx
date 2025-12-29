@@ -164,7 +164,7 @@ const ChatContainer = () => {
             <Bot className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h2 className="font-semibold text-foreground">🎵 MusiAssist</h2>
+            <h2 className="font-semibold text-foreground">🎵 Assistente MuseTera</h2>
             <p className="text-xs text-muted-foreground">Assistente de Musicoterapia</p>
           </div>
         </div>
@@ -189,7 +189,7 @@ const ChatContainer = () => {
               <Bot className="w-8 h-8 text-white" />
             </div>
             <h3 className="text-lg font-semibold text-foreground mb-2">
-              Olá! Sou a MusiAssist 🎵
+              Olá! Sou a Assistente MuseTera 🎵
             </h3>
             <p className="text-sm text-muted-foreground max-w-md mb-6">
               Sua assistente virtual especializada em musicoterapia clínica. 
