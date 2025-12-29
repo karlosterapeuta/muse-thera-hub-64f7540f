@@ -1,4 +1,3 @@
-import { Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -6,6 +5,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import museteraAssistantBot from "@/assets/musetera-assistant-bot.png";
 
 interface FloatingChatButtonProps {
   onClick: () => void;
@@ -18,10 +18,14 @@ const FloatingChatButton = ({ onClick }: FloatingChatButtonProps) => {
         <TooltipTrigger asChild>
           <Button
             onClick={onClick}
-            className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full bg-gradient-to-br from-purple-600 to-purple-800 shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300 animate-scale-in"
+            className="fixed bottom-6 right-6 z-50 h-16 w-16 rounded-full bg-gradient-to-br from-purple-600 to-purple-800 shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300 animate-scale-in p-1"
             size="icon"
           >
-            <Bot className="h-6 w-6 text-white" />
+            <img 
+              src={museteraAssistantBot} 
+              alt="Assistente MuseTera"
+              className="h-12 w-12 rounded-full object-cover"
+            />
             <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-green-500 animate-pulse" />
           </Button>
         </TooltipTrigger>
