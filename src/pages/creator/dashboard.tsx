@@ -111,12 +111,12 @@ export default function CreatorDashboardPage() {
           setCourses(coursesData);
         }
 
-        // Load purchases for creator's courses
+        // Load purchases for creator's courses (only with existing courses - INNER JOIN)
         const { data: purchasesData } = await supabase
           .from('course_purchases')
           .select(`
             *,
-            course:courses(id, title, thumbnail_url)
+            course:courses!inner(id, title, thumbnail_url)
           `)
           .eq('creator_id', creatorData.id)
           .order('created_at', { ascending: false });
