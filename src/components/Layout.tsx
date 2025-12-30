@@ -16,6 +16,7 @@ import ThemeToggle from "./ThemeToggle";
 import { Separator } from "./ui/separator";
 import { logPageView } from "@/utils/activityLogger";
 import FloatingChat from "./ai-chat/FloatingChat";
+import { UserExpirationWarning } from "./auth/UserExpirationWarning";
 
 interface LayoutProps {
   children?: React.ReactNode;
@@ -125,6 +126,9 @@ function LayoutContent({ children }: LayoutProps) {
       
       {/* Main content que será empurrado */}
       <div className="flex-1 flex flex-col w-full min-w-0">
+        {/* Warning banner for expiring plans */}
+        <UserExpirationWarning />
+        
         {/* Universal Header com design moderno */}
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/70 shadow-lg">
           {/* Gradient line */}
