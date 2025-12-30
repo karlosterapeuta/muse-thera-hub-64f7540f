@@ -10,6 +10,7 @@ export type Profile = {
   created_at: string;
   status: string;
   expires_at: string | null;
+  plan_start_date: string | null;
   user_roles: UserRole[];
   email?: string;
 }

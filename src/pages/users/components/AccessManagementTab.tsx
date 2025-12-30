@@ -306,15 +306,16 @@ export function AccessManagementTab({ user, onClose }: AccessManagementTabProps)
             </Alert>
           )}
 
-          {/* Info Grid - Cards destacados para datas */}
           <div className="grid grid-cols-2 gap-4 pt-2">
             <div className="p-4 rounded-lg bg-muted/50 border">
               <div className="flex items-center gap-2 mb-2">
                 <CalendarCheck className="h-4 w-4 text-emerald-600" />
-                <span className="text-sm font-medium text-muted-foreground">Data de Início</span>
+                <span className="text-sm font-medium text-muted-foreground">Data de Adesão</span>
               </div>
               <p className="text-lg font-bold">
-                {new Date(user.created_at).toLocaleDateString('pt-BR')}
+                {user.plan_start_date 
+                  ? new Date(user.plan_start_date).toLocaleDateString('pt-BR')
+                  : new Date(user.created_at).toLocaleDateString('pt-BR')}
               </p>
             </div>
             

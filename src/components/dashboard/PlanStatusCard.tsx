@@ -17,13 +17,16 @@ export function PlanStatusCard() {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("created_at, expires_at")
+        .select("created_at, expires_at, plan_start_date")
         .eq("id", user.id)
         .single();
 
       if (!profile) return null;
 
-      const createdAt = new Date(profile.created_at);
+      // Use plan_start_date if available, otherwise fallback to created_at
+      const planStartDate = profile.plan_start_date 
+        ? new Date(profile.plan_start_date) 
+        : new Date(profile.created_at);
       const expiresAt = profile.expires_at ? new Date(profile.expires_at) : null;
       
       let daysRemaining: number | null = null;
@@ -34,7 +37,7 @@ export function PlanStatusCard() {
       }
 
       return {
-        createdAt,
+        planStartDate,
         expiresAt,
         daysRemaining,
         isUnlimited: !expiresAt,
@@ -146,8 +149,8 @@ export function PlanStatusCard() {
       </CardHeader>
       <CardContent className="space-y-2">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">Data de Início:</span>
-          <span className="font-medium">{formatDate(planData.createdAt)}</span>
+          <span className="text-muted-foreground">Data de Adesão:</span>
+          <span className="font-medium">{formatDate(planData.planStartDate)}</span>
         </div>
         
         <div className="flex items-center justify-between text-sm">

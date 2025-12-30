@@ -221,10 +221,15 @@ export function useAccessManagement() {
           break;
       }
 
-      const { error } = await supabase.rpc('update_user_expiration', {
-        target_user_id: userId,
-        new_expires_at: expirationDate.toISOString()
-      });
+      // Update plan_start_date and expires_at
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          plan_start_date: startDate.toISOString(),
+          expires_at: expirationDate.toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', userId);
 
       if (error) throw error;
 
