@@ -1538,6 +1538,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      configure_user_plan: {
+        Args: {
+          new_expires_at: string
+          new_plan_start_date: string
+          target_user_id: string
+        }
+        Returns: boolean
+      }
       force_user_logout:
         | { Args: { target_user_id: string }; Returns: boolean }
         | {
