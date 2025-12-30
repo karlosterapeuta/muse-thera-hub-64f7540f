@@ -27,8 +27,27 @@ export default function Users() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [roleFilter, setRoleFilter] = useState("all");
   const [expirationFilter, setExpirationFilter] = useState("all");
+  const [planTypeFilter, setPlanTypeFilter] = useState("all");
   const [detailsUser, setDetailsUser] = useState<Profile | null>(null);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
+
+  // Helper function to calculate plan type based on duration
+  const getPlanType = (profile: { expires_at?: string | null; plan_start_date?: string | null }): string => {
+    if (!profile.expires_at || !profile.plan_start_date) {
+      return 'unlimited';
+    }
+    
+    const start = new Date(profile.plan_start_date);
+    const end = new Date(profile.expires_at);
+    const diffDays = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+    
+    // Tolerance of +/- 5 days for month variations
+    if (diffDays >= 25 && diffDays <= 35) return '30-days';
+    if (diffDays >= 175 && diffDays <= 195) return '6-months';
+    if (diffDays >= 355 && diffDays <= 380) return '12-months';
+    
+    return 'other';
+  };
   
   const {
     selectedUser,
@@ -86,15 +105,22 @@ export default function Users() {
         }
       }
       
-      return matchesSearch && matchesStatus && matchesRole && matchesExpiration;
+      // Plan type filter logic
+      let matchesPlanType = true;
+      if (planTypeFilter !== "all") {
+        matchesPlanType = getPlanType(user) === planTypeFilter;
+      }
+      
+      return matchesSearch && matchesStatus && matchesRole && matchesExpiration && matchesPlanType;
     });
-  }, [users, searchTerm, statusFilter, roleFilter, expirationFilter]);
+  }, [users, searchTerm, statusFilter, roleFilter, expirationFilter, planTypeFilter]);
 
   const handleClearFilters = () => {
     setSearchTerm("");
     setStatusFilter("all");
     setRoleFilter("all");
     setExpirationFilter("all");
+    setPlanTypeFilter("all");
   };
 
   if (isLoading) {
@@ -155,6 +181,8 @@ export default function Users() {
           onRoleFilterChange={setRoleFilter}
           expirationFilter={expirationFilter}
           onExpirationFilterChange={setExpirationFilter}
+          planTypeFilter={planTypeFilter}
+          onPlanTypeFilterChange={setPlanTypeFilter}
           onClearFilters={handleClearFilters}
         />
       
