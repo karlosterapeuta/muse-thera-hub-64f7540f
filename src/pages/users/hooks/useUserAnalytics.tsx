@@ -27,9 +27,28 @@ export function useUserAnalytics() {
           id,
           created_at,
           status,
+          expires_at,
+          plan_start_date,
           user_roles (role)
         `)
         .order("created_at", { ascending: true });
+
+      // Helper function to calculate plan type
+      const getPlanType = (profile: { expires_at?: string | null; plan_start_date?: string | null }): string => {
+        if (!profile.expires_at || !profile.plan_start_date) {
+          return 'unlimited';
+        }
+        
+        const start = new Date(profile.plan_start_date);
+        const end = new Date(profile.expires_at);
+        const diffDays = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+        
+        if (diffDays >= 25 && diffDays <= 35) return '30-days';
+        if (diffDays >= 175 && diffDays <= 195) return '6-months';
+        if (diffDays >= 355 && diffDays <= 380) return '12-months';
+        
+        return 'other';
+      };
 
       if (error) throw error;
 
@@ -110,11 +129,20 @@ export function useUserAnalytics() {
         });
       }
 
+      // Calculate plan type distribution
+      const planTypeDistribution = [
+        { name: "30 dias", value: users?.filter(u => getPlanType(u) === '30-days').length || 0 },
+        { name: "6 meses", value: users?.filter(u => getPlanType(u) === '6-months').length || 0 },
+        { name: "12 meses", value: users?.filter(u => getPlanType(u) === '12-months').length || 0 },
+        { name: "Ilimitado", value: users?.filter(u => getPlanType(u) === 'unlimited').length || 0 },
+      ].filter(item => item.value > 0);
+
       return {
         newUsersByMonth,
         roleDistribution,
         statusByMonth,
         retentionByMonth,
+        planTypeDistribution,
       };
     },
     retry: false,

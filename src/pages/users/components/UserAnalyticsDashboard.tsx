@@ -19,7 +19,7 @@ import {
   Cell,
 } from "recharts";
 
-const COLORS = ["hsl(var(--primary))", "hsl(var(--secondary))"];
+const COLORS = ["hsl(var(--primary))", "hsl(var(--secondary))", "#22c55e", "#f59e0b"];
 
 export function UserAnalyticsDashboard() {
   const { data: analytics, isLoading } = useUserAnalytics();
@@ -93,6 +93,31 @@ export function UserAnalyticsDashboard() {
                   ))}
                 </Pie>
                 <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Plan Type Distribution */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium">Distribuição por Tipo de Plano</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={analytics.planTypeDistribution}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  outerRadius={80}
+                  fill="hsl(var(--primary))"
+                  dataKey="value"
+                >
+                  {analytics.planTypeDistribution.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
               </PieChart>
             </ResponsiveContainer>
           </div>
