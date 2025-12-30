@@ -4,6 +4,7 @@ import { FinancialAgenda } from "./components/FinancialAgenda";
 import { useDashboardData } from "./hooks/useDashboardData";
 import { ProductsShowcase } from "@/components/products/ProductsShowcase";
 import { globalCacheManager } from "@/utils/cacheManager";
+import { PlanStatusCard } from "@/components/dashboard/PlanStatusCard";
 
 export default function Dashboard() {
   const data = useDashboardData();
@@ -21,6 +22,11 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 w-full overflow-x-hidden">
       {/* Main Content */}
       <div className="w-full px-4 sm:px-6 py-6 space-y-6 max-w-[1600px] mx-auto">
+        {/* Plan Status Card */}
+        <div className="max-w-sm">
+          <PlanStatusCard />
+        </div>
+
         {/* Statistics Cards */}
         <div>
           <DashboardStats
