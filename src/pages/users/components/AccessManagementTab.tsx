@@ -160,7 +160,7 @@ export function AccessManagementTab({ user, onClose }: AccessManagementTabProps)
                   {planStartDate ? format(planStartDate, "PPP", { locale: ptBR }) : "Selecione a data de início"}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0 bg-popover border-border">
                 <Calendar
                   mode="single"
                   selected={planStartDate}
@@ -475,7 +475,7 @@ export function AccessManagementTab({ user, onClose }: AccessManagementTabProps)
                   {extendDate ? format(extendDate, "PPP", { locale: ptBR }) : "Selecione uma data"}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0 bg-popover border-border">
                 <Calendar
                   mode="single"
                   selected={extendDate}
@@ -546,7 +546,7 @@ export function AccessManagementTab({ user, onClose }: AccessManagementTabProps)
                   {limitDate ? format(limitDate, "PPP", { locale: ptBR }) : "Selecione"}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0 bg-popover border-border">
                 <Calendar
                   mode="single"
                   selected={limitDate}

@@ -21,8 +21,13 @@ function Calendar({
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
-        caption: "flex justify-center pt-1 relative items-center",
-        caption_label: "text-sm font-semibold text-gray-900",
+        caption: "flex justify-center pt-1 relative items-center gap-2",
+        caption_label: "text-sm font-semibold text-foreground",
+        caption_dropdowns: "flex gap-2 items-center",
+        vhidden: "sr-only",
+        dropdown_month: "relative",
+        dropdown_year: "relative",
+        dropdown: "bg-background text-foreground border border-input rounded-md px-2 py-1 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer appearance-auto",
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
@@ -33,20 +38,20 @@ function Calendar({
         table: "w-full border-collapse space-y-1",
         head_row: "flex",
         head_cell:
-          "text-gray-700 font-semibold rounded-md w-9 text-[0.8rem]",
+          "text-muted-foreground font-semibold rounded-md w-9 text-[0.8rem]",
         row: "flex w-full mt-2",
         cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
         day: cn(
           buttonVariants({ variant: "ghost" }),
-          "h-9 w-9 p-0 font-semibold text-gray-900 aria-selected:opacity-100"
+          "h-9 w-9 p-0 font-semibold text-foreground aria-selected:opacity-100 hover:bg-accent hover:text-accent-foreground"
         ),
         day_range_end: "day-range-end",
         day_selected:
-          "bg-blue-600 text-white hover:bg-blue-700 hover:text-white focus:bg-blue-700 focus:text-white font-bold",
-        day_today: "bg-blue-100 text-blue-900 font-bold border-2 border-blue-600",
+          "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground font-bold",
+        day_today: "bg-accent text-accent-foreground font-bold ring-2 ring-primary",
         day_outside:
-          "day-outside text-gray-400 opacity-50 aria-selected:bg-blue-100 aria-selected:text-gray-500 aria-selected:opacity-60",
-        day_disabled: "text-gray-400 opacity-40 line-through",
+          "day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-60",
+        day_disabled: "text-muted-foreground opacity-40 line-through",
         day_range_middle:
           "aria-selected:bg-accent aria-selected:text-accent-foreground",
         day_hidden: "invisible",
