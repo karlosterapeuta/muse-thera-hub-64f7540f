@@ -12,12 +12,10 @@ export function useSidebarData() {
     queryKey: ["userEmail"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      console.log("🔍 useSidebarData - user email fetched:", user?.email);
       return user?.email || null;
     },
+    staleTime: 1000 * 60 * 5,
   });
-
-  console.log("🔍 useSidebarData - returning:", { userEmail, isAdmin });
 
   const getProfessionalInfo = () => {
     if (!professional) {
@@ -34,8 +32,8 @@ export function useSidebarData() {
   };
 
   return {
-    userEmail,
-    isAdmin,
+    userEmail: userEmail ?? null,
+    isAdmin: isAdmin ?? false,
     professional,
     professionalInfo: getProfessionalInfo()
   };
