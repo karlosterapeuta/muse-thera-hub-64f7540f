@@ -57,8 +57,14 @@ export const communityMenuItems = [
 ];
 
 export const getAdminMenuItems = (userEmail: string | null, isAdmin: boolean | undefined) => {
+  console.log("🔍 getAdminMenuItems:", { userEmail, isAdmin });
+  
+  const adminEmails = ["musicoterapeutakarlos@gmail.com", "marcia.jacira@hotmail.com"];
+  const isAdminEmail = userEmail ? adminEmails.includes(userEmail) : false;
+  
   const adminMenuItems = [];
-  if (userEmail === "musicoterapeutakarlos@gmail.com" || userEmail === "marcia.jacira@hotmail.com" || isAdmin) {
+  if (isAdminEmail || isAdmin === true) {
+    console.log("✅ User is admin, showing menu items");
     adminMenuItems.push(
       { icon: LayoutDashboard, text: "🎬 Creator Dashboard", path: "/creator-dashboard", gradient: "from-orange-500 to-amber-600", isNew: true },
       { icon: UsersRound, text: "👤 Gestão de Usuários", path: "/users", gradient: "from-slate-500 to-gray-600" },
