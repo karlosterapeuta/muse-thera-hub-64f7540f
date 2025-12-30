@@ -19,7 +19,7 @@ import {
   Cell,
 } from "recharts";
 
-const COLORS = ["hsl(var(--primary))", "hsl(var(--secondary))", "#22c55e", "#f59e0b"];
+const COLORS = ["#3b82f6", "#8b5cf6", "#22c55e", "#f59e0b"];
 
 export function UserAnalyticsDashboard() {
   const { data: analytics, isLoading } = useUserAnalytics();
