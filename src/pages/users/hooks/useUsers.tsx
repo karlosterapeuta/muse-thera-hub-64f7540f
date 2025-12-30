@@ -56,6 +56,7 @@ export function useUsers() {
           created_at,
           status,
           expires_at,
+          plan_start_date,
           user_roles (
             role
           )
