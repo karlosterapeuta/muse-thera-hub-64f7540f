@@ -229,15 +229,12 @@ export function useAccessManagement() {
       // Definir expiração para o fim do dia
       expirationDate.setHours(23, 59, 59, 999);
 
-      // Update plan_start_date and expires_at
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          plan_start_date: normalizedStartDate.toISOString(),
-          expires_at: expirationDate.toISOString(),
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', userId);
+      // Update plan_start_date and expires_at using RPC (bypasses RLS)
+      const { error } = await supabase.rpc('configure_user_plan', {
+        target_user_id: userId,
+        new_plan_start_date: normalizedStartDate.toISOString(),
+        new_expires_at: expirationDate.toISOString()
+      });
 
       if (error) throw error;
 
