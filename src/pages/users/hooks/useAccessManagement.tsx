@@ -193,11 +193,74 @@ export function useAccessManagement() {
     }
   };
 
+  const configurePlan = async (
+    userId: string, 
+    userName: string | null, 
+    startDate: Date, 
+    planType: '30-days' | '6-months' | '1-year'
+  ) => {
+    // Check if user is admin first
+    if (await checkIsAdmin(userId)) {
+      return blockAdminAction();
+    }
+    
+    setIsLoading(true);
+    try {
+      // Calculate expiration date based on start date and plan type
+      const expirationDate = new Date(startDate);
+      
+      switch (planType) {
+        case '30-days':
+          expirationDate.setDate(expirationDate.getDate() + 30);
+          break;
+        case '6-months':
+          expirationDate.setDate(expirationDate.getDate() + 180);
+          break;
+        case '1-year':
+          expirationDate.setDate(expirationDate.getDate() + 365);
+          break;
+      }
+
+      const { error } = await supabase.rpc('update_user_expiration', {
+        target_user_id: userId,
+        new_expires_at: expirationDate.toISOString()
+      });
+
+      if (error) throw error;
+
+      await queryClient.invalidateQueries({ queryKey: ["users"] });
+
+      const planLabels = {
+        '30-days': '30 dias',
+        '6-months': '6 meses',
+        '1-year': '1 ano'
+      };
+
+      toast({
+        title: "Plano configurado",
+        description: `Plano de ${planLabels[planType]} aplicado para ${userName}. Expira em ${expirationDate.toLocaleDateString('pt-BR')}.`,
+      });
+
+      return true;
+    } catch (error: any) {
+      console.error('Error configuring plan:', error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao configurar plano",
+        description: error.message || "Ocorreu um erro ao tentar configurar o plano.",
+      });
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return {
     isLoading,
     renewPlan,
     extendAccess,
     makeUnlimited,
-    setLimit
+    setLimit,
+    configurePlan
   };
 }

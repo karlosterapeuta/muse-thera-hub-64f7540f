@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Profile } from "../types";
 import { useAccessManagement } from "../hooks/useAccessManagement";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar as CalendarIcon, RefreshCw, Plus, Unlock, Lock, Zap, AlertTriangle, Clock, CheckCircle, CalendarCheck, CalendarX, Shield } from "lucide-react";
+import { Calendar as CalendarIcon, RefreshCw, Plus, Unlock, Lock, Zap, AlertTriangle, Clock, CheckCircle, CalendarCheck, CalendarX, Shield, Settings } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
@@ -13,6 +13,7 @@ import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ExpirationBadge } from "./ExpirationBadge";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 interface AccessManagementTabProps {
   user: Profile;
@@ -20,10 +21,32 @@ interface AccessManagementTabProps {
 }
 
 export function AccessManagementTab({ user, onClose }: AccessManagementTabProps) {
-  const { isLoading, renewPlan, extendAccess, makeUnlimited, setLimit } = useAccessManagement();
+  const { isLoading, renewPlan, extendAccess, makeUnlimited, setLimit, configurePlan } = useAccessManagement();
   const [renewDays, setRenewDays] = useState("30");
   const [extendDate, setExtendDate] = useState<Date>();
   const [limitDate, setLimitDate] = useState<Date>();
+  
+  // New plan configuration state
+  const [planStartDate, setPlanStartDate] = useState<Date>(new Date());
+  const [planType, setPlanType] = useState<'30-days' | '6-months' | '1-year'>('30-days');
+  
+  // Calculate expiration date preview
+  const calculatedExpirationDate = useMemo(() => {
+    if (!planStartDate) return null;
+    const expDate = new Date(planStartDate);
+    switch (planType) {
+      case '30-days':
+        expDate.setDate(expDate.getDate() + 30);
+        break;
+      case '6-months':
+        expDate.setDate(expDate.getDate() + 180);
+        break;
+      case '1-year':
+        expDate.setDate(expDate.getDate() + 365);
+        break;
+    }
+    return expDate;
+  }, [planStartDate, planType]);
 
   // Check if user is admin - admins have permanent unlimited access
   const isUserAdmin = user.user_roles?.some(r => r.role === 'admin');
@@ -101,8 +124,135 @@ export function AccessManagementTab({ user, onClose }: AccessManagementTabProps)
     if (success) onClose();
   };
 
+  const handleConfigurePlan = async () => {
+    if (!planStartDate) return;
+    const success = await configurePlan(user.id, user.name, planStartDate, planType);
+    if (success) onClose();
+  };
+
   return (
     <div className="space-y-6">
+      {/* Configure New Plan Section - Most Important */}
+      <Card className="border-2 border-primary/50 bg-primary/5">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Settings className="h-5 w-5 text-primary" />
+            Configurar Novo Plano
+          </CardTitle>
+          <CardDescription>
+            Defina a data de adesão e o tipo de plano. O sistema calcula automaticamente a data de expiração.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Start Date Selection */}
+          <div className="space-y-2">
+            <Label className="text-base font-medium">Data de Adesão</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal h-12",
+                    !planStartDate && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-5 w-5" />
+                  {planStartDate ? format(planStartDate, "PPP", { locale: ptBR }) : "Selecione a data de início"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={planStartDate}
+                  onSelect={(date) => date && setPlanStartDate(date)}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          {/* Plan Type Selection */}
+          <div className="space-y-3">
+            <Label className="text-base font-medium">Tipo de Plano</Label>
+            <RadioGroup
+              value={planType}
+              onValueChange={(value) => setPlanType(value as '30-days' | '6-months' | '1-year')}
+              className="grid grid-cols-3 gap-3"
+            >
+              <Label
+                htmlFor="plan-30"
+                className={cn(
+                  "flex flex-col items-center justify-center p-4 rounded-lg border-2 cursor-pointer transition-all",
+                  planType === '30-days' 
+                    ? "border-primary bg-primary/10 text-primary" 
+                    : "border-muted hover:border-primary/50"
+                )}
+              >
+                <RadioGroupItem value="30-days" id="plan-30" className="sr-only" />
+                <span className="text-2xl font-bold">30</span>
+                <span className="text-sm">dias</span>
+                <span className="text-xs text-muted-foreground mt-1">1 mês</span>
+              </Label>
+              
+              <Label
+                htmlFor="plan-180"
+                className={cn(
+                  "flex flex-col items-center justify-center p-4 rounded-lg border-2 cursor-pointer transition-all",
+                  planType === '6-months' 
+                    ? "border-primary bg-primary/10 text-primary" 
+                    : "border-muted hover:border-primary/50"
+                )}
+              >
+                <RadioGroupItem value="6-months" id="plan-180" className="sr-only" />
+                <span className="text-2xl font-bold">180</span>
+                <span className="text-sm">dias</span>
+                <span className="text-xs text-muted-foreground mt-1">6 meses</span>
+              </Label>
+              
+              <Label
+                htmlFor="plan-365"
+                className={cn(
+                  "flex flex-col items-center justify-center p-4 rounded-lg border-2 cursor-pointer transition-all",
+                  planType === '1-year' 
+                    ? "border-primary bg-primary/10 text-primary" 
+                    : "border-muted hover:border-primary/50"
+                )}
+              >
+                <RadioGroupItem value="1-year" id="plan-365" className="sr-only" />
+                <span className="text-2xl font-bold">365</span>
+                <span className="text-sm">dias</span>
+                <span className="text-xs text-muted-foreground mt-1">1 ano</span>
+              </Label>
+            </RadioGroup>
+          </div>
+
+          {/* Expiration Preview */}
+          {calculatedExpirationDate && (
+            <div className="p-4 rounded-lg bg-muted/50 border border-primary/30">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <CalendarX className="h-5 w-5 text-primary" />
+                  <span className="font-medium">Expira em:</span>
+                </div>
+                <span className="text-lg font-bold text-primary">
+                  {format(calculatedExpirationDate, "dd/MM/yyyy")}
+                </span>
+              </div>
+            </div>
+          )}
+
+          <Button 
+            onClick={handleConfigurePlan} 
+            disabled={isLoading || !planStartDate}
+            className="w-full h-12 text-base"
+            size="lg"
+          >
+            <Settings className="mr-2 h-5 w-5" />
+            Aplicar Plano
+          </Button>
+        </CardContent>
+      </Card>
+
       {/* Current Status with Visual Feedback */}
       <Card className={cn(
         "border-2 relative overflow-hidden",
