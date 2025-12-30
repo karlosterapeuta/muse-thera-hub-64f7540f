@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
+import { addDays, addMonths } from "date-fns";
 
 export function useAccessManagement() {
   const queryClient = useQueryClient();
@@ -206,26 +207,33 @@ export function useAccessManagement() {
     
     setIsLoading(true);
     try {
-      // Calculate expiration date based on start date and plan type
-      const expirationDate = new Date(startDate);
+      // Normalizar a data de início para meio-dia (evita problemas de timezone)
+      const normalizedStartDate = new Date(startDate);
+      normalizedStartDate.setHours(12, 0, 0, 0);
+      
+      // Calcular data de expiração usando date-fns para precisão
+      let expirationDate: Date;
       
       switch (planType) {
         case '30-days':
-          expirationDate.setDate(expirationDate.getDate() + 30);
+          expirationDate = addDays(normalizedStartDate, 30);
           break;
         case '6-months':
-          expirationDate.setDate(expirationDate.getDate() + 180);
+          expirationDate = addMonths(normalizedStartDate, 6);
           break;
         case '1-year':
-          expirationDate.setDate(expirationDate.getDate() + 365);
+          expirationDate = addMonths(normalizedStartDate, 12);
           break;
       }
+      
+      // Definir expiração para o fim do dia
+      expirationDate.setHours(23, 59, 59, 999);
 
       // Update plan_start_date and expires_at
       const { error } = await supabase
         .from('profiles')
         .update({
-          plan_start_date: startDate.toISOString(),
+          plan_start_date: normalizedStartDate.toISOString(),
           expires_at: expirationDate.toISOString(),
           updated_at: new Date().toISOString()
         })
