@@ -33,6 +33,7 @@ export const mainMenuItems = [
 
 export const clinicalMenuItems = [
   { icon: ClipboardList, text: "⭐ Processos Musicoterapia", path: "/processes", gradient: "from-purple-600 via-pink-600 to-red-600", isNew: true },
+  { icon: ListChecks, text: "📋 Atividades", path: "/activities", gradient: "from-emerald-500 to-green-600", isNew: true },
 ];
 
 export const musicalGamesMenuItems = [
