@@ -20,8 +20,14 @@ export function ModernCheckboxCard({
   icon: Icon,
   description,
 }: ModernCheckboxCardProps) {
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onChange(!checked);
+  };
+
   return (
-    <div
+    <label
+      htmlFor={id}
       className={cn(
         "group relative flex items-start gap-3 p-4 rounded-xl border-2 transition-all duration-300 cursor-pointer",
         "hover:shadow-md hover:border-primary/50 hover:bg-accent/30",
@@ -29,12 +35,12 @@ export function ModernCheckboxCard({
           ? "border-primary bg-primary/5 shadow-sm"
           : "border-border bg-card"
       )}
-      onClick={() => onChange(!checked)}
     >
       <Checkbox
         id={id}
         checked={checked}
-        onCheckedChange={onChange}
+        onCheckedChange={(value) => onChange(value as boolean)}
+        onClick={(e) => e.stopPropagation()}
         className={cn(
           "mt-0.5 h-5 w-5 rounded-md transition-all",
           "data-[state=checked]:bg-primary data-[state=checked]:border-primary"
@@ -67,7 +73,7 @@ export function ModernCheckboxCard({
       {checked && (
         <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary animate-pulse" />
       )}
-    </div>
+    </label>
   );
 }
 
