@@ -76,6 +76,8 @@ export default function ProfessionalActivitiesPage() {
       TDAH: getActivitiesByDisorder('TDAH').length,
       TOD: getActivitiesByDisorder('TOD').length,
       DI: getActivitiesByDisorder('DI').length,
+      ALZHEIMER: getActivitiesByDisorder('ALZHEIMER').length,
+      PARKINSON: getActivitiesByDisorder('PARKINSON').length,
     };
     return {
       total: professionalActivities.length,

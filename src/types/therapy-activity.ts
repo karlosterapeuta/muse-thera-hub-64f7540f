@@ -1,4 +1,4 @@
-export type Disorder = 'TEA' | 'TDAH' | 'TOD' | 'DI';
+export type Disorder = 'TEA' | 'TDAH' | 'TOD' | 'DI' | 'ALZHEIMER' | 'PARKINSON';
 
 export type Demand = 
   | 'Comunicação e Linguagem'
