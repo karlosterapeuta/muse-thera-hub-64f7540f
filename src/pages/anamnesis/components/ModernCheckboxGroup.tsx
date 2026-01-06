@@ -29,30 +29,26 @@ export function ModernCheckboxGroup({
       
       <div className={`grid grid-cols-1 md:grid-cols-${columns} gap-3`}>
         {fields.map((field) => (
-          <Card 
-            key={field.id} 
-            className={`p-4 border-2 transition-all duration-200 hover:shadow-md cursor-pointer ${
+          <label
+            key={field.id}
+            htmlFor={field.id}
+            className={`p-4 border-2 rounded-lg transition-all duration-200 hover:shadow-md cursor-pointer flex items-center space-x-3 ${
               field.checked 
                 ? 'border-primary bg-primary/5 shadow-sm' 
-                : 'border-border hover:border-muted-foreground'
+                : 'border-border hover:border-muted-foreground bg-card'
             }`}
-            onClick={() => field.onChange(!field.checked)}
           >
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id={field.id}
-                checked={field.checked}
-                onCheckedChange={field.onChange}
-                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-              />
-              <Label 
-                htmlFor={field.id} 
-                className="text-sm font-medium cursor-pointer flex-1 leading-5"
-              >
-                {field.label}
-              </Label>
-            </div>
-          </Card>
+            <Checkbox
+              id={field.id}
+              checked={field.checked}
+              onCheckedChange={(value) => field.onChange(value as boolean)}
+              onClick={(e) => e.stopPropagation()}
+              className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+            />
+            <span className="text-sm font-medium flex-1 leading-5">
+              {field.label}
+            </span>
+          </label>
         ))}
       </div>
     </div>
