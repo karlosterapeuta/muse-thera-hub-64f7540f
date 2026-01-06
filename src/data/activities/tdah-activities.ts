@@ -3,11 +3,10 @@ import { ProfessionalActivity } from './types';
 export const tdahActivities: ProfessionalActivity[] = [
   // ==================== ATENÇÃO (20 atividades) ====================
   {
-    id: 'tdah-at-1',
+    id: 2001,
     title: 'Caça ao Tesouro Sonoro',
     disorder: 'TDAH',
-    demandCategory: 'atencao',
-    demandLabel: 'Atenção Sustentada',
+    demandCategory: 'attention',
     generalObjective: 'Desenvolver a capacidade de manter o foco atencional por períodos progressivamente maiores através de pistas auditivas sequenciais',
     specificObjectives: [
       'Seguir sequências de 5-10 pistas sonoras sem perder a ordem',
@@ -15,10 +14,11 @@ export const tdahActivities: ProfessionalActivity[] = [
       'Identificar corretamente 80% das pistas apresentadas',
       'Reduzir comportamentos de distração durante a atividade'
     ],
-    description: 'Crie um mapa sonoro onde cada instrumento ou som representa uma pista para encontrar o "tesouro". O paciente deve seguir a sequência de sons na ordem correta, movendo-se pelo espaço ou apontando no mapa visual. Comece com 3 pistas e aumente progressivamente. Cada som tem um significado (sino = virar direita, tambor = andar reto, triângulo = virar esquerda). O "tesouro" pode ser um instrumento especial ou uma música favorita como recompensa. A atividade trabalha atenção sustentada com reforçamento imediato.',
+    description: 'Crie um mapa sonoro onde cada instrumento ou som representa uma pista para encontrar o "tesouro". O paciente deve seguir a sequência de sons na ordem correta, movendo-se pelo espaço ou apontando no mapa visual. Comece com 3 pistas e aumente progressivamente. Cada som tem um significado (sino = virar direita, tambor = andar reto, triângulo = virar esquerda). O "tesouro" pode ser um instrumento especial ou uma música favorita como recompensa.',
     materials: ['Instrumentos variados (sino, tambor, triângulo, chocalho)', 'Mapa visual do percurso', 'Objeto "tesouro"', 'Vendas (opcional)'],
     estimatedTime: '15-25 minutos',
-    complexityLevel: 'moderado',
+    ageRange: '6-12 anos',
+    complexityLevel: 'intermediate',
     evaluationCriteria: [
       'Número de pistas seguidas corretamente em sequência',
       'Tempo de manutenção do foco sem distração',
@@ -26,37 +26,31 @@ export const tdahActivities: ProfessionalActivity[] = [
       'Nível de independência na execução',
       'Comportamentos de distração observados'
     ],
-    adaptations: [
-      'Nível leve: 3-4 pistas com apoio visual constante e pausas entre pistas',
-      'Nível moderado: 5-7 pistas com apoio visual parcial',
-      'Nível severo: 8-10 pistas apenas auditivas, com distratores sonoros'
-    ],
-    theoreticalBasis: 'Baseado no modelo de Barkley sobre déficit de inibição e sua relação com atenção sustentada. Utiliza reforçamento imediato (encontrar o tesouro) para manter engajamento, considerando a sensibilidade do TDAH a atrasos no reforço.',
-    ageRange: '6-12 anos',
-    tips: [
-      'Use sons bem distintos entre si para facilitar discriminação',
-      'Ofereça feedback imediato a cada pista correta',
-      'Reduza distratores ambientais no início',
-      'Permita movimento - crianças com TDAH aprendem melhor em movimento'
-    ]
+    adaptations: {
+      level1: '3-4 pistas com apoio visual constante e pausas entre pistas',
+      level2: '5-7 pistas com apoio visual parcial',
+      level3: '8-10 pistas apenas auditivas, com distratores sonoros'
+    },
+    theoreticalBasis: 'Baseado no modelo de Barkley sobre déficit de inibição e sua relação com atenção sustentada. Utiliza reforçamento imediato para manter engajamento.',
+    practicalTips: ['Use sons bem distintos entre si', 'Ofereça feedback imediato a cada pista correta', 'Reduza distratores ambientais no início']
   },
   {
-    id: 'tdah-at-2',
+    id: 2002,
     title: 'Maestro Atento',
     disorder: 'TDAH',
-    demandCategory: 'atencao',
-    demandLabel: 'Atenção Sustentada',
+    demandCategory: 'attention',
     generalObjective: 'Desenvolver atenção sustentada e dividida através do papel de maestro que precisa monitorar múltiplos instrumentos',
     specificObjectives: [
       'Manter controle visual sobre todos os músicos por períodos de 5+ minutos',
       'Identificar quando um instrumento está fora do tempo',
       'Dar comandos claros de mudança de dinâmica',
-      'Alternar foco entre diferentes seções da "orquestra"'
+      'Alternar foco entre diferentes seções da orquestra'
     ],
-    description: 'O paciente assume o papel de maestro de uma pequena orquestra (real ou imaginária com participantes). Deve usar gestos para indicar quando cada instrumento toca, controlar volume (gestos amplos = forte, pequenos = suave) e tempo. Introduza "erros" propositais para o maestro identificar. Progrida de reger um instrumento por vez até múltiplos simultaneamente. Use cartões visuais para apoiar os comandos inicialmente.',
+    description: 'O paciente assume o papel de maestro de uma pequena orquestra. Deve usar gestos para indicar quando cada instrumento toca, controlar volume e tempo. Introduza erros propositais para o maestro identificar. Progrida de reger um instrumento por vez até múltiplos simultaneamente.',
     materials: ['Batuta ou bastão', 'Instrumentos variados', 'Cartões de comando visual', 'Metrônomo', 'Música gravada (opcional)'],
     estimatedTime: '20-30 minutos',
-    complexityLevel: 'moderado',
+    ageRange: '7-15 anos',
+    complexityLevel: 'intermediate',
     evaluationCriteria: [
       'Tempo de manutenção do papel de maestro',
       'Precisão na identificação de erros',
@@ -64,26 +58,19 @@ export const tdahActivities: ProfessionalActivity[] = [
       'Capacidade de dividir atenção entre músicos',
       'Nível de frustração tolerado'
     ],
-    adaptations: [
-      'Nível leve: Reger apenas 1-2 instrumentos com música simples',
-      'Nível moderado: Reger 3-4 instrumentos com mudanças de dinâmica',
-      'Nível severo: Reger grupo completo com mudanças complexas e identificar erros'
-    ],
-    theoreticalBasis: 'Fundamentado no conceito de funções executivas de Barkley, especificamente working memory e atenção dividida. O papel de maestro exige monitoramento contínuo, uma habilidade frequentemente deficitária no TDAH.',
-    ageRange: '7-15 anos',
-    tips: [
-      'Comece com músicas conhecidas e previsíveis',
-      'Use reforço social imediato ("Excelente comando!")',
-      'Faça pausas estratégicas para manter engajamento',
-      'Grave a performance para revisão e feedback'
-    ]
+    adaptations: {
+      level1: 'Reger apenas 1-2 instrumentos com música simples',
+      level2: 'Reger 3-4 instrumentos com mudanças de dinâmica',
+      level3: 'Reger grupo completo com mudanças complexas e identificar erros'
+    },
+    theoreticalBasis: 'Fundamentado no conceito de funções executivas de Barkley, especificamente working memory e atenção dividida.',
+    practicalTips: ['Comece com músicas conhecidas', 'Use reforço social imediato', 'Faça pausas estratégicas']
   },
   {
-    id: 'tdah-at-3',
+    id: 2003,
     title: 'Radar Sonoro',
     disorder: 'TDAH',
-    demandCategory: 'atencao',
-    demandLabel: 'Atenção Seletiva',
+    demandCategory: 'attention',
     generalObjective: 'Desenvolver atenção seletiva através da identificação de sons-alvo em meio a distratores auditivos',
     specificObjectives: [
       'Identificar som-alvo em 80% das apresentações',
@@ -91,10 +78,11 @@ export const tdahActivities: ProfessionalActivity[] = [
       'Responder ao estímulo-alvo em tempo adequado',
       'Manter vigilância por períodos crescentes'
     ],
-    description: 'Apresente uma paisagem sonora com múltiplos sons simultâneos. O paciente deve identificar apenas o som-alvo (ex: sino) levantando a mão ou tocando um instrumento. Comece com fundo silencioso e adicione progressivamente ruído branco, conversas, música de fundo. Varie a frequência do som-alvo para manter vigilância. Use diferentes níveis de volume para o alvo.',
+    description: 'Apresente uma paisagem sonora com múltiplos sons simultâneos. O paciente deve identificar apenas o som-alvo levantando a mão ou tocando um instrumento. Comece com fundo silencioso e adicione progressivamente ruído branco, conversas, música de fundo.',
     materials: ['Gravações de paisagens sonoras', 'Caixa de som', 'Instrumento-resposta para o paciente', 'Cronômetro', 'Registro de acertos'],
     estimatedTime: '15-20 minutos',
-    complexityLevel: 'moderado',
+    ageRange: '6-14 anos',
+    complexityLevel: 'intermediate',
     evaluationCriteria: [
       'Taxa de acertos (identificações corretas)',
       'Taxa de falsos positivos',
@@ -102,26 +90,19 @@ export const tdahActivities: ProfessionalActivity[] = [
       'Tolerância a distratores',
       'Manutenção da atenção ao longo do tempo'
     ],
-    adaptations: [
-      'Nível leve: Som-alvo muito distinto, poucos distratores, apresentações frequentes',
-      'Nível moderado: Som-alvo moderadamente distinto, distratores médios',
-      'Nível severo: Som-alvo sutil, muitos distratores, apresentações espaçadas'
-    ],
-    theoreticalBasis: 'Baseado em paradigmas de atenção seletiva e vigilância da neuropsicologia cognitiva. O TDAH apresenta dificuldades específicas em filtrar informação irrelevante, habilidade trabalhada diretamente nesta atividade.',
-    ageRange: '6-14 anos',
-    tips: [
-      'Comece com sessões curtas (3-5 minutos) e aumente gradualmente',
-      'Ofereça feedback visual imediato (luz verde para acerto)',
-      'Use sons-alvo que o paciente considere interessantes',
-      'Faça gráficos de progresso para motivação'
-    ]
+    adaptations: {
+      level1: 'Som-alvo muito distinto, poucos distratores, apresentações frequentes',
+      level2: 'Som-alvo moderadamente distinto, distratores médios',
+      level3: 'Som-alvo sutil, muitos distratores, apresentações espaçadas'
+    },
+    theoreticalBasis: 'Baseado em paradigmas de atenção seletiva e vigilância da neuropsicologia cognitiva.',
+    practicalTips: ['Comece com sessões curtas (3-5 minutos)', 'Ofereça feedback visual imediato', 'Use sons-alvo interessantes']
   },
   {
-    id: 'tdah-at-4',
+    id: 2004,
     title: 'Detetive dos Sons',
     disorder: 'TDAH',
-    demandCategory: 'atencao',
-    demandLabel: 'Atenção aos Detalhes',
+    demandCategory: 'attention',
     generalObjective: 'Desenvolver atenção a detalhes através da identificação de diferenças sutis entre melodias ou padrões rítmicos',
     specificObjectives: [
       'Identificar diferenças em 7 de cada 10 pares apresentados',
@@ -129,10 +110,11 @@ export const tdahActivities: ProfessionalActivity[] = [
       'Aumentar tempo de escuta analítica',
       'Desenvolver vocabulário para descrever diferenças musicais'
     ],
-    description: 'Apresente dois trechos musicais aparentemente idênticos. O paciente-detetive deve descobrir as diferenças. Comece com diferenças óbvias (instrumento diferente) e evolua para sutis (uma nota, tempo ligeiramente diferente). Use lupa de brinquedo como objeto simbólico. Crie "casos" temáticos (O Caso da Nota Perdida, O Mistério do Ritmo Trocado).',
+    description: 'Apresente dois trechos musicais aparentemente idênticos. O paciente-detetive deve descobrir as diferenças. Comece com diferenças óbvias e evolua para sutis. Use lupa de brinquedo como objeto simbólico.',
     materials: ['Gravações pareadas com diferenças', 'Lupa de brinquedo', 'Ficha de detetive', 'Distintivo', 'Quadro de casos resolvidos'],
     estimatedTime: '15-25 minutos',
-    complexityLevel: 'moderado',
+    ageRange: '7-14 anos',
+    complexityLevel: 'intermediate',
     evaluationCriteria: [
       'Porcentagem de diferenças identificadas',
       'Capacidade de especificar a diferença',
@@ -140,26 +122,19 @@ export const tdahActivities: ProfessionalActivity[] = [
       'Persistência diante de dificuldade',
       'Estratégias de escuta utilizadas'
     ],
-    adaptations: [
-      'Nível leve: Diferenças muito óbvias (instrumento diferente, pausa longa)',
-      'Nível moderado: Diferenças médias (notas diferentes, ritmo alterado)',
-      'Nível severo: Diferenças sutis (timbre, dinâmica, articulação)'
-    ],
-    theoreticalBasis: 'Baseado na dificuldade de atenção a detalhes característica do TDAH, conforme critérios do DSM-5. A gamificação (ser detetive) aumenta motivação intrínseca e engajamento.',
-    ageRange: '7-14 anos',
-    tips: [
-      'Permita escutar cada trecho múltiplas vezes',
-      'Use histórias para contextualizar cada "caso"',
-      'Comemore cada "caso resolvido" efusivamente',
-      'Crie arquivo de casos para mostrar progresso'
-    ]
+    adaptations: {
+      level1: 'Diferenças muito óbvias (instrumento diferente, pausa longa)',
+      level2: 'Diferenças médias (notas diferentes, ritmo alterado)',
+      level3: 'Diferenças sutis (timbre, dinâmica, articulação)'
+    },
+    theoreticalBasis: 'Baseado na dificuldade de atenção a detalhes característica do TDAH, conforme critérios do DSM-5.',
+    practicalTips: ['Permita escutar múltiplas vezes', 'Use histórias para contextualizar', 'Comemore cada caso resolvido']
   },
   {
-    id: 'tdah-at-5',
+    id: 2005,
     title: 'Foco no Ritmo',
     disorder: 'TDAH',
-    demandCategory: 'atencao',
-    demandLabel: 'Atenção Sustentada',
+    demandCategory: 'attention',
     generalObjective: 'Desenvolver capacidade de manter padrão rítmico estável mesmo na presença de distratores',
     specificObjectives: [
       'Manter padrão rítmico por 2+ minutos sem erro',
@@ -167,10 +142,11 @@ export const tdahActivities: ProfessionalActivity[] = [
       'Recuperar padrão rapidamente após distração',
       'Aumentar complexidade do padrão mantido'
     ],
-    description: 'O paciente aprende um padrão rítmico simples e deve mantê-lo enquanto distratores são introduzidos progressivamente: outro ritmo tocando, perguntas verbais, estímulos visuais. Se perder o ritmo, deve retomar rapidamente. Use metrônomo como âncora inicial que vai sendo retirado. Registre tempo de manutenção e número de "perdas".',
+    description: 'O paciente aprende um padrão rítmico simples e deve mantê-lo enquanto distratores são introduzidos progressivamente: outro ritmo tocando, perguntas verbais, estímulos visuais. Use metrônomo como âncora inicial.',
     materials: ['Instrumento de percussão', 'Metrônomo', 'Gravações de ritmos distratores', 'Cronômetro', 'Ficha de registro'],
     estimatedTime: '15-20 minutos',
-    complexityLevel: 'moderado',
+    ageRange: '6-15 anos',
+    complexityLevel: 'intermediate',
     evaluationCriteria: [
       'Tempo total de manutenção do padrão',
       'Número de interrupções',
@@ -178,26 +154,19 @@ export const tdahActivities: ProfessionalActivity[] = [
       'Tolerância a distratores cada vez mais fortes',
       'Capacidade de manter padrões mais complexos'
     ],
-    adaptations: [
-      'Nível leve: Padrão simples (pulso), poucos distratores, metrônomo constante',
-      'Nível moderado: Padrão médio (2-3 elementos), distratores moderados',
-      'Nível severo: Padrão complexo, múltiplos distratores simultâneos, sem metrônomo'
-    ],
-    theoreticalBasis: 'Fundamentado na teoria de que o ritmo externo pode servir como organizador da atenção (RAS). O treino de manutenção de padrão sob distração trabalha diretamente o déficit atencional do TDAH.',
-    ageRange: '6-15 anos',
-    tips: [
-      'Comece com ritmos que o paciente goste',
-      'Introduza distratores gradualmente',
-      'Celebre cada recorde de tempo',
-      'Use competição consigo mesmo (bater próprio recorde)'
-    ]
+    adaptations: {
+      level1: 'Padrão simples (pulso), poucos distratores, metrônomo constante',
+      level2: 'Padrão médio (2-3 elementos), distratores moderados',
+      level3: 'Padrão complexo, múltiplos distratores simultâneos, sem metrônomo'
+    },
+    theoreticalBasis: 'Fundamentado na teoria de que o ritmo externo pode servir como organizador da atenção (RAS).',
+    practicalTips: ['Comece com ritmos que o paciente goste', 'Introduza distratores gradualmente', 'Celebre cada recorde de tempo']
   },
   {
-    id: 'tdah-at-6',
+    id: 2006,
     title: 'Atenção Dividida Musical',
     disorder: 'TDAH',
-    demandCategory: 'atencao',
-    demandLabel: 'Atenção Dividida',
+    demandCategory: 'attention',
     generalObjective: 'Desenvolver capacidade de dividir atenção entre duas tarefas musicais simultâneas',
     specificObjectives: [
       'Executar duas tarefas simples simultaneamente',
@@ -205,10 +174,11 @@ export const tdahActivities: ProfessionalActivity[] = [
       'Manter qualidade em ambas as tarefas',
       'Aumentar complexidade das tarefas combinadas'
     ],
-    description: 'Combine duas tarefas musicais: tocar um ritmo enquanto canta, andar no pulso enquanto toca instrumento, identificar sons enquanto mantém padrão. Comece com tarefas muito simples e automatizadas, aumentando complexidade gradualmente. Use tarefas já dominadas individualmente antes de combinar.',
+    description: 'Combine duas tarefas musicais: tocar um ritmo enquanto canta, andar no pulso enquanto toca instrumento. Comece com tarefas muito simples e automatizadas, aumentando complexidade gradualmente.',
     materials: ['Instrumentos de percussão', 'Canções conhecidas', 'Espaço para movimento', 'Gravador para feedback'],
     estimatedTime: '20-25 minutos',
-    complexityLevel: 'severo',
+    ageRange: '8-16 anos',
+    complexityLevel: 'advanced',
     evaluationCriteria: [
       'Qualidade de execução de cada tarefa isolada vs. combinada',
       'Tempo de manutenção da dupla tarefa',
@@ -216,26 +186,19 @@ export const tdahActivities: ProfessionalActivity[] = [
       'Estratégias de gerenciamento utilizadas',
       'Frustração observada'
     ],
-    adaptations: [
-      'Nível leve: Uma tarefa muito simples + uma automática',
-      'Nível moderado: Duas tarefas de complexidade média',
-      'Nível severo: Duas tarefas complexas com alternância de foco'
-    ],
-    theoreticalBasis: 'Baseado no modelo de recursos atencionais limitados. O TDAH apresenta dificuldade específica em alocar recursos para múltiplas tarefas. O treino gradual pode melhorar essa habilidade.',
-    ageRange: '8-16 anos',
-    tips: [
-      'Garanta domínio individual de cada tarefa antes de combinar',
-      'Comece com combinações naturais (cantar e bater palmas)',
-      'Não exija perfeição inicial - valorize qualquer manutenção',
-      'Use humor quando ocorrerem erros'
-    ]
+    adaptations: {
+      level1: 'Uma tarefa muito simples + uma automática',
+      level2: 'Duas tarefas de complexidade média',
+      level3: 'Duas tarefas complexas com alternância de foco'
+    },
+    theoreticalBasis: 'Baseado no modelo de recursos atencionais limitados. O treino gradual pode melhorar essa habilidade.',
+    practicalTips: ['Garanta domínio individual antes de combinar', 'Comece com combinações naturais', 'Use humor quando ocorrerem erros']
   },
   {
-    id: 'tdah-at-7',
+    id: 2007,
     title: 'Sequência Crescente',
     disorder: 'TDAH',
-    demandCategory: 'atencao',
-    demandLabel: 'Memória de Trabalho Auditiva',
+    demandCategory: 'attention',
     generalObjective: 'Expandir span de memória de trabalho auditiva através de sequências sonoras progressivamente maiores',
     specificObjectives: [
       'Reproduzir sequências de 4-7 elementos',
@@ -243,10 +206,11 @@ export const tdahActivities: ProfessionalActivity[] = [
       'Desenvolver estratégias de memorização',
       'Transferir habilidade para contextos cotidianos'
     ],
-    description: 'Apresente sequências de sons (instrumentos, notas, ritmos) que o paciente deve reproduzir. Comece com 2 elementos e adicione um a cada rodada bem-sucedida. Use o formato "Simon" musical. Registre span máximo. Introduza estratégias de chunking e ensaio subvocal.',
+    description: 'Apresente sequências de sons que o paciente deve reproduzir. Comece com 2 elementos e adicione um a cada rodada bem-sucedida. Use o formato Simon musical. Introduza estratégias de chunking.',
     materials: ['Instrumentos variados ou teclado', 'Registro de spans', 'Cartões visuais de apoio (opcional)'],
     estimatedTime: '15-20 minutos',
-    complexityLevel: 'moderado',
+    ageRange: '6-14 anos',
+    complexityLevel: 'intermediate',
     evaluationCriteria: [
       'Span máximo atingido',
       'Consistência entre sessões',
@@ -254,26 +218,19 @@ export const tdahActivities: ProfessionalActivity[] = [
       'Tolerância à frustração em caso de erro',
       'Generalização para outros contextos'
     ],
-    adaptations: [
-      'Nível leve: Sequências curtas (2-3), com apoio visual, ritmo lento',
-      'Nível moderado: Sequências médias (4-5), apoio visual parcial',
-      'Nível severo: Sequências longas (6+), apenas auditivo, ritmo rápido'
-    ],
-    theoreticalBasis: 'Déficit de memória de trabalho é central no modelo de Barkley para TDAH. O treino de span auditivo tem evidências de transferência para funcionamento executivo geral.',
-    ageRange: '6-14 anos',
-    tips: [
-      'Ensine estratégias explicitamente (agrupar, repetir mentalmente)',
-      'Celebre cada elemento adicional lembrado',
-      'Use sons interessantes para o paciente',
-      'Compare com recorde pessoal, não com normas'
-    ]
+    adaptations: {
+      level1: 'Sequências curtas (2-3), com apoio visual, ritmo lento',
+      level2: 'Sequências médias (4-5), apoio visual parcial',
+      level3: 'Sequências longas (6+), apenas auditivo, ritmo rápido'
+    },
+    theoreticalBasis: 'Déficit de memória de trabalho é central no modelo de Barkley para TDAH.',
+    practicalTips: ['Ensine estratégias explicitamente', 'Celebre cada elemento adicional', 'Compare com recorde pessoal']
   },
   {
-    id: 'tdah-at-8',
+    id: 2008,
     title: 'Escuta Seletiva em Camadas',
     disorder: 'TDAH',
-    demandCategory: 'atencao',
-    demandLabel: 'Atenção Seletiva',
+    demandCategory: 'attention',
     generalObjective: 'Desenvolver capacidade de focar em uma camada sonora específica em meio a múltiplas camadas',
     specificObjectives: [
       'Identificar melodia principal em arranjo com 3+ instrumentos',
@@ -281,10 +238,11 @@ export const tdahActivities: ProfessionalActivity[] = [
       'Alternar foco entre camadas quando solicitado',
       'Descrever o que cada camada está fazendo'
     ],
-    description: 'Use músicas com arranjos claros (voz, guitarra, baixo, bateria). Peça ao paciente para focar em apenas um instrumento por vez, descrevendo o que ele faz. Aumente complexidade com mais instrumentos e camadas menos distintas. Use equalizador para destacar/esconder camadas como apoio inicial.',
+    description: 'Use músicas com arranjos claros. Peça ao paciente para focar em apenas um instrumento por vez. Aumente complexidade com mais instrumentos. Use equalizador para destacar camadas como apoio inicial.',
     materials: ['Músicas com arranjos multi-instrumentais', 'Equalizador ou software de áudio', 'Fones de ouvido', 'Ficha de registro'],
     estimatedTime: '20-30 minutos',
-    complexityLevel: 'severo',
+    ageRange: '10-18 anos',
+    complexityLevel: 'advanced',
     evaluationCriteria: [
       'Precisão na descrição de cada camada',
       'Capacidade de alternar foco entre camadas',
@@ -292,26 +250,19 @@ export const tdahActivities: ProfessionalActivity[] = [
       'Tempo de foco em cada camada',
       'Satisfação com a atividade'
     ],
-    adaptations: [
-      'Nível leve: Apenas 2 camadas muito distintas, destaque eletrônico do alvo',
-      'Nível moderado: 3-4 camadas, destaque parcial',
-      'Nível severo: Múltiplas camadas, sem destaque, alternância rápida'
-    ],
-    theoreticalBasis: 'Baseado em estudos de atenção auditiva seletiva que mostram déficits específicos no TDAH para filtrar informação irrelevante. O treino sistemático pode melhorar essa habilidade.',
-    ageRange: '10-18 anos',
-    tips: [
-      'Use músicas que o paciente conhece e gosta',
-      'Comece com instrumentos de timbre muito diferente',
-      'Faça pausas frequentes - é cognitivamente exigente',
-      'Relacione com situações cotidianas (ouvir professor com barulho)'
-    ]
+    adaptations: {
+      level1: 'Apenas 2 camadas muito distintas, destaque eletrônico do alvo',
+      level2: '3-4 camadas, destaque parcial',
+      level3: 'Múltiplas camadas, sem destaque, alternância rápida'
+    },
+    theoreticalBasis: 'Baseado em estudos de atenção auditiva seletiva que mostram déficits específicos no TDAH.',
+    practicalTips: ['Use músicas que o paciente conhece', 'Comece com timbres muito diferentes', 'Faça pausas frequentes']
   },
   {
-    id: 'tdah-at-9',
+    id: 2009,
     title: 'Mapa Musical Navegável',
     disorder: 'TDAH',
-    demandCategory: 'atencao',
-    demandLabel: 'Atenção Sustentada',
+    demandCategory: 'attention',
     generalObjective: 'Desenvolver atenção sustentada através de navegação guiada por comandos sonoros em sequência',
     specificObjectives: [
       'Seguir 10+ comandos sonoros consecutivos',
@@ -319,2735 +270,2304 @@ export const tdahActivities: ProfessionalActivity[] = [
       'Responder corretamente a 90% dos comandos',
       'Aumentar velocidade de resposta mantendo precisão'
     ],
-    description: 'Crie um "mapa" no chão ou mesa com diferentes zonas. Cada som representa um comando de movimento (agudo = norte, grave = sul, rápido = leste, lento = oeste). O paciente navega seguindo sequências de sons. Adicione obstáculos e coletáveis para aumentar engajamento. Registre percurso e erros.',
-    materials: ['Mapa grande no chão ou tabuleiro', 'Instrumentos para comandos', 'Marcadores de posição', 'Obstáculos e recompensas'],
+    description: 'Crie um mapa no chão ou mesa com diferentes zonas. Cada som representa um comando de movimento. O paciente navega seguindo sequências de sons. Adicione obstáculos e coletáveis.',
+    materials: ['Mapa grande no chão', 'Marcadores de zona', 'Instrumentos para comandos', 'Objetos coletáveis', 'Cronômetro'],
     estimatedTime: '20-30 minutos',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Número de comandos seguidos corretamente',
-      'Erros de direção',
-      'Tempo para completar percursos',
-      'Manutenção do engajamento',
-      'Estratégias de orientação utilizadas'
-    ],
-    adaptations: [
-      'Nível leve: 4 direções básicas, comandos lentos e claros, apoio visual',
-      'Nível moderado: 6-8 comandos diferentes, velocidade média',
-      'Nível severo: Comandos complexos, velocidade rápida, distratores'
-    ],
-    theoreticalBasis: 'Combina atenção sustentada com memória de trabalho espacial, ambas áreas de dificuldade no TDAH. O movimento físico aumenta engajamento e facilita processamento.',
     ageRange: '5-12 anos',
-    tips: [
-      'Faça do mapa algo visualmente interessante',
-      'Inclua personagem que o paciente "é" durante navegação',
-      'Celebre chegada ao destino',
-      'Permita que paciente crie mapas também'
-    ]
-  },
-  {
-    id: 'tdah-at-10',
-    title: 'Memória Musical de Trabalho',
-    disorder: 'TDAH',
-    demandCategory: 'atencao',
-    demandLabel: 'Memória de Trabalho',
-    generalObjective: 'Fortalecer memória de trabalho através de manipulação ativa de informação musical',
-    specificObjectives: [
-      'Reproduzir melodias em ordem inversa',
-      'Transpor padrões rítmicos para outros instrumentos',
-      'Manter informação enquanto realiza operação mental',
-      'Aumentar quantidade de informação manipulada'
-    ],
-    description: 'Apresente sequências musicais que devem ser manipuladas mentalmente: tocar de trás para frente, adicionar um elemento, trocar dois elementos de lugar. Diferente de simples repetição, exige manter e manipular informação. Progrida de operações simples para complexas.',
-    materials: ['Instrumentos melódicos', 'Gravador para comparação', 'Cartões com operações', 'Registro de desempenho'],
-    estimatedTime: '15-25 minutos',
-    complexityLevel: 'severo',
+    complexityLevel: 'intermediate',
     evaluationCriteria: [
-      'Precisão na manipulação',
-      'Complexidade da operação realizada',
-      'Número de elementos manipulados',
-      'Velocidade de processamento',
-      'Estratégias verbais ou visuais utilizadas'
+      'Porcentagem de comandos seguidos corretamente',
+      'Tempo total de navegação',
+      'Número de vezes que perdeu orientação',
+      'Capacidade de corrigir erros',
+      'Engajamento durante a atividade'
     ],
-    adaptations: [
-      'Nível leve: Sequências de 2-3 elementos, operações simples (repetir último)',
-      'Nível moderado: Sequências de 4-5 elementos, inversão parcial',
-      'Nível severo: Sequências longas, operações complexas (inverter e transpor)'
-    ],
-    theoreticalBasis: 'A memória de trabalho é o executivo central no modelo de Baddeley, consistentemente deficitária no TDAH. Treino de manipulação ativa fortalece mais que simples armazenamento.',
-    ageRange: '8-16 anos',
-    tips: [
-      'Ensine estratégias de visualização',
-      'Permita verbalizações durante processamento',
-      'Comece com operações muito simples',
-      'Não apresse - dê tempo para processamento'
-    ]
+    adaptations: {
+      level1: 'Mapa simples, 4 direções, comandos lentos',
+      level2: 'Mapa médio, 6 direções, comandos moderados',
+      level3: 'Mapa complexo, múltiplas ações, comandos rápidos'
+    },
+    theoreticalBasis: 'Integração de atenção sustentada com orientação espacial e memória de trabalho.',
+    practicalTips: ['Use mapas temáticos (piratas, espaço)', 'Adicione recompensas coletáveis', 'Permita movimento físico']
   },
   {
-    id: 'tdah-at-11',
+    id: 2010,
     title: 'Cronômetro Musical',
     disorder: 'TDAH',
-    demandCategory: 'atencao',
-    demandLabel: 'Percepção Temporal',
-    generalObjective: 'Desenvolver percepção temporal e estimativa de duração através de atividades musicais cronometradas',
+    demandCategory: 'attention',
+    generalObjective: 'Desenvolver senso de tempo e atenção temporal através de estimativas musicais',
     specificObjectives: [
-      'Estimar durações de 10-60 segundos com precisão de ±20%',
-      'Tocar por tempo solicitado sem olhar relógio',
-      'Identificar quando passou tempo determinado',
-      'Melhorar consciência do tempo durante atividades'
+      'Estimar duração de trechos musicais com precisão crescente',
+      'Manter atenção em música por tempo pré-determinado',
+      'Desenvolver senso interno de passagem do tempo',
+      'Reduzir distorção temporal característica do TDAH'
     ],
-    description: 'Trabalhe percepção temporal usando música: "Toque até achar que passou 30 segundos", "Cante uma música que dure exatamente 1 minuto", "Avise quando achar que passou o tempo combinado". Compare estimativas com tempo real. Use metrônomo como âncora inicial.',
-    materials: ['Cronômetro', 'Instrumentos variados', 'Metrônomo', 'Registro de estimativas'],
+    description: 'Ouça trechos musicais e estime quanto tempo durou. Compare estimativa com tempo real. Pratique manter atenção por tempos específicos usando música como marcador.',
+    materials: ['Cronômetro', 'Músicas de diferentes durações', 'Gráfico de registro', 'Timer visual'],
     estimatedTime: '15-20 minutos',
-    complexityLevel: 'moderado',
+    ageRange: '7-16 anos',
+    complexityLevel: 'intermediate',
     evaluationCriteria: [
       'Precisão das estimativas temporais',
-      'Melhora ao longo das sessões',
-      'Uso de estratégias internas (contagem, pulso)',
-      'Transferência para consciência temporal diária',
-      'Tolerância a feedback de erro'
+      'Redução de distorção temporal ao longo das sessões',
+      'Capacidade de usar música como marcador de tempo',
+      'Generalização para contextos não musicais',
+      'Consciência metacognitiva sobre tempo'
     ],
-    adaptations: [
-      'Nível leve: Durações curtas (10-20s), feedback imediato, metrônomo',
-      'Nível moderado: Durações médias (30-60s), feedback atrasado',
-      'Nível severo: Durações longas (2-5min), sem apoios, durante atividade'
-    ],
-    theoreticalBasis: 'A discronia (dificuldade de percepção temporal) é característica do TDAH no modelo de Barkley. O ritmo musical pode servir como organizador temporal externo que vai sendo internalizado.',
-    ageRange: '7-16 anos',
-    tips: [
-      'Comece com durações muito curtas',
-      'Use humor quando estimativas estiverem muito erradas',
-      'Relacione com situações problemáticas (atrasos)',
-      'Ensine estratégias de monitoramento temporal'
-    ]
+    adaptations: {
+      level1: 'Durações curtas (15-30s), feedback imediato',
+      level2: 'Durações médias (1-2min), feedback parcial',
+      level3: 'Durações longas (3-5min), auto-avaliação'
+    },
+    theoreticalBasis: 'Baseado na dificuldade de percepção temporal documentada no TDAH (Barkley, 1997).',
+    practicalTips: ['Use músicas conhecidas inicialmente', 'Celebre aproximações', 'Relacione com atividades cotidianas']
   },
   {
-    id: 'tdah-at-12',
-    title: 'Vigilância Sonora',
+    id: 2011,
+    title: 'Vigilância Sonora Prolongada',
     disorder: 'TDAH',
-    demandCategory: 'atencao',
-    demandLabel: 'Atenção Vigilante',
-    generalObjective: 'Desenvolver capacidade de manter estado de alerta para detectar eventos raros e imprevisíveis',
+    demandCategory: 'attention',
+    generalObjective: 'Aumentar capacidade de manter vigilância atencional por períodos prolongados',
     specificObjectives: [
-      'Manter vigilância por 5+ minutos com detecção precisa',
-      'Responder rapidamente a eventos-alvo',
-      'Minimizar falsas detecções',
-      'Manter desempenho ao longo do tempo'
+      'Manter atenção vigilante por 10+ minutos',
+      'Identificar estímulos-alvo raros em sequência longa',
+      'Reduzir erros de omissão ao longo do tempo',
+      'Desenvolver estratégias para manter alerta'
     ],
-    description: 'Durante uma música ou paisagem sonora contínua, o paciente deve detectar eventos raros (um sino tocando brevemente, uma pausa súbita). Os eventos são imprevisíveis em timing. Registre tempo de reação e falsas detecções. Aumente duração gradualmente.',
-    materials: ['Gravações longas com eventos inseridos', 'Botão ou instrumento para resposta', 'Cronômetro', 'Registro de detecções'],
-    estimatedTime: '10-20 minutos',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Taxa de detecção de eventos',
-      'Tempo de reação médio',
-      'Taxa de falsos positivos',
-      'Declínio de desempenho ao longo do tempo',
-      'Estratégias de manutenção de alerta'
-    ],
-    adaptations: [
-      'Nível leve: Eventos frequentes (a cada 30s), muito salientes',
-      'Nível moderado: Eventos espaçados (1-2min), moderadamente salientes',
-      'Nível severo: Eventos raros e sutis, duração longa'
-    ],
-    theoreticalBasis: 'Tarefas de vigilância são especialmente difíceis para TDAH devido ao déficit de ativação sustentada. O treino gradual pode melhorar essa capacidade com transferência para contextos escolares.',
+    description: 'Tarefa de vigilância musical onde o paciente ouve longa sequência de sons e deve responder apenas a combinações específicas. Comece com alvos frequentes e reduza progressivamente.',
+    materials: ['Gravação de sequência sonora longa', 'Botão ou instrumento de resposta', 'Registro de acertos/erros', 'Timer'],
+    estimatedTime: '15-25 minutos',
     ageRange: '8-16 anos',
-    tips: [
-      'Use eventos interessantes (som de videogame favorito)',
-      'Faça sessões curtas inicialmente',
-      'Forneça feedback sobre desempenho',
-      'Relacione com situações reais (prestar atenção em sala)'
-    ]
+    complexityLevel: 'advanced',
+    evaluationCriteria: [
+      'Taxa de acertos ao longo do tempo',
+      'Curva de fadiga atencional',
+      'Tempo de reação médio',
+      'Erros de omissão vs. comissão',
+      'Uso de estratégias de manutenção'
+    ],
+    adaptations: {
+      level1: 'Sessões curtas (5min), alvos frequentes (30%)',
+      level2: 'Sessões médias (10min), alvos moderados (20%)',
+      level3: 'Sessões longas (15min), alvos raros (10%)'
+    },
+    theoreticalBasis: 'Paradigma de vigilância sustentada adaptado para contexto musical com maior engajamento.',
+    practicalTips: ['Faça pausas se necessário', 'Use alvos interessantes', 'Monitore sinais de fadiga']
   },
   {
-    id: 'tdah-at-13',
+    id: 2012,
     title: 'Alternância de Foco Musical',
     disorder: 'TDAH',
-    demandCategory: 'atencao',
-    demandLabel: 'Atenção Alternada',
-    generalObjective: 'Desenvolver capacidade de alternar foco atencional entre diferentes tarefas musicais de forma eficiente',
+    demandCategory: 'attention',
+    generalObjective: 'Desenvolver flexibilidade atencional através de trocas rápidas de foco entre estímulos musicais',
     specificObjectives: [
-      'Alternar entre tarefas com mínimo tempo de transição',
-      'Manter qualidade em ambas as tarefas após alternância',
-      'Reduzir erros de perseveração',
-      'Responder flexivelmente a sinais de mudança'
+      'Alternar foco entre dois estímulos em menos de 2 segundos',
+      'Manter precisão durante alternância',
+      'Aumentar velocidade de alternância',
+      'Reduzir erros de perseveração'
     ],
-    description: 'O paciente alterna entre duas tarefas musicais diferentes quando um sinal é dado: tocar ritmo A / tocar ritmo B; cantar melodia / tocar instrumento; escutar e responder / tocar sem parar. Meça tempo de transição e erros. Aumente frequência de alternâncias.',
-    materials: ['Dois instrumentos diferentes', 'Sinal sonoro para alternância', 'Cronômetro', 'Registro de desempenho'],
-    estimatedTime: '15-25 minutos',
-    complexityLevel: 'severo',
-    evaluationCriteria: [
-      'Tempo de transição entre tarefas',
-      'Erros de perseveração (continuar tarefa anterior)',
-      'Qualidade de execução em cada tarefa',
-      'Capacidade de aumentar frequência de alternâncias',
-      'Flexibilidade diante de mudanças imprevistas'
-    ],
-    adaptations: [
-      'Nível leve: Duas tarefas muito diferentes, alternâncias previsíveis e lentas',
-      'Nível moderado: Tarefas relacionadas, alternâncias semi-previsíveis',
-      'Nível severo: Tarefas similares, alternâncias rápidas e imprevisíveis'
-    ],
-    theoreticalBasis: 'Déficit de flexibilidade cognitiva é comum no TDAH. A alternância de set atencional requer desengajar de uma tarefa e engajar em outra, habilidade frequentemente comprometida.',
-    ageRange: '7-16 anos',
-    tips: [
-      'Comece com tarefas muito distintas',
-      'Use sinais claros e consistentes para alternância',
-      'Não critique perseveração - é esperada inicialmente',
-      'Celebre alternâncias rápidas e limpas'
-    ]
-  },
-  {
-    id: 'tdah-at-14',
-    title: 'Atenção Flutuante',
-    disorder: 'TDAH',
-    demandCategory: 'atencao',
-    demandLabel: 'Monitoramento Atencional',
-    generalObjective: 'Desenvolver consciência metacognitiva do próprio estado atencional e estratégias de recuperação',
-    specificObjectives: [
-      'Identificar quando atenção está dispersando',
-      'Nomear gatilhos de distração pessoais',
-      'Aplicar estratégia de refocalização',
-      'Aumentar tempo até primeira distração'
-    ],
-    description: 'Durante atividade musical contínua, o paciente monitora seu próprio estado atencional. Ao perceber distração, sinaliza (levanta mão) e aplica estratégia combinada (respirar, olhar para instrumento, contar até 3). Terapeuta também pode sinalizar quando percebe distração. Discuta gatilhos e estratégias.',
-    materials: ['Instrumento para atividade contínua', 'Sinalizador para distrações', 'Cartões de estratégias', 'Diário atencional'],
-    estimatedTime: '20-30 minutos',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Precisão na auto-detecção de distração',
-      'Tempo entre distração e auto-sinalização',
-      'Efetividade das estratégias de recuperação',
-      'Aumento do tempo até primeira distração',
-      'Identificação de gatilhos pessoais'
-    ],
-    adaptations: [
-      'Nível leve: Terapeuta sinaliza distrações, paciente aprende a reconhecer',
-      'Nível moderado: Paciente e terapeuta sinalizam, comparam percepções',
-      'Nível severo: Apenas paciente sinaliza, múltiplas estratégias de recuperação'
-    ],
-    theoreticalBasis: 'Baseado em abordagens metacognitivas para TDAH. Desenvolver consciência do próprio estado atencional é passo fundamental para autorregulação.',
-    ageRange: '8-18 anos',
-    tips: [
-      'Normalize distração como parte do processo',
-      'Celebre auto-detecções, não critique distrações',
-      'Ajude a identificar padrões pessoais',
-      'Transfira estratégias para sala de aula'
-    ]
-  },
-  {
-    id: 'tdah-at-15',
-    title: 'Multitarefa Musical Estruturada',
-    disorder: 'TDAH',
-    demandCategory: 'atencao',
-    demandLabel: 'Atenção Dividida',
-    generalObjective: 'Desenvolver capacidade de gerenciar múltiplas demandas atencionais simultâneas de forma estruturada',
-    specificObjectives: [
-      'Manter desempenho em 3 tarefas simples simultâneas',
-      'Priorizar tarefas quando necessário',
-      'Recuperar rapidamente de sobrecarga',
-      'Desenvolver estratégias pessoais de gerenciamento'
-    ],
-    description: 'Estruture ambiente com múltiplas demandas: tocar ritmo, responder a perguntas ocasionais, monitorar tempo. O paciente deve gerenciar todas simultaneamente. Quando sobrecarga acontece, discuta estratégias (temporizar uma tarefa, simplificar outra). Progrida de 2 para 3+ tarefas.',
-    materials: ['Múltiplos instrumentos', 'Timer visual', 'Cartões de perguntas', 'Sinalizadores de prioridade'],
-    estimatedTime: '20-30 minutos',
-    complexityLevel: 'severo',
-    evaluationCriteria: [
-      'Número de tarefas gerenciadas simultaneamente',
-      'Qualidade de desempenho em cada tarefa',
-      'Estratégias de priorização utilizadas',
-      'Recuperação após sobrecarga',
-      'Frustra vs. persistência'
-    ],
-    adaptations: [
-      'Nível leve: 2 tarefas simples, uma automatizada, sem pressão de tempo',
-      'Nível moderado: 2-3 tarefas, alguma pressão temporal',
-      'Nível severo: 3+ tarefas, demandas imprevisíveis, pressão temporal'
-    ],
-    theoreticalBasis: 'O TDAH impacta especialmente situações de alta demanda executiva. Treinar gerenciamento de múltiplas tarefas em ambiente controlado pode desenvolver estratégias transferíveis.',
-    ageRange: '10-18 anos',
-    tips: [
-      'Comece muito simples - sucesso inicial é crucial',
-      'Ensine explicitamente estratégias de priorização',
-      'Use humor quando sobrecarga acontecer',
-      'Relacione com desafios do cotidiano'
-    ]
-  },
-  {
-    id: 'tdah-at-16',
-    title: 'Pausas Atentas',
-    disorder: 'TDAH',
-    demandCategory: 'atencao',
-    demandLabel: 'Recuperação Atencional',
-    generalObjective: 'Desenvolver capacidade de fazer pausas restauradoras que efetivamente recuperem recursos atencionais',
-    specificObjectives: [
-      'Identificar sinais de fadiga atencional',
-      'Implementar pausas musicais restauradoras',
-      'Retornar a tarefas com atenção renovada',
-      'Internalizar ciclos atenção-pausa-atenção'
-    ],
-    description: 'Estruture atividade em ciclos: tarefa atencional exigente + pausa musical restauradora (escuta passiva, movimento livre, improvação sem regras). Ensine a identificar quando pausa é necessária. Compare desempenho com e sem pausas estratégicas. Individualize tipo de pausa mais efetivo.',
-    materials: ['Instrumentos para tarefa', 'Músicas relaxantes', 'Timer', 'Espaço para movimento', 'Diário de pausas'],
-    estimatedTime: '30-40 minutos',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Auto-identificação de necessidade de pausa',
-      'Efetividade da pausa na recuperação',
-      'Melhora de desempenho pós-pausa',
-      'Duração ideal de pausa identificada',
-      'Tipo de pausa mais efetivo para o paciente'
-    ],
-    adaptations: [
-      'Nível leve: Pausas estruturadas pelo terapeuta, curtas e frequentes',
-      'Nível moderado: Pausas semi-estruturadas, paciente escolhe timing',
-      'Nível severo: Pausas auto-gerenciadas, paciente identifica necessidade'
-    ],
-    theoreticalBasis: 'Baseado na teoria de recursos atencionais limitados e necessidade de restauração. Pessoas com TDAH frequentemente não reconhecem fadiga atencional ou usam pausas ineficazes.',
-    ageRange: '8-18 anos',
-    tips: [
-      'Experimente diferentes tipos de pausas (ativa vs. passiva)',
-      'Não julgue a necessidade de pausas frequentes',
-      'Ajude a transferir para contexto escolar',
-      'Ensine diferença entre pausa e evasão de tarefa'
-    ]
-  },
-  {
-    id: 'tdah-at-17',
-    title: 'Resistência a Distratores',
-    disorder: 'TDAH',
-    demandCategory: 'atencao',
-    demandLabel: 'Controle Atencional',
-    generalObjective: 'Desenvolver resistência progressiva a distratores através de exposição gradual e estratégias ativas',
-    specificObjectives: [
-      'Manter tarefa com distratores leves por 5+ minutos',
-      'Identificar distratores mais problemáticos pessoalmente',
-      'Aplicar estratégias de bloqueio atencional',
-      'Aumentar tolerância a ambientes não controlados'
-    ],
-    description: 'Durante tarefa musical, introduza distratores graduais: ruído de fundo, música concorrente, estímulos visuais, interrupções verbais. Ensine estratégias: foco no instrumento, subvocalização, ignorar ativamente. Registre tolerância e estratégias efetivas. Personalize hierarquia de distratores.',
-    materials: ['Instrumentos', 'Fontes de distração controladas', 'Fones (para bloquear)', 'Registro de tolerância'],
-    estimatedTime: '20-30 minutos',
-    complexityLevel: 'severo',
-    evaluationCriteria: [
-      'Nível de distração tolerado mantendo tarefa',
-      'Efetividade das estratégias de bloqueio',
-      'Identificação de distratores pessoais',
-      'Progresso na hierarquia de distratores',
-      'Transferência para ambientes naturais'
-    ],
-    adaptations: [
-      'Nível leve: Distratores muito sutis, ambiente controlado',
-      'Nível moderado: Distratores moderados, algumas estratégias',
-      'Nível severo: Múltiplos distratores fortes, apenas estratégias internas'
-    ],
-    theoreticalBasis: 'Exposição gradual a distratores com ensino de estratégias é mais eficaz que simples evitação. Desenvolve habilidades transferíveis para ambientes escolares e profissionais.',
-    ageRange: '8-18 anos',
-    tips: [
-      'Construa hierarquia individual de distratores',
-      'Comece muito abaixo do limiar de falha',
-      'Celebre cada avanço na hierarquia',
-      'Pratique em ambientes cada vez mais naturais'
-    ]
-  },
-  {
-    id: 'tdah-at-18',
-    title: 'Rotina Atencional Musical',
-    disorder: 'TDAH',
-    demandCategory: 'atencao',
-    demandLabel: 'Preparação Atencional',
-    generalObjective: 'Desenvolver rotina de preparação atencional que facilite entrada em estado de foco',
-    specificObjectives: [
-      'Criar ritual pessoal de preparação para foco',
-      'Reduzir tempo para entrar em estado atencional',
-      'Identificar condições ótimas pessoais de atenção',
-      'Transferir rotina para outros contextos'
-    ],
-    description: 'Crie um ritual consistente de preparação antes de tarefas que exigem atenção: música específica, respiração com ritmo, organização do espaço, movimentos preparatórios. Pratique até automatizar. Personalize elementos mais efetivos. Ensine a aplicar antes de deveres, provas.',
-    materials: ['Playlist de preparação', 'Objetos de ritual', 'Checklist de preparação', 'Espaço organizado'],
-    estimatedTime: '15-25 minutos',
-    complexityLevel: 'leve',
-    evaluationCriteria: [
-      'Consistência na execução do ritual',
-      'Tempo para entrar em estado de foco',
-      'Qualidade da atenção subsequente',
-      'Personalização efetiva dos elementos',
-      'Transferência para outros contextos'
-    ],
-    adaptations: [
-      'Nível leve: Ritual longo e completo, ambiente ideal',
-      'Nível moderado: Ritual condensado, ambiente variado',
-      'Nível severo: Micro-ritual portátil, qualquer ambiente'
-    ],
-    theoreticalBasis: 'Rituais de preparação criam previsibilidade e organizam transição para estado de trabalho, especialmente importante para TDAH que tem dificuldade em auto-iniciar.',
-    ageRange: '6-18 anos',
-    tips: [
-      'Comece com ritual elaborado, depois condense',
-      'Inclua elementos sensoriais agradáveis',
-      'Pratique consistentemente antes de atividades',
-      'Ajude a criar versão portátil para escola'
-    ]
-  },
-  {
-    id: 'tdah-at-19',
-    title: 'Zoom Atencional',
-    disorder: 'TDAH',
-    demandCategory: 'atencao',
-    demandLabel: 'Controle Atencional',
-    generalObjective: 'Desenvolver capacidade de ajustar foco atencional (amplo vs. estreito) conforme demanda da tarefa',
-    specificObjectives: [
-      'Alternar entre foco amplo e estreito sob comando',
-      'Identificar qual foco é necessário para cada tarefa',
-      'Manter foco no modo adequado',
-      'Ajustar espontaneamente quando necessário'
-    ],
-    description: 'Use metáfora de lente de câmera: foco amplo (ouvir toda a música, todos os instrumentos) vs. foco estreito (apenas um instrumento, um compasso). Pratique alternar entre modos. Aplique a diferentes tarefas, identificando qual modo é necessário. Use gestos (mãos abertas vs. fechadas) para sinalizar.',
-    materials: ['Músicas variadas', 'Gestos de sinalização', 'Cartões de modo atencional', 'Registro de adequação'],
-    estimatedTime: '20-25 minutos',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Precisão na alternância de modos',
-      'Identificação espontânea do modo necessário',
-      'Manutenção do modo adequado',
-      'Flexibilidade de ajuste',
-      'Transferência para tarefas não-musicais'
-    ],
-    adaptations: [
-      'Nível leve: Apenas dois modos muito distintos, terapeuta indica modo',
-      'Nível moderado: Paciente identifica modo necessário, apoio parcial',
-      'Nível severo: Múltiplos níveis de zoom, auto-gerenciado'
-    ],
-    theoreticalBasis: 'Controle do foco atencional (spotlight vs. lanterna) é habilidade executiva frequentemente deficitária no TDAH. A metáfora visual facilita compreensão e transferência.',
+    description: 'Dois estímulos musicais simultâneos. Sinal indica qual focar. Alternar rapidamente entre eles, respondendo a características específicas de cada um.',
+    materials: ['Duas fontes sonoras separadas', 'Sinal de alternância', 'Registro de respostas', 'Fones de ouvido estéreo'],
+    estimatedTime: '15-20 minutos',
     ageRange: '8-16 anos',
-    tips: [
-      'Use metáfora concreta (câmera, lanterna)',
-      'Pratique em músicas conhecidas primeiro',
-      'Relacione com situações escolares',
-      'Faça gestos para externalizar modo'
-    ]
+    complexityLevel: 'advanced',
+    evaluationCriteria: [
+      'Tempo de alternância entre focos',
+      'Precisão de resposta em cada foco',
+      'Erros de perseveração',
+      'Capacidade de manter ritmo de alternância',
+      'Frustração observada'
+    ],
+    adaptations: {
+      level1: 'Alternância lenta (cada 10s), estímulos muito distintos',
+      level2: 'Alternância média (cada 5s), estímulos moderados',
+      level3: 'Alternância rápida (cada 2s), estímulos similares'
+    },
+    theoreticalBasis: 'Flexibilidade cognitiva e set-shifting, frequentemente deficitários no TDAH.',
+    practicalTips: ['Comece com ritmo confortável', 'Use sinais claros de alternância', 'Não exija perfeição inicial']
   },
   {
-    id: 'tdah-at-20',
-    title: 'Maratona Atencional Musical',
+    id: 2013,
+    title: 'Contagem Musical Paralela',
     disorder: 'TDAH',
-    demandCategory: 'atencao',
-    demandLabel: 'Resistência Atencional',
-    generalObjective: 'Desenvolver resistência atencional para tarefas de longa duração através de treino progressivo',
+    demandCategory: 'attention',
+    generalObjective: 'Desenvolver atenção dividida através de contagem simultânea de elementos musicais',
     specificObjectives: [
-      'Aumentar tempo de atenção sustentada em 50%',
-      'Manter qualidade ao longo de tarefas longas',
-      'Desenvolver estratégias de manutenção de energia',
-      'Identificar padrões pessoais de declínio'
+      'Contar ocorrências de dois sons diferentes simultaneamente',
+      'Manter contagens precisas por períodos crescentes',
+      'Desenvolver estratégias de gerenciamento atencional',
+      'Transferir habilidade para situações cotidianas'
     ],
-    description: 'Estruture atividades musicais progressivamente mais longas, monitorando qualidade ao longo do tempo. Identifique quando declínio começa, ensine estratégias de revitalização (mudança de postura, micro-pausa, variação). Registre curva atencional pessoal. Trabalhe para achatar declínio.',
-    materials: ['Atividades de durações variadas', 'Timer', 'Gráfico de desempenho', 'Cartões de estratégias'],
-    estimatedTime: '30-45 minutos',
-    complexityLevel: 'severo',
+    description: 'Ouça música e conte quantas vezes dois instrumentos diferentes aparecem. Comece contando um, depois adicione o segundo. Registre contagens e compare com gabarito.',
+    materials: ['Músicas com instrumentos claros', 'Papel e lápis', 'Contadores manuais', 'Gravações com gabarito'],
+    estimatedTime: '15-25 minutos',
+    ageRange: '8-15 anos',
+    complexityLevel: 'advanced',
     evaluationCriteria: [
-      'Duração máxima com qualidade mantida',
-      'Padrão de declínio (quando começa)',
-      'Efetividade das estratégias de manutenção',
-      'Progresso ao longo das sessões',
-      'Transferência para atividades escolares longas'
+      'Precisão das contagens',
+      'Capacidade de manter duas contagens simultâneas',
+      'Estratégias utilizadas',
+      'Melhora ao longo das sessões',
+      'Generalização para outras tarefas'
     ],
-    adaptations: [
-      'Nível leve: Sessões curtas (10-15min), muitos intervalos, tarefa interessante',
-      'Nível moderado: Sessões médias (20-30min), intervalos estratégicos',
-      'Nível severo: Sessões longas (40+min), mínimos intervalos, variação interna'
-    ],
-    theoreticalBasis: 'A resistência atencional pode ser desenvolvida como músculo. Treino progressivo com monitoramento permite identificar limites e estratégias pessoais de extensão.',
-    ageRange: '10-18 anos',
-    tips: [
-      'Aumente duração muito gradualmente',
-      'Monitore qualidade, não apenas duração',
-      'Ensine a reconhecer sinais de fadiga',
-      'Relacione com provas e tarefas longas'
-    ]
+    adaptations: {
+      level1: 'Contar apenas um instrumento',
+      level2: 'Contar dois instrumentos muito distintos',
+      level3: 'Contar dois instrumentos similares'
+    },
+    theoreticalBasis: 'Treino de atenção dividida baseado em paradigmas de dupla tarefa.',
+    practicalTips: ['Ensine estratégia de dedos', 'Use instrumentos de preferência', 'Não puna erros']
   },
-
+  {
+    id: 2014,
+    title: 'Atenção Antecipatória Musical',
+    disorder: 'TDAH',
+    demandCategory: 'attention',
+    generalObjective: 'Desenvolver atenção preparatória através de antecipação de eventos musicais',
+    specificObjectives: [
+      'Antecipar eventos musicais previsíveis',
+      'Preparar resposta antes do evento',
+      'Reduzir tempo de reação através de antecipação',
+      'Desenvolver previsibilidade temporal'
+    ],
+    description: 'Use músicas com padrões previsíveis. O paciente deve antecipar quando eventos específicos ocorrerão e preparar resposta. Comece com padrões óbvios e aumente sutileza.',
+    materials: ['Músicas com padrões claros', 'Instrumento de resposta', 'Timer visual', 'Registro de antecipações'],
+    estimatedTime: '15-20 minutos',
+    ageRange: '6-14 anos',
+    complexityLevel: 'intermediate',
+    evaluationCriteria: [
+      'Precisão das antecipações',
+      'Redução de tempo de reação',
+      'Capacidade de prever eventos sutis',
+      'Preparação motora observável',
+      'Generalização para outros contextos'
+    ],
+    adaptations: {
+      level1: 'Padrões muito previsíveis, dica visual adicional',
+      level2: 'Padrões moderados, sem dica visual',
+      level3: 'Padrões sutis, variações inesperadas ocasionais'
+    },
+    theoreticalBasis: 'Déficit de antecipação temporal no TDAH e seu impacto no tempo de reação.',
+    practicalTips: ['Use músicas favoritas', 'Celebre antecipações corretas', 'Adicione elemento motor']
+  },
+  {
+    id: 2015,
+    title: 'Filtro de Distratores Progressivo',
+    disorder: 'TDAH',
+    demandCategory: 'attention',
+    generalObjective: 'Desenvolver resistência a distratores através de exposição gradual controlada',
+    specificObjectives: [
+      'Manter tarefa principal sob distração leve',
+      'Tolerar distratores de intensidade crescente',
+      'Desenvolver estratégias de filtragem',
+      'Generalizar resistência para ambiente natural'
+    ],
+    description: 'Execute tarefa musical simples enquanto distratores são adicionados gradualmente: ruído, música competidora, estímulos visuais. Registre impacto de cada tipo de distrator.',
+    materials: ['Instrumento para tarefa principal', 'Fontes de distração controladas', 'Escala de dificuldade', 'Registro de desempenho'],
+    estimatedTime: '20-30 minutos',
+    ageRange: '7-16 anos',
+    complexityLevel: 'intermediate',
+    evaluationCriteria: [
+      'Nível de distração tolerado',
+      'Impacto no desempenho da tarefa principal',
+      'Estratégias de filtragem utilizadas',
+      'Recuperação após distração',
+      'Generalização para vida diária'
+    ],
+    adaptations: {
+      level1: 'Distratores leves, introdução muito gradual',
+      level2: 'Distratores moderados, introdução gradual',
+      level3: 'Distratores intensos, ambiente naturalístico'
+    },
+    theoreticalBasis: 'Dessensibilização sistemática aplicada a déficits de filtragem atencional.',
+    practicalTips: ['Avance apenas quando estável', 'Use distratores relevantes para o paciente', 'Celebre cada nível superado']
+  },
+  {
+    id: 2016,
+    title: 'Monitoramento de Erros Musical',
+    disorder: 'TDAH',
+    demandCategory: 'attention',
+    generalObjective: 'Desenvolver auto-monitoramento através da identificação de próprios erros musicais',
+    specificObjectives: [
+      'Identificar próprios erros durante execução',
+      'Parar e corrigir erros identificados',
+      'Reduzir erros através de monitoramento ativo',
+      'Desenvolver metacognição sobre desempenho'
+    ],
+    description: 'Execute padrão musical conhecido. Pare quando perceber erro e indique. Use gravação para comparar percepção com realidade. Desenvolva checklist de monitoramento.',
+    materials: ['Instrumento', 'Gravador', 'Checklist de erros', 'Espelho (opcional)', 'Cartões de auto-correção'],
+    estimatedTime: '20-25 minutos',
+    ageRange: '7-16 anos',
+    complexityLevel: 'intermediate',
+    evaluationCriteria: [
+      'Porcentagem de erros identificados',
+      'Velocidade de identificação',
+      'Capacidade de auto-correção',
+      'Desenvolvimento de metacognição',
+      'Generalização para outras atividades'
+    ],
+    adaptations: {
+      level1: 'Erros óbvios, pausa após cada tentativa',
+      level2: 'Erros moderados, monitoramento em tempo real',
+      level3: 'Erros sutis, auto-avaliação sem pausa'
+    },
+    theoreticalBasis: 'Déficit de auto-monitoramento no TDAH e sua relação com funções executivas.',
+    practicalTips: ['Não puna erros', 'Use gravação para feedback objetivo', 'Celebre identificação de erros']
+  },
+  {
+    id: 2017,
+    title: 'Atenção Sustentada com Movimento',
+    disorder: 'TDAH',
+    demandCategory: 'attention',
+    generalObjective: 'Utilizar movimento controlado como facilitador de atenção sustentada',
+    specificObjectives: [
+      'Manter atenção em tarefa auditiva enquanto se move',
+      'Canalizar energia motora de forma produtiva',
+      'Aumentar tempo de foco através de movimento',
+      'Desenvolver consciência corpo-mente'
+    ],
+    description: 'Execute tarefa de atenção auditiva enquanto realiza movimento rítmico (andar, balançar). O movimento serve como regulador energético que facilita atenção. Compare desempenho com e sem movimento.',
+    materials: ['Espaço para movimento', 'Música ou sequência sonora', 'Registro de desempenho', 'Opções de movimento (bola, almofada)'],
+    estimatedTime: '20-25 minutos',
+    ageRange: '5-14 anos',
+    complexityLevel: 'basic',
+    evaluationCriteria: [
+      'Comparação desempenho com/sem movimento',
+      'Tipo de movimento mais efetivo',
+      'Tempo de atenção sustentada',
+      'Regulação energética observada',
+      'Preferência do paciente'
+    ],
+    adaptations: {
+      level1: 'Movimento livre, tarefa muito simples',
+      level2: 'Movimento semi-estruturado, tarefa média',
+      level3: 'Movimento estruturado sincronizado com tarefa'
+    },
+    theoreticalBasis: 'Pesquisas sobre benefícios do movimento para atenção no TDAH (fidgeting funcional).',
+    practicalTips: ['Permita escolha de movimento', 'Não force imobilidade', 'Observe qual movimento funciona melhor']
+  },
+  {
+    id: 2018,
+    title: 'Busca Sonora Sistemática',
+    disorder: 'TDAH',
+    demandCategory: 'attention',
+    generalObjective: 'Desenvolver estratégia de busca sistemática através de exploração sonora organizada',
+    specificObjectives: [
+      'Aplicar estratégia sistemática de busca',
+      'Evitar busca aleatória e impulsiva',
+      'Cobrir todo campo sonoro sem omissões',
+      'Transferir estratégia para outras buscas'
+    ],
+    description: 'Sons escondidos no espaço ou em sequência. O paciente deve encontrar todos usando estratégia sistemática (esquerda-direita, início-fim). Discutir e treinar estratégias explicitamente.',
+    materials: ['Múltiplas fontes sonoras', 'Mapa de busca', 'Checklist de estratégias', 'Cronômetro'],
+    estimatedTime: '20-25 minutos',
+    ageRange: '6-14 anos',
+    complexityLevel: 'intermediate',
+    evaluationCriteria: [
+      'Uso de estratégia sistemática',
+      'Cobertura completa sem omissões',
+      'Tempo de busca',
+      'Redução de impulsividade na busca',
+      'Verbalização de estratégia'
+    ],
+    adaptations: {
+      level1: 'Poucos sons, estratégia dada explicitamente',
+      level2: 'Mais sons, estratégia semi-guiada',
+      level3: 'Muitos sons, estratégia auto-gerada'
+    },
+    theoreticalBasis: 'Déficit de estratégias organizacionais no TDAH e treino de compensação.',
+    practicalTips: ['Modele estratégia explicitamente', 'Use mapa visual de apoio', 'Celebre uso de estratégia']
+  },
+  {
+    id: 2019,
+    title: 'Conexão de Padrões Sonoros',
+    disorder: 'TDAH',
+    demandCategory: 'attention',
+    generalObjective: 'Desenvolver atenção relacional através da identificação de conexões entre padrões sonoros',
+    specificObjectives: [
+      'Identificar padrões similares em diferentes contextos',
+      'Conectar sons relacionados conceitualmente',
+      'Desenvolver pensamento relacional auditivo',
+      'Transferir padrões entre domínios'
+    ],
+    description: 'Apresente sons que têm algo em comum (todos são graves, todos têm ritmo similar, todos são de metal). O paciente deve identificar a conexão. Aumente abstração das conexões.',
+    materials: ['Banco de sons categorizados', 'Cartões de categorias', 'Diagrama de conexões', 'Registro de insights'],
+    estimatedTime: '20-25 minutos',
+    ageRange: '8-16 anos',
+    complexityLevel: 'advanced',
+    evaluationCriteria: [
+      'Identificação correta de conexões',
+      'Velocidade de insight',
+      'Capacidade de explicar conexão',
+      'Criação de novas categorias',
+      'Pensamento abstrato observado'
+    ],
+    adaptations: {
+      level1: 'Conexões óbvias e concretas',
+      level2: 'Conexões moderadamente abstratas',
+      level3: 'Conexões abstratas e múltiplas'
+    },
+    theoreticalBasis: 'Treino de atenção a relações como base para raciocínio analógico.',
+    practicalTips: ['Aceite conexões criativas', 'Comece com categorias familiares', 'Discuta diferentes perspectivas']
+  },
+  {
+    id: 2020,
+    title: 'Completar a Música',
+    disorder: 'TDAH',
+    demandCategory: 'attention',
+    generalObjective: 'Desenvolver atenção preditiva através do preenchimento de partes faltantes em músicas',
+    specificObjectives: [
+      'Antecipar notas ou ritmos faltantes',
+      'Manter representação mental de padrão completo',
+      'Desenvolver previsão musical',
+      'Fortalecer memória de trabalho auditiva'
+    ],
+    description: 'Músicas conhecidas com partes removidas. O paciente deve completar cantando, tocando ou verbalizando o que falta. Comece com finais de frases e progrida para partes do meio.',
+    materials: ['Músicas editadas com partes removidas', 'Instrumento para completar', 'Gravador', 'Repertório conhecido do paciente'],
+    estimatedTime: '15-25 minutos',
+    ageRange: '5-15 anos',
+    complexityLevel: 'intermediate',
+    evaluationCriteria: [
+      'Precisão do preenchimento',
+      'Tempo de resposta',
+      'Manutenção do pulso durante lacuna',
+      'Capacidade de preencher partes maiores',
+      'Generalização para músicas novas'
+    ],
+    adaptations: {
+      level1: 'Finais de frases muito previsíveis',
+      level2: 'Partes do meio de frases conhecidas',
+      level3: 'Partes variadas de músicas menos familiares'
+    },
+    theoreticalBasis: 'Closure auditivo e sua relação com memória de trabalho e previsão.',
+    practicalTips: ['Use músicas muito conhecidas', 'Comece com lacunas curtas', 'Celebre tentativas aproximadas']
+  },
+  
   // ==================== FUNÇÕES EXECUTIVAS (20 atividades) ====================
   {
-    id: 'tdah-fe-1',
+    id: 2021,
     title: 'Compositor Organizador',
     disorder: 'TDAH',
-    demandCategory: 'funcoes_executivas',
-    demandLabel: 'Planejamento',
-    generalObjective: 'Desenvolver habilidades de planejamento através da estruturação de uma composição musical',
+    demandCategory: 'executive_functions',
+    generalObjective: 'Desenvolver habilidades de planejamento através da organização estrutural de composição musical',
     specificObjectives: [
-      'Planejar estrutura completa antes de executar',
-      'Organizar seções em ordem lógica',
-      'Antecipar materiais e tempo necessários',
-      'Seguir plano estabelecido até conclusão'
+      'Planejar estrutura musical antes de executar',
+      'Organizar elementos em sequência lógica',
+      'Manter plano durante execução',
+      'Avaliar resultado em relação ao plano'
     ],
-    description: 'O paciente planeja uma composição musical completa antes de tocar: quantas partes terá, que instrumentos em cada parte, quanto tempo cada seção, qual a ordem. Usa mapa visual da estrutura. Só executa após plano completo. Compare resultado com plano original.',
-    materials: ['Papel grande para mapa', 'Marcadores coloridos', 'Instrumentos variados', 'Timer', 'Gravador'],
+    description: 'O paciente planeja uma composição simples: decide quantas partes terá, quais instrumentos, que ordem. Escreve ou desenha plano antes de executar. Compara execução com plano original.',
+    materials: ['Papel para planejamento', 'Símbolos musicais visuais', 'Instrumentos variados', 'Gravador', 'Template de estrutura'],
     estimatedTime: '30-40 minutos',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Completude do plano antes de iniciar',
-      'Adequação do plano (realista, organizado)',
-      'Fidelidade ao plano durante execução',
-      'Ajustes necessários durante execução',
-      'Satisfação com resultado final'
-    ],
-    adaptations: [
-      'Nível leve: Estrutura simples (3 partes), muito apoio visual, terapeuta co-planeja',
-      'Nível moderado: Estrutura média (5 partes), apoio visual parcial',
-      'Nível severo: Estrutura complexa, planejamento independente'
-    ],
-    theoreticalBasis: 'Déficit de planejamento é central no TDAH segundo modelo de Barkley. A composição musical oferece contexto motivador para treinar antecipação e organização.',
     ageRange: '8-16 anos',
-    tips: [
-      'Valorize o plano tanto quanto a execução',
-      'Não permita começar sem plano',
-      'Use cores para diferentes seções',
-      'Fotografe plano para comparação futura'
-    ]
+    complexityLevel: 'intermediate',
+    evaluationCriteria: [
+      'Qualidade do plano inicial',
+      'Aderência ao plano durante execução',
+      'Capacidade de ajustar plano se necessário',
+      'Satisfação com produto final',
+      'Verbalização do processo'
+    ],
+    adaptations: {
+      level1: 'Estrutura dada, apenas escolher elementos',
+      level2: 'Estrutura parcial, completar planejamento',
+      level3: 'Planejamento completo independente'
+    },
+    theoreticalBasis: 'Déficit de planejamento no TDAH e uso de suportes externos para compensação.',
+    practicalTips: ['Use templates visuais', 'Divida em passos pequenos', 'Não exija perfeição na execução']
   },
   {
-    id: 'tdah-fe-2',
+    id: 2022,
     title: 'Maestro do Tempo',
     disorder: 'TDAH',
-    demandCategory: 'funcoes_executivas',
-    demandLabel: 'Gerenciamento Temporal',
-    generalObjective: 'Desenvolver habilidades de gerenciamento de tempo através de atividade musical estruturada',
+    demandCategory: 'executive_functions',
+    generalObjective: 'Desenvolver gerenciamento de tempo através de atividade musical com limites temporais',
     specificObjectives: [
-      'Estimar tempo necessário para atividades musicais',
-      'Monitorar tempo durante execução',
+      'Estimar tempo necessário para tarefas',
+      'Monitorar passagem do tempo durante atividade',
       'Ajustar ritmo para cumprir prazo',
-      'Melhorar precisão de estimativas temporais'
+      'Desenvolver senso interno de tempo'
     ],
-    description: 'O paciente deve completar tarefas musicais em tempo determinado: "Você tem 5 minutos para criar uma música com 3 partes", "Ensaie até conseguir tocar sem erro - quanto tempo acha que vai precisar?". Compare estimativas com tempo real. Desenvolva consciência temporal.',
-    materials: ['Timer visual', 'Instrumentos', 'Registro de estimativas vs. real', 'Relógio analógico grande'],
-    estimatedTime: '20-30 minutos',
-    complexityLevel: 'moderado',
+    description: 'Atividades musicais com tempo limitado. Antes de começar, estima quanto tempo levará. Timer visual mostra passagem do tempo. Ao final, compara estimativa com realidade. Ajusta estratégia.',
+    materials: ['Timer visual', 'Tarefas musicais de duração variada', 'Registro de estimativas', 'Gráfico de progresso'],
+    estimatedTime: '25-30 minutos',
+    ageRange: '7-16 anos',
+    complexityLevel: 'intermediate',
     evaluationCriteria: [
       'Precisão das estimativas temporais',
       'Monitoramento ativo do tempo',
-      'Ajustes de ritmo para cumprir prazo',
-      'Melhora de estimativas ao longo do tempo',
-      'Ansiedade vs. tranquilidade com prazos'
+      'Ajuste de ritmo quando necessário',
+      'Redução de distorção temporal',
+      'Generalização para tarefas escolares'
     ],
-    adaptations: [
-      'Nível leve: Prazos generosos, timer muito visível, avisos frequentes',
-      'Nível moderado: Prazos moderados, timer disponível, poucos avisos',
-      'Nível severo: Prazos justos, auto-monitoramento'
-    ],
-    theoreticalBasis: 'A "miopia temporal" do TDAH dificulta estimar e gerenciar tempo. Treino com feedback imediato melhora gradualmente esta habilidade.',
-    ageRange: '7-16 anos',
-    tips: [
-      'Use timer visual (Time Timer)',
-      'Comece com estimativas explícitas antes de cada tarefa',
-      'Não puna erro de estimativa - use para aprendizado',
-      'Relacione com situações problemáticas reais'
-    ]
+    adaptations: {
+      level1: 'Tarefas curtas, timer muito visível, lembretes frequentes',
+      level2: 'Tarefas médias, timer parcialmente visível',
+      level3: 'Tarefas longas, timer oculto, auto-monitoramento'
+    },
+    theoreticalBasis: 'Time blindness no TDAH e estratégias de compensação com suporte externo.',
+    practicalTips: ['Use timer visual sempre', 'Celebre estimativas aproximadas', 'Não puna atrasos']
   },
   {
-    id: 'tdah-fe-3',
+    id: 2023,
     title: 'Banda Planejada',
     disorder: 'TDAH',
-    demandCategory: 'funcoes_executivas',
-    demandLabel: 'Organização',
-    generalObjective: 'Desenvolver habilidades organizacionais através do planejamento e execução de performance em grupo',
+    demandCategory: 'executive_functions',
+    generalObjective: 'Desenvolver organização e delegação através do planejamento de performance em grupo',
     specificObjectives: [
-      'Atribuir funções a cada participante',
-      'Organizar sequência de entrada dos instrumentos',
-      'Preparar materiais necessários antecipadamente',
-      'Coordenar ensaio e performance'
+      'Atribuir papéis apropriados para cada membro',
+      'Organizar sequência de performance',
+      'Coordenar múltiplos elementos simultaneamente',
+      'Resolver problemas de organização'
     ],
-    description: 'O paciente é "produtor" de uma banda: deve decidir quem toca o quê, qual a ordem das músicas, quanto tempo de ensaio para cada, quando fazer pausa. Usa checklist de produção. Pode ser com participantes reais ou simulados. Avalie organização do processo.',
-    materials: ['Checklist de produção', 'Quadro de organização', 'Instrumentos variados', 'Cronograma visual'],
-    estimatedTime: '30-45 minutos',
-    complexityLevel: 'severo',
+    description: 'Planejar performance de banda imaginária ou real. Decidir quem toca o quê, quando cada um entra, como será o arranjo. Usar quadro visual para organização. Executar e avaliar.',
+    materials: ['Quadro de planejamento', 'Cartões de instrumentos/funções', 'Linha do tempo visual', 'Instrumentos para execução'],
+    estimatedTime: '35-45 minutos',
+    ageRange: '8-15 anos',
+    complexityLevel: 'advanced',
     evaluationCriteria: [
-      'Completude do planejamento',
-      'Organização dos materiais',
-      'Cumprimento do cronograma',
-      'Flexibilidade diante de imprevistos',
-      'Resultado da performance'
+      'Qualidade do plano organizacional',
+      'Clareza na atribuição de papéis',
+      'Resolução de conflitos no planejamento',
+      'Execução conforme planejado',
+      'Ajustes necessários identificados'
     ],
-    adaptations: [
-      'Nível leve: Organizar apenas 1 música, com template pronto',
-      'Nível moderado: Organizar mini-show (3 músicas), apoio parcial',
-      'Nível severo: Organizar apresentação completa independentemente'
-    ],
-    theoreticalBasis: 'Dificuldades organizacionais são queixa frequente no TDAH. O contexto musical motivador pode facilitar desenvolvimento de habilidades transferíveis.',
-    ageRange: '9-18 anos',
-    tips: [
-      'Use checklists visuais',
-      'Permita erros de organização como aprendizado',
-      'Celebre organização, não apenas resultado',
-      'Fotografe processo para revisão'
-    ]
+    adaptations: {
+      level1: 'Banda de 2 pessoas, estrutura dada',
+      level2: 'Banda de 3-4, estrutura parcial',
+      level3: 'Banda grande, planejamento completo'
+    },
+    theoreticalBasis: 'Funções executivas de planejamento e organização aplicadas a contexto social e criativo.',
+    practicalTips: ['Use quadro visual', 'Comece com formações simples', 'Permita ajustes no plano']
   },
   {
-    id: 'tdah-fe-4',
+    id: 2024,
     title: 'Memória de Trabalho Rítmica',
     disorder: 'TDAH',
-    demandCategory: 'funcoes_executivas',
-    demandLabel: 'Memória de Trabalho',
-    generalObjective: 'Fortalecer memória de trabalho através de manipulação de padrões rítmicos',
+    demandCategory: 'executive_functions',
+    generalObjective: 'Fortalecer memória de trabalho através de manipulação mental de padrões rítmicos',
     specificObjectives: [
-      'Manter padrão em mente enquanto executa variação',
-      'Manipular 2-3 elementos simultaneamente',
-      'Aumentar span de manipulação gradualmente',
-      'Transferir habilidade para contextos não-musicais'
+      'Manter padrão rítmico na mente',
+      'Manipular padrão mentalmente (inverter, modificar)',
+      'Reproduzir versão modificada',
+      'Aumentar complexidade das manipulações'
     ],
-    description: 'Apresente um padrão rítmico e peça transformações: dobrar velocidade, adicionar pausa, inverter ordem, combinar com outro padrão. O paciente deve manter original em mente enquanto cria versão transformada. Comece com transformações simples.',
-    materials: ['Instrumentos de percussão', 'Cartões de transformação', 'Gravador para comparação', 'Registro de complexidade'],
+    description: 'Ouça padrão rítmico e reproduza modificado: de trás para frente, dobrando tempo, mudando acentuação. Requer manter representação mental enquanto aplica transformação.',
+    materials: ['Instrumento de percussão', 'Gravador', 'Cartões de transformação', 'Metrônomo'],
     estimatedTime: '20-30 minutos',
-    complexityLevel: 'severo',
-    evaluationCriteria: [
-      'Manutenção do padrão original em mente',
-      'Precisão das transformações',
-      'Número de elementos manipulados',
-      'Velocidade de processamento',
-      'Uso de estratégias verbais/visuais'
-    ],
-    adaptations: [
-      'Nível leve: Padrões curtos (2 elementos), transformação única e simples',
-      'Nível moderado: Padrões médios (3-4 elementos), transformação moderada',
-      'Nível severo: Padrões longos, transformações complexas ou múltiplas'
-    ],
-    theoreticalBasis: 'Memória de trabalho é componente central do executivo no modelo de Baddeley e deficitário no TDAH. Manipulação ativa fortalece mais que simples armazenamento.',
     ageRange: '8-16 anos',
-    tips: [
-      'Permita verbalização durante processamento',
-      'Comece com transformações muito simples',
-      'Use analogias visuais quando possível',
-      'Celebre tentativas, não apenas acertos'
-    ]
+    complexityLevel: 'advanced',
+    evaluationCriteria: [
+      'Precisão das reproduções modificadas',
+      'Complexidade de padrões manipulados',
+      'Velocidade de processamento',
+      'Estratégias de manipulação utilizadas',
+      'Transferência para outros domínios'
+    ],
+    adaptations: {
+      level1: 'Padrões curtos (2-3 elementos), manipulação simples',
+      level2: 'Padrões médios (4-5 elementos), manipulação moderada',
+      level3: 'Padrões longos, manipulações complexas'
+    },
+    theoreticalBasis: 'Working memory como função executiva central e seu treino através de música.',
+    practicalTips: ['Comece com transformações simples', 'Use apoio visual se necessário', 'Celebre aproximações']
   },
   {
-    id: 'tdah-fe-5',
+    id: 2025,
     title: 'Flexibilidade Musical',
     disorder: 'TDAH',
-    demandCategory: 'funcoes_executivas',
-    demandLabel: 'Flexibilidade Cognitiva',
-    generalObjective: 'Desenvolver flexibilidade cognitiva através de mudanças de regras e adaptações durante atividades musicais',
+    demandCategory: 'executive_functions',
+    generalObjective: 'Desenvolver flexibilidade cognitiva através de mudanças de regras durante atividade musical',
     specificObjectives: [
       'Adaptar-se rapidamente a mudanças de regras',
-      'Reduzir erros de perseveração',
-      'Gerar soluções alternativas',
-      'Manter desempenho apesar de mudanças'
+      'Inibir resposta anterior quando regra muda',
+      'Manter desempenho durante transições',
+      'Reduzir erros de perseveração'
     ],
-    description: 'Durante uma atividade musical, mude as regras periodicamente: "Agora o grave vira agudo", "Agora rápido vira lento", "Agora silêncio vira som". O paciente deve adaptar-se rapidamente. Comece com uma mudança, evolua para múltiplas. Meça tempo de adaptação.',
-    materials: ['Instrumentos variados', 'Cartões de regras', 'Sinalizador de mudança', 'Registro de adaptações'],
+    description: 'Atividade musical com regras que mudam. Exemplo: quando terapeuta levanta mão direita, toque forte; esquerda, toque fraco. Inverta regras sem aviso. Aumente frequência de mudanças.',
+    materials: ['Instrumentos', 'Cartões de regras', 'Sinalizadores de mudança', 'Registro de erros de perseveração'],
     estimatedTime: '20-25 minutos',
-    complexityLevel: 'moderado',
+    ageRange: '6-15 anos',
+    complexityLevel: 'intermediate',
     evaluationCriteria: [
-      'Tempo para adaptar-se à nova regra',
-      'Erros de perseveração (usar regra antiga)',
-      'Capacidade de gerenciar múltiplas mudanças',
-      'Frustração vs. flexibilidade observada',
-      'Transferência para situações cotidianas'
+      'Velocidade de adaptação a novas regras',
+      'Erros de perseveração',
+      'Manutenção de desempenho sob mudança',
+      'Frustração diante de mudanças',
+      'Antecipação de possíveis mudanças'
     ],
-    adaptations: [
-      'Nível leve: Uma mudança por vez, previsível, muito tempo para adaptar',
-      'Nível moderado: Mudanças mais frequentes, semi-previsíveis',
-      'Nível severo: Múltiplas mudanças, imprevisíveis, adaptação rápida'
-    ],
-    theoreticalBasis: 'Rigidez cognitiva é comum no TDAH, com dificuldade de desengajar de set mental. Treino de flexibilidade melhora adaptação a mudanças.',
-    ageRange: '6-16 anos',
-    tips: [
-      'Normalize erros iniciais de perseveração',
-      'Use humor quando regra antiga escapar',
-      'Comece com mudanças opostas (mais fáceis)',
-      'Relacione com situações de mudança de planos'
-    ]
+    adaptations: {
+      level1: 'Duas regras simples, mudanças avisadas',
+      level2: 'Três regras, mudanças parcialmente avisadas',
+      level3: 'Múltiplas regras, mudanças sem aviso'
+    },
+    theoreticalBasis: 'Inflexibilidade cognitiva no TDAH e treino de set-shifting.',
+    practicalTips: ['Comece com mudanças avisadas', 'Use humor para erros', 'Celebre adaptações rápidas']
   },
   {
-    id: 'tdah-fe-6',
-    title: 'Resolução de Problemas Musicais',
+    id: 2026,
+    title: 'Organizador de Instrumentos',
     disorder: 'TDAH',
-    demandCategory: 'funcoes_executivas',
-    demandLabel: 'Resolução de Problemas',
-    generalObjective: 'Desenvolver habilidades de resolução de problemas através de desafios musicais estruturados',
+    demandCategory: 'executive_functions',
+    generalObjective: 'Desenvolver habilidades de categorização e organização através de instrumentos musicais',
     specificObjectives: [
-      'Identificar o problema claramente antes de agir',
-      'Gerar múltiplas soluções possíveis',
-      'Avaliar prós e contras de cada solução',
-      'Implementar e ajustar solução escolhida'
+      'Categorizar instrumentos por diferentes critérios',
+      'Organizar materiais de forma sistemática',
+      'Criar e seguir sistema organizacional',
+      'Generalizar habilidade para outros contextos'
     ],
-    description: 'Apresente problemas musicais: instrumento "quebrado" (falta uma nota), ritmo que não encaixa, volume inadequado. O paciente deve identificar o problema, pensar em soluções, escolher uma e implementar. Use protocolo PARE: Problema, Alternativas, Resultado esperado, Executar.',
-    materials: ['Instrumentos com "problemas"', 'Protocolo PARE visual', 'Situações-problema preparadas', 'Registro de soluções'],
+    description: 'Organize coleção de instrumentos por diferentes critérios: tamanho, material, som, família. Crie sistema de organização, etiquete, arrume. Discuta transferência para organização de materiais escolares.',
+    materials: ['Coleção variada de instrumentos', 'Etiquetas', 'Caixas organizadoras', 'Categorias visuais', 'Checklist'],
     estimatedTime: '25-35 minutos',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Identificação clara do problema',
-      'Número de alternativas geradas',
-      'Qualidade da avaliação das opções',
-      'Eficácia da solução implementada',
-      'Ajuste diante de solução inadequada'
-    ],
-    adaptations: [
-      'Nível leve: Problemas simples e óbvios, alternativas sugeridas',
-      'Nível moderado: Problemas moderados, geração parcialmente guiada',
-      'Nível severo: Problemas complexos, geração e avaliação independentes'
-    ],
-    theoreticalBasis: 'O TDAH impacta todas as etapas de resolução de problemas, desde identificação até implementação. Treino estruturado desenvolve hábitos de processamento.',
-    ageRange: '8-16 anos',
-    tips: [
-      'Não resolva pelo paciente',
-      'Valorize o processo tanto quanto a solução',
-      'Use o protocolo PARE consistentemente',
-      'Crie arquivo de problemas resolvidos'
-    ]
-  },
-  {
-    id: 'tdah-fe-7',
-    title: 'Sequenciamento Musical',
-    disorder: 'TDAH',
-    demandCategory: 'funcoes_executivas',
-    demandLabel: 'Sequenciamento',
-    generalObjective: 'Desenvolver capacidade de organizar e seguir sequências através de atividades musicais estruturadas',
-    specificObjectives: [
-      'Ordenar etapas de uma atividade corretamente',
-      'Seguir sequências de 5+ passos',
-      'Identificar e corrigir erros de ordem',
-      'Criar sequências próprias lógicas'
-    ],
-    description: 'Trabalhe sequenciamento: ordenar cartões com etapas de uma música, seguir receita musical (passo a passo), identificar o que está fora de ordem em uma sequência. Progrida de ordenar sequências prontas para criar próprias.',
-    materials: ['Cartões de etapas', 'Receitas musicais', 'Sequências com erros', 'Quadro de sequenciamento'],
-    estimatedTime: '20-30 minutos',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Precisão na ordenação de sequências',
-      'Número de passos gerenciados',
-      'Identificação de erros de ordem',
-      'Qualidade de sequências criadas',
-      'Transferência para rotinas diárias'
-    ],
-    adaptations: [
-      'Nível leve: Sequências curtas (3 passos), muito visuais, ordenação simples',
-      'Nível moderado: Sequências médias (5 passos), criação parcial',
-      'Nível severo: Sequências longas, criação independente, abstração'
-    ],
-    theoreticalBasis: 'Dificuldade de sequenciamento afeta rotinas e procedimentos no TDAH. Treino explícito melhora organização temporal de ações.',
     ageRange: '6-14 anos',
-    tips: [
-      'Use sequências visuais coloridas',
-      'Conecte com rotinas problemáticas (se arrumar)',
-      'Comemore sequências corretas',
-      'Permita erro e autocorreção'
-    ]
-  },
-  {
-    id: 'tdah-fe-8',
-    title: 'Priorização Musical',
-    disorder: 'TDAH',
-    demandCategory: 'funcoes_executivas',
-    demandLabel: 'Priorização',
-    generalObjective: 'Desenvolver capacidade de priorizar tarefas e informações através de contexto musical',
-    specificObjectives: [
-      'Identificar o que é mais importante em situação',
-      'Ordenar tarefas por urgência/importância',
-      'Manter foco no prioritário',
-      'Adiar gratificação para completar importante primeiro'
-    ],
-    description: 'Apresente múltiplas demandas musicais e peça priorização: "Qual instrumento precisa de mais atenção agora?", "O que devemos ensaiar primeiro?", "Qual problema resolver antes?". Use matriz de prioridade visual. Pratique escolhas e justificativas.',
-    materials: ['Matriz de priorização', 'Múltiplas tarefas musicais', 'Cartões de urgência/importância', 'Registro de decisões'],
-    estimatedTime: '25-35 minutos',
-    complexityLevel: 'severo',
+    complexityLevel: 'basic',
     evaluationCriteria: [
-      'Capacidade de identificar prioridades',
-      'Justificativas para escolhas',
-      'Manutenção de foco no prioritário',
-      'Resistência a distrações interessantes',
-      'Transferência para tarefas escolares'
-    ],
-    adaptations: [
-      'Nível leve: 2-3 opções claras, critério único de prioridade',
-      'Nível moderado: 4-5 opções, múltiplos critérios',
-      'Nível severo: Muitas opções, critérios conflitantes, pressão temporal'
-    ],
-    theoreticalBasis: 'TDAH dificulta hierarquização de importância, tratando tudo como igualmente urgente ou atraente. Treino explícito desenvolve hábito de priorizar.',
-    ageRange: '9-18 anos',
-    tips: [
-      'Use matriz visual de Eisenhower adaptada',
-      'Pratique justificar escolhas',
-      'Conecte com deveres e compromissos',
-      'Não julgue prioridades erradas - discuta'
-    ]
-  },
-  {
-    id: 'tdah-fe-9',
-    title: 'Monitoramento de Meta',
-    disorder: 'TDAH',
-    demandCategory: 'funcoes_executivas',
-    demandLabel: 'Monitoramento',
-    generalObjective: 'Desenvolver capacidade de monitorar progresso em direção a metas durante atividades musicais',
-    specificObjectives: [
-      'Estabelecer meta clara antes de iniciar',
-      'Verificar progresso periodicamente',
-      'Ajustar estratégia quando necessário',
-      'Reconhecer quando meta foi atingida'
-    ],
-    description: 'Estabeleça metas musicais claras (aprender música em 10 minutos, tocar sem erro 3 vezes). Durante trabalho, pause periodicamente para check-in: "Quanto falta?", "Está funcionando?", "Precisa mudar algo?". Use termômetro visual de progresso.',
-    materials: ['Quadro de meta', 'Termômetro de progresso', 'Timer para check-ins', 'Registro de ajustes'],
-    estimatedTime: '25-35 minutos',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Clareza da meta estabelecida',
-      'Frequência de auto-check-ins',
-      'Precisão da auto-avaliação de progresso',
-      'Ajustes estratégicos realizados',
-      'Reconhecimento de atingimento de meta'
-    ],
-    adaptations: [
-      'Nível leve: Metas simples, check-ins externos frequentes, muito visual',
-      'Nível moderado: Metas moderadas, check-ins semi-guiados',
-      'Nível severo: Metas complexas, auto-monitoramento, ajustes independentes'
-    ],
-    theoreticalBasis: 'Déficit de auto-monitoramento é central no TDAH. Externalizar o processo através de check-ins e visual aids pode desenvolver hábito interno.',
-    ageRange: '8-18 anos',
-    tips: [
-      'Use timer para lembrar check-ins',
-      'Faça termômetro ou gráfico visual',
-      'Celebre reconhecimento de meta atingida',
-      'Normalize ajustes como parte do processo'
-    ]
-  },
-  {
-    id: 'tdah-fe-10',
-    title: 'Iniciação de Tarefas',
-    disorder: 'TDAH',
-    demandCategory: 'funcoes_executivas',
-    demandLabel: 'Iniciação',
-    generalObjective: 'Desenvolver estratégias para iniciar tarefas musicais superando inércia inicial',
-    specificObjectives: [
-      'Reduzir tempo para iniciar atividades',
-      'Criar rituais de iniciação efetivos',
-      'Superar evitação de início',
-      'Começar mesmo sem motivação completa'
-    ],
-    description: 'Trabalhe o momento de começar: cronometre quanto demora para iniciar, use "contagem regressiva de lançamento", crie ritual de início (3 respirações + primeira nota), pratique começos rápidos. Identifique o que bloqueia início e desenvolva contra-estratégias.',
-    materials: ['Cronômetro', 'Ritual de início personalizado', 'Cartões de início rápido', 'Registro de tempo de iniciação'],
-    estimatedTime: '20-30 minutos',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Tempo para iniciar atividades',
-      'Uso de estratégias de iniciação',
-      'Redução de evitação',
-      'Início mesmo sem motivação ideal',
-      'Transferência para deveres escolares'
-    ],
-    adaptations: [
-      'Nível leve: Atividades muito atraentes, muito apoio para iniciar',
-      'Nível moderado: Atividades neutras, apoio moderado',
-      'Nível severo: Atividades menos preferidas, auto-iniciação'
-    ],
-    theoreticalBasis: 'A dificuldade de iniciar tarefas no TDAH relaciona-se com déficit de ativação e aversão a esforço. Estratégias compensatórias podem reduzir barreiras.',
-    ageRange: '7-18 anos',
-    tips: [
-      'Use contagem regressiva de foguete',
-      'Crie rituais de início personalizados',
-      'Comece com primeiros 2 minutos apenas',
-      'Conecte com procrastinação de deveres'
-    ]
-  },
-  {
-    id: 'tdah-fe-11',
-    title: 'Conclusão de Projetos',
-    disorder: 'TDAH',
-    demandCategory: 'funcoes_executivas',
-    demandLabel: 'Conclusão',
-    generalObjective: 'Desenvolver capacidade de concluir projetos musicais superando dificuldades de finalização',
-    specificObjectives: [
-      'Identificar quando projeto está próximo do fim',
-      'Manter energia e foco até conclusão',
-      'Resistir à tentação de abandonar ou começar novo',
-      'Celebrar e documentar conclusões'
-    ],
-    description: 'Trabalhe projetos musicais com fases claras e foco na conclusão: composição de música completa, aprendizagem de repertório, criação de apresentação. Use termômetro de conclusão, comemore cada finalização. Identifique padrões de abandono.',
-    materials: ['Projetos com fases definidas', 'Termômetro de conclusão', 'Álbum de projetos concluídos', 'Certificados de conclusão'],
-    estimatedTime: '30-45 minutos (múltiplas sessões)',
-    complexityLevel: 'severo',
-    evaluationCriteria: [
-      'Taxa de projetos concluídos',
-      'Manutenção de energia nas fases finais',
-      'Resistência a novos projetos antes de concluir',
-      'Satisfação com conclusões',
-      'Transferência para projetos escolares'
-    ],
-    adaptations: [
-      'Nível leve: Projetos curtíssimos (1 sessão), muito apoio para finalizar',
-      'Nível moderado: Projetos curtos (2-3 sessões), apoio moderado',
-      'Nível severo: Projetos longos, auto-gerenciados'
-    ],
-    theoreticalBasis: 'TDAH é caracterizado por dificuldade de conclusão, com perda de interesse após fase inicial. Treino de finalização desenvolve hábito de completar.',
-    ageRange: '8-18 anos',
-    tips: [
-      'Comece com projetos pequenos garantindo sucesso',
-      'Faça álbum de "projetos concluídos"',
-      'Celebre cada conclusão efusivamente',
-      'Discuta padrão de abandonar perto do fim'
-    ]
-  },
-  {
-    id: 'tdah-fe-12',
-    title: 'Transições Executivas',
-    disorder: 'TDAH',
-    demandCategory: 'funcoes_executivas',
-    demandLabel: 'Transição',
-    generalObjective: 'Desenvolver capacidade de realizar transições suaves entre atividades musicais',
-    specificObjectives: [
-      'Concluir atividade atual adequadamente',
-      'Fazer transição sem resistência excessiva',
-      'Iniciar nova atividade sem demora',
-      'Manter regulação emocional durante mudanças'
-    ],
-    description: 'Estruture sessão com múltiplas atividades e transições planejadas. Use avisos prévios (5 minutos, 2 minutos, última vez), ritual de transição (guardar instrumento, respirar, pegar próximo), músicas de transição. Meça tempo e qualidade de transições.',
-    materials: ['Timer visual', 'Músicas de transição', 'Ritual visual de transição', 'Cronograma de atividades'],
-    estimatedTime: '30-40 minutos',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Tempo de transição entre atividades',
-      'Resistência durante transições',
-      'Uso de estratégias de transição',
-      'Regulação emocional mantida',
-      'Transferência para transições escolares'
-    ],
-    adaptations: [
-      'Nível leve: Transições longas, muito aviso, ritual completo',
-      'Nível moderado: Transições médias, avisos padrão',
-      'Nível severo: Transições rápidas, mínimo aviso, auto-gerenciadas'
-    ],
-    theoreticalBasis: 'Dificuldade de transição no TDAH relaciona-se com hiperfoco e inércia cognitiva. Rituais e previsibilidade facilitam mudanças.',
-    ageRange: '5-14 anos',
-    tips: [
-      'Sempre avise transições com antecedência',
-      'Use música específica para transição',
-      'Crie ritual consistente de mudança',
-      'Conecte com dificuldades de transição em casa'
-    ]
-  },
-  {
-    id: 'tdah-fe-13',
-    title: 'Controle de Impulso Musical',
-    disorder: 'TDAH',
-    demandCategory: 'funcoes_executivas',
-    demandLabel: 'Inibição',
-    generalObjective: 'Desenvolver controle inibitório através de atividades musicais que exigem espera e contenção',
-    specificObjectives: [
-      'Aguardar sinal antes de agir',
-      'Interromper ação iniciada quando solicitado',
-      'Resistir a tocar instrumento fora da hora',
-      'Pensar antes de agir musicalmente'
-    ],
-    description: 'Estruture atividades que exijam inibição: esperar deixa para entrar, parar imediatamente em sinal, resistir a tocar instrumento visível até momento certo. Use hierarquia de dificuldade. Celebre inibições bem-sucedidas.',
-    materials: ['Instrumentos atrativos', 'Sinais claros de início/parada', 'Timer visual', 'Registro de inibições'],
-    estimatedTime: '20-30 minutos',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Taxa de inibições bem-sucedidas',
-      'Tempo de latência antes de agir',
-      'Capacidade de parar ação iniciada',
-      'Resistência a tentações',
-      'Estratégias de autocontrole utilizadas'
-    ],
-    adaptations: [
-      'Nível leve: Esperas curtas, instrumentos menos atrativos, muitos sinais',
-      'Nível moderado: Esperas médias, instrumentos atrativos',
-      'Nível severo: Esperas longas, instrumentos muito atrativos, poucos sinais'
-    ],
-    theoreticalBasis: 'Déficit de inibição é núcleo do TDAH no modelo de Barkley. Treino comportamental pode desenvolver controle inibitório.',
-    ageRange: '5-15 anos',
-    tips: [
-      'Comece com esperas muito curtas',
-      'Use sinais visuais além de verbais',
-      'Celebre cada inibição bem-sucedida',
-      'Ensine estratégias (mãos no colo, contar)'
-    ]
-  },
-  {
-    id: 'tdah-fe-14',
-    title: 'Regulação de Esforço',
-    disorder: 'TDAH',
-    demandCategory: 'funcoes_executivas',
-    demandLabel: 'Regulação de Esforço',
-    generalObjective: 'Desenvolver capacidade de modular esforço conforme demanda da tarefa musical',
-    specificObjectives: [
-      'Identificar nível de esforço necessário para cada tarefa',
-      'Ajustar esforço durante execução',
-      'Manter esforço adequado por períodos',
-      'Evitar sub ou sobre-esforço'
-    ],
-    description: 'Trabalhe consciência de esforço: tarefas que exigem mais concentração vs. mais relaxamento, peças difíceis vs. fáceis, momentos intensos vs. calmos. Use termômetro de esforço visual. Pratique modular esforço conscientemente.',
-    materials: ['Tarefas de dificuldades variadas', 'Termômetro de esforço', 'Registro de adequação de esforço'],
-    estimatedTime: '25-35 minutos',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Identificação correta de esforço necessário',
-      'Ajuste apropriado durante tarefa',
-      'Manutenção de esforço adequado',
-      'Consciência de sub/sobre-esforço',
-      'Transferência para tarefas escolares'
-    ],
-    adaptations: [
-      'Nível leve: Apenas dois níveis (fácil/difícil), feedback constante',
-      'Nível moderado: Múltiplos níveis, feedback moderado',
-      'Nível severo: Gradações sutis, auto-regulação'
-    ],
-    theoreticalBasis: 'Regulação de esforço é função executiva frequentemente comprometida no TDAH, com tendência a pouco esforço ou esforço excessivo inconsistente.',
-    ageRange: '8-18 anos',
-    tips: [
-      'Use metáfora de marcha de carro',
-      'Faça termômetro visual de esforço',
-      'Discuta quando usar qual nível',
-      'Conecte com distribuição de esforço em provas'
-    ]
-  },
-  {
-    id: 'tdah-fe-15',
-    title: 'Planejamento Reverso',
-    disorder: 'TDAH',
-    demandCategory: 'funcoes_executivas',
-    demandLabel: 'Planejamento',
-    generalObjective: 'Desenvolver habilidade de planejamento reverso (do fim para o início) através de projeto musical',
-    specificObjectives: [
-      'Definir claramente o resultado final desejado',
-      'Identificar etapas necessárias de trás para frente',
-      'Estimar tempo para cada etapa',
-      'Criar cronograma realista'
-    ],
-    description: 'Comece definindo como será a apresentação final (meta), depois trabalhe para trás: "O que precisa estar pronto antes?", "E antes disso?". Crie timeline visual do fim para o início. Use para planejar apresentação, gravação ou composição.',
-    materials: ['Timeline visual reverso', 'Cartões de etapas', 'Calendário', 'Registro de planejamento'],
-    estimatedTime: '30-40 minutos',
-    complexityLevel: 'severo',
-    evaluationCriteria: [
-      'Clareza da meta final',
-      'Identificação de etapas precedentes',
-      'Realismo das estimativas temporais',
-      'Cumprimento do plano reverso',
-      'Transferência para trabalhos escolares'
-    ],
-    adaptations: [
-      'Nível leve: Projeto curto, poucas etapas, muito apoio visual',
-      'Nível moderado: Projeto médio, apoio parcial',
-      'Nível severo: Projeto longo, planejamento independente'
-    ],
-    theoreticalBasis: 'Planejamento reverso é estratégia executiva avançada especialmente útil para TDAH que tem dificuldade em "ver" o caminho até a meta.',
-    ageRange: '10-18 anos',
-    tips: [
-      'Use linha do tempo visual',
-      'Comece com projetos curtos',
-      'Conecte com trabalhos escolares',
-      'Fotografe planejamentos para referência'
-    ]
-  },
-  {
-    id: 'tdah-fe-16',
-    title: 'Gerenciamento de Materiais',
-    disorder: 'TDAH',
-    demandCategory: 'funcoes_executivas',
-    demandLabel: 'Organização Material',
-    generalObjective: 'Desenvolver habilidades de organização e gerenciamento de materiais musicais',
-    specificObjectives: [
-      'Organizar materiais antes de começar',
-      'Manter espaço de trabalho organizado durante atividade',
-      'Guardar materiais adequadamente após uso',
-      'Saber onde cada coisa está'
-    ],
-    description: 'Estruture organização do espaço musical: cada instrumento tem lugar, materiais preparados antes, espaço limpo depois. Use etiquetas, fotos, checklist. O paciente é responsável por preparar e guardar. Avalie estado de organização.',
-    materials: ['Sistema de organização visual', 'Etiquetas', 'Fotos de organização', 'Checklist de preparação/guarda'],
-    estimatedTime: '20-30 minutos',
-    complexityLevel: 'leve',
-    evaluationCriteria: [
-      'Preparação adequada de materiais',
-      'Manutenção de organização durante atividade',
-      'Guarda adequada após uso',
-      'Saber localizar materiais',
-      'Transferência para organização escolar'
-    ],
-    adaptations: [
-      'Nível leve: Poucos materiais, lugares muito definidos, checklist visual',
-      'Nível moderado: Mais materiais, organização parcialmente autônoma',
-      'Nível severo: Muitos materiais, criação e manutenção de sistema próprio'
-    ],
-    theoreticalBasis: 'Desorganização material é queixa frequente no TDAH, impactando funcionamento diário. Sistemas externos consistentes podem compensar déficit interno.',
-    ageRange: '6-18 anos',
-    tips: [
-      'Use fotos de como deve ficar',
-      'Faça checklist visual de preparação',
-      'Inclua guarda no tempo da atividade',
-      'Conecte com organização de mochila'
-    ]
-  },
-  {
-    id: 'tdah-fe-17',
-    title: 'Automonitoramento de Desempenho',
-    disorder: 'TDAH',
-    demandCategory: 'funcoes_executivas',
-    demandLabel: 'Automonitoramento',
-    generalObjective: 'Desenvolver capacidade de auto-avaliar desempenho musical de forma precisa e contínua',
-    specificObjectives: [
-      'Avaliar próprio desempenho durante execução',
-      'Identificar erros em tempo real',
-      'Comparar autoavaliação com avaliação externa',
-      'Usar feedback para ajustar comportamento'
-    ],
-    description: 'Após cada execução musical, paciente avalia próprio desempenho antes de feedback externo. Compare avaliações. Grave e revise para calibrar auto-percepção. Desenvolva critérios claros de avaliação. Use escala visual simples.',
-    materials: ['Gravador', 'Escala de autoavaliação', 'Critérios de desempenho', 'Registro de calibração'],
-    estimatedTime: '25-35 minutos',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Precisão da autoavaliação',
-      'Identificação de pontos fortes e fracos',
-      'Calibração ao longo do tempo',
-      'Uso de feedback para ajuste',
-      'Metacognição desenvolvida'
-    ],
-    adaptations: [
-      'Nível leve: Critérios simples, escala de 3 pontos, muito feedback',
-      'Nível moderado: Critérios moderados, escala de 5 pontos',
-      'Nível severo: Critérios detalhados, auto-avaliação antes de feedback'
-    ],
-    theoreticalBasis: 'TDAH frequentemente apresenta déficit de automonitoramento, com sub ou superestimação de desempenho. Calibração explícita melhora metacognição.',
-    ageRange: '8-18 anos',
-    tips: [
-      'Use gravação para evidência objetiva',
-      'Não julgue autoavaliações erradas',
-      'Celebre autoavaliações precisas',
-      'Discuta discrepâncias com curiosidade'
-    ]
-  },
-  {
-    id: 'tdah-fe-18',
-    title: 'Gestão de Erros',
-    disorder: 'TDAH',
-    demandCategory: 'funcoes_executivas',
-    demandLabel: 'Gestão de Erros',
-    generalObjective: 'Desenvolver capacidade de identificar, analisar e aprender com erros musicais de forma construtiva',
-    specificObjectives: [
-      'Identificar erros sem reação emocional excessiva',
-      'Analisar causa do erro',
-      'Gerar estratégia para evitar repetição',
-      'Manter motivação apesar de erros'
-    ],
-    description: 'Trabalhe relação saudável com erros: identificar sem frustrar, analisar causa, planejar correção. Use protocolo "ECA" (Erro → Causa → Ação). Celebre erros como oportunidade de aprendizado. Crie arquivo de "erros que viraram aprendizado".',
-    materials: ['Protocolo ECA visual', 'Arquivo de aprendizados', 'Registro de erros e soluções'],
-    estimatedTime: '25-35 minutos',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Reação emocional a erros',
-      'Uso do protocolo ECA',
-      'Qualidade da análise de causa',
-      'Implementação de estratégia corretiva',
-      'Manutenção de motivação'
-    ],
-    adaptations: [
-      'Nível leve: Erros simples, muito apoio emocional, análise guiada',
-      'Nível moderado: Erros variados, apoio moderado',
-      'Nível severo: Erros complexos, auto-análise, auto-regulação emocional'
-    ],
-    theoreticalBasis: 'TDAH frequentemente associa-se com reação emocional excessiva a erros ou negação de erros. Desenvolver relação saudável com falhas é crucial.',
-    ageRange: '7-18 anos',
-    tips: [
-      'Normalize erros como parte do aprendizado',
-      'Comemore erros descobertos pelo próprio paciente',
-      'Modele reação saudável a seus próprios erros',
-      'Use humor quando apropriado'
-    ]
-  },
-  {
-    id: 'tdah-fe-19',
-    title: 'Tomada de Decisão Musical',
-    disorder: 'TDAH',
-    demandCategory: 'funcoes_executivas',
-    demandLabel: 'Tomada de Decisão',
-    generalObjective: 'Desenvolver processo de tomada de decisão estruturada em contexto musical',
-    specificObjectives: [
-      'Identificar decisão a ser tomada',
-      'Gerar opções viáveis',
-      'Avaliar prós e contras de cada opção',
-      'Escolher e implementar decisão'
-    ],
-    description: 'Crie situações de decisão musical: qual música tocar, qual instrumento usar, como resolver problema técnico. Use matriz de decisão visual. Pratique não decidir por impulso. Revise decisões e resultados.',
-    materials: ['Matriz de decisão', 'Opções claras', 'Registro de decisões e resultados'],
-    estimatedTime: '25-35 minutos',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Uso de processo estruturado',
-      'Geração de opções',
-      'Qualidade da avaliação',
-      'Satisfação com decisões tomadas',
-      'Aprendizado com decisões passadas'
-    ],
-    adaptations: [
-      'Nível leve: 2-3 opções claras, consequências óbvias',
-      'Nível moderado: Mais opções, consequências menos claras',
-      'Nível severo: Múltiplas opções, trade-offs complexos'
-    ],
-    theoreticalBasis: 'Tomada de decisão impulsiva ou paralisada é comum no TDAH. Processos estruturados compensam déficit de ponderação interna.',
-    ageRange: '9-18 anos',
-    tips: [
-      'Use matriz visual de decisão',
-      'Não apresse decisões',
-      'Revise decisões passadas sem julgamento',
-      'Conecte com decisões do cotidiano'
-    ]
-  },
-  {
-    id: 'tdah-fe-20',
-    title: 'Metacognição Musical',
-    disorder: 'TDAH',
-    demandCategory: 'funcoes_executivas',
-    demandLabel: 'Metacognição',
-    generalObjective: 'Desenvolver consciência metacognitiva sobre próprio funcionamento executivo através da música',
-    specificObjectives: [
-      'Identificar padrões pessoais de funcionamento',
-      'Reconhecer pontos fortes e desafios executivos',
-      'Desenvolver estratégias personalizadas',
-      'Aumentar autoconhecimento funcional'
-    ],
-    description: 'Através de reflexão guiada sobre atividades musicais, explore padrões pessoais: quando foca melhor, o que distrai mais, como se organiza, quando desiste. Crie "mapa de funcionamento" pessoal. Desenvolva estratégias individualizadas.',
-    materials: ['Diário de reflexão', 'Mapa de funcionamento', 'Cartões de estratégias pessoais'],
-    estimatedTime: '30-40 minutos',
-    complexityLevel: 'severo',
-    evaluationCriteria: [
-      'Precisão do autoconhecimento',
-      'Identificação de padrões',
-      'Qualidade das estratégias desenvolvidas',
-      'Uso de estratégias personalizadas',
+      'Capacidade de categorizar por diferentes critérios',
+      'Consistência do sistema criado',
+      'Manutenção da organização',
+      'Criação de categorias próprias',
       'Transferência para vida diária'
     ],
-    adaptations: [
-      'Nível leve: Reflexões simples, muito guiadas, foco em 1-2 áreas',
-      'Nível moderado: Reflexões moderadas, múltiplas áreas',
-      'Nível severo: Reflexão profunda, auto-guiada, integração ampla'
-    ],
-    theoreticalBasis: 'Metacognição - pensar sobre o próprio pensamento - é frequentemente deficitária no TDAH. Desenvolver autoconhecimento é base para autorregulação.',
-    ageRange: '10-18 anos',
-    tips: [
-      'Use perguntas abertas e reflexivas',
-      'Não tenha pressa - metacognição requer tempo',
-      'Valide descobertas sobre si mesmo',
-      'Crie registro escrito de insights'
-    ]
+    adaptations: {
+      level1: 'Categorias dadas, poucos instrumentos',
+      level2: 'Algumas categorias dadas, mais instrumentos',
+      level3: 'Criar próprias categorias, muitos instrumentos'
+    },
+    theoreticalBasis: 'Déficits organizacionais no TDAH e estratégias compensatórias concretas.',
+    practicalTips: ['Use categorias visuais claras', 'Fotografe resultado', 'Conecte com organização do quarto']
   },
-
+  {
+    id: 2027,
+    title: 'Agenda Musical da Sessão',
+    disorder: 'TDAH',
+    demandCategory: 'executive_functions',
+    generalObjective: 'Desenvolver planejamento de curto prazo através de agenda visual da sessão',
+    specificObjectives: [
+      'Planejar sequência de atividades',
+      'Estimar duração de cada atividade',
+      'Seguir agenda planejada',
+      'Fazer ajustes quando necessário'
+    ],
+    description: 'No início da sessão, paciente ajuda a planejar o que será feito, em que ordem, e quanto tempo para cada. Agenda visual é criada. Referir-se a ela durante sessão. Ao final, avaliar aderência.',
+    materials: ['Quadro de agenda visual', 'Cartões de atividades', 'Timer', 'Marcadores de conclusão'],
+    estimatedTime: '5 min planejamento + sessão + 5 min avaliação',
+    ageRange: '6-16 anos',
+    complexityLevel: 'basic',
+    evaluationCriteria: [
+      'Participação no planejamento',
+      'Realismo das estimativas',
+      'Consulta à agenda durante sessão',
+      'Flexibilidade quando necessário ajuste',
+      'Auto-avaliação ao final'
+    ],
+    adaptations: {
+      level1: 'Apenas escolher entre 2-3 atividades pré-selecionadas',
+      level2: 'Ordenar atividades e estimar tempos',
+      level3: 'Planejamento completo com alternativas'
+    },
+    theoreticalBasis: 'Externalização de funções executivas como compensação para déficits internos.',
+    practicalTips: ['Use mesma agenda todas as sessões', 'Permita ajustes sem julgamento', 'Fotografe para referência']
+  },
+  {
+    id: 2028,
+    title: 'Resolução de Problemas Sonoros',
+    disorder: 'TDAH',
+    demandCategory: 'executive_functions',
+    generalObjective: 'Desenvolver resolução sistemática de problemas através de desafios musicais',
+    specificObjectives: [
+      'Identificar problema claramente',
+      'Gerar múltiplas soluções possíveis',
+      'Avaliar prós e contras de cada solução',
+      'Implementar e avaliar solução escolhida'
+    ],
+    description: 'Presente problemas musicais: instrumento não soa bem, como fazer música feliz, como tocar sem acordar bebê. Use modelo de resolução de problemas: definir, gerar opções, escolher, testar, avaliar.',
+    materials: ['Cartões de problema', 'Quadro de soluções', 'Instrumentos variados', 'Matriz de avaliação'],
+    estimatedTime: '25-35 minutos',
+    ageRange: '7-15 anos',
+    complexityLevel: 'intermediate',
+    evaluationCriteria: [
+      'Clareza na definição do problema',
+      'Número de soluções geradas',
+      'Qualidade da avaliação de opções',
+      'Persistência na implementação',
+      'Capacidade de ajustar abordagem'
+    ],
+    adaptations: {
+      level1: 'Problema simples, opções dadas, escolher uma',
+      level2: 'Problema médio, gerar opções com ajuda',
+      level3: 'Problema complexo, processo independente'
+    },
+    theoreticalBasis: 'Déficit de resolução de problemas no TDAH por impulsividade e baixa geração de alternativas.',
+    practicalTips: ['Use problemas divertidos', 'Modele processo de pensamento', 'Celebre qualquer solução tentada']
+  },
+  {
+    id: 2029,
+    title: 'Multitarefa Musical Gradual',
+    disorder: 'TDAH',
+    demandCategory: 'executive_functions',
+    generalObjective: 'Desenvolver gerenciamento de múltiplas demandas através de aumento gradual de complexidade',
+    specificObjectives: [
+      'Gerenciar duas tarefas simples simultaneamente',
+      'Priorizar entre demandas competidoras',
+      'Alternar eficientemente entre tarefas',
+      'Manter qualidade sob pressão'
+    ],
+    description: 'Adicione demandas gradualmente: tocar ritmo + responder perguntas, cantar + tocar + andar. Comece com tarefas automatizadas, adicione uma nova. Discuta estratégias de gerenciamento.',
+    materials: ['Instrumentos', 'Lista de tarefas graduadas', 'Cronômetro', 'Escala de desempenho'],
+    estimatedTime: '25-30 minutos',
+    ageRange: '8-16 anos',
+    complexityLevel: 'advanced',
+    evaluationCriteria: [
+      'Número de tarefas gerenciadas simultaneamente',
+      'Qualidade de cada tarefa',
+      'Estratégias de priorização',
+      'Recuperação após sobrecarga',
+      'Autoconhecimento de limites'
+    ],
+    adaptations: {
+      level1: 'Uma tarefa automatizada + uma muito simples',
+      level2: 'Duas tarefas de complexidade média',
+      level3: 'Múltiplas tarefas com demandas variáveis'
+    },
+    theoreticalBasis: 'Sobrecarga executiva no TDAH e treino de estratégias de gerenciamento.',
+    practicalTips: ['Nunca sobrecarregue a ponto de frustração', 'Identifique limites individuais', 'Ensine a pedir pausa']
+  },
+  {
+    id: 2030,
+    title: 'Transição Planejada Musical',
+    disorder: 'TDAH',
+    demandCategory: 'executive_functions',
+    generalObjective: 'Facilitar transições através de rituais musicais e preparação antecipada',
+    specificObjectives: [
+      'Preparar-se para transições com antecedência',
+      'Usar sinais musicais como facilitadores',
+      'Reduzir resistência a transições',
+      'Generalizar estratégias para vida diária'
+    ],
+    description: 'Crie músicas ou sinais sonoros para transições: música de guardar instrumentos, música de encerramento, contagem musical. Use consistentemente. Avise transições com antecedência usando música.',
+    materials: ['Músicas de transição gravadas', 'Instrumentos para sinais', 'Timer musical', 'Sequência visual'],
+    estimatedTime: 'Integrado em toda sessão',
+    ageRange: '4-14 anos',
+    complexityLevel: 'basic',
+    evaluationCriteria: [
+      'Resposta às músicas de transição',
+      'Redução de resistência',
+      'Preparação antecipada',
+      'Generalização para casa/escola',
+      'Uso independente de estratégias'
+    ],
+    adaptations: {
+      level1: 'Transições longas com muito aviso e apoio',
+      level2: 'Transições moderadas com aviso musical',
+      level3: 'Transições breves com sinal musical apenas'
+    },
+    theoreticalBasis: 'Dificuldade de transição no TDAH e uso de estrutura externa como compensação.',
+    practicalTips: ['Seja consistente com músicas', 'Comece aviso cedo', 'Crie músicas com o paciente']
+  },
+  {
+    id: 2031,
+    title: 'Sequenciamento Musical Visual',
+    disorder: 'TDAH',
+    demandCategory: 'executive_functions',
+    generalObjective: 'Desenvolver sequenciamento através de organização visual de etapas musicais',
+    specificObjectives: [
+      'Ordenar etapas de tarefa em sequência correta',
+      'Seguir sequência planejada',
+      'Identificar etapas faltantes',
+      'Criar sequências próprias'
+    ],
+    description: 'Use cartões visuais representando etapas de atividades musicais. Paciente ordena cartões antes de executar. Segue sequência visual durante atividade. Ao final, avalia se seguiu.',
+    materials: ['Cartões de etapas visuais', 'Trilho de sequência', 'Marcador de progresso', 'Atividades músico-segmentadas'],
+    estimatedTime: '20-30 minutos',
+    ageRange: '5-14 anos',
+    complexityLevel: 'basic',
+    evaluationCriteria: [
+      'Ordenação correta de etapas',
+      'Aderência à sequência durante execução',
+      'Identificação de etapas puladas',
+      'Criação de sequências para novas tarefas',
+      'Uso independente de suporte visual'
+    ],
+    adaptations: {
+      level1: 'Sequências curtas (3-4 etapas) com muitas dicas',
+      level2: 'Sequências médias (5-6 etapas) com dicas parciais',
+      level3: 'Sequências longas, criação independente'
+    },
+    theoreticalBasis: 'Déficit de sequenciamento no TDAH e estratégias visuais de compensação.',
+    practicalTips: ['Use fotos reais quando possível', 'Marque progresso visivelmente', 'Transfira para rotinas diárias']
+  },
+  {
+    id: 2032,
+    title: 'Controle de Impulso na Improvisação',
+    disorder: 'TDAH',
+    demandCategory: 'executive_functions',
+    generalObjective: 'Desenvolver controle inibitório durante improvisação musical com regras',
+    specificObjectives: [
+      'Seguir regras durante improvisação livre',
+      'Inibir resposta quando regra exige',
+      'Equilibrar criatividade com limites',
+      'Autorregular intensidade e volume'
+    ],
+    description: 'Improvisação com restrições: não tocar nota X, parar quando terapeuta para, tocar só quando é sua vez. Requer equilibrar impulso criativo com regras. Aumente complexidade das regras.',
+    materials: ['Instrumentos de fácil improvisação', 'Cartões de regras', 'Sinalizador de parada', 'Gravador'],
+    estimatedTime: '20-25 minutos',
+    ageRange: '6-16 anos',
+    complexityLevel: 'intermediate',
+    evaluationCriteria: [
+      'Aderência às regras',
+      'Qualidade criativa mantida',
+      'Tempo de parada após sinal',
+      'Autocorreção após violação',
+      'Equilíbrio expressão/controle'
+    ],
+    adaptations: {
+      level1: 'Uma regra simples, sinais claros',
+      level2: 'Duas regras, sinais moderados',
+      level3: 'Múltiplas regras, sinais sutis'
+    },
+    theoreticalBasis: 'Déficit de inibição como núcleo do TDAH (Barkley) aplicado a contexto criativo.',
+    practicalTips: ['Valorize criatividade tanto quanto controle', 'Não puna violações severamente', 'Celebre autocorreções']
+  },
+  {
+    id: 2033,
+    title: 'Meta-cognição Musical',
+    disorder: 'TDAH',
+    demandCategory: 'executive_functions',
+    generalObjective: 'Desenvolver consciência metacognitiva através de reflexão sobre processo musical',
+    specificObjectives: [
+      'Refletir sobre próprio processo de aprendizagem',
+      'Identificar pontos fortes e fracos',
+      'Ajustar estratégias com base em reflexão',
+      'Desenvolver autoconhecimento'
+    ],
+    description: 'Após atividades musicais, perguntar: O que foi fácil/difícil? Que estratégia usou? O que faria diferente? Criar diário musical de reflexões. Revisar padrões ao longo do tempo.',
+    materials: ['Diário de reflexão', 'Perguntas guia', 'Escala visual de dificuldade', 'Gravações para revisão'],
+    estimatedTime: '10-15 min por sessão',
+    ageRange: '8-18 anos',
+    complexityLevel: 'intermediate',
+    evaluationCriteria: [
+      'Qualidade das reflexões',
+      'Consciência de processos próprios',
+      'Ajuste de estratégias baseado em reflexão',
+      'Autoconhecimento demonstrado',
+      'Aplicação de insights'
+    ],
+    adaptations: {
+      level1: 'Perguntas fechadas, opções de resposta',
+      level2: 'Perguntas semi-abertas, alguma elaboração',
+      level3: 'Reflexão livre e elaborada'
+    },
+    theoreticalBasis: 'Déficit metacognitivo no TDAH e treino de auto-reflexão.',
+    practicalTips: ['Faça perguntas específicas', 'Não julgue respostas', 'Celebre qualquer insight']
+  },
+  {
+    id: 2034,
+    title: 'Priorização de Tarefas Musicais',
+    disorder: 'TDAH',
+    demandCategory: 'executive_functions',
+    generalObjective: 'Desenvolver habilidade de priorização através de escolhas musicais com trade-offs',
+    specificObjectives: [
+      'Identificar tarefas mais importantes',
+      'Fazer escolhas entre opções competidoras',
+      'Justificar prioridades escolhidas',
+      'Aceitar que nem tudo pode ser feito'
+    ],
+    description: 'Apresente mais atividades musicais do que tempo permite. Paciente deve priorizar o que fazer primeiro, o que pode esperar, o que não fará. Discuta critérios de priorização.',
+    materials: ['Lista de atividades possíveis', 'Quadro de priorização', 'Timer', 'Critérios visuais'],
+    estimatedTime: '20-30 minutos',
+    ageRange: '8-16 anos',
+    complexityLevel: 'intermediate',
+    evaluationCriteria: [
+      'Capacidade de escolher prioridades',
+      'Justificativa para escolhas',
+      'Aceitação de limitações',
+      'Efetividade das priorizações',
+      'Transferência para vida diária'
+    ],
+    adaptations: {
+      level1: 'Escolher 1 entre 2 opções',
+      level2: 'Priorizar 3 entre 5 opções',
+      level3: 'Priorizar lista longa com critérios complexos'
+    },
+    theoreticalBasis: 'Dificuldade de priorização no TDAH e treino de tomada de decisão.',
+    practicalTips: ['Use situações reais do cotidiano', 'Discuta diferentes critérios', 'Não há resposta errada']
+  },
+  {
+    id: 2035,
+    title: 'Checklist Musical',
+    disorder: 'TDAH',
+    demandCategory: 'executive_functions',
+    generalObjective: 'Desenvolver uso de checklists como ferramenta de organização através de contexto musical',
+    specificObjectives: [
+      'Criar checklists para atividades',
+      'Usar checklist durante execução',
+      'Verificar completude de tarefas',
+      'Generalizar para tarefas escolares/domésticas'
+    ],
+    description: 'Antes de atividade musical, criar checklist do que precisa: preparar instrumentos, afinar, seguir partitura, guardar. Marcar cada item ao completar. Transferir para outras atividades.',
+    materials: ['Templates de checklist', 'Canetas marcadoras', 'Quadro de verificação', 'Exemplos de checklists da vida real'],
+    estimatedTime: '15-20 minutos',
+    ageRange: '6-16 anos',
+    complexityLevel: 'basic',
+    evaluationCriteria: [
+      'Criação de checklists funcionais',
+      'Uso consistente durante atividade',
+      'Verificação de todos os itens',
+      'Criação espontânea de checklists',
+      'Uso em outros contextos'
+    ],
+    adaptations: {
+      level1: 'Checklist dada, apenas marcar',
+      level2: 'Completar checklist parcial',
+      level3: 'Criar checklist do zero'
+    },
+    theoreticalBasis: 'Externalização de memória prospectiva como compensação para déficits executivos.',
+    practicalTips: ['Mantenha checklists visíveis', 'Comemore conclusão de lista', 'Conecte com lição de casa']
+  },
+  {
+    id: 2036,
+    title: 'Iniciação de Tarefas Musical',
+    disorder: 'TDAH',
+    demandCategory: 'executive_functions',
+    generalObjective: 'Facilitar iniciação de tarefas através de rituais musicais de arranque',
+    specificObjectives: [
+      'Reduzir procrastinação para iniciar',
+      'Criar ritual de iniciação efetivo',
+      'Começar tarefas sem estímulo externo',
+      'Generalizar para tarefas escolares'
+    ],
+    description: 'Crie música ou ritual sonoro pessoal de iniciação. Quando tocar, é hora de começar. Pratique começar imediatamente após sinal. Transfira para alarmes e rituais de estudo.',
+    materials: ['Instrumento para ritual', 'Gravação do ritual', 'Timer', 'Tarefas para praticar iniciação'],
+    estimatedTime: '15-20 minutos',
+    ageRange: '6-16 anos',
+    complexityLevel: 'basic',
+    evaluationCriteria: [
+      'Tempo entre sinal e início da tarefa',
+      'Uso consistente do ritual',
+      'Redução de procrastinação',
+      'Iniciação independente',
+      'Transferência para outras situações'
+    ],
+    adaptations: {
+      level1: 'Ritual com muito suporte e tarefa curta',
+      level2: 'Ritual com suporte moderado',
+      level3: 'Ritual internalizado, tarefas variadas'
+    },
+    theoreticalBasis: 'Déficit de iniciação no TDAH e uso de gatilhos externos.',
+    practicalTips: ['Crie ritual junto com paciente', 'Mantenha consistência', 'Use para lição de casa']
+  },
+  {
+    id: 2037,
+    title: 'Monitoramento de Progresso Musical',
+    disorder: 'TDAH',
+    demandCategory: 'executive_functions',
+    generalObjective: 'Desenvolver auto-monitoramento através de acompanhamento visual de progresso musical',
+    specificObjectives: [
+      'Registrar próprio progresso visualmente',
+      'Identificar padrões de desempenho',
+      'Ajustar esforço baseado em feedback',
+      'Desenvolver motivação através de visualização'
+    ],
+    description: 'Crie gráficos de progresso para habilidades musicais: precisão rítmica, tempo de foco, músicas aprendidas. Atualizar a cada sessão. Discutir padrões e celebrar progresso.',
+    materials: ['Gráficos de progresso', 'Adesivos/marcadores', 'Métricas definidas', 'Pasta de acompanhamento'],
+    estimatedTime: '5-10 min por sessão',
+    ageRange: '6-16 anos',
+    complexityLevel: 'basic',
+    evaluationCriteria: [
+      'Participação no registro',
+      'Precisão do auto-registro',
+      'Identificação de padrões',
+      'Motivação gerada pela visualização',
+      'Transferência para outras áreas'
+    ],
+    adaptations: {
+      level1: 'Terapeuta registra, paciente observa',
+      level2: 'Registro conjunto',
+      level3: 'Auto-registro independente'
+    },
+    theoreticalBasis: 'Déficit de auto-monitoramento no TDAH e benefícios de feedback visual.',
+    practicalTips: ['Use cores e visual atraente', 'Celebre qualquer progresso', 'Foque em esforço, não só resultado']
+  },
+  {
+    id: 2038,
+    title: 'Conclusão de Tarefas Musical',
+    disorder: 'TDAH',
+    demandCategory: 'executive_functions',
+    generalObjective: 'Desenvolver persistência até conclusão através de atividades musicais com fechamento claro',
+    specificObjectives: [
+      'Completar atividades até o fim',
+      'Resistir a abandonar antes da conclusão',
+      'Reconhecer momento de término',
+      'Celebrar conclusões adequadamente'
+    ],
+    description: 'Atividades com início, meio e fim claros. Música tem que terminar para contar como completa. Discutir sensação de conclusão. Criar ritual de fechamento. Registrar tarefas concluídas.',
+    materials: ['Músicas com estrutura clara', 'Marcador de conclusão', 'Quadro de tarefas concluídas', 'Ritual de celebração'],
+    estimatedTime: '20-30 minutos',
+    ageRange: '5-15 anos',
+    complexityLevel: 'basic',
+    evaluationCriteria: [
+      'Porcentagem de tarefas concluídas',
+      'Resistência à distração próximo ao fim',
+      'Reconhecimento do término',
+      'Satisfação com conclusão',
+      'Transferência para outras tarefas'
+    ],
+    adaptations: {
+      level1: 'Tarefas muito curtas, feedback imediato',
+      level2: 'Tarefas médias, checkpoints intermediários',
+      level3: 'Tarefas longas, auto-monitoramento'
+    },
+    theoreticalBasis: 'Dificuldade de persistência e conclusão no TDAH.',
+    practicalTips: ['Comece com tarefas curtas garantindo sucesso', 'Celebre conclusões', 'Use visual de progresso']
+  },
+  {
+    id: 2039,
+    title: 'Planejamento Reverso Musical',
+    disorder: 'TDAH',
+    demandCategory: 'executive_functions',
+    generalObjective: 'Desenvolver planejamento reverso partindo do objetivo final para etapas iniciais',
+    specificObjectives: [
+      'Definir objetivo final claramente',
+      'Identificar etapas necessárias de trás para frente',
+      'Organizar etapas em sequência viável',
+      'Executar plano e avaliar resultado'
+    ],
+    description: 'Comece com objetivo musical final (tocar música X). Pergunte: o que preciso saber antes? E antes disso? Construa caminho reverso até o ponto de partida. Execute plano.',
+    materials: ['Quadro de planejamento reverso', 'Post-its', 'Linha do tempo invertida', 'Objetivos musicais claros'],
+    estimatedTime: '25-35 minutos',
+    ageRange: '9-18 anos',
+    complexityLevel: 'advanced',
+    evaluationCriteria: [
+      'Clareza do objetivo definido',
+      'Qualidade das etapas identificadas',
+      'Sequenciamento lógico',
+      'Execução conforme plano',
+      'Ajustes necessários identificados'
+    ],
+    adaptations: {
+      level1: 'Objetivo simples, etapas guiadas',
+      level2: 'Objetivo médio, algumas etapas dadas',
+      level3: 'Objetivo complexo, planejamento independente'
+    },
+    theoreticalBasis: 'Planejamento reverso como estratégia compensatória para déficits prospectivos.',
+    practicalTips: ['Use visual de escada/caminho', 'Comece com objetivos motivadores', 'Celebre cada etapa']
+  },
+  {
+    id: 2040,
+    title: 'Gerenciamento de Materiais Musical',
+    disorder: 'TDAH',
+    demandCategory: 'executive_functions',
+    generalObjective: 'Desenvolver organização de materiais através de rotina de cuidado com instrumentos',
+    specificObjectives: [
+      'Manter instrumentos organizados e em bom estado',
+      'Desenvolver rotina de organização',
+      'Encontrar materiais quando necessário',
+      'Generalizar para materiais escolares'
+    ],
+    description: 'Crie sistema de organização para instrumentos da sessão: lugar para cada coisa, rotina de guardar, checklist de verificação. Pratique consistentemente. Transfira para mochila escolar.',
+    materials: ['Instrumentos com lugares definidos', 'Etiquetas', 'Fotos de organização correta', 'Checklist de materiais'],
+    estimatedTime: '15-20 minutos iniciais + rotina',
+    ageRange: '5-14 anos',
+    complexityLevel: 'basic',
+    evaluationCriteria: [
+      'Manutenção da organização ao longo do tempo',
+      'Encontrar materiais rapidamente',
+      'Guardar materiais corretamente',
+      'Criação de sistemas próprios',
+      'Transferência para vida diária'
+    ],
+    adaptations: {
+      level1: 'Poucos materiais, sistema dado',
+      level2: 'Mais materiais, sistema co-criado',
+      level3: 'Muitos materiais, sistema criado pelo paciente'
+    },
+    theoreticalBasis: 'Déficits organizacionais no TDAH e externalização de sistemas.',
+    practicalTips: ['Use fotos de referência', 'Mantenha sistema simples', 'Conecte com organização da mochila']
+  },
+  
   // ==================== CONTROLE INIBITÓRIO (15 atividades) ====================
   {
-    id: 'tdah-ci-1',
-    title: 'Estátua Musical Avançada',
+    id: 2041,
+    title: 'Estátua Musical',
     disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Controle Inibitório',
-    generalObjective: 'Desenvolver controle inibitório motor através de paradas súbitas durante atividade musical',
+    demandCategory: 'behavior',
+    generalObjective: 'Desenvolver controle inibitório motor através de paradas abruptas quando a música para',
     specificObjectives: [
       'Parar movimento imediatamente quando música para',
-      'Manter posição estática por períodos crescentes',
-      'Inibir movimento apesar de vontade de mexer',
-      'Reiniciar suavemente quando música retorna'
+      'Manter imobilidade por períodos crescentes',
+      'Reduzir tempo de reação para parada',
+      'Controlar impulso de movimento'
     ],
-    description: 'Versão avançada do jogo de estátua com níveis de dificuldade: parar em diferentes momentos da frase musical, parar em posições específicas, parar quando ouvir instrumento específico. Aumente tempo de permanência imóvel gradualmente. Adicione distratores nas fases avançadas.',
-    materials: ['Músicas variadas', 'Timer visual', 'Cartões de regras especiais', 'Registro de desempenho'],
-    estimatedTime: '15-25 minutos',
-    complexityLevel: 'moderado',
+    description: 'Dança ou movimento livre enquanto música toca. Quando para, congelar imediatamente como estátua. Manter posição por tempo determinado. Aumentar imprevisibilidade e duração.',
+    materials: ['Música animada', 'Controle de pausa', 'Timer', 'Espaço para movimento'],
+    estimatedTime: '15-20 minutos',
+    ageRange: '4-12 anos',
+    complexityLevel: 'basic',
     evaluationCriteria: [
-      'Velocidade de inibição do movimento',
-      'Duração da manutenção da posição',
-      'Resistência a distratores',
-      'Qualidade do reinício',
-      'Diversão mantida durante atividade'
+      'Tempo de reação para parada',
+      'Duração da imobilidade mantida',
+      'Qualidade da parada (completa vs parcial)',
+      'Melhora ao longo da sessão',
+      'Diversão e engajamento'
     ],
-    adaptations: [
-      'Nível leve: Paradas previsíveis, curtas, sem distratores',
-      'Nível moderado: Paradas semi-previsíveis, médias',
-      'Nível severo: Paradas imprevisíveis, longas, com distratores'
-    ],
-    theoreticalBasis: 'Inibição motora é forma fundamental de controle inibitório. Jogos de estátua treinam a capacidade de frear respostas pré-potentes.',
-    ageRange: '5-14 anos',
-    tips: [
-      'Comece com paradas curtas e previsíveis',
-      'Use músicas que a criança gosta',
-      'Celebre cada parada bem-sucedida',
-      'Mantenha clima divertido, não punitivo'
-    ]
+    adaptations: {
+      level1: 'Pausas previsíveis, imobilidade curta (3s)',
+      level2: 'Pausas semi-previsíveis, imobilidade média (5-7s)',
+      level3: 'Pausas imprevisíveis, imobilidade longa (10s+)'
+    },
+    theoreticalBasis: 'Déficit de inibição motora no TDAH e treino através de jogos estruturados.',
+    practicalTips: ['Use músicas preferidas', 'Participe junto', 'Celebre cada estátua bem feita']
   },
   {
-    id: 'tdah-ci-2',
+    id: 2042,
     title: 'Semáforo Sonoro',
     disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Controle Inibitório',
-    generalObjective: 'Desenvolver controle inibitório através de respostas diferenciadas a estímulos sonoros (verde/amarelo/vermelho)',
+    demandCategory: 'behavior',
+    generalObjective: 'Desenvolver controle de impulso através de sistema de sinais sonoros graduados',
     specificObjectives: [
-      'Responder corretamente a cada cor/som',
-      'Inibir resposta no vermelho',
-      'Modular resposta no amarelo',
-      'Manter precisão com velocidade crescente'
+      'Responder apropriadamente a cada sinal',
+      'Modular intensidade de ação conforme sinal',
+      'Inibir ação quando sinal vermelho',
+      'Transferir sistema para autorregulação'
     ],
-    description: 'Três sons representam cores do semáforo: verde = toque livremente, amarelo = toque devagar/suave, vermelho = pare imediatamente. Varie a sequência e velocidade. Adicione pegadinhas (falso vermelho). Registre acertos e erros de cada cor.',
-    materials: ['Três sons distintos', 'Instrumento do paciente', 'Cartões de cores visuais (apoio)', 'Registro de respostas'],
-    estimatedTime: '15-20 minutos',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Taxa de acerto em cada cor',
-      'Velocidade de resposta',
-      'Erros de comissão (agir no vermelho)',
-      'Qualidade da modulação no amarelo',
-      'Desempenho sob velocidade'
-    ],
-    adaptations: [
-      'Nível leve: Apenas verde e vermelho, lento, apoio visual',
-      'Nível moderado: Três cores, velocidade média',
-      'Nível severo: Três cores, rápido, sem apoio visual, pegadinhas'
-    ],
-    theoreticalBasis: 'Paradigma Go/No-Go com modulação, desenvolvendo não apenas inibição total mas também controle graduado de resposta.',
-    ageRange: '5-12 anos',
-    tips: [
-      'Use sons muito distintos para cada cor',
-      'Comece lento e aumente velocidade gradualmente',
-      'Celebre especialmente inibições no vermelho',
-      'Use humor com pegadinhas'
-    ]
-  },
-  {
-    id: 'tdah-ci-3',
-    title: 'Não Vale Esse',
-    disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Inibição de Resposta',
-    generalObjective: 'Desenvolver capacidade de inibir resposta a estímulo específico enquanto responde a outros',
-    specificObjectives: [
-      'Responder a estímulos permitidos',
-      'Inibir resposta ao estímulo proibido',
-      'Manter desempenho com múltiplos proibidos',
-      'Reduzir erros de comissão'
-    ],
-    description: 'Defina um som/instrumento "proibido" ao qual não deve responder. Toque vários sons e paciente responde a todos exceto o proibido. Aumente velocidade e número de proibidos. Use sons cada vez mais semelhantes para aumentar dificuldade de discriminação.',
-    materials: ['Vários instrumentos/sons', 'Cartão de "proibido"', 'Registro de erros de comissão'],
-    estimatedTime: '15-20 minutos',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Erros de comissão (resposta ao proibido)',
-      'Erros de omissão (não resposta ao permitido)',
-      'Velocidade mantida com precisão',
-      'Desempenho com múltiplos proibidos',
-      'Uso de estratégias de inibição'
-    ],
-    adaptations: [
-      'Nível leve: Um proibido muito distinto, ritmo lento',
-      'Nível moderado: 2-3 proibidos, ritmo médio',
-      'Nível severo: Múltiplos proibidos similares aos permitidos, ritmo rápido'
-    ],
-    theoreticalBasis: 'Tarefa tipo Go/No-Go clássica, treinando inibição de resposta pré-potente a estímulo específico.',
-    ageRange: '6-14 anos',
-    tips: [
-      'Comece com proibido muito óbvio',
-      'Adicione proibidos gradualmente',
-      'Registre progresso visualmente',
-      'Use contexto de jogo (não alimentar o monstro)'
-    ]
-  },
-  {
-    id: 'tdah-ci-4',
-    title: 'Espera Musical Cronometrada',
-    disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Controle de Impulso',
-    generalObjective: 'Desenvolver capacidade de aguardar tempo determinado antes de agir musicalmente',
-    specificObjectives: [
-      'Aguardar sinal sem antecipar',
-      'Tolerar esperas progressivamente maiores',
-      'Manter prontidão durante espera',
-      'Agir precisamente no momento certo'
-    ],
-    description: 'Paciente deve aguardar tempo específico (cronometrado visivelmente) antes de tocar. Comece com 5 segundos, aumente gradualmente. O desafio é não antecipar mas também não atrasar. Use contagem regressiva visual. Registre antecipações e atrasos.',
-    materials: ['Timer visual (Time Timer)', 'Instrumento', 'Registro de precisão', 'Sinalizador de início'],
+    description: 'Sons diferentes representam verde (ação livre), amarelo (diminuir/preparar parada), vermelho (parar). Pratique respostas a cada sinal. Aumente velocidade de transições. Internalize sistema para auto-uso.',
+    materials: ['Instrumentos para sinais (diferentes timbres)', 'Cartões visuais de cores', 'Espaço para ação', 'Gravação de sinais'],
     estimatedTime: '15-25 minutos',
-    complexityLevel: 'moderado',
+    ageRange: '4-12 anos',
+    complexityLevel: 'basic',
     evaluationCriteria: [
-      'Número de antecipações',
-      'Precisão no tempo de início',
-      'Tolerância a esperas crescentes',
-      'Estratégias de espera utilizadas',
-      'Regulação durante espera'
+      'Precisão de resposta a cada cor',
+      'Modulação adequada no amarelo',
+      'Parada completa no vermelho',
+      'Velocidade de resposta',
+      'Internalização do sistema'
     ],
-    adaptations: [
-      'Nível leve: Esperas curtas (5-10s), timer muito visível',
-      'Nível moderado: Esperas médias (15-30s), timer disponível',
-      'Nível severo: Esperas longas (45s+), estimativa interna'
-    ],
-    theoreticalBasis: 'Aversão a atraso é central no TDAH. Treino de tolerância a espera desenvolve capacidade de adiar gratificação.',
-    ageRange: '6-15 anos',
-    tips: [
-      'Use timer visual tipo Time Timer',
-      'Ensine estratégias de espera (contar, respirar)',
-      'Celebre esperas bem-sucedidas',
-      'Aumente tempo muito gradualmente'
-    ]
+    adaptations: {
+      level1: 'Apenas verde e vermelho, sinais longos',
+      level2: 'Três cores, sinais moderados',
+      level3: 'Transições rápidas, sinais sutis'
+    },
+    theoreticalBasis: 'Modelo de semáforo como apoio visual-auditivo para inibição de resposta.',
+    practicalTips: ['Use em transições da sessão', 'Transfira para casa', 'Crie versão portátil']
   },
   {
-    id: 'tdah-ci-5',
-    title: 'Pare no Meio',
+    id: 2043,
+    title: 'Não Vale Esse Som',
     disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Inibição de Resposta em Curso',
-    generalObjective: 'Desenvolver capacidade de interromper ação já iniciada quando sinal é dado',
+    demandCategory: 'behavior',
+    generalObjective: 'Desenvolver inibição seletiva através de não-resposta a estímulo específico',
     specificObjectives: [
-      'Parar ação em andamento imediatamente',
-      'Responder a sinais de parada em diferentes momentos',
-      'Retomar após parada sem perder qualidade',
-      'Aumentar velocidade de parada'
+      'Inibir resposta a estímulo proibido',
+      'Manter resposta a outros estímulos',
+      'Reduzir erros de comissão',
+      'Aumentar tolerância a tentação'
     ],
-    description: 'Diferente de não iniciar, aqui o desafio é parar algo já iniciado. Durante execução musical (tocar, cantar, dançar), sinais aleatórios de STOP exigem interrupção imediata. Meça tempo de latência para parar. Trabalhe paradas em diferentes pontos da ação.',
-    materials: ['Instrumento ou atividade contínua', 'Sinal de STOP claro', 'Cronômetro de latência'],
+    description: 'Jogo tipo Go/No-Go musical. Bater palma para todos os sons EXCETO um específico. Aumentar semelhança entre sons permitidos e proibido. Variar frequência do som proibido.',
+    materials: ['Instrumentos variados', 'Gravações de sons', 'Registro de erros', 'Cronômetro'],
     estimatedTime: '15-20 minutos',
-    complexityLevel: 'severo',
+    ageRange: '5-14 anos',
+    complexityLevel: 'intermediate',
     evaluationCriteria: [
-      'Latência de parada (tempo para parar)',
-      'Qualidade da parada (total vs. gradual)',
-      'Variação conforme ponto da ação',
-      'Retomada após parada',
-      'Progresso ao longo das sessões'
+      'Taxa de erros de comissão (responder ao proibido)',
+      'Taxa de erros de omissão (não responder ao permitido)',
+      'Consistência ao longo do tempo',
+      'Resposta a sons similares ao proibido',
+      'Auto-correção após erro'
     ],
-    adaptations: [
-      'Nível leve: Ações simples, sinais previsíveis, tolerância a parada gradual',
-      'Nível moderado: Ações mais engajantes, sinais imprevisíveis',
-      'Nível severo: Ações muito engajantes (música favorita), parada instantânea exigida'
-    ],
-    theoreticalBasis: 'Inibir resposta em curso é mais difícil que não iniciar. Treina especificamente a capacidade de "frear" comportamento já ativado.',
-    ageRange: '6-16 anos',
-    tips: [
-      'Comece com ações fáceis de parar',
-      'Use sinal muito claro e consistente',
-      'Não exija perfeição inicial',
-      'Progressão gradual é chave'
-    ]
+    adaptations: {
+      level1: 'Som proibido muito distinto, frequência baixa',
+      level2: 'Som proibido moderadamente distinto',
+      level3: 'Som proibido similar aos permitidos, frequência alta'
+    },
+    theoreticalBasis: 'Paradigma Go/No-Go como medida e treino de controle inibitório.',
+    practicalTips: ['Comece devagar', 'Use som proibido interessante', 'Não puna erros, discuta-os']
   },
   {
-    id: 'tdah-ci-6',
+    id: 2044,
+    title: 'Espera Musical',
+    disorder: 'TDAH',
+    demandCategory: 'behavior',
+    generalObjective: 'Desenvolver capacidade de espera através de adiamento de resposta reforçada',
+    specificObjectives: [
+      'Aguardar tempo crescente antes de responder',
+      'Tolerar adiamento de reforço',
+      'Usar estratégias durante espera',
+      'Reduzir impulsividade de resposta'
+    ],
+    description: 'Instrumento preferido disponível, mas deve esperar sinal (contagem musical, melodia completa) para tocar. Aumentar tempo de espera gradualmente. Ensinar estratégias para aguardar.',
+    materials: ['Instrumento motivador', 'Timer visual/musical', 'Registro de tempos', 'Estratégias visuais de espera'],
+    estimatedTime: '15-25 minutos',
+    ageRange: '4-12 anos',
+    complexityLevel: 'basic',
+    evaluationCriteria: [
+      'Tempo máximo de espera tolerado',
+      'Uso de estratégias durante espera',
+      'Redução de tentativas de antecipar',
+      'Melhora ao longo das sessões',
+      'Generalização para outras situações'
+    ],
+    adaptations: {
+      level1: 'Espera de 3-5 segundos com apoio',
+      level2: 'Espera de 10-15 segundos',
+      level3: 'Espera de 30+ segundos com distratores'
+    },
+    theoreticalBasis: 'Treino de adiamento de gratificação, frequentemente deficitário no TDAH.',
+    practicalTips: ['Comece com esperas muito curtas', 'Ensine o que fazer enquanto espera', 'Sempre honre promessa de acesso']
+  },
+  {
+    id: 2045,
     title: 'Contagem Regressiva Rítmica',
     disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Adiamento de Gratificação',
-    generalObjective: 'Desenvolver capacidade de adiar gratificação musical através de contagem regressiva estruturada',
+    demandCategory: 'behavior',
+    generalObjective: 'Desenvolver controle inibitório através de preparação para ação com contagem',
     specificObjectives: [
-      'Aguardar contagem completa antes da recompensa musical',
-      'Tolerar contagens progressivamente maiores',
-      'Manter regulação durante espera',
-      'Internalizar estratégia de adiamento'
+      'Aguardar toda contagem antes de agir',
+      'Usar contagem como regulador interno',
+      'Reduzir antecipações impulsivas',
+      'Internalizar estratégia de contagem'
     ],
-    description: 'Antes de tocar instrumento desejado ou música favorita, fazer contagem regressiva rítmica (10, 9, 8...). Aumente gradualmente o número. A contagem é ativa (batendo pulso), não passiva. A música/instrumento é a recompensa por completar. Trabalhe conceito de "vale a pena esperar".',
-    materials: ['Instrumento de contagem (tambor)', 'Recompensa musical atraente', 'Registro de contagens completadas'],
-    estimatedTime: '15-25 minutos',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Maior contagem tolerada',
-      'Qualidade da espera (ativa vs. agitada)',
-      'Regulação emocional durante espera',
-      'Satisfação com recompensa',
-      'Transferência para outras situações de espera'
-    ],
-    adaptations: [
-      'Nível leve: Contagem curta (5), recompensa muito atraente',
-      'Nível moderado: Contagem média (10-20), recompensa atraente',
-      'Nível severo: Contagem longa (30+), recompensa moderada'
-    ],
-    theoreticalBasis: 'Baseado em paradigmas de adiamento de gratificação. A contagem ativa preenche o tempo de espera, facilitando tolerância.',
+    description: 'Antes de qualquer ação musical, fazer contagem rítmica (1-2-3-4-VAI). Deve esperar o VAI para agir. Aumentar duração da contagem. Transferir para outras situações de impulso.',
+    materials: ['Metrônomo', 'Instrumentos', 'Contagem visual', 'Registro de antecipações'],
+    estimatedTime: '15-20 minutos',
     ageRange: '5-14 anos',
-    tips: [
-      'Faça contagem rítmica e musical',
-      'Use recompensas que realmente motivem',
-      'Aumente números gradualmente',
-      'Celebre contagens completadas'
-    ]
+    complexityLevel: 'basic',
+    evaluationCriteria: [
+      'Completar contagem sem antecipar',
+      'Precisão do timing do VAI',
+      'Uso espontâneo de contagem',
+      'Redução de impulsividade',
+      'Internalização da estratégia'
+    ],
+    adaptations: {
+      level1: 'Contagem curta (3), voz alta',
+      level2: 'Contagem média (5), voz normal',
+      level3: 'Contagem longa (8), mentalização'
+    },
+    theoreticalBasis: 'Estratégias de autocontrole baseadas em pausa reflexiva.',
+    practicalTips: ['Use em toda transição', 'Faça junto inicialmente', 'Crie contagem pessoal do paciente']
   },
   {
-    id: 'tdah-ci-7',
-    title: 'Turno Silencioso Musical',
+    id: 2046,
+    title: 'Pare e Pense Musical',
     disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Espera de Turno',
-    generalObjective: 'Desenvolver capacidade de aguardar sua vez em contexto musical grupal ou diádico',
+    demandCategory: 'behavior',
+    generalObjective: 'Desenvolver pausa reflexiva antes de ações através de protocolo musical',
     specificObjectives: [
-      'Aguardar turno do outro sem antecipar',
-      'Manter atenção ao outro durante espera',
-      'Entrar precisamente no seu turno',
-      'Tolerar turnos de outros cada vez mais longos'
+      'Parar antes de agir impulsivamente',
+      'Pensar nas opções disponíveis',
+      'Escolher melhor opção conscientemente',
+      'Agir de forma planejada'
     ],
-    description: 'Em formato de conversa musical ou improvisação em turnos, cada um toca em sua vez. Paciente deve aguardar em silêncio enquanto outro toca, sem antecipar. Aumente duração dos turnos do outro gradualmente. Trabalhe também respeitar quando outro ainda não terminou.',
-    materials: ['Instrumentos para cada participante', 'Sinalizador de turno visual', 'Timer de turno'],
-    estimatedTime: '20-30 minutos',
-    complexityLevel: 'moderado',
+    description: 'Quando sinal toca (sino especial), pausar atividade. Durante pausa, pensar: O que estou fazendo? O que devo fazer? Qual melhor escolha? Depois agir. Usar para decisões musicais e comportamentais.',
+    materials: ['Sino de pausa', 'Cartões de perguntas', 'Quadro de opções', 'Registro de uso'],
+    estimatedTime: '15-25 minutos',
+    ageRange: '6-15 anos',
+    complexityLevel: 'intermediate',
     evaluationCriteria: [
-      'Antecipações durante turno do outro',
-      'Atenção mantida ao outro',
-      'Entrada precisa no próprio turno',
-      'Tolerância a turnos longos',
-      'Frustração observada'
+      'Resposta ao sinal de pausa',
+      'Qualidade da reflexão',
+      'Melhoria nas escolhas',
+      'Uso espontâneo da estratégia',
+      'Generalização para vida diária'
     ],
-    adaptations: [
-      'Nível leve: Turnos curtos do outro, sinalizador claro, feedback imediato',
-      'Nível moderado: Turnos médios, sinalizador presente',
-      'Nível severo: Turnos longos, sem sinalizador, auto-monitoramento'
-    ],
-    theoreticalBasis: 'Dificuldade de esperar vez é manifestação social do controle inibitório deficitário. Contexto musical torna prática mais motivadora.',
-    ageRange: '5-14 anos',
-    tips: [
-      'Comece com turnos curtos do outro',
-      'Use objeto sinalizador de quem é a vez',
-      'Pratique em díade antes de grupo',
-      'Conecte com situações de interrupção'
-    ]
+    adaptations: {
+      level1: 'Terapeuta guia todas as perguntas',
+      level2: 'Cartões visuais de apoio, semi-independente',
+      level3: 'Reflexão independente internalizada'
+    },
+    theoreticalBasis: 'Treino de parada-reflexão-ação como compensação para impulsividade.',
+    practicalTips: ['Use sino distintivo', 'Comece em momentos sem pressão', 'Pratique com dilemas musicais simples']
   },
   {
-    id: 'tdah-ci-8',
+    id: 2047,
     title: 'Controle de Volume Gradual',
     disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Controle Motor Fino',
-    generalObjective: 'Desenvolver controle inibitório motor fino através de modulação gradual de volume',
+    demandCategory: 'behavior',
+    generalObjective: 'Desenvolver modulação de intensidade através de controle fino de volume',
     specificObjectives: [
-      'Controlar intensidade de toque suavemente',
-      'Fazer crescendos e decrescendos graduais',
-      'Manter volume estável quando solicitado',
-      'Inibir tendência a tocar forte demais'
+      'Tocar em intensidades específicas solicitadas',
+      'Fazer transições graduais de volume',
+      'Manter volume estável quando pedido',
+      'Inibir explosões de intensidade'
     ],
-    description: 'Trabalhe controle de volume: seguir régua visual de volume, fazer crescendo muito lento, manter pianíssimo por período. O desafio é inibir a tendência natural de tocar forte. Use feedback visual de volume (app de medidor). Pratique moderação gradual.',
-    materials: ['Instrumento', 'Régua visual de volume', 'App medidor de volume', 'Registro de controle'],
-    estimatedTime: '15-25 minutos',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Controle de volume conforme solicitado',
-      'Suavidade de mudanças',
-      'Capacidade de manter volume baixo',
-      'Inibição de explosões de volume',
-      'Transferência para controle de voz'
-    ],
-    adaptations: [
-      'Nível leve: Apenas forte vs. fraco, tolerância a variações',
-      'Nível moderado: 3-4 níveis, crescendos/decrescendos',
-      'Nível severo: Gradações finas, manutenção prolongada de volume específico'
-    ],
-    theoreticalBasis: 'Controle motor fino de intensidade requer inibição constante da resposta máxima, trabalhando autorregulação motora.',
-    ageRange: '6-16 anos',
-    tips: [
-      'Use feedback visual de volume',
-      'Comece com extremos antes de gradações',
-      'Conecte com volume de voz em sala de aula',
-      'Faça jogos de "quem consegue mais baixo"'
-    ]
-  },
-  {
-    id: 'tdah-ci-9',
-    title: 'Câmera Lenta Musical',
-    disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Controle de Velocidade',
-    generalObjective: 'Desenvolver controle inibitório através da execução musical em velocidade muito lenta',
-    specificObjectives: [
-      'Executar movimentos em câmera lenta',
-      'Inibir tendência a acelerar',
-      'Manter qualidade em velocidade reduzida',
-      'Controlar impulso de apressar'
-    ],
-    description: 'Toque músicas ou padrões em câmera lenta - muito mais lento que natural. O desafio é inibir a aceleração automática. Use metrônomo em velocidade muito baixa como guia. Faça competições de "quem consegue mais lento mantendo a música reconhecível".',
-    materials: ['Instrumento', 'Metrônomo', 'Músicas conhecidas', 'Timer'],
+    description: 'Escala visual de volume (1-10). Tocar instrumento no nível indicado. Fazer transições suaves entre níveis. Manter nível específico por tempo determinado. Evitar picos não solicitados.',
+    materials: ['Escala visual de volume', 'Instrumentos de fácil modulação', 'Medidor de volume (app)', 'Registro de consistência'],
     estimatedTime: '15-20 minutos',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Manutenção de velocidade lenta',
-      'Resistência a acelerar',
-      'Qualidade mantida em lento',
-      'Velocidade mínima alcançada',
-      'Frustração vs. controle'
-    ],
-    adaptations: [
-      'Nível leve: Velocidade apenas moderadamente lenta, apoio de metrônomo',
-      'Nível moderado: Velocidade bem lenta, metrônomo disponível',
-      'Nível severo: Velocidade muito lenta, sem metrônomo, peças longas'
-    ],
-    theoreticalBasis: 'Tendência a velocidade excessiva é comum no TDAH. Treinar desaceleração deliberada trabalha inibição de resposta predominante.',
-    ageRange: '6-16 anos',
-    tips: [
-      'Use músicas conhecidas e amadas',
-      'Faça competição de lentidão',
-      'Use metrônomo como apoio inicial',
-      'Conecte com fala rápida demais'
-    ]
-  },
-  {
-    id: 'tdah-ci-10',
-    title: 'Resistindo à Tentação Musical',
-    disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Resistência à Tentação',
-    generalObjective: 'Desenvolver capacidade de resistir a tentações musicais imediatas em favor de recompensa maior posterior',
-    specificObjectives: [
-      'Resistir a instrumento atraente visível',
-      'Escolher esperar por recompensa maior',
-      'Desenvolver estratégias de resistência',
-      'Internalizar conceito de gratificação adiada'
-    ],
-    description: 'Inspirado no teste do marshmallow: instrumento muito atraente está visível mas não pode ser tocado por tempo determinado. Se conseguir esperar, ganha tempo extra com ele ou algo ainda melhor. Ensine estratégias de resistência (olhar para outro lado, pensar em outra coisa).',
-    materials: ['Instrumento muito atraente', 'Timer visual', 'Recompensa maior para quem esperar', 'Cartões de estratégias'],
-    estimatedTime: '15-25 minutos',
-    complexityLevel: 'severo',
-    evaluationCriteria: [
-      'Tempo de resistência',
-      'Uso de estratégias de distração',
-      'Escolha de esperar ou não',
-      'Satisfação com resultado',
-      'Internalização do conceito'
-    ],
-    adaptations: [
-      'Nível leve: Tentação moderada, tempo curto, estratégias dadas',
-      'Nível moderado: Tentação alta, tempo médio, algumas estratégias',
-      'Nível severo: Tentação muito alta, tempo longo, criar próprias estratégias'
-    ],
-    theoreticalBasis: 'Paradigma de adiamento de gratificação de Mischel. TDAH tem dificuldade específica em resistir a recompensas imediatas.',
     ageRange: '5-14 anos',
-    tips: [
-      'Não julgue se não conseguir resistir',
-      'Ensine estratégias de distração',
-      'Celebre escolhas de esperar',
-      'Discuta o que funcionou/não funcionou'
-    ]
+    complexityLevel: 'intermediate',
+    evaluationCriteria: [
+      'Precisão do volume solicitado',
+      'Suavidade das transições',
+      'Estabilidade quando mantendo nível',
+      'Controle de picos impulsivos',
+      'Auto-monitoramento de volume'
+    ],
+    adaptations: {
+      level1: 'Apenas 3 níveis (baixo, médio, alto)',
+      level2: '5 níveis com transições',
+      level3: '10 níveis com modulação fina'
+    },
+    theoreticalBasis: 'Treino de modulação como generalização de controle inibitório.',
+    practicalTips: ['Use visual claro de níveis', 'Evite instrumentos difíceis de modular', 'Relacione com volume de voz']
   },
   {
-    id: 'tdah-ci-11',
-    title: 'Inibição de Hábitos Musicais',
+    id: 2048,
+    title: 'Turno Silencioso',
     disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Inibição de Hábitos',
-    generalObjective: 'Desenvolver capacidade de inibir respostas habituais ou automáticas em contexto musical',
+    demandCategory: 'behavior',
+    generalObjective: 'Desenvolver inibição de resposta durante espera de vez em atividade social',
     specificObjectives: [
-      'Identificar respostas automáticas',
-      'Inibir resposta habitual quando inadequada',
-      'Substituir por resposta alternativa',
-      'Manter nova resposta consistentemente'
+      'Aguardar silenciosamente sua vez',
+      'Manter atenção no turno do outro',
+      'Não interromper ou antecipar',
+      'Entrar no momento exato de sua vez'
     ],
-    description: 'Identifique uma resposta habitual do paciente (sempre começa forte, sempre acelera, sempre repete) e trabalhe inibição: cada vez que perceber o hábito, parar e fazer diferente. Use sinal combinado para quando hábito aparecer. Registre ocorrências e inibições.',
-    materials: ['Identificação de hábitos', 'Sinal combinado', 'Alternativa planejada', 'Registro de monitoramento'],
-    estimatedTime: '20-30 minutos',
-    complexityLevel: 'severo',
+    description: 'Atividade musical em turnos. Durante vez do outro, deve permanecer silencioso e atento. Marcar turno com bastão visual. Aumentar duração do turno do outro. Discutir dificuldades.',
+    materials: ['Bastão de turno', 'Timer visual', 'Instrumentos para cada pessoa', 'Registro de antecipações'],
+    estimatedTime: '20-25 minutos',
+    ageRange: '5-14 anos',
+    complexityLevel: 'intermediate',
     evaluationCriteria: [
-      'Consciência do hábito',
-      'Taxa de inibição quando percebido',
-      'Implementação da alternativa',
-      'Redução gradual do hábito',
-      'Transferência para hábitos fora da sessão'
-    ],
-    adaptations: [
-      'Nível leve: Hábito óbvio, terapeuta sinaliza, alternativa simples',
-      'Nível moderado: Hábito moderado, auto-monitoramento parcial',
-      'Nível severo: Hábito sutil, auto-monitoramento, múltiplos hábitos'
-    ],
-    theoreticalBasis: 'Inibir respostas habituais requer controle executivo ativo para suprimir resposta automática em favor de resposta intencional.',
-    ageRange: '8-18 anos',
-    tips: [
-      'Comece com hábito óbvio e fácil de mudar',
-      'Use humor ao notar hábito',
-      'Celebre cada inibição bem-sucedida',
-      'Conecte com hábitos problemáticos reais'
-    ]
-  },
-  {
-    id: 'tdah-ci-12',
-    title: 'Pausa Reflexiva Musical',
-    disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Pensar Antes de Agir',
-    generalObjective: 'Desenvolver hábito de pausar e refletir antes de responder musicalmente',
-    specificObjectives: [
-      'Inserir pausa antes de respostas',
-      'Usar pausa para planejar resposta',
-      'Melhorar qualidade de respostas após pausa',
-      'Internalizar hábito de pausar'
-    ],
-    description: 'Antes de responder a qualquer solicitação musical, paciente deve pausar (contagem de 3-5), pensar no que vai fazer, depois agir. Compare qualidade de respostas com e sem pausa. Use sinal visual ou ritual de pausa. Progrida de pausa externa para interna.',
-    materials: ['Ritual de pausa', 'Timer de pausa', 'Registro de qualidade de respostas'],
-    estimatedTime: '20-30 minutos',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Implementação consistente da pausa',
-      'Uso produtivo do tempo de pausa',
-      'Qualidade de resposta após pausa',
-      'Internalização gradual',
-      'Transferência para outros contextos'
-    ],
-    adaptations: [
-      'Nível leve: Pausa longa e explícita, lembrete constante',
-      'Nível moderado: Pausa média, lembrete parcial',
-      'Nível severo: Pausa breve e interna, auto-gerenciada'
-    ],
-    theoreticalBasis: 'Inserir intervalo entre estímulo e resposta permite ativação de controle executivo, frequentemente bypassed no TDAH.',
-    ageRange: '7-18 anos',
-    tips: [
-      'Comece com pausa explícita e ritualizada',
-      'Mostre diferença de qualidade com pausa',
-      'Gradualmente internalize a pausa',
-      'Conecte com "pensar antes de falar"'
-    ]
-  },
-  {
-    id: 'tdah-ci-13',
-    title: 'Resistência a Interrupção',
-    disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Inibição de Interrupção',
-    generalObjective: 'Desenvolver capacidade de inibir impulso de interromper durante atividade musical colaborativa',
-    specificObjectives: [
-      'Aguardar outro terminar antes de contribuir',
-      'Inibir verbalizações durante música do outro',
-      'Manter pensamentos para depois sem esquecer',
-      'Contribuir no momento adequado'
-    ],
-    description: 'Durante atividades colaborativas, trabalhe especificamente não interromper: quando tiver ideia ou comentário, anotar ou sinalizar mas não verbalizar até momento adequado. Use sinal de "tenho algo para dizer" que não interrompe. Pratique guardar pensamento.',
-    materials: ['Atividade colaborativa', 'Cartão de "tenho algo"', 'Bloco de anotações rápidas', 'Momento planejado para contribuições'],
-    estimatedTime: '25-35 minutos',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Frequência de interrupções',
-      'Uso de estratégias alternativas',
-      'Retenção do pensamento até momento adequado',
-      'Qualidade das contribuições no momento certo',
+      'Manutenção do silêncio durante turno do outro',
+      'Qualidade da atenção ao turno do outro',
+      'Entrada no momento correto',
+      'Redução de interrupções',
       'Transferência para conversas'
     ],
-    adaptations: [
-      'Nível leve: Muitos momentos para contribuir, cartão visual, atividades curtas',
-      'Nível moderado: Momentos moderados para contribuir',
-      'Nível severo: Poucos momentos, atividades longas, auto-gerenciamento'
-    ],
-    theoreticalBasis: 'Interrupção é manifestação comum de déficit inibitório no TDAH, impactando funcionamento social. Treino em contexto motivador facilita aprendizado.',
-    ageRange: '6-18 anos',
-    tips: [
-      'Crie forma aceitável de sinalizar que tem algo',
-      'Ensine a anotar rapidamente para não esquecer',
-      'Não puna interrupções - redirecione',
-      'Conecte com queixas de interrupção em outros contextos'
-    ]
+    adaptations: {
+      level1: 'Turnos muito curtos (5s), bastão visível',
+      level2: 'Turnos médios (15s), visual parcial',
+      level3: 'Turnos longos (30s+), transição natural'
+    },
+    theoreticalBasis: 'Inibição social e sua relação com controle de impulso verbal.',
+    practicalTips: ['Modele atenção durante turno do outro', 'Celebre entradas bem cronometradas', 'Discuta paralelos com conversas']
   },
   {
-    id: 'tdah-ci-14',
-    title: 'Inibição Seletiva',
+    id: 2049,
+    title: 'Impulso Canalizado',
     disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Inibição Complexa',
-    generalObjective: 'Desenvolver capacidade de inibir seletivamente apenas parte da resposta mantendo outras',
+    demandCategory: 'behavior',
+    generalObjective: 'Redirecionar impulsos motores para expressão musical controlada',
     specificObjectives: [
-      'Inibir um componente enquanto mantém outros',
-      'Discriminar o que inibir e o que manter',
-      'Aumentar precisão da inibição seletiva',
-      'Manter desempenho sob regras complexas'
+      'Reconhecer impulso motor crescente',
+      'Canalizar energia para instrumento',
+      'Expressar impulso de forma socialmente aceitável',
+      'Desenvolver autoconsciência de estados energéticos'
     ],
-    description: 'Regras complexas de inibição: "Toque o ritmo mas não cante", "Mova os braços mas não as pernas", "Responda a graves mas não agudos enquanto mantém o pulso". Inibição parcial é mais difícil que total. Aumente complexidade das combinações.',
-    materials: ['Atividades com componentes separáveis', 'Cartões de regras', 'Registro de precisão'],
-    estimatedTime: '20-30 minutos',
-    complexityLevel: 'severo',
+    description: 'Identificar quando energia está subindo. Em vez de comportamento desorganizado, canalizar para bateria, tambor ou movimento rítmico estruturado. Criar ritual de descarga energética.',
+    materials: ['Tambores ou bateria', 'Espaço para movimento', 'Escala de energia visual', 'Rituais de descarga definidos'],
+    estimatedTime: '15-25 minutos',
+    ageRange: '5-14 anos',
+    complexityLevel: 'basic',
     evaluationCriteria: [
-      'Precisão na inibição seletiva',
-      'Manutenção dos componentes não-inibidos',
-      'Gerenciamento de regras complexas',
-      'Flexibilidade com mudanças de regras',
-      'Estratégias utilizadas'
+      'Reconhecimento de estados de alta energia',
+      'Uso apropriado de canais de descarga',
+      'Redução de comportamentos desorganizados',
+      'Iniciativa de uso das estratégias',
+      'Autorregulação melhorada'
     ],
-    adaptations: [
-      'Nível leve: Componentes muito distintos, uma regra simples',
-      'Nível moderado: Componentes relacionados, regras moderadas',
-      'Nível severo: Componentes integrados, regras complexas e mutáveis'
-    ],
-    theoreticalBasis: 'Inibição seletiva requer controle executivo mais sofisticado que inibição total, trabalhando modulação fina de resposta.',
-    ageRange: '9-18 anos',
-    tips: [
-      'Comece com componentes muito distintos',
-      'Use cores ou símbolos para diferentes regras',
-      'Não exija perfeição - celebre tentativas',
-      'Humor ajuda quando regras se misturam'
-    ]
+    adaptations: {
+      level1: 'Terapeuta identifica e oferece instrumento',
+      level2: 'Paciente identifica com ajuda',
+      level3: 'Identificação e canalização independentes'
+    },
+    theoreticalBasis: 'Sublimação de impulsos e uso de movimento como regulação.',
+    practicalTips: ['Tenha sempre instrumento de descarga disponível', 'Valide necessidade de movimento', 'Crie ritual pessoal']
   },
   {
-    id: 'tdah-ci-15',
-    title: 'Autocontrole Progressivo',
+    id: 2050,
+    title: 'Câmera Lenta Musical',
     disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Autocontrole',
-    generalObjective: 'Desenvolver autocontrole progressivo através de desafios inibitórios de dificuldade crescente',
+    demandCategory: 'behavior',
+    generalObjective: 'Desenvolver controle motor fino através de execução em velocidade muito reduzida',
     specificObjectives: [
-      'Completar hierarquia de desafios inibitórios',
-      'Identificar nível atual de autocontrole',
-      'Desenvolver estratégias personalizadas',
-      'Generalizar autocontrole para vida diária'
+      'Executar movimentos em câmera lenta',
+      'Manter precisão durante desaceleração',
+      'Controlar impulso de acelerar',
+      'Transferir controle para ações cotidianas'
     ],
-    description: 'Crie hierarquia personalizada de desafios inibitórios, do mais fácil ao mais difícil para o paciente específico. Trabalhe progressivamente, consolidando cada nível antes de avançar. Identifique estratégias mais efetivas para cada tipo de desafio. Crie "diploma de autocontrole" para níveis alcançados.',
-    materials: ['Hierarquia personalizada', 'Registro de conquistas', 'Cartões de estratégias', 'Diplomas de níveis'],
-    estimatedTime: '30-40 minutos (múltiplas sessões)',
-    complexityLevel: 'severo',
+    description: 'Execute movimentos musicais (tocar instrumento, dançar) em velocidade muito lenta. Use música lenta como guia. Mantenha qualidade apesar da lentidão. Discuta impulso de acelerar.',
+    materials: ['Músicas em diferentes velocidades', 'Metrônomo lento', 'Espelho', 'Gravador para review'],
+    estimatedTime: '15-20 minutos',
+    ageRange: '5-15 anos',
+    complexityLevel: 'intermediate',
     evaluationCriteria: [
-      'Progresso na hierarquia',
-      'Consolidação de níveis anteriores',
-      'Desenvolvimento de estratégias pessoais',
-      'Generalização para outros contextos',
-      'Autoeficácia percebida'
+      'Manutenção de velocidade lenta',
+      'Qualidade do movimento desacelerado',
+      'Controle de impulso de acelerar',
+      'Progressão para velocidades cada vez mais lentas',
+      'Transferência para ações cotidianas'
     ],
-    adaptations: [
-      'Nível leve: Hierarquia com muitos níveis intermediários, muito apoio',
-      'Nível moderado: Hierarquia moderada, apoio parcial',
-      'Nível severo: Hierarquia desafiadora, auto-progressão'
-    ],
-    theoreticalBasis: 'Exposição gradual a desafios inibitórios, com consolidação de sucesso em cada nível, desenvolve autocontrole de forma sustentável.',
-    ageRange: '8-18 anos',
-    tips: [
-      'Personalize hierarquia para o paciente',
-      'Não pule níveis - consolide cada um',
-      'Celebre cada nível alcançado',
-      'Revise estratégias que funcionaram'
-    ]
+    adaptations: {
+      level1: 'Velocidade moderadamente lenta',
+      level2: 'Velocidade bem lenta',
+      level3: 'Velocidade muito lenta com precisão'
+    },
+    theoreticalBasis: 'Treino de inibição motora através de controle de velocidade.',
+    practicalTips: ['Faça junto', 'Use música como guia de velocidade', 'Comece apenas um pouco mais lento']
   },
-
+  {
+    id: 2051,
+    title: 'Palavra Proibida Musical',
+    disorder: 'TDAH',
+    demandCategory: 'behavior',
+    generalObjective: 'Desenvolver inibição verbal através de jogo musical com palavras proibidas',
+    specificObjectives: [
+      'Cantar evitando palavra específica',
+      'Substituir palavra proibida por outra',
+      'Manter fluxo da canção apesar da inibição',
+      'Generalizar controle verbal'
+    ],
+    description: 'Cante música conhecida, mas uma palavra é proibida (ex: nunca dizer cores). Deve substituir por hum ou outra palavra. Aumente número de palavras proibidas. Discuta dificuldade.',
+    materials: ['Músicas conhecidas', 'Lista de palavras proibidas', 'Sinalizador de erro', 'Registro de desempenho'],
+    estimatedTime: '15-20 minutos',
+    ageRange: '6-15 anos',
+    complexityLevel: 'intermediate',
+    evaluationCriteria: [
+      'Taxa de evitação da palavra proibida',
+      'Qualidade das substituições',
+      'Manutenção do fluxo da música',
+      'Melhora com prática',
+      'Generalização para contexto verbal'
+    ],
+    adaptations: {
+      level1: 'Uma palavra óbvia e fácil de antecipar',
+      level2: 'Duas palavras de categorias diferentes',
+      level3: 'Múltiplas palavras, categoria inteira'
+    },
+    theoreticalBasis: 'Treino de inibição de resposta verbal pré-potente.',
+    practicalTips: ['Comece com músicas muito conhecidas', 'Use palavras frequentes mas não essenciais', 'Ria junto dos erros']
+  },
+  {
+    id: 2052,
+    title: 'Resposta Incompatível Musical',
+    disorder: 'TDAH',
+    demandCategory: 'behavior',
+    generalObjective: 'Desenvolver inibição através de resposta oposta à tendência natural',
+    specificObjectives: [
+      'Executar resposta contrária ao impulso',
+      'Inibir resposta prepotente',
+      'Manter regra inversa ativa',
+      'Reduzir erros com prática'
+    ],
+    description: 'Quando ouvir som agudo, fazer movimento de agachar (não de subir). Quando som forte, tocar fraco. Resposta sempre contrária à tendência natural. Aumentar complexidade das inversões.',
+    materials: ['Instrumentos variados', 'Cartões de regras inversas', 'Registro de erros', 'Espaço para movimento'],
+    estimatedTime: '15-20 minutos',
+    ageRange: '6-15 anos',
+    complexityLevel: 'advanced',
+    evaluationCriteria: [
+      'Taxa de respostas corretas (inversas)',
+      'Tempo de reação',
+      'Manutenção da regra ao longo do tempo',
+      'Redução de erros automáticos',
+      'Generalização do controle'
+    ],
+    adaptations: {
+      level1: 'Uma inversão simples, ritmo lento',
+      level2: 'Duas inversões, ritmo moderado',
+      level3: 'Múltiplas inversões, ritmo rápido'
+    },
+    theoreticalBasis: 'Paradigma de resposta incompatível para treino de inibição.',
+    practicalTips: ['Pratique regra normal antes de inverter', 'Dê tempo para processar', 'Use humor para erros']
+  },
+  {
+    id: 2053,
+    title: 'Inibição de Eco',
+    disorder: 'TDAH',
+    demandCategory: 'behavior',
+    generalObjective: 'Desenvolver controle sobre resposta automática de imitação',
+    specificObjectives: [
+      'Ouvir sem imitar automaticamente',
+      'Processar antes de responder',
+      'Responder de forma diferente ao modelo',
+      'Reduzir impulsividade de eco'
+    ],
+    description: 'Terapeuta toca padrão. Paciente deve esperar, processar e tocar algo DIFERENTE (não eco). Aumentar tentação de eco com padrões interessantes ou repetitivos.',
+    materials: ['Instrumentos', 'Timer de espera', 'Registro de ecos involuntários', 'Padrões progressivamente tentadores'],
+    estimatedTime: '15-20 minutos',
+    ageRange: '5-14 anos',
+    complexityLevel: 'intermediate',
+    evaluationCriteria: [
+      'Frequência de ecos involuntários',
+      'Qualidade de respostas diferentes',
+      'Tempo de processamento adequado',
+      'Redução de ecos ao longo da sessão',
+      'Criatividade nas respostas'
+    ],
+    adaptations: {
+      level1: 'Padrões simples, tempo longo de processamento',
+      level2: 'Padrões médios, tempo moderado',
+      level3: 'Padrões tentadores, resposta rápida diferente'
+    },
+    theoreticalBasis: 'Inibição de resposta imitativa automática como treino de controle.',
+    practicalTips: ['Valorize respostas criativas', 'Não puna ecos, apenas note', 'Use como jogo divertido']
+  },
+  {
+    id: 2054,
+    title: 'Congelamento Seletivo',
+    disorder: 'TDAH',
+    demandCategory: 'behavior',
+    generalObjective: 'Desenvolver inibição parcial através de congelamento de partes específicas do corpo',
+    specificObjectives: [
+      'Congelar parte específica enquanto resto move',
+      'Seguir instruções de congelamento seletivo',
+      'Manter inibição parcial por tempo determinado',
+      'Aumentar precisão do controle corporal'
+    ],
+    description: 'Dance, mas quando sinal, congele apenas parte específica (mãos, pés, cabeça). Resto continua. Aumentar dificuldade com partes menores ou múltiplas. Combinar com música.',
+    materials: ['Música dançante', 'Cartões de partes do corpo', 'Sinalizador', 'Espaço para movimento'],
+    estimatedTime: '15-25 minutos',
+    ageRange: '5-12 anos',
+    complexityLevel: 'intermediate',
+    evaluationCriteria: [
+      'Precisão do congelamento seletivo',
+      'Manutenção do movimento no resto',
+      'Tempo de resposta',
+      'Duração do congelamento mantido',
+      'Divertimento e engajamento'
+    ],
+    adaptations: {
+      level1: 'Partes grandes (pernas, braços), tempo curto',
+      level2: 'Partes médias, tempo moderado',
+      level3: 'Partes pequenas, tempo longo, múltiplas'
+    },
+    theoreticalBasis: 'Inibição motora seletiva como forma avançada de controle.',
+    practicalTips: ['Comece com partes fáceis de isolar', 'Use visual de apoio', 'Faça junto demonstrando']
+  },
+  {
+    id: 2055,
+    title: 'Resistência à Tentação Musical',
+    disorder: 'TDAH',
+    demandCategory: 'behavior',
+    generalObjective: 'Desenvolver resistência a impulsos através de exposição gradual a tentações',
+    specificObjectives: [
+      'Resistir a tocar instrumento tentador',
+      'Manter foco em tarefa designada',
+      'Usar estratégias de autorregulação',
+      'Aumentar tolerância a frustração'
+    ],
+    description: 'Instrumento muito desejado visível mas proibido temporariamente. Complete outra tarefa antes de acessar. Aumente tempo de espera e proximidade do objeto tentador.',
+    materials: ['Instrumento altamente preferido', 'Tarefa intermediária', 'Timer', 'Estratégias visuais de resistência'],
+    estimatedTime: '20-25 minutos',
+    ageRange: '5-14 anos',
+    complexityLevel: 'intermediate',
+    evaluationCriteria: [
+      'Tempo de resistência antes de ceder',
+      'Conclusão da tarefa intermediária',
+      'Uso de estratégias de resistência',
+      'Melhora ao longo das sessões',
+      'Generalização para outras situações'
+    ],
+    adaptations: {
+      level1: 'Objeto distante, espera curta, tarefa fácil',
+      level2: 'Objeto próximo, espera média, tarefa moderada',
+      level3: 'Objeto à mão, espera longa, tarefa exigente'
+    },
+    theoreticalBasis: 'Treino de adiamento de gratificação em contexto motivador.',
+    practicalTips: ['Sempre permita acesso após completar', 'Ensine estratégias de desvio de atenção', 'Celebre cada resistência bem-sucedida']
+  },
+  
   // ==================== AUTORREGULAÇÃO (15 atividades) ====================
   {
-    id: 'tdah-ar-1',
+    id: 2056,
     title: 'Termômetro Emocional Musical',
     disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Consciência Emocional',
-    generalObjective: 'Desenvolver consciência do próprio estado emocional e de energia através de representação musical',
+    demandCategory: 'self_regulation',
+    generalObjective: 'Desenvolver consciência de estados emocionais através de associação com música',
     specificObjectives: [
-      'Identificar estado emocional atual',
-      'Representar estado através de música',
-      'Reconhecer mudanças de estado',
-      'Associar estados a expressões musicais específicas'
+      'Identificar próprio nível de energia/emoção',
+      'Expressar estado através de escolha musical',
+      'Monitorar mudanças de estado',
+      'Comunicar estados de forma aceitável'
     ],
-    description: 'Use instrumento ou voz para representar estado emocional/energético atual: intensidade, velocidade, altura representam diferentes aspectos. Crie escala visual de referência. Pratique check-ins regulares representando musicalmente "como estou agora". Compare auto-percepção com observação externa.',
-    materials: ['Instrumento ou voz', 'Termômetro visual', 'Escala de referência', 'Diário musical de estados'],
-    estimatedTime: '15-25 minutos',
-    complexityLevel: 'leve',
+    description: 'Termômetro visual com níveis de energia/emoção. Em cada nível, músicas associadas. Paciente identifica onde está e escolhe música correspondente. Monitorar ao longo da sessão.',
+    materials: ['Termômetro visual grande', 'Playlist por nível', 'Marcador móvel', 'Registro de estados'],
+    estimatedTime: '10-15 min por sessão (integrado)',
+    ageRange: '5-16 anos',
+    complexityLevel: 'basic',
     evaluationCriteria: [
-      'Precisão da auto-percepção',
-      'Consistência da representação musical',
+      'Precisão na identificação do estado',
+      'Uso consistente do termômetro',
+      'Comunicação de estados',
       'Consciência de mudanças',
-      'Vocabulário emocional desenvolvido',
-      'Generalização para fora da sessão'
+      'Generalização para vida diária'
     ],
-    adaptations: [
-      'Nível leve: Apenas 3 níveis (baixo/médio/alto), representação simples',
-      'Nível moderado: 5 níveis, diferenciação emoção vs. energia',
-      'Nível severo: Gradações finas, múltiplas dimensões, auto-monitoramento'
-    ],
-    theoreticalBasis: 'Consciência interoceptiva e emocional é frequentemente reduzida no TDAH. Externalizar através de música facilita reconhecimento.',
-    ageRange: '6-18 anos',
-    tips: [
-      'Faça check-ins no início e fim de cada sessão',
-      'Use visual concreto de referência',
-      'Não julgue estados - apenas identifique',
-      'Conecte com situações de desregulação'
-    ]
+    adaptations: {
+      level1: 'Apenas 3 níveis (baixo, médio, alto)',
+      level2: '5 níveis com nuances',
+      level3: 'Escala contínua com descrições'
+    },
+    theoreticalBasis: 'Consciência interoceptiva como base para regulação emocional.',
+    practicalTips: ['Use em início e fim de cada sessão', 'Crie versão portátil', 'Não julgue estados, apenas observe']
   },
   {
-    id: 'tdah-ar-2',
+    id: 2057,
     title: 'Música para Acalmar',
     disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Regulação para Baixo',
-    generalObjective: 'Desenvolver estratégias musicais para reduzir ativação quando estado está elevado demais',
+    demandCategory: 'self_regulation',
+    generalObjective: 'Desenvolver estratégias de redução de ativação através de música calmante personalizada',
     specificObjectives: [
-      'Reconhecer quando ativação está alta demais',
-      'Aplicar técnicas musicais de redução',
-      'Monitorar efeito das técnicas',
-      'Internalizar repertório de estratégias calmantes'
+      'Identificar quando está superativado',
+      'Escolher música apropriada para acalmar',
+      'Usar música ativamente para reduzir ativação',
+      'Criar playlist pessoal de calma'
     ],
-    description: 'Crie repertório de estratégias musicais para acalmar: músicas lentas, respiração com ritmo lento, instrumentos de som suave, movimento lento. Pratique em estados neutros primeiro, depois quando levemente ativado. Identifique o que funciona melhor individualmente.',
-    materials: ['Playlist calmante', 'Instrumentos suaves', 'Técnicas de respiração rítmica', 'Registro de efetividade'],
-    estimatedTime: '20-30 minutos',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Reconhecimento de alta ativação',
-      'Aplicação de técnicas adequadas',
-      'Redução observável de ativação',
-      'Preferências identificadas',
-      'Uso fora da sessão'
-    ],
-    adaptations: [
-      'Nível leve: Prática em estado neutro, técnicas guiadas',
-      'Nível moderado: Prática em estado levemente elevado, escolha de técnicas',
-      'Nível severo: Prática em estados mais ativados, auto-aplicação'
-    ],
-    theoreticalBasis: 'Música com características específicas (andamento lento, dinâmica suave) pode induzir estados mais calmos através de entrainment.',
+    description: 'Explore diferentes músicas e seu efeito calmante. Identifique quais funcionam para este paciente específico. Crie playlist personalizada. Pratique uso quando ativação está alta.',
+    materials: ['Biblioteca musical variada', 'Escala de ativação', 'Fones de ouvido', 'Espaço confortável', 'Registro de eficácia'],
+    estimatedTime: '25-35 minutos',
     ageRange: '5-18 anos',
-    tips: [
-      'Identifique preferências individuais',
-      'Pratique quando calmo, não apenas em crise',
-      'Crie playlist portátil para uso diário',
-      'Ensine respiração sincronizada com música'
-    ]
+    complexityLevel: 'basic',
+    evaluationCriteria: [
+      'Identificação de músicas efetivas',
+      'Uso apropriado quando superativado',
+      'Redução mensurável de ativação',
+      'Criação de repertório pessoal',
+      'Uso espontâneo em casa/escola'
+    ],
+    adaptations: {
+      level1: 'Terapeuta oferece opções, paciente escolhe',
+      level2: 'Paciente explora biblioteca com guia',
+      level3: 'Paciente busca e cria próprio repertório'
+    },
+    theoreticalBasis: 'Uso de música como ferramenta de regulação autonômica e emocional.',
+    practicalTips: ['Músicas efetivas são individuais', 'Teste em momentos calmos primeiro', 'Crie playlist acessível sempre']
   },
   {
-    id: 'tdah-ar-3',
+    id: 2058,
     title: 'Música para Energizar',
     disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Regulação para Cima',
-    generalObjective: 'Desenvolver estratégias musicais para aumentar ativação quando estado está baixo demais',
+    demandCategory: 'self_regulation',
+    generalObjective: 'Desenvolver ativação controlada para momentos de baixa energia ou foco',
     specificObjectives: [
-      'Reconhecer quando ativação está baixa demais',
-      'Aplicar técnicas musicais de ativação',
-      'Controlar nível de ativação (não exagerar)',
-      'Internalizar repertório de estratégias energizantes'
+      'Identificar estados de baixa energia',
+      'Usar música para aumentar ativação de forma controlada',
+      'Encontrar nível ótimo de ativação',
+      'Evitar superativação'
     ],
-    description: 'Crie repertório de estratégias musicais para energizar: músicas rápidas, percussão ativa, movimento amplo, canto vigoroso. Pratique ativar energia de forma controlada - sem passar do ponto. Identifique nível ótimo pessoal de ativação.',
-    materials: ['Playlist energizante', 'Instrumentos de percussão', 'Espaço para movimento', 'Registro de níveis de energia'],
+    description: 'Para momentos de apatia, sonolência ou desmotivação. Encontre músicas que aumentem energia sem superativar. Pratique regulação ascendente controlada. Crie playlist de ativação.',
+    materials: ['Músicas de diferentes níveis de energia', 'Escala de ativação', 'Timer', 'Registro de efeitos'],
     estimatedTime: '20-30 minutos',
-    complexityLevel: 'moderado',
+    ageRange: '6-18 anos',
+    complexityLevel: 'intermediate',
     evaluationCriteria: [
-      'Reconhecimento de baixa ativação',
-      'Aplicação de técnicas adequadas',
+      'Identificação de músicas ativadoras efetivas',
       'Controle do nível de ativação',
-      'Identificação do ponto ótimo',
-      'Uso antes de atividades que exigem foco'
+      'Evitação de superativação',
+      'Uso apropriado para tarefas',
+      'Transferência para estudo/trabalho'
     ],
-    adaptations: [
-      'Nível leve: Ativação moderada com apoio, feedback constante',
-      'Nível moderado: Ativação mais intensa, auto-monitoramento parcial',
-      'Nível severo: Calibração fina, auto-gerenciamento'
-    ],
-    theoreticalBasis: 'Muitas pessoas com TDAH apresentam hipoativação basal, precisando de estratégias para atingir nível ótimo de arousal.',
-    ageRange: '5-18 anos',
-    tips: [
-      'Ensine que há nível ótimo - nem baixo, nem alto demais',
-      'Use antes de deveres/atividades exigentes',
-      'Movimento físico potencializa efeito',
-      'Cuidado para não superativar'
-    ]
+    adaptations: {
+      level1: 'Ativação leve com supervisão',
+      level2: 'Ativação moderada semi-independente',
+      level3: 'Ativação flexível auto-gerenciada'
+    },
+    theoreticalBasis: 'Modelo de ativação ótima e uso de música para regulação energética.',
+    practicalTips: ['Cuidado com superativação', 'Teste antes de momentos importantes', 'Observe efeito individual']
   },
   {
-    id: 'tdah-ar-4',
-    title: 'Respiração Rítmica Reguladora',
+    id: 2059,
+    title: 'Respiração Rítmica Musical',
     disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Regulação Fisiológica',
-    generalObjective: 'Desenvolver técnica de respiração sincronizada com ritmo para regulação do sistema nervoso',
+    demandCategory: 'self_regulation',
+    generalObjective: 'Desenvolver regulação fisiológica através de sincronização respiratória com música',
     specificObjectives: [
       'Sincronizar respiração com ritmo musical',
-      'Usar respiração para regular ativação',
-      'Identificar padrões respiratórios associados a estados',
-      'Aplicar técnica independentemente em momentos de necessidade'
+      'Usar respiração como ferramenta de regulação',
+      'Desenvolver padrões respiratórios saudáveis',
+      'Aplicar em momentos de desregulação'
     ],
-    description: 'Ensine padrões respiratórios sincronizados com ritmo: inspirar em 4 tempos, segurar em 4, expirar em 6-8. Use instrumento ou música como guia. Pratique padrões diferentes para acalmar (expiração longa) e ativar (inspiração ativa). Crie música de respiração pessoal.',
-    materials: ['Metrônomo ou música guia', 'Visual de padrão respiratório', 'Registro de prática'],
-    estimatedTime: '15-25 minutos',
-    complexityLevel: 'leve',
-    evaluationCriteria: [
-      'Sincronização respiração-ritmo',
-      'Efetividade na mudança de estado',
-      'Lembrança de usar quando necessário',
-      'Aplicação independente',
-      'Internalização do ritmo'
-    ],
-    adaptations: [
-      'Nível leve: Padrão simples, muito apoio visual/auditivo',
-      'Nível moderado: Padrões variados, apoio moderado',
-      'Nível severo: Escolha de padrão conforme necessidade, auto-guiado'
-    ],
-    theoreticalBasis: 'Respiração é via de acesso ao sistema nervoso autônomo. Sincronização com ritmo externo facilita regularidade e profundidade.',
+    description: 'Música com tempo apropriado para guiar respiração (inspirar 4 tempos, expirar 6). Pratique sincronização. Use em momentos de ansiedade ou superativação. Crie ritual pessoal.',
+    materials: ['Músicas com tempos específicos', 'Visual de respiração', 'Metrônomo', 'Espaço confortável'],
+    estimatedTime: '15-20 minutos',
     ageRange: '6-18 anos',
-    tips: [
-      'Comece com padrões simples',
-      'Use visual de onda ou bola subindo/descendo',
-      'Pratique quando calmo para automatizar',
-      'Crie lembrete para usar em situações-chave'
-    ]
+    complexityLevel: 'basic',
+    evaluationCriteria: [
+      'Sincronização respiração-música',
+      'Efeito calmante observado',
+      'Uso espontâneo da técnica',
+      'Generalização para vida diária',
+      'Redução de sintomas de ansiedade'
+    ],
+    adaptations: {
+      level1: 'Respiração simples com contagem audível',
+      level2: 'Respiração com música, guia parcial',
+      level3: 'Respiração internalizada com música de fundo'
+    },
+    theoreticalBasis: 'Regulação vagal através de respiração e seu efeito no sistema nervoso autônomo.',
+    practicalTips: ['Comece com proporções simples', 'Use antes de tarefas desafiadoras', 'Pratique quando calmo para usar quando ansioso']
   },
   {
-    id: 'tdah-ar-5',
+    id: 2060,
     title: 'Zonas de Regulação Sonoras',
     disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Consciência de Estados',
-    generalObjective: 'Desenvolver consciência e vocabulário de estados regulatórios usando metáfora de zonas coloridas com música',
+    demandCategory: 'self_regulation',
+    generalObjective: 'Integrar programa Zonas de Regulação com suporte musical para cada estado',
     specificObjectives: [
-      'Identificar zona atual (verde/azul/amarelo/vermelho)',
-      'Associar cada zona a características musicais',
-      'Reconhecer transições entre zonas',
-      'Desenvolver estratégias musicais para cada zona'
+      'Identificar em qual zona está (azul, verde, amarelo, vermelho)',
+      'Associar músicas a cada zona',
+      'Usar música para transitar entre zonas',
+      'Desenvolver repertório de estratégias por zona'
     ],
-    description: 'Baseado no programa Zonas de Regulação, associe cada zona a características musicais: verde (regulado) = música equilibrada; azul (baixa energia) = música lenta/triste; amarelo (perdendo controle) = música acelerada/tensa; vermelho (fora de controle) = música caótica. Crie playlist de cada zona e playlist para voltar ao verde.',
-    materials: ['Cartões de zonas', 'Playlists por zona', 'Registro de zonas durante a sessão'],
-    estimatedTime: '25-35 minutos',
-    complexityLevel: 'moderado',
+    description: 'Cada zona tem músicas associadas: azul (energizantes suaves), verde (manutenção), amarelo (calmantes leves), vermelho (calmantes intensos). Identifique zona, escolha música, use para regular.',
+    materials: ['Quadro de zonas', 'Playlists por zona', 'Cartões de estratégias', 'Registro de transições'],
+    estimatedTime: '25-35 minutos para setup + uso contínuo',
+    ageRange: '5-16 anos',
+    complexityLevel: 'intermediate',
     evaluationCriteria: [
-      'Identificação precisa de zona',
-      'Associação música-zona estabelecida',
-      'Reconhecimento de transições',
-      'Uso de estratégias para retornar ao verde',
-      'Generalização para fora da sessão'
+      'Identificação correta de zonas',
+      'Escolha apropriada de músicas',
+      'Transições bem-sucedidas entre zonas',
+      'Uso independente do sistema',
+      'Generalização para ambiente natural'
     ],
-    adaptations: [
-      'Nível leve: Apenas verde e vermelho, músicas muito distintas',
-      'Nível moderado: 4 zonas, estratégias básicas para cada',
-      'Nível severo: Gradações dentro de zonas, estratégias sofisticadas'
-    ],
-    theoreticalBasis: 'O programa Zonas de Regulação de Leah Kuypers fornece estrutura concreta para autorregulação, adaptado aqui com música.',
-    ageRange: '5-14 anos',
-    tips: [
-      'Use cores consistentes com programa original',
-      'Crie gestos musicais para cada zona',
-      'Check-in de zona em cada sessão',
-      'Envolva família no vocabulário de zonas'
-    ]
+    adaptations: {
+      level1: 'Apenas zonas extremas (azul e vermelho)',
+      level2: 'Quatro zonas com apoio',
+      level3: 'Sistema completo independente'
+    },
+    theoreticalBasis: 'Programa Zones of Regulation (Kuypers) integrado com musicoterapia.',
+    practicalTips: ['Use cores consistentes', 'Crie versão portátil', 'Envolva família no uso']
   },
   {
-    id: 'tdah-ar-6',
+    id: 2061,
     title: 'Transição Emocional Musical',
     disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Mudança de Estado',
-    generalObjective: 'Desenvolver capacidade de mudar estado emocional/regulatório intencionalmente através de música',
+    demandCategory: 'self_regulation',
+    generalObjective: 'Desenvolver habilidade de mudar estados emocionais utilizando música como veículo',
     specificObjectives: [
-      'Identificar estado atual e estado desejado',
-      'Selecionar música/técnica para transição',
-      'Executar transição gradual',
-      'Atingir estado alvo de forma controlada'
+      'Reconhecer necessidade de mudança de estado',
+      'Usar música para facilitar transição',
+      'Completar transição de forma controlada',
+      'Chegar a estado desejado'
     ],
-    description: 'Pratique transições intencionais: de agitado para calmo, de apático para energizado, de irritado para neutro. Use música como veículo de mudança - comece com música que reflete estado atual, gradualmente mude para música do estado desejado. O paciente escolhe e implementa.',
-    materials: ['Músicas de diferentes estados', 'Mapa de transições', 'Registro de transições realizadas'],
-    estimatedTime: '25-35 minutos',
-    complexityLevel: 'moderado',
+    description: 'Quando em estado indesejado (muito agitado, muito triste), usar sequência de músicas que gradualmente leva ao estado desejado. Não pular diretamente, fazer transição gradual.',
+    materials: ['Sequências de músicas de transição', 'Mapa de transições', 'Escala de estados', 'Timer'],
+    estimatedTime: '20-30 minutos',
+    ageRange: '7-18 anos',
+    complexityLevel: 'intermediate',
     evaluationCriteria: [
-      'Precisão na identificação de estados',
-      'Adequação da seleção musical',
-      'Suavidade da transição',
-      'Atingimento do estado alvo',
-      'Aplicação em situações reais'
+      'Reconhecimento de estado atual',
+      'Definição de estado desejado',
+      'Uso de sequência de transição',
+      'Chegada ao estado desejado',
+      'Uso independente da estratégia'
     ],
-    adaptations: [
-      'Nível leve: Transições simples (calmo-energizado), terapeuta seleciona músicas',
-      'Nível moderado: Transições variadas, paciente ajuda na seleção',
-      'Nível severo: Qualquer transição, paciente planeja e executa'
-    ],
-    theoreticalBasis: 'O princípio ISO em musicoterapia propõe começar com música que espelha o estado atual e gradualmente mudar para estado desejado.',
-    ageRange: '8-18 anos',
-    tips: [
-      'Não pule diretamente de um extremo ao outro',
-      'Respeite ritmo pessoal de transição',
-      'Crie repertório de transições bem-sucedidas',
-      'Aplique antes de situações desafiadoras'
-    ]
+    adaptations: {
+      level1: 'Transições simples (agitado→calmo) com muita ajuda',
+      level2: 'Transições variadas com ajuda parcial',
+      level3: 'Transições complexas independentes'
+    },
+    theoreticalBasis: 'ISO musical e princípio de matching-leading para mudança de estados.',
+    practicalTips: ['Crie mapas de transição personalizados', 'Nunca force transição muito rápida', 'Respeite tempo individual']
   },
   {
-    id: 'tdah-ar-7',
+    id: 2062,
     title: 'Diário Musical de Humor',
     disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Monitoramento Emocional',
-    generalObjective: 'Desenvolver hábito de monitorar e registrar estados emocionais através de expressão musical',
+    demandCategory: 'self_regulation',
+    generalObjective: 'Desenvolver autoconsciência emocional através de registro musical de estados',
     specificObjectives: [
-      'Fazer check-ins emocionais regulares',
-      'Expressar estados através de música',
+      'Registrar estados emocionais regularmente',
+      'Associar músicas a estados específicos',
       'Identificar padrões ao longo do tempo',
-      'Relacionar estados com situações e estratégias'
+      'Usar padrões para prevenção e regulação'
     ],
-    description: 'Crie formato de diário musical: breve improvisação ou seleção musical que representa o estado atual, registro de situações relevantes, estratégias usadas. Pode ser gravado ou anotado com símbolos musicais. Revise semanalmente para identificar padrões.',
-    materials: ['Instrumento ou voz', 'Gravador', 'Formato de diário visual', 'Calendário de humor musical'],
-    estimatedTime: '10-15 minutos por entrada',
-    complexityLevel: 'leve',
-    evaluationCriteria: [
-      'Regularidade das entradas',
-      'Expressividade das representações',
-      'Consciência de padrões',
-      'Relação estado-situação identificada',
-      'Uso de informações para autorregulação'
-    ],
-    adaptations: [
-      'Nível leve: Uma entrada por sessão, formato muito estruturado',
-      'Nível moderado: Entradas diárias, formato semi-estruturado',
-      'Nível severo: Múltiplas entradas, formato livre, análise de padrões'
-    ],
-    theoreticalBasis: 'Auto-monitoramento regular aumenta consciência emocional, permitindo intervenção mais precoce em padrões problemáticos.',
+    description: 'Diário onde registra como está se sentindo e que música representa esse sentimento. Ao longo do tempo, identificar padrões: que dias são mais difíceis, que músicas ajudam mais.',
+    materials: ['Caderno de diário', 'Adesivos de humor', 'Acesso a músicas', 'Gráficos de padrões'],
+    estimatedTime: '5-10 min por sessão + revisão periódica',
     ageRange: '8-18 anos',
-    tips: [
-      'Mantenha simples para garantir adesão',
-      'Use emojis ou símbolos se preferir não gravar',
-      'Revise semanalmente para insights',
-      'Celebre consistência do registro'
-    ]
+    complexityLevel: 'basic',
+    evaluationCriteria: [
+      'Consistência do registro',
+      'Qualidade das associações música-estado',
+      'Identificação de padrões',
+      'Uso de insights para regulação',
+      'Engajamento com a atividade'
+    ],
+    adaptations: {
+      level1: 'Registro visual simples com ajuda',
+      level2: 'Registro escrito semi-independente',
+      level3: 'Registro e análise independentes'
+    },
+    theoreticalBasis: 'Auto-monitoramento como base para regulação emocional e metacognição.',
+    practicalTips: ['Mantenha simples', 'Revise padrões regularmente', 'Conecte com eventos da vida']
   },
   {
-    id: 'tdah-ar-8',
+    id: 2063,
     title: 'Ritual de Foco Musical',
     disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Preparação para Foco',
-    generalObjective: 'Desenvolver ritual musical de preparação que facilite entrada em estado de foco',
+    demandCategory: 'self_regulation',
+    generalObjective: 'Criar ritual musical de preparação para atividades que exigem foco',
     specificObjectives: [
-      'Criar sequência de preparação personalizada',
-      'Automatizar ritual através de repetição',
-      'Associar ritual a estado de foco',
-      'Aplicar antes de atividades que exigem atenção'
+      'Desenvolver ritual pessoal de preparação',
+      'Usar ritual antes de tarefas desafiadoras',
+      'Atingir estado de foco mais rapidamente',
+      'Generalizar para estudo e trabalho'
     ],
-    description: 'Crie ritual consistente antes de tarefas de foco: música específica, respiração rítmica, organização do espaço, movimento preparatório. Sempre na mesma sequência. Pratique até ficar automático. A música de ritual se torna "gatilho" de estado focado.',
-    materials: ['Música de ritual', 'Sequência visual', 'Elementos do ritual', 'Registro de uso'],
-    estimatedTime: '5-10 minutos (ritual) + prática',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Consistência do ritual',
-      'Tempo para entrar em foco após ritual',
-      'Associação música-foco estabelecida',
-      'Uso fora das sessões',
-      'Efetividade percebida'
-    ],
-    adaptations: [
-      'Nível leve: Ritual longo (10min) com muitos elementos, ambiente ideal',
-      'Nível moderado: Ritual médio (5min), ambiente variado',
-      'Nível severo: Micro-ritual (2min) portátil para qualquer ambiente'
-    ],
-    theoreticalBasis: 'Condicionamento clássico pode criar associação entre ritual e estado de foco. A consistência é chave para formação do hábito.',
+    description: 'Crie sequência musical curta (2-3 min) que prepara mente para foco: música específica, movimentos de centramento, respiração. Usar sempre antes de tarefas que exigem concentração.',
+    materials: ['Música de ritual', 'Sequência de movimentos', 'Timer', 'Ambiente preparado'],
+    estimatedTime: '15-20 min para criar + uso contínuo',
     ageRange: '6-18 anos',
-    tips: [
-      'A consistência é mais importante que complexidade',
-      'Use mesma música sempre para condicionamento',
-      'Pratique em condições ideais primeiro',
-      'Gradualmente aplique em situações reais'
-    ]
+    complexityLevel: 'basic',
+    evaluationCriteria: [
+      'Criação de ritual personalizado',
+      'Uso consistente antes de tarefas',
+      'Efeito no foco e desempenho',
+      'Manutenção do ritual ao longo do tempo',
+      'Generalização para escola/casa'
+    ],
+    adaptations: {
+      level1: 'Ritual dado, praticar uso',
+      level2: 'Ritual co-criado',
+      level3: 'Ritual criado independentemente'
+    },
+    theoreticalBasis: 'Condicionamento clássico e estabelecimento de rotinas preparatórias.',
+    practicalTips: ['Mantenha curto (2-3 min)', 'Seja consistente', 'Use mesma música sempre']
   },
   {
-    id: 'tdah-ar-9',
-    title: 'Descompressão Musical',
+    id: 2064,
+    title: 'Descompressão Musical Pós-Atividade',
     disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Recuperação',
-    generalObjective: 'Desenvolver estratégias musicais de descompressão após atividades intensas ou estressantes',
+    demandCategory: 'self_regulation',
+    generalObjective: 'Desenvolver ritual de descompressão após atividades intensas',
     specificObjectives: [
       'Reconhecer necessidade de descompressão',
-      'Aplicar técnicas musicais de relaxamento',
-      'Completar ciclo de ativação-desativação',
-      'Prevenir acúmulo de estresse'
+      'Usar música para transição de alta para baixa ativação',
+      'Completar descompressão antes de próxima atividade',
+      'Prevenir acúmulo de tensão'
     ],
-    description: 'Após atividades intensas (escolares, sociais, físicas), use música para descomprimir: escuta passiva relaxante, improvisação livre sem objetivo, movimento fluido com música suave. Crie rotina de descompressão para fim de dia ou transições difíceis.',
-    materials: ['Playlist de descompressão', 'Espaço confortável', 'Instrumentos de som suave'],
-    estimatedTime: '15-25 minutos',
-    complexityLevel: 'leve',
+    description: 'Após atividades intensas (escola, esporte, conflito), usar sequência musical para descomprimir. Música começa matching energia alta e gradualmente reduz. Criar ritual de fim de dia.',
+    materials: ['Sequências de descompressão', 'Espaço confortável', 'Timer', 'Escala de tensão'],
+    estimatedTime: '10-15 minutos',
+    ageRange: '6-18 anos',
+    complexityLevel: 'basic',
     evaluationCriteria: [
       'Reconhecimento de necessidade',
-      'Implementação regular',
-      'Efetividade na redução de tensão',
-      'Prevenção de colapsos',
-      'Rotina estabelecida'
+      'Uso consistente após eventos intensos',
+      'Redução de tensão observada',
+      'Prevenção de explosões',
+      'Incorporação na rotina'
     ],
-    adaptations: [
-      'Nível leve: Descompressão guiada, ambiente ideal, após atividades leves',
-      'Nível moderado: Descompressão semi-guiada, ambiente variado',
-      'Nível severo: Auto-aplicação após atividades muito intensas'
-    ],
-    theoreticalBasis: 'O sistema nervoso precisa de recuperação ativa após ativação intensa. Música pode facilitar transição para estado parassimpático.',
-    ageRange: '5-18 anos',
-    tips: [
-      'Não pule descompressão por falta de tempo',
-      'Crie rotina de fim de dia',
-      'Ajuste duração conforme intensidade da atividade',
-      'Inclua elementos sensoriais prazerosos'
-    ]
+    adaptations: {
+      level1: 'Terapeuta inicia e guia',
+      level2: 'Paciente reconhece necessidade com ajuda',
+      level3: 'Uso independente e proativo'
+    },
+    theoreticalBasis: 'Regulação do sistema nervoso e prevenção de sobrecarga autonômica.',
+    practicalTips: ['Ensine a reconhecer sinais de sobrecarga', 'Integre na rotina diária', 'Use após escola/atividades']
   },
   {
-    id: 'tdah-ar-10',
-    title: 'Ancoragem Sonora',
+    id: 2065,
+    title: 'Ancoragem Sonora de Estados',
     disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Condicionamento Regulatório',
-    generalObjective: 'Criar associações condicionadas entre sons/músicas específicos e estados regulatórios desejados',
+    demandCategory: 'self_regulation',
+    generalObjective: 'Criar associações condicionadas entre músicas e estados desejados',
     specificObjectives: [
-      'Associar música específica a estado de calma',
-      'Associar música específica a estado de foco',
-      'Usar âncora para acessar estado rapidamente',
-      'Desenvolver repertório de âncoras pessoais'
+      'Parear música específica com estado desejado',
+      'Fortalecer associação através de repetição',
+      'Usar música como gatilho de estado',
+      'Acessar estado rapidamente quando necessário'
     ],
-    description: 'Crie âncoras sonoras: durante estados desejados (muito calmo, muito focado), exponha a música específica repetidamente. Depois, a música pode evocar o estado. Funciona como condicionamento. Crie âncoras para diferentes estados úteis.',
-    materials: ['Músicas selecionadas para âncora', 'Registro de emparelhamentos', 'Práticas de condicionamento'],
-    estimatedTime: '20-30 minutos (múltiplas sessões)',
-    complexityLevel: 'moderado',
+    description: 'Quando em estado desejado (calmo, focado, confiante), sempre ouvir mesma música. Com repetição, música se torna gatilho para esse estado. Criar âncoras para estados úteis.',
+    materials: ['Músicas de âncora selecionadas', 'Protocolo de pareamento', 'Registro de uso', 'Acesso fácil às músicas'],
+    estimatedTime: 'Múltiplas sessões curtas + uso contínuo',
+    ageRange: '7-18 anos',
+    complexityLevel: 'intermediate',
     evaluationCriteria: [
-      'Força da associação música-estado',
-      'Velocidade de evocação do estado',
-      'Durabilidade da âncora',
-      'Generalização para fora da sessão',
-      'Repertório desenvolvido'
-    ],
-    adaptations: [
-      'Nível leve: Uma âncora simples (calma), muitas repetições',
-      'Nível moderado: 2-3 âncoras, prática regular',
-      'Nível severo: Múltiplas âncoras, uso estratégico em situações'
-    ],
-    theoreticalBasis: 'Baseado em princípios de condicionamento clássico. A música repetidamente pareada com estado pode eventualmente evocar o estado.',
-    ageRange: '8-18 anos',
-    tips: [
-      'Escolha músicas que já têm associações positivas',
-      'Repita emparelhamento muitas vezes',
-      'Use âncora em momentos de necessidade real',
-      'Mantenha âncoras em playlist acessível'
-    ]
-  },
-  {
-    id: 'tdah-ar-11',
-    title: 'Regulação do Nível de Energia',
-    disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Modulação de Arousal',
-    generalObjective: 'Desenvolver capacidade de modular nível de energia/arousal para adequar-se a demandas situacionais',
-    specificObjectives: [
-      'Identificar nível de energia atual vs. necessário',
-      'Ajustar energia para cima ou para baixo',
-      'Manter nível adequado durante atividade',
-      'Prevenir oscilações extremas'
-    ],
-    description: 'Use metáfora de "tanque de energia" ou "medidor de velocidade". Identifique nível atual e nível necessário para atividade. Use música para ajustar: ativadora para subir, calmante para descer. Pratique calibração para diferentes demandas (escola, esporte, descanso).',
-    materials: ['Medidor visual de energia', 'Músicas para ajuste', 'Cartões de demandas situacionais'],
-    estimatedTime: '25-35 minutos',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Precisão da identificação de níveis',
-      'Capacidade de ajuste intencional',
-      'Adequação às demandas situacionais',
-      'Estabilidade do nível atingido',
+      'Força da associação criada',
+      'Efetividade do gatilho',
+      'Uso apropriado da âncora',
+      'Manutenção da associação',
       'Aplicação em situações reais'
     ],
-    adaptations: [
-      'Nível leve: Apenas alto/baixo/médio, situações simples',
-      'Nível moderado: Gradações finas, situações variadas',
-      'Nível severo: Auto-monitoramento contínuo, ajuste dinâmico'
-    ],
-    theoreticalBasis: 'O modelo de regulação de arousal propõe nível ótimo de ativação para cada tarefa. TDAH tem dificuldade de modular arousal conforme demanda.',
-    ageRange: '7-18 anos',
-    tips: [
-      'Use metáfora concreta (velocímetro)',
-      'Mapeie demandas de energia de diferentes atividades',
-      'Pratique ajustes antes de transições',
-      'Celebre calibrações bem-sucedidas'
-    ]
+    adaptations: {
+      level1: 'Uma âncora simples (calma)',
+      level2: '2-3 âncoras diferentes',
+      level3: 'Sistema completo de âncoras'
+    },
+    theoreticalBasis: 'Condicionamento clássico aplicado a estados emocionais e fisiológicos.',
+    practicalTips: ['Escolha músicas que já têm associação positiva', 'Pratique em estado real, não simulado', 'Mantenha música exclusiva para esse fim']
   },
   {
-    id: 'tdah-ar-12',
-    title: 'Prevenção de Explosão Musical',
+    id: 2066,
+    title: 'Regulação através de Composição',
     disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Prevenção de Crise',
-    generalObjective: 'Desenvolver capacidade de reconhecer sinais precoces de desregulação e intervir antes de explosão',
+    demandCategory: 'self_regulation',
+    generalObjective: 'Usar processo criativo de composição para processar e regular emoções',
     specificObjectives: [
-      'Identificar sinais pessoais de escalada',
-      'Intervir musicalmente nos sinais iniciais',
-      'Prevenir progressão para descontrole',
-      'Desenvolver repertório de intervenções precoces'
+      'Expressar emoções através de criação musical',
+      'Processar experiências difíceis criativamente',
+      'Transformar emoções negativas em produto criativo',
+      'Desenvolver estratégia de coping criativo'
     ],
-    description: 'Mapeie sinais pessoais de escalada (tensão muscular, agitação, irritabilidade). Crie intervenções musicais para cada nível da escalada. Pratique identificar e intervir cedo - quanto antes, mais fácil. Use música como "extintor de incêndio" emocional.',
-    materials: ['Mapa de sinais pessoais', 'Termômetro de escalada', 'Intervenções musicais por nível', 'Registro de prevenções'],
-    estimatedTime: '30-40 minutos',
-    complexityLevel: 'severo',
+    description: 'Quando em estado emocional intenso, canalizar para composição musical. Não precisa ser sofisticado - sons, ritmos, melodias que expressem o sentimento. Guardar e revisar depois.',
+    materials: ['Instrumentos de fácil expressão', 'Gravador', 'Caderno de composições', 'Espaço privado'],
+    estimatedTime: '20-30 minutos',
+    ageRange: '8-18 anos',
+    complexityLevel: 'intermediate',
     evaluationCriteria: [
-      'Reconhecimento de sinais precoces',
-      'Intervenção em níveis iniciais',
-      'Prevenção de escalada completa',
-      'Efetividade das intervenções',
-      'Redução de episódios de descontrole'
+      'Uso da composição como regulação',
+      'Qualidade da expressão emocional',
+      'Efeito regulatório observado',
+      'Uso espontâneo da estratégia',
+      'Desenvolvimento criativo'
     ],
-    adaptations: [
-      'Nível leve: Sinais óbvios, intervenção guiada por terapeuta',
-      'Nível moderado: Sinais moderados, intervenção semi-independente',
-      'Nível severo: Sinais sutis, auto-intervenção precoce'
-    ],
-    theoreticalBasis: 'Intervenção precoce na curva de escalada é mais efetiva que tentar regular após descontrole. Consciência dos sinais é primeiro passo.',
-    ageRange: '6-18 anos',
-    tips: [
-      'Personalize sinais para cada pessoa',
-      'Intervenção precoce é chave',
-      'Pratique quando regulado, não em crise',
-      'Envolva família no reconhecimento de sinais'
-    ]
+    adaptations: {
+      level1: 'Composição muito livre e simples',
+      level2: 'Composição semi-estruturada',
+      level3: 'Composição elaborada e intencional'
+    },
+    theoreticalBasis: 'Arteterapia e sublimação como mecanismos de regulação emocional.',
+    practicalTips: ['Não julgue qualidade musical', 'Grave para processar depois', 'Valorize qualquer expressão']
   },
   {
-    id: 'tdah-ar-13',
-    title: 'Regulação Social Musical',
+    id: 2067,
+    title: 'Modulação de Energia Corporal',
     disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Regulação em Contexto Social',
-    generalObjective: 'Desenvolver capacidade de regular-se musicalmente em contextos sociais e interpessoais',
+    demandCategory: 'self_regulation',
+    generalObjective: 'Desenvolver consciência e controle da energia corporal através de movimento musical',
     specificObjectives: [
-      'Reconhecer quando interação está gerando desregulação',
-      'Aplicar técnicas sutis de autorregulação',
-      'Manter engajamento social enquanto regula',
-      'Usar música interna (imaginada) como recurso'
+      'Perceber nível de energia corporal',
+      'Modular energia através de movimento',
+      'Chegar a nível adequado para contexto',
+      'Usar corpo como ferramenta de regulação'
     ],
-    description: 'Pratique cenários sociais desafiadores com apoio musical. Desenvolva técnicas sutis de regulação usáveis em público: ritmo mental, respiração discreta, movimento pequeno. Ensaie aplicar durante interações simuladas. Crie "música interna" calmante acessível a qualquer momento.',
-    materials: ['Cenários sociais simulados', 'Técnicas sutis de regulação', 'Prática de música interna'],
-    estimatedTime: '25-35 minutos',
-    complexityLevel: 'severo',
+    description: 'Movimento com música em diferentes intensidades. Praticar aumentar e diminuir energia corporalmente. Reconhecer sensações de cada nível. Usar para se preparar para diferentes contextos.',
+    materials: ['Músicas de diferentes energias', 'Espaço para movimento', 'Escala corporal de energia', 'Espelho opcional'],
+    estimatedTime: '20-25 minutos',
+    ageRange: '5-16 anos',
+    complexityLevel: 'basic',
     evaluationCriteria: [
-      'Reconhecimento de desregulação social',
-      'Aplicação de técnicas sutis',
-      'Manutenção de engajamento',
-      'Efetividade em situações reais',
-      'Uso de música interna'
+      'Consciência de energia corporal',
+      'Capacidade de modular através de movimento',
+      'Precisão no nível desejado',
+      'Uso para preparação de atividades',
+      'Consciência corpo-mente'
     ],
-    adaptations: [
-      'Nível leve: Situações simples, técnicas óbvias permitidas, muito ensaio',
-      'Nível moderado: Situações moderadas, técnicas mais sutis',
-      'Nível severo: Situações complexas, técnicas invisíveis, tempo real'
-    ],
-    theoreticalBasis: 'Regulação em contexto social requer técnicas que não interfiram na interação. Música internalizada pode servir como recurso portátil.',
-    ageRange: '10-18 anos',
-    tips: [
-      'Pratique técnicas sutis até ficarem automáticas',
-      'Desenvolva música interna calmante pessoal',
-      'Ensaie em role-plays antes de situações reais',
-      'Debriefe situações reais para aprendizado'
-    ]
+    adaptations: {
+      level1: 'Apenas alto e baixo, guiado',
+      level2: 'Três níveis, semi-independente',
+      level3: 'Escala contínua, auto-regulação'
+    },
+    theoreticalBasis: 'Embodied cognition e regulação bottom-up através do corpo.',
+    practicalTips: ['Faça junto', 'Use antes de atividades que exigem energia específica', 'Conecte com esportes/escola']
   },
   {
-    id: 'tdah-ar-14',
-    title: 'Autorregulação na Frustração',
+    id: 2068,
+    title: 'Autofalas Musicais',
     disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Tolerância à Frustração',
-    generalObjective: 'Desenvolver capacidade de regular-se musicalmente diante de frustrações e dificuldades',
+    demandCategory: 'self_regulation',
+    generalObjective: 'Desenvolver autoinstruções positivas através de canções personalizadas',
     specificObjectives: [
-      'Reconhecer frustração sem reagir impulsivamente',
-      'Aplicar técnicas musicais de regulação',
-      'Manter engajamento apesar de dificuldade',
-      'Desenvolver tolerância progressiva'
+      'Criar frases de autoinstrução positiva',
+      'Colocar em formato musical memorável',
+      'Usar em momentos de dificuldade',
+      'Internalizar autofala positiva'
     ],
-    description: 'Crie situações controladas de frustração musical (peça difícil, erro proposital, perda em jogo). Ensine a reconhecer frustração emergente e aplicar técnicas: pausa musical, respiração, expressar frustração no instrumento depois regular. Aumente gradualmente tolerância.',
-    materials: ['Atividades levemente frustrantes', 'Técnicas de regulação', 'Termômetro de frustração', 'Registro de tolerância'],
-    estimatedTime: '25-35 minutos',
-    complexityLevel: 'severo',
+    description: 'Crie canções curtas com mensagens de autocontrole: "Posso esperar", "Calma, respira", "Pensa primeiro". Pratique cantar em momentos calmos. Use mentalização em momentos difíceis.',
+    materials: ['Letras de autoinstrução', 'Melodias simples', 'Gravações', 'Cartões com letras'],
+    estimatedTime: '20-25 minutos para criar + uso contínuo',
+    ageRange: '5-14 anos',
+    complexityLevel: 'basic',
     evaluationCriteria: [
-      'Reconhecimento de frustração',
-      'Regulação antes de reação explosiva',
-      'Persistência em tarefa difícil',
-      'Aumento gradual de tolerância',
-      'Transferência para situações fora da sessão'
+      'Criação de canções efetivas',
+      'Memorização das letras',
+      'Uso em momentos difíceis',
+      'Internalização das mensagens',
+      'Impacto no comportamento'
     ],
-    adaptations: [
-      'Nível leve: Frustrações mínimas, muito apoio para regular',
-      'Nível moderado: Frustrações moderadas, apoio parcial',
-      'Nível severo: Frustrações significativas, autorregulação'
-    ],
-    theoreticalBasis: 'Baixa tolerância à frustração é comum no TDAH e impacta funcionamento. Exposição gradual com ensino de regulação aumenta tolerância.',
-    ageRange: '6-18 anos',
-    tips: [
-      'Não evite frustração - ensine a regular',
-      'Comece com frustrações muito leves',
-      'Normalize frustração como parte do processo',
-      'Celebre regulações bem-sucedidas'
-    ]
+    adaptations: {
+      level1: 'Canções dadas, praticar uso',
+      level2: 'Canções co-criadas',
+      level3: 'Canções criadas pelo paciente'
+    },
+    theoreticalBasis: 'Autoinstrução de Meichenbaum adaptada para formato musical.',
+    practicalTips: ['Use melodias conhecidas', 'Mantenha frases curtas', 'Pratique quando calmo para usar quando estressado']
   },
   {
-    id: 'tdah-ar-15',
-    title: 'Autorregulação Autônoma',
+    id: 2069,
+    title: 'Check-in/Check-out Musical',
     disorder: 'TDAH',
-    demandCategory: 'autorregulacao',
-    demandLabel: 'Independência Regulatória',
-    generalObjective: 'Desenvolver capacidade de auto-gerenciar estados regulatórios com independência usando recursos musicais',
+    demandCategory: 'self_regulation',
+    generalObjective: 'Implementar rotina de check-in e check-out com suporte musical',
     specificObjectives: [
-      'Monitorar próprio estado continuamente',
-      'Identificar necessidade de regulação sem aviso externo',
-      'Selecionar e aplicar estratégia adequada',
-      'Avaliar efetividade e ajustar se necessário'
+      'Iniciar dia/atividade com avaliação de estado',
+      'Definir objetivo de regulação',
+      'Encerrar com reflexão sobre regulação',
+      'Desenvolver rotina consistente'
     ],
-    description: 'Compile todo o aprendizado regulatório em kit de autorregulação pessoal: playlist de regulação, técnicas favoritas, sinais de alerta, mapa de estados. Pratique ciclo completo: monitorar → detectar necessidade → escolher estratégia → aplicar → avaliar. Gradualmente retire apoio externo.',
-    materials: ['Kit pessoal de autorregulação', 'Playlist portátil', 'Cartões de técnicas', 'Registro de autogerenciamento'],
-    estimatedTime: '30-40 minutos',
-    complexityLevel: 'severo',
+    description: 'Início: música de abertura + avaliação de estado + definição de meta. Final: música de fechamento + avaliação de como foi + celebração ou ajuste. Usar em cada sessão e transferir para dia a dia.',
+    materials: ['Músicas de abertura e fechamento', 'Escala de estados', 'Registro de metas', 'Ritual definido'],
+    estimatedTime: '5 min início + 5 min fim (integrado)',
+    ageRange: '5-18 anos',
+    complexityLevel: 'basic',
     evaluationCriteria: [
-      'Frequência de automonitoramento',
-      'Detecção autônoma de necessidade',
-      'Adequação de escolha de estratégias',
-      'Efetividade de auto-intervenções',
-      'Independência progressiva'
+      'Consistência do uso',
+      'Qualidade das avaliações',
+      'Definição de metas realistas',
+      'Reflexão honesta ao final',
+      'Transferência para vida diária'
     ],
-    adaptations: [
-      'Nível leve: Apoio externo frequente, opções limitadas de estratégias',
-      'Nível moderado: Apoio ocasional, múltiplas estratégias',
-      'Nível severo: Total independência, repertório completo'
+    adaptations: {
+      level1: 'Ritual muito simples e guiado',
+      level2: 'Ritual moderado semi-independente',
+      level3: 'Ritual elaborado independente'
+    },
+    theoreticalBasis: 'Check-in/Check-out como intervenção PBIS adaptada.',
+    practicalTips: ['Mantenha consistência', 'Use mesmas músicas', 'Envolva família na implementação']
+  },
+  {
+    id: 2070,
+    title: 'Previsão e Preparação Musical',
+    disorder: 'TDAH',
+    demandCategory: 'self_regulation',
+    generalObjective: 'Desenvolver habilidade de antecipar desafios e preparar estratégias de regulação',
+    specificObjectives: [
+      'Identificar situações desafiadoras futuras',
+      'Prever reações emocionais/comportamentais',
+      'Preparar estratégias musicais de enfrentamento',
+      'Executar plano quando situação ocorrer'
     ],
-    theoreticalBasis: 'O objetivo final da intervenção é independência regulatória. Todas as habilidades trabalhadas convergem para auto-gerenciamento autônomo.',
-    ageRange: '10-18 anos',
-    tips: [
-      'Construa kit pessoal portátil',
-      'Pratique em situações reais gradualmente',
-      'Debriefe sucessos e desafios',
-      'Continue refinando estratégias pessoais'
-    ]
+    description: 'Antes de eventos desafiadores (prova, festa, viagem), discutir possíveis dificuldades e preparar estratégias musicais. Criar kit de regulação portátil. Revisar após o evento.',
+    materials: ['Calendário de eventos', 'Mapa de desafios e estratégias', 'Kit portátil de músicas', 'Registro de uso'],
+    estimatedTime: '25-35 minutos por evento',
+    ageRange: '8-18 anos',
+    complexityLevel: 'advanced',
+    evaluationCriteria: [
+      'Identificação de desafios futuros',
+      'Qualidade das previsões',
+      'Preparação de estratégias adequadas',
+      'Uso do plano na situação real',
+      'Ajuste baseado em experiência'
+    ],
+    adaptations: {
+      level1: 'Eventos próximos e concretos, estratégias dadas',
+      level2: 'Eventos moderados, estratégias co-criadas',
+      level3: 'Eventos variados, estratégias independentes'
+    },
+    theoreticalBasis: 'Regulação proativa vs. reativa e desenvolvimento de planejamento futuro.',
+    practicalTips: ['Comece com eventos previsíveis', 'Crie ritual de preparação', 'Revise sempre após o evento']
   },
 
   // ==================== MOTOR (10 atividades) ====================
   {
-    id: 'tdah-mo-1',
+    id: 2071,
     title: 'Circuito Rítmico Motor',
     disorder: 'TDAH',
     demandCategory: 'motor',
-    demandLabel: 'Canalização de Energia',
-    generalObjective: 'Canalizar excesso de energia motora através de circuito de exercícios sincronizados com ritmo',
+    generalObjective: 'Canalizar energia motora através de exercícios físicos sincronizados com música',
     specificObjectives: [
-      'Executar movimentos no ritmo da música',
-      'Manter sequência de exercícios',
-      'Regular intensidade conforme ritmo',
+      'Executar movimentos sincronizados com ritmo',
+      'Completar circuito de atividades físicas',
+      'Manter ritmo durante esforço',
       'Descarregar energia de forma organizada'
     ],
-    description: 'Monte circuito com estações de movimento (pular, correr no lugar, agachar, girar) sincronizadas com música. O ritmo da música dita intensidade e mudanças. Permite descarga motora de forma estruturada. Use músicas de diferentes andamentos.',
-    materials: ['Espaço amplo', 'Marcações de estações', 'Músicas variadas', 'Timer'],
+    description: 'Circuito de estações físicas (pular, agachar, correr no lugar, polichinelo) com música que guia ritmo. Cada estação dura uma frase musical. Transição entre estações no refrão.',
+    materials: ['Música rítmica animada', 'Marcadores de estação', 'Timer musical', 'Espaço amplo'],
     estimatedTime: '20-30 minutos',
-    complexityLevel: 'leve',
-    evaluationCriteria: [
-      'Sincronização movimento-ritmo',
-      'Manutenção da sequência',
-      'Regulação de intensidade',
-      'Estado após circuito',
-      'Engajamento mantido'
-    ],
-    adaptations: [
-      'Nível leve: Movimentos simples, ritmo estável, poucas estações',
-      'Nível moderado: Movimentos variados, ritmo mutável',
-      'Nível severo: Movimentos complexos, mudanças rápidas, muitas estações'
-    ],
-    theoreticalBasis: 'Movimento rítmico organizado pode canalizar hiperatividade de forma produtiva, satisfazendo necessidade de movimento enquanto desenvolve controle.',
     ageRange: '5-14 anos',
-    tips: [
-      'Use músicas que a criança gosta',
-      'Permita escolha de algumas estações',
-      'Faça junto para modelar',
-      'Use como preparação para atividades de foco'
-    ]
+    complexityLevel: 'basic',
+    evaluationCriteria: [
+      'Sincronização com ritmo',
+      'Completude do circuito',
+      'Regulação durante esforço',
+      'Estado após atividade',
+      'Engajamento e diversão'
+    ],
+    adaptations: {
+      level1: 'Poucas estações, ritmo lento',
+      level2: 'Estações moderadas, ritmo médio',
+      level3: 'Muitas estações, ritmo rápido'
+    },
+    theoreticalBasis: 'Benefícios do exercício para TDAH e uso do ritmo como organizador motor.',
+    practicalTips: ['Use músicas favoritas', 'Ajuste intensidade', 'Termine com regulação']
   },
   {
-    id: 'tdah-mo-2',
+    id: 2072,
     title: 'Bateria Corporal Estruturada',
     disorder: 'TDAH',
     demandCategory: 'motor',
-    demandLabel: 'Percussão Corporal',
-    generalObjective: 'Desenvolver controle motor e canalização de energia através de percussão corporal estruturada',
+    generalObjective: 'Desenvolver coordenação e canalizar energia através de percussão no próprio corpo',
     specificObjectives: [
       'Executar padrões rítmicos no corpo',
       'Coordenar diferentes partes do corpo',
-      'Manter padrão por períodos',
-      'Expressar-se ritmicamente de forma organizada'
+      'Manter padrão por tempo determinado',
+      'Criar sequências próprias'
     ],
-    description: 'Use o corpo como instrumento de percussão: palmas, batidas no peito, coxa, pés. Crie padrões rítmicos envolvendo diferentes partes. Comece simples e aumente complexidade. Permite expressão física intensa de forma canalizada.',
-    materials: ['Corpo', 'Espaço confortável', 'Músicas de apoio', 'Cartões de padrões'],
-    estimatedTime: '15-25 minutos',
-    complexityLevel: 'moderado',
+    description: 'Criar ritmos usando palmas, batidas no peito, coxas, pés. Aprender sequências progressivamente mais complexas. Canalizar energia para expressão corporal organizada.',
+    materials: ['Nenhum material necessário', 'Espaço mínimo', 'Vídeos de referência opcional'],
+    estimatedTime: '15-20 minutos',
+    ageRange: '5-16 anos',
+    complexityLevel: 'intermediate',
     evaluationCriteria: [
       'Precisão dos padrões',
       'Coordenação de partes do corpo',
-      'Manutenção de padrão',
-      'Criatividade nas variações',
-      'Canalização de energia'
+      'Complexidade de sequências',
+      'Criatividade',
+      'Efeito regulatório'
     ],
-    adaptations: [
-      'Nível leve: Uma ou duas partes do corpo, padrão simples',
-      'Nível moderado: Múltiplas partes, padrões moderados',
-      'Nível severo: Padrões complexos, polirritmia, criação'
-    ],
-    theoreticalBasis: 'Percussão corporal engaja propriocepção, coordenação e ritmo simultaneamente, organizando sistema motor de forma integrada.',
-    ageRange: '5-16 anos',
-    tips: [
-      'Comece com movimentos naturais (palmas)',
-      'Adicione partes do corpo gradualmente',
-      'Permita intensidade se for rítmica',
-      'Conecte com músicas populares'
-    ]
+    adaptations: {
+      level1: 'Padrões simples, uma parte por vez',
+      level2: 'Padrões médios, duas partes',
+      level3: 'Padrões complexos, múltiplas partes'
+    },
+    theoreticalBasis: 'Body percussion como ferramenta de integração sensório-motora.',
+    practicalTips: ['Comece com palmas simples', 'Adicione partes gradualmente', 'Crie sequências com o paciente']
   },
   {
-    id: 'tdah-mo-3',
-    title: 'Dança Estruturada com Freezes',
+    id: 2073,
+    title: 'Dança com Paradas Súbitas',
     disorder: 'TDAH',
     demandCategory: 'motor',
-    demandLabel: 'Movimento com Controle',
-    generalObjective: 'Desenvolver controle motor através de dança livre alternada com momentos de freeze (estátua)',
+    generalObjective: 'Desenvolver controle motor e inibição através de dança livre com freezes',
     specificObjectives: [
-      'Mover-se livremente no ritmo',
-      'Parar imediatamente no freeze',
-      'Manter posição por tempo determinado',
-      'Alternar movimento e controle'
+      'Mover-se livremente com a música',
+      'Congelar imediatamente quando música para',
+      'Manter posição estática',
+      'Controlar transição movimento-parada'
     ],
-    description: 'Alterne momentos de dança livre intensa com freezes súbitos quando música para. Trabalha expressão e controle alternados. Aumente duração dos freezes e diminua previsibilidade. Permita movimento expressivo quando permitido.',
-    materials: ['Músicas dançantes', 'Espaço para movimento', 'Timer visual para freezes'],
+    description: 'Dança livre com música. Quando música para, congela na posição. Aumentar imprevisibilidade e duração do freeze. Adicionar desafios (freeze em pose específica).',
+    materials: ['Música dançante', 'Controle de pausa', 'Espaço para dança', 'Opcional: cartões de poses'],
     estimatedTime: '15-25 minutos',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Expressividade na dança',
-      'Velocidade de freeze',
-      'Manutenção da posição',
-      'Retomada suave após freeze',
-      'Diversão mantida'
-    ],
-    adaptations: [
-      'Nível leve: Freezes previsíveis, curtos, tolerância a ajustes',
-      'Nível moderado: Freezes semi-previsíveis, médios',
-      'Nível severo: Freezes imprevisíveis, longos, posições difíceis'
-    ],
-    theoreticalBasis: 'A alternância de movimento livre e controle desenvolve capacidade de modular output motor, essencial para TDAH.',
     ageRange: '4-14 anos',
-    tips: [
-      'Valorize expressão na dança',
-      'Aumente dificuldade dos freezes gradualmente',
-      'Use músicas favoritas',
-      'Celebre freezes bem-sucedidos'
-    ]
+    complexityLevel: 'basic',
+    evaluationCriteria: [
+      'Qualidade da dança (engajamento)',
+      'Velocidade do freeze',
+      'Estabilidade na posição',
+      'Diversão e expressão',
+      'Controle motor geral'
+    ],
+    adaptations: {
+      level1: 'Paradas previsíveis, freezes curtos',
+      level2: 'Paradas semi-previsíveis, freezes médios',
+      level3: 'Paradas imprevisíveis, freezes com poses'
+    },
+    theoreticalBasis: 'Treino de inibição motora através de jogo estruturado.',
+    practicalTips: ['Participe junto', 'Use músicas preferidas', 'Celebre bons freezes']
   },
   {
-    id: 'tdah-mo-4',
-    title: 'Tambores para Descarga',
+    id: 2074,
+    title: 'Descarga Energética no Tambor',
     disorder: 'TDAH',
     demandCategory: 'motor',
-    demandLabel: 'Descarga Motora',
-    generalObjective: 'Oferecer canal de descarga motora intensa através de percussão em tambores',
+    generalObjective: 'Proporcionar canal aceitável para descarga de energia através de percussão',
     specificObjectives: [
-      'Expressar energia física através da percussão',
-      'Manter intensidade dentro de estrutura rítmica',
-      'Regular intensidade conforme sinalização',
-      'Terminar sessão em estado regulado'
+      'Canalizar excesso de energia para instrumento',
+      'Expressar tensão de forma construtiva',
+      'Desenvolver controle de intensidade',
+      'Terminar em estado mais regulado'
     ],
-    description: 'Use tambores ou superfícies de percussão para descarga motora intensa. Começa livre, depois estrutura gradualmente. Termine com decrescendo para voltar a estado regulado. Permite expressão física sem perder estrutura.',
-    materials: ['Tambores ou almofadas grandes', 'Baquetas', 'Espaço apropriado para som'],
-    estimatedTime: '15-25 minutos',
-    complexityLevel: 'leve',
-    evaluationCriteria: [
-      'Satisfação da necessidade de descarga',
-      'Manutenção de alguma estrutura',
-      'Resposta a sinais de regulação',
-      'Estado ao final',
-      'Ausência de agressividade'
-    ],
-    adaptations: [
-      'Nível leve: Descarga livre seguida de estrutura leve',
-      'Nível moderado: Descarga dentro de estrutura moderada',
-      'Nível severo: Descarga intensa com controle de início/fim preciso'
-    ],
-    theoreticalBasis: 'Percussão oferece canal socialmente aceitável para descarga de energia/tensão, regulando sistema nervoso através de atividade intensa.',
+    description: 'Quando energia muito alta, usar tambor ou bateria para descarregar. Começar com intensidade que match o estado, gradualmente modular para mais calmo. Terminar com padrão tranquilo.',
+    materials: ['Tambores variados', 'Baquetas', 'Protetor de ouvido opcional', 'Escala de energia'],
+    estimatedTime: '10-20 minutos conforme necessidade',
     ageRange: '4-18 anos',
-    tips: [
-      'Não limite intensidade inicialmente',
-      'Estruture gradualmente',
-      'Sempre termine com regulação',
-      'Use como preparação para atividades exigentes'
-    ]
+    complexityLevel: 'basic',
+    evaluationCriteria: [
+      'Uso apropriado quando necessário',
+      'Modulação de intensidade',
+      'Estado ao final',
+      'Redução de comportamentos desorganizados',
+      'Iniciativa de uso'
+    ],
+    adaptations: {
+      level1: 'Terapeuta guia toda a atividade',
+      level2: 'Paciente inicia, terapeuta guia modulação',
+      level3: 'Auto-regulação independente'
+    },
+    theoreticalBasis: 'Catarse controlada e sublimação de energia motora.',
+    practicalTips: ['Tenha sempre disponível', 'Não limite no início', 'Guie para fechamento calmo']
   },
   {
-    id: 'tdah-mo-5',
+    id: 2075,
     title: 'Coordenação Bilateral Musical',
     disorder: 'TDAH',
     demandCategory: 'motor',
-    demandLabel: 'Coordenação',
-    generalObjective: 'Desenvolver coordenação bilateral e cruzamento de linha média através de atividades musicais',
+    generalObjective: 'Desenvolver coordenação bilateral através de atividades musicais que cruzam linha média',
     specificObjectives: [
-      'Executar movimentos bilaterais simultâneos',
-      'Cruzar linha média do corpo com ritmo',
-      'Coordenar braços e pernas em padrões',
-      'Manter padrão enquanto cruza'
+      'Executar movimentos bilaterais coordenados',
+      'Cruzar linha média do corpo',
+      'Sincronizar hemisférios através de música',
+      'Melhorar integração motora geral'
     ],
-    description: 'Atividades que exigem uso dos dois lados do corpo e cruzamento de linha média: tocar tambor com mãos alternadas, bater palmas em diferentes posições, movimentos que cruzam o corpo. Use ritmo como organizador.',
-    materials: ['Instrumentos para dois lados', 'Espaço para movimento', 'Marcações de linha média'],
-    estimatedTime: '20-30 minutos',
-    complexityLevel: 'moderado',
-    evaluationCriteria: [
-      'Qualidade de movimentos bilaterais',
-      'Fluidez no cruzamento de linha média',
-      'Coordenação mãos-pés',
-      'Manutenção de padrão',
-      'Progresso ao longo das sessões'
-    ],
-    adaptations: [
-      'Nível leve: Movimentos simétricos, sem cruzamento',
-      'Nível moderado: Alternância, cruzamento simples',
-      'Nível severo: Padrões complexos com cruzamento contínuo'
-    ],
-    theoreticalBasis: 'Coordenação bilateral e integração hemisférica podem ser deficitárias no TDAH. Atividades musicais bilaterais promovem integração.',
+    description: 'Atividades que requerem uso coordenado de ambos os lados: tocar tambores alternados, movimentos cruzados com música, canções com gestos bilaterais.',
+    materials: ['Dois tambores ou instrumentos', 'Músicas com movimentos específicos', 'Espaço para movimentos amplos'],
+    estimatedTime: '20-25 minutos',
     ageRange: '5-14 anos',
-    tips: [
-      'Comece com movimentos simétricos',
-      'Adicione alternância gradualmente',
-      'Use ritmo lento no início',
-      'Faça jogos de cruzamento divertidos'
-    ]
+    complexityLevel: 'intermediate',
+    evaluationCriteria: [
+      'Fluidez da coordenação bilateral',
+      'Capacidade de cruzar linha média',
+      'Sincronização com música',
+      'Melhora ao longo do tempo',
+      'Transferência para outras atividades'
+    ],
+    adaptations: {
+      level1: 'Movimentos simétricos primeiro',
+      level2: 'Movimentos alternados',
+      level3: 'Movimentos cruzados complexos'
+    },
+    theoreticalBasis: 'Integração hemisférica e seu papel no controle motor e atenção.',
+    practicalTips: ['Comece com movimentos simétricos', 'Adicione cruzamento gradualmente', 'Use músicas que facilitam ritmo']
   },
   {
-    id: 'tdah-mo-6',
+    id: 2076,
     title: 'Ritmo e Equilíbrio',
     disorder: 'TDAH',
     demandCategory: 'motor',
-    demandLabel: 'Equilíbrio',
-    generalObjective: 'Desenvolver equilíbrio e estabilidade postural através de atividades musicais',
+    generalObjective: 'Desenvolver controle postural e equilíbrio através de atividades rítmicas',
     specificObjectives: [
-      'Manter equilíbrio em diferentes posições',
-      'Usar ritmo como âncora para estabilidade',
-      'Realizar movimentos mantendo centro de gravidade',
-      'Integrar ritmo com controle postural'
+      'Manter equilíbrio durante atividade musical',
+      'Executar movimentos equilibrados com ritmo',
+      'Desenvolver consciência corporal',
+      'Melhorar estabilidade postural'
     ],
-    description: 'Combine desafios de equilíbrio com ritmo: ficar em um pé enquanto bate palmas, andar em linha reta no pulso, manter posição de ioga com música. O ritmo ajuda a organizar e manter estabilidade. Progrida para desafios mais complexos.',
-    materials: ['Linha no chão', 'Música com pulso claro', 'Almofadas de equilíbrio (opcional)'],
-    estimatedTime: '15-25 minutos',
-    complexityLevel: 'moderado',
+    description: 'Atividades de equilíbrio com suporte musical: andar em linha com ritmo, ficar em um pé durante frase musical, movimentos de yoga com música, posturas estáticas com manutenção.',
+    materials: ['Linha no chão', 'Almofadas de equilíbrio', 'Música calma e rítmica', 'Espelho opcional'],
+    estimatedTime: '20-25 minutos',
+    ageRange: '5-14 anos',
+    complexityLevel: 'intermediate',
     evaluationCriteria: [
-      'Estabilidade em diferentes posições',
-      'Uso do ritmo para equilíbrio',
-      'Duração de manutenção de posições',
-      'Qualidade de movimentos enquanto equilibra',
-      'Progresso em desafios mais difíceis'
+      'Tempo de manutenção de equilíbrio',
+      'Qualidade postural',
+      'Sincronização com música',
+      'Consciência corporal demonstrada',
+      'Melhora ao longo das sessões'
     ],
-    adaptations: [
-      'Nível leve: Posições simples, base ampla, muito apoio rítmico',
-      'Nível moderado: Posições desafiantes, base reduzida',
-      'Nível severo: Posições complexas, movimento durante equilíbrio'
-    ],
-    theoreticalBasis: 'Ritmo externo pode servir como organizador para controle postural, integrando sistemas vestibular, proprioceptivo e auditivo.',
-    ageRange: '5-16 anos',
-    tips: [
-      'Use ritmo forte e claro como âncora',
-      'Permita estratégias de compensação',
-      'Faça desafios divertidos, não frustrantes',
-      'Relacione com esportes e atividades que goste'
-    ]
+    adaptations: {
+      level1: 'Base ampla, apoio disponível',
+      level2: 'Base média, desafios moderados',
+      level3: 'Base estreita, olhos fechados opcional'
+    },
+    theoreticalBasis: 'Integração vestibular-proprioceptiva facilitada por ritmo externo.',
+    practicalTips: ['Segurança primeiro', 'Use música para foco externo', 'Celebre pequenas conquistas']
   },
   {
-    id: 'tdah-mo-7',
-    title: 'Sequência Motora Musical',
+    id: 2077,
+    title: 'Sequência Motora Coreografada',
     disorder: 'TDAH',
     demandCategory: 'motor',
-    demandLabel: 'Memória Motora',
-    generalObjective: 'Desenvolver memória motora sequencial através de coreografias musicais progressivas',
+    generalObjective: 'Desenvolver memória motora e sequenciamento através de coreografias musicais simples',
     specificObjectives: [
-      'Aprender sequências de movimentos',
-      'Lembrar e executar sequências crescentes',
-      'Sincronizar sequência com música',
-      'Manter sequência ao longo do tempo'
+      'Aprender sequência de movimentos',
+      'Memorizar ordem de passos',
+      'Executar sequência com música',
+      'Adicionar novos elementos progressivamente'
     ],
-    description: 'Ensine coreografias simples que vão aumentando: 4 movimentos, depois 6, depois 8. Use música como mnemônico. Pratique até automatizar. Crie coreografias de músicas favoritas. Adicione desafio de ensinar para outro.',
-    materials: ['Músicas estruturadas', 'Vídeo de referência (opcional)', 'Espelho', 'Cartões de sequência'],
-    estimatedTime: '20-30 minutos',
-    complexityLevel: 'moderado',
+    description: 'Criar coreografia simples para música. Ensinar passo a passo, adicionar elementos gradualmente. Praticar até dominar. Usar como aquecimento regular.',
+    materials: ['Música para coreografia', 'Espaço amplo', 'Espelho opcional', 'Vídeo de referência opcional'],
+    estimatedTime: '25-35 minutos',
+    ageRange: '5-16 anos',
+    complexityLevel: 'intermediate',
     evaluationCriteria: [
-      'Número de movimentos na sequência',
-      'Precisão da execução',
+      'Memorização da sequência',
+      'Precisão dos movimentos',
       'Sincronização com música',
-      'Retenção entre sessões',
-      'Capacidade de ensinar outro'
+      'Fluência e naturalidade',
+      'Prazer na execução'
     ],
-    adaptations: [
-      'Nível leve: Sequências curtas (4 movimentos), muito repetitivas',
-      'Nível moderado: Sequências médias (6-8), com variações',
-      'Nível severo: Sequências longas, criação de próprias coreografias'
-    ],
-    theoreticalBasis: 'Memória procedural/motora pode ser uma força no TDAH quando adequadamente estruturada. A música serve como mnemônico e motivador.',
-    ageRange: '6-16 anos',
-    tips: [
-      'Use músicas muito familiares',
-      'Ensine em pedaços pequenos',
-      'Pratique até ficar automático',
-      'Permita personalização da coreografia'
-    ]
+    adaptations: {
+      level1: '4-6 movimentos simples',
+      level2: '8-12 movimentos moderados',
+      level3: 'Coreografia completa elaborada'
+    },
+    theoreticalBasis: 'Memória procedural e aprendizagem motora através de prática estruturada.',
+    practicalTips: ['Use músicas favoritas', 'Ensine em pequenos chunks', 'Grave para referência']
   },
   {
-    id: 'tdah-mo-8',
+    id: 2078,
     title: 'Relaxamento Muscular Progressivo Musical',
     disorder: 'TDAH',
     demandCategory: 'motor',
-    demandLabel: 'Relaxamento',
-    generalObjective: 'Desenvolver consciência corporal e capacidade de relaxamento através de técnica musical de tensão-relaxamento',
+    generalObjective: 'Desenvolver consciência de tensão muscular e relaxamento através de protocolo com música',
     specificObjectives: [
-      'Identificar tensão em grupos musculares',
-      'Tensionar e relaxar sistematicamente',
-      'Sincronizar tensão-relaxamento com música',
-      'Atingir estado de relaxamento físico'
+      'Identificar tensão em diferentes grupos musculares',
+      'Executar tensão e relaxamento controlados',
+      'Usar música como guia de ritmo',
+      'Atingir estado de relaxamento'
     ],
-    description: 'Adaptação musical da técnica de Jacobson: tensionar grupo muscular com música tensa, relaxar com música suave. Percorra todo o corpo sistematicamente. Use contraste musical para facilitar transição tensão-relaxamento. Termine em estado relaxado.',
-    materials: ['Músicas contrastantes', 'Colchonete', 'Script guiado', 'Ambiente confortável'],
-    estimatedTime: '20-30 minutos',
-    complexityLevel: 'leve',
+    description: 'Tensionar e relaxar grupos musculares sistematicamente, guiado por música calma. Tensão durante uma frase, relaxamento na seguinte. Percorrer todo corpo.',
+    materials: ['Música calma e previsível', 'Colchonete', 'Ambiente tranquilo', 'Script de grupos musculares'],
+    estimatedTime: '15-25 minutos',
+    ageRange: '6-18 anos',
+    complexityLevel: 'basic',
     evaluationCriteria: [
       'Identificação de tensão',
-      'Contraste tensão-relaxamento',
+      'Qualidade do relaxamento',
       'Sincronização com música',
-      'Estado ao final',
-      'Capacidade de aplicar sozinho'
+      'Estado final atingido',
+      'Uso independente da técnica'
     ],
-    adaptations: [
-      'Nível leve: Grupos musculares grandes, muito guiado',
-      'Nível moderado: Grupos musculares menores, semi-guiado',
-      'Nível severo: Discriminação fina, auto-guiado'
-    ],
-    theoreticalBasis: 'Relaxamento Muscular Progressivo de Jacobson adaptado com música, facilitando transições tensão-relaxamento através de contraste auditivo.',
-    ageRange: '7-18 anos',
-    tips: [
-      'Use contrastes musicais fortes',
-      'Faça em ambiente confortável',
-      'Ensine versão curta para uso diário',
-      'Aplique antes de dormir ou após estresse'
-    ]
+    adaptations: {
+      level1: 'Poucos grupos, terapeuta guia',
+      level2: 'Mais grupos, guia parcial',
+      level3: 'Corpo todo, auto-guiado'
+    },
+    theoreticalBasis: 'Relaxamento progressivo de Jacobson adaptado com suporte musical.',
+    practicalTips: ['Ambiente calmo essencial', 'Não force profundidade', 'Transfira para hora de dormir']
   },
   {
-    id: 'tdah-mo-9',
-    title: 'Yoga Musical para TDAH',
+    id: 2079,
+    title: 'Yoga Musical para Crianças',
     disorder: 'TDAH',
     demandCategory: 'motor',
-    demandLabel: 'Controle Corporal',
-    generalObjective: 'Desenvolver controle corporal, consciência postural e autorregulação através de yoga adaptada com música',
+    generalObjective: 'Integrar posturas de yoga com música para regulação corporal e mental',
     specificObjectives: [
-      'Executar posturas de yoga com apoio musical',
-      'Manter posturas por períodos progressivos',
-      'Integrar respiração com movimento e música',
-      'Desenvolver consciência corporal'
+      'Executar posturas básicas de yoga',
+      'Sincronizar respiração com movimento e música',
+      'Desenvolver consciência corporal',
+      'Atingir estado de calma e foco'
     ],
-    description: 'Sequência de yoga adaptada para TDAH: posturas mais curtas, transições mais frequentes, música como âncora. Use músicas que correspondem à energia de cada postura. Inclua posturas ativadoras e calmantes. Termine sempre com relaxamento.',
-    materials: ['Colchonete', 'Playlist de yoga TDAH', 'Cartões de posturas', 'Ambiente tranquilo'],
-    estimatedTime: '20-35 minutos',
-    complexityLevel: 'moderado',
+    description: 'Sequência de posturas de yoga com música apropriada. Cada postura mantida por uma frase musical. Respiração sincronizada. Usar nomes de animais para posturas.',
+    materials: ['Colchonete de yoga', 'Música calma', 'Cartões de posturas', 'Espaço tranquilo'],
+    estimatedTime: '20-30 minutos',
+    ageRange: '5-16 anos',
+    complexityLevel: 'intermediate',
     evaluationCriteria: [
-      'Execução de posturas',
-      'Tempo de manutenção',
-      'Integração respiração-movimento',
+      'Execução das posturas',
+      'Sincronização respiratória',
+      'Manutenção de foco',
       'Estado ao final',
-      'Engajamento mantido'
+      'Engajamento com prática'
     ],
-    adaptations: [
-      'Nível leve: Posturas simples, manutenção curta, muito movimento',
-      'Nível moderado: Posturas moderadas, manutenção média',
-      'Nível severo: Posturas desafiantes, manutenção longa, sequência fluida'
-    ],
-    theoreticalBasis: 'Yoga adaptada para TDAH mantém engajamento através de variedade enquanto desenvolve controle corporal e autorregulação.',
-    ageRange: '6-18 anos',
-    tips: [
-      'Não exija perfeição nas posturas',
-      'Mantenha variedade para engajamento',
-      'Use músicas que facilitem cada fase',
-      'Inclua posturas divertidas e desafiantes'
-    ]
+    adaptations: {
+      level1: 'Poucas posturas simples, tempo curto',
+      level2: 'Mais posturas, tempo médio',
+      level3: 'Sequência completa, tempo padrão'
+    },
+    theoreticalBasis: 'Yoga como intervenção para TDAH com benefícios em atenção e regulação.',
+    practicalTips: ['Use nomes divertidos para posturas', 'Não exija perfeição', 'Termine sempre em relaxamento']
   },
   {
-    id: 'tdah-mo-10',
-    title: 'Caminhada Rítmica Controlada',
+    id: 2080,
+    title: 'Caminhada Rítmica Regulada',
     disorder: 'TDAH',
     demandCategory: 'motor',
-    demandLabel: 'Controle Locomotor',
-    generalObjective: 'Desenvolver controle locomotor através de caminhada sincronizada com diferentes ritmos',
+    generalObjective: 'Desenvolver controle de velocidade e direção através de caminhada sincronizada com música',
     specificObjectives: [
-      'Sincronizar passos com pulso musical',
-      'Adaptar velocidade a diferentes ritmos',
-      'Manter sincronização durante períodos',
-      'Controlar impulso de acelerar ou parar'
+      'Caminhar no ritmo da música',
+      'Ajustar velocidade conforme tempo musical muda',
+      'Manter direção enquanto segue ritmo',
+      'Desenvolver consciência de ritmo corporal'
     ],
-    description: 'Caminhar em sincronia com diferentes ritmos musicais: lento, moderado, rápido. O desafio é adaptar-se ao ritmo externo, não ao impulso interno. Use metrônomo visual ou musical. Pratique mudanças de velocidade sem perder sincronização.',
-    materials: ['Espaço para caminhar', 'Músicas de diferentes andamentos', 'Metrônomo visual', 'Fones (opcional)'],
-    estimatedTime: '15-25 minutos',
-    complexityLevel: 'leve',
+    description: 'Caminhar ao ritmo de diferentes músicas. Quando música acelera, caminhar mais rápido. Quando desacelera, caminhar mais devagar. Parar quando música para. Adicionar mudanças de direção.',
+    materials: ['Músicas de diferentes tempos', 'Espaço para caminhar', 'Marcadores de direção', 'Metrônomo opcional'],
+    estimatedTime: '15-20 minutos',
+    ageRange: '4-14 anos',
+    complexityLevel: 'basic',
     evaluationCriteria: [
-      'Sincronização passo-pulso',
-      'Adaptação a diferentes velocidades',
-      'Manutenção de sincronização',
-      'Controle de aceleração espontânea',
-      'Fluência nas transições'
+      'Sincronização passo-ritmo',
+      'Ajuste a mudanças de tempo',
+      'Controle de velocidade',
+      'Resposta a paradas',
+      'Prazer na atividade'
     ],
-    adaptations: [
-      'Nível leve: Ritmo único e confortável, muito apoio auditivo',
-      'Nível moderado: Mudanças de ritmo, apoio moderado',
-      'Nível severo: Mudanças frequentes, ritmos extremos (muito lento/rápido)'
-    ],
-    theoreticalBasis: 'Baseado em RAS (Rhythmic Auditory Stimulation), o ritmo externo pode organizar e regular output motor locomotor.',
-    ageRange: '5-18 anos',
-    tips: [
-      'Comece com ritmo natural de caminhada',
-      'Adicione extremos gradualmente',
-      'Use metrônomo forte e claro',
-      'Conecte com situações de andar muito rápido/lento'
-    ]
+    adaptations: {
+      level1: 'Tempo constante, sem mudanças',
+      level2: 'Mudanças graduais de tempo',
+      level3: 'Mudanças abruptas, múltiplas direções'
+    },
+    theoreticalBasis: 'RAS (Rhythmic Auditory Stimulation) aplicada ao desenvolvimento motor.',
+    practicalTips: ['Comece com tempo confortável', 'Adicione variações gradualmente', 'Use como aquecimento']
   }
 ];
