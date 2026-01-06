@@ -19,9 +19,6 @@ const requiredFields: Record<number, { field: string; label: string; sectionTitl
   1: [
     { field: "main_clinical_demand", label: "Demanda Clínica Principal", sectionTitle: "Identificação e Encaminhamento" }
   ],
-  5: [
-    { field: "patient_musical_history", label: "História Musical do Paciente", sectionTitle: "Perfil Musical do Paciente" }
-  ],
   6: [
     { field: "family_musical_history", label: "História Musical Familiar", sectionTitle: "Identidade Sonora (ISO)" }
   ],
