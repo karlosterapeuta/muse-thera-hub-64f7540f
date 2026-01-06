@@ -1,4 +1,4 @@
-export type DisorderType = 'TEA' | 'TDAH' | 'TOD' | 'DI';
+export type DisorderType = 'TEA' | 'TDAH' | 'TOD' | 'DI' | 'ALZHEIMER' | 'PARKINSON';
 
 export type DemandCategory = 
   | 'communication' 
@@ -11,7 +11,17 @@ export type DemandCategory =
   | 'executive_functions'
   | 'emotional_control'
   | 'self_regulation'
-  | 'autonomy';
+  | 'autonomia'
+  // Alzheimer specific
+  | 'memory'
+  | 'orientation'
+  | 'reminiscence'
+  | 'identity'
+  // Parkinson specific
+  | 'gait'
+  | 'voice_speech'
+  | 'tremor_rigidity'
+  | 'coordination';
 
 export interface ProfessionalActivity {
   id: number;
@@ -56,6 +66,16 @@ export const disorderInfo: Record<DisorderType, { name: string; color: string; d
     name: 'Deficiência Intelectual',
     color: 'bg-purple-500',
     description: 'Atividades adaptadas para desenvolvimento cognitivo, comunicação e autonomia'
+  },
+  ALZHEIMER: {
+    name: 'Doença de Alzheimer',
+    color: 'bg-teal-500',
+    description: 'Atividades focadas em estimulação cognitiva, memória, reminiscência e manutenção de identidade'
+  },
+  PARKINSON: {
+    name: 'Doença de Parkinson',
+    color: 'bg-green-500',
+    description: 'Atividades rítmicas para melhora da marcha, coordenação motora, voz e controle de movimentos'
   }
 };
 
@@ -70,7 +90,17 @@ export const demandCategoryInfo: Record<DemandCategory, { name: string; icon: st
   executive_functions: { name: 'Funções Executivas', icon: 'Workflow' },
   emotional_control: { name: 'Controle Emocional', icon: 'Gauge' },
   self_regulation: { name: 'Autorregulação', icon: 'Settings' },
-  autonomy: { name: 'Autonomia', icon: 'User' }
+  autonomia: { name: 'Autonomia', icon: 'User' },
+  // Alzheimer specific
+  memory: { name: 'Memória', icon: 'Brain' },
+  orientation: { name: 'Orientação', icon: 'Compass' },
+  reminiscence: { name: 'Reminiscência', icon: 'Camera' },
+  identity: { name: 'Identidade', icon: 'User' },
+  // Parkinson specific
+  gait: { name: 'Marcha', icon: 'Footprints' },
+  voice_speech: { name: 'Voz e Fala', icon: 'Mic' },
+  tremor_rigidity: { name: 'Tremor e Rigidez', icon: 'Hand' },
+  coordination: { name: 'Coordenação', icon: 'Target' }
 };
 
 export const getDisorderColor = (disorder: DisorderType): string => {
@@ -78,7 +108,9 @@ export const getDisorderColor = (disorder: DisorderType): string => {
     TEA: 'border-l-blue-500',
     TDAH: 'border-l-orange-500',
     TOD: 'border-l-red-500',
-    DI: 'border-l-purple-500'
+    DI: 'border-l-purple-500',
+    ALZHEIMER: 'border-l-teal-500',
+    PARKINSON: 'border-l-green-500'
   };
   return colors[disorder];
 };
@@ -88,7 +120,9 @@ export const getDisorderBgColor = (disorder: DisorderType): string => {
     TEA: 'bg-blue-500/10',
     TDAH: 'bg-orange-500/10',
     TOD: 'bg-red-500/10',
-    DI: 'bg-purple-500/10'
+    DI: 'bg-purple-500/10',
+    ALZHEIMER: 'bg-teal-500/10',
+    PARKINSON: 'bg-green-500/10'
   };
   return colors[disorder];
 };

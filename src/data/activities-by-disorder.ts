@@ -1,4 +1,4 @@
-export type DisorderType = 'TEA' | 'TDAH' | 'TOD' | 'DI';
+export type DisorderType = 'TEA' | 'TDAH' | 'TOD' | 'DI' | 'ALZHEIMER' | 'PARKINSON';
 
 export type DemandCategory = 
   | 'comunicacao' 
@@ -11,7 +11,17 @@ export type DemandCategory =
   | 'funcoes_executivas'
   | 'controle_emocional'
   | 'autorregulacao'
-  | 'autonomia';
+  | 'autonomia'
+  // Alzheimer specific
+  | 'memoria'
+  | 'orientacao'
+  | 'reminiscencia'
+  | 'identidade'
+  // Parkinson specific
+  | 'marcha'
+  | 'voz_fala'
+  | 'tremor_rigidez'
+  | 'coordenacao';
 
 export interface ProfessionalActivity {
   id: string;
@@ -57,6 +67,18 @@ export const disorderInfo: Record<DisorderType, { name: string; description: str
     description: 'Atividades adaptadas para desenvolvimento de autonomia, comunicação funcional, cognição e habilidades sociais.',
     color: 'from-purple-500 to-violet-600',
     icon: '💜'
+  },
+  ALZHEIMER: {
+    name: 'Doença de Alzheimer',
+    description: 'Atividades focadas em estimulação cognitiva, memória, reminiscência, manutenção de identidade e comunicação.',
+    color: 'from-teal-500 to-cyan-600',
+    icon: '🧠'
+  },
+  PARKINSON: {
+    name: 'Doença de Parkinson',
+    description: 'Atividades rítmicas para melhora da marcha, coordenação motora, voz, fala e controle de movimentos.',
+    color: 'from-green-500 to-emerald-600',
+    icon: '🎵'
   }
 };
 
@@ -71,7 +93,17 @@ export const demandCategoryInfo: Record<DemandCategory, { name: string; icon: st
   funcoes_executivas: { name: 'Funções Executivas', icon: '📊' },
   controle_emocional: { name: 'Controle Emocional', icon: '❤️‍🔥' },
   autorregulacao: { name: 'Autorregulação', icon: '🧘' },
-  autonomia: { name: 'Autonomia', icon: '🌟' }
+  autonomia: { name: 'Autonomia', icon: '🌟' },
+  // Alzheimer specific
+  memoria: { name: 'Memória e Cognição', icon: '🧠' },
+  orientacao: { name: 'Orientação', icon: '🧭' },
+  reminiscencia: { name: 'Reminiscência', icon: '📷' },
+  identidade: { name: 'Identidade', icon: '👤' },
+  // Parkinson specific
+  marcha: { name: 'Marcha e Locomoção', icon: '🚶' },
+  voz_fala: { name: 'Voz e Fala', icon: '🗣️' },
+  tremor_rigidez: { name: 'Tremor e Rigidez', icon: '✋' },
+  coordenacao: { name: 'Coordenação', icon: '🎯' }
 };
 
 export const professionalActivities: ProfessionalActivity[] = [

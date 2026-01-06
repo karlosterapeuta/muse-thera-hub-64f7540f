@@ -57,7 +57,7 @@ const basicDatabaseFields = [
 const optionalDatabaseFields = [
   'cerebral_palsy', 'fragile_x_syndrome', 'epilepsy', 'williams_syndrome', 
   'depression', 'bipolar_disorder', 'rett_syndrome', 'aba_therapy', 
-  'psychomotricity', 'music_therapy', 'nutrition', 'sensory_integration', 'alzheimer'
+  'psychomotricity', 'music_therapy', 'nutrition', 'sensory_integration', 'alzheimer', 'parkinson'
 ];
 
 // Cache para colunas verificadas

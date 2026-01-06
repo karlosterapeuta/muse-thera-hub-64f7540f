@@ -9,7 +9,7 @@ interface DisorderTabsProps {
 }
 
 export function DisorderTabs({ selectedDisorder, onDisorderChange, children }: DisorderTabsProps) {
-  const disorders: (DisorderType | 'all')[] = ['all', 'TEA', 'TDAH', 'TOD', 'DI'];
+  const disorders: (DisorderType | 'all')[] = ['all', 'TEA', 'TDAH', 'TOD', 'DI', 'ALZHEIMER', 'PARKINSON'];
 
   return (
     <Tabs value={selectedDisorder} onValueChange={(v) => onDisorderChange(v as DisorderType | 'all')} className="w-full">
@@ -17,7 +17,7 @@ export function DisorderTabs({ selectedDisorder, onDisorderChange, children }: D
         <TabsTrigger 
           value="all" 
           className={cn(
-            "flex-1 min-w-[120px] data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground",
+            "flex-1 min-w-[100px] data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground",
             "transition-all duration-200"
           )}
         >
@@ -29,11 +29,13 @@ export function DisorderTabs({ selectedDisorder, onDisorderChange, children }: D
             key={disorder} 
             value={disorder}
             className={cn(
-              "flex-1 min-w-[120px] data-[state=active]:bg-gradient-to-r data-[state=active]:text-white",
+              "flex-1 min-w-[100px] data-[state=active]:bg-gradient-to-r data-[state=active]:text-white",
               disorder === 'TEA' && "data-[state=active]:from-blue-500 data-[state=active]:to-cyan-600",
               disorder === 'TDAH' && "data-[state=active]:from-orange-500 data-[state=active]:to-amber-600",
               disorder === 'TOD' && "data-[state=active]:from-red-500 data-[state=active]:to-rose-600",
               disorder === 'DI' && "data-[state=active]:from-purple-500 data-[state=active]:to-violet-600",
+              disorder === 'ALZHEIMER' && "data-[state=active]:from-teal-500 data-[state=active]:to-cyan-600",
+              disorder === 'PARKINSON' && "data-[state=active]:from-green-500 data-[state=active]:to-emerald-600",
               "transition-all duration-200"
             )}
           >
