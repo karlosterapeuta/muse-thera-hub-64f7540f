@@ -22,6 +22,7 @@ import {
   Database,
   LayoutDashboard,
   Bot,
+  FolderOpen,
 } from "lucide-react";
 
 export const mainMenuItems = [
@@ -51,6 +52,10 @@ export const toolsMenuItems = [
 
 export const managementMenuItems = [
   { icon: DollarSign, text: "💰 Gestão Financeira", path: "/finance", gradient: "from-yellow-500 to-orange-600", isNew: true },
+];
+
+export const resourcesMenuItems = [
+  { icon: FolderOpen, text: "📁 Recursos", path: "/resources", gradient: "from-amber-500 to-orange-600", isNew: true },
 ];
 
 export const communityMenuItems = [

@@ -1,6 +1,6 @@
 
 import { MenuSection } from "./MenuSection";
-import { mainMenuItems, clinicalMenuItems, musicalGamesMenuItems, toolsMenuItems, managementMenuItems, communityMenuItems, getAdminMenuItems } from "../constants";
+import { mainMenuItems, clinicalMenuItems, musicalGamesMenuItems, toolsMenuItems, managementMenuItems, resourcesMenuItems, communityMenuItems, getAdminMenuItems } from "../constants";
 
 interface SidebarNavigationProps {
   collapsed: boolean;
@@ -31,6 +31,10 @@ export function SidebarNavigation({ collapsed, onNavigate, userEmail, isAdmin }:
       <div className="mx-4 border-t border-border/50"></div>
       
       <MenuSection title="Gestão" items={managementMenuItems} collapsed={collapsed} onNavigate={onNavigate} />
+      
+      <div className="mx-4 border-t border-border/50"></div>
+      
+      <MenuSection title="Recursos" items={resourcesMenuItems} collapsed={collapsed} onNavigate={onNavigate} />
       
       <div className="mx-4 border-t border-border/50"></div>
       
