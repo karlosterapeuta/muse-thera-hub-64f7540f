@@ -12,7 +12,6 @@ import {
   Bell,
   Music,
   Grid3X3,
-  Music2,
   Waves,
   UsersRound,
   Key,
@@ -41,7 +40,7 @@ export const musicalGamesMenuItems = [
   { icon: Piano, text: "🎮 Jogos MuseTera", path: "/chrome-music-lab", gradient: "from-blue-500 to-purple-600", isNew: true },
   { icon: Music, text: "🧩 TEA-Hero", path: "/tea-hero", gradient: "from-violet-500 to-purple-600", isNew: true },
   { icon: Bell, text: "🔔 Sinos Musicais", path: "/musical-bells", gradient: "from-green-500 to-emerald-600" },
-  { icon: Music2, text: "🎵 Sprunki Musical", path: "/sprunki", gradient: "from-rose-500 to-pink-600", isNew: true },
+  
 ];
 
 export const toolsMenuItems = [
