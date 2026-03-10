@@ -33,7 +33,21 @@ export function useCreateUser() {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        // Extract the actual error message from the Edge Function response
+        let errorMessage = error.message;
+        try {
+          if (error.context && typeof error.context.json === 'function') {
+            const responseBody = await error.context.json();
+            if (responseBody?.error) {
+              errorMessage = responseBody.error;
+            }
+          }
+        } catch {
+          // fallback to default message
+        }
+        throw new Error(errorMessage);
+      }
       if (!data?.user) throw new Error('Usuário não foi criado');
 
       console.log('Edge Function response:', data);
