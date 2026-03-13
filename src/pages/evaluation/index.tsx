@@ -2109,8 +2109,8 @@ export default function Evaluation() {
                 </h2>
                 
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
-                  <Card className="border-0 shadow-xl p-6 rounded-2xl bg-gradient-to-br from-purple-50 to-indigo-50">
-                    <h3 className="text-lg sm:text-xl font-bold mb-6 text-center text-purple-800">
+                  <Card className="border-0 shadow-xl p-6 rounded-2xl bg-purple-50/80 dark:bg-purple-950/30">
+                    <h3 className="text-lg sm:text-xl font-bold mb-6 text-center text-purple-800 dark:text-purple-200">
                       Perfil Musicoterapêutico
                     </h3>
                     <div className="h-[350px] sm:h-[400px] w-full flex items-center justify-center">
