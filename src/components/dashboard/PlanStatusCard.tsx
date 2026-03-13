@@ -7,7 +7,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function PlanStatusCard() {
-  const { data: isAdmin } = useAdmin();
 
   const { data: planData, isLoading } = useQuery({
     queryKey: ["user-plan-status"],
