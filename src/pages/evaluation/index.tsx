@@ -2126,8 +2126,8 @@ export default function Evaluation() {
                     </div>
                   </Card>
 
-                  <Card className="border-0 shadow-xl p-6 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50">
-                    <h3 className="text-lg sm:text-xl font-bold mb-6 text-center text-emerald-800">
+                  <Card className="border-0 shadow-xl p-6 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/30">
+                    <h3 className="text-lg sm:text-xl font-bold mb-6 text-center text-emerald-800 dark:text-emerald-200">
                       Desenvolvimento Global
                     </h3>
                     <div className="h-[350px] sm:h-[400px] w-full flex flex-col items-center justify-center">
