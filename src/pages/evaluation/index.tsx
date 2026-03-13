@@ -1921,17 +1921,28 @@ export default function Evaluation() {
                       </div>
                     </div>
                     
-                    {domain.subdomains.map((subdomain, subdomainIndex) => (
+                    {domain.subdomains.map((subdomain, subdomainIndex) => {
+                      const domainColorMap: Record<string, { border: string; bg: string; headerBg: string; text: string; badgeBg: string; badgeText: string; badgeBorder: string; infoBg: string; infoText: string }> = {
+                        "from-purple-500 to-pink-500": { border: "border-l-pink-500", bg: "bg-gradient-to-r from-pink-50 via-purple-50 to-fuchsia-50 dark:from-pink-950/30 dark:via-purple-950/30 dark:to-fuchsia-950/30", headerBg: "bg-gradient-to-r from-purple-600 to-pink-600", text: "text-purple-800 dark:text-purple-200", badgeBg: "bg-pink-100 dark:bg-pink-900/40", badgeText: "text-pink-700 dark:text-pink-300", badgeBorder: "border-pink-300 dark:border-pink-700", infoBg: "hover:bg-pink-100 dark:hover:bg-pink-900/30", infoText: "text-pink-600 dark:text-pink-400" },
+                        "from-blue-500 to-cyan-500": { border: "border-l-cyan-500", bg: "bg-gradient-to-r from-blue-50 via-cyan-50 to-sky-50 dark:from-blue-950/30 dark:via-cyan-950/30 dark:to-sky-950/30", headerBg: "bg-gradient-to-r from-blue-600 to-cyan-600", text: "text-blue-800 dark:text-blue-200", badgeBg: "bg-cyan-100 dark:bg-cyan-900/40", badgeText: "text-cyan-700 dark:text-cyan-300", badgeBorder: "border-cyan-300 dark:border-cyan-700", infoBg: "hover:bg-cyan-100 dark:hover:bg-cyan-900/30", infoText: "text-cyan-600 dark:text-cyan-400" },
+                        "from-emerald-500 to-teal-500": { border: "border-l-teal-500", bg: "bg-gradient-to-r from-emerald-50 via-teal-50 to-green-50 dark:from-emerald-950/30 dark:via-teal-950/30 dark:to-green-950/30", headerBg: "bg-gradient-to-r from-emerald-600 to-teal-600", text: "text-emerald-800 dark:text-emerald-200", badgeBg: "bg-teal-100 dark:bg-teal-900/40", badgeText: "text-teal-700 dark:text-teal-300", badgeBorder: "border-teal-300 dark:border-teal-700", infoBg: "hover:bg-teal-100 dark:hover:bg-teal-900/30", infoText: "text-teal-600 dark:text-teal-400" },
+                        "from-orange-500 to-red-500": { border: "border-l-orange-500", bg: "bg-gradient-to-r from-orange-50 via-amber-50 to-yellow-50 dark:from-orange-950/30 dark:via-amber-950/30 dark:to-yellow-950/30", headerBg: "bg-gradient-to-r from-orange-600 to-red-600", text: "text-orange-800 dark:text-orange-200", badgeBg: "bg-orange-100 dark:bg-orange-900/40", badgeText: "text-orange-700 dark:text-orange-300", badgeBorder: "border-orange-300 dark:border-orange-700", infoBg: "hover:bg-orange-100 dark:hover:bg-orange-900/30", infoText: "text-orange-600 dark:text-orange-400" },
+                        "from-indigo-500 to-purple-500": { border: "border-l-indigo-500", bg: "bg-gradient-to-r from-indigo-50 via-violet-50 to-purple-50 dark:from-indigo-950/30 dark:via-violet-950/30 dark:to-purple-950/30", headerBg: "bg-gradient-to-r from-indigo-600 to-purple-600", text: "text-indigo-800 dark:text-indigo-200", badgeBg: "bg-indigo-100 dark:bg-indigo-900/40", badgeText: "text-indigo-700 dark:text-indigo-300", badgeBorder: "border-indigo-300 dark:border-indigo-700", infoBg: "hover:bg-indigo-100 dark:hover:bg-indigo-900/30", infoText: "text-indigo-600 dark:text-indigo-400" },
+                      };
+                      const colors = domainColorMap[domain.color] || domainColorMap["from-purple-500 to-pink-500"];
+                      
+                      return (
                       <div key={subdomainIndex} className="mb-8 last:mb-0">
-                        <Card className="border-l-4 border-l-purple-400 bg-background/60 backdrop-blur-sm p-6 rounded-2xl shadow-lg">
+                        <Card className={`border-l-4 ${colors.border} ${colors.bg} backdrop-blur-sm p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300`}>
                           <div className="flex items-center justify-between mb-4">
-                            <div className="flex items-center">
-                              <h3 className="text-lg sm:text-xl font-semibold text-gray-800">{subdomain.title}</h3>
+                            <div className="flex items-center gap-2">
+                              <div className={`w-2 h-2 rounded-full ${colors.headerBg}`} />
+                              <h3 className={`text-lg sm:text-xl font-bold ${colors.text}`}>{subdomain.title}</h3>
                               <TooltipProvider>
                                 <TooltipComponent>
                                   <TooltipTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-6 w-6 ml-2 hover:bg-purple-100 rounded-full">
-                                      <Info className="h-4 w-4 text-purple-600" />
+                                    <Button variant="ghost" size="icon" className={`h-6 w-6 ${colors.infoBg} rounded-full`}>
+                                      <Info className={`h-4 w-4 ${colors.infoText}`} />
                                     </Button>
                                   </TooltipTrigger>
                                   <TooltipContent className="max-w-xs bg-gray-900 text-white border-0">
@@ -1943,11 +1954,11 @@ export default function Evaluation() {
                             
                             {/* Badge indicador de status do subdomínio */}
                             {isSubdomainEvaluated(domain.title, subdomain.title, subdomain.parameters) ? (
-                              <div className="bg-emerald-50 text-emerald-600 px-2 py-1 rounded-md text-xs font-medium border border-emerald-200">
+                              <div className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-semibold border border-emerald-300 shadow-sm">
                                 ✓ Avaliado
                               </div>
                             ) : (
-                              <div className="bg-gray-50 text-gray-500 px-2 py-1 rounded-md text-xs font-medium border border-gray-200">
+                              <div className={`${colors.badgeBg} ${colors.badgeText} px-3 py-1 rounded-full text-xs font-medium border ${colors.badgeBorder}`}>
                                 Pendente
                               </div>
                             )}
