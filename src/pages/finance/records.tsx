@@ -566,7 +566,7 @@ export default function FinancialRecords() {
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
               <p className="mt-2 text-muted-foreground">Carregando registros...</p>
             </div>
-          ) : sortedRecords.length > 0 ? (
+          ) : (sortedRecords.length > 0 || viewMode === "fixed") ? (
             <>
               {viewMode === "fixed" ? (
                 <div className={`${isMobile ? 'space-y-4' : isTablet ? 'grid grid-cols-3 gap-3' : 'grid grid-cols-6 gap-3'}`}>
