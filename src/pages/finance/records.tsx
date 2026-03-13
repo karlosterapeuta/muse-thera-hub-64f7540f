@@ -550,7 +550,88 @@ export default function FinancialRecords() {
             </div>
           ) : sortedRecords.length > 0 ? (
             <>
-              {viewMode === "agenda" ? (
+              {viewMode === "fixed" ? (
+                <div className={`${isMobile ? 'space-y-4' : isTablet ? 'grid grid-cols-3 gap-3' : 'grid grid-cols-6 gap-3'}`}>
+                  {isMobile ? (
+                    <Tabs defaultValue="SEG" className="w-full">
+                      <TabsList className="w-full grid grid-cols-6 text-xs">
+                        {weekdays.map((day) => (
+                          <TabsTrigger key={day} value={day} className="text-xs">
+                            {day}
+                          </TabsTrigger>
+                        ))}
+                      </TabsList>
+                      {weekdays.map((day) => {
+                        const dayRecords = recordsByWeekday[day as keyof typeof recordsByWeekday] || [];
+                        const dayTotal = dayRecords.reduce((sum, r) => sum + r.amount, 0);
+                        const dayLabels: Record<string, string> = {
+                          SEG: "Segunda-feira", TER: "Terça-feira", QUA: "Quarta-feira",
+                          QUI: "Quinta-feira", SEX: "Sexta-feira", SAB: "Sábado"
+                        };
+                        return (
+                          <TabsContent key={day} value={day} className="animate-fade-in">
+                            <div className="space-y-2">
+                              <div className="p-3 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 text-white">
+                                <div className="flex justify-between items-center">
+                                  <div>
+                                    <div className="font-semibold">{dayLabels[day]}</div>
+                                    <div className="text-sm opacity-75 flex items-center gap-1">
+                                      <PinIcon className="h-3 w-3" /> Agenda Fixa
+                                    </div>
+                                  </div>
+                                  <div className="text-right">
+                                    <div className="text-sm">{dayRecords.length} pacientes</div>
+                                    <div className="font-bold">{formatCurrency(dayTotal)}</div>
+                                  </div>
+                                </div>
+                              </div>
+                              <ScrollArea className="max-h-[400px]">
+                                {dayRecords.length > 0 ? (
+                                  dayRecords.map(record => renderAppointmentCard(record))
+                                ) : (
+                                  <div className="text-center py-8 text-muted-foreground text-sm">
+                                    Nenhum paciente fixo
+                                  </div>
+                                )}
+                              </ScrollArea>
+                            </div>
+                          </TabsContent>
+                        );
+                      })}
+                    </Tabs>
+                  ) : (
+                    weekdays.map((day) => {
+                      const dayRecords = recordsByWeekday[day as keyof typeof recordsByWeekday] || [];
+                      const dayTotal = dayRecords.reduce((sum, r) => sum + r.amount, 0);
+                      return (
+                        <div key={day} className="animate-fade-in">
+                          <div className="rounded-t-lg py-3 px-2 text-center text-white font-bold bg-gradient-to-br from-amber-500 to-orange-600">
+                            <div className="text-sm">{day}</div>
+                            <div className="text-[10px] opacity-80 flex items-center justify-center gap-1">
+                              <PinIcon className="h-2.5 w-2.5" /> Fixo
+                            </div>
+                          </div>
+                          <div className="bg-muted/50 border border-t-0 rounded-b-lg">
+                            <div className="p-2 bg-card border-b dark:border-border flex justify-between items-center text-xs">
+                              <span>{dayRecords.length} pacientes</span>
+                              <span className="font-semibold text-primary">{formatCurrency(dayTotal)}</span>
+                            </div>
+                            <ScrollArea className="h-[400px] p-2">
+                              {dayRecords.length > 0 ? (
+                                dayRecords.map(record => renderAppointmentCard(record))
+                              ) : (
+                                <div className="text-center py-8 text-muted-foreground text-sm">
+                                  Nenhum paciente fixo
+                                </div>
+                              )}
+                            </ScrollArea>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              ) : viewMode === "agenda" ? (
                 <div className={`${isMobile ? 'space-y-4' : isTablet ? 'grid grid-cols-3 gap-3' : 'grid grid-cols-7 gap-3'}`}>
                   {isMobile ? (
                     <Tabs defaultValue="0" className="w-full">
