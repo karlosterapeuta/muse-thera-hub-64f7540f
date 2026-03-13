@@ -1855,31 +1855,31 @@ export default function Evaluation() {
               </div>
 
               {/* Estatísticas da Avaliação Parcial */}
-              <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-lg p-4 mb-6">
-                <h3 className="text-lg font-semibold text-emerald-800 mb-2">Status da Avaliação</h3>
+              <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-lg p-4 mb-6">
+                <h3 className="text-lg font-semibold text-emerald-800 dark:text-emerald-200 mb-2">Status da Avaliação</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-emerald-600">{getEvaluatedDomainsCount()}</p>
-                    <p className="text-sm text-emerald-700">Domínios Avaliados</p>
-                    <p className="text-xs text-emerald-600">de {evaluationDomains.length} total</p>
+                    <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{getEvaluatedDomainsCount()}</p>
+                    <p className="text-sm text-emerald-700 dark:text-emerald-300">Domínios Avaliados</p>
+                    <p className="text-xs text-emerald-600 dark:text-emerald-400">de {evaluationDomains.length} total</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-teal-600">{getEvaluatedSubdomainsCount()}</p>
-                    <p className="text-sm text-teal-700">Subdomínios Avaliados</p>
-                    <p className="text-xs text-teal-600">
+                    <p className="text-2xl font-bold text-teal-600 dark:text-teal-400">{getEvaluatedSubdomainsCount()}</p>
+                    <p className="text-sm text-teal-700 dark:text-teal-300">Subdomínios Avaliados</p>
+                    <p className="text-xs text-teal-600 dark:text-teal-400">
                       de {evaluationDomains.reduce((acc, domain) => acc + domain.subdomains.length, 0)} total
                     </p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-blue-600">
+                    <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                       {calculateOverallScore().percentage}%
                     </p>
-                    <p className="text-sm text-blue-700">Pontuação Média</p>
-                    <p className="text-xs text-blue-600">escala MuseTera</p>
+                    <p className="text-sm text-blue-700 dark:text-blue-300">Pontuação Média</p>
+                    <p className="text-xs text-blue-600 dark:text-blue-400">escala MuseTera</p>
                   </div>
                 </div>
                 <div className="mt-3 text-center">
-                  <p className="text-sm text-emerald-700">
+                  <p className="text-sm text-emerald-700 dark:text-emerald-300">
                     💡 Apenas domínios avaliados impactam na pontuação final
                   </p>
                 </div>
