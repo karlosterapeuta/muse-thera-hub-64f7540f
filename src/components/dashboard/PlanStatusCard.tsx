@@ -47,8 +47,6 @@ export function PlanStatusCard() {
     refetchOnWindowFocus: false,
   });
 
-  // Don't show for admins
-  if (isAdmin) return null;
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString("pt-BR", {
