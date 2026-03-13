@@ -141,7 +141,7 @@ export default function FinanceDashboard() {
           />
           
           <Tabs defaultValue="charts" className="print:hidden">
-            <TabsList className="mb-4 w-full justify-start overflow-x-auto bg-gradient-to-r from-blue-100 to-purple-100">
+            <TabsList className="mb-4 w-full justify-start overflow-x-auto bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/40 dark:to-purple-900/40">
               <TabsTrigger value="charts" className={`px-2 sm:px-4 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white ${isMobile ? 'text-xs' : ''}`}>
                 <BarChart2Icon className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                 🎼 Partituras Financeiras

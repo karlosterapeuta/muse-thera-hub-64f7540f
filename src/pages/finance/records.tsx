@@ -299,12 +299,12 @@ export default function FinancialRecords() {
     const getCardStatusClasses = (status?: string) => {
       switch (status) {
         case 'completed':
-          return 'bg-green-100 border-green-400';
+          return 'bg-green-100 dark:bg-green-900/30 border-green-400 dark:border-green-600';
         case 'no_show':
-          return 'bg-red-100 border-red-400';
+          return 'bg-red-100 dark:bg-red-900/30 border-red-400 dark:border-red-600';
         case 'scheduled':
         default:
-          return 'bg-blue-100 border-blue-400';
+          return 'bg-blue-100 dark:bg-blue-900/30 border-blue-400 dark:border-blue-600';
       }
     };
     
@@ -353,12 +353,12 @@ export default function FinancialRecords() {
     const getCardStatusClasses = (status?: string) => {
       switch (status) {
         case 'completed':
-          return 'bg-green-100 border-green-500';
+          return 'bg-green-100 dark:bg-green-900/30 border-green-500 dark:border-green-600';
         case 'no_show':
-          return 'bg-red-100 border-red-500';
+          return 'bg-red-100 dark:bg-red-900/30 border-red-500 dark:border-red-600';
         case 'scheduled':
         default:
-          return 'bg-blue-100 border-blue-500';
+          return 'bg-blue-100 dark:bg-blue-900/30 border-blue-500 dark:border-blue-600';
       }
     };
     
@@ -588,7 +588,7 @@ export default function FinancialRecords() {
                           <div className="text-xs opacity-90">{day.formatted}</div>
                         </div>
                         <div className="bg-muted/50 border border-t-0 rounded-b-lg">
-                          <div className="p-2 bg-white border-b flex justify-between items-center text-xs">
+                          <div className="p-2 bg-card border-b dark:border-border flex justify-between items-center text-xs">
                             <span>{day.records.length} sessões</span>
                             <span className="font-semibold text-primary">{formatCurrency(day.total)}</span>
                           </div>

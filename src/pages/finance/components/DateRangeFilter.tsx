@@ -40,7 +40,7 @@ export function DateRangeFilter({ onFilter }: DateRangeFilterProps) {
   };
   
   return (
-    <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
+    <Card className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/40 dark:to-purple-950/40 border-blue-200 dark:border-blue-800">
       <CardContent className="pt-4">
         <div className="flex flex-col space-y-4">
           <div className="flex flex-wrap gap-2">
@@ -48,7 +48,7 @@ export function DateRangeFilter({ onFilter }: DateRangeFilterProps) {
               variant="outline" 
               size="sm" 
               onClick={() => setQuickFilter(7)}
-              className="bg-gradient-to-r from-blue-100 to-blue-200 border-blue-200 text-blue-700 hover:from-blue-200 hover:to-blue-300 transition-all duration-300"
+              className="bg-gradient-to-r from-blue-100 to-blue-200 dark:from-blue-900/50 dark:to-blue-800/50 border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300 hover:from-blue-200 hover:to-blue-300 dark:hover:from-blue-800/50 dark:hover:to-blue-700/50 transition-all duration-300"
             >
               🎵 Última Semana
             </Button>
@@ -56,7 +56,7 @@ export function DateRangeFilter({ onFilter }: DateRangeFilterProps) {
               variant="outline" 
               size="sm" 
               onClick={() => setQuickFilter(30)}
-              className="bg-gradient-to-r from-purple-100 to-purple-200 border-purple-200 text-purple-700 hover:from-purple-200 hover:to-purple-300 transition-all duration-300"
+              className="bg-gradient-to-r from-purple-100 to-purple-200 dark:from-purple-900/50 dark:to-purple-800/50 border-purple-200 dark:border-purple-700 text-purple-700 dark:text-purple-300 hover:from-purple-200 hover:to-purple-300 dark:hover:from-purple-800/50 dark:hover:to-purple-700/50 transition-all duration-300"
             >
               🎼 Último Movimento (30 dias)
             </Button>
@@ -64,7 +64,7 @@ export function DateRangeFilter({ onFilter }: DateRangeFilterProps) {
               variant="outline" 
               size="sm" 
               onClick={() => setQuickFilter(90)}
-              className="bg-gradient-to-r from-green-100 to-green-200 border-green-200 text-green-700 hover:from-green-200 hover:to-green-300 transition-all duration-300"
+              className="bg-gradient-to-r from-green-100 to-green-200 dark:from-green-900/50 dark:to-green-800/50 border-green-200 dark:border-green-700 text-green-700 dark:text-green-300 hover:from-green-200 hover:to-green-300 dark:hover:from-green-800/50 dark:hover:to-green-700/50 transition-all duration-300"
             >
               🎹 Última Sinfonia (90 dias)
             </Button>
@@ -72,7 +72,7 @@ export function DateRangeFilter({ onFilter }: DateRangeFilterProps) {
               variant="outline" 
               size="sm" 
               onClick={setMonthFilter}
-              className="bg-gradient-to-r from-orange-100 to-orange-200 border-orange-200 text-orange-700 hover:from-orange-200 hover:to-orange-300 transition-all duration-300"
+              className="bg-gradient-to-r from-orange-100 to-orange-200 dark:from-orange-900/50 dark:to-orange-800/50 border-orange-200 dark:border-orange-700 text-orange-700 dark:text-orange-300 hover:from-orange-200 hover:to-orange-300 dark:hover:from-orange-800/50 dark:hover:to-orange-700/50 transition-all duration-300"
             >
               🎶 Mês Atual
             </Button>
@@ -80,7 +80,7 @@ export function DateRangeFilter({ onFilter }: DateRangeFilterProps) {
           
           <div className="flex flex-wrap gap-2 items-end">
             <div className="flex-1 min-w-[180px]">
-              <label className="text-sm font-medium" htmlFor="start-date">De</label>
+              <label className="text-sm font-medium text-foreground" htmlFor="start-date">De</label>
               <Input
                 id="start-date"
                 type="date"
@@ -89,7 +89,7 @@ export function DateRangeFilter({ onFilter }: DateRangeFilterProps) {
               />
             </div>
             <div className="flex-1 min-w-[180px]">
-              <label className="text-sm font-medium" htmlFor="end-date">Até</label>
+              <label className="text-sm font-medium text-foreground" htmlFor="end-date">Até</label>
               <Input
                 id="end-date"
                 type="date"
