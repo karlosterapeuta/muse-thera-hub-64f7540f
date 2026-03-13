@@ -2170,8 +2170,8 @@ export default function Evaluation() {
                   </Card>
                 </div>
                 
-                <Card className="border-0 shadow-xl p-6 rounded-2xl bg-gradient-to-br from-blue-50 to-cyan-50">
-                  <h3 className="text-lg sm:text-xl font-bold mb-6 text-center text-blue-800">
+                <Card className="border-0 shadow-xl p-6 rounded-2xl bg-blue-50/80 dark:bg-blue-950/30">
+                  <h3 className="text-lg sm:text-xl font-bold mb-6 text-center text-blue-800 dark:text-blue-200">
                     Análise Detalhada por Subdomínios
                   </h3>
                   <div className="h-[450px] sm:h-[500px]">
