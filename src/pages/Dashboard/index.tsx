@@ -23,9 +23,7 @@ export default function Dashboard() {
       {/* Main Content */}
       <div className="w-full px-4 sm:px-6 py-6 space-y-6 max-w-[1600px] mx-auto">
         {/* Plan Status Card */}
-        <div className="max-w-sm">
-          <PlanStatusCard />
-        </div>
+        <PlanStatusCard />
 
         {/* Statistics Cards */}
         <div>
