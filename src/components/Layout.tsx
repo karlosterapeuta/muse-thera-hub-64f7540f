@@ -187,7 +187,7 @@ export default function Layout({ children }: LayoutProps) {
   const isMobile = useIsMobile();
 
   return (
-    <SidebarProvider defaultOpen={!isMobile}>
+    <SidebarProvider defaultOpen={false}>
       <LayoutContent>{children}</LayoutContent>
     </SidebarProvider>
   );
