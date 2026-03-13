@@ -58,7 +58,10 @@ export const EvolutionReportPreview: React.FC<EvolutionReportPreviewProps> = ({
             <strong>Paciente:</strong> {data.patient_name || 'Nome do Paciente'}
           </div>
           <div>
-            <strong>Data:</strong> {data.date ? format(new Date(data.date), 'dd/MM/yyyy') : currentDate}
+            <strong>Data:</strong> {data.date ? (() => {
+              const [y, m, d] = data.date.split('-').map(Number);
+              return format(new Date(y, m - 1, d), 'dd/MM/yyyy');
+            })() : currentDate}
           </div>
         </div>
       </div>
