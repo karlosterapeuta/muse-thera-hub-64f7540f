@@ -24,10 +24,16 @@ export const useEvolutionReport = () => {
   };
 
   const selectOption = (field: keyof EvolutionReportData, option: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: option
-    }));
+    setFormData(prev => {
+      const currentValue = (prev[field] as string) || "";
+      const newValue = currentValue.trim()
+        ? `${currentValue.trim()}\n\n${option}`
+        : option;
+      return {
+        ...prev,
+        [field]: newValue
+      };
+    });
   };
 
   const clearField = (field: keyof EvolutionReportData) => {
