@@ -2102,7 +2102,7 @@ export default function Evaluation() {
                 <h2 className="text-2xl sm:text-3xl font-bold mb-8 text-center bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                   Resultados da Escala MuseTera
                   {getEvaluatedDomainsCount() < evaluationDomains.length && (
-                    <span className="block text-sm font-normal text-amber-600 mt-1">
+                    <span className="block text-sm font-normal text-amber-600 dark:text-amber-400 mt-1">
                       (Avaliação Parcial - {getEvaluatedDomainsCount()}/{evaluationDomains.length} domínios)
                     </span>
                   )}
