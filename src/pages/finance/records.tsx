@@ -529,15 +529,6 @@ export default function FinancialRecords() {
             <span className={isMobile ? "text-xs" : "inline"}>Agenda Fixa</span>
           </Button>
           <Button 
-            variant={viewMode === "agenda" ? "default" : "outline"} 
-            size="sm" 
-            className="rounded-none border-x-0"
-            onClick={() => setViewMode("agenda")}
-          >
-            <LayoutGridIcon className="h-4 w-4 mr-1 text-[#0EA5E9]" />
-            <span className={isMobile ? "text-xs" : "inline"}>Semanal</span>
-          </Button>
-          <Button 
             variant={viewMode === "list" ? "default" : "outline"} 
             size="sm" 
             className="rounded-l-none"
