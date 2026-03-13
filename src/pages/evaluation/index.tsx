@@ -2194,9 +2194,9 @@ export default function Evaluation() {
                             const data = payload[0].payload;
                             return (
                               <div className="bg-background p-4 border-0 rounded-xl shadow-xl">
-                                <p className="text-sm font-semibold text-gray-800">{data.name}</p>
-                                <p className="text-sm text-blue-600">Domínio: {data.domain}</p>
-                                <p className="text-sm font-bold text-green-600">Pontuação: {data.value}%</p>
+                                <p className="text-sm font-semibold text-foreground">{data.name}</p>
+                                <p className="text-sm text-blue-600 dark:text-blue-400">Domínio: {data.domain}</p>
+                                <p className="text-sm font-bold text-green-600 dark:text-green-400">Pontuação: {data.value}%</p>
                               </div>
                             );
                           }
