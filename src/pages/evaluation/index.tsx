@@ -2068,7 +2068,9 @@ export default function Evaluation() {
                           </div>
                         </Card>
                       </div>
-                    ))}
+                      );
+                    })}
+
                   </Card>
                 </div>
               ))}
