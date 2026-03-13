@@ -48,7 +48,7 @@ export default function FinancialRecords() {
   const [selectedRecord, setSelectedRecord] = useState<FinancialRecord | undefined>();
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [recordToDelete, setRecordToDelete] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<"list" | "agenda" | "fixed">("agenda");
+  const [viewMode, setViewMode] = useState<"list" | "fixed">("fixed");
   const [clearAllDialogOpen, setClearAllDialogOpen] = useState(false);
   const isMobile = useIsMobile();
   const isTablet = useIsTablet();
