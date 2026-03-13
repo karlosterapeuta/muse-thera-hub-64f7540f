@@ -28,9 +28,18 @@ function LayoutContent({ children }: LayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { toggleSidebar } = useSidebar();
+  const { toggleSidebar, setOpenMobile, isMobile } = useSidebar();
   const isDashboard = location.pathname === '/dashboard';
   const lastTrackedPath = useRef<string>("");
+  const hasAutoOpenedMobile = useRef(false);
+
+  // Auto-open sidebar on mobile when first loading
+  useEffect(() => {
+    if (isMobile && !hasAutoOpenedMobile.current && !publicRoutes.includes(location.pathname)) {
+      hasAutoOpenedMobile.current = true;
+      setOpenMobile(true);
+    }
+  }, [isMobile, setOpenMobile, location.pathname]);
 
   // Atalho de teclado Ctrl+B / Cmd+B para toggle do sidebar
   useEffect(() => {
