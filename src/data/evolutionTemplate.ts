@@ -17,7 +17,7 @@ export const evolutionTemplate = {
 export const evolutionSections = [
   {
     key: "arrival_state",
-    title: "Como a criança chegou",
+    title: "Como o paciente chegou",
     placeholder: "Descreva o estado emocional e físico da criança ao chegar na sessão..."
   },
   {
