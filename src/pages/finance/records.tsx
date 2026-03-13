@@ -588,7 +588,7 @@ export default function FinancialRecords() {
                           <div className="text-xs opacity-90">{day.formatted}</div>
                         </div>
                         <div className="bg-muted/50 border border-t-0 rounded-b-lg">
-                          <div className="p-2 bg-white border-b flex justify-between items-center text-xs">
+                          <div className="p-2 bg-card border-b dark:border-border flex justify-between items-center text-xs">
                             <span>{day.records.length} sessões</span>
                             <span className="font-semibold text-primary">{formatCurrency(day.total)}</span>
                           </div>

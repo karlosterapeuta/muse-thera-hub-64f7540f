@@ -12,7 +12,6 @@ import { FinancialRecord } from '../types';
 // Parse currency string to number
 const parseCurrencyValue = (value: string): number => {
   if (!value || value === '') return 0;
-  // Remove currency formatting characters and convert to number
   return parseFloat(value.replace(/[^\d.-]/g, '')) || 0;
 };
 
@@ -44,20 +43,11 @@ export const IncomeTaxCalculator: React.FC<IncomeTaxCalculatorProps> = ({ record
   const calculatePresumption = (value: number) => {
     let taxRate = 0;
     switch (selectedActivity) {
-      case 'commerce':
-        taxRate = 0.08;
-        break;
-      case 'industry':
-        taxRate = 0.08;
-        break;
-      case 'service':
-        taxRate = 0.32;
-        break;
-      case 'transport':
-        taxRate = 0.16;
-        break;
-      default:
-        taxRate = 0.08;
+      case 'commerce': taxRate = 0.08; break;
+      case 'industry': taxRate = 0.08; break;
+      case 'service': taxRate = 0.32; break;
+      case 'transport': taxRate = 0.16; break;
+      default: taxRate = 0.08;
     }
     const tax = value * taxRate;
     setPresumptionTax(tax);
@@ -67,14 +57,11 @@ export const IncomeTaxCalculator: React.FC<IncomeTaxCalculatorProps> = ({ record
     const taxRate = 0.15;
     const additionalTaxThreshold = 20000;
     const additionalTaxRate = 0.10;
-
     let tax = value * taxRate;
-
     if (value > additionalTaxThreshold) {
       const excess = value - additionalTaxThreshold;
       tax += excess * additionalTaxRate;
     }
-
     setRealProfitTax(tax);
   };
 
@@ -86,93 +73,38 @@ export const IncomeTaxCalculator: React.FC<IncomeTaxCalculatorProps> = ({ record
 
   const calculateSimples = (value: number) => {
     let taxRate = 0;
-
     switch (selectedActivity) {
-      case 'commerce':
-        taxRate = 0.04;
-        break;
-      case 'industry':
-        taxRate = 0.045;
-        break;
-      case 'service':
-        taxRate = 0.06;
-        break;
-      default:
-        taxRate = 0.04;
+      case 'commerce': taxRate = 0.04; break;
+      case 'industry': taxRate = 0.045; break;
+      case 'service': taxRate = 0.06; break;
+      default: taxRate = 0.04;
     }
-
     const tax = value * taxRate;
     setSimplesTax(tax);
   };
 
-  const handleSimpleIndexValue = (event: React.FocusEvent<HTMLInputElement>) => {
-    const rawValue = event.target.value;
+  const handleBlur = (
+    rawValue: string,
+    setValue: (v: string) => void,
+    calculate: (v: number) => void
+  ) => {
     const value = parseCurrencyValue(rawValue);
-    
     if (value === 0) {
-      setSimpleIndexValue('');
+      setValue('');
     } else {
-      setSimpleIndexValue(formatCurrency(value));
-      calculateSimpleIndex(value);
-    }
-  };
-
-  const handlePresumptionValue = (event: React.FocusEvent<HTMLInputElement>) => {
-    const rawValue = event.target.value;
-    const value = parseCurrencyValue(rawValue);
-    
-    if (value === 0) {
-      setPresumptionValue('');
-    } else {
-      setPresumptionValue(formatCurrency(value));
-      calculatePresumption(value);
-    }
-  };
-
-  const handleRealProfitValue = (event: React.FocusEvent<HTMLInputElement>) => {
-    const rawValue = event.target.value;
-    const value = parseCurrencyValue(rawValue);
-    
-    if (value === 0) {
-      setRealProfitValue('');
-    } else {
-      setRealProfitValue(formatCurrency(value));
-      calculateRealProfit(value);
-    }
-  };
-
-  const handleMeiValue = (event: React.FocusEvent<HTMLInputElement>) => {
-    const rawValue = event.target.value;
-    const value = parseCurrencyValue(rawValue);
-    
-    if (value === 0) {
-      setMeiValue('');
-    } else {
-      setMeiValue(formatCurrency(value));
-      calculateMei(value);
-    }
-  };
-
-  const handleSimplesValue = (event: React.FocusEvent<HTMLInputElement>) => {
-    const rawValue = event.target.value;
-    const value = parseCurrencyValue(rawValue);
-    
-    if (value === 0) {
-      setSimplesValue('');
-    } else {
-      setSimplesValue(formatCurrency(value));
-      calculateSimples(value);
+      setValue(formatCurrency(value));
+      calculate(value);
     }
   };
 
   return (
-    <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200">
+    <Card className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/40 dark:to-purple-950/40 border-blue-200 dark:border-blue-800">
       <CardHeader>
-        <CardTitle className="text-blue-900 flex items-center space-x-2">
+        <CardTitle className="text-blue-900 dark:text-blue-200 flex items-center space-x-2">
           <span>🧮</span>
           <span>Calculadora IR - Musicoterapeutas</span>
         </CardTitle>
-        <CardDescription className="text-blue-700">
+        <CardDescription className="text-blue-700 dark:text-blue-400">
           🎵 Calcule o imposto de renda devido para profissionais de musicoterapia com base em diferentes regimes tributários.
         </CardDescription>
       </CardHeader>
@@ -188,31 +120,21 @@ export const IncomeTaxCalculator: React.FC<IncomeTaxCalculatorProps> = ({ record
           <TabsContent value="simpleIndex" className="space-y-2">
             <div className="grid gap-2">
               <Label htmlFor="simpleIndex">Receita Bruta Anual</Label>
-              <Input
-                id="simpleIndex"
-                placeholder="R$ 0,00"
-                value={simpleIndexValue}
-                onBlur={handleSimpleIndexValue}
-              />
+              <Input id="simpleIndex" placeholder="R$ 0,00" value={simpleIndexValue}
+                onChange={(e) => setSimpleIndexValue(e.target.value)}
+                onBlur={(e) => handleBlur(e.target.value, setSimpleIndexValue, calculateSimpleIndex)} />
             </div>
-            <div>
-              <p>Imposto de Renda Devido: {formatCurrency(simpleIndexTax)}</p>
-            </div>
+            <p className="text-foreground">Imposto de Renda Devido: {formatCurrency(simpleIndexTax)}</p>
           </TabsContent>
           <TabsContent value="presumption" className="space-y-2">
             <div className="grid gap-2">
               <Label htmlFor="presumption">Receita Bruta Trimestral</Label>
-              <Input
-                id="presumption"
-                placeholder="R$ 0,00"
-                value={presumptionValue}
-                onBlur={handlePresumptionValue}
-              />
+              <Input id="presumption" placeholder="R$ 0,00" value={presumptionValue}
+                onChange={(e) => setPresumptionValue(e.target.value)}
+                onBlur={(e) => handleBlur(e.target.value, setPresumptionValue, calculatePresumption)} />
             </div>
             <Select onValueChange={setSelectedActivity}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Selecione a Atividade" />
-              </SelectTrigger>
+              <SelectTrigger className="w-full"><SelectValue placeholder="Selecione a Atividade" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="commerce">Comércio</SelectItem>
                 <SelectItem value="industry">Indústria</SelectItem>
@@ -220,61 +142,42 @@ export const IncomeTaxCalculator: React.FC<IncomeTaxCalculatorProps> = ({ record
                 <SelectItem value="transport">Transporte</SelectItem>
               </SelectContent>
             </Select>
-            <div>
-              <p>Imposto de Renda Devido: {formatCurrency(presumptionTax)}</p>
-            </div>
+            <p className="text-foreground">Imposto de Renda Devido: {formatCurrency(presumptionTax)}</p>
           </TabsContent>
           <TabsContent value="realProfit" className="space-y-2">
             <div className="grid gap-2">
               <Label htmlFor="realProfit">Lucro Real Trimestral</Label>
-              <Input
-                id="realProfit"
-                placeholder="R$ 0,00"
-                value={realProfitValue}
-                onBlur={handleRealProfitValue}
-              />
+              <Input id="realProfit" placeholder="R$ 0,00" value={realProfitValue}
+                onChange={(e) => setRealProfitValue(e.target.value)}
+                onBlur={(e) => handleBlur(e.target.value, setRealProfitValue, calculateRealProfit)} />
             </div>
-            <div>
-              <p>Imposto de Renda Devido: {formatCurrency(realProfitTax)}</p>
-            </div>
+            <p className="text-foreground">Imposto de Renda Devido: {formatCurrency(realProfitTax)}</p>
           </TabsContent>
           <TabsContent value="mei" className="space-y-2">
             <div className="grid gap-2">
               <Label htmlFor="mei">Receita Bruta Mensal</Label>
-              <Input
-                id="mei"
-                placeholder="R$ 0,00"
-                value={meiValue}
-                onBlur={handleMeiValue}
-              />
+              <Input id="mei" placeholder="R$ 0,00" value={meiValue}
+                onChange={(e) => setMeiValue(e.target.value)}
+                onBlur={(e) => handleBlur(e.target.value, setMeiValue, calculateMei)} />
             </div>
-            <div>
-              <p>Imposto de Renda Devido: {formatCurrency(meiTax)}</p>
-            </div>
+            <p className="text-foreground">Imposto de Renda Devido: {formatCurrency(meiTax)}</p>
           </TabsContent>
           <TabsContent value="simples" className="space-y-2">
             <div className="grid gap-2">
               <Label htmlFor="simples">Receita Bruta Anual</Label>
-              <Input
-                id="simples"
-                placeholder="R$ 0,00"
-                value={simplesValue}
-                onBlur={handleSimplesValue}
-              />
+              <Input id="simples" placeholder="R$ 0,00" value={simplesValue}
+                onChange={(e) => setSimplesValue(e.target.value)}
+                onBlur={(e) => handleBlur(e.target.value, setSimplesValue, calculateSimples)} />
             </div>
             <Select onValueChange={setSelectedActivity}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Selecione a Atividade" />
-              </SelectTrigger>
+              <SelectTrigger className="w-full"><SelectValue placeholder="Selecione a Atividade" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="commerce">Comércio</SelectItem>
                 <SelectItem value="industry">Indústria</SelectItem>
                 <SelectItem value="service">Serviço</SelectItem>
               </SelectContent>
             </Select>
-            <div>
-              <p>Imposto de Renda Devido: {formatCurrency(simplesTax)}</p>
-            </div>
+            <p className="text-foreground">Imposto de Renda Devido: {formatCurrency(simplesTax)}</p>
           </TabsContent>
         </Tabs>
       </CardContent>
