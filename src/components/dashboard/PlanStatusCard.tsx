@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { useAdmin } from "@/hooks/use-admin";
+
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function PlanStatusCard() {
