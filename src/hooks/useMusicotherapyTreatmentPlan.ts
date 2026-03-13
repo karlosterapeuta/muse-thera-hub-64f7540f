@@ -5,7 +5,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { MusicotherapyTreatmentPlan, defaultTreatmentPlan } from '@/types/musicotherapy-plan';
 import { useProfessionalData } from './useProfessionalData';
 
-export function useMusicotherapyTreatmentPlan(planId?: string) {
+export function useMusicotherapyTreatmentPlan(planId?: string, onCreated?: (newId: string) => void) {
   const [planData, setPlanData] = useState<Partial<MusicotherapyTreatmentPlan>>(defaultTreatmentPlan);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isAutoSaving, setIsAutoSaving] = useState(false);
