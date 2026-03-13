@@ -546,13 +546,8 @@ export default function FinancialRecords() {
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center">
               <DollarSignIcon className="mr-2 h-5 w-5 text-primary" />
-              {viewMode === "fixed" ? "Agenda Fixa dos Pacientes" : viewMode === "agenda" ? "Agenda Semanal Inteligente" : "Registros"} 
+              {viewMode === "fixed" ? "Agenda Fixa dos Pacientes" : "Registros"} 
             </div>
-            {viewMode === "agenda" && (
-              <div className="text-sm text-muted-foreground">
-                Semana de {format(weeklyAgenda[0]?.date, "dd/MM", { locale: ptBR })} - {format(weeklyAgenda[6]?.date, "dd/MM", { locale: ptBR })}
-              </div>
-            )}
             {viewMode === "fixed" && (
               <div className="text-sm text-muted-foreground flex items-center gap-1">
                 <PinIcon className="h-3.5 w-3.5" />
