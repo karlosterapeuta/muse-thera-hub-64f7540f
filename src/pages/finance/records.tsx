@@ -184,21 +184,31 @@ export default function FinancialRecords() {
   
   const weeklyAgenda = organizeWeeklyAgenda();
   
-  // Fixed agenda: use ALL records (no date filter) grouped by weekday
+  // Fixed agenda: use ALL records grouped by session_date weekday
   const fixedFilteredRecords = allRecords.filter(record => 
     record.clinic_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     record.patient_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     record.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
   
+  const getRecordWeekday = (record: FinancialRecord): string => {
+    // First try description pattern, then fall back to session_date
+    const short = getWeekdayShort(record.description);
+    if (short) return short;
+    
+    const date = parseISO(record.session_date);
+    const dayOfWeek = date.getDay(); // 0=Sun, 1=Mon...6=Sat
+    const dayMap: Record<number, string> = { 1: "SEG", 2: "TER", 3: "QUA", 4: "QUI", 5: "SEX", 6: "SAB", 0: "DOM" };
+    return dayMap[dayOfWeek] || "DOM";
+  };
+  
   const recordsByWeekday = {
-    "SEG": fixedFilteredRecords.filter(record => getWeekdayShort(record.description) === "SEG"),
-    "TER": fixedFilteredRecords.filter(record => getWeekdayShort(record.description) === "TER"),
-    "QUA": fixedFilteredRecords.filter(record => getWeekdayShort(record.description) === "QUA"),
-    "QUI": fixedFilteredRecords.filter(record => getWeekdayShort(record.description) === "QUI"),
-    "SEX": fixedFilteredRecords.filter(record => getWeekdayShort(record.description) === "SEX"),
-    "SAB": fixedFilteredRecords.filter(record => getWeekdayShort(record.description) === "SAB"),
-    "OUTROS": fixedFilteredRecords.filter(record => !getWeekdayShort(record.description))
+    "SEG": fixedFilteredRecords.filter(record => getRecordWeekday(record) === "SEG"),
+    "TER": fixedFilteredRecords.filter(record => getRecordWeekday(record) === "TER"),
+    "QUA": fixedFilteredRecords.filter(record => getRecordWeekday(record) === "QUA"),
+    "QUI": fixedFilteredRecords.filter(record => getRecordWeekday(record) === "QUI"),
+    "SEX": fixedFilteredRecords.filter(record => getRecordWeekday(record) === "SEX"),
+    "SAB": fixedFilteredRecords.filter(record => getRecordWeekday(record) === "SAB"),
   };
   
   // Deduplicate fixed agenda by patient+weekday+time (show unique slots only)
