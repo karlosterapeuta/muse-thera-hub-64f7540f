@@ -2079,20 +2079,20 @@ export default function Evaluation() {
             <TabsContent value="results" className="space-y-8 mt-8">
               {/* Informações sobre Avaliação Parcial */}
               {getEvaluatedDomainsCount() < evaluationDomains.length && (
-                <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-4 mb-6">
-                  <h3 className="text-lg font-semibold text-amber-800 mb-2">⚡ Avaliação Parcial Detectada</h3>
-                  <p className="text-amber-700 text-sm mb-2">
+                <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-lg p-4 mb-6">
+                  <h3 className="text-lg font-semibold text-amber-800 dark:text-amber-200 mb-2">⚡ Avaliação Parcial Detectada</h3>
+                  <p className="text-amber-700 dark:text-amber-300 text-sm mb-2">
                     Esta é uma avaliação parcial onde nem todos os domínios foram pontuados. 
                     Os resultados refletem apenas os domínios efetivamente avaliados.
                   </p>
                   <div className="grid grid-cols-2 gap-4 text-center mt-3">
-                    <div className="bg-amber-100 p-2 rounded">
-                      <p className="text-sm font-semibold text-amber-800">Avaliados</p>
-                      <p className="text-lg font-bold text-amber-700">{getEvaluatedDomainsCount()}</p>
+                    <div className="bg-amber-100 dark:bg-amber-900/40 p-2 rounded">
+                      <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">Avaliados</p>
+                      <p className="text-lg font-bold text-amber-700 dark:text-amber-300">{getEvaluatedDomainsCount()}</p>
                     </div>
-                    <div className="bg-gray-100 p-2 rounded">
-                      <p className="text-sm font-semibold text-gray-600">Não Avaliados</p>
-                      <p className="text-lg font-bold text-gray-500">{evaluationDomains.length - getEvaluatedDomainsCount()}</p>
+                    <div className="bg-gray-100 dark:bg-gray-800 p-2 rounded">
+                      <p className="text-sm font-semibold text-muted-foreground">Não Avaliados</p>
+                      <p className="text-lg font-bold text-muted-foreground">{evaluationDomains.length - getEvaluatedDomainsCount()}</p>
                     </div>
                   </div>
                 </div>
