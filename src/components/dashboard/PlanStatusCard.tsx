@@ -134,36 +134,43 @@ export function PlanStatusCard() {
   if (!planData) return null;
 
   return (
-    <Card className="border border-border/60 bg-gradient-to-r from-slate-900/80 to-slate-800/80 dark:from-slate-900 dark:to-slate-800 shadow-xl rounded-xl">
-      <CardContent className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 sm:p-5">
+    <Card className="relative overflow-hidden border-0 shadow-2xl rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 dark:from-indigo-700 dark:via-purple-700 dark:to-pink-600">
+      {/* Decorative elements */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/20 blur-2xl" />
+        <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full bg-white/15 blur-2xl" />
+      </div>
+      <CardContent className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 sm:p-5">
         <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-          <Calendar className="h-5 w-5 text-primary shrink-0" />
-          <span className="text-sm sm:text-base font-semibold text-foreground whitespace-nowrap">Status do Plano</span>
+          <div className="p-2 rounded-lg bg-white/20 backdrop-blur-sm">
+            <Calendar className="h-5 w-5 text-white shrink-0" />
+          </div>
+          <span className="text-sm sm:text-base font-bold text-white whitespace-nowrap drop-shadow-sm">Status do Plano</span>
           {getStatusBadge()}
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-5 text-xs sm:text-sm">
-          <div className="flex items-center gap-1">
-            <span className="text-muted-foreground whitespace-nowrap">Adesão:</span>
-            <span className="font-medium text-foreground">{formatDate(planData.planStartDate)}</span>
+          <div className="flex items-center gap-1.5 bg-white/15 backdrop-blur-sm rounded-lg px-3 py-1.5">
+            <span className="text-white/80 whitespace-nowrap">Adesão:</span>
+            <span className="font-semibold text-white">{formatDate(planData.planStartDate)}</span>
           </div>
-          <div className="flex items-center gap-1">
-            <span className="text-muted-foreground whitespace-nowrap">Término:</span>
-            <span className="font-medium">
+          <div className="flex items-center gap-1.5 bg-white/15 backdrop-blur-sm rounded-lg px-3 py-1.5">
+            <span className="text-white/80 whitespace-nowrap">Término:</span>
+            <span className="font-semibold">
               {planData.isUnlimited ? (
-                <span className="flex items-center gap-1 text-blue-400">
+                <span className="flex items-center gap-1 text-yellow-200">
                   <Infinity className="h-4 w-4" />
                   Sem limite
                 </span>
               ) : (
-                <span className="text-foreground">{formatDate(planData.expiresAt!)}</span>
+                <span className="text-white">{formatDate(planData.expiresAt!)}</span>
               )}
             </span>
           </div>
           {!planData.isUnlimited && planData.daysRemaining !== null && planData.daysRemaining > 0 && (
-            <div className="flex items-center gap-1 text-muted-foreground">
+            <div className="flex items-center gap-1.5 bg-white/15 backdrop-blur-sm rounded-lg px-3 py-1.5 text-white/90">
               <Clock className="h-4 w-4 shrink-0" />
               <span className="whitespace-nowrap">
-                Restam <strong className="text-foreground">{planData.daysRemaining}</strong> {planData.daysRemaining === 1 ? "dia" : "dias"}
+                Restam <strong className="text-yellow-200">{planData.daysRemaining}</strong> {planData.daysRemaining === 1 ? "dia" : "dias"}
               </span>
             </div>
           )}
