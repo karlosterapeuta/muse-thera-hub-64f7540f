@@ -184,22 +184,39 @@ export default function FinancialRecords() {
   
   const weeklyAgenda = organizeWeeklyAgenda();
   
+  // Fixed agenda: use ALL records (no date filter) grouped by weekday
+  const fixedFilteredRecords = allRecords.filter(record => 
+    record.clinic_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    record.patient_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    record.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
   const recordsByWeekday = {
-    "SEG": sortedRecords.filter(record => getWeekdayShort(record.description) === "SEG"),
-    "TER": sortedRecords.filter(record => getWeekdayShort(record.description) === "TER"),
-    "QUA": sortedRecords.filter(record => getWeekdayShort(record.description) === "QUA"),
-    "QUI": sortedRecords.filter(record => getWeekdayShort(record.description) === "QUI"),
-    "SEX": sortedRecords.filter(record => getWeekdayShort(record.description) === "SEX"),
-    "SAB": sortedRecords.filter(record => getWeekdayShort(record.description) === "SAB"),
-    "OUTROS": sortedRecords.filter(record => !getWeekdayShort(record.description))
+    "SEG": fixedFilteredRecords.filter(record => getWeekdayShort(record.description) === "SEG"),
+    "TER": fixedFilteredRecords.filter(record => getWeekdayShort(record.description) === "TER"),
+    "QUA": fixedFilteredRecords.filter(record => getWeekdayShort(record.description) === "QUA"),
+    "QUI": fixedFilteredRecords.filter(record => getWeekdayShort(record.description) === "QUI"),
+    "SEX": fixedFilteredRecords.filter(record => getWeekdayShort(record.description) === "SEX"),
+    "SAB": fixedFilteredRecords.filter(record => getWeekdayShort(record.description) === "SAB"),
+    "OUTROS": fixedFilteredRecords.filter(record => !getWeekdayShort(record.description))
   };
   
+  // Deduplicate fixed agenda by patient+weekday+time (show unique slots only)
   Object.keys(recordsByWeekday).forEach(day => {
-    recordsByWeekday[day as keyof typeof recordsByWeekday].sort((a, b) => {
-      const timeA = getAppointmentTime(a.description) || "00:00";
-      const timeB = getAppointmentTime(b.description) || "00:00";
-      return timeA.localeCompare(timeB);
-    });
+    const seen = new Set<string>();
+    recordsByWeekday[day as keyof typeof recordsByWeekday] = 
+      recordsByWeekday[day as keyof typeof recordsByWeekday]
+        .sort((a, b) => {
+          const timeA = getAppointmentTime(a.description) || "00:00";
+          const timeB = getAppointmentTime(b.description) || "00:00";
+          return timeA.localeCompare(timeB);
+        })
+        .filter(record => {
+          const key = `${record.patient_name}-${getAppointmentTime(record.description)}-${record.clinic_name}`;
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
   });
   
   useEffect(() => {
