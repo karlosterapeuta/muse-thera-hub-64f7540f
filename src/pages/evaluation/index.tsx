@@ -1648,8 +1648,8 @@ export default function Evaluation() {
                 <Button
                   variant={"outline"}
                   className={cn(
-                    "w-[220px] justify-start text-left font-normal bg-white border-blue-300 hover:bg-blue-50 transition-all duration-300 text-gray-900 font-medium",
-                    !evaluationDate && "text-gray-500"
+                    "w-[220px] justify-start text-left font-normal border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all duration-300 text-foreground font-medium",
+                    !evaluationDate && "text-muted-foreground"
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4 text-blue-600" />
