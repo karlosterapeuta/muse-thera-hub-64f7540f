@@ -48,11 +48,31 @@ export function FinanceCharts({
   return (
     <div className="space-y-4">
       <Tabs defaultValue="daily" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/40 dark:to-purple-900/40">
-          <TabsTrigger value="daily" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">🎵 Andante (Diário)</TabsTrigger>
-          <TabsTrigger value="weekly" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">🎶 Crescendo (Semanal)</TabsTrigger>
-          <TabsTrigger value="monthly" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">🎼 Forte (Mensal)</TabsTrigger>
-          <TabsTrigger value="yearly" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">🎹 Fortíssimo (Anual)</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4 gap-2 bg-transparent p-1 h-auto">
+          <TabsTrigger 
+            value="daily" 
+            className="rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50/80 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-semibold py-3 transition-all duration-300 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:border-transparent data-[state=active]:shadow-lg data-[state=active]:shadow-blue-500/25 data-[state=active]:scale-[1.02]"
+          >
+            🎵 Andante (Diário)
+          </TabsTrigger>
+          <TabsTrigger 
+            value="weekly" 
+            className="rounded-xl border border-purple-200 dark:border-purple-800 bg-purple-50/80 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 font-semibold py-3 transition-all duration-300 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-500 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:border-transparent data-[state=active]:shadow-lg data-[state=active]:shadow-purple-500/25 data-[state=active]:scale-[1.02]"
+          >
+            🎶 Crescendo (Semanal)
+          </TabsTrigger>
+          <TabsTrigger 
+            value="monthly" 
+            className="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/80 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 font-semibold py-3 transition-all duration-300 data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-500 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:border-transparent data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/25 data-[state=active]:scale-[1.02]"
+          >
+            🎼 Forte (Mensal)
+          </TabsTrigger>
+          <TabsTrigger 
+            value="yearly" 
+            className="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50/80 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 font-semibold py-3 transition-all duration-300 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:border-transparent data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/25 data-[state=active]:scale-[1.02]"
+          >
+            🎹 Fortíssimo (Anual)
+          </TabsTrigger>
         </TabsList>
         
         <TabsContent value="daily" className="mt-4">
