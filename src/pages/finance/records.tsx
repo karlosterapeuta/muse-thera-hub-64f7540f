@@ -48,7 +48,7 @@ export default function FinancialRecords() {
   const [selectedRecord, setSelectedRecord] = useState<FinancialRecord | undefined>();
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [recordToDelete, setRecordToDelete] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<"list" | "agenda" | "fixed">("agenda");
+  const [viewMode, setViewMode] = useState<"list" | "fixed">("fixed");
   const [clearAllDialogOpen, setClearAllDialogOpen] = useState(false);
   const isMobile = useIsMobile();
   const isTablet = useIsTablet();
@@ -184,21 +184,31 @@ export default function FinancialRecords() {
   
   const weeklyAgenda = organizeWeeklyAgenda();
   
-  // Fixed agenda: use ALL records (no date filter) grouped by weekday
+  // Fixed agenda: use ALL records grouped by session_date weekday
   const fixedFilteredRecords = allRecords.filter(record => 
     record.clinic_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     record.patient_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     record.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
   
+  const getRecordWeekday = (record: FinancialRecord): string => {
+    // First try description pattern, then fall back to session_date
+    const short = getWeekdayShort(record.description);
+    if (short) return short;
+    
+    const date = parseISO(record.session_date);
+    const dayOfWeek = date.getDay(); // 0=Sun, 1=Mon...6=Sat
+    const dayMap: Record<number, string> = { 1: "SEG", 2: "TER", 3: "QUA", 4: "QUI", 5: "SEX", 6: "SAB", 0: "DOM" };
+    return dayMap[dayOfWeek] || "DOM";
+  };
+  
   const recordsByWeekday = {
-    "SEG": fixedFilteredRecords.filter(record => getWeekdayShort(record.description) === "SEG"),
-    "TER": fixedFilteredRecords.filter(record => getWeekdayShort(record.description) === "TER"),
-    "QUA": fixedFilteredRecords.filter(record => getWeekdayShort(record.description) === "QUA"),
-    "QUI": fixedFilteredRecords.filter(record => getWeekdayShort(record.description) === "QUI"),
-    "SEX": fixedFilteredRecords.filter(record => getWeekdayShort(record.description) === "SEX"),
-    "SAB": fixedFilteredRecords.filter(record => getWeekdayShort(record.description) === "SAB"),
-    "OUTROS": fixedFilteredRecords.filter(record => !getWeekdayShort(record.description))
+    "SEG": fixedFilteredRecords.filter(record => getRecordWeekday(record) === "SEG"),
+    "TER": fixedFilteredRecords.filter(record => getRecordWeekday(record) === "TER"),
+    "QUA": fixedFilteredRecords.filter(record => getRecordWeekday(record) === "QUA"),
+    "QUI": fixedFilteredRecords.filter(record => getRecordWeekday(record) === "QUI"),
+    "SEX": fixedFilteredRecords.filter(record => getRecordWeekday(record) === "SEX"),
+    "SAB": fixedFilteredRecords.filter(record => getRecordWeekday(record) === "SAB"),
   };
   
   // Deduplicate fixed agenda by patient+weekday+time (show unique slots only)
@@ -519,15 +529,6 @@ export default function FinancialRecords() {
             <span className={isMobile ? "text-xs" : "inline"}>Agenda Fixa</span>
           </Button>
           <Button 
-            variant={viewMode === "agenda" ? "default" : "outline"} 
-            size="sm" 
-            className="rounded-none border-x-0"
-            onClick={() => setViewMode("agenda")}
-          >
-            <LayoutGridIcon className="h-4 w-4 mr-1 text-[#0EA5E9]" />
-            <span className={isMobile ? "text-xs" : "inline"}>Semanal</span>
-          </Button>
-          <Button 
             variant={viewMode === "list" ? "default" : "outline"} 
             size="sm" 
             className="rounded-l-none"
@@ -545,13 +546,8 @@ export default function FinancialRecords() {
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center">
               <DollarSignIcon className="mr-2 h-5 w-5 text-primary" />
-              {viewMode === "fixed" ? "Agenda Fixa dos Pacientes" : viewMode === "agenda" ? "Agenda Semanal Inteligente" : "Registros"} 
+              {viewMode === "fixed" ? "Agenda Fixa dos Pacientes" : "Registros"} 
             </div>
-            {viewMode === "agenda" && (
-              <div className="text-sm text-muted-foreground">
-                Semana de {format(weeklyAgenda[0]?.date, "dd/MM", { locale: ptBR })} - {format(weeklyAgenda[6]?.date, "dd/MM", { locale: ptBR })}
-              </div>
-            )}
             {viewMode === "fixed" && (
               <div className="text-sm text-muted-foreground flex items-center gap-1">
                 <PinIcon className="h-3.5 w-3.5" />
@@ -647,77 +643,6 @@ export default function FinancialRecords() {
                         </div>
                       );
                     })
-                  )}
-                </div>
-              ) : viewMode === "agenda" ? (
-                <div className={`${isMobile ? 'space-y-4' : isTablet ? 'grid grid-cols-3 gap-3' : 'grid grid-cols-7 gap-3'}`}>
-                  {isMobile ? (
-                    <Tabs defaultValue="0" className="w-full">
-                      <TabsList className="w-full grid grid-cols-7 text-xs">
-                        {weeklyAgenda.map((day, index) => (
-                          <TabsTrigger 
-                            key={index} 
-                            value={index.toString()} 
-                            className={`text-xs ${day.isToday ? 'bg-primary text-white' : ''}`}
-                          >
-                            {day.dayShort}
-                          </TabsTrigger>
-                        ))}
-                      </TabsList>
-                      {weeklyAgenda.map((day, index) => (
-                        <TabsContent key={index} value={index.toString()} className="animate-fade-in">
-                          <div className="space-y-2">
-                            <div className={`p-3 rounded-lg ${day.isToday ? 'bg-primary text-white' : 'bg-muted'}`}>
-                              <div className="flex justify-between items-center">
-                                <div>
-                                  <div className="font-semibold">{day.dayName}</div>
-                                  <div className="text-sm opacity-75">{day.formatted}</div>
-                                </div>
-                                <div className="text-right">
-                                  <div className="text-sm">{day.records.length} sessões</div>
-                                  <div className="font-bold">{formatCurrency(day.total)}</div>
-                                </div>
-                              </div>
-                            </div>
-                            <ScrollArea className="max-h-[400px]">
-                              {day.records.length > 0 ? (
-                                day.records.map(record => renderSmartAppointmentCard(record))
-                              ) : (
-                                <div className="text-center py-8 text-muted-foreground text-sm">
-                                  {day.isToday ? 'Nenhuma sessão hoje' : 'Nenhuma sessão agendada'}
-                                </div>
-                              )}
-                            </ScrollArea>
-                          </div>
-                        </TabsContent>
-                      ))}
-                    </Tabs>
-                  ) : (
-                    weeklyAgenda.map((day, index) => (
-                      <div key={index} className="animate-fade-in">
-                        <div className={`rounded-t-lg py-3 px-2 text-center text-white font-bold ${
-                          day.isToday ? 'bg-gradient-to-r from-primary to-primary/80' : 'bg-primary/70'
-                        }`}>
-                          <div className="text-sm">{day.dayShort}</div>
-                          <div className="text-xs opacity-90">{day.formatted}</div>
-                        </div>
-                        <div className="bg-muted/50 border border-t-0 rounded-b-lg">
-                          <div className="p-2 bg-card border-b dark:border-border flex justify-between items-center text-xs">
-                            <span>{day.records.length} sessões</span>
-                            <span className="font-semibold text-primary">{formatCurrency(day.total)}</span>
-                          </div>
-                          <ScrollArea className="h-[400px] p-2">
-                            {day.records.length > 0 ? (
-                              day.records.map(record => renderSmartAppointmentCard(record))
-                            ) : (
-                              <div className="text-center py-8 text-muted-foreground text-sm">
-                                {day.isToday ? 'Nenhuma sessão hoje' : 'Nenhuma sessão'}
-                              </div>
-                            )}
-                          </ScrollArea>
-                        </div>
-                      </div>
-                    ))
                   )}
                 </div>
               ) : (
