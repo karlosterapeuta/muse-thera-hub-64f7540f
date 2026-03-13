@@ -54,6 +54,7 @@ export default function FinancialRecords() {
   const isTablet = useIsTablet();
   
   const { data: records = [], isLoading, refetch } = useFinancialRecords(dateFilter);
+  const { data: allRecords = [] } = useFinancialRecords(undefined);
   const deleteRecord = useDeleteFinancialRecord();
   const clearAllRecords = useClearAllFinancialRecords();
   
