@@ -2079,38 +2079,38 @@ export default function Evaluation() {
             <TabsContent value="results" className="space-y-8 mt-8">
               {/* Informações sobre Avaliação Parcial */}
               {getEvaluatedDomainsCount() < evaluationDomains.length && (
-                <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-4 mb-6">
-                  <h3 className="text-lg font-semibold text-amber-800 mb-2">⚡ Avaliação Parcial Detectada</h3>
-                  <p className="text-amber-700 text-sm mb-2">
+                <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-lg p-4 mb-6">
+                  <h3 className="text-lg font-semibold text-amber-800 dark:text-amber-200 mb-2">⚡ Avaliação Parcial Detectada</h3>
+                  <p className="text-amber-700 dark:text-amber-300 text-sm mb-2">
                     Esta é uma avaliação parcial onde nem todos os domínios foram pontuados. 
                     Os resultados refletem apenas os domínios efetivamente avaliados.
                   </p>
                   <div className="grid grid-cols-2 gap-4 text-center mt-3">
-                    <div className="bg-amber-100 p-2 rounded">
-                      <p className="text-sm font-semibold text-amber-800">Avaliados</p>
-                      <p className="text-lg font-bold text-amber-700">{getEvaluatedDomainsCount()}</p>
+                    <div className="bg-amber-100 dark:bg-amber-900/40 p-2 rounded">
+                      <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">Avaliados</p>
+                      <p className="text-lg font-bold text-amber-700 dark:text-amber-300">{getEvaluatedDomainsCount()}</p>
                     </div>
-                    <div className="bg-gray-100 p-2 rounded">
-                      <p className="text-sm font-semibold text-gray-600">Não Avaliados</p>
-                      <p className="text-lg font-bold text-gray-500">{evaluationDomains.length - getEvaluatedDomainsCount()}</p>
+                    <div className="bg-gray-100 dark:bg-gray-800 p-2 rounded">
+                      <p className="text-sm font-semibold text-muted-foreground">Não Avaliados</p>
+                      <p className="text-lg font-bold text-muted-foreground">{evaluationDomains.length - getEvaluatedDomainsCount()}</p>
                     </div>
                   </div>
                 </div>
               )}
 
-              <Card className="border-0 shadow-2xl p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-white via-blue-50 to-indigo-50">
+              <Card className="border-0 shadow-2xl p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-background via-blue-50/50 to-indigo-50/50 dark:from-background dark:via-blue-950/20 dark:to-indigo-950/20">
                 <h2 className="text-2xl sm:text-3xl font-bold mb-8 text-center bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                   Resultados da Escala MuseTera
                   {getEvaluatedDomainsCount() < evaluationDomains.length && (
-                    <span className="block text-sm font-normal text-amber-600 mt-1">
+                    <span className="block text-sm font-normal text-amber-600 dark:text-amber-400 mt-1">
                       (Avaliação Parcial - {getEvaluatedDomainsCount()}/{evaluationDomains.length} domínios)
                     </span>
                   )}
                 </h2>
                 
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
-                  <Card className="border-0 shadow-xl p-6 rounded-2xl bg-gradient-to-br from-purple-50 to-indigo-50">
-                    <h3 className="text-lg sm:text-xl font-bold mb-6 text-center text-purple-800">
+                  <Card className="border-0 shadow-xl p-6 rounded-2xl bg-purple-50/80 dark:bg-purple-950/30">
+                    <h3 className="text-lg sm:text-xl font-bold mb-6 text-center text-purple-800 dark:text-purple-200">
                       Perfil Musicoterapêutico
                     </h3>
                     <div className="h-[350px] sm:h-[400px] w-full flex items-center justify-center">
@@ -2126,8 +2126,8 @@ export default function Evaluation() {
                     </div>
                   </Card>
 
-                  <Card className="border-0 shadow-xl p-6 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50">
-                    <h3 className="text-lg sm:text-xl font-bold mb-6 text-center text-emerald-800">
+                  <Card className="border-0 shadow-xl p-6 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/30">
+                    <h3 className="text-lg sm:text-xl font-bold mb-6 text-center text-emerald-800 dark:text-emerald-200">
                       Desenvolvimento Global
                     </h3>
                     <div className="h-[350px] sm:h-[400px] w-full flex flex-col items-center justify-center">
@@ -2153,14 +2153,14 @@ export default function Evaluation() {
                         </ResponsiveContainer>
                       </div>
                        <div className="text-center mt-4 p-4 bg-background rounded-xl shadow-inner">
-                         <p className="text-lg font-bold text-gray-800">Pontuação Total: {overallScore.raw}/{overallScore.max}</p>
-                         <p className="text-sm text-emerald-600 font-semibold">Percentil de desenvolvimento: {overallScore.percentage}%</p>
+                         <p className="text-lg font-bold text-foreground">Pontuação Total: {overallScore.raw}/{overallScore.max}</p>
+                         <p className="text-sm text-emerald-600 dark:text-emerald-400 font-semibold">Percentil de desenvolvimento: {overallScore.percentage}%</p>
                          {overallScore.evaluatedDomains && overallScore.totalDomains && (
-                           <div className="mt-3 pt-3 border-t border-gray-200">
-                             <p className="text-xs text-gray-600">
+                           <div className="mt-3 pt-3 border-t border-border">
+                             <p className="text-xs text-muted-foreground">
                                📊 Avaliação Parcial: {overallScore.evaluatedDomains} de {overallScore.totalDomains} domínios avaliados
                              </p>
-                             <p className="text-xs text-blue-600 font-medium">
+                             <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">
                                * Apenas domínios avaliados impactam na pontuação final
                              </p>
                            </div>
@@ -2170,8 +2170,8 @@ export default function Evaluation() {
                   </Card>
                 </div>
                 
-                <Card className="border-0 shadow-xl p-6 rounded-2xl bg-gradient-to-br from-blue-50 to-cyan-50">
-                  <h3 className="text-lg sm:text-xl font-bold mb-6 text-center text-blue-800">
+                <Card className="border-0 shadow-xl p-6 rounded-2xl bg-blue-50/80 dark:bg-blue-950/30">
+                  <h3 className="text-lg sm:text-xl font-bold mb-6 text-center text-blue-800 dark:text-blue-200">
                     Análise Detalhada por Subdomínios
                   </h3>
                   <div className="h-[450px] sm:h-[500px]">
@@ -2194,9 +2194,9 @@ export default function Evaluation() {
                             const data = payload[0].payload;
                             return (
                               <div className="bg-background p-4 border-0 rounded-xl shadow-xl">
-                                <p className="text-sm font-semibold text-gray-800">{data.name}</p>
-                                <p className="text-sm text-blue-600">Domínio: {data.domain}</p>
-                                <p className="text-sm font-bold text-green-600">Pontuação: {data.value}%</p>
+                                <p className="text-sm font-semibold text-foreground">{data.name}</p>
+                                <p className="text-sm text-blue-600 dark:text-blue-400">Domínio: {data.domain}</p>
+                                <p className="text-sm font-bold text-green-600 dark:text-green-400">Pontuação: {data.value}%</p>
                               </div>
                             );
                           }
