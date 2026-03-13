@@ -230,8 +230,8 @@ export default function FinancialReports() {
             </TabsContent>
             
             <TabsContent value="income-tax" className="mt-4">
-              <div className="p-4 bg-gradient-to-r from-[#9b87f5]/10 to-[#8B5CF6]/5 rounded-xl border border-[#8B5CF6]/20 mb-4">
-                <h3 className="text-xl font-bold text-[#8B5CF6] flex items-center mb-2">
+              <div className="p-4 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-950/30 dark:to-indigo-950/30 rounded-xl border border-purple-200 dark:border-purple-800 mb-4">
+                <h3 className="text-xl font-bold text-purple-800 dark:text-purple-200 flex items-center mb-2">
                   <CalculatorIcon className="mr-2 h-5 w-5" />
                   Cálculo de Imposto de Renda
                 </h3>
