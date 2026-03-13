@@ -5,170 +5,164 @@ import {
   FileText,
   Users,
   ChartBar,
-  Edit,
   ArrowRight,
   Music,
   TrendingUp,
   Heart,
+  Sparkles,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function Processes() {
   const isMobile = useIsMobile();
-  
+
   const processes = [
     {
       title: "Anamnese",
       description: "Coleta inicial de informações e histórico do paciente",
       icon: ClipboardList,
       path: "/anamnesis",
-      gradient: "from-blue-500 to-cyan-500",
-      bgGradient: "from-blue-50 to-cyan-50",
-      bgGradientDark: "dark:from-blue-950/30 dark:to-cyan-950/30"
+      accentColor: "blue",
     },
     {
       title: "Avaliação",
       description: "Avaliação das necessidades e potencialidades musicoterapêuticas",
       icon: FileText,
       path: "/evaluation",
-      gradient: "from-purple-500 to-pink-500",
-      bgGradient: "from-purple-50 to-pink-50",
-      bgGradientDark: "dark:from-purple-950/30 dark:to-pink-950/30"
+      accentColor: "purple",
     },
     {
       title: "Planos Musicoterapêuticos",
       description: "Crie e gerencie planos de tratamento musicoterapêutico personalizados",
       icon: ClipboardList,
       path: "/musicotherapy-treatment-plans",
-      gradient: "from-emerald-500 to-teal-500",
-      bgGradient: "from-emerald-50 to-teal-50",
-      bgGradientDark: "dark:from-emerald-950/30 dark:to-teal-950/30",
-      isNew: true
+      accentColor: "emerald",
+      isNew: true,
     },
     {
       title: "Intervenção",
       description: "Aplicação das técnicas e atividades musicoterapêuticas",
       icon: Users,
       path: "/intervention",
-      gradient: "from-orange-500 to-red-500",
-      bgGradient: "from-orange-50 to-red-50",
-      bgGradientDark: "dark:from-orange-950/30 dark:to-red-950/30",
-      isNew: true
+      accentColor: "orange",
+      isNew: true,
     },
     {
       title: "Reavaliação",
       description: "Análise do progresso e ajustes no tratamento",
       icon: ChartBar,
       path: "/reevaluation",
-      gradient: "from-indigo-500 to-purple-500",
-      bgGradient: "from-indigo-50 to-purple-50",
-      bgGradientDark: "dark:from-indigo-950/30 dark:to-purple-950/30"
+      accentColor: "indigo",
     },
     {
       title: "Relatório MuseTera TEA",
       description: "Relatórios especializados em Musicoterapia para TEA",
       icon: Music,
       path: "/processes/musicoterapia",
-      gradient: "from-purple-500 to-pink-500",
-      bgGradient: "from-purple-50 to-pink-50",
-      bgGradientDark: "dark:from-purple-950/30 dark:to-pink-950/30"
+      accentColor: "violet",
     },
     {
-      title: "Relatório de Evolução – MuseTera",
+      title: "Relatório de Evolução",
       description: "Relatório detalhado de evolução do paciente em musicoterapia",
       icon: TrendingUp,
       path: "/processes/evolution",
-      gradient: "from-green-500 to-blue-500",
-      bgGradient: "from-green-50 to-blue-50",
-      bgGradientDark: "dark:from-green-950/30 dark:to-blue-950/30",
-      isNew: true
+      accentColor: "teal",
+      isNew: true,
     },
     {
-      title: "Devolutiva Musicoterapia TEA",
+      title: "Devolutiva TEA",
       description: "Relatório simplificado para famílias de pacientes com TEA",
       icon: Heart,
       path: "/processes/devolutiva-tea",
-      gradient: "from-pink-500 to-rose-500",
-      bgGradient: "from-pink-50 to-rose-50",
-      bgGradientDark: "dark:from-pink-950/30 dark:to-rose-950/30",
-      isNew: true
+      accentColor: "rose",
+      isNew: true,
     },
   ];
 
+  const colorMap: Record<string, { gradient: string; iconBg: string; glow: string; border: string; text: string; badge: string }> = {
+    blue:    { gradient: "from-blue-500 to-blue-600",       iconBg: "bg-blue-500/10 dark:bg-blue-500/20",       glow: "shadow-blue-500/20",    border: "border-blue-500/20 dark:border-blue-400/20",       text: "text-blue-600 dark:text-blue-400",       badge: "bg-blue-500" },
+    purple:  { gradient: "from-purple-500 to-purple-600",   iconBg: "bg-purple-500/10 dark:bg-purple-500/20",   glow: "shadow-purple-500/20",  border: "border-purple-500/20 dark:border-purple-400/20",   text: "text-purple-600 dark:text-purple-400",   badge: "bg-purple-500" },
+    emerald: { gradient: "from-emerald-500 to-emerald-600", iconBg: "bg-emerald-500/10 dark:bg-emerald-500/20", glow: "shadow-emerald-500/20", border: "border-emerald-500/20 dark:border-emerald-400/20", text: "text-emerald-600 dark:text-emerald-400", badge: "bg-emerald-500" },
+    orange:  { gradient: "from-orange-500 to-orange-600",   iconBg: "bg-orange-500/10 dark:bg-orange-500/20",   glow: "shadow-orange-500/20",  border: "border-orange-500/20 dark:border-orange-400/20",   text: "text-orange-600 dark:text-orange-400",   badge: "bg-orange-500" },
+    indigo:  { gradient: "from-indigo-500 to-indigo-600",   iconBg: "bg-indigo-500/10 dark:bg-indigo-500/20",   glow: "shadow-indigo-500/20",  border: "border-indigo-500/20 dark:border-indigo-400/20",   text: "text-indigo-600 dark:text-indigo-400",   badge: "bg-indigo-500" },
+    violet:  { gradient: "from-violet-500 to-fuchsia-600",  iconBg: "bg-violet-500/10 dark:bg-violet-500/20",   glow: "shadow-violet-500/20",  border: "border-violet-500/20 dark:border-violet-400/20",   text: "text-violet-600 dark:text-violet-400",   badge: "bg-violet-500" },
+    teal:    { gradient: "from-teal-500 to-cyan-600",       iconBg: "bg-teal-500/10 dark:bg-teal-500/20",       glow: "shadow-teal-500/20",    border: "border-teal-500/20 dark:border-teal-400/20",       text: "text-teal-600 dark:text-teal-400",       badge: "bg-teal-500" },
+    rose:    { gradient: "from-rose-500 to-pink-600",       iconBg: "bg-rose-500/10 dark:bg-rose-500/20",       glow: "shadow-rose-500/20",    border: "border-rose-500/20 dark:border-rose-400/20",       text: "text-rose-600 dark:text-rose-400",       badge: "bg-rose-500" },
+  };
+
   return (
     <div className="min-h-screen bg-background">
-      <div className="w-full px-0 py-4 sm:py-6 lg:py-8">
-        {/* Header Section */}
-        <div className="text-center mb-12 lg:mb-16 px-2 sm:px-3">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-primary to-purple-600 rounded-full mb-6 shadow-lg">
-            <Users className="h-8 w-8 text-white" />
+      <div className="w-full px-3 sm:px-4 lg:px-6 py-6 sm:py-8 lg:py-10 max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-10 lg:mb-14">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-5">
+            <Sparkles className="h-4 w-4" />
+            Fluxo Terapêutico Completo
           </div>
-          <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-            Processos Musicoterapêuticos
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground mb-4 tracking-tight">
+            Processos{" "}
+            <span className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
+              Musicoterapêuticos
+            </span>
           </h1>
-          <p className="text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Gerencie todo o ciclo terapêutico com ferramentas especializadas para cada etapa do tratamento
+          <p className="text-base sm:text-lg text-muted-foreground max-w-xl mx-auto">
+            Gerencie todo o ciclo terapêutico com ferramentas especializadas
           </p>
         </div>
-        
-        {/* Process Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-2 sm:px-3">
-          {processes.map((process, index) => (
-            <Link 
-              to={process.path} 
-              key={index}
-              className="group block transform transition-all duration-300 hover:scale-105"
-            >
-              <Card className={`relative overflow-hidden border border-border shadow-lg hover:shadow-2xl transition-all duration-500 bg-card h-full group`}>
-                {/* NEW Badge */}
-                {process.isNew && (
-                  <Badge className="absolute top-3 right-3 z-10 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-xs px-2 py-1 animate-pulse shadow-lg">
-                    NOVO
-                  </Badge>
-                )}
-                
-                {/* Background Pattern */}
-                <div className="absolute inset-0 opacity-5">
-                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white dark:via-gray-800 to-transparent transform rotate-12 scale-150"></div>
-                </div>
-                
-                {/* Content */}
-                <div className="relative p-6 lg:p-8 h-full flex flex-col">
-                  {/* Icon */}
-                  <div className={`inline-flex items-center justify-center w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-r ${process.gradient} rounded-2xl mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110`}>
-                    <process.icon className="h-7 w-7 lg:h-8 lg:w-8 text-white" />
+
+        {/* Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-5">
+          {processes.map((process, index) => {
+            const colors = colorMap[process.accentColor];
+            return (
+              <Link to={process.path} key={index} className="group block">
+                <Card
+                  className={`relative h-full overflow-hidden rounded-2xl border ${colors.border} bg-card transition-all duration-500 hover:shadow-xl hover:${colors.glow} hover:-translate-y-1`}
+                >
+                  {/* Top accent line */}
+                  <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${colors.gradient} opacity-80 group-hover:opacity-100 transition-opacity`} />
+
+                  {/* NEW badge */}
+                  {process.isNew && (
+                    <Badge className={`absolute top-4 right-4 z-10 ${colors.badge} text-white font-bold text-[10px] px-2 py-0.5 rounded-full shadow-md`}>
+                      NOVO
+                    </Badge>
+                  )}
+
+                  <div className="relative p-5 lg:p-6 flex flex-col h-full">
+                    {/* Icon container */}
+                    <div className={`${colors.iconBg} w-12 h-12 lg:w-14 lg:h-14 rounded-xl flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110`}>
+                      <process.icon className={`h-6 w-6 lg:h-7 lg:w-7 ${colors.text}`} />
+                    </div>
+
+                    {/* Title */}
+                    <h2 className="text-lg lg:text-xl font-bold text-foreground mb-2 leading-tight group-hover:text-foreground/90 transition-colors">
+                      {process.title}
+                    </h2>
+
+                    {/* Description */}
+                    <p className="text-sm text-muted-foreground leading-relaxed flex-grow mb-4">
+                      {process.description}
+                    </p>
+
+                    {/* CTA */}
+                    <div className={`flex items-center gap-1.5 ${colors.text} text-sm font-semibold opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-300`}>
+                      <span>Acessar</span>
+                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
                   </div>
-                  
-                  {/* Title */}
-                  <h2 className="text-xl lg:text-2xl font-bold text-foreground mb-3 transition-colors">
-                    {process.title}
-                  </h2>
-                  
-                  {/* Description */}
-                  <p className="text-muted-foreground text-base lg:text-lg leading-relaxed flex-grow mb-4">
-                    {process.description}
-                  </p>
-                  
-                  {/* Arrow */}
-                  <div className="flex items-center text-primary group-hover:text-primary/80 transition-colors">
-                    <span className="text-sm font-medium mr-2">Acessar</span>
-                    <ArrowRight className="h-4 w-4 transform group-hover:translate-x-1 transition-transform duration-300" />
-                  </div>
-                </div>
-                
-                {/* Hover Gradient Overlay */}
-                <div className={`absolute inset-0 bg-gradient-to-r ${process.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}></div>
-              </Card>
-            </Link>
-          ))}
+                </Card>
+              </Link>
+            );
+          })}
         </div>
 
-        {/* Bottom Section */}
-        <div className="mt-16 text-center px-2 sm:px-3">
-          <div className="inline-flex items-center justify-center space-x-2 text-sm text-muted-foreground bg-card/80 backdrop-blur-sm px-6 py-3 rounded-full shadow-md">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span>Sistema integrado de gestão musicoterapêutica</span>
+        {/* Bottom */}
+        <div className="mt-12 text-center">
+          <div className="inline-flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-5 py-2.5 rounded-full border border-border/50">
+            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+            Sistema integrado de gestão musicoterapêutica
           </div>
         </div>
       </div>
