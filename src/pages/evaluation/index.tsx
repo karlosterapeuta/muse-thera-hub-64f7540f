@@ -1656,7 +1656,7 @@ export default function Evaluation() {
                   {evaluationDate ? format(evaluationDate, "dd/MM/yyyy") : <span>Selecionar data</span>}
                 </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-white border-2 border-blue-300 shadow-2xl" align="start">
+                  <PopoverContent className="w-auto p-0 bg-popover border-2 border-blue-300 dark:border-blue-700 shadow-2xl" align="start">
                     <Calendar
                       mode="single"
                       selected={evaluationDate}
