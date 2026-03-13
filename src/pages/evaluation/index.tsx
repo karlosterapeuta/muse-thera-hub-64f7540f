@@ -1892,7 +1892,7 @@ export default function Evaluation() {
                       <div className={`text-3xl p-3 rounded-2xl bg-gradient-to-r ${domain.color} bg-opacity-20`}>
                         {domain.icon}
                       </div>
-                      <h2 className="text-xl sm:text-2xl font-bold text-gray-800">{domain.title}</h2>
+                      <h2 className="text-xl sm:text-2xl font-bold text-foreground">{domain.title}</h2>
                       
                       {/* Badge indicador de status do domínio */}
                       <div className="ml-auto flex items-center gap-2">
