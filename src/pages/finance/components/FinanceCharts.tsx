@@ -48,30 +48,46 @@ export function FinanceCharts({
   return (
     <div className="space-y-4">
       <Tabs defaultValue="daily" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 gap-2 bg-transparent p-1 h-auto">
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-2 bg-transparent p-1 h-auto">
           <TabsTrigger 
             value="daily" 
-            className="rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50/80 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-semibold py-3 transition-all duration-300 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:border-transparent data-[state=active]:shadow-lg data-[state=active]:shadow-blue-500/25 data-[state=active]:scale-[1.02]"
+            className="rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50/80 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-semibold px-2 py-2.5 text-xs sm:text-sm md:text-base leading-tight transition-all duration-300 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:border-transparent data-[state=active]:shadow-lg data-[state=active]:shadow-blue-500/25 data-[state=active]:scale-[1.02]"
           >
-            🎵 Andante (Diário)
+            <span className="flex flex-col sm:flex-row items-center gap-0.5 sm:gap-1.5">
+              <span className="text-base sm:text-lg">🎵</span>
+              <span className="whitespace-nowrap">Andante</span>
+              <span className="text-[10px] sm:text-xs opacity-80">(Diário)</span>
+            </span>
           </TabsTrigger>
           <TabsTrigger 
             value="weekly" 
-            className="rounded-xl border border-purple-200 dark:border-purple-800 bg-purple-50/80 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 font-semibold py-3 transition-all duration-300 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-500 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:border-transparent data-[state=active]:shadow-lg data-[state=active]:shadow-purple-500/25 data-[state=active]:scale-[1.02]"
+            className="rounded-xl border border-purple-200 dark:border-purple-800 bg-purple-50/80 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 font-semibold px-2 py-2.5 text-xs sm:text-sm md:text-base leading-tight transition-all duration-300 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-500 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:border-transparent data-[state=active]:shadow-lg data-[state=active]:shadow-purple-500/25 data-[state=active]:scale-[1.02]"
           >
-            🎶 Crescendo (Semanal)
+            <span className="flex flex-col sm:flex-row items-center gap-0.5 sm:gap-1.5">
+              <span className="text-base sm:text-lg">🎶</span>
+              <span className="whitespace-nowrap">Crescendo</span>
+              <span className="text-[10px] sm:text-xs opacity-80">(Semanal)</span>
+            </span>
           </TabsTrigger>
           <TabsTrigger 
             value="monthly" 
-            className="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/80 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 font-semibold py-3 transition-all duration-300 data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-500 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:border-transparent data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/25 data-[state=active]:scale-[1.02]"
+            className="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/80 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 font-semibold px-2 py-2.5 text-xs sm:text-sm md:text-base leading-tight transition-all duration-300 data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-500 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:border-transparent data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/25 data-[state=active]:scale-[1.02]"
           >
-            🎼 Forte (Mensal)
+            <span className="flex flex-col sm:flex-row items-center gap-0.5 sm:gap-1.5">
+              <span className="text-base sm:text-lg">🎼</span>
+              <span className="whitespace-nowrap">Forte</span>
+              <span className="text-[10px] sm:text-xs opacity-80">(Mensal)</span>
+            </span>
           </TabsTrigger>
           <TabsTrigger 
             value="yearly" 
-            className="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50/80 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 font-semibold py-3 transition-all duration-300 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:border-transparent data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/25 data-[state=active]:scale-[1.02]"
+            className="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50/80 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 font-semibold px-2 py-2.5 text-xs sm:text-sm md:text-base leading-tight transition-all duration-300 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:border-transparent data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/25 data-[state=active]:scale-[1.02]"
           >
-            🎹 Fortíssimo (Anual)
+            <span className="flex flex-col sm:flex-row items-center gap-0.5 sm:gap-1.5">
+              <span className="text-base sm:text-lg">🎹</span>
+              <span className="whitespace-nowrap">Fortíssimo</span>
+              <span className="text-[10px] sm:text-xs opacity-80">(Anual)</span>
+            </span>
           </TabsTrigger>
         </TabsList>
         
