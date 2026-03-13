@@ -135,20 +135,20 @@ export function PlanStatusCard() {
 
   return (
     <Card className="border border-border/60 bg-gradient-to-r from-slate-900/80 to-slate-800/80 dark:from-slate-900 dark:to-slate-800 shadow-xl rounded-xl">
-      <CardContent className="flex items-center justify-between p-5">
-        <div className="flex items-center gap-3">
-          <Calendar className="h-5 w-5 text-primary" />
-          <span className="text-base font-semibold text-foreground">Status do Plano</span>
+      <CardContent className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 sm:p-5">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+          <Calendar className="h-5 w-5 text-primary shrink-0" />
+          <span className="text-sm sm:text-base font-semibold text-foreground whitespace-nowrap">Status do Plano</span>
           {getStatusBadge()}
         </div>
-        <div className="flex items-center gap-6 text-sm">
-          <div className="text-right">
-            <span className="text-muted-foreground">Data de Adesão:</span>
-            <span className="ml-2 font-medium text-foreground">{formatDate(planData.planStartDate)}</span>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-5 text-xs sm:text-sm">
+          <div className="flex items-center gap-1">
+            <span className="text-muted-foreground whitespace-nowrap">Adesão:</span>
+            <span className="font-medium text-foreground">{formatDate(planData.planStartDate)}</span>
           </div>
-          <div className="text-right flex items-center">
-            <span className="text-muted-foreground">Data de Término:</span>
-            <span className="ml-2 font-medium">
+          <div className="flex items-center gap-1">
+            <span className="text-muted-foreground whitespace-nowrap">Término:</span>
+            <span className="font-medium">
               {planData.isUnlimited ? (
                 <span className="flex items-center gap-1 text-blue-400">
                   <Infinity className="h-4 w-4" />
@@ -161,8 +161,8 @@ export function PlanStatusCard() {
           </div>
           {!planData.isUnlimited && planData.daysRemaining !== null && planData.daysRemaining > 0 && (
             <div className="flex items-center gap-1 text-muted-foreground">
-              <Clock className="h-4 w-4" />
-              <span>
+              <Clock className="h-4 w-4 shrink-0" />
+              <span className="whitespace-nowrap">
                 Restam <strong className="text-foreground">{planData.daysRemaining}</strong> {planData.daysRemaining === 1 ? "dia" : "dias"}
               </span>
             </div>
