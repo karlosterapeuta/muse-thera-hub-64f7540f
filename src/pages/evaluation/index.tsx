@@ -1910,7 +1910,7 @@ export default function Evaluation() {
                           <TooltipComponent>
                             <TooltipTrigger asChild>
                               <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-background/50 rounded-full">
-                                <HelpCircle className="h-5 w-5 text-gray-600" />
+                                <HelpCircle className="h-5 w-5 text-muted-foreground" />
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent className="max-w-xs bg-gray-900 text-white border-0">
