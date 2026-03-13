@@ -228,6 +228,11 @@ export function useMusicotherapyTreatmentPlan(planId?: string, onCreated?: (newI
       initialDataRef.current = { ...planData };
       queryClient.invalidateQueries({ queryKey: ['treatment-plan'] });
       queryClient.invalidateQueries({ queryKey: ['treatment-plans'] });
+      
+      // If this was a new plan, notify parent so it can navigate to the edit URL
+      if (!planId && data?.id && onCreated) {
+        onCreated(data.id);
+      }
     },
     onError: (error) => {
       console.error('Error saving treatment plan:', error);
