@@ -1631,9 +1631,9 @@ export default function Evaluation() {
               </div>
               
               {selectedPatientData && (
-                <div className="bg-gradient-to-r from-emerald-50 to-teal-50 p-4 rounded-xl border border-emerald-200">
-                  <p className="text-sm font-medium text-emerald-800">
-                    <span className="text-emerald-600">Idade:</span> {(() => {
+                <div className="bg-emerald-50 dark:bg-emerald-950/40 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800">
+                  <p className="text-sm font-medium text-emerald-800 dark:text-emerald-200">
+                    <span className="text-emerald-600 dark:text-emerald-400">Idade:</span> {(() => {
                       const age = calculateAgeFromBirthDate(selectedPatientData.birth_date) ?? selectedPatientData.age;
                       return age ? `${age} anos` : 'Não informada';
                     })()}
@@ -1642,21 +1642,21 @@ export default function Evaluation() {
               )}
               
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-bold text-gray-900 dark:text-white">Data da Avaliação</label>
+                <label className="text-sm font-bold text-foreground">Data da Avaliação</label>
                 <Popover>
                   <PopoverTrigger asChild>
                 <Button
                   variant={"outline"}
                   className={cn(
-                    "w-[220px] justify-start text-left font-normal bg-white border-blue-300 hover:bg-blue-50 transition-all duration-300 text-gray-900 font-medium",
-                    !evaluationDate && "text-gray-500"
+                    "w-[220px] justify-start text-left font-normal border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all duration-300 text-foreground font-medium",
+                    !evaluationDate && "text-muted-foreground"
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4 text-blue-600" />
                   {evaluationDate ? format(evaluationDate, "dd/MM/yyyy") : <span>Selecionar data</span>}
                 </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-white border-2 border-blue-300 shadow-2xl" align="start">
+                  <PopoverContent className="w-auto p-0 bg-popover border-2 border-blue-300 dark:border-blue-700 shadow-2xl" align="start">
                     <Calendar
                       mode="single"
                       selected={evaluationDate}
@@ -1675,7 +1675,7 @@ export default function Evaluation() {
                 value={selectedEvaluation}
                 onValueChange={setSelectedEvaluation}
               >
-                <SelectTrigger className="w-full sm:w-[200px] bg-white text-gray-900 font-medium border-blue-300 hover:bg-blue-50 transition-all duration-300">
+                <SelectTrigger className="w-full sm:w-[200px] text-foreground font-medium border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all duration-300">
                   <SelectValue placeholder="Selecione a avaliação" />
                 </SelectTrigger>
                 <SelectContent className="border-0 shadow-xl">
@@ -1846,40 +1846,40 @@ export default function Evaluation() {
                 </div>
               )}
 
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                <h3 className="text-lg font-semibold text-blue-800 mb-2">Escala MuseTera - Versão Profissional</h3>
-                <p className="text-blue-700 text-sm">
+              <div className="bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+                <h3 className="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-2">Escala MuseTera - Versão Profissional</h3>
+                <p className="text-blue-700 dark:text-blue-300 text-sm">
                   Sistema de pontuação (0-100): Não Observado (0), Emergente (20), Inconsistente (40), 
                   Moderado (60), Consistente (80), Excepcional (100)
                 </p>
               </div>
 
               {/* Estatísticas da Avaliação Parcial */}
-              <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-lg p-4 mb-6">
-                <h3 className="text-lg font-semibold text-emerald-800 mb-2">Status da Avaliação</h3>
+              <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-lg p-4 mb-6">
+                <h3 className="text-lg font-semibold text-emerald-800 dark:text-emerald-200 mb-2">Status da Avaliação</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-emerald-600">{getEvaluatedDomainsCount()}</p>
-                    <p className="text-sm text-emerald-700">Domínios Avaliados</p>
-                    <p className="text-xs text-emerald-600">de {evaluationDomains.length} total</p>
+                    <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{getEvaluatedDomainsCount()}</p>
+                    <p className="text-sm text-emerald-700 dark:text-emerald-300">Domínios Avaliados</p>
+                    <p className="text-xs text-emerald-600 dark:text-emerald-400">de {evaluationDomains.length} total</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-teal-600">{getEvaluatedSubdomainsCount()}</p>
-                    <p className="text-sm text-teal-700">Subdomínios Avaliados</p>
-                    <p className="text-xs text-teal-600">
+                    <p className="text-2xl font-bold text-teal-600 dark:text-teal-400">{getEvaluatedSubdomainsCount()}</p>
+                    <p className="text-sm text-teal-700 dark:text-teal-300">Subdomínios Avaliados</p>
+                    <p className="text-xs text-teal-600 dark:text-teal-400">
                       de {evaluationDomains.reduce((acc, domain) => acc + domain.subdomains.length, 0)} total
                     </p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-blue-600">
+                    <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                       {calculateOverallScore().percentage}%
                     </p>
-                    <p className="text-sm text-blue-700">Pontuação Média</p>
-                    <p className="text-xs text-blue-600">escala MuseTera</p>
+                    <p className="text-sm text-blue-700 dark:text-blue-300">Pontuação Média</p>
+                    <p className="text-xs text-blue-600 dark:text-blue-400">escala MuseTera</p>
                   </div>
                 </div>
                 <div className="mt-3 text-center">
-                  <p className="text-sm text-emerald-700">
+                  <p className="text-sm text-emerald-700 dark:text-emerald-300">
                     💡 Apenas domínios avaliados impactam na pontuação final
                   </p>
                 </div>
@@ -1892,7 +1892,7 @@ export default function Evaluation() {
                       <div className={`text-3xl p-3 rounded-2xl bg-gradient-to-r ${domain.color} bg-opacity-20`}>
                         {domain.icon}
                       </div>
-                      <h2 className="text-xl sm:text-2xl font-bold text-gray-800">{domain.title}</h2>
+                      <h2 className="text-xl sm:text-2xl font-bold text-foreground">{domain.title}</h2>
                       
                       {/* Badge indicador de status do domínio */}
                       <div className="ml-auto flex items-center gap-2">
@@ -1910,7 +1910,7 @@ export default function Evaluation() {
                           <TooltipComponent>
                             <TooltipTrigger asChild>
                               <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-background/50 rounded-full">
-                                <HelpCircle className="h-5 w-5 text-gray-600" />
+                                <HelpCircle className="h-5 w-5 text-muted-foreground" />
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent className="max-w-xs bg-gray-900 text-white border-0">
@@ -2053,7 +2053,7 @@ export default function Evaluation() {
 
                           {/* Campo de observações qualitativas */}
                           <div className="mt-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-foreground mb-2">
                               Observações Qualitativas - {subdomain.title}
                             </label>
                             <Textarea
