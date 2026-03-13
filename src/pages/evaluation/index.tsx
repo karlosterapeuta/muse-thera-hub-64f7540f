@@ -2098,128 +2098,269 @@ export default function Evaluation() {
                 </div>
               )}
 
-              <Card className="border-0 shadow-2xl p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-background via-blue-50/50 to-indigo-50/50 dark:from-background dark:via-blue-950/20 dark:to-indigo-950/20">
-                <h2 className="text-2xl sm:text-3xl font-bold mb-8 text-center bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+              <Card className="border-0 shadow-2xl p-6 sm:p-8 rounded-3xl bg-background">
+                <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-center bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                   Resultados da Escala MuseTera
-                  {getEvaluatedDomainsCount() < evaluationDomains.length && (
-                    <span className="block text-sm font-normal text-amber-600 dark:text-amber-400 mt-1">
-                      (Avaliação Parcial - {getEvaluatedDomainsCount()}/{evaluationDomains.length} domínios)
-                    </span>
-                  )}
                 </h2>
+                {getEvaluatedDomainsCount() < evaluationDomains.length && (
+                  <p className="text-center text-sm text-amber-600 dark:text-amber-400 mb-6">
+                    Avaliação Parcial — {getEvaluatedDomainsCount()}/{evaluationDomains.length} domínios
+                  </p>
+                )}
+                <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-blue-500 mx-auto rounded-full mb-8" />
                 
+                {/* Score Summary Cards */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+                  <div className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl p-4 text-white text-center shadow-lg shadow-purple-500/20">
+                    <p className="text-3xl font-black">{overallScore.percentage}%</p>
+                    <p className="text-xs font-medium text-purple-100 mt-1">Pontuação Geral</p>
+                  </div>
+                  <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-4 text-white text-center shadow-lg shadow-emerald-500/20">
+                    <p className="text-3xl font-black">{getEvaluatedDomainsCount()}/{evaluationDomains.length}</p>
+                    <p className="text-xs font-medium text-emerald-100 mt-1">Domínios</p>
+                  </div>
+                  <div className="bg-gradient-to-br from-blue-500 to-cyan-600 rounded-2xl p-4 text-white text-center shadow-lg shadow-blue-500/20">
+                    <p className="text-3xl font-black">{getEvaluatedSubdomainsCount()}</p>
+                    <p className="text-xs font-medium text-blue-100 mt-1">Subdomínios</p>
+                  </div>
+                  <div className="bg-gradient-to-br from-orange-500 to-rose-600 rounded-2xl p-4 text-white text-center shadow-lg shadow-orange-500/20">
+                    <p className="text-3xl font-black">{overallScore.raw}</p>
+                    <p className="text-xs font-medium text-orange-100 mt-1">Pontos / {overallScore.max}</p>
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
-                  <Card className="border-0 shadow-xl p-6 rounded-2xl bg-purple-50/80 dark:bg-purple-950/30">
-                    <h3 className="text-lg sm:text-xl font-bold mb-6 text-center text-purple-800 dark:text-purple-200">
-                      Perfil Musicoterapêutico
-                    </h3>
+                  {/* Radar Chart */}
+                  <Card className="border border-border/50 shadow-lg p-6 rounded-2xl bg-card">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-md">
+                        <span className="text-white text-lg">📊</span>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-foreground">Perfil Musicoterapêutico</h3>
+                        <p className="text-xs text-muted-foreground">Visão multidimensional por domínio</p>
+                      </div>
+                    </div>
                     <div className="h-[350px] sm:h-[400px] w-full flex items-center justify-center">
                       <ResponsiveContainer width="100%" height="100%">
-                        <RadarChart cx="50%" cy="50%" outerRadius="80%" data={domainScores}>
-                          <PolarGrid stroke="#e0e7ff" />
-                          <PolarAngleAxis dataKey="name" tick={{ fontSize: 12, fill: '#6366f1' }} />
-                          <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fontSize: 10, fill: '#6366f1' }} />
-                          <Radar name="Perfil" dataKey="value" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.3} strokeWidth={3} />
-                          <Legend />
+                        <RadarChart cx="50%" cy="50%" outerRadius="75%" data={domainScores}>
+                          <defs>
+                            <linearGradient id="radarGradient" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.4} />
+                              <stop offset="100%" stopColor="#6366f1" stopOpacity={0.1} />
+                            </linearGradient>
+                          </defs>
+                          <PolarGrid stroke="hsl(var(--border))" strokeDasharray="3 3" />
+                          <PolarAngleAxis 
+                            dataKey="name" 
+                            tick={{ fontSize: 11, fill: 'hsl(var(--foreground))', fontWeight: 600 }} 
+                          />
+                          <PolarRadiusAxis 
+                            angle={30} 
+                            domain={[0, 100]} 
+                            tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
+                            axisLine={false}
+                          />
+                          <Radar 
+                            name="Perfil" 
+                            dataKey="value" 
+                            stroke="#8b5cf6" 
+                            fill="url(#radarGradient)" 
+                            strokeWidth={2.5}
+                            dot={{ r: 5, fill: '#8b5cf6', stroke: '#fff', strokeWidth: 2 }}
+                          />
+                          <Tooltip 
+                            contentStyle={{ 
+                              backgroundColor: 'hsl(var(--card))', 
+                              border: '1px solid hsl(var(--border))', 
+                              borderRadius: '12px', 
+                              boxShadow: '0 10px 40px -10px rgba(0,0,0,0.2)',
+                              padding: '12px 16px'
+                            }}
+                            formatter={(value: number) => [`${value}%`, 'Pontuação']}
+                          />
                         </RadarChart>
                       </ResponsiveContainer>
                     </div>
                   </Card>
 
-                  <Card className="border-0 shadow-xl p-6 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/30">
-                    <h3 className="text-lg sm:text-xl font-bold mb-6 text-center text-emerald-800 dark:text-emerald-200">
-                      Desenvolvimento Global
-                    </h3>
+                  {/* Donut Chart */}
+                  <Card className="border border-border/50 shadow-lg p-6 rounded-2xl bg-card">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-md">
+                        <span className="text-white text-lg">🎯</span>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-foreground">Desenvolvimento Global</h3>
+                        <p className="text-xs text-muted-foreground">Progresso geral do paciente</p>
+                      </div>
+                    </div>
                     <div className="h-[350px] sm:h-[400px] w-full flex flex-col items-center justify-center">
-                      <div className="h-[250px] sm:h-[300px] w-full">
+                      <div className="h-[280px] sm:h-[320px] w-full relative">
                         <ResponsiveContainer width="100%" height="100%">
                           <PieChart>
+                            <defs>
+                              <linearGradient id="pieGreen" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stopColor="#10b981" />
+                                <stop offset="100%" stopColor="#059669" />
+                              </linearGradient>
+                              <linearGradient id="pieOrange" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stopColor="#f97316" />
+                                <stop offset="100%" stopColor="#ea580c" />
+                              </linearGradient>
+                            </defs>
                             <Pie
                               data={pieData}
                               cx="50%"
                               cy="50%"
-                              innerRadius="60%"
-                              outerRadius="90%"
-                              paddingAngle={5}
+                              innerRadius="55%"
+                              outerRadius="85%"
+                              paddingAngle={4}
                               dataKey="value"
-                              label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                              strokeWidth={0}
+                              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                             >
-                              {pieData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                              ))}
+                              <Cell fill="url(#pieGreen)" />
+                              <Cell fill="url(#pieOrange)" />
                             </Pie>
-                            <Tooltip />
+                            <Tooltip 
+                              contentStyle={{ 
+                                backgroundColor: 'hsl(var(--card))', 
+                                border: '1px solid hsl(var(--border))', 
+                                borderRadius: '12px',
+                                boxShadow: '0 10px 40px -10px rgba(0,0,0,0.2)',
+                                padding: '12px 16px'
+                              }}
+                              formatter={(value: number) => [`${value}%`, '']}
+                            />
                           </PieChart>
                         </ResponsiveContainer>
+                        {/* Center label */}
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                          <div className="text-center">
+                            <p className="text-4xl font-black text-foreground">{overallScore.percentage}%</p>
+                            <p className="text-xs text-muted-foreground font-medium">Score</p>
+                          </div>
+                        </div>
                       </div>
-                       <div className="text-center mt-4 p-4 bg-background rounded-xl shadow-inner">
-                         <p className="text-lg font-bold text-foreground">Pontuação Total: {overallScore.raw}/{overallScore.max}</p>
-                         <p className="text-sm text-emerald-600 dark:text-emerald-400 font-semibold">Percentil de desenvolvimento: {overallScore.percentage}%</p>
-                         {overallScore.evaluatedDomains && overallScore.totalDomains && (
-                           <div className="mt-3 pt-3 border-t border-border">
-                             <p className="text-xs text-muted-foreground">
-                               📊 Avaliação Parcial: {overallScore.evaluatedDomains} de {overallScore.totalDomains} domínios avaliados
-                             </p>
-                             <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">
-                               * Apenas domínios avaliados impactam na pontuação final
-                             </p>
-                           </div>
-                         )}
-                       </div>
+                      {overallScore.evaluatedDomains && overallScore.totalDomains && (
+                        <p className="text-xs text-muted-foreground text-center mt-2">
+                          📊 {overallScore.evaluatedDomains} de {overallScore.totalDomains} domínios · Apenas avaliados impactam o score
+                        </p>
+                      )}
                     </div>
                   </Card>
                 </div>
                 
-                <Card className="border-0 shadow-xl p-6 rounded-2xl bg-blue-50/80 dark:bg-blue-950/30">
-                  <h3 className="text-lg sm:text-xl font-bold mb-6 text-center text-blue-800 dark:text-blue-200">
-                    Análise Detalhada por Subdomínios
-                  </h3>
+                {/* Bar Chart */}
+                <Card className="border border-border/50 shadow-lg p-6 rounded-2xl bg-card">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center shadow-md">
+                      <span className="text-white text-lg">📈</span>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-foreground">Análise por Subdomínios</h3>
+                      <p className="text-xs text-muted-foreground">Desempenho detalhado em cada área</p>
+                    </div>
+                  </div>
                   <div className="h-[450px] sm:h-[500px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart
                         data={subdomainScores}
                         margin={{ top: 20, right: 30, left: 20, bottom: 120 }}
                       >
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e0f2fe" />
+                        <defs>
+                          <linearGradient id="barMusical" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#a78bfa" />
+                            <stop offset="100%" stopColor="#7c3aed" />
+                          </linearGradient>
+                          <linearGradient id="barPsicossocial" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#34d399" />
+                            <stop offset="100%" stopColor="#059669" />
+                          </linearGradient>
+                          <linearGradient id="barCognitivo" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#fbbf24" />
+                            <stop offset="100%" stopColor="#d97706" />
+                          </linearGradient>
+                          <linearGradient id="barSensorio" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#f87171" />
+                            <stop offset="100%" stopColor="#dc2626" />
+                          </linearGradient>
+                          <linearGradient id="barComunicativo" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#818cf8" />
+                            <stop offset="100%" stopColor="#4f46e5" />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
                         <XAxis 
                           dataKey="name" 
                           angle={-45} 
                           textAnchor="end" 
                           height={100}
-                          tick={{ fontSize: 11, fill: '#0369a1' }}
+                          tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))', fontWeight: 500 }}
+                          axisLine={{ stroke: 'hsl(var(--border))' }}
+                          tickLine={false}
                         />
-                        <YAxis domain={[0, 100]} tick={{ fill: '#0369a1' }} />
+                        <YAxis 
+                          domain={[0, 100]} 
+                          tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
+                          axisLine={false}
+                          tickLine={false}
+                          tickFormatter={(v) => `${v}%`}
+                        />
                         <Tooltip content={({ active, payload }) => {
                           if (active && payload && payload.length) {
                             const data = payload[0].payload;
                             return (
-                              <div className="bg-background p-4 border-0 rounded-xl shadow-xl">
-                                <p className="text-sm font-semibold text-foreground">{data.name}</p>
-                                <p className="text-sm text-blue-600 dark:text-blue-400">Domínio: {data.domain}</p>
-                                <p className="text-sm font-bold text-green-600 dark:text-green-400">Pontuação: {data.value}%</p>
+                              <div className="bg-card p-4 border border-border rounded-xl shadow-xl">
+                                <p className="text-sm font-bold text-foreground">{data.name}</p>
+                                <p className="text-xs text-muted-foreground mb-1">Domínio: {data.domain}</p>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-full bg-muted rounded-full h-2">
+                                    <div 
+                                      className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500" 
+                                      style={{ width: `${data.value}%` }}
+                                    />
+                                  </div>
+                                  <span className="text-sm font-bold text-foreground">{data.value}%</span>
+                                </div>
                               </div>
                             );
                           }
                           return null;
                         }} />
-                        <Bar dataKey="value" radius={[8, 8, 0, 0]}>
+                        <Bar dataKey="value" radius={[8, 8, 0, 0]} barSize={28}>
                           {subdomainScores.map((entry, index) => (
                             <Cell 
                               key={`cell-${index}`} 
                               fill={
-                                entry.domain === "Musical" ? "#8b5cf6" :
-                                entry.domain === "Psicossocial" ? "#10b981" : 
-                                entry.domain === "Cognitivo" ? "#f59e0b" : 
-                                entry.domain === "Sensório-Motor" ? "#ef4444" :
-                                entry.domain === "Comunicativo-Interativo" ? "#6366f1" :
-                                entry.domain === "Neurofisiológico" ? "#14b8a6" : "#ec4899"
+                                entry.domain === "Musical" ? "url(#barMusical)" :
+                                entry.domain === "Psicossocial" ? "url(#barPsicossocial)" : 
+                                entry.domain === "Cognitivo" ? "url(#barCognitivo)" : 
+                                entry.domain === "Sensório-Motor" ? "url(#barSensorio)" :
+                                entry.domain === "Comunicativo-Interativo" ? "url(#barComunicativo)" :
+                                "url(#barMusical)"
                               } 
                             />
                           ))}
                         </Bar>
-                        <Legend />
                       </BarChart>
                     </ResponsiveContainer>
+                  </div>
+                  {/* Legend */}
+                  <div className="flex flex-wrap justify-center gap-4 mt-4">
+                    {[
+                      { label: "Musical", color: "from-purple-400 to-purple-600" },
+                      { label: "Psicossocial", color: "from-emerald-400 to-emerald-600" },
+                      { label: "Cognitivo", color: "from-amber-400 to-amber-600" },
+                      { label: "Sensório-Motor", color: "from-red-400 to-red-600" },
+                      { label: "Comunicativo", color: "from-indigo-400 to-indigo-600" },
+                    ].map(item => (
+                      <div key={item.label} className="flex items-center gap-2">
+                        <div className={`w-3 h-3 rounded-full bg-gradient-to-br ${item.color}`} />
+                        <span className="text-xs font-medium text-muted-foreground">{item.label}</span>
+                      </div>
+                    ))}
                   </div>
                 </Card>
               </Card>
