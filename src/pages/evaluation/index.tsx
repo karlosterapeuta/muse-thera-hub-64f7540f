@@ -2053,7 +2053,7 @@ export default function Evaluation() {
 
                           {/* Campo de observações qualitativas */}
                           <div className="mt-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-foreground mb-2">
                               Observações Qualitativas - {subdomain.title}
                             </label>
                             <Textarea
