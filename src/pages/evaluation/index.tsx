@@ -2153,14 +2153,14 @@ export default function Evaluation() {
                         </ResponsiveContainer>
                       </div>
                        <div className="text-center mt-4 p-4 bg-background rounded-xl shadow-inner">
-                         <p className="text-lg font-bold text-gray-800">Pontuação Total: {overallScore.raw}/{overallScore.max}</p>
-                         <p className="text-sm text-emerald-600 font-semibold">Percentil de desenvolvimento: {overallScore.percentage}%</p>
+                         <p className="text-lg font-bold text-foreground">Pontuação Total: {overallScore.raw}/{overallScore.max}</p>
+                         <p className="text-sm text-emerald-600 dark:text-emerald-400 font-semibold">Percentil de desenvolvimento: {overallScore.percentage}%</p>
                          {overallScore.evaluatedDomains && overallScore.totalDomains && (
-                           <div className="mt-3 pt-3 border-t border-gray-200">
-                             <p className="text-xs text-gray-600">
+                           <div className="mt-3 pt-3 border-t border-border">
+                             <p className="text-xs text-muted-foreground">
                                📊 Avaliação Parcial: {overallScore.evaluatedDomains} de {overallScore.totalDomains} domínios avaliados
                              </p>
-                             <p className="text-xs text-blue-600 font-medium">
+                             <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">
                                * Apenas domínios avaliados impactam na pontuação final
                              </p>
                            </div>
