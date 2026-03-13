@@ -1642,7 +1642,7 @@ export default function Evaluation() {
               )}
               
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-bold text-gray-900 dark:text-white">Data da Avaliação</label>
+                <label className="text-sm font-bold text-foreground">Data da Avaliação</label>
                 <Popover>
                   <PopoverTrigger asChild>
                 <Button
