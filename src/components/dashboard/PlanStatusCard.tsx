@@ -3,11 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { useAdmin } from "@/hooks/use-admin";
+
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function PlanStatusCard() {
-  const { data: isAdmin } = useAdmin();
 
   const { data: planData, isLoading } = useQuery({
     queryKey: ["user-plan-status"],
@@ -47,8 +46,6 @@ export function PlanStatusCard() {
     refetchOnWindowFocus: false,
   });
 
-  // Don't show for admins
-  if (isAdmin) return null;
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString("pt-BR", {
@@ -137,46 +134,40 @@ export function PlanStatusCard() {
   if (!planData) return null;
 
   return (
-    <Card className="border-l-4 border-l-primary">
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-primary" />
-            Status do Plano
-          </CardTitle>
+    <Card className="border border-border/60 bg-gradient-to-r from-slate-900/80 to-slate-800/80 dark:from-slate-900 dark:to-slate-800 shadow-xl rounded-xl">
+      <CardContent className="flex items-center justify-between p-5">
+        <div className="flex items-center gap-3">
+          <Calendar className="h-5 w-5 text-primary" />
+          <span className="text-base font-semibold text-foreground">Status do Plano</span>
           {getStatusBadge()}
         </div>
-      </CardHeader>
-      <CardContent className="space-y-2">
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">Data de Adesão:</span>
-          <span className="font-medium">{formatDate(planData.planStartDate)}</span>
-        </div>
-        
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">Data de Término:</span>
-          <span className="font-medium">
-            {planData.isUnlimited ? (
-              <span className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
-                <Infinity className="h-4 w-4" />
-                Sem limite
-              </span>
-            ) : (
-              formatDate(planData.expiresAt!)
-            )}
-          </span>
-        </div>
-
-        {!planData.isUnlimited && planData.daysRemaining !== null && planData.daysRemaining > 0 && (
-          <div className="pt-2 border-t">
-            <div className="flex items-center gap-2 text-sm">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              <span className="text-muted-foreground">
+        <div className="flex items-center gap-6 text-sm">
+          <div className="text-right">
+            <span className="text-muted-foreground">Data de Adesão:</span>
+            <span className="ml-2 font-medium text-foreground">{formatDate(planData.planStartDate)}</span>
+          </div>
+          <div className="text-right flex items-center">
+            <span className="text-muted-foreground">Data de Término:</span>
+            <span className="ml-2 font-medium">
+              {planData.isUnlimited ? (
+                <span className="flex items-center gap-1 text-blue-400">
+                  <Infinity className="h-4 w-4" />
+                  Sem limite
+                </span>
+              ) : (
+                <span className="text-foreground">{formatDate(planData.expiresAt!)}</span>
+              )}
+            </span>
+          </div>
+          {!planData.isUnlimited && planData.daysRemaining !== null && planData.daysRemaining > 0 && (
+            <div className="flex items-center gap-1 text-muted-foreground">
+              <Clock className="h-4 w-4" />
+              <span>
                 Restam <strong className="text-foreground">{planData.daysRemaining}</strong> {planData.daysRemaining === 1 ? "dia" : "dias"}
               </span>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </CardContent>
     </Card>
   );
