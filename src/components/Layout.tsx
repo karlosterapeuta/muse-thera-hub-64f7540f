@@ -137,10 +137,7 @@ function LayoutContent({ children }: LayoutProps) {
           <div className="flex h-20 items-center justify-between px-6 sm:px-8 gap-6">
             {/* Left: Trigger + Logo + Breadcrumbs */}
             <div className="flex items-center gap-4 flex-1 min-w-0">
-              <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-lg blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <SidebarTrigger className="relative hover:bg-muted/50 hover:scale-110 transition-all duration-300" />
-              </div>
+              <SidebarTrigger className="h-10 w-10 flex items-center justify-center rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-105 shadow-md transition-all duration-200" />
               
               <HeaderLogo />
               
