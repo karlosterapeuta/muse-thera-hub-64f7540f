@@ -1967,31 +1967,31 @@ export default function Evaluation() {
                           <div className="overflow-x-auto rounded-xl shadow-inner">
                             <Table className="min-w-full">
                               <TableHeader>
-                                <TableRow className="bg-gradient-to-r from-purple-600 to-purple-700">
+                                <TableRow className={`${colors.headerBg}`}>
                                   <TableHead className="min-w-[200px] font-bold text-white text-base">Parâmetros Avaliados</TableHead>
                                   <TableHead className="w-16 text-center text-white">
                                     <span className="block text-sm font-semibold">Não Obs.</span>
-                                    <span className="block text-xs font-medium text-purple-200">(0)</span>
+                                    <span className="block text-xs font-medium text-white/70">(0)</span>
                                   </TableHead>
                                   <TableHead className="w-16 text-center text-white">
                                     <span className="block text-sm font-semibold">Emergente</span>
-                                    <span className="block text-xs font-medium text-purple-200">(1)</span>
+                                    <span className="block text-xs font-medium text-white/70">(1)</span>
                                   </TableHead>
                                   <TableHead className="w-16 text-center text-white">
                                     <span className="block text-sm font-semibold">Inconsist.</span>
-                                    <span className="block text-xs font-medium text-purple-200">(2)</span>
+                                    <span className="block text-xs font-medium text-white/70">(2)</span>
                                   </TableHead>
                                   <TableHead className="w-16 text-center text-white">
                                     <span className="block text-sm font-semibold">Moderado</span>
-                                    <span className="block text-xs font-medium text-purple-200">(3)</span>
+                                    <span className="block text-xs font-medium text-white/70">(3)</span>
                                   </TableHead>
                                   <TableHead className="w-16 text-center text-white">
                                     <span className="block text-sm font-semibold">Consistente</span>
-                                    <span className="block text-xs font-medium text-purple-200">(4)</span>
+                                    <span className="block text-xs font-medium text-white/70">(4)</span>
                                   </TableHead>
                                   <TableHead className="w-16 text-center text-white">
                                     <span className="block text-sm font-semibold">Excepcional</span>
-                                    <span className="block text-xs font-medium text-purple-200">(5)</span>
+                                    <span className="block text-xs font-medium text-white/70">(5)</span>
                                   </TableHead>
                                 </TableRow>
                               </TableHeader>
