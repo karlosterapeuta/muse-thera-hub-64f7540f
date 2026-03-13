@@ -139,7 +139,7 @@ function LayoutContent({ children }: LayoutProps) {
         <UserExpirationWarning />
         
         {/* Universal Header com design moderno */}
-        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/70 shadow-lg">
+        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/70 shadow-lg" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
           {/* Gradient line */}
           <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-purple-600 via-blue-500 to-pink-600 animate-gradient shadow-[0_2px_8px_rgba(147,51,234,0.3)]" />
           
