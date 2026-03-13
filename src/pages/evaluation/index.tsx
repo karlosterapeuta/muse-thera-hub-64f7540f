@@ -1675,7 +1675,7 @@ export default function Evaluation() {
                 value={selectedEvaluation}
                 onValueChange={setSelectedEvaluation}
               >
-                <SelectTrigger className="w-full sm:w-[200px] bg-white text-gray-900 font-medium border-blue-300 hover:bg-blue-50 transition-all duration-300">
+                <SelectTrigger className="w-full sm:w-[200px] text-foreground font-medium border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all duration-300">
                   <SelectValue placeholder="Selecione a avaliação" />
                 </SelectTrigger>
                 <SelectContent className="border-0 shadow-xl">
