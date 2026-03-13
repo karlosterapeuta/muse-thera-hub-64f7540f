@@ -64,7 +64,10 @@ export default function MusicotherapyTreatmentPlanPage() {
     lastSaved,
     validateRequiredFields,
     getValidationErrors 
-  } = useMusicotherapyTreatmentPlan(id);
+  } = useMusicotherapyTreatmentPlan(id, (newId) => {
+    // Navigate to edit URL so subsequent saves update instead of creating duplicates
+    navigate(`/musicotherapy-treatment-plan/${newId}`, { replace: true });
+  });
   
   const [patients, setPatients] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState("");

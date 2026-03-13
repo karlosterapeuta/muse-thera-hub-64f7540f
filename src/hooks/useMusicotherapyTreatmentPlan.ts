@@ -5,7 +5,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { MusicotherapyTreatmentPlan, defaultTreatmentPlan } from '@/types/musicotherapy-plan';
 import { useProfessionalData } from './useProfessionalData';
 
-export function useMusicotherapyTreatmentPlan(planId?: string) {
+export function useMusicotherapyTreatmentPlan(planId?: string, onCreated?: (newId: string) => void) {
   const [planData, setPlanData] = useState<Partial<MusicotherapyTreatmentPlan>>(defaultTreatmentPlan);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isAutoSaving, setIsAutoSaving] = useState(false);
@@ -228,6 +228,11 @@ export function useMusicotherapyTreatmentPlan(planId?: string) {
       initialDataRef.current = { ...planData };
       queryClient.invalidateQueries({ queryKey: ['treatment-plan'] });
       queryClient.invalidateQueries({ queryKey: ['treatment-plans'] });
+      
+      // If this was a new plan, notify parent so it can navigate to the edit URL
+      if (!planId && data?.id && onCreated) {
+        onCreated(data.id);
+      }
     },
     onError: (error) => {
       console.error('Error saving treatment plan:', error);
