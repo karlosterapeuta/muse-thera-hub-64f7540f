@@ -2098,7 +2098,7 @@ export default function Evaluation() {
                 </div>
               )}
 
-              <Card className="border-0 shadow-2xl p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-white via-blue-50 to-indigo-50">
+              <Card className="border-0 shadow-2xl p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-background via-blue-50/50 to-indigo-50/50 dark:from-background dark:via-blue-950/20 dark:to-indigo-950/20">
                 <h2 className="text-2xl sm:text-3xl font-bold mb-8 text-center bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                   Resultados da Escala MuseTera
                   {getEvaluatedDomainsCount() < evaluationDomains.length && (
