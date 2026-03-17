@@ -48,6 +48,7 @@ import Hawkins from "./pages/hawkins";
 import Users from "./pages/users";
 import InviteCodes from "./pages/InviteCodes";
 import DigitalStamp from "./pages/DigitalStamp";
+import PatientHistory from "./pages/patient-history";
 import Install from "./pages/Install";
 
 // Process pages
@@ -153,6 +154,7 @@ const App = () => {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="professional" element={<Professional />} />
             <Route path="patients" element={<Patients />} />
+            <Route path="patient-history" element={<PatientHistory />} />
             <Route path="anamnesis/*" element={<Anamnesis />} />
             <Route path="processes" element={<Processes />} />
             <Route path="processes/musicoterapia" element={<MusicoterapiaReport />} />

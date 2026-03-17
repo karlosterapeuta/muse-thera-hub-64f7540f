@@ -22,6 +22,7 @@ import {
   LayoutDashboard,
   Bot,
   FolderOpen,
+  History,
 } from "lucide-react";
 
 export const mainMenuItems = [
@@ -29,6 +30,7 @@ export const mainMenuItems = [
   { icon: UserCircle, text: "🎵 Perfil Profissional", path: "/professional", gradient: "from-green-500 to-teal-600" },
   { icon: Stamp, text: "📝 Carimbo Digital", path: "/digital-stamp", gradient: "from-teal-500 to-cyan-600", isNew: true },
   { icon: Users, text: "👥 Pacientes", path: "/patients", gradient: "from-pink-500 to-rose-600" },
+  { icon: History, text: "📂 Histórico do Paciente", path: "/patient-history", gradient: "from-indigo-500 to-violet-600" },
 ];
 
 export const clinicalMenuItems = [
