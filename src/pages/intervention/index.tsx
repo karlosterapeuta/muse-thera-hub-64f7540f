@@ -23,6 +23,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import html2pdf from "html2pdf.js";
+import { savePDFToStorage } from "@/utils/pdfStorageUtils";
 import {
   Card,
   CardContent,
