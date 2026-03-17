@@ -1,4 +1,3 @@
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   ClipboardList,
@@ -10,9 +9,11 @@ import {
   TrendingUp,
   Heart,
   Sparkles,
+  Zap,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { motion } from "framer-motion";
 
 export default function Processes() {
   const isMobile = useIsMobile();
@@ -24,6 +25,7 @@ export default function Processes() {
       icon: ClipboardList,
       path: "/anamnesis",
       accentColor: "blue",
+      step: 1,
     },
     {
       title: "Avaliação",
@@ -31,14 +33,16 @@ export default function Processes() {
       icon: FileText,
       path: "/evaluation",
       accentColor: "purple",
+      step: 2,
     },
     {
       title: "Planos Musicoterapêuticos",
-      description: "Crie e gerencie planos de tratamento musicoterapêutico personalizados",
+      description: "Crie e gerencie planos de tratamento personalizados",
       icon: ClipboardList,
       path: "/musicotherapy-treatment-plans",
       accentColor: "emerald",
       isNew: true,
+      step: 3,
     },
     {
       title: "Intervenção",
@@ -47,6 +51,7 @@ export default function Processes() {
       path: "/intervention",
       accentColor: "orange",
       isNew: true,
+      step: 4,
     },
     {
       title: "Reavaliação",
@@ -54,6 +59,7 @@ export default function Processes() {
       icon: ChartBar,
       path: "/reevaluation",
       accentColor: "indigo",
+      step: 5,
     },
     {
       title: "Relatório MuseTera TEA",
@@ -61,14 +67,16 @@ export default function Processes() {
       icon: Music,
       path: "/processes/musicoterapia",
       accentColor: "violet",
+      step: 6,
     },
     {
       title: "Relatório de Evolução",
-      description: "Relatório detalhado de evolução do paciente em musicoterapia",
+      description: "Relatório detalhado de evolução do paciente",
       icon: TrendingUp,
       path: "/processes/evolution",
       accentColor: "teal",
       isNew: true,
+      step: 7,
     },
     {
       title: "Devolutiva TEA",
@@ -77,26 +85,122 @@ export default function Processes() {
       path: "/processes/devolutiva-tea",
       accentColor: "rose",
       isNew: true,
+      step: 8,
     },
   ];
 
-  const colorMap: Record<string, { gradient: string; iconBg: string; glow: string; border: string; text: string; badge: string }> = {
-    blue:    { gradient: "from-blue-500 to-blue-600",       iconBg: "bg-blue-500/10 dark:bg-blue-500/20",       glow: "shadow-blue-500/20",    border: "border-blue-500/20 dark:border-blue-400/20",       text: "text-blue-600 dark:text-blue-400",       badge: "bg-blue-500" },
-    purple:  { gradient: "from-purple-500 to-purple-600",   iconBg: "bg-purple-500/10 dark:bg-purple-500/20",   glow: "shadow-purple-500/20",  border: "border-purple-500/20 dark:border-purple-400/20",   text: "text-purple-600 dark:text-purple-400",   badge: "bg-purple-500" },
-    emerald: { gradient: "from-emerald-500 to-emerald-600", iconBg: "bg-emerald-500/10 dark:bg-emerald-500/20", glow: "shadow-emerald-500/20", border: "border-emerald-500/20 dark:border-emerald-400/20", text: "text-emerald-600 dark:text-emerald-400", badge: "bg-emerald-500" },
-    orange:  { gradient: "from-orange-500 to-orange-600",   iconBg: "bg-orange-500/10 dark:bg-orange-500/20",   glow: "shadow-orange-500/20",  border: "border-orange-500/20 dark:border-orange-400/20",   text: "text-orange-600 dark:text-orange-400",   badge: "bg-orange-500" },
-    indigo:  { gradient: "from-indigo-500 to-indigo-600",   iconBg: "bg-indigo-500/10 dark:bg-indigo-500/20",   glow: "shadow-indigo-500/20",  border: "border-indigo-500/20 dark:border-indigo-400/20",   text: "text-indigo-600 dark:text-indigo-400",   badge: "bg-indigo-500" },
-    violet:  { gradient: "from-violet-500 to-fuchsia-600",  iconBg: "bg-violet-500/10 dark:bg-violet-500/20",   glow: "shadow-violet-500/20",  border: "border-violet-500/20 dark:border-violet-400/20",   text: "text-violet-600 dark:text-violet-400",   badge: "bg-violet-500" },
-    teal:    { gradient: "from-teal-500 to-cyan-600",       iconBg: "bg-teal-500/10 dark:bg-teal-500/20",       glow: "shadow-teal-500/20",    border: "border-teal-500/20 dark:border-teal-400/20",       text: "text-teal-600 dark:text-teal-400",       badge: "bg-teal-500" },
-    rose:    { gradient: "from-rose-500 to-pink-600",       iconBg: "bg-rose-500/10 dark:bg-rose-500/20",       glow: "shadow-rose-500/20",    border: "border-rose-500/20 dark:border-rose-400/20",       text: "text-rose-600 dark:text-rose-400",       badge: "bg-rose-500" },
+  const colorMap: Record<string, {
+    gradient: string;
+    iconGradient: string;
+    glow: string;
+    glowHover: string;
+    ring: string;
+    text: string;
+    badge: string;
+    bg: string;
+    stepBg: string;
+  }> = {
+    blue: {
+      gradient: "from-blue-500 via-blue-600 to-indigo-600",
+      iconGradient: "from-blue-400 to-blue-600",
+      glow: "shadow-blue-500/10",
+      glowHover: "shadow-blue-500/30",
+      ring: "ring-blue-500/20",
+      text: "text-blue-600 dark:text-blue-400",
+      badge: "bg-blue-500",
+      bg: "bg-blue-50 dark:bg-blue-950/30",
+      stepBg: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+    },
+    purple: {
+      gradient: "from-purple-500 via-purple-600 to-violet-600",
+      iconGradient: "from-purple-400 to-purple-600",
+      glow: "shadow-purple-500/10",
+      glowHover: "shadow-purple-500/30",
+      ring: "ring-purple-500/20",
+      text: "text-purple-600 dark:text-purple-400",
+      badge: "bg-purple-500",
+      bg: "bg-purple-50 dark:bg-purple-950/30",
+      stepBg: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
+    },
+    emerald: {
+      gradient: "from-emerald-500 via-emerald-600 to-green-600",
+      iconGradient: "from-emerald-400 to-emerald-600",
+      glow: "shadow-emerald-500/10",
+      glowHover: "shadow-emerald-500/30",
+      ring: "ring-emerald-500/20",
+      text: "text-emerald-600 dark:text-emerald-400",
+      badge: "bg-emerald-500",
+      bg: "bg-emerald-50 dark:bg-emerald-950/30",
+      stepBg: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+    },
+    orange: {
+      gradient: "from-orange-500 via-amber-500 to-orange-600",
+      iconGradient: "from-orange-400 to-orange-600",
+      glow: "shadow-orange-500/10",
+      glowHover: "shadow-orange-500/30",
+      ring: "ring-orange-500/20",
+      text: "text-orange-600 dark:text-orange-400",
+      badge: "bg-orange-500",
+      bg: "bg-orange-50 dark:bg-orange-950/30",
+      stepBg: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
+    },
+    indigo: {
+      gradient: "from-indigo-500 via-indigo-600 to-blue-700",
+      iconGradient: "from-indigo-400 to-indigo-600",
+      glow: "shadow-indigo-500/10",
+      glowHover: "shadow-indigo-500/30",
+      ring: "ring-indigo-500/20",
+      text: "text-indigo-600 dark:text-indigo-400",
+      badge: "bg-indigo-500",
+      bg: "bg-indigo-50 dark:bg-indigo-950/30",
+      stepBg: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
+    },
+    violet: {
+      gradient: "from-violet-500 via-purple-600 to-fuchsia-600",
+      iconGradient: "from-violet-400 to-fuchsia-600",
+      glow: "shadow-violet-500/10",
+      glowHover: "shadow-violet-500/30",
+      ring: "ring-violet-500/20",
+      text: "text-violet-600 dark:text-violet-400",
+      badge: "bg-violet-500",
+      bg: "bg-violet-50 dark:bg-violet-950/30",
+      stepBg: "bg-violet-500/10 text-violet-600 dark:text-violet-400",
+    },
+    teal: {
+      gradient: "from-teal-500 via-teal-600 to-cyan-600",
+      iconGradient: "from-teal-400 to-cyan-600",
+      glow: "shadow-teal-500/10",
+      glowHover: "shadow-teal-500/30",
+      ring: "ring-teal-500/20",
+      text: "text-teal-600 dark:text-teal-400",
+      badge: "bg-teal-500",
+      bg: "bg-teal-50 dark:bg-teal-950/30",
+      stepBg: "bg-teal-500/10 text-teal-600 dark:text-teal-400",
+    },
+    rose: {
+      gradient: "from-rose-500 via-pink-500 to-rose-600",
+      iconGradient: "from-rose-400 to-pink-600",
+      glow: "shadow-rose-500/10",
+      glowHover: "shadow-rose-500/30",
+      ring: "ring-rose-500/20",
+      text: "text-rose-600 dark:text-rose-400",
+      badge: "bg-rose-500",
+      bg: "bg-rose-50 dark:bg-rose-950/30",
+      stepBg: "bg-rose-500/10 text-rose-600 dark:text-rose-400",
+    },
   };
 
   return (
     <div className="min-h-screen bg-background">
       <div className="w-full px-3 sm:px-4 lg:px-6 py-6 sm:py-8 lg:py-10 max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-10 lg:mb-14">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-5">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-10 lg:mb-14"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-5 backdrop-blur-sm">
             <Sparkles className="h-4 w-4" />
             Fluxo Terapêutico Completo
           </div>
@@ -109,62 +213,94 @@ export default function Processes() {
           <p className="text-base sm:text-lg text-muted-foreground max-w-xl mx-auto">
             Gerencie todo o ciclo terapêutico com ferramentas especializadas
           </p>
-        </div>
+        </motion.div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-6">
           {processes.map((process, index) => {
             const colors = colorMap[process.accentColor];
             return (
-              <Link to={process.path} key={index} className="group block">
-                <Card
-                  className={`relative h-full overflow-hidden rounded-2xl border ${colors.border} bg-card transition-all duration-500 hover:shadow-xl hover:${colors.glow} hover:-translate-y-1`}
-                >
-                  {/* Top accent line */}
-                  <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${colors.gradient} opacity-80 group-hover:opacity-100 transition-opacity`} />
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.06 }}
+              >
+                <Link to={process.path} className="group block h-full">
+                  <div
+                    className={`relative h-full rounded-2xl bg-card border border-border/60 dark:border-border/40 overflow-hidden transition-all duration-500 hover:-translate-y-2 shadow-lg ${colors.glow} hover:shadow-2xl hover:${colors.glowHover}`}
+                  >
+                    {/* Gradient background overlay on hover */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${colors.gradient} opacity-0 group-hover:opacity-[0.04] dark:group-hover:opacity-[0.08] transition-opacity duration-500`} />
 
-                  {/* NEW badge */}
-                  {process.isNew && (
-                    <Badge className={`absolute top-4 right-4 z-10 ${colors.badge} text-white font-bold text-[10px] px-2 py-0.5 rounded-full shadow-md`}>
-                      NOVO
-                    </Badge>
-                  )}
+                    {/* Top gradient bar */}
+                    <div className={`h-1.5 bg-gradient-to-r ${colors.gradient} rounded-t-2xl`} />
 
-                  <div className="relative p-5 lg:p-6 flex flex-col h-full">
-                    {/* Icon container */}
-                    <div className={`${colors.iconBg} w-12 h-12 lg:w-14 lg:h-14 rounded-xl flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110`}>
-                      <process.icon className={`h-6 w-6 lg:h-7 lg:w-7 ${colors.text}`} />
-                    </div>
+                    {/* Decorative corner glow */}
+                    <div className={`absolute -top-12 -right-12 w-32 h-32 bg-gradient-to-br ${colors.gradient} opacity-[0.07] dark:opacity-[0.12] rounded-full blur-2xl group-hover:opacity-[0.15] dark:group-hover:opacity-[0.2] transition-opacity duration-500`} />
 
-                    {/* Title */}
-                    <h2 className="text-lg lg:text-xl font-bold text-foreground mb-2 leading-tight group-hover:text-foreground/90 transition-colors">
-                      {process.title}
-                    </h2>
+                    {/* NEW badge */}
+                    {process.isNew && (
+                      <div className="absolute top-5 right-4 z-10">
+                        <Badge className={`${colors.badge} text-white font-bold text-[10px] px-2.5 py-0.5 rounded-full shadow-lg border-0 flex items-center gap-1`}>
+                          <Zap className="h-2.5 w-2.5" />
+                          NOVO
+                        </Badge>
+                      </div>
+                    )}
 
-                    {/* Description */}
-                    <p className="text-sm text-muted-foreground leading-relaxed flex-grow mb-4">
-                      {process.description}
-                    </p>
+                    <div className="relative p-5 lg:p-6 flex flex-col h-full">
+                      {/* Step number + Icon row */}
+                      <div className="flex items-start justify-between mb-4">
+                        <div className={`relative w-14 h-14 rounded-2xl bg-gradient-to-br ${colors.iconGradient} p-[1px] shadow-lg ${colors.glow} group-hover:shadow-xl group-hover:${colors.glowHover} transition-all duration-300 group-hover:scale-105`}>
+                          <div className="w-full h-full rounded-2xl bg-card dark:bg-card flex items-center justify-center">
+                            <process.icon className={`h-6 w-6 ${colors.text}`} />
+                          </div>
+                        </div>
+                        <span className={`text-xs font-bold ${colors.stepBg} px-2.5 py-1 rounded-full`}>
+                          {String(process.step).padStart(2, "0")}
+                        </span>
+                      </div>
 
-                    {/* CTA */}
-                    <div className={`flex items-center gap-1.5 ${colors.text} text-sm font-semibold opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-300`}>
-                      <span>Acessar</span>
-                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                      {/* Title */}
+                      <h2 className="text-lg font-bold text-foreground mb-2 leading-tight tracking-tight">
+                        {process.title}
+                      </h2>
+
+                      {/* Description */}
+                      <p className="text-[13px] text-muted-foreground leading-relaxed flex-grow mb-5">
+                        {process.description}
+                      </p>
+
+                      {/* CTA */}
+                      <div className={`flex items-center justify-between pt-4 border-t border-border/50`}>
+                        <span className={`text-sm font-semibold ${colors.text}`}>
+                          Acessar
+                        </span>
+                        <div className={`w-8 h-8 rounded-full bg-gradient-to-r ${colors.gradient} flex items-center justify-center opacity-80 group-hover:opacity-100 transition-all duration-300 group-hover:scale-110`}>
+                          <ArrowRight className="h-4 w-4 text-white group-hover:translate-x-0.5 transition-transform" />
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </Card>
-              </Link>
+                </Link>
+              </motion.div>
             );
           })}
         </div>
 
         {/* Bottom */}
-        <div className="mt-12 text-center">
-          <div className="inline-flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-5 py-2.5 rounded-full border border-border/50">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="mt-12 text-center"
+        >
+          <div className="inline-flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-5 py-2.5 rounded-full border border-border/50 backdrop-blur-sm">
             <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
             Sistema integrado de gestão musicoterapêutica
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
