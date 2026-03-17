@@ -1066,7 +1066,9 @@ export default function Evaluation() {
         }
       };
 
-      await html2pdf().set(opt).from(root).save();
+      const pdfInst3 = html2pdf().set(opt).from(root);
+      await pdfInst3.save();
+      try { const blob = await pdfInst3.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
       
       document.body.removeChild(container);
       
