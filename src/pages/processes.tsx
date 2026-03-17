@@ -81,7 +81,6 @@ export default function Processes() {
       icon: Heart,
       path: "/processes/devolutiva-tea",
       accentColor: "rose",
-      isNew: true,
       step: 8,
     },
   ];
