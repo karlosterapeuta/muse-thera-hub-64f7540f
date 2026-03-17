@@ -574,11 +574,8 @@ function SavedPDFsTab({ patientName }: { patientName?: string }) {
     </>
   );
 }
-        </DialogContent>
-      </Dialog>
-    </>
-  );
-}
+
+
 
 // Analytics sub-components
 function ActivityOverTimeChart({ items }: { items: HistoryItem[] }) {
