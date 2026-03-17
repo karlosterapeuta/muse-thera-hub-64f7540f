@@ -22,6 +22,7 @@ import {
   LayoutDashboard,
   Bot,
   FolderOpen,
+  History,
 } from "lucide-react";
 
 export const mainMenuItems = [
