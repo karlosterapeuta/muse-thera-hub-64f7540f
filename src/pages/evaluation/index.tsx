@@ -1399,7 +1399,9 @@ export default function Evaluation() {
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
 
-      await html2pdf().set(opt).from(root).save();
+      const pdfInst5 = html2pdf().set(opt).from(root);
+      await pdfInst5.save();
+      try { const blob = await pdfInst5.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
       
       document.body.removeChild(container);
       
