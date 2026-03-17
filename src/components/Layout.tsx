@@ -174,12 +174,12 @@ function LayoutContent({ children }: LayoutProps) {
         </header>
         
         {/* Conteúdo principal */}
-        <main className="flex-1 overflow-auto bg-background">
+        <main className="flex-1 overflow-auto bg-background" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
           {children || <Outlet />}
         </main>
         
         {/* Footer */}
-        <footer className="w-full py-2 text-center text-xs text-muted-foreground border-t bg-transparent">
+        <footer className="w-full py-2 text-center text-xs text-muted-foreground border-t bg-transparent" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
           <div className="w-full px-0">
             © 2025 MuseTera
           </div>
