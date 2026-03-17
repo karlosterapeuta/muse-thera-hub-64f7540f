@@ -1005,6 +1005,11 @@ export default function PatientHistoryPage() {
                   <span className="hidden sm:inline">Analytics</span>
                   <span className="sm:hidden">Gráficos</span>
                 </TabsTrigger>
+                <TabsTrigger value="documents" className="gap-1.5 data-[state=active]:bg-background">
+                  <FolderOpen className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Documentos PDF</span>
+                  <span className="sm:hidden">PDFs</span>
+                </TabsTrigger>
               </TabsList>
 
               {/* Analytics Tab */}
