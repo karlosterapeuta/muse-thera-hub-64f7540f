@@ -166,7 +166,9 @@ export default function InterventionPlans() {
     };
 
     try {
-      await html2pdf().set(opt).from(content).save();
+      const pdfInstance = html2pdf().set(opt).from(content);
+      await pdfInstance.save();
+      try { const blob = await pdfInstance.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "intervention"); } catch(e) { console.warn("PDF não salvo no storage:", e); }
       toast.success("PDF gerado com sucesso!");
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);

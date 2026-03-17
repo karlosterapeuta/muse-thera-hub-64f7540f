@@ -612,7 +612,9 @@ export default function MusicoterapiaPage() {
       };
 
       // 5. Generate and download PDF
-      await html2pdf().set(opt).from(tempDiv).save();
+      const pdfInstance2 = html2pdf().set(opt).from(tempDiv);
+      await pdfInstance2.save();
+      try { const blob = await pdfInstance2.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "report"); } catch(e) { console.warn("PDF não salvo no storage:", e); }
       
       document.body.removeChild(tempDiv);
       
