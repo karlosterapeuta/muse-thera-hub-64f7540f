@@ -13,36 +13,36 @@ export function SidebarNavigation({ collapsed, onNavigate, userEmail, isAdmin }:
   const adminMenuItems = getAdminMenuItems(userEmail, isAdmin);
 
   return (
-    <nav className="relative flex-1 py-4 space-y-4 overflow-y-auto">
+    <nav className="relative flex-1 py-3 space-y-1 overflow-y-auto scrollbar-thin">
       <MenuSection title="Principal" items={mainMenuItems} collapsed={collapsed} onNavigate={onNavigate} />
       
-      <div className="mx-4 border-t border-border/50"></div>
+      {!collapsed && <div className="mx-5 my-2 border-t border-border/30" />}
       
       <MenuSection title="Clínico" items={clinicalMenuItems} collapsed={collapsed} onNavigate={onNavigate} />
       
-      <div className="mx-4 border-t border-border/50"></div>
+      {!collapsed && <div className="mx-5 my-2 border-t border-border/30" />}
       
       <MenuSection title="Jogos Musicais" items={musicalGamesMenuItems} collapsed={collapsed} onNavigate={onNavigate} />
       
-      <div className="mx-4 border-t border-border/50"></div>
+      {!collapsed && <div className="mx-5 my-2 border-t border-border/30" />}
       
       <MenuSection title="Ferramentas" items={toolsMenuItems} collapsed={collapsed} onNavigate={onNavigate} />
       
-      <div className="mx-4 border-t border-border/50"></div>
+      {!collapsed && <div className="mx-5 my-2 border-t border-border/30" />}
       
       <MenuSection title="Gestão" items={managementMenuItems} collapsed={collapsed} onNavigate={onNavigate} />
       
-      <div className="mx-4 border-t border-border/50"></div>
+      {!collapsed && <div className="mx-5 my-2 border-t border-border/30" />}
       
       <MenuSection title="Recursos" items={resourcesMenuItems} collapsed={collapsed} onNavigate={onNavigate} />
       
-      <div className="mx-4 border-t border-border/50"></div>
+      {!collapsed && <div className="mx-5 my-2 border-t border-border/30" />}
       
       <MenuSection title="Comunidade" items={communityMenuItems} collapsed={collapsed} onNavigate={onNavigate} />
       
       {adminMenuItems.length > 0 && (
         <>
-          <div className="mx-4 border-t border-border/50"></div>
+          {!collapsed && <div className="mx-5 my-2 border-t border-border/30" />}
           <MenuSection title="Administração" items={adminMenuItems} collapsed={collapsed} onNavigate={onNavigate} />
         </>
       )}
