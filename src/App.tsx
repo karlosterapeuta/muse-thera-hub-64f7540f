@@ -48,6 +48,7 @@ import Hawkins from "./pages/hawkins";
 import Users from "./pages/users";
 import InviteCodes from "./pages/InviteCodes";
 import DigitalStamp from "./pages/DigitalStamp";
+import PatientHistory from "./pages/patient-history";
 import Install from "./pages/Install";
 
 // Process pages
