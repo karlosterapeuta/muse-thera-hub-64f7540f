@@ -75,8 +75,9 @@ export function useMusicoterapiaReport() {
         });
 
         toast({
-          title: "Relatório Organizado com IA!",
-          description: "O conteúdo foi estruturado automaticamente com inteligência artificial.",
+          title: "✅ Relatório Organizado com Sucesso!",
+          description: "Seu relatório foi estruturado pela IA e está pronto para baixar ou salvar. Revise o conteúdo e finalize quando desejar.",
+          duration: 6000,
         });
       } else if (data.fallbackContent) {
         // Usar conteúdo de fallback em caso de erro
