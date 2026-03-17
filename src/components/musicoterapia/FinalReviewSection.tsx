@@ -70,7 +70,16 @@ export function FinalReviewSection({
       };
 
       // Gerar e baixar o PDF
-      await html2pdf().set(opt).from(tempDiv).save();
+      const pdfInstance = html2pdf().set(opt).from(tempDiv);
+      await pdfInstance.save();
+
+      // Auto-save to storage
+      try {
+        const pdfBlob = await pdfInstance.outputPdf('blob');
+        await savePDFToStorage(pdfBlob, opt.filename, "report");
+      } catch (storageErr) {
+        console.warn("⚠️ PDF baixado mas não foi salvo no sistema:", storageErr);
+      }
       
       document.body.removeChild(tempDiv);
       

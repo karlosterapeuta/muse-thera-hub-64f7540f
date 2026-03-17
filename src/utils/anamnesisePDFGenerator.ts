@@ -716,7 +716,17 @@ export const generateProfessionalAnamnesePDF = async (
     };
 
     console.log("📄 Gerando PDF da Anamnese...");
-    await html2pdf().from(element).set(opt).save();
+    const pdfInstance = html2pdf().from(element).set(opt);
+    await pdfInstance.save();
+
+    // Auto-save to storage
+    try {
+      const pdfBlob = await pdfInstance.outputPdf('blob');
+      await savePDFToStorage(pdfBlob, opt.filename, "anamnesis");
+    } catch (storageErr) {
+      console.warn("⚠️ PDF baixado mas não foi salvo no sistema:", storageErr);
+    }
+
     console.log("✅ PDF da Anamnese gerado com sucesso!");
     return true;
   } catch (error) {
