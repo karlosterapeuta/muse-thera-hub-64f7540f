@@ -154,6 +154,7 @@ const App = () => {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="professional" element={<Professional />} />
             <Route path="patients" element={<Patients />} />
+            <Route path="patient-history" element={<PatientHistory />} />
             <Route path="anamnesis/*" element={<Anamnesis />} />
             <Route path="processes" element={<Processes />} />
             <Route path="processes/musicoterapia" element={<MusicoterapiaReport />} />
