@@ -463,7 +463,9 @@ export default function MusicoterapiaPage() {
       };
 
       // Generate and download PDF
-      await html2pdf().set(opt).from(tempDiv).save();
+      const pdfInstance = html2pdf().set(opt).from(tempDiv);
+      await pdfInstance.save();
+      try { const blob = await pdfInstance.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "report"); } catch(e) { console.warn("PDF não salvo no storage:", e); }
       
       document.body.removeChild(tempDiv);
 
