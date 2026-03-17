@@ -638,7 +638,9 @@ export default function InterventionForm() {
         },
       };
 
-      await html2pdf().from(element).set(opt).save();
+      const pdfInstance = html2pdf().from(element).set(opt);
+      await pdfInstance.save();
+      try { const blob = await pdfInstance.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "intervention"); } catch(e) { console.warn("PDF não salvo no storage:", e); }
       
       toast({
         title: "PDF gerado com sucesso!",
