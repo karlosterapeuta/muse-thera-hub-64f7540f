@@ -2,6 +2,7 @@
 import html2pdf from 'html2pdf.js';
 import { createRoot } from 'react-dom/client';
 import { toast } from 'sonner';
+import { savePDFToStorage } from './pdfStorageUtils';
 
 interface PDFOptions {
   filename?: string;
