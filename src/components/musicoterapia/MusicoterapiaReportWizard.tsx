@@ -337,12 +337,21 @@ export function MusicoterapiaReportWizard({
       <div ref={stepContentRef} className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Main Content */}
         <div className="lg:col-span-3">
-          <Card>
-            <CardContent className="p-8">
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold mb-2">{currentStepData.title}</h2>
-                <p className="text-muted-foreground">{currentStepData.description}</p>
+          <Card className="overflow-hidden border-0 shadow-lg">
+            {/* Step Header with gradient accent */}
+            <div className="relative bg-gradient-to-r from-purple-600 via-purple-500 to-pink-500 p-6">
+              <div className="absolute inset-0 bg-white/10 backdrop-blur-sm" />
+              <div className="relative flex items-center gap-4">
+                <div className="flex items-center justify-center w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl shadow-lg">
+                  <StepIcon className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-white">{currentStepData.title}</h2>
+                  <p className="text-white/80 text-sm mt-1">{currentStepData.description}</p>
+                </div>
               </div>
+            </div>
+            <CardContent className="p-8">
               
               {renderStepFields()}
             </CardContent>
