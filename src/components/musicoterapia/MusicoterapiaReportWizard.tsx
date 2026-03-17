@@ -295,23 +295,23 @@ export function MusicoterapiaReportWizard({
                       ${isCurrent 
                         ? 'bg-white text-purple-700 border-white shadow-lg scale-105' 
                         : isCompleted 
-                        ? 'bg-white/20 text-white border-white/30 hover:bg-white/30' 
-                        : 'bg-white/10 text-white/70 border-white/20 hover:bg-white/20'
+                        ? 'bg-white/25 text-white border-white/40 hover:bg-white/35' 
+                        : 'bg-white/10 text-white/80 border-white/20 hover:bg-white/20'
                       }
                     `}
                   >
                     <div className="flex items-center space-x-3">
                       <div className={`
                         flex items-center justify-center w-8 h-8 rounded-lg
-                        ${isCurrent ? 'bg-purple-100' : 'bg-white/20'}
+                        ${isCurrent ? 'bg-purple-100' : isCompleted ? 'bg-white/30' : 'bg-white/20'}
                       `}>
                         <Icon className={`h-4 w-4 ${isCurrent ? 'text-purple-700' : 'text-white'}`} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className={`text-sm font-semibold truncate ${isCurrent ? 'text-purple-700' : 'text-white'}`}>
+                        <div className={`text-sm font-bold truncate ${isCurrent ? 'text-purple-700' : 'text-white drop-shadow-sm'}`}>
                           {step.title}
                         </div>
-                        <div className={`text-xs truncate ${isCurrent ? 'text-purple-500' : 'text-white/70'}`}>
+                        <div className={`text-xs truncate ${isCurrent ? 'text-purple-500' : isCompleted ? 'text-yellow-200' : 'text-pink-200'}`}>
                           {step.description}
                         </div>
                       </div>
