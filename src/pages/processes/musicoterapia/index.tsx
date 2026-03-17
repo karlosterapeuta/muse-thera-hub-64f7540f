@@ -13,6 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { MusicoterapiaReportWizard } from '@/components/musicoterapia/MusicoterapiaReportWizard';
 import { MusicoterapiaPreview } from '@/components/musicoterapia/MusicoterapiaPreview';
 import { useMusicoterapiaReport } from '@/hooks/useMusicoterapiaReport';
+import { savePDFToStorage } from '@/utils/pdfStorageUtils';
 import { useReportData } from '../report/hooks/useReportData';
 import html2pdf from 'html2pdf.js';
 import { imageUrlToBase64 } from '@/utils/imageToBase64';
