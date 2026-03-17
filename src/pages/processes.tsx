@@ -235,15 +235,6 @@ export default function Processes() {
                     {/* Decorative corner glow */}
                     <div className={`absolute -top-12 -right-12 w-32 h-32 bg-gradient-to-br ${colors.gradient} opacity-[0.07] dark:opacity-[0.12] rounded-full blur-2xl group-hover:opacity-[0.15] dark:group-hover:opacity-[0.2] transition-opacity duration-500`} />
 
-                    {/* NEW badge */}
-                    {process.isNew && (
-                      <div className="absolute top-5 right-4 z-10">
-                        <Badge className={`${colors.badge} text-white font-bold text-[10px] px-2.5 py-0.5 rounded-full shadow-lg border-0 flex items-center gap-1`}>
-                          <Zap className="h-2.5 w-2.5" />
-                          NOVO
-                        </Badge>
-                      </div>
-                    )}
 
                     <div className="relative p-5 lg:p-6 flex flex-col h-full">
                       {/* Step number + Icon row */}
