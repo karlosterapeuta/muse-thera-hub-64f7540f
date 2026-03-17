@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -109,17 +109,25 @@ export function MusicoterapiaReportWizard({
     });
   }, [reportData, onUpdateData]);
 
+  const stepContentRef = useRef<HTMLDivElement>(null);
+
+  const scrollToStepContent = () => {
+    setTimeout(() => {
+      stepContentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
+  };
+
   const handleNextStep = () => {
     if (currentStep < STEPS.length - 1) {
       setCurrentStep(currentStep + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      scrollToStepContent();
     }
   };
 
   const handlePrevStep = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      scrollToStepContent();
     }
   };
 
@@ -326,7 +334,7 @@ export function MusicoterapiaReportWizard({
       </div>
 
       {/* Step Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div ref={stepContentRef} className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Main Content */}
         <div className="lg:col-span-3">
           <Card>
