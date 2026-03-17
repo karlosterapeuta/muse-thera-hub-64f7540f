@@ -1174,6 +1174,11 @@ export default function PatientHistoryPage() {
                   </div>
                 )}
               </TabsContent>
+
+              {/* Documents Tab */}
+              <TabsContent value="documents" className="space-y-4">
+                <SavedPDFsTab />
+              </TabsContent>
             </Tabs>
           </div>
         )}
