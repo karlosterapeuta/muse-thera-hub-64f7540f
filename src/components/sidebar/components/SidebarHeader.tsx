@@ -6,62 +6,54 @@ interface SidebarHeaderProps {
 
 export function SidebarHeader({ collapsed }: SidebarHeaderProps) {
   return (
-    <div className="relative overflow-hidden p-6 border-b border-border/50">
-      {/* Background animado com gradiente */}
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 via-blue-500/10 to-pink-500/10 animate-gradient"></div>
-      
-      {/* Notas musicais decorativas flutuantes */}
-      <div className="absolute inset-0 opacity-10 pointer-events-none">
-        <Music2 className="absolute top-2 left-2 w-4 h-4 text-purple-600 dark:text-purple-400 animate-float-slow" />
-        <Sparkles className="absolute top-4 right-4 w-3 h-3 text-blue-500 dark:text-blue-400 animate-float-slower" />
-        <Music2 className="absolute bottom-2 right-2 w-4 h-4 text-pink-500 dark:text-pink-400 animate-float-slow" />
+    <div className="relative overflow-hidden border-b border-border/30">
+      {/* Layered gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-purple-500/5 to-pink-500/8" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,hsl(var(--primary)/0.1),transparent_60%)]" />
+
+      {/* Subtle floating particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-3 left-4 w-1 h-1 rounded-full bg-primary/30 animate-pulse" />
+        <div className="absolute top-6 right-5 w-1.5 h-1.5 rounded-full bg-purple-500/20 animate-pulse delay-700" />
+        <div className="absolute bottom-4 left-8 w-1 h-1 rounded-full bg-pink-500/25 animate-pulse delay-1000" />
       </div>
 
       {collapsed ? (
-        // Versão colapsada - logo médio centralizado
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-center py-5 px-2">
           <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full blur-md opacity-50 group-hover:opacity-75 transition-opacity animate-pulse-slow"></div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-primary via-purple-600 to-pink-600 rounded-2xl blur-md opacity-40 group-hover:opacity-70 transition-opacity duration-500" />
             <img
               src="/lovable-uploads/musetera-logo-new.png"
               alt="MuseTera"
-              className="relative h-10 w-10 rounded-full shadow-xl ring-2 ring-border group-hover:ring-border/80 transition-all group-hover:scale-110 duration-300"
+              className="relative h-10 w-10 rounded-xl shadow-xl ring-2 ring-border/50 group-hover:ring-primary/40 transition-all group-hover:scale-110 duration-300"
             />
           </div>
         </div>
       ) : (
-        // Versão expandida - logo grande com texto
-        <div className="relative flex flex-col items-center space-y-3">
-          {/* Logo com efeitos */}
-          <div className="relative group cursor-pointer">
-            {/* Glow effect */}
-            <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-blue-600 to-pink-600 rounded-full blur-lg opacity-40 group-hover:opacity-75 transition-all duration-500 animate-gradient"></div>
-            
-            {/* Logo principal */}
+        <div className="relative flex items-center gap-4 p-5">
+          {/* Logo */}
+          <div className="relative group cursor-pointer shrink-0">
+            <div className="absolute -inset-1.5 bg-gradient-to-r from-primary via-purple-600 to-pink-600 rounded-2xl blur-lg opacity-30 group-hover:opacity-60 transition-all duration-500" />
             <div className="relative">
               <img
                 src="/lovable-uploads/musetera-logo-new.png"
                 alt="MuseTera"
-                className="h-16 w-16 rounded-full shadow-2xl ring-4 ring-border group-hover:ring-border/80 transition-all group-hover:scale-110 duration-300"
+                className="h-12 w-12 rounded-xl shadow-xl ring-2 ring-border/40 group-hover:ring-primary/40 transition-all group-hover:scale-105 duration-300"
               />
-              
-              {/* Badge decorativo */}
-              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center shadow-lg ring-2 ring-background">
-                <Music2 className="w-3 h-3 text-white" />
+              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-gradient-to-br from-primary to-purple-600 rounded-lg flex items-center justify-center shadow-md ring-2 ring-background">
+                <Music2 className="w-2.5 h-2.5 text-white" />
               </div>
             </div>
           </div>
 
-          {/* Nome da plataforma */}
-          <div className="flex flex-col items-center space-y-1 text-center">
-            <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-pink-600 dark:from-purple-400 dark:via-blue-400 dark:to-pink-400 bg-clip-text text-transparent animate-gradient tracking-tight">
+          {/* Brand text */}
+          <div className="flex flex-col min-w-0">
+            <h1 className="text-lg font-bold bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent tracking-tight leading-tight">
               MuseTera
             </h1>
-            
-            {/* Tagline */}
-            <div className="flex items-center gap-1.5 px-3 py-1 bg-muted/80 backdrop-blur-sm rounded-full border border-border shadow-sm">
-              <Sparkles className="w-3 h-3 text-purple-600 dark:text-purple-400" />
-              <p className="text-[10px] font-semibold text-foreground uppercase tracking-wider">
+            <div className="flex items-center gap-1 mt-0.5">
+              <Sparkles className="w-2.5 h-2.5 text-primary/60 shrink-0" />
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.12em]">
                 Musicoterapia
               </p>
             </div>
