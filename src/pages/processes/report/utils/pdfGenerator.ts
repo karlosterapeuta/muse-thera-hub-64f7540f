@@ -2,6 +2,7 @@
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import html2pdf from "html2pdf.js";
+import { savePDFToStorage } from "@/utils/pdfStorageUtils";
 import type { Database } from "@/integrations/supabase/types";
 
 type ReportType = Database["public"]["Enums"]["report_type"];
