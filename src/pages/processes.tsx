@@ -49,7 +49,6 @@ export default function Processes() {
       icon: Users,
       path: "/intervention",
       accentColor: "orange",
-      isNew: true,
       step: 4,
     },
     {
