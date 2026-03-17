@@ -41,7 +41,6 @@ export default function Processes() {
       icon: ClipboardList,
       path: "/musicotherapy-treatment-plans",
       accentColor: "emerald",
-      isNew: true,
       step: 3,
     },
     {
