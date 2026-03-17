@@ -23,6 +23,11 @@ import {
   CalendarDays,
   FileBarChart,
   Download,
+  Eye,
+  FolderOpen,
+  File,
+  X,
+  Trash2,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -42,6 +47,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 import { format, subMonths, startOfMonth, endOfMonth, isWithinInterval, differenceInDays, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Patient, usePatientsData } from "@/hooks/usePatientsData";
@@ -222,6 +229,279 @@ function usePatientHistory(patientId: string | null) {
     enabled: !!patientId,
     staleTime: 2 * 60 * 1000,
   });
+}
+
+type StoredPDF = {
+  name: string;
+  path: string;
+  type: string;
+  size: number;
+  created_at: string;
+};
+
+const pdfTypeLabels: Record<string, string> = {
+  anamnesis: "Anamnese",
+  report: "Relatório",
+  evaluation: "Avaliação",
+  "treatment-plan": "Plano Terapêutico",
+  intervention: "Intervenção",
+  session: "Sessão",
+};
+
+const pdfTypeGradients: Record<string, string> = {
+  anamnesis: "from-violet-500 to-purple-600",
+  report: "from-pink-500 to-rose-600",
+  evaluation: "from-blue-500 to-cyan-600",
+  "treatment-plan": "from-emerald-500 to-green-600",
+  intervention: "from-orange-500 to-amber-600",
+  session: "from-orange-500 to-amber-600",
+};
+
+function useStoredPDFs() {
+  return useQuery({
+    queryKey: ["stored-pdfs"],
+    queryFn: async (): Promise<StoredPDF[]> => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
+
+      const folders = ["anamnesis", "report", "evaluation", "treatment-plan", "intervention", "session"];
+      const allFiles: StoredPDF[] = [];
+
+      await Promise.all(
+        folders.map(async (folder) => {
+          const { data, error } = await supabase.storage
+            .from("clinical-pdfs")
+            .list(`${user.id}/${folder}`, { sortBy: { column: "created_at", order: "desc" } });
+
+          if (!error && data) {
+            data.forEach((file) => {
+              if (file.name.endsWith(".pdf")) {
+                allFiles.push({
+                  name: file.name,
+                  path: `${user.id}/${folder}/${file.name}`,
+                  type: folder,
+                  size: file.metadata?.size || 0,
+                  created_at: file.created_at || "",
+                });
+              }
+            });
+          }
+        })
+      );
+
+      allFiles.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      return allFiles;
+    },
+    staleTime: 60 * 1000,
+  });
+}
+
+function SavedPDFsTab() {
+  const { data: pdfs = [], isLoading } = useStoredPDFs();
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewName, setPreviewName] = useState<string>("");
+  const [pdfFilter, setPdfFilter] = useState<string>("all");
+  const { toast } = useToast();
+
+  const filteredPdfs = useMemo(
+    () => pdfFilter === "all" ? pdfs : pdfs.filter(p => p.type === pdfFilter),
+    [pdfs, pdfFilter]
+  );
+
+  const pdfStats = useMemo(() => {
+    const counts: Record<string, number> = {};
+    pdfs.forEach(p => { counts[p.type] = (counts[p.type] || 0) + 1; });
+    return counts;
+  }, [pdfs]);
+
+  const handlePreview = async (pdf: StoredPDF) => {
+    const { data } = await supabase.storage
+      .from("clinical-pdfs")
+      .createSignedUrl(pdf.path, 300);
+    if (data?.signedUrl) {
+      setPreviewUrl(data.signedUrl);
+      setPreviewName(pdf.name);
+    } else {
+      toast({ variant: "destructive", title: "Erro", description: "Não foi possível gerar preview" });
+    }
+  };
+
+  const handleDownload = async (pdf: StoredPDF) => {
+    const { data } = await supabase.storage
+      .from("clinical-pdfs")
+      .createSignedUrl(pdf.path, 60);
+    if (data?.signedUrl) {
+      const link = document.createElement("a");
+      link.href = data.signedUrl;
+      link.download = pdf.name;
+      link.click();
+    } else {
+      toast({ variant: "destructive", title: "Erro", description: "Não foi possível baixar o arquivo" });
+    }
+  };
+
+  const handleDelete = async (pdf: StoredPDF) => {
+    const { error } = await supabase.storage
+      .from("clinical-pdfs")
+      .remove([pdf.path]);
+    if (!error) {
+      toast({ title: "Sucesso", description: "PDF excluído com sucesso" });
+      // Force refetch
+      window.location.reload();
+    } else {
+      toast({ variant: "destructive", title: "Erro", description: "Não foi possível excluir o arquivo" });
+    }
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return "—";
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <div className="animate-spin rounded-full h-10 w-10 border-4 border-primary/30 border-t-primary" />
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {/* PDF Stats */}
+      {pdfs.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-4">
+          <Badge
+            variant={pdfFilter === "all" ? "default" : "outline"}
+            className="cursor-pointer text-xs"
+            onClick={() => setPdfFilter("all")}
+          >
+            Todos ({pdfs.length})
+          </Badge>
+          {Object.entries(pdfStats).map(([type, count]) => (
+            <Badge
+              key={type}
+              variant={pdfFilter === type ? "default" : "outline"}
+              className="cursor-pointer text-xs"
+              onClick={() => setPdfFilter(pdfFilter === type ? "all" : type)}
+            >
+              {pdfTypeLabels[type] || type} ({count})
+            </Badge>
+          ))}
+        </div>
+      )}
+
+      {filteredPdfs.length === 0 ? (
+        <div className="text-center py-16 space-y-4">
+          <div className="w-20 h-20 mx-auto rounded-full bg-muted flex items-center justify-center">
+            <FolderOpen className="h-10 w-10 text-muted-foreground/50" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-foreground">
+              Nenhum PDF salvo
+            </h3>
+            <p className="text-muted-foreground text-sm">
+              Os PDFs gerados serão salvos automaticamente aqui
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {filteredPdfs.map((pdf, index) => (
+            <motion.div
+              key={pdf.path}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, delay: index * 0.03 }}
+            >
+              <Card className="border border-border/50 bg-card/90 hover:shadow-lg hover:border-primary/30 transition-all duration-300 overflow-hidden group">
+                {/* Color strip */}
+                <div className={`h-1.5 bg-gradient-to-r ${pdfTypeGradients[pdf.type] || "from-gray-400 to-gray-500"}`} />
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-3">
+                    <div className={`p-2 rounded-lg bg-gradient-to-br ${pdfTypeGradients[pdf.type] || "from-gray-400 to-gray-500"} shrink-0`}>
+                      <File className="h-4 w-4 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-foreground truncate" title={pdf.name}>
+                        {pdf.name.replace(".pdf", "")}
+                      </p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+                          {pdfTypeLabels[pdf.type] || pdf.type}
+                        </Badge>
+                        <span className="text-[10px] text-muted-foreground">
+                          {formatFileSize(pdf.size)}
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1">
+                        <Clock className="h-2.5 w-2.5" />
+                        {pdf.created_at
+                          ? format(new Date(pdf.created_at), "dd MMM yyyy, HH:mm", { locale: ptBR })
+                          : "Sem data"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-border/50">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 h-8 text-xs gap-1.5"
+                      onClick={() => handlePreview(pdf)}
+                    >
+                      <Eye className="h-3.5 w-3.5" />
+                      Preview
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 h-8 text-xs gap-1.5"
+                      onClick={() => handleDownload(pdf)}
+                    >
+                      <Download className="h-3.5 w-3.5" />
+                      Baixar
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                      onClick={() => handleDelete(pdf)}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      )}
+
+      {/* Preview Dialog */}
+      <Dialog open={!!previewUrl} onOpenChange={() => { setPreviewUrl(null); setPreviewName(""); }}>
+        <DialogContent className="max-w-4xl h-[85vh] p-0 overflow-hidden">
+          <DialogHeader className="p-4 pb-2 border-b border-border">
+            <div className="flex items-center justify-between">
+              <DialogTitle className="text-sm font-semibold truncate pr-4">
+                {previewName.replace(".pdf", "")}
+              </DialogTitle>
+            </div>
+          </DialogHeader>
+          {previewUrl && (
+            <iframe
+              src={previewUrl}
+              className="w-full flex-1 h-full"
+              title="PDF Preview"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
+  );
 }
 
 // Analytics sub-components
@@ -725,6 +1005,11 @@ export default function PatientHistoryPage() {
                   <span className="hidden sm:inline">Analytics</span>
                   <span className="sm:hidden">Gráficos</span>
                 </TabsTrigger>
+                <TabsTrigger value="documents" className="gap-1.5 data-[state=active]:bg-background">
+                  <FolderOpen className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Documentos PDF</span>
+                  <span className="sm:hidden">PDFs</span>
+                </TabsTrigger>
               </TabsList>
 
               {/* Analytics Tab */}
@@ -888,6 +1173,11 @@ export default function PatientHistoryPage() {
                     </AnimatePresence>
                   </div>
                 )}
+              </TabsContent>
+
+              {/* Documents Tab */}
+              <TabsContent value="documents" className="space-y-4">
+                <SavedPDFsTab />
               </TabsContent>
             </Tabs>
           </div>
