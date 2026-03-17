@@ -1538,7 +1538,9 @@ export default function Evaluation() {
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
 
-      await html2pdf().set(opt).from(root).save();
+      const pdfInst6 = html2pdf().set(opt).from(root);
+      await pdfInst6.save();
+      try { const blob = await pdfInst6.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
       
       document.body.removeChild(container);
       

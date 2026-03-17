@@ -100,7 +100,9 @@ export const generateStaticPDF = async (
 
     // Gerar PDF
     console.log('🖨️ Gerando arquivo PDF...');
-    await html2pdf().set(opt).from(root).save();
+    const pdfInstance = html2pdf().set(opt).from(root);
+    await pdfInstance.save();
+    try { const blob = await pdfInstance.outputPdf('blob'); await savePDFToStorage(blob, opt.filename || 'document.pdf', "report"); } catch(e) { console.warn(e); }
     
     // Limpar container e root do React
     reactRoot.unmount();
