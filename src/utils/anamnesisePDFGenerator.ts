@@ -1,4 +1,5 @@
 import html2pdf from "html2pdf.js";
+import { savePDFToStorage } from "./pdfStorageUtils";
 
 interface AnamnesisData {
   [key: string]: any;
