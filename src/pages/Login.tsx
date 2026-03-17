@@ -6,7 +6,7 @@ import LoginForm from "@/components/auth/LoginForm";
 import PasswordResetForm from "@/components/auth/PasswordResetForm";
 import NewPasswordForm from "@/components/auth/NewPasswordForm";
 import { VideoBackground } from "@/components/auth/VideoBackground";
-import { AnimatedParticles } from "@/components/auth/AnimatedParticles";
+import { CosmicBackground } from "@/components/auth/CosmicBackground";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 
@@ -237,9 +237,9 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex flex-col lg:flex-row relative overflow-hidden">
-      {/* Animated Particles Background */}
-      <AnimatedParticles />
+    <div className="min-h-screen flex flex-col lg:flex-row relative overflow-hidden">
+      {/* Cosmic Background - Music of the Spheres */}
+      <CosmicBackground />
 
       {/* Left side - Login Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-3 sm:p-4 md:p-6 lg:p-8 relative z-10 min-h-screen lg:min-h-auto">
@@ -249,7 +249,7 @@ export default function Login() {
       </div>
 
       {/* Right side - Video Background Section (Desktop Only) */}
-      <div className="relative hidden lg:flex lg:w-1/2 overflow-hidden">
+      <div className="relative hidden lg:flex lg:w-1/2 overflow-hidden z-10">
         <VideoBackground />
       </div>
     </div>
