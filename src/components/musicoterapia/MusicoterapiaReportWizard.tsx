@@ -109,17 +109,25 @@ export function MusicoterapiaReportWizard({
     });
   }, [reportData, onUpdateData]);
 
+  const stepContentRef = useRef<HTMLDivElement>(null);
+
+  const scrollToStepContent = () => {
+    setTimeout(() => {
+      stepContentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
+  };
+
   const handleNextStep = () => {
     if (currentStep < STEPS.length - 1) {
       setCurrentStep(currentStep + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      scrollToStepContent();
     }
   };
 
   const handlePrevStep = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      scrollToStepContent();
     }
   };
 
