@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { FileDown, Info, HelpCircle, FileBarChart, FileText, CalendarIcon, Loader2, Save, User, AlertTriangle, X, Stethoscope } from "lucide-react";
 import html2pdf from "html2pdf.js";
+import { savePDFToStorage } from "@/utils/pdfStorageUtils";
 import { toast } from "sonner";
 import { TeaScalePDF } from "@/components/TeaScalePDF";
 import { ParametersGraphsPDF } from "@/components/ParametersGraphsPDF";
