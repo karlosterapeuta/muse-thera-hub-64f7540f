@@ -830,7 +830,9 @@ export default function Evaluation() {
         }
       };
 
-      await html2pdf().set(opt).from(root).save();
+      const pdfInst1 = html2pdf().set(opt).from(root);
+      await pdfInst1.save();
+      try { const blob = await pdfInst1.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
       
       document.body.removeChild(container);
       
