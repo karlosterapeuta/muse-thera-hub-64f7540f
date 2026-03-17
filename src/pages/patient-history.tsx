@@ -1250,7 +1250,7 @@ export default function PatientHistoryPage() {
 
               {/* Documents Tab */}
               <TabsContent value="documents" className="space-y-4">
-                <SavedPDFsTab />
+                <SavedPDFsTab patientName={selectedPatient?.name} />
               </TabsContent>
             </Tabs>
           </div>
