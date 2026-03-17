@@ -729,7 +729,7 @@ function PatientInsights({ items, patient }: { items: HistoryItem[]; patient: Pa
     const sortedDates = dates.sort((a, b) => a.getTime() - b.getTime());
     const firstRecord = sortedDates[0];
     const lastRecord = sortedDates[sortedDates.length - 1];
-    const daysInTreatment = firstRecord && lastRecord ? differenceInDays(lastRecord, firstRecord) : 0;
+    const daysInTreatment = firstRecord ? differenceInDays(new Date(), firstRecord) : 0;
 
     const thisMonth = items.filter(i => {
       if (!i.date) return false;
