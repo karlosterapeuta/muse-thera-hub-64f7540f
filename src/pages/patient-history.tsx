@@ -296,23 +296,48 @@ function useStoredPDFs() {
   });
 }
 
-function SavedPDFsTab() {
-  const { data: pdfs = [], isLoading } = useStoredPDFs();
+function SavedPDFsTab({ patientName }: { patientName?: string }) {
+  const { data: allPdfs = [], isLoading, refetch } = useStoredPDFs();
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewName, setPreviewName] = useState<string>("");
   const [pdfFilter, setPdfFilter] = useState<string>("all");
+  const [searchPdf, setSearchPdf] = useState<string>("");
   const { toast } = useToast();
 
-  const filteredPdfs = useMemo(
-    () => pdfFilter === "all" ? pdfs : pdfs.filter(p => p.type === pdfFilter),
-    [pdfs, pdfFilter]
-  );
+  // Filter by patient name if provided (normalize for comparison)
+  const patientPdfs = useMemo(() => {
+    if (!patientName) return allPdfs;
+    const normalized = patientName.toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, "_");
+    const normalizedAlt = patientName.toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, "-");
+    const normalizedSpaces = patientName.toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    
+    return allPdfs.filter(pdf => {
+      const fn = pdf.name.toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      return fn.includes(normalized) || fn.includes(normalizedAlt) || fn.includes(normalizedSpaces);
+    });
+  }, [allPdfs, patientName]);
+
+  const filteredPdfs = useMemo(() => {
+    let result = patientPdfs;
+    if (pdfFilter !== "all") result = result.filter(p => p.type === pdfFilter);
+    if (searchPdf.trim()) {
+      const s = searchPdf.toLowerCase();
+      result = result.filter(p => p.name.toLowerCase().includes(s));
+    }
+    return result;
+  }, [patientPdfs, pdfFilter, searchPdf]);
 
   const pdfStats = useMemo(() => {
     const counts: Record<string, number> = {};
-    pdfs.forEach(p => { counts[p.type] = (counts[p.type] || 0) + 1; });
+    patientPdfs.forEach(p => { counts[p.type] = (counts[p.type] || 0) + 1; });
     return counts;
-  }, [pdfs]);
+  }, [patientPdfs]);
 
   const handlePreview = async (pdf: StoredPDF) => {
     const { data } = await supabase.storage
@@ -346,8 +371,7 @@ function SavedPDFsTab() {
       .remove([pdf.path]);
     if (!error) {
       toast({ title: "Sucesso", description: "PDF excluído com sucesso" });
-      // Force refetch
-      window.location.reload();
+      refetch();
     } else {
       toast({ variant: "destructive", title: "Erro", description: "Não foi possível excluir o arquivo" });
     }
@@ -370,28 +394,57 @@ function SavedPDFsTab() {
 
   return (
     <>
-      {/* PDF Stats */}
-      {pdfs.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-4">
-          <Badge
-            variant={pdfFilter === "all" ? "default" : "outline"}
-            className="cursor-pointer text-xs"
-            onClick={() => setPdfFilter("all")}
-          >
-            Todos ({pdfs.length})
-          </Badge>
-          {Object.entries(pdfStats).map(([type, count]) => (
+      {/* Header info */}
+      <Card className="border border-border/50 bg-card/90 backdrop-blur-sm mb-4">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="p-2 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600">
+              <FolderOpen className="h-4 w-4 text-white" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-foreground">
+                Biblioteca de Documentos {patientName ? `— ${patientName}` : ""}
+              </h3>
+              <p className="text-xs text-muted-foreground">
+                {patientPdfs.length} documento{patientPdfs.length !== 1 ? "s" : ""} salvo{patientPdfs.length !== 1 ? "s" : ""}
+              </p>
+            </div>
+          </div>
+
+          {/* Search */}
+          <div className="flex items-center bg-background border border-border rounded-lg p-2 hover:border-primary/30 transition-colors mb-3">
+            <Search className="h-3.5 w-3.5 text-muted-foreground mr-2" />
+            <Input
+              type="search"
+              placeholder="Buscar documento..."
+              value={searchPdf}
+              onChange={(e) => setSearchPdf(e.target.value)}
+              className="border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-foreground placeholder:text-muted-foreground h-7 text-xs"
+            />
+          </div>
+
+          {/* Filter badges */}
+          <div className="flex flex-wrap gap-1.5">
             <Badge
-              key={type}
-              variant={pdfFilter === type ? "default" : "outline"}
-              className="cursor-pointer text-xs"
-              onClick={() => setPdfFilter(pdfFilter === type ? "all" : type)}
+              variant={pdfFilter === "all" ? "default" : "outline"}
+              className="cursor-pointer text-[10px] px-2 py-0.5"
+              onClick={() => setPdfFilter("all")}
             >
-              {pdfTypeLabels[type] || type} ({count})
+              Todos ({patientPdfs.length})
             </Badge>
-          ))}
-        </div>
-      )}
+            {Object.entries(pdfStats).map(([type, count]) => (
+              <Badge
+                key={type}
+                variant={pdfFilter === type ? "default" : "outline"}
+                className="cursor-pointer text-[10px] px-2 py-0.5"
+                onClick={() => setPdfFilter(pdfFilter === type ? "all" : type)}
+              >
+                {pdfTypeLabels[type] || type} ({count})
+              </Badge>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
       {filteredPdfs.length === 0 ? (
         <div className="text-center py-16 space-y-4">
@@ -400,10 +453,12 @@ function SavedPDFsTab() {
           </div>
           <div>
             <h3 className="text-lg font-semibold text-foreground">
-              Nenhum PDF salvo
+              {patientPdfs.length === 0 ? "Nenhum PDF salvo" : "Nenhum resultado"}
             </h3>
             <p className="text-muted-foreground text-sm">
-              Os PDFs gerados serão salvos automaticamente aqui
+              {patientPdfs.length === 0
+                ? "Os PDFs gerados serão salvos automaticamente aqui"
+                : "Tente ajustar o filtro ou a busca"}
             </p>
           </div>
         </div>
@@ -426,7 +481,7 @@ function SavedPDFsTab() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-foreground truncate" title={pdf.name}>
-                        {pdf.name.replace(".pdf", "")}
+                        {pdf.name.replace(".pdf", "").replace(/_/g, " ")}
                       </p>
                       <div className="flex items-center gap-2 mt-0.5">
                         <Badge variant="outline" className="text-[10px] px-1.5 py-0">
@@ -487,8 +542,24 @@ function SavedPDFsTab() {
           <DialogHeader className="p-4 pb-2 border-b border-border">
             <div className="flex items-center justify-between">
               <DialogTitle className="text-sm font-semibold truncate pr-4">
-                {previewName.replace(".pdf", "")}
+                {previewName.replace(".pdf", "").replace(/_/g, " ")}
               </DialogTitle>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5 text-xs shrink-0"
+                onClick={async () => {
+                  if (previewUrl) {
+                    const link = document.createElement("a");
+                    link.href = previewUrl;
+                    link.download = previewName;
+                    link.click();
+                  }
+                }}
+              >
+                <Download className="h-3.5 w-3.5" />
+                Baixar
+              </Button>
             </div>
           </DialogHeader>
           {previewUrl && (
@@ -503,6 +574,8 @@ function SavedPDFsTab() {
     </>
   );
 }
+
+
 
 // Analytics sub-components
 function ActivityOverTimeChart({ items }: { items: HistoryItem[] }) {
@@ -1177,7 +1250,7 @@ export default function PatientHistoryPage() {
 
               {/* Documents Tab */}
               <TabsContent value="documents" className="space-y-4">
-                <SavedPDFsTab />
+                <SavedPDFsTab patientName={selectedPatient?.name} />
               </TabsContent>
             </Tabs>
           </div>
