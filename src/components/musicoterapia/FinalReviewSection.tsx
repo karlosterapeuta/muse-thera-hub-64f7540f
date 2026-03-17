@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import html2pdf from 'html2pdf.js';
 import type { ReportData } from '@/data/musicoterapiaTemplate';
 import { imageUrlToBase64 } from '@/utils/imageToBase64';
+import { savePDFToStorage } from '@/utils/pdfStorageUtils';
 
 interface FinalReviewSectionProps {
   reportData: Partial<ReportData>;
