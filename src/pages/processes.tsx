@@ -73,7 +73,6 @@ export default function Processes() {
       icon: TrendingUp,
       path: "/processes/evolution",
       accentColor: "teal",
-      isNew: true,
       step: 7,
     },
     {
