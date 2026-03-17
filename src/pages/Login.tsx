@@ -6,7 +6,7 @@ import LoginForm from "@/components/auth/LoginForm";
 import PasswordResetForm from "@/components/auth/PasswordResetForm";
 import NewPasswordForm from "@/components/auth/NewPasswordForm";
 import { VideoBackground } from "@/components/auth/VideoBackground";
-import { AnimatedParticles } from "@/components/auth/AnimatedParticles";
+import { CosmicBackground } from "@/components/auth/CosmicBackground";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 
