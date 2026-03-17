@@ -2,6 +2,7 @@
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import html2pdf from "html2pdf.js";
+import { savePDFToStorage } from "@/utils/pdfStorageUtils";
 import type { Database } from "@/integrations/supabase/types";
 
 type ReportType = Database["public"]["Enums"]["report_type"];
@@ -394,7 +395,9 @@ export async function generatePDF(
 
     console.log("Configurações do PDF:", opt);
     
-    await html2pdf().set(opt).from(element).save();
+    const pdfInstance = html2pdf().set(opt).from(element);
+    await pdfInstance.save();
+    try { const blob = await pdfInstance.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "report"); } catch(e) { console.warn("PDF não salvo no storage:", e); }
     
     console.log("PDF gerado com sucesso!");
     

@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { savePDFToStorage } from "@/utils/pdfStorageUtils";
 import {
   Form,
   FormControl,
@@ -287,7 +288,9 @@ export default function ReevaluationForm() {
       },
     };
 
-    await html2pdf().from(element).set(opt).save();
+    const pdfInstance = html2pdf().from(element).set(opt);
+    await pdfInstance.save();
+    try { const blob = await pdfInstance.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn("PDF não salvo no storage:", e); }
   };
 
   const onSubmit = async (data: FormValues) => {

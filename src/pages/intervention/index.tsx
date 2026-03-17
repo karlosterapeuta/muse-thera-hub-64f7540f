@@ -23,6 +23,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import html2pdf from "html2pdf.js";
+import { savePDFToStorage } from "@/utils/pdfStorageUtils";
 import {
   Card,
   CardContent,
@@ -637,7 +638,9 @@ export default function InterventionForm() {
         },
       };
 
-      await html2pdf().from(element).set(opt).save();
+      const pdfInstance = html2pdf().from(element).set(opt);
+      await pdfInstance.save();
+      try { const blob = await pdfInstance.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "intervention"); } catch(e) { console.warn("PDF não salvo no storage:", e); }
       
       toast({
         title: "PDF gerado com sucesso!",
@@ -926,7 +929,9 @@ export default function InterventionForm() {
         },
       };
 
-      await html2pdf().from(element).set(opt).save();
+      const pdfInstance2 = html2pdf().from(element).set(opt);
+      await pdfInstance2.save();
+      try { const blob = await pdfInstance2.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "intervention"); } catch(e) { console.warn("PDF não salvo no storage:", e); }
       
       toast({
         title: "PDF gerado com sucesso!",

@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { FileDown, Info, HelpCircle, FileBarChart, FileText, CalendarIcon, Loader2, Save, User, AlertTriangle, X, Stethoscope } from "lucide-react";
 import html2pdf from "html2pdf.js";
+import { savePDFToStorage } from "@/utils/pdfStorageUtils";
 import { toast } from "sonner";
 import { TeaScalePDF } from "@/components/TeaScalePDF";
 import { ParametersGraphsPDF } from "@/components/ParametersGraphsPDF";
@@ -829,7 +830,9 @@ export default function Evaluation() {
         }
       };
 
-      await html2pdf().set(opt).from(root).save();
+      const pdfInst1 = html2pdf().set(opt).from(root);
+      await pdfInst1.save();
+      try { const blob = await pdfInst1.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
       
       document.body.removeChild(container);
       
@@ -940,7 +943,9 @@ export default function Evaluation() {
         }
       };
 
-      await html2pdf().set(opt).from(root).save();
+      const pdfInst2 = html2pdf().set(opt).from(root);
+      await pdfInst2.save();
+      try { const blob = await pdfInst2.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
       
       document.body.removeChild(container);
       
@@ -1061,7 +1066,9 @@ export default function Evaluation() {
         }
       };
 
-      await html2pdf().set(opt).from(root).save();
+      const pdfInst3 = html2pdf().set(opt).from(root);
+      await pdfInst3.save();
+      try { const blob = await pdfInst3.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
       
       document.body.removeChild(container);
       
@@ -1158,7 +1165,9 @@ export default function Evaluation() {
         }
       };
 
-      await html2pdf().set(opt).from(root).save();
+      const pdfInst4 = html2pdf().set(opt).from(root);
+      await pdfInst4.save();
+      try { const blob = await pdfInst4.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
       
       document.body.removeChild(container);
       
@@ -1390,7 +1399,9 @@ export default function Evaluation() {
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
 
-      await html2pdf().set(opt).from(root).save();
+      const pdfInst5 = html2pdf().set(opt).from(root);
+      await pdfInst5.save();
+      try { const blob = await pdfInst5.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
       
       document.body.removeChild(container);
       
@@ -1527,7 +1538,9 @@ export default function Evaluation() {
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
 
-      await html2pdf().set(opt).from(root).save();
+      const pdfInst6 = html2pdf().set(opt).from(root);
+      await pdfInst6.save();
+      try { const blob = await pdfInst6.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
       
       document.body.removeChild(container);
       
