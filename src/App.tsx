@@ -139,6 +139,7 @@ const App = () => {
     <PWAInstallProvider>
       <TooltipProvider>
         <Toaster />
+        <ShadcnToaster />
         
         <BrowserRouter>
         <InstantAuthChecker />
