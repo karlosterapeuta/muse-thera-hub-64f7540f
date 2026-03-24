@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff, Mail, Lock, Music, Sparkles, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, Music, CheckCircle2, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { GradientButton } from "./GradientButton";
 import { WelcomeToast } from "./WelcomeToast";
