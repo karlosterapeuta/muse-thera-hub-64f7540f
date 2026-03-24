@@ -36,22 +36,22 @@ export function StarfieldBackground() {
     }
     const shootingStars: ShootingStar[] = [];
     const createShootingStar = (): ShootingStar => {
-      const angle = Math.PI * 0.15 + Math.random() * Math.PI * 0.3;
-      const speed = 4 + Math.random() * 6;
+      const angle = Math.PI * 0.15 + Math.random() * Math.PI * 0.35;
+      const speed = 6 + Math.random() * 10;
       return {
-        x: Math.random() * canvas.width * 1.2 - canvas.width * 0.1,
-        y: -10,
+        x: Math.random() * canvas.width * 1.4 - canvas.width * 0.2,
+        y: -20 - Math.random() * 40,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
         life: 0,
-        maxLife: 40 + Math.random() * 40,
-        size: 1 + Math.random() * 1.5,
+        maxLife: 50 + Math.random() * 60,
+        size: 2 + Math.random() * 3,
         active: true,
       };
     };
 
     let time = 0;
-    let nextShootingAt = 60 + Math.random() * 120;
+    let nextShootingAt = 8 + Math.random() * 15;
     let frameCount = 0;
 
     const animate = () => {
