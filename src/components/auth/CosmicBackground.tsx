@@ -95,13 +95,14 @@ export function CosmicBackground() {
         // Frequency vibration lines emanating from planet
         drawFrequencyLines(ctx, px, py, planet, t);
 
-        // Planet glow
-        const glowGrad = ctx.createRadialGradient(px, py, 0, px, py, planet.size * scale * 3);
-        glowGrad.addColorStop(0, planet.glow);
+        // Planet glow - enhanced
+        const glowGrad = ctx.createRadialGradient(px, py, 0, px, py, planet.size * scale * 4);
+        glowGrad.addColorStop(0, planet.glow.replace(/[\d.]+\)$/, '0.6)'));
+        glowGrad.addColorStop(0.5, planet.glow);
         glowGrad.addColorStop(1, "transparent");
         ctx.fillStyle = glowGrad;
         ctx.beginPath();
-        ctx.arc(px, py, planet.size * scale * 3, 0, Math.PI * 2);
+        ctx.arc(px, py, planet.size * scale * 4, 0, Math.PI * 2);
         ctx.fill();
 
         // Saturn ring
