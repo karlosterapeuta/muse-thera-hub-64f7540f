@@ -106,10 +106,13 @@ export function StarfieldBackground() {
         }
       });
 
-      // Spawn shooting stars
+      // Spawn shooting stars - chuva intensa
       if (frameCount >= nextShootingAt) {
-        shootingStars.push(createShootingStar());
-        nextShootingAt = frameCount + 80 + Math.random() * 200;
+        const batch = 1 + Math.floor(Math.random() * 3);
+        for (let i = 0; i < batch; i++) {
+          shootingStars.push(createShootingStar());
+        }
+        nextShootingAt = frameCount + 5 + Math.random() * 20;
       }
 
       // Draw shooting stars
