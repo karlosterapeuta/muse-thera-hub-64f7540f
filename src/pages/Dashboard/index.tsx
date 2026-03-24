@@ -5,23 +5,20 @@ import { useDashboardData } from "./hooks/useDashboardData";
 import { ProductsShowcase } from "@/components/products/ProductsShowcase";
 import { globalCacheManager } from "@/utils/cacheManager";
 import { PlanStatusCard } from "@/components/dashboard/PlanStatusCard";
+import { DashboardBackground } from "@/components/dashboard/DashboardBackground";
 
 export default function Dashboard() {
   const data = useDashboardData();
 
-  // Initialize cache manager for automatic cleanup (runs in background)
   useEffect(() => {
-    // The globalCacheManager already has automatic cleanup running
-    // This effect ensures it's active when Dashboard mounts
-    return () => {
-      // Cleanup is handled by the global instance
-    };
+    return () => {};
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 w-full overflow-x-hidden">
+    <div className="min-h-screen relative w-full overflow-x-hidden">
+      <DashboardBackground />
       {/* Main Content */}
-      <div className="w-full px-4 sm:px-6 py-6 space-y-6 max-w-[1600px] mx-auto">
+      <div className="relative z-10 w-full px-4 sm:px-6 py-6 space-y-6 max-w-[1600px] mx-auto">
         {/* Plan Status Card */}
         <PlanStatusCard />
 
