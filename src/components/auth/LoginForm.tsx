@@ -99,20 +99,10 @@ export default function LoginForm({ onSwitchToPasswordReset }: LoginFormProps) {
       <div className="absolute -top-3 md:-top-4 -right-6 md:-right-8 w-8 md:w-10 h-8 md:h-10 bg-gradient-to-br from-secondary/40 to-primary/40 rounded-full blur-xl animate-pulse delay-1000"></div>
       <div className="absolute bottom-10 -left-8 w-10 h-10 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full blur-xl animate-pulse delay-2000"></div>
       
-      {/* Header */}
-      <div className="text-center mb-6 md:mb-8">
-        <div className="relative inline-flex items-center justify-center w-20 sm:w-24 md:w-28 h-20 sm:h-24 md:h-28 rounded-full shadow-2xl shadow-primary/30 mb-4 animate-scale-in">
-          <div className="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-full blur-md opacity-30 animate-pulse"></div>
-          <img 
-            src="/lovable-uploads/musetera-logo-new.png" 
-            alt="MuseTera Logo" 
-            className="relative w-full h-full object-cover rounded-full z-10"
-          />
-        </div>
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-primary/90 to-secondary bg-clip-text text-transparent mb-2 tracking-tight animate-fade-in">
-          MuseTera
-        </h1>
-        <p className="text-sm sm:text-base text-muted-foreground animate-fade-in delay-200 font-medium">
+      {/* Cosmic Hero - Planeta central com órbitas, planetas e logo */}
+      <div className="text-center mb-4 md:mb-6 relative">
+        <CosmicHeroLogo />
+        <p className="text-sm sm:text-base text-muted-foreground animate-fade-in delay-200 font-medium mt-1">
           Musicoterapia baseada em evidências científicas
         </p>
         <div className="inline-flex items-center gap-2 px-3 py-1 mt-2 rounded-full bg-primary/5 border border-primary/10 animate-fade-in delay-300">

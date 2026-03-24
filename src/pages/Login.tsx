@@ -237,11 +237,8 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
-      {/* Cosmic Background - Music of the Spheres */}
-      <CosmicBackground />
-
-      {/* Login Form - centered over cosmic background */}
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-[#040418] via-[#0a0d35] to-[#08082a]">
+      {/* Login Form */}
       <div className="relative z-10 w-full max-w-sm sm:max-w-md md:max-w-lg p-4 sm:p-6">
         {renderForm()}
       </div>
