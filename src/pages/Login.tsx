@@ -6,7 +6,7 @@ import LoginForm from "@/components/auth/LoginForm";
 import PasswordResetForm from "@/components/auth/PasswordResetForm";
 import NewPasswordForm from "@/components/auth/NewPasswordForm";
 import { VideoBackground } from "@/components/auth/VideoBackground";
-import { DashboardBackground } from "@/components/dashboard/DashboardBackground";
+import { CosmicBackground } from "@/components/auth/CosmicBackground";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 
@@ -239,7 +239,7 @@ export default function Login() {
   return (
     <div className="min-h-screen flex flex-col lg:flex-row relative overflow-hidden">
       {/* Cosmic Background - Music of the Spheres */}
-      <DashboardBackground />
+      <CosmicBackground />
 
       {/* Left side - Login Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-3 sm:p-4 md:p-6 lg:p-8 relative z-10 min-h-screen lg:min-h-auto">
