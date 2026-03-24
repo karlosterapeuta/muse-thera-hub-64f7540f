@@ -237,20 +237,13 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
       {/* Cosmic Background - Music of the Spheres */}
       <CosmicBackground />
 
-      {/* Left side - Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-3 sm:p-4 md:p-6 lg:p-8 relative z-10 min-h-screen lg:min-h-auto">
-        <div className="relative w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl">
-          {renderForm()}
-        </div>
-      </div>
-
-      {/* Right side - Video Background Section (Desktop Only) */}
-      <div className="relative hidden lg:flex lg:w-1/2 overflow-hidden z-10">
-        <VideoBackground />
+      {/* Login Form - centered over cosmic background */}
+      <div className="relative z-10 w-full max-w-sm sm:max-w-md md:max-w-lg p-4 sm:p-6">
+        {renderForm()}
       </div>
     </div>
   );
