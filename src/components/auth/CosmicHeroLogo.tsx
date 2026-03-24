@@ -79,22 +79,6 @@ export function CosmicHeroLogo() {
       const t = timeRef.current;
       ctx.clearRect(0, 0, SIZE, SIZE);
 
-      // Nebula glow
-      ctx.save();
-      ctx.globalAlpha = 0.15 + Math.sin(t * 0.3) * 0.05;
-      const neb1 = ctx.createRadialGradient(cx - 40, cy - 30, 0, cx, cy, 160);
-      neb1.addColorStop(0, "#7c3aed");
-      neb1.addColorStop(0.5, "#4c1d95");
-      neb1.addColorStop(1, "transparent");
-      ctx.fillStyle = neb1;
-      ctx.fillRect(0, 0, SIZE, SIZE);
-      const neb2 = ctx.createRadialGradient(cx + 50, cy + 40, 0, cx, cy, 140);
-      neb2.addColorStop(0, "#2563eb");
-      neb2.addColorStop(0.5, "#1e3a5f");
-      neb2.addColorStop(1, "transparent");
-      ctx.fillStyle = neb2;
-      ctx.fillRect(0, 0, SIZE, SIZE);
-      ctx.restore();
 
       // Stars
       stars.forEach((s) => {
