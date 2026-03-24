@@ -76,9 +76,13 @@ export default function LoginForm({ onSwitchToPasswordReset }: LoginFormProps) {
       }, 300);
       
     } catch (error: any) {
+      let description = error.message;
+      if (error.message?.includes('Invalid login credentials')) {
+        description = "Email ou senha incorretos. Verifique suas credenciais e tente novamente.";
+      }
       toast({
         title: "Falha no login",
-        description: error.message,
+        description,
         variant: "destructive",
       });
     } finally {
