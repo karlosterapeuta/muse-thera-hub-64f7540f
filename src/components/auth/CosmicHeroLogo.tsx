@@ -5,6 +5,7 @@ export function CosmicHeroLogo() {
   const animRef = useRef<number>(0);
   const timeRef = useRef(0);
   const logoRef = useRef<HTMLImageElement | null>(null);
+  const processedLogoRef = useRef<HTMLCanvasElement | null>(null);
   const logoLoaded = useRef(false);
 
   useEffect(() => {
@@ -13,11 +14,41 @@ export function CosmicHeroLogo() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Load logo image
+    // Load logo image and remove embedded dark background pixels
     const logo = new Image();
     logo.src = "/lovable-uploads/musetera-logo-new.png";
     logo.onload = () => {
       logoRef.current = logo;
+
+      const processedLogo = document.createElement("canvas");
+      processedLogo.width = logo.naturalWidth;
+      processedLogo.height = logo.naturalHeight;
+      const processedCtx = processedLogo.getContext("2d");
+
+      if (processedCtx) {
+        processedCtx.drawImage(logo, 0, 0);
+        const imageData = processedCtx.getImageData(0, 0, processedLogo.width, processedLogo.height);
+        const { data } = imageData;
+
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          const a = data[i + 3];
+          const avg = (r + g + b) / 3;
+          const channelSpread = Math.max(r, g, b) - Math.min(r, g, b);
+          const isNearBlack = r < 36 && g < 36 && b < 36;
+          const isDarkNeutral = avg < 52 && channelSpread < 18;
+
+          if (a > 0 && (isNearBlack || isDarkNeutral)) {
+            data[i + 3] = 0;
+          }
+        }
+
+        processedCtx.putImageData(imageData, 0, 0);
+        processedLogoRef.current = processedLogo;
+      }
+
       logoLoaded.current = true;
     };
 
