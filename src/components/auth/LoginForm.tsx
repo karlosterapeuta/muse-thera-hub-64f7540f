@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff, Mail, Lock, Music, Sparkles, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, Music, CheckCircle2, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { GradientButton } from "./GradientButton";
 import { WelcomeToast } from "./WelcomeToast";
@@ -98,42 +98,38 @@ export default function LoginForm({ onSwitchToPasswordReset }: LoginFormProps) {
       <div className="absolute -top-3 md:-top-4 -right-6 md:-right-8 w-8 md:w-10 h-8 md:h-10 bg-gradient-to-br from-secondary/40 to-primary/40 rounded-full blur-xl animate-pulse delay-1000"></div>
       <div className="absolute bottom-10 -left-8 w-10 h-10 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full blur-xl animate-pulse delay-2000"></div>
       
-      {/* Header with Enhanced Logo */}
-      <div className="text-center mb-8 md:mb-10 lg:mb-12 relative">
-        {/* Enhanced Background Glow */}
-        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 sm:w-40 md:w-48 lg:w-56 h-32 sm:h-40 md:h-48 lg:h-56 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full blur-3xl animate-pulse-slow"></div>
-        
-        {/* Logo Container with Enhanced Effects */}
-        <div className="relative inline-flex items-center justify-center w-20 sm:w-24 md:w-28 lg:w-32 h-20 sm:h-24 md:h-28 lg:h-32 bg-gradient-to-br from-primary via-primary/95 to-secondary rounded-full shadow-2xl shadow-primary/30 mb-6 md:mb-8 animate-scale-in group hover:scale-110 transition-all duration-700 hover:shadow-primary/50">
-          <div className="absolute inset-2 md:inset-3 bg-gradient-to-br from-white/30 to-transparent rounded-full"></div>
-          <div className="absolute -inset-1 md:-inset-2 bg-gradient-to-r from-primary to-secondary rounded-full blur-md opacity-30 group-hover:opacity-50 transition-opacity duration-500 animate-pulse-slow"></div>
-          <img 
-            src="/lovable-uploads/musetera-logo-new.png" 
-            alt="MuseTera Logo" 
-            className="relative w-full h-full object-cover filter drop-shadow-2xl z-10 rounded-full"
-          />
-          {/* Animated Musical Notes */}
-          <Music className="absolute -top-2 md:-top-3 -right-2 md:-right-3 w-4 md:w-5 lg:w-6 h-4 md:h-5 lg:h-6 text-primary animate-bounce delay-500" />
-          <Sparkles className="absolute -bottom-2 md:-bottom-3 -left-2 md:-left-3 w-4 md:w-5 lg:w-6 h-4 md:h-5 lg:h-6 text-secondary animate-pulse delay-700" />
-          <Music className="absolute top-0 -left-4 w-3 md:w-4 h-3 md:h-4 text-primary/70 animate-float-slow" />
+      {/* Cosmic Hero Logo */}
+      <div className="text-center mb-6 md:mb-8 relative">
+        {/* Cosmic image container with animations */}
+        <div className="relative inline-block animate-scale-in">
+          {/* Outer glow ring */}
+          <div className="absolute inset-0 -m-4 md:-m-6 rounded-full bg-gradient-to-r from-purple-500/20 via-blue-500/20 to-purple-500/20 blur-2xl animate-[spin_20s_linear_infinite]"></div>
+          
+          {/* Cosmic hero image */}
+          <div className="relative w-56 sm:w-64 md:w-72 lg:w-80 mx-auto animate-[float-cosmic_6s_ease-in-out_infinite]">
+            <img 
+              src="/lovable-uploads/musetera-cosmic-hero.png" 
+              alt="MuseTera - Música das Esferas" 
+              className="w-full h-auto drop-shadow-[0_0_30px_rgba(139,92,246,0.4)] hover:drop-shadow-[0_0_50px_rgba(139,92,246,0.6)] transition-all duration-700"
+            />
+            {/* Orbiting particle effects */}
+            <div className="absolute inset-0 animate-[spin_15s_linear_infinite]">
+              <div className="absolute top-0 left-1/2 w-1.5 h-1.5 bg-purple-400 rounded-full blur-[1px] animate-pulse"></div>
+            </div>
+            <div className="absolute inset-0 animate-[spin_25s_linear_infinite_reverse]">
+              <div className="absolute bottom-2 right-4 w-1 h-1 bg-blue-400 rounded-full blur-[1px] animate-pulse delay-700"></div>
+            </div>
+            <div className="absolute inset-0 animate-[spin_18s_linear_infinite]">
+              <div className="absolute top-1/4 right-0 w-1 h-1 bg-indigo-300 rounded-full blur-[1px] animate-pulse delay-1000"></div>
+            </div>
+          </div>
         </div>
         
-        {/* Enhanced Title */}
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary via-primary/90 to-secondary bg-clip-text text-transparent mb-3 md:mb-4 animate-slide-in tracking-tight">
-          MuseTera
-        </h1>
-        
-        {/* Enhanced Subtitle with Badge */}
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground animate-fade-in delay-200 font-medium">
-            Musicoterapia baseada em evidências científicas
-          </p>
-          <div className="w-2 h-2 rounded-full bg-secondary animate-pulse delay-500"></div>
-        </div>
-        
-        {/* Trust Badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 border border-primary/10 animate-fade-in delay-300">
+        {/* Subtitle */}
+        <p className="text-sm sm:text-base text-muted-foreground animate-fade-in delay-200 font-medium mt-3">
+          Musicoterapia baseada em evidências científicas
+        </p>
+        <div className="inline-flex items-center gap-2 px-3 py-1 mt-2 rounded-full bg-primary/5 border border-primary/10 animate-fade-in delay-300">
           <CheckCircle2 className="w-3 h-3 text-primary" />
           <span className="text-xs text-muted-foreground">Plataforma Certificada</span>
         </div>
