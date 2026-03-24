@@ -273,19 +273,22 @@ export function CosmicHeroLogo() {
       }
 
       // Draw logo image on top of planet
-      if (logoLoaded.current && logoRef.current) {
+      if (logoLoaded.current && (processedLogoRef.current || logoRef.current)) {
         const logoSize = planetR * 1.5;
+        const logoImage = processedLogoRef.current ?? logoRef.current;
         ctx.save();
         ctx.beginPath();
         ctx.arc(cx, cy, planetR - 2, 0, Math.PI * 2);
         ctx.clip();
-        ctx.drawImage(
-          logoRef.current,
-          cx - logoSize / 2,
-          cy - logoSize / 2,
-          logoSize,
-          logoSize
-        );
+        if (logoImage) {
+          ctx.drawImage(
+            logoImage,
+            cx - logoSize / 2,
+            cy - logoSize / 2,
+            logoSize,
+            logoSize
+          );
+        }
         ctx.restore();
       }
 
