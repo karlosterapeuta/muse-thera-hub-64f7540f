@@ -79,15 +79,6 @@ export function CosmicHeroLogo() {
       const t = timeRef.current;
       ctx.clearRect(0, 0, SIZE, SIZE);
 
-      // Background gradient (transparent edges, deep center)
-      const bg = ctx.createRadialGradient(cx, cy, 0, cx, cy, SIZE / 2);
-      bg.addColorStop(0, "rgba(10,15,50,0.9)");
-      bg.addColorStop(0.5, "rgba(8,10,40,0.6)");
-      bg.addColorStop(0.8, "rgba(5,5,25,0.2)");
-      bg.addColorStop(1, "transparent");
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, SIZE, SIZE);
-
       // Nebula glow
       ctx.save();
       ctx.globalAlpha = 0.15 + Math.sin(t * 0.3) * 0.05;
