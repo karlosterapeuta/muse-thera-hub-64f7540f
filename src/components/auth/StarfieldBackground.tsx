@@ -36,22 +36,22 @@ export function StarfieldBackground() {
     }
     const shootingStars: ShootingStar[] = [];
     const createShootingStar = (): ShootingStar => {
-      const angle = Math.PI * 0.15 + Math.random() * Math.PI * 0.3;
-      const speed = 4 + Math.random() * 6;
+      const angle = Math.PI * 0.15 + Math.random() * Math.PI * 0.35;
+      const speed = 6 + Math.random() * 10;
       return {
-        x: Math.random() * canvas.width * 1.2 - canvas.width * 0.1,
-        y: -10,
+        x: Math.random() * canvas.width * 1.4 - canvas.width * 0.2,
+        y: -20 - Math.random() * 40,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
         life: 0,
-        maxLife: 40 + Math.random() * 40,
-        size: 1 + Math.random() * 1.5,
+        maxLife: 50 + Math.random() * 60,
+        size: 2 + Math.random() * 3,
         active: true,
       };
     };
 
     let time = 0;
-    let nextShootingAt = 60 + Math.random() * 120;
+    let nextShootingAt = 8 + Math.random() * 15;
     let frameCount = 0;
 
     const animate = () => {
@@ -106,10 +106,13 @@ export function StarfieldBackground() {
         }
       });
 
-      // Spawn shooting stars
+      // Spawn shooting stars - chuva intensa
       if (frameCount >= nextShootingAt) {
-        shootingStars.push(createShootingStar());
-        nextShootingAt = frameCount + 80 + Math.random() * 200;
+        const batch = 1 + Math.floor(Math.random() * 3);
+        for (let i = 0; i < batch; i++) {
+          shootingStars.push(createShootingStar());
+        }
+        nextShootingAt = frameCount + 5 + Math.random() * 20;
       }
 
       // Draw shooting stars
@@ -125,7 +128,7 @@ export function StarfieldBackground() {
         }
 
         const alpha = Math.sin((ss.life / ss.maxLife) * Math.PI);
-        const tailLen = 25 + ss.size * 10;
+        const tailLen = 40 + ss.size * 15;
 
         // Tail gradient
         const tailX = ss.x - (ss.vx / Math.sqrt(ss.vx * ss.vx + ss.vy * ss.vy)) * tailLen;
