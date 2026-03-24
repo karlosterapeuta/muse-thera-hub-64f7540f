@@ -18,7 +18,7 @@ export default function Dashboard() {
     <div className="min-h-screen relative w-full overflow-x-hidden">
       <DashboardBackground />
       {/* Main Content */}
-      <div className="w-full px-4 sm:px-6 py-6 space-y-6 max-w-[1600px] mx-auto">
+      <div className="relative z-10 w-full px-4 sm:px-6 py-6 space-y-6 max-w-[1600px] mx-auto">
         {/* Plan Status Card */}
         <PlanStatusCard />
 
