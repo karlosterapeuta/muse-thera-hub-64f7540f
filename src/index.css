@@ -488,6 +488,15 @@
   }
 }
 
+@keyframes float-cosmic {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-12px) scale(1.02);
+  }
+}
+
 @keyframes pulse-slow {
   0%, 100% {
     opacity: 0.5;
