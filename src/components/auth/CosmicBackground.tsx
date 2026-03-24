@@ -64,12 +64,12 @@ export function CosmicBackground() {
       const cx = w * 0.72;
       const cy = h * 0.5;
 
-      // Clear with deep space gradient
+      // Clear with deep space gradient - more vibrant
       const bg = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(w, h) * 0.8);
-      bg.addColorStop(0, "#0a0a2e");
-      bg.addColorStop(0.3, "#070720");
-      bg.addColorStop(0.6, "#050518");
-      bg.addColorStop(1, "#020210");
+      bg.addColorStop(0, "#0f1040");
+      bg.addColorStop(0.3, "#0a0d35");
+      bg.addColorStop(0.6, "#08082a");
+      bg.addColorStop(1, "#040418");
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, w, h);
 
@@ -170,41 +170,61 @@ function createParticle(w: number, h: number): Particle {
 
 function drawNebula(ctx: CanvasRenderingContext2D, w: number, h: number, t: number) {
   ctx.save();
-  ctx.globalAlpha = 0.08;
+  ctx.globalAlpha = 0.18 + Math.sin(t * 0.2) * 0.03;
 
-  // Purple nebula
-  const n1 = ctx.createRadialGradient(w * 0.3, h * 0.3, 0, w * 0.3, h * 0.3, w * 0.4);
-  n1.addColorStop(0, "#6b21a8");
-  n1.addColorStop(0.5, "#4c1d95");
+  // Purple nebula - more vivid
+  const n1 = ctx.createRadialGradient(w * 0.3, h * 0.3, 0, w * 0.3, h * 0.3, w * 0.45);
+  n1.addColorStop(0, "#7c3aed");
+  n1.addColorStop(0.4, "#6b21a8");
+  n1.addColorStop(0.7, "#4c1d95");
   n1.addColorStop(1, "transparent");
   ctx.fillStyle = n1;
   ctx.fillRect(0, 0, w, h);
 
-  // Blue nebula
-  ctx.globalAlpha = 0.06;
-  const n2 = ctx.createRadialGradient(w * 0.7, h * 0.7, 0, w * 0.7, h * 0.7, w * 0.35);
-  n2.addColorStop(0, "#1e40af");
-  n2.addColorStop(0.5, "#1e3a5f");
+  // Blue nebula - more vivid
+  ctx.globalAlpha = 0.14 + Math.sin(t * 0.25 + 1) * 0.03;
+  const n2 = ctx.createRadialGradient(w * 0.7, h * 0.7, 0, w * 0.7, h * 0.7, w * 0.4);
+  n2.addColorStop(0, "#2563eb");
+  n2.addColorStop(0.4, "#1e40af");
+  n2.addColorStop(0.7, "#1e3a5f");
   n2.addColorStop(1, "transparent");
   ctx.fillStyle = n2;
+  ctx.fillRect(0, 0, w, h);
+
+  // Extra warm accent nebula
+  ctx.globalAlpha = 0.06;
+  const n3 = ctx.createRadialGradient(w * 0.5, h * 0.15, 0, w * 0.5, h * 0.15, w * 0.3);
+  n3.addColorStop(0, "#8b5cf6");
+  n3.addColorStop(0.5, "#6d28d9");
+  n3.addColorStop(1, "transparent");
+  ctx.fillStyle = n3;
   ctx.fillRect(0, 0, w, h);
 
   ctx.restore();
 }
 
 function drawStars(ctx: CanvasRenderingContext2D, w: number, h: number, t: number) {
-  // Use deterministic "random" based on position
-  for (let i = 0; i < 120; i++) {
+  for (let i = 0; i < 180; i++) {
     const seed = i * 7919;
     const x = (seed * 13) % w;
     const y = (seed * 17) % h;
-    const twinkle = Math.sin(t * 2 + i * 0.5) * 0.3 + 0.7;
-    const size = ((seed % 3) + 1) * 0.5;
+    const twinkle = Math.sin(t * 2.5 + i * 0.5) * 0.4 + 0.6;
+    const size = ((seed % 3) + 1) * 0.6;
 
-    ctx.fillStyle = `rgba(200, 210, 255, ${twinkle * 0.6})`;
+    // Brighter stars with slight color variation
+    const hue = 220 + (seed % 40);
+    ctx.fillStyle = `hsla(${hue}, 80%, 85%, ${twinkle * 0.8})`;
     ctx.beginPath();
     ctx.arc(x, y, size, 0, Math.PI * 2);
     ctx.fill();
+
+    // Add glow to larger stars
+    if (size > 1) {
+      ctx.fillStyle = `hsla(${hue}, 80%, 85%, ${twinkle * 0.15})`;
+      ctx.beginPath();
+      ctx.arc(x, y, size * 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 }
 
@@ -217,7 +237,7 @@ function drawOrbitalWave(
   planet: Planet
 ) {
   ctx.save();
-  ctx.strokeStyle = `${planet.color}18`;
+  ctx.strokeStyle = `${planet.color}30`;
   ctx.lineWidth = 1;
   ctx.beginPath();
 
@@ -246,7 +266,7 @@ function drawFrequencyLines(
   for (let i = 0; i < numLines; i++) {
     const angle = (Math.PI * 2 * i) / numLines + t * 0.5;
     const len = 15 + Math.sin(t * 3 + i) * 8;
-    ctx.strokeStyle = `${planet.color}30`;
+    ctx.strokeStyle = `${planet.color}50`;
     ctx.lineWidth = 0.8;
     ctx.beginPath();
     ctx.moveTo(px, py);
@@ -322,10 +342,11 @@ function drawCentralStar(
   const scale = Math.min(w, h) / 900;
   const r = 18 * scale * pulse;
 
-  // Outer glow
-  const g1 = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * 4);
-  g1.addColorStop(0, "rgba(139,92,246,0.15)");
-  g1.addColorStop(0.3, "rgba(99,102,241,0.08)");
+  // Outer glow - more prominent
+  const g1 = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * 5);
+  g1.addColorStop(0, "rgba(139,92,246,0.25)");
+  g1.addColorStop(0.3, "rgba(99,102,241,0.12)");
+  g1.addColorStop(0.6, "rgba(79,70,229,0.04)");
   g1.addColorStop(1, "transparent");
   ctx.fillStyle = g1;
   ctx.beginPath();
