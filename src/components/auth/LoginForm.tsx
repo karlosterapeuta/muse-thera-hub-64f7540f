@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff, Mail, Lock, Music, CheckCircle2, AlertTriangle } from "lucide-react";
+import { CosmicHeroLogo } from "./CosmicHeroLogo";
 import { supabase } from "@/integrations/supabase/client";
 import { GradientButton } from "./GradientButton";
 import { WelcomeToast } from "./WelcomeToast";
@@ -98,44 +99,10 @@ export default function LoginForm({ onSwitchToPasswordReset }: LoginFormProps) {
       <div className="absolute -top-3 md:-top-4 -right-6 md:-right-8 w-8 md:w-10 h-8 md:h-10 bg-gradient-to-br from-secondary/40 to-primary/40 rounded-full blur-xl animate-pulse delay-1000"></div>
       <div className="absolute bottom-10 -left-8 w-10 h-10 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full blur-xl animate-pulse delay-2000"></div>
       
-      {/* Cosmic Hero - Logo centralizada sobre o fundo cósmico animado */}
-      <div className="text-center mb-6 md:mb-8 relative">
-        <div className="relative inline-block animate-scale-in">
-          {/* Glow pulsante atrás da logo */}
-          <div className="absolute inset-0 -m-6 md:-m-8 rounded-full bg-gradient-to-r from-primary/30 via-secondary/20 to-primary/30 blur-3xl animate-pulse-slow"></div>
-          
-          {/* Logo container com animação de flutuação */}
-          <div className="relative w-24 sm:w-28 md:w-32 lg:w-36 h-24 sm:h-28 md:h-32 lg:h-36 mx-auto animate-[float-cosmic_6s_ease-in-out_infinite]">
-            {/* Anel orbital animado 1 */}
-            <div className="absolute -inset-4 md:-inset-6 border border-primary/20 rounded-full animate-[spin_20s_linear_infinite]">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-primary/60 rounded-full blur-[1px]"></div>
-            </div>
-            {/* Anel orbital animado 2 */}
-            <div className="absolute -inset-8 md:-inset-10 border border-secondary/15 rounded-full animate-[spin_30s_linear_infinite_reverse]">
-              <div className="absolute bottom-0 right-0 w-1.5 h-1.5 bg-secondary/50 rounded-full blur-[1px]"></div>
-            </div>
-            {/* Anel orbital animado 3 */}
-            <div className="absolute -inset-12 md:-inset-14 border border-primary/10 rounded-full animate-[spin_25s_linear_infinite]">
-              <div className="absolute top-1/4 right-0 w-1 h-1 bg-blue-400/40 rounded-full blur-[1px]"></div>
-            </div>
-            
-            {/* Logo com brilho */}
-            <div className="relative w-full h-full rounded-full overflow-hidden shadow-2xl shadow-primary/40">
-              <div className="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-full blur-md opacity-40 animate-pulse"></div>
-              <img 
-                src="/lovable-uploads/musetera-logo-new.png" 
-                alt="MuseTera Logo" 
-                className="relative w-full h-full object-cover rounded-full z-10 drop-shadow-[0_0_20px_hsl(var(--primary)/0.5)]"
-              />
-            </div>
-          </div>
-        </div>
-        
-        {/* Título */}
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-primary/90 to-secondary bg-clip-text text-transparent mt-4 mb-2 tracking-tight animate-fade-in">
-          MuseTera
-        </h1>
-        <p className="text-sm sm:text-base text-muted-foreground animate-fade-in delay-200 font-medium">
+      {/* Cosmic Hero - Planeta central com órbitas, planetas e logo */}
+      <div className="text-center mb-4 md:mb-6 relative">
+        <CosmicHeroLogo />
+        <p className="text-sm sm:text-base text-muted-foreground animate-fade-in delay-200 font-medium mt-1">
           Musicoterapia baseada em evidências científicas
         </p>
         <div className="inline-flex items-center gap-2 px-3 py-1 mt-2 rounded-full bg-primary/5 border border-primary/10 animate-fade-in delay-300">
