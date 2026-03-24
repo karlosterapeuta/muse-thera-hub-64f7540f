@@ -128,7 +128,7 @@ export function StarfieldBackground() {
         }
 
         const alpha = Math.sin((ss.life / ss.maxLife) * Math.PI);
-        const tailLen = 25 + ss.size * 10;
+        const tailLen = 40 + ss.size * 15;
 
         // Tail gradient
         const tailX = ss.x - (ss.vx / Math.sqrt(ss.vx * ss.vx + ss.vy * ss.vy)) * tailLen;
