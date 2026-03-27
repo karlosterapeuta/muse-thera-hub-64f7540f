@@ -23,25 +23,28 @@ export function useUsers() {
         return [];
       }
 
-      // Check if user is admin
+      // Check if user is admin (via role or email fallback)
       const { data: adminRoles, error: adminError } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", user.id)
         .eq("role", "admin");
 
-      console.log("🔑 Admin roles check:", { 
-        adminRoles, 
-        adminError, 
-        isAdmin: adminRoles && adminRoles.length > 0 
+      const isAdminByRole = adminRoles && adminRoles.length > 0;
+      const isAdminByEmail = user.email === "musicoterapeutakarlos@gmail.com";
+
+      console.log("🔑 Admin check:", { 
+        isAdminByRole, 
+        isAdminByEmail,
+        adminError
       });
 
       if (adminError) {
         console.error("❌ Error checking admin status:", adminError);
-        return [];
+        if (!isAdminByEmail) return [];
       }
 
-      if (!adminRoles || adminRoles.length === 0) {
+      if (!isAdminByRole && !isAdminByEmail) {
         console.log("❌ User is not an admin");
         return [];
       }
