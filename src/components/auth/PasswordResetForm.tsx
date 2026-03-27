@@ -52,8 +52,10 @@ export default function PasswordResetForm({ onSwitchToLogin }: PasswordResetForm
       
       if (error.message?.includes("User not found")) {
         errorMsg = "Não foi encontrado nenhum usuário com este email.";
-      } else if (error.message?.includes("rate limit")) {
-        errorMsg = "Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.";
+      } else if (error.message?.includes("rate limit") || error.message?.includes("rate_limit")) {
+        errorMsg = "Você já solicitou a recuperação recentemente. Aguarde alguns minutos e verifique sua caixa de entrada (incluindo spam).";
+      } else if (error.status === 0 || error.message?.includes("Failed to fetch")) {
+        errorMsg = "Erro de conexão. Tente novamente no site publicado ou verifique sua internet.";
       }
       
       toast({
