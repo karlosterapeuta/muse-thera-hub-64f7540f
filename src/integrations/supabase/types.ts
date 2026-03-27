@@ -721,6 +721,13 @@ export type Database = {
             referencedRelation: "course_creators"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "course_purchases_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "course_creators_secure"
+            referencedColumns: ["id"]
+          },
         ]
       }
       course_views: {
@@ -807,6 +814,13 @@ export type Database = {
             columns: ["creator_id"]
             isOneToOne: false
             referencedRelation: "course_creators"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "courses_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "course_creators_secure"
             referencedColumns: ["id"]
           },
         ]
@@ -1535,7 +1549,66 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      course_creators_secure: {
+        Row: {
+          asaas_account_status: string | null
+          asaas_customer_id: string | null
+          asaas_wallet_id: string | null
+          avatar_url: string | null
+          bio: string | null
+          commission_percentage: number | null
+          cpf_cnpj: string | null
+          created_at: string | null
+          email: string | null
+          id: string | null
+          is_active: boolean | null
+          name: string | null
+          phone: string | null
+          pix_key: string | null
+          pix_key_type: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          asaas_account_status?: string | null
+          asaas_customer_id?: string | null
+          asaas_wallet_id?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          commission_percentage?: number | null
+          cpf_cnpj?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          name?: string | null
+          phone?: string | null
+          pix_key?: string | null
+          pix_key_type?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          asaas_account_status?: string | null
+          asaas_customer_id?: string | null
+          asaas_wallet_id?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          commission_percentage?: number | null
+          cpf_cnpj?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          name?: string | null
+          phone?: string | null
+          pix_key?: string | null
+          pix_key_type?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       configure_user_plan: {
