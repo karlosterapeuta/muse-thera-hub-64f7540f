@@ -7,8 +7,14 @@ import { globalCacheManager } from "@/utils/cacheManager";
 import { PlanStatusCard } from "@/components/dashboard/PlanStatusCard";
 import { CosmicBackground } from "@/components/auth/CosmicBackground";
 import { PendingUsersPanel } from "@/components/dashboard/PendingUsersPanel";
+import { useAdmin } from "@/hooks/use-admin";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { ShieldCheck } from "lucide-react";
 
 export default function Dashboard() {
+  const { data: isAdmin } = useAdmin();
+  const navigate = useNavigate();
   const data = useDashboardData();
 
   useEffect(() => {
