@@ -1,7 +1,5 @@
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { Volume2, VolumeX } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useEffect, useRef } from "react";
 
 // Planetary frequencies inspired by Music of the Spheres
 // Based on orbital ratios mapped to audible harmonics
@@ -388,38 +386,19 @@ class CosmicMusicEngine {
 }
 
 export function CosmicAmbientMusic() {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [hasInteracted, setHasInteracted] = useState(false);
   const engineRef = useRef<CosmicMusicEngine | null>(null);
+  const startedRef = useRef(false);
 
-  const toggleMusic = useCallback(async () => {
-    if (!engineRef.current) {
-      engineRef.current = new CosmicMusicEngine();
-    }
-
-    if (isPlaying) {
-      await engineRef.current.stop();
-      setIsPlaying(false);
-    } else {
-      await engineRef.current.start();
-      setIsPlaying(true);
-    }
-    setHasInteracted(true);
-  }, [isPlaying]);
-
-  // Auto-start on first user interaction with the page
+  // Auto-start on first user interaction (browser requires gesture for AudioContext)
   useEffect(() => {
-    if (hasInteracted) return;
-
     const handleFirstInteraction = async () => {
-      if (hasInteracted) return;
-      setHasInteracted(true);
-      
+      if (startedRef.current) return;
+      startedRef.current = true;
+
       if (!engineRef.current) {
         engineRef.current = new CosmicMusicEngine();
       }
       await engineRef.current.start();
-      setIsPlaying(true);
     };
 
     const events = ["click", "keydown", "touchstart"];
@@ -428,7 +407,7 @@ export function CosmicAmbientMusic() {
     return () => {
       events.forEach(e => document.removeEventListener(e, handleFirstInteraction));
     };
-  }, [hasInteracted]);
+  }, []);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -439,19 +418,5 @@ export function CosmicAmbientMusic() {
     };
   }, []);
 
-  return (
-    <Button
-      variant="ghost"
-      size="icon"
-      onClick={toggleMusic}
-      className="fixed bottom-4 right-4 z-50 rounded-full bg-black/30 backdrop-blur-sm border border-white/10 hover:bg-black/50 text-white/70 hover:text-white transition-all duration-300"
-      title={isPlaying ? "Silenciar Música das Esferas" : "Tocar Música das Esferas"}
-    >
-      {isPlaying ? (
-        <Volume2 className="h-5 w-5 animate-pulse" />
-      ) : (
-        <VolumeX className="h-5 w-5" />
-      )}
-    </Button>
-  );
+  return null;
 }
