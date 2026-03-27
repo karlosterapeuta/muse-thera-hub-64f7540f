@@ -47,14 +47,20 @@ export default function LoginForm({ onSwitchToPasswordReset }: LoginFormProps) {
       
       if (profileError) throw profileError;
       
+      if (profile.status === 'pending') {
+        // Pending users can proceed - Layout will show PendingApprovalScreen
+        await logUserActivity(result.data.user.id, "login");
+        setUserId(result.data.user.id);
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 300);
+        setIsLoading(false);
+        return;
+      }
+      
       if (profile.status !== 'active') {
-        // Fazer signOut e aguardar completar
         await supabase.auth.signOut();
-        
-        // Aguardar um pouco para garantir que a sessão seja completamente encerrada
         await new Promise(resolve => setTimeout(resolve, 200));
-        
-        // Mostrar card visual de bloqueio
         setShowBlockedMessage(true);
         setIsLoading(false);
         return;

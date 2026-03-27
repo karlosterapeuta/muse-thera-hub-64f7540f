@@ -64,8 +64,7 @@ export const communityMenuItems = [
 ];
 
 export const getAdminMenuItems = (userEmail: string | null, isAdmin: boolean | undefined) => {
-  const adminEmails = ["musicoterapeutakarlos@gmail.com", "marcia.jacira@hotmail.com"];
-  const isAdminEmail = userEmail ? adminEmails.includes(userEmail) : false;
+  const isAdminEmail = userEmail === "musicoterapeutakarlos@gmail.com";
   
   const adminMenuItems = [];
   if (isAdminEmail || isAdmin === true) {
