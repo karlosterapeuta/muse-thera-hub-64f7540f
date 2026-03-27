@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 
 const LOOP_DURATION_SECONDS = 32;
-const OUTPUT_VOLUME = 0.48;
+const OUTPUT_VOLUME = 0.90;
 
 const PLANETARY_FREQUENCIES = {
   cosmos: 64,
