@@ -20,7 +20,7 @@ import { UserAnalyticsDashboard } from "./components/UserAnalyticsDashboard";
 
 export default function Users() {
   const { data: users, isLoading } = useUsers();
-  const { data: isAdmin } = useAdmin();
+  const { data: isAdmin, isLoading: isAdminLoading } = useAdmin();
   const { data: expiringUsers = [] } = useExpiringUsers(7);
   
   const [searchTerm, setSearchTerm] = useState("");
@@ -123,7 +123,7 @@ export default function Users() {
     setPlanTypeFilter("all");
   };
 
-  if (isLoading) {
+  if (isLoading || isAdminLoading) {
     return (
       <div className="space-y-4">
         <Skeleton className="h-8 w-[250px]" />
