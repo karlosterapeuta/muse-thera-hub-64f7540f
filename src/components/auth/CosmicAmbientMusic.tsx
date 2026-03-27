@@ -210,11 +210,12 @@ export function CosmicAmbientMusic() {
     audio.loop = true;
     audio.volume = OUTPUT_VOLUME;
     audio.preload = "auto";
-    audio.playsInline = true;
+    audio.setAttribute("playsinline", "true");
     audioRef.current = audio;
 
     const tryPlay = async () => {
       if (!audioRef.current?.src) return;
+      if (audioRef.current.readyState < 3) return;
 
       try {
         await audioRef.current.play();
@@ -225,10 +226,14 @@ export function CosmicAmbientMusic() {
     };
 
     const handleInteraction = () => {
-      if (!playAttemptedRef.current) {
-        playAttemptedRef.current = true;
-      }
+      playAttemptedRef.current = true;
       void tryPlay();
+    };
+
+    const handleCanPlay = () => {
+      if (playAttemptedRef.current) {
+        void tryPlay();
+      }
     };
 
     const init = async () => {
@@ -241,6 +246,7 @@ export function CosmicAmbientMusic() {
       urlRef.current = url;
       audio.src = url;
       audio.load();
+      audio.addEventListener("canplaythrough", handleCanPlay);
       void tryPlay();
     };
 
@@ -252,6 +258,7 @@ export function CosmicAmbientMusic() {
 
     return () => {
       isMounted = false;
+      audio.removeEventListener("canplaythrough", handleCanPlay);
       window.removeEventListener("pointerdown", handleInteraction);
       window.removeEventListener("touchstart", handleInteraction);
       window.removeEventListener("keydown", handleInteraction);
