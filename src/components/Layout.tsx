@@ -1,5 +1,6 @@
 
 import { useEffect, useRef } from "react";
+import { PushNotificationManager } from "./notifications/PushNotificationManager";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
@@ -199,6 +200,9 @@ function LayoutContent({ children }: LayoutProps) {
             © 2025 MuseTera
           </div>
         </footer>
+        
+        {/* Push Notification Manager */}
+        <PushNotificationManager />
         
         {/* Floating Chat Button */}
         <FloatingChat />

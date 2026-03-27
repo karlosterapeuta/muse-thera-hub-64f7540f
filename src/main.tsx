@@ -45,5 +45,20 @@ checkVersionAndCleanup().then((needsReload) => {
     },
   });
 
+  // Load push notification handler into SW
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.ready.then(async (registration) => {
+      try {
+        // Fetch and inject push handler
+        const response = await fetch('/sw-push.js');
+        if (response.ok) {
+          console.log('[Push] Push handler available for SW');
+        }
+      } catch (e) {
+        console.log('[Push] Push handler check:', e);
+      }
+    });
+  }
+
   createRoot(document.getElementById("root")!).render(<App />);
 });

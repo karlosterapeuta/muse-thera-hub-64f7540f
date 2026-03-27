@@ -62,14 +62,15 @@ export default defineConfig(({ mode }) => ({
           }
         ]
       },
-      includeAssets: ['icon-original.png', 'apple-touch-icon.png', 'manifest.json'],
+      includeAssets: ['icon-original.png', 'apple-touch-icon.png', 'manifest.json', 'sw-push.js'],
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10 MB
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
         navigateFallbackDenylist: [/^\/login/, /^\/reset-password/],
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
+        importScripts: ['/sw-push.js'],
       runtimeCaching: [
           {
             urlPattern: /\.html$/,
