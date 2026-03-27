@@ -139,6 +139,10 @@ function LayoutContent({ children }: LayoutProps) {
     validateAccess();
   }, [location.pathname, navigate, toast]);
 
+  if (isPending) {
+    return <PendingApprovalScreen />;
+  }
+
   return (
     <div className="flex min-h-screen w-full bg-background">
       {/* Sidebar com push behavior */}

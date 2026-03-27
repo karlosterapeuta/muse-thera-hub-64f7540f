@@ -41,6 +41,8 @@ export default function InstantAuthChecker() {
       const cached = profileStatusCache.get(userId);
       if (cached && (now - cached.timestamp) < CACHE_DURATION) {
         const isExpired = cached.expires_at ? new Date(cached.expires_at) < new Date() : false;
+        // Skip pending users - they are handled by Layout
+        if (cached.status === 'pending') return;
         if (cached.status !== 'active' || isExpired) {
           await supabase.auth.signOut();
           navigate("/login");
@@ -74,6 +76,9 @@ export default function InstantAuthChecker() {
       });
 
       const isExpired = profile?.expires_at ? new Date(profile.expires_at) < new Date() : false;
+      
+      // Skip pending users - they are handled by Layout
+      if (profile?.status === 'pending') return;
       
       if (profile?.status !== 'active' || isExpired) {
         await supabase.auth.signOut();
