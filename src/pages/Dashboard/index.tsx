@@ -29,6 +29,18 @@ export default function Dashboard() {
         {/* Admin: Pending Users Approval */}
         <PendingUsersPanel />
 
+        {/* Admin Quick Access Button */}
+        {isAdmin && (
+          <Button
+            onClick={() => navigate("/users")}
+            className="gap-2"
+            variant="outline"
+          >
+            <ShieldCheck className="h-4 w-4" />
+            Painel Administrativo
+          </Button>
+        )}
+
         {/* Plan Status Card */}
         <PlanStatusCard />
 
