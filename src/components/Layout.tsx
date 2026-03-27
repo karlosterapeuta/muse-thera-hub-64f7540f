@@ -112,14 +112,22 @@ function LayoutContent({ children }: LayoutProps) {
           return;
         }
 
+        // Handle pending approval
+        if (profile?.status === 'pending') {
+          setIsPending(true);
+          return;
+        }
+
+        setIsPending(false);
+
         const isExpired = profile?.expires_at ? new Date(profile.expires_at) < new Date() : false;
         
         if (profile?.status !== 'active' || isExpired) {
           await supabase.auth.signOut();
           navigate('/login');
           toast({
-            title: "Acesso bloqueado - Pagamento pendente",
-            description: "Sua conta está desativada por falta de pagamento. Regularize para voltar a usar o sistema.",
+            title: "Acesso bloqueado",
+            description: "Sua conta está desativada. Entre em contato com o administrador.",
             variant: "destructive",
           });
         }
