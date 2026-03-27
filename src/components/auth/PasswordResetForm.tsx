@@ -32,7 +32,7 @@ export default function PasswordResetForm({ onSwitchToLogin }: PasswordResetForm
 
     try {
       const origin = window.location.origin;
-      const redirectTo = `${origin}/login?type=recovery`;
+      const redirectTo = `${origin}/reset-password`;
       
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: redirectTo,
