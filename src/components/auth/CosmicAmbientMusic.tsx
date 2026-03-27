@@ -64,7 +64,7 @@ async function renderCosmicLoop(): Promise<string> {
   const ctx = new OfflineAudioContext(2, frameCount, sampleRate);
 
   const master = ctx.createGain();
-  master.gain.setValueAtTime(2.5, 0);
+  master.gain.setValueAtTime(5.0, 0);
   master.connect(ctx.destination);
 
   const makePad = (frequency: number, gainValue: number, pan: number, harmonic = 1) => {
@@ -102,11 +102,11 @@ async function renderCosmicLoop(): Promise<string> {
     detuned.stop(LOOP_DURATION_SECONDS);
   };
 
-  makePad(PLANETARY_FREQUENCIES.cosmos, 0.08, 0);
-  makePad(PLANETARY_FREQUENCIES.earth, 0.06, -0.2);
-  makePad(PLANETARY_FREQUENCIES.venus, 0.04, 0.22);
-  makePad(PLANETARY_FREQUENCIES.jupiter, 0.035, -0.35, 0.5);
-  makePad(PLANETARY_FREQUENCIES.saturn, 0.03, 0.38, 1.5);
+  makePad(PLANETARY_FREQUENCIES.cosmos, 0.18, 0);
+  makePad(PLANETARY_FREQUENCIES.earth, 0.14, -0.2);
+  makePad(PLANETARY_FREQUENCIES.venus, 0.10, 0.22);
+  makePad(PLANETARY_FREQUENCIES.jupiter, 0.08, -0.35, 0.5);
+  makePad(PLANETARY_FREQUENCIES.saturn, 0.07, 0.38, 1.5);
 
   const arpNotes = [
     PLANETARY_FREQUENCIES.earth,
