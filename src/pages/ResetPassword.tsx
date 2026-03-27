@@ -2,9 +2,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NewPasswordForm from "@/components/auth/NewPasswordForm";
-import AuthHeader from "@/components/auth/AuthHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { StarfieldBackground } from "@/components/auth/StarfieldBackground";
+import { CosmicAmbientMusic } from "@/components/auth/CosmicAmbientMusic";
+import { Loader2, ArrowLeft } from "lucide-react";
 
 export default function ResetPassword() {
   const [loading, setLoading] = useState(true);
@@ -16,11 +18,6 @@ export default function ResetPassword() {
   useEffect(() => {
     const handlePasswordReset = async () => {
       try {
-        // Log the current URL for debugging
-        console.log("Current URL:", window.location.href);
-        console.log("Hash part:", window.location.hash);
-        
-        // Check if this is a password recovery flow from URL hash params
         if (window.location.hash) {
           const hashParams: Record<string, string> = {};
           const hash = window.location.hash.substring(1);
@@ -32,104 +29,90 @@ export default function ResetPassword() {
             }
           });
           
-          console.log("Parsed hash parameters:", hashParams);
-          
           if (hashParams.type === 'recovery' && hashParams.access_token) {
             try {
-              // Set the session with the recovery tokens
               await supabase.auth.setSession({
                 access_token: hashParams.access_token,
                 refresh_token: hashParams.refresh_token || '',
               });
               
-              console.log("Session set successfully with recovery tokens");
               setHasValidToken(true);
               setLoading(false);
             } catch (error: any) {
-              console.error("Error setting recovery session:", error);
-              setError("Link inválido ou expirado. Por favor, solicite um novo link de redefinição de senha.");
+              setError("Link inválido ou expirado. Solicite um novo link de redefinição.");
               toast({
                 title: "Erro",
-                description: "Link inválido ou expirado. Por favor, solicite um novo link de redefinição de senha.",
+                description: "Link inválido ou expirado.",
                 variant: "destructive",
               });
               setLoading(false);
             }
           } else {
-            console.error("Invalid hash parameters", hashParams);
-            setError("Link inválido. Por favor, solicite um novo link de redefinição de senha.");
-            toast({
-              title: "Erro",
-              description: "Link inválido. Por favor, solicite um novo link de redefinição de senha.",
-              variant: "destructive",
-            });
+            setError("Link inválido. Solicite um novo link de redefinição.");
             setLoading(false);
           }
         } else {
-          console.error("No hash parameters found in URL");
-          setError("Nenhum token de recuperação encontrado. Por favor, solicite um link de redefinição de senha.");
-          toast({
-            title: "Erro",
-            description: "Nenhum token de recuperação encontrado. Por favor, solicite um link de redefinição de senha.",
-            variant: "destructive",
-          });
+          setError("Nenhum token de recuperação encontrado. Solicite um link de redefinição.");
           setLoading(false);
         }
       } catch (error: any) {
-        console.error("Unexpected error processing reset:", error);
-        setError("Ocorreu um erro ao processar seu link. Por favor, tente novamente ou solicite um novo link.");
-        toast({
-          title: "Erro",
-          description: "Ocorreu um erro ao processar seu link. Por favor, tente novamente ou solicite um novo link.",
-          variant: "destructive",
-        });
+        setError("Ocorreu um erro. Tente novamente ou solicite um novo link.");
         setLoading(false);
       }
     };
 
     handlePasswordReset();
-    
-    // Cleanup function to handle component unmounting gracefully
-    return () => {
-      // Any cleanup needed
-    };
   }, [navigate, toast]);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-gray-600">Processando seu link de recuperação...</p>
+      <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+        <StarfieldBackground />
+        <CosmicAmbientMusic />
+        <div className="relative z-10 text-center">
+          <Loader2 className="w-12 h-12 text-primary animate-spin mx-auto" />
+          <p className="mt-4 text-muted-foreground font-medium">Processando seu link de recuperação...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="max-w-md w-full space-y-8">
-        <AuthHeader 
-          title="Definir Nova Senha" 
-          description={error || "Digite sua nova senha abaixo:"}
-        />
-        
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+      <StarfieldBackground />
+      <CosmicAmbientMusic />
+      <div className="relative z-10 w-full max-w-sm sm:max-w-md md:max-w-lg p-4 sm:p-6">
         {hasValidToken ? (
           <NewPasswordForm onSuccessCallback={() => {
             toast({
               title: "Sucesso!",
-              description: "Sua senha foi atualizada com sucesso. Você será redirecionado para a página de login.",
+              description: "Sua senha foi atualizada. Redirecionando para o login...",
             });
             setTimeout(() => navigate("/login"), 2000);
           }} />
         ) : (
-          <div className="mt-4 text-center">
-            <button
-              onClick={() => navigate("/login")}
-              className="text-primary hover:text-primary/80"
-            >
-              Voltar para o login
-            </button>
+          <div className="flex flex-col items-center space-y-6">
+            <div className="flex flex-col items-center space-y-2">
+              <img
+                src="/lovable-uploads/musetera-logo-new.png"
+                alt="MuseTera Logo"
+                className="h-20 w-20"
+              />
+              <h2 className="text-2xl font-bold text-primary">MuseTera</h2>
+            </div>
+
+            <div className="relative w-full bg-gradient-to-br from-background/60 via-background/50 to-background/60 backdrop-blur-2xl rounded-3xl shadow-2xl border border-destructive/20 p-6 sm:p-8 overflow-hidden">
+              <div className="relative z-10 text-center space-y-4">
+                <p className="text-sm text-muted-foreground leading-relaxed">{error}</p>
+                <button
+                  onClick={() => navigate("/login")}
+                  className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-all duration-300 font-semibold hover:underline underline-offset-4"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  Voltar para o login
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
