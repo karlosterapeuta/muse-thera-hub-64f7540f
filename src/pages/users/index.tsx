@@ -20,7 +20,7 @@ import { UserAnalyticsDashboard } from "./components/UserAnalyticsDashboard";
 
 export default function Users() {
   const { data: users, isLoading } = useUsers();
-  const { data: isAdmin } = useAdmin();
+  const { data: isAdmin, isLoading: isAdminLoading } = useAdmin();
   const { data: expiringUsers = [] } = useExpiringUsers(7);
   
   const [searchTerm, setSearchTerm] = useState("");
