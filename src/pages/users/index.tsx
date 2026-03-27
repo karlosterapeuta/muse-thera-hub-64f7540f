@@ -123,7 +123,7 @@ export default function Users() {
     setPlanTypeFilter("all");
   };
 
-  if (isLoading) {
+  if (isLoading || isAdminLoading) {
     return (
       <div className="space-y-4">
         <Skeleton className="h-8 w-[250px]" />
