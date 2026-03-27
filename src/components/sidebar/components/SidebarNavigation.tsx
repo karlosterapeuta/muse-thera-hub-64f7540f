@@ -42,8 +42,15 @@ export function SidebarNavigation({ collapsed, onNavigate, userEmail, isAdmin }:
       
       {adminMenuItems.length > 0 && (
         <>
-          {!collapsed && <div className="mx-5 my-2 border-t border-border/30" />}
-          <MenuSection title="Administração" items={adminMenuItems} collapsed={collapsed} onNavigate={onNavigate} />
+          {!collapsed && <div className="mx-5 my-2 border-t border-primary/30" />}
+          {!collapsed && (
+            <div className="mx-3 mb-1 mt-2 px-2 py-1.5 bg-primary/10 rounded-lg border border-primary/20">
+              <span className="text-xs font-extrabold text-primary uppercase tracking-widest flex items-center gap-2">
+                🛡️ Administração
+              </span>
+            </div>
+          )}
+          <MenuSection title="" items={adminMenuItems} collapsed={collapsed} onNavigate={onNavigate} showTitle={false} />
         </>
       )}
     </nav>
