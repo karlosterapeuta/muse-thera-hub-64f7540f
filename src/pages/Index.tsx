@@ -24,7 +24,10 @@ const Index = () => {
             ? new Date(profile.expires_at) < new Date() 
             : false;
           
-          if (profile?.status === 'active' && !isExpired) {
+          if (profile?.status === 'pending') {
+            // Pending users go to dashboard where they'll see the approval screen
+            navigate('/dashboard', { replace: true });
+          } else if (profile?.status === 'active' && !isExpired) {
             navigate('/dashboard', { replace: true });
           } else {
             await supabase.auth.signOut();
