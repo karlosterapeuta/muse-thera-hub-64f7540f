@@ -6,6 +6,7 @@ import { ProductsShowcase } from "@/components/products/ProductsShowcase";
 import { globalCacheManager } from "@/utils/cacheManager";
 import { PlanStatusCard } from "@/components/dashboard/PlanStatusCard";
 import { CosmicBackground } from "@/components/auth/CosmicBackground";
+import { PendingUsersPanel } from "@/components/dashboard/PendingUsersPanel";
 
 export default function Dashboard() {
   const data = useDashboardData();
@@ -19,6 +20,9 @@ export default function Dashboard() {
       <CosmicBackground />
       {/* Main Content */}
       <div className="relative z-10 w-full px-4 sm:px-6 py-6 space-y-6 max-w-[1600px] mx-auto">
+        {/* Admin: Pending Users Approval */}
+        <PendingUsersPanel />
+
         {/* Plan Status Card */}
         <PlanStatusCard />
 
