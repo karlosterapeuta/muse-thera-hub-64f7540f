@@ -17,6 +17,8 @@ import { Separator } from "./ui/separator";
 import { logPageView } from "@/utils/activityLogger";
 import FloatingChat from "./ai-chat/FloatingChat";
 import { UserExpirationWarning } from "./auth/UserExpirationWarning";
+import { PendingApprovalScreen } from "./auth/PendingApprovalScreen";
+import { useState } from "react";
 
 interface LayoutProps {
   children?: React.ReactNode;
@@ -28,6 +30,7 @@ function LayoutContent({ children }: LayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [isPending, setIsPending] = useState(false);
   const { toggleSidebar, setOpenMobile, isMobile } = useSidebar();
   const isDashboard = location.pathname === '/dashboard';
   const lastTrackedPath = useRef<string>("");
@@ -109,14 +112,22 @@ function LayoutContent({ children }: LayoutProps) {
           return;
         }
 
+        // Handle pending approval
+        if (profile?.status === 'pending') {
+          setIsPending(true);
+          return;
+        }
+
+        setIsPending(false);
+
         const isExpired = profile?.expires_at ? new Date(profile.expires_at) < new Date() : false;
         
         if (profile?.status !== 'active' || isExpired) {
           await supabase.auth.signOut();
           navigate('/login');
           toast({
-            title: "Acesso bloqueado - Pagamento pendente",
-            description: "Sua conta está desativada por falta de pagamento. Regularize para voltar a usar o sistema.",
+            title: "Acesso bloqueado",
+            description: "Sua conta está desativada. Entre em contato com o administrador.",
             variant: "destructive",
           });
         }
@@ -127,6 +138,10 @@ function LayoutContent({ children }: LayoutProps) {
 
     validateAccess();
   }, [location.pathname, navigate, toast]);
+
+  if (isPending) {
+    return <PendingApprovalScreen />;
+  }
 
   return (
     <div className="flex min-h-screen w-full bg-background">
