@@ -7,6 +7,7 @@ import PasswordResetForm from "@/components/auth/PasswordResetForm";
 import NewPasswordForm from "@/components/auth/NewPasswordForm";
 
 import { StarfieldBackground } from "@/components/auth/StarfieldBackground";
+import { CosmicAmbientMusic } from "@/components/auth/CosmicAmbientMusic";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 
@@ -239,6 +240,7 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
       <StarfieldBackground />
+      <CosmicAmbientMusic />
       <div className="relative z-10 w-full max-w-sm sm:max-w-md md:max-w-lg p-4 sm:p-6">
         {renderForm()}
       </div>
