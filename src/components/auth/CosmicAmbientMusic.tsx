@@ -1,433 +1,271 @@
-
 import { useEffect, useRef } from "react";
 
-// Planetary frequencies inspired by Music of the Spheres
-// Based on orbital ratios mapped to audible harmonics
+const LOOP_DURATION_SECONDS = 32;
+const OUTPUT_VOLUME = 0.32;
+
 const PLANETARY_FREQUENCIES = {
-  mercury: 141.27,  // Quick orbit
-  venus: 221.23,    // Harmonic warmth
-  earth: 136.10,    // OM frequency / Earth year
-  mars: 144.72,     // Energy
-  jupiter: 183.58,  // Expansion
-  saturn: 147.85,   // Structure
-  neptune: 211.44,  // Mystery
-  cosmos: 128.00,   // Deep drone base
+  cosmos: 64,
+  earth: 136.1,
+  venus: 221.23,
+  jupiter: 183.58,
+  saturn: 147.85,
+  neptune: 211.44,
 };
 
-class CosmicMusicEngine {
-  public ctx: AudioContext | null = null;
-  private masterGain: GainNode | null = null;
-  private convolver: ConvolverNode | null = null;
-  private activeNodes: AudioNode[] = [];
-  private oscillators: OscillatorNode[] = [];
-  private intervalIds: number[] = [];
-  private isPlaying = false;
+function audioBufferToWav(buffer: AudioBuffer): Blob {
+  const numberOfChannels = buffer.numberOfChannels;
+  const sampleRate = buffer.sampleRate;
+  const format = 1;
+  const bitDepth = 16;
+  const samples = buffer.length;
+  const blockAlign = numberOfChannels * bitDepth / 8;
+  const byteRate = sampleRate * blockAlign;
+  const dataSize = samples * blockAlign;
+  const arrayBuffer = new ArrayBuffer(44 + dataSize);
+  const view = new DataView(arrayBuffer);
 
-  async start(): Promise<void> {
-    if (this.isPlaying) return;
-
-    this.ctx = new AudioContext();
-    this.isPlaying = true;
-
-    // Master gain - starts at 0 for fade-in
-    this.masterGain = this.ctx.createGain();
-    this.masterGain.gain.setValueAtTime(0, this.ctx.currentTime);
-    this.masterGain.gain.linearRampToValueAtTime(0.18, this.ctx.currentTime + 4);
-
-    // Reverb
-    this.convolver = this.createReverb();
-    const reverbGain = this.ctx.createGain();
-    reverbGain.gain.setValueAtTime(0.4, this.ctx.currentTime);
-    this.convolver.connect(reverbGain);
-    reverbGain.connect(this.ctx.destination);
-    this.activeNodes.push(this.convolver, reverbGain);
-
-    // Delay effect
-    const delay = this.ctx.createDelay(2);
-    delay.delayTime.setValueAtTime(1.2, this.ctx.currentTime);
-    const delayFeedback = this.ctx.createGain();
-    delayFeedback.gain.setValueAtTime(0.25, this.ctx.currentTime);
-    const delayMix = this.ctx.createGain();
-    delayMix.gain.setValueAtTime(0.15, this.ctx.currentTime);
-    delay.connect(delayFeedback);
-    delayFeedback.connect(delay);
-    delay.connect(delayMix);
-    delayMix.connect(this.ctx.destination);
-    this.activeNodes.push(delay, delayFeedback, delayMix);
-
-    // Connect master to dry + effects
-    this.masterGain.connect(this.ctx.destination);
-    this.masterGain.connect(this.convolver);
-    this.masterGain.connect(delay);
-
-    // Layer 1: Deep cosmic drone
-    this.createDrone(PLANETARY_FREQUENCIES.cosmos, 0.12);
-    this.createDrone(PLANETARY_FREQUENCIES.earth, 0.08);
-
-    // Layer 2: Atmospheric pads (slow evolving)
-    this.createEvolvingPad(PLANETARY_FREQUENCIES.venus, 0.06, 8);
-    this.createEvolvingPad(PLANETARY_FREQUENCIES.jupiter, 0.05, 12);
-    this.createEvolvingPad(PLANETARY_FREQUENCIES.saturn, 0.04, 15);
-
-    // Layer 3: Orbital arpeggios
-    this.startOrbitalArpeggio();
-
-    // Layer 4: Cosmic bells (sparse)
-    this.startCosmicBells();
-
-    // Layer 5: Binaural-like subtle beating
-    this.createBinauralBeat(PLANETARY_FREQUENCIES.earth, 4, 0.03); // 4Hz theta
-  }
-
-  private createReverb(): ConvolverNode {
-    const convolver = this.ctx!.createConvolver();
-    const rate = this.ctx!.sampleRate;
-    const length = rate * 4; // 4-second reverb tail
-    const impulse = this.ctx!.createBuffer(2, length, rate);
-
-    for (let ch = 0; ch < 2; ch++) {
-      const data = impulse.getChannelData(ch);
-      for (let i = 0; i < length; i++) {
-        // Exponential decay with random diffusion
-        data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2.5);
-      }
+  const writeString = (offset: number, value: string) => {
+    for (let i = 0; i < value.length; i++) {
+      view.setUint8(offset + i, value.charCodeAt(i));
     }
-    convolver.buffer = impulse;
-    return convolver;
+  };
+
+  writeString(0, "RIFF");
+  view.setUint32(4, 36 + dataSize, true);
+  writeString(8, "WAVE");
+  writeString(12, "fmt ");
+  view.setUint32(16, 16, true);
+  view.setUint16(20, format, true);
+  view.setUint16(22, numberOfChannels, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, byteRate, true);
+  view.setUint16(32, blockAlign, true);
+  view.setUint16(34, bitDepth, true);
+  writeString(36, "data");
+  view.setUint32(40, dataSize, true);
+
+  const channels = Array.from({ length: numberOfChannels }, (_, channel) => buffer.getChannelData(channel));
+  let offset = 44;
+
+  for (let i = 0; i < samples; i++) {
+    for (let channel = 0; channel < numberOfChannels; channel++) {
+      const sample = Math.max(-1, Math.min(1, channels[channel][i] || 0));
+      view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7fff, true);
+      offset += 2;
+    }
   }
 
-  private createDrone(freq: number, volume: number): void {
-    if (!this.ctx || !this.masterGain) return;
+  return new Blob([arrayBuffer], { type: "audio/wav" });
+}
 
-    // Main tone
-    const osc = this.ctx.createOscillator();
+async function renderCosmicLoop(): Promise<string> {
+  const sampleRate = 44100;
+  const frameCount = LOOP_DURATION_SECONDS * sampleRate;
+  const ctx = new OfflineAudioContext(2, frameCount, sampleRate);
+
+  const master = ctx.createGain();
+  master.gain.setValueAtTime(0.75, 0);
+  master.connect(ctx.destination);
+
+  const makePad = (frequency: number, gainValue: number, pan: number, harmonic = 1) => {
+    const osc = ctx.createOscillator();
     osc.type = "sine";
-    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+    osc.frequency.setValueAtTime(frequency * harmonic, 0);
 
-    // Sub-octave
-    const sub = this.ctx.createOscillator();
-    sub.type = "sine";
-    sub.frequency.setValueAtTime(freq / 2, this.ctx.currentTime);
+    const detuned = ctx.createOscillator();
+    detuned.type = "triangle";
+    detuned.frequency.setValueAtTime(frequency * harmonic * 1.002, 0);
 
-    // Slight detuning for richness
-    const detune = this.ctx.createOscillator();
-    detune.type = "sine";
-    detune.frequency.setValueAtTime(freq + 0.5, this.ctx.currentTime);
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(gainValue, 0);
+    gain.gain.linearRampToValueAtTime(gainValue * 1.18, LOOP_DURATION_SECONDS / 2);
+    gain.gain.linearRampToValueAtTime(gainValue, LOOP_DURATION_SECONDS);
 
-    const gain = this.ctx.createGain();
-    gain.gain.setValueAtTime(volume, this.ctx.currentTime);
-
-    const subGain = this.ctx.createGain();
-    subGain.gain.setValueAtTime(volume * 0.6, this.ctx.currentTime);
-
-    const detuneGain = this.ctx.createGain();
-    detuneGain.gain.setValueAtTime(volume * 0.3, this.ctx.currentTime);
-
-    // Low-pass filter for warmth
-    const filter = this.ctx.createBiquadFilter();
+    const filter = ctx.createBiquadFilter();
     filter.type = "lowpass";
-    filter.frequency.setValueAtTime(400, this.ctx.currentTime);
-    filter.Q.setValueAtTime(0.7, this.ctx.currentTime);
+    filter.frequency.setValueAtTime(900, 0);
+    filter.frequency.linearRampToValueAtTime(1400, LOOP_DURATION_SECONDS / 2);
+    filter.frequency.linearRampToValueAtTime(900, LOOP_DURATION_SECONDS);
+
+    const panner = ctx.createStereoPanner();
+    panner.pan.setValueAtTime(pan, 0);
 
     osc.connect(gain);
-    sub.connect(subGain);
-    detune.connect(detuneGain);
+    detuned.connect(gain);
     gain.connect(filter);
-    subGain.connect(filter);
-    detuneGain.connect(filter);
-    filter.connect(this.masterGain);
+    filter.connect(panner);
+    panner.connect(master);
 
-    osc.start();
-    sub.start();
-    detune.start();
+    osc.start(0);
+    detuned.start(0);
+    osc.stop(LOOP_DURATION_SECONDS);
+    detuned.stop(LOOP_DURATION_SECONDS);
+  };
 
-    this.oscillators.push(osc, sub, detune);
-    this.activeNodes.push(gain, subGain, detuneGain, filter);
+  makePad(PLANETARY_FREQUENCIES.cosmos, 0.08, 0);
+  makePad(PLANETARY_FREQUENCIES.earth, 0.06, -0.2);
+  makePad(PLANETARY_FREQUENCIES.venus, 0.04, 0.22);
+  makePad(PLANETARY_FREQUENCIES.jupiter, 0.035, -0.35, 0.5);
+  makePad(PLANETARY_FREQUENCIES.saturn, 0.03, 0.38, 1.5);
+
+  const arpNotes = [
+    PLANETARY_FREQUENCIES.earth,
+    PLANETARY_FREQUENCIES.earth * 1.125,
+    PLANETARY_FREQUENCIES.earth * 1.25,
+    PLANETARY_FREQUENCIES.earth * 1.5,
+    PLANETARY_FREQUENCIES.earth * 1.667,
+  ];
+
+  for (let i = 0; i < 7; i++) {
+    const start = 2 + i * 4;
+    const duration = 2.8;
+    const osc = ctx.createOscillator();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(arpNotes[i % arpNotes.length] * 2, start);
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.linearRampToValueAtTime(0.028, start + 0.8);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(1800, start);
+    filter.frequency.linearRampToValueAtTime(650, start + duration);
+
+    const panner = ctx.createStereoPanner();
+    panner.pan.setValueAtTime(i % 2 === 0 ? -0.45 : 0.45, start);
+
+    osc.connect(gain);
+    gain.connect(filter);
+    filter.connect(panner);
+    panner.connect(master);
+
+    osc.start(start);
+    osc.stop(start + duration + 0.1);
   }
 
-  private createEvolvingPad(freq: number, volume: number, cycleSeconds: number): void {
-    if (!this.ctx || !this.masterGain) return;
+  [6, 16, 26].forEach((start, index) => {
+    const baseFreq = [PLANETARY_FREQUENCIES.neptune * 2, PLANETARY_FREQUENCIES.venus * 3, PLANETARY_FREQUENCIES.jupiter * 2][index];
 
-    const osc = this.ctx.createOscillator();
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+    const fundamental = ctx.createOscillator();
+    fundamental.type = "sine";
+    fundamental.frequency.setValueAtTime(baseFreq, start);
 
-    // Slow tremolo via LFO
-    const lfo = this.ctx.createOscillator();
-    lfo.type = "sine";
-    lfo.frequency.setValueAtTime(1 / cycleSeconds, this.ctx.currentTime);
+    const overtone = ctx.createOscillator();
+    overtone.type = "sine";
+    overtone.frequency.setValueAtTime(baseFreq * 2.756, start);
 
-    const lfoGain = this.ctx.createGain();
-    lfoGain.gain.setValueAtTime(volume * 0.5, this.ctx.currentTime);
+    const gain1 = ctx.createGain();
+    gain1.gain.setValueAtTime(0.0001, start);
+    gain1.gain.linearRampToValueAtTime(0.022, start + 0.05);
+    gain1.gain.exponentialRampToValueAtTime(0.0001, start + 3.8);
 
-    const padGain = this.ctx.createGain();
-    padGain.gain.setValueAtTime(volume, this.ctx.currentTime);
+    const gain2 = ctx.createGain();
+    gain2.gain.setValueAtTime(0.0001, start);
+    gain2.gain.linearRampToValueAtTime(0.01, start + 0.05);
+    gain2.gain.exponentialRampToValueAtTime(0.0001, start + 2.2);
 
-    // Bandpass for ethereal quality
-    const filter = this.ctx.createBiquadFilter();
-    filter.type = "bandpass";
-    filter.frequency.setValueAtTime(freq, this.ctx.currentTime);
-    filter.Q.setValueAtTime(2, this.ctx.currentTime);
+    const panner = ctx.createStereoPanner();
+    panner.pan.setValueAtTime(index === 1 ? 0.3 : -0.3, start);
 
-    lfo.connect(lfoGain);
-    lfoGain.connect(padGain.gain);
-    osc.connect(padGain);
-    padGain.connect(filter);
-    filter.connect(this.masterGain);
+    fundamental.connect(gain1);
+    overtone.connect(gain2);
+    gain1.connect(panner);
+    gain2.connect(panner);
+    panner.connect(master);
 
-    osc.start();
-    lfo.start();
+    fundamental.start(start);
+    overtone.start(start);
+    fundamental.stop(start + 4);
+    overtone.stop(start + 2.4);
+  });
 
-    this.oscillators.push(osc, lfo);
-    this.activeNodes.push(lfoGain, padGain, filter);
-  }
+  const buffer = await ctx.startRendering();
 
-  private startOrbitalArpeggio(): void {
-    if (!this.ctx || !this.masterGain) return;
+  for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
+    const data = buffer.getChannelData(channel);
+    const fadeSamples = Math.floor(sampleRate * 1.5);
 
-    // Pentatonic-like scale from planetary frequencies
-    const notes = [
-      PLANETARY_FREQUENCIES.earth,
-      PLANETARY_FREQUENCIES.earth * 1.125,
-      PLANETARY_FREQUENCIES.earth * 1.25,
-      PLANETARY_FREQUENCIES.earth * 1.5,
-      PLANETARY_FREQUENCIES.earth * 1.667,
-      PLANETARY_FREQUENCIES.earth * 2,
-    ];
-
-    let noteIndex = 0;
-    const ctx = this.ctx;
-    const master = this.masterGain;
-
-    const playArpNote = () => {
-      if (!this.isPlaying || !ctx) return;
-
-      const freq = notes[noteIndex % notes.length];
-      noteIndex++;
-
-      const osc = ctx.createOscillator();
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(freq * 2, ctx.currentTime); // Higher octave
-
-      const gain = ctx.createGain();
-      const now = ctx.currentTime;
-      gain.gain.setValueAtTime(0, now);
-      gain.gain.linearRampToValueAtTime(0.04, now + 0.3);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 3);
-
-      const filter = ctx.createBiquadFilter();
-      filter.type = "lowpass";
-      filter.frequency.setValueAtTime(2000, now);
-      filter.frequency.exponentialRampToValueAtTime(500, now + 3);
-
-      osc.connect(gain);
-      gain.connect(filter);
-      filter.connect(master);
-
-      osc.start(now);
-      osc.stop(now + 3.5);
-    };
-
-    // Play notes at slow intervals (2-5 seconds, slightly random)
-    const scheduleNext = () => {
-      if (!this.isPlaying) return;
-      const delay = 2000 + Math.random() * 3000;
-      const id = window.setTimeout(() => {
-        playArpNote();
-        scheduleNext();
-      }, delay);
-      this.intervalIds.push(id);
-    };
-
-    // Start after initial fade-in
-    const startId = window.setTimeout(() => {
-      playArpNote();
-      scheduleNext();
-    }, 5000);
-    this.intervalIds.push(startId);
-  }
-
-  private startCosmicBells(): void {
-    if (!this.ctx || !this.masterGain) return;
-
-    const bellFreqs = [
-      PLANETARY_FREQUENCIES.mercury * 4,
-      PLANETARY_FREQUENCIES.venus * 3,
-      PLANETARY_FREQUENCIES.neptune * 2,
-    ];
-
-    const ctx = this.ctx;
-    const master = this.masterGain;
-
-    const playBell = () => {
-      if (!this.isPlaying || !ctx) return;
-
-      const freq = bellFreqs[Math.floor(Math.random() * bellFreqs.length)];
-
-      // Bell = sine + harmonic overtones with fast decay
-      const fundamental = ctx.createOscillator();
-      fundamental.type = "sine";
-      fundamental.frequency.setValueAtTime(freq, ctx.currentTime);
-
-      const overtone = ctx.createOscillator();
-      overtone.type = "sine";
-      overtone.frequency.setValueAtTime(freq * 2.756, ctx.currentTime); // Inharmonic bell ratio
-
-      const gain = ctx.createGain();
-      const now = ctx.currentTime;
-      gain.gain.setValueAtTime(0, now);
-      gain.gain.linearRampToValueAtTime(0.025, now + 0.01);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 4);
-
-      const overtoneGain = ctx.createGain();
-      overtoneGain.gain.setValueAtTime(0, now);
-      overtoneGain.gain.linearRampToValueAtTime(0.012, now + 0.01);
-      overtoneGain.gain.exponentialRampToValueAtTime(0.001, now + 2.5);
-
-      fundamental.connect(gain);
-      overtone.connect(overtoneGain);
-      gain.connect(master);
-      overtoneGain.connect(master);
-
-      fundamental.start(now);
-      overtone.start(now);
-      fundamental.stop(now + 4.5);
-      overtone.stop(now + 3);
-    };
-
-    const scheduleNext = () => {
-      if (!this.isPlaying) return;
-      const delay = 6000 + Math.random() * 10000; // Every 6-16 seconds
-      const id = window.setTimeout(() => {
-        playBell();
-        scheduleNext();
-      }, delay);
-      this.intervalIds.push(id);
-    };
-
-    const startId = window.setTimeout(() => {
-      playBell();
-      scheduleNext();
-    }, 8000);
-    this.intervalIds.push(startId);
-  }
-
-  private createBinauralBeat(baseFreq: number, beatFreq: number, volume: number): void {
-    if (!this.ctx || !this.masterGain) return;
-
-    // Left ear
-    const left = this.ctx.createOscillator();
-    left.type = "sine";
-    left.frequency.setValueAtTime(baseFreq, this.ctx.currentTime);
-
-    // Right ear (slightly different frequency creates the beat)
-    const right = this.ctx.createOscillator();
-    right.type = "sine";
-    right.frequency.setValueAtTime(baseFreq + beatFreq, this.ctx.currentTime);
-
-    const leftGain = this.ctx.createGain();
-    leftGain.gain.setValueAtTime(volume, this.ctx.currentTime);
-
-    const rightGain = this.ctx.createGain();
-    rightGain.gain.setValueAtTime(volume, this.ctx.currentTime);
-
-    const leftPanner = this.ctx.createStereoPanner();
-    leftPanner.pan.setValueAtTime(-0.8, this.ctx.currentTime);
-
-    const rightPanner = this.ctx.createStereoPanner();
-    rightPanner.pan.setValueAtTime(0.8, this.ctx.currentTime);
-
-    left.connect(leftGain);
-    leftGain.connect(leftPanner);
-    leftPanner.connect(this.masterGain);
-
-    right.connect(rightGain);
-    rightGain.connect(rightPanner);
-    rightPanner.connect(this.masterGain);
-
-    left.start();
-    right.start();
-
-    this.oscillators.push(left, right);
-    this.activeNodes.push(leftGain, rightGain, leftPanner, rightPanner);
-  }
-
-  async stop(): Promise<void> {
-    this.isPlaying = false;
-
-    // Clear scheduled events
-    this.intervalIds.forEach(id => clearTimeout(id));
-    this.intervalIds = [];
-
-    // Fade out
-    if (this.masterGain && this.ctx) {
-      const now = this.ctx.currentTime;
-      this.masterGain.gain.cancelScheduledValues(now);
-      this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
-      this.masterGain.gain.linearRampToValueAtTime(0, now + 2);
-
-      // Stop everything after fade-out
-      await new Promise(resolve => setTimeout(resolve, 2200));
+    for (let i = 0; i < fadeSamples; i++) {
+      const fadeIn = i / fadeSamples;
+      const fadeOut = (fadeSamples - i) / fadeSamples;
+      data[i] *= fadeIn;
+      data[data.length - 1 - i] *= fadeOut;
     }
-
-    this.oscillators.forEach(osc => {
-      try { osc.stop(); } catch {}
-    });
-    this.oscillators = [];
-    this.activeNodes = [];
-
-    if (this.ctx) {
-      try { await this.ctx.close(); } catch {}
-      this.ctx = null;
-    }
-    this.masterGain = null;
-    this.convolver = null;
   }
+
+  return URL.createObjectURL(audioBufferToWav(buffer));
 }
 
 export function CosmicAmbientMusic() {
-  const engineRef = useRef<CosmicMusicEngine | null>(null);
-  const startedRef = useRef(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const urlRef = useRef<string | null>(null);
+  const playAttemptedRef = useRef(false);
 
   useEffect(() => {
-    const tryStart = async () => {
-      if (startedRef.current) return;
-      startedRef.current = true;
+    let isMounted = true;
+
+    const audio = new Audio();
+    audio.loop = true;
+    audio.volume = OUTPUT_VOLUME;
+    audio.preload = "auto";
+    audio.setAttribute("playsinline", "true");
+    audioRef.current = audio;
+
+    const tryPlay = async () => {
+      if (!audioRef.current?.src) return;
+      if (audioRef.current.readyState < 3) return;
 
       try {
-        const engine = new CosmicMusicEngine();
-        engineRef.current = engine;
-        await engine.start();
-        console.log("🎵 Música das Esferas iniciada");
-      } catch (err) {
-        console.warn("🎵 Erro ao iniciar música:", err);
-        startedRef.current = false;
+        await audioRef.current.play();
+        console.log("🎵 Música ambiente iniciada");
+      } catch (error) {
+        console.warn("🎵 Reprodução bloqueada até interação do usuário", error);
       }
     };
 
-    // Try immediately (works if user already interacted with page)
-    tryStart();
-
-    // Also listen for interactions in case AudioContext was blocked
     const handleInteraction = () => {
-      if (!startedRef.current) {
-        tryStart();
-      } else if (engineRef.current) {
-        // Resume if suspended
-        (engineRef.current as any).ctx?.resume?.();
+      playAttemptedRef.current = true;
+      void tryPlay();
+    };
+
+    const handleCanPlay = () => {
+      if (playAttemptedRef.current) {
+        void tryPlay();
       }
     };
 
-    document.addEventListener("click", handleInteraction);
-    document.addEventListener("keydown", handleInteraction);
-    document.addEventListener("touchstart", handleInteraction);
+    const init = async () => {
+      const url = await renderCosmicLoop();
+      if (!isMounted) {
+        URL.revokeObjectURL(url);
+        return;
+      }
+
+      urlRef.current = url;
+      audio.src = url;
+      audio.load();
+      audio.addEventListener("canplaythrough", handleCanPlay);
+      void tryPlay();
+    };
+
+    void init();
+
+    window.addEventListener("pointerdown", handleInteraction, { passive: true });
+    window.addEventListener("touchstart", handleInteraction, { passive: true });
+    window.addEventListener("keydown", handleInteraction);
 
     return () => {
-      document.removeEventListener("click", handleInteraction);
-      document.removeEventListener("keydown", handleInteraction);
-      document.removeEventListener("touchstart", handleInteraction);
-      if (engineRef.current) {
-        engineRef.current.stop();
+      isMounted = false;
+      audio.removeEventListener("canplaythrough", handleCanPlay);
+      window.removeEventListener("pointerdown", handleInteraction);
+      window.removeEventListener("touchstart", handleInteraction);
+      window.removeEventListener("keydown", handleInteraction);
+      audio.pause();
+      audio.src = "";
+      if (urlRef.current) {
+        URL.revokeObjectURL(urlRef.current);
       }
     };
   }, []);
