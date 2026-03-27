@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 
 const LOOP_DURATION_SECONDS = 32;
-const OUTPUT_VOLUME = 1.0;
+const OUTPUT_VOLUME = 0.45;
 
 const PLANETARY_FREQUENCIES = {
   cosmos: 64,
@@ -73,8 +73,8 @@ async function renderCosmicLoop(): Promise<string> {
     osc.frequency.setValueAtTime(frequency * harmonic, 0);
 
     const detuned = ctx.createOscillator();
-    detuned.type = "triangle";
-    detuned.frequency.setValueAtTime(frequency * harmonic * 1.002, 0);
+    detuned.type = "sine";
+    detuned.frequency.setValueAtTime(frequency * harmonic * 1.001, 0);
 
     const gain = ctx.createGain();
     gain.gain.setValueAtTime(gainValue, 0);
@@ -83,9 +83,9 @@ async function renderCosmicLoop(): Promise<string> {
 
     const filter = ctx.createBiquadFilter();
     filter.type = "lowpass";
-    filter.frequency.setValueAtTime(900, 0);
-    filter.frequency.linearRampToValueAtTime(1400, LOOP_DURATION_SECONDS / 2);
-    filter.frequency.linearRampToValueAtTime(900, LOOP_DURATION_SECONDS);
+    filter.frequency.setValueAtTime(600, 0);
+    filter.frequency.linearRampToValueAtTime(900, LOOP_DURATION_SECONDS / 2);
+    filter.frequency.linearRampToValueAtTime(600, LOOP_DURATION_SECONDS);
 
     const panner = ctx.createStereoPanner();
     panner.pan.setValueAtTime(pan, 0);
@@ -102,11 +102,11 @@ async function renderCosmicLoop(): Promise<string> {
     detuned.stop(LOOP_DURATION_SECONDS);
   };
 
-  makePad(PLANETARY_FREQUENCIES.cosmos, 0.08, 0);
-  makePad(PLANETARY_FREQUENCIES.earth, 0.06, -0.2);
-  makePad(PLANETARY_FREQUENCIES.venus, 0.04, 0.22);
-  makePad(PLANETARY_FREQUENCIES.jupiter, 0.035, -0.35, 0.5);
-  makePad(PLANETARY_FREQUENCIES.saturn, 0.03, 0.38, 1.5);
+  makePad(PLANETARY_FREQUENCIES.cosmos, 0.06, 0);
+  makePad(PLANETARY_FREQUENCIES.earth, 0.045, -0.2);
+  makePad(PLANETARY_FREQUENCIES.venus, 0.025, 0.22);
+  makePad(PLANETARY_FREQUENCIES.jupiter, 0.02, -0.35, 0.5);
+  makePad(PLANETARY_FREQUENCIES.saturn, 0.018, 0.38, 1.5);
 
   const arpNotes = [
     PLANETARY_FREQUENCIES.earth,
@@ -120,18 +120,18 @@ async function renderCosmicLoop(): Promise<string> {
     const start = 2 + i * 4;
     const duration = 2.8;
     const osc = ctx.createOscillator();
-    osc.type = "triangle";
+    osc.type = "sine";
     osc.frequency.setValueAtTime(arpNotes[i % arpNotes.length] * 2, start);
 
     const gain = ctx.createGain();
     gain.gain.setValueAtTime(0.0001, start);
-    gain.gain.linearRampToValueAtTime(0.028, start + 0.8);
+    gain.gain.linearRampToValueAtTime(0.018, start + 1.2);
     gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
 
     const filter = ctx.createBiquadFilter();
     filter.type = "lowpass";
-    filter.frequency.setValueAtTime(1800, start);
-    filter.frequency.linearRampToValueAtTime(650, start + duration);
+    filter.frequency.setValueAtTime(1200, start);
+    filter.frequency.linearRampToValueAtTime(500, start + duration);
 
     const panner = ctx.createStereoPanner();
     panner.pan.setValueAtTime(i % 2 === 0 ? -0.45 : 0.45, start);
@@ -146,7 +146,7 @@ async function renderCosmicLoop(): Promise<string> {
   }
 
   [6, 16, 26].forEach((start, index) => {
-    const baseFreq = [PLANETARY_FREQUENCIES.neptune * 2, PLANETARY_FREQUENCIES.venus * 3, PLANETARY_FREQUENCIES.jupiter * 2][index];
+    const baseFreq = [PLANETARY_FREQUENCIES.neptune, PLANETARY_FREQUENCIES.venus * 1.5, PLANETARY_FREQUENCIES.jupiter][index];
 
     const fundamental = ctx.createOscillator();
     fundamental.type = "sine";
@@ -154,16 +154,16 @@ async function renderCosmicLoop(): Promise<string> {
 
     const overtone = ctx.createOscillator();
     overtone.type = "sine";
-    overtone.frequency.setValueAtTime(baseFreq * 2.756, start);
+    overtone.frequency.setValueAtTime(baseFreq * 2.0, start);
 
     const gain1 = ctx.createGain();
     gain1.gain.setValueAtTime(0.0001, start);
-    gain1.gain.linearRampToValueAtTime(0.022, start + 0.05);
+    gain1.gain.linearRampToValueAtTime(0.015, start + 0.4);
     gain1.gain.exponentialRampToValueAtTime(0.0001, start + 3.8);
 
     const gain2 = ctx.createGain();
     gain2.gain.setValueAtTime(0.0001, start);
-    gain2.gain.linearRampToValueAtTime(0.01, start + 0.05);
+    gain2.gain.linearRampToValueAtTime(0.006, start + 0.4);
     gain2.gain.exponentialRampToValueAtTime(0.0001, start + 2.2);
 
     const panner = ctx.createStereoPanner();
