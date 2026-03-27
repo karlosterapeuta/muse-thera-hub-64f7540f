@@ -241,6 +241,21 @@ export default function LoginForm({ onSwitchToPasswordReset, onSwitchToRegister 
             {isLoading && <span>Entrando...</span>}
           </GradientButton>
         </form>
+
+        {onSwitchToRegister && (
+          <div className="mt-6 text-center relative z-10">
+            <p className="text-sm text-muted-foreground">
+              Ainda não tem conta?{" "}
+              <button
+                type="button"
+                onClick={onSwitchToRegister}
+                className="text-primary hover:text-primary/80 font-semibold transition-all duration-300 hover:underline underline-offset-4"
+              >
+                Criar conta
+              </button>
+            </p>
+          </div>
+        )}
       </div>
     </div>
 
