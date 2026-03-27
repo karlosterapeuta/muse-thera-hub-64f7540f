@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import LoginForm from "@/components/auth/LoginForm";
 import PasswordResetForm from "@/components/auth/PasswordResetForm";
 import NewPasswordForm from "@/components/auth/NewPasswordForm";
+import RegisterForm from "@/components/auth/RegisterForm";
 
 import { StarfieldBackground } from "@/components/auth/StarfieldBackground";
 import { CosmicAmbientMusic } from "@/components/auth/CosmicAmbientMusic";
@@ -23,6 +24,7 @@ interface HashParams {
 export default function Login() {
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [isSettingNewPassword, setIsSettingNewPassword] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
   const [isProcessingToken, setIsProcessingToken] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
@@ -228,10 +230,17 @@ export default function Login() {
           onSwitchToLogin={() => setIsResettingPassword(false)}
         />
       );
+    } else if (isRegistering) {
+      return (
+        <RegisterForm
+          onSwitchToLogin={() => setIsRegistering(false)}
+        />
+      );
     } else {
       return (
         <LoginForm
           onSwitchToPasswordReset={() => setIsResettingPassword(true)}
+          onSwitchToRegister={() => setIsRegistering(true)}
         />
       );
     }

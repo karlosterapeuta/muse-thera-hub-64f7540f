@@ -13,9 +13,10 @@ import { createPortal } from "react-dom";
 
 type LoginFormProps = {
   onSwitchToPasswordReset: () => void;
+  onSwitchToRegister?: () => void;
 };
 
-export default function LoginForm({ onSwitchToPasswordReset }: LoginFormProps) {
+export default function LoginForm({ onSwitchToPasswordReset, onSwitchToRegister }: LoginFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -47,14 +48,20 @@ export default function LoginForm({ onSwitchToPasswordReset }: LoginFormProps) {
       
       if (profileError) throw profileError;
       
+      if (profile.status === 'pending') {
+        // Pending users can proceed - Layout will show PendingApprovalScreen
+        await logUserActivity(result.data.user.id, "login");
+        setUserId(result.data.user.id);
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 300);
+        setIsLoading(false);
+        return;
+      }
+      
       if (profile.status !== 'active') {
-        // Fazer signOut e aguardar completar
         await supabase.auth.signOut();
-        
-        // Aguardar um pouco para garantir que a sessão seja completamente encerrada
         await new Promise(resolve => setTimeout(resolve, 200));
-        
-        // Mostrar card visual de bloqueio
         setShowBlockedMessage(true);
         setIsLoading(false);
         return;
@@ -234,6 +241,21 @@ export default function LoginForm({ onSwitchToPasswordReset }: LoginFormProps) {
             {isLoading && <span>Entrando...</span>}
           </GradientButton>
         </form>
+
+        {onSwitchToRegister && (
+          <div className="mt-6 text-center relative z-10">
+            <p className="text-sm text-muted-foreground">
+              Ainda não tem conta?{" "}
+              <button
+                type="button"
+                onClick={onSwitchToRegister}
+                className="text-primary hover:text-primary/80 font-semibold transition-all duration-300 hover:underline underline-offset-4"
+              >
+                Criar conta
+              </button>
+            </p>
+          </div>
+        )}
       </div>
     </div>
 
