@@ -99,6 +99,11 @@ export default function AuthStatusChecker() {
           console.log(`⏰ Tempo restante de acesso: ${Math.round(timeLeft / 1000 / 60)} minutos`);
         }
 
+        // If the user is pending, skip - Layout handles this
+        if (profile && profile.status === 'pending') {
+          return;
+        }
+
         // Se o usuário não estiver ativo, faz logout imediatamente
         if (profile && profile.status !== 'active') {
           // Limpa o intervalo
@@ -107,16 +112,12 @@ export default function AuthStatusChecker() {
             checkIntervalRef.current = null;
           }
           
-          // Faz logout imediatamente
           await supabase.auth.signOut();
-          
-          // Navega para a página de login
           navigate("/login");
           
-          // Exibe uma mensagem
           toast({
             title: "Sessão encerrada",
-            description: "Sua conta está desativa. Entre em contato com o administrador.",
+            description: "Sua conta está desativada. Entre em contato com o administrador.",
             variant: "destructive",
           });
         }
