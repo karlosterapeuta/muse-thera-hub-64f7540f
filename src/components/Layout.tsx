@@ -30,6 +30,7 @@ function LayoutContent({ children }: LayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [isPending, setIsPending] = useState(false);
   const { toggleSidebar, setOpenMobile, isMobile } = useSidebar();
   const isDashboard = location.pathname === '/dashboard';
   const lastTrackedPath = useRef<string>("");
