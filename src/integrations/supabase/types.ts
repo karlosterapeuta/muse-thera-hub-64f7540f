@@ -931,6 +931,33 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_logs: {
+        Row: {
+          id: string
+          message: string
+          schedule_key: string
+          sent_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          message: string
+          schedule_key: string
+          sent_at?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          message?: string
+          schedule_key?: string
+          sent_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       patients: {
         Row: {
           age: number | null
@@ -1062,6 +1089,39 @@ export type Database = {
           plan_start_date?: string | null
           status?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          timezone: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          timezone?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          timezone?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
