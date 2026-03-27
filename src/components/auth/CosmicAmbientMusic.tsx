@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 
 const LOOP_DURATION_SECONDS = 32;
-const OUTPUT_VOLUME = 0.90;
+const OUTPUT_VOLUME = 1.0;
 
 const PLANETARY_FREQUENCIES = {
   cosmos: 64,
@@ -64,7 +64,7 @@ async function renderCosmicLoop(): Promise<string> {
   const ctx = new OfflineAudioContext(2, frameCount, sampleRate);
 
   const master = ctx.createGain();
-  master.gain.setValueAtTime(0.75, 0);
+  master.gain.setValueAtTime(2.5, 0);
   master.connect(ctx.destination);
 
   const makePad = (frequency: number, gainValue: number, pan: number, harmonic = 1) => {
