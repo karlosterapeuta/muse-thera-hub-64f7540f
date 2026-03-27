@@ -13,9 +13,10 @@ import { createPortal } from "react-dom";
 
 type LoginFormProps = {
   onSwitchToPasswordReset: () => void;
+  onSwitchToRegister?: () => void;
 };
 
-export default function LoginForm({ onSwitchToPasswordReset }: LoginFormProps) {
+export default function LoginForm({ onSwitchToPasswordReset, onSwitchToRegister }: LoginFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
