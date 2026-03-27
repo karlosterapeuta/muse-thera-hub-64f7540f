@@ -7,6 +7,7 @@ import PasswordResetForm from "@/components/auth/PasswordResetForm";
 import NewPasswordForm from "@/components/auth/NewPasswordForm";
 
 import { StarfieldBackground } from "@/components/auth/StarfieldBackground";
+import { CosmicAmbientMusic } from "@/components/auth/CosmicAmbientMusic";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 
