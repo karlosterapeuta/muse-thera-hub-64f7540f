@@ -17,6 +17,8 @@ import { Separator } from "./ui/separator";
 import { logPageView } from "@/utils/activityLogger";
 import FloatingChat from "./ai-chat/FloatingChat";
 import { UserExpirationWarning } from "./auth/UserExpirationWarning";
+import { PendingApprovalScreen } from "./auth/PendingApprovalScreen";
+import { useState } from "react";
 
 interface LayoutProps {
   children?: React.ReactNode;
