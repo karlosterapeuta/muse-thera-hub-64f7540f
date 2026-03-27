@@ -15,7 +15,7 @@ const PLANETARY_FREQUENCIES = {
 };
 
 class CosmicMusicEngine {
-  private ctx: AudioContext | null = null;
+  public ctx: AudioContext | null = null;
   private masterGain: GainNode | null = null;
   private convolver: ConvolverNode | null = null;
   private activeNodes: AudioNode[] = [];
