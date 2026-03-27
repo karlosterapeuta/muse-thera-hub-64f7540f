@@ -15,7 +15,7 @@ const PLANETARY_FREQUENCIES = {
 };
 
 class CosmicMusicEngine {
-  private ctx: AudioContext | null = null;
+  public ctx: AudioContext | null = null;
   private masterGain: GainNode | null = null;
   private convolver: ConvolverNode | null = null;
   private activeNodes: AudioNode[] = [];
@@ -389,29 +389,43 @@ export function CosmicAmbientMusic() {
   const engineRef = useRef<CosmicMusicEngine | null>(null);
   const startedRef = useRef(false);
 
-  // Auto-start on first user interaction (browser requires gesture for AudioContext)
   useEffect(() => {
-    const handleFirstInteraction = async () => {
+    const tryStart = async () => {
       if (startedRef.current) return;
       startedRef.current = true;
 
-      if (!engineRef.current) {
-        engineRef.current = new CosmicMusicEngine();
+      try {
+        const engine = new CosmicMusicEngine();
+        engineRef.current = engine;
+        await engine.start();
+        console.log("🎵 Música das Esferas iniciada");
+      } catch (err) {
+        console.warn("🎵 Erro ao iniciar música:", err);
+        startedRef.current = false;
       }
-      await engineRef.current.start();
     };
 
-    const events = ["click", "keydown", "touchstart"];
-    events.forEach(e => document.addEventListener(e, handleFirstInteraction, { once: true }));
+    // Try immediately (works if user already interacted with page)
+    tryStart();
 
-    return () => {
-      events.forEach(e => document.removeEventListener(e, handleFirstInteraction));
+    // Also listen for interactions in case AudioContext was blocked
+    const handleInteraction = () => {
+      if (!startedRef.current) {
+        tryStart();
+      } else if (engineRef.current) {
+        // Resume if suspended
+        (engineRef.current as any).ctx?.resume?.();
+      }
     };
-  }, []);
 
-  // Cleanup on unmount
-  useEffect(() => {
+    document.addEventListener("click", handleInteraction);
+    document.addEventListener("keydown", handleInteraction);
+    document.addEventListener("touchstart", handleInteraction);
+
     return () => {
+      document.removeEventListener("click", handleInteraction);
+      document.removeEventListener("keydown", handleInteraction);
+      document.removeEventListener("touchstart", handleInteraction);
       if (engineRef.current) {
         engineRef.current.stop();
       }
