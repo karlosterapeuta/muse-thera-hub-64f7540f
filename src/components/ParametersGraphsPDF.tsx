@@ -116,17 +116,26 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
 
   // Inline styles
   const cardStyle: React.CSSProperties = {
-    padding: '16px',
+    padding: '18px',
     backgroundColor: '#ffffff',
-    borderRadius: '8px',
-    border: '1px solid #e5e7eb',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+    borderRadius: '10px',
+    border: '1px solid #e2e8f0',
+    boxShadow: '0 1px 4px rgba(0,0,0,0.06)'
   };
 
   const cardLargeStyle: React.CSSProperties = {
     ...cardStyle,
     padding: '24px',
-    marginBottom: '32px'
+    marginBottom: '28px'
+  };
+
+  const sectionTitleStyle: React.CSSProperties = {
+    fontSize: '16px',
+    fontWeight: 700,
+    marginBottom: '14px',
+    color: '#0f172a',
+    textAlign: 'center' as const,
+    letterSpacing: '-0.2px'
   };
 
   return (
