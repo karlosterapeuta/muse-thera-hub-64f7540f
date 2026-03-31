@@ -14,7 +14,8 @@ import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { FileDown, Info, HelpCircle, FileBarChart, FileText, CalendarIcon, Loader2, Save, User, AlertTriangle, X, Stethoscope } from "lucide-react";
+import { FileDown, Info, HelpCircle, FileBarChart, FileText, CalendarIcon, Loader2, Save, User, AlertTriangle, X, Stethoscope, ChevronDown } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import html2pdf from "html2pdf.js";
 import { savePDFToStorage } from "@/utils/pdfStorageUtils";
 import { toast } from "sonner";
@@ -1859,13 +1860,22 @@ export default function Evaluation() {
                 </div>
               )}
 
-              <div className="bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
-                <h3 className="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-2">Escala MuseTera - Versão Profissional</h3>
-                <p className="text-blue-700 dark:text-blue-300 text-sm">
-                  Sistema de pontuação (0-100): Não Observado (0), Emergente (20), Inconsistente (40), 
-                  Moderado (60), Consistente (80), Excepcional (100)
-                </p>
-              </div>
+              <Collapsible className="mb-6">
+                <CollapsibleTrigger className="w-full bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-lg p-3 flex items-center justify-between hover:bg-blue-100 dark:hover:bg-blue-950/60 transition-colors">
+                  <div className="flex items-center gap-2">
+                    <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                    <span className="text-sm font-semibold text-blue-800 dark:text-blue-200">Como usar a escala</span>
+                  </div>
+                  <ChevronDown className="h-4 w-4 text-blue-600 dark:text-blue-400 transition-transform duration-200 [[data-state=open]>&]:rotate-180" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 border-t-0 rounded-b-lg p-4">
+                  <h3 className="text-base font-semibold text-blue-800 dark:text-blue-200 mb-2">Escala MuseTera - Versão Profissional</h3>
+                  <p className="text-blue-700 dark:text-blue-300 text-sm">
+                    Sistema de pontuação (0-100): Não Observado (0), Emergente (20), Inconsistente (40), 
+                    Moderado (60), Consistente (80), Excepcional (100)
+                  </p>
+                </CollapsibleContent>
+              </Collapsible>
 
               {/* Estatísticas da Avaliação Parcial */}
               <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-lg p-4 mb-6">
