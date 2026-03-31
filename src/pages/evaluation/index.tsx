@@ -66,19 +66,44 @@ interface Patient {
   age: number | null;
 }
 
+const EVAL_DRAFT_KEY = 'musetera-eval-draft';
+
+function loadDraft() {
+  try {
+    const raw = sessionStorage.getItem(EVAL_DRAFT_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return null;
+}
+
 export default function Evaluation() {
+  const draft = useMemo(() => loadDraft(), []);
   const [patients, setPatients] = useState<Patient[]>([]);
-  const [selectedPatient, setSelectedPatient] = useState<string>("");
-  const [selectedEvaluation, setSelectedEvaluation] = useState("1");
-  const [evaluationDate, setEvaluationDate] = useState<Date>(new Date());
-  const [selections, setSelections] = useState<Record<string, string>>({});
-  const [observations, setObservations] = useState<Record<string, string>>({});
+  const [selectedPatient, setSelectedPatient] = useState<string>(draft?.selectedPatient || "");
+  const [selectedEvaluation, setSelectedEvaluation] = useState(draft?.selectedEvaluation || "1");
+  const [evaluationDate, setEvaluationDate] = useState<Date>(draft?.evaluationDate ? new Date(draft.evaluationDate) : new Date());
+  const [selections, setSelections] = useState<Record<string, string>>(draft?.selections || {});
+  const [observations, setObservations] = useState<Record<string, string>>(draft?.observations || {});
   const [isLoading, setIsLoading] = useState(true);
   const [isGeneratingText, setIsGeneratingText] = useState(false);
-  const [activeTab, setActiveTab] = useState("evaluation");
+  const [activeTab, setActiveTab] = useState(draft?.activeTab || "evaluation");
   const [selectedForComparison, setSelectedForComparison] = useState<string[]>([]);
   const [editingEvaluationId, setEditingEvaluationId] = useState<string | null>(null);
   const [evolutionPatientId, setEvolutionPatientId] = useState<string | null>(null);
+  const [draftLoaded] = useState(!!draft);
+
+  // Persist draft to sessionStorage on changes
+  useEffect(() => {
+    const data = {
+      selectedPatient,
+      selectedEvaluation,
+      evaluationDate: evaluationDate.toISOString(),
+      selections,
+      observations,
+      activeTab,
+    };
+    sessionStorage.setItem(EVAL_DRAFT_KEY, JSON.stringify(data));
+  }, [selectedPatient, selectedEvaluation, evaluationDate, selections, observations, activeTab]);
 
   const { generateBlankScalePDF } = useEvaluationPDF();
   
@@ -100,9 +125,14 @@ export default function Evaluation() {
   }, [loadAllEvaluations]);
 
   // Auto-carregar a avaliação mais recente quando paciente é selecionado
+  const [skipAutoLoad, setSkipAutoLoad] = useState(draftLoaded);
   useEffect(() => {
-    // Não auto-carregar se está editando ou se não há avaliações ou ainda carregando
+    // Não auto-carregar se está editando, carregando, ou se acabou de restaurar draft
     if (editingEvaluationId || isLoadingEvaluations) {
+      return;
+    }
+    if (skipAutoLoad) {
+      setSkipAutoLoad(false);
       return;
     }
     
