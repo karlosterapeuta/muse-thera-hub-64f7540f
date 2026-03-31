@@ -192,6 +192,17 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
                 }}>
                   Pontuação Total: {overallScore.raw}/{overallScore.max} ({overallScore.percentage}%)
                 </p>
+                {overallScore.evaluatedParameters != null && overallScore.totalParameters != null && (
+                  <p style={{ fontSize: '13px', color: '#3b82f6', marginTop: '4px' }}>
+                    {overallScore.evaluatedParameters} de {overallScore.totalParameters} parâmetros avaliados
+                    ({overallScore.completionPercentage || Math.round((overallScore.evaluatedParameters / (overallScore.totalParameters || 1)) * 100)}% de cobertura)
+                  </p>
+                )}
+                {evaluatedDetails.length > 0 && (
+                  <p style={{ fontSize: '12px', color: '#6b7280', marginTop: '2px' }}>
+                    Exibindo apenas os parâmetros efetivamente avaliados
+                  </p>
+                )}
               </div>
             )}
           </div>
