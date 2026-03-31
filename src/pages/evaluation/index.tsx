@@ -938,6 +938,8 @@ export default function Evaluation() {
             allEvaluations={patientAllEvaluations}
             professionalPhotoBase64={professionalPhotoBase64}
             digitalStampBase64={digitalStampBase64}
+            selectedParameters={selections}
+            evaluationDomains={evaluationDomains}
           />
         </div>
       );
