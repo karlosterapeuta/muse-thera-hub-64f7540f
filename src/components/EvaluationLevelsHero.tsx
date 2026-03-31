@@ -93,7 +93,7 @@ export function EvaluationLevelsHero() {
           </div>
           <div className="flex gap-2 self-start sm:self-center flex-shrink-0">
             <Button
-              onClick={() => navigate('/scientific-article')}
+              onClick={() => window.open('/documents/artigo-musetera.pdf', '_blank')}
               className={cn(
                 "relative overflow-hidden",
                 "bg-gradient-to-r from-blue-600 via-blue-600 to-blue-700",
