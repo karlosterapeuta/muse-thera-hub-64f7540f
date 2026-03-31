@@ -205,7 +205,8 @@ export default function Login() {
     handlePasswordReset();
 
     return () => subscription.unsubscribe();
-  }, [location, toast, navigate, isProcessingToken]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location, toast, navigate]);
 
   if (isProcessingToken) {
     return (

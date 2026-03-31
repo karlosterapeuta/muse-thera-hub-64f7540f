@@ -79,15 +79,21 @@ export default function AuthStatusChecker() {
           return;
         }
 
-        // Verifica o status do usuário
+        // Verifica o status do usuário - use maybeSingle for resilience
         const { data: profile, error } = await supabase
           .from('profiles')
           .select('status, expires_at')
           .eq('id', session.user.id)
-          .single();
+          .maybeSingle();
         
         if (error) {
           console.error("Erro ao verificar status do usuário:", error);
+          return;
+        }
+
+        // If profile not found, skip - don't log out on transient issues
+        if (!profile) {
+          console.warn("⚠️ Profile not found, skipping status check");
           return;
         }
         
