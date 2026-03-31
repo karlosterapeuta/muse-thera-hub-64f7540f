@@ -1977,7 +1977,8 @@ export default function Evaluation() {
                             )}
                           </div>
                           
-                          <div className="overflow-x-auto rounded-xl shadow-inner">
+                          {/* Desktop Table Layout */}
+                          <div className="hidden md:block overflow-x-auto rounded-xl shadow-inner">
                             <Table className="min-w-full">
                               <TableHeader>
                                 <TableRow className={`${colors.headerBg}`}>
@@ -2062,6 +2063,52 @@ export default function Evaluation() {
                                 ))}
                               </TableBody>
                             </Table>
+                          </div>
+
+                          {/* Mobile Card Layout */}
+                          <div className="md:hidden space-y-3">
+                            {subdomain.parameters.map((parameter, paramIndex) => {
+                              const selectionKey = `${domain.title}-${subdomain.title}-${parameter}`;
+                              const currentSelection = selections[selectionKey];
+                              const levels = [
+                                { value: "nao_observado", label: "Não Obs.", score: 0, bg: "bg-gray-100 dark:bg-gray-800", bgSelected: "bg-gray-500 text-white", border: "border-gray-300 dark:border-gray-600" },
+                                { value: "emergente", label: "Emerg.", score: 1, bg: "bg-red-50 dark:bg-red-950", bgSelected: "bg-red-500 text-white", border: "border-red-200 dark:border-red-800" },
+                                { value: "inconsistente", label: "Incons.", score: 2, bg: "bg-orange-50 dark:bg-orange-950", bgSelected: "bg-orange-500 text-white", border: "border-orange-200 dark:border-orange-800" },
+                                { value: "moderado", label: "Moder.", score: 3, bg: "bg-yellow-50 dark:bg-yellow-950", bgSelected: "bg-yellow-500 text-white", border: "border-yellow-200 dark:border-yellow-800" },
+                                { value: "consistente", label: "Consist.", score: 4, bg: "bg-lime-50 dark:bg-lime-950", bgSelected: "bg-lime-600 text-white", border: "border-lime-200 dark:border-lime-800" },
+                                { value: "excepcional", label: "Excep.", score: 5, bg: "bg-green-50 dark:bg-green-950", bgSelected: "bg-green-600 text-white", border: "border-green-200 dark:border-green-800" },
+                              ];
+                              return (
+                                <div key={paramIndex} className="rounded-xl border bg-card p-4 shadow-sm">
+                                  <p className="text-sm font-semibold text-foreground mb-3">{parameter}</p>
+                                  <div className="grid grid-cols-3 gap-2">
+                                    {levels.map((lvl) => {
+                                      const isSelected = currentSelection === lvl.value;
+                                      return (
+                                        <button
+                                          key={lvl.value}
+                                          type="button"
+                                          onClick={() =>
+                                            setSelections(prev => ({
+                                              ...prev,
+                                              [selectionKey]: lvl.value
+                                            }))
+                                          }
+                                          className={`h-11 rounded-lg text-xs font-medium border transition-all duration-200 touch-manipulation ${
+                                            isSelected
+                                              ? `${lvl.bgSelected} border-transparent shadow-md scale-[1.02]`
+                                              : `${lvl.bg} ${lvl.border} hover:opacity-80`
+                                          }`}
+                                        >
+                                          <span className="block leading-tight">{lvl.label}</span>
+                                          <span className={`block text-[10px] ${isSelected ? 'text-white/80' : 'text-muted-foreground'}`}>({lvl.score})</span>
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              );
+                            })}
                           </div>
 
                           {/* Campo de observações qualitativas */}
