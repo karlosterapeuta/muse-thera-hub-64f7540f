@@ -16,12 +16,20 @@ interface ParametersGraphsPDFProps {
     raw: number;
     max: number;
     percentage: number;
+    completionPercentage?: number;
+    evaluatedParameters?: number;
+    totalParameters?: number;
+    evaluatedDomains?: number;
+    totalDomains?: number;
   };
   evaluationDate?: Date;
   allEvaluations?: SavedEvaluation[];
   // Assinatura digital e carimbo
   professionalPhotoBase64?: string;
   digitalStampBase64?: string;
+  // Dados detalhados de avaliação
+  selectedParameters?: Record<string, string>;
+  evaluationDomains?: any[];
 }
 
 // Domain colors for line chart
