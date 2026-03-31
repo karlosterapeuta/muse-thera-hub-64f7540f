@@ -4,7 +4,6 @@ import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, RadarC
 import { format } from 'date-fns';
 import { ProfessionalData } from "@/hooks/useProfessionalData";
 import { SavedEvaluation } from "@/hooks/useEvaluationStorage";
-import { generateSuggestions, DomainSuggestion } from "@/pages/evaluation/utils/suggestionEngine";
 
 interface ParametersGraphsPDFProps {
   categoryData: any[];
