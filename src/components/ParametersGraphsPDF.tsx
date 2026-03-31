@@ -130,10 +130,10 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
   };
 
   return (
-    <div style={{ backgroundColor: '#ffffff', color: '#000000' }}>
+    <div style={{ backgroundColor: '#ffffff', color: '#000000', fontFamily: 'Helvetica, Arial, sans-serif' }}>
       {/* Página Única - Parâmetros e Gráficos */}
       <div style={{ 
-        padding: '24px', 
+        padding: '28px 32px', 
         width: '100%', 
         maxWidth: '800px', 
         margin: '0 auto', 
@@ -142,65 +142,79 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
       }}>
         {/* Header Section */}
         <div style={{ 
-          borderBottom: '2px solid #e5e7eb', 
-          paddingBottom: '16px', 
-          marginBottom: '24px' 
+          marginBottom: '28px',
+          borderBottom: '3px solid #2563eb',
+          paddingBottom: '20px'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
-            <img 
-              src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" 
-              alt="Logo" 
-              style={{ width: '35px', height: 'auto' }} 
-            />
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <h1 style={{ 
-              fontSize: '20px', 
-              fontWeight: 700, 
-              color: '#2563eb', 
-              marginBottom: '8px' 
-            }}>
-              Parâmetros e Gráficos - Avaliação TEA
-            </h1>
-            <h2 style={{ 
-              fontSize: '16px', 
-              color: '#374151', 
-              marginBottom: '4px',
-              fontWeight: 400
-            }}>
-              Paciente: {patientName || 'Não informado'}
-            </h2>
-            <p style={{ 
-              fontSize: '14px', 
-              color: '#6b7280', 
-              marginBottom: '8px' 
-            }}>
-              Data da Avaliação: {evaluationDate ? format(evaluationDate, 'dd/MM/yyyy') : format(new Date(), 'dd/MM/yyyy')}
-            </p>
-            {overallScore && (
-              <div style={{ 
-                marginTop: '12px', 
-                padding: '12px', 
-                backgroundColor: '#eff6ff', 
-                borderRadius: '8px' 
-              }}>
-                <p style={{ 
-                  fontSize: '16px', 
-                  fontWeight: 600, 
-                  color: '#1e40af' 
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between',
+            marginBottom: '16px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <img 
+                src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" 
+                alt="Logo" 
+                style={{ width: '40px', height: 'auto' }} 
+              />
+              <div>
+                <h1 style={{ 
+                  fontSize: '22px', 
+                  fontWeight: 800, 
+                  color: '#1e3a5f', 
+                  margin: 0,
+                  letterSpacing: '-0.3px'
                 }}>
-                  Pontuação Total: {overallScore.raw}/{overallScore.max} ({overallScore.percentage}%)
+                  Relatório de Avaliação
+                </h1>
+                <p style={{ fontSize: '12px', color: '#64748b', margin: 0, marginTop: '2px' }}>
+                  Escala MuseTera - Parâmetros e Gráficos
                 </p>
+              </div>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 600 }}>
+                Data da Avaliação
+              </p>
+              <p style={{ fontSize: '15px', color: '#1e3a5f', margin: 0, fontWeight: 700 }}>
+                {evaluationDate ? format(evaluationDate, 'dd/MM/yyyy') : format(new Date(), 'dd/MM/yyyy')}
+              </p>
+            </div>
+          </div>
+          
+          {/* Patient & Score Row */}
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            backgroundColor: '#f8fafc',
+            borderRadius: '10px',
+            padding: '14px 20px',
+            border: '1px solid #e2e8f0'
+          }}>
+            <div>
+              <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 600 }}>Paciente</p>
+              <p style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', margin: 0 }}>{patientName || 'Não informado'}</p>
+            </div>
+            {overallScore && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <div style={{ textAlign: 'center' }}>
+                  <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 600 }}>Score</p>
+                  <p style={{ fontSize: '24px', fontWeight: 800, color: '#2563eb', margin: 0 }}>{overallScore.percentage}%</p>
+                </div>
                 {overallScore.evaluatedParameters != null && overallScore.totalParameters != null && (
-                  <p style={{ fontSize: '13px', color: '#3b82f6', marginTop: '4px' }}>
-                    {overallScore.evaluatedParameters} de {overallScore.totalParameters} parâmetros avaliados
-                    ({overallScore.completionPercentage || Math.round((overallScore.evaluatedParameters / (overallScore.totalParameters || 1)) * 100)}% de cobertura)
-                  </p>
-                )}
-                {evaluatedDetails.length > 0 && (
-                  <p style={{ fontSize: '12px', color: '#6b7280', marginTop: '2px' }}>
-                    Exibindo apenas os parâmetros efetivamente avaliados
-                  </p>
+                  <div style={{ 
+                    borderLeft: '2px solid #e2e8f0', 
+                    paddingLeft: '16px',
+                    textAlign: 'center'
+                  }}>
+                    <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 600 }}>Cobertura</p>
+                    <p style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+                      {overallScore.evaluatedParameters}/{overallScore.totalParameters}
+                    </p>
+                    <p style={{ fontSize: '10px', color: '#64748b', margin: 0 }}>parâmetros</p>
+                  </div>
                 )}
               </div>
             )}
