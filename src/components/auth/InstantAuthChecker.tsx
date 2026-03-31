@@ -134,6 +134,9 @@ export default function InstantAuthChecker() {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      // Ignore token refreshes to prevent cascade loops
+      if (event === 'TOKEN_REFRESHED') return;
+      
       // Limpa cache ao fazer login
       if (event === 'SIGNED_IN' && session?.user) {
         // Skip check for creator routes - they use course_creators table, not profiles

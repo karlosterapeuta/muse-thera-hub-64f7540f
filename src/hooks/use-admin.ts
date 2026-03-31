@@ -20,6 +20,9 @@ export function useAdmin() {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event) => {
+        // Only react to meaningful auth events, NOT token refreshes
+        // TOKEN_REFRESHED fires frequently and causes cascade loops
+        if (event === 'TOKEN_REFRESHED') return;
         console.log("[useAdmin] Auth state changed:", event);
         setIsSessionReady(true);
         queryClient.invalidateQueries({ queryKey: ["isAdmin"] });
