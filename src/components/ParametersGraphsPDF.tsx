@@ -41,6 +41,25 @@ const DOMAIN_COLORS: Record<string, string> = {
   "Comunicativo-Interativo": "#00C49F"
 };
 
+// Level label mapping
+const LEVEL_LABELS: Record<string, { label: string; color: string; bgColor: string }> = {
+  "nao_observado": { label: "Não Observado", color: "#6b7280", bgColor: "#f3f4f6" },
+  "emergente": { label: "Emergente", color: "#dc2626", bgColor: "#fef2f2" },
+  "inconsistente": { label: "Inconsistente", color: "#f59e0b", bgColor: "#fffbeb" },
+  "moderado": { label: "Moderado", color: "#2563eb", bgColor: "#eff6ff" },
+  "consistente": { label: "Consistente", color: "#16a34a", bgColor: "#f0fdf4" },
+  "excepcional": { label: "Excepcional", color: "#7c3aed", bgColor: "#faf5ff" },
+};
+
+const levelToScore = (level: string): number => {
+  return level === "nao_observado" ? 0 : 
+         level === "emergente" ? 20 : 
+         level === "inconsistente" ? 40 : 
+         level === "moderado" ? 60 :
+         level === "consistente" ? 80 : 
+         level === "excepcional" ? 100 : 0;
+};
+
 export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
   categoryData,
   pieData,
@@ -52,8 +71,49 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
   allEvaluations = [],
   professionalPhotoBase64,
   digitalStampBase64,
+  selectedParameters = {},
+  evaluationDomains = [],
 }) => {
   const COLORS = ['#4ade80', '#ffa1b5'];
+
+  // Build evaluated parameters detail
+  const evaluatedDetails: {
+    domain: string;
+    subdomain: string;
+    parameter: string;
+    level: string;
+    score: number;
+  }[] = [];
+
+  evaluationDomains.forEach((domain: any) => {
+    domain.subdomains?.forEach((subdomain: any) => {
+      subdomain.parameters?.forEach((param: string) => {
+        const key = `${domain.title}-${subdomain.title}-${param}`;
+        const value = selectedParameters[key];
+        if (value && value !== "nao_observado") {
+          evaluatedDetails.push({
+            domain: domain.title,
+            subdomain: subdomain.title,
+            parameter: param,
+            level: value,
+            score: levelToScore(value),
+          });
+        }
+      });
+    });
+  });
+
+  // Group by domain > subdomain
+  const groupedByDomain: Record<string, Record<string, typeof evaluatedDetails>> = {};
+  evaluatedDetails.forEach(item => {
+    if (!groupedByDomain[item.domain]) groupedByDomain[item.domain] = {};
+    if (!groupedByDomain[item.domain][item.subdomain]) groupedByDomain[item.domain][item.subdomain] = [];
+    groupedByDomain[item.domain][item.subdomain].push(item);
+  });
+
+  // Filter categoryData to only show evaluated subdomains
+  const evaluatedCategoryData = categoryData.filter(item => item.value > 0);
+  const evaluatedRadarData = radarData?.filter(item => item.value > 0) || [];
 
   // Inline styles
   const cardStyle: React.CSSProperties = {
