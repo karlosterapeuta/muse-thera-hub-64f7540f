@@ -41,10 +41,16 @@ export default function Login() {
             .from('profiles')
             .select('status, expires_at')
             .eq('id', session.user.id)
-            .single();
+            .maybeSingle();
           
           if (error) {
             console.error("Error checking profile status:", error);
+            navigate('/dashboard');
+            return;
+          }
+
+          if (!profile) {
+            // Profile not found - still navigate to dashboard, Layout will handle it
             navigate('/dashboard');
             return;
           }
