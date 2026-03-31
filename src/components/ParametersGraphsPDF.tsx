@@ -4,7 +4,6 @@ import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, RadarC
 import { format } from 'date-fns';
 import { ProfessionalData } from "@/hooks/useProfessionalData";
 import { SavedEvaluation } from "@/hooks/useEvaluationStorage";
-import { generateSuggestions, DomainSuggestion } from "@/pages/evaluation/utils/suggestionEngine";
 
 interface ParametersGraphsPDFProps {
   categoryData: any[];
@@ -117,24 +116,33 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
 
   // Inline styles
   const cardStyle: React.CSSProperties = {
-    padding: '16px',
+    padding: '18px',
     backgroundColor: '#ffffff',
-    borderRadius: '8px',
-    border: '1px solid #e5e7eb',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+    borderRadius: '10px',
+    border: '1px solid #e2e8f0',
+    boxShadow: '0 1px 4px rgba(0,0,0,0.06)'
   };
 
   const cardLargeStyle: React.CSSProperties = {
     ...cardStyle,
     padding: '24px',
-    marginBottom: '32px'
+    marginBottom: '28px'
+  };
+
+  const sectionTitleStyle: React.CSSProperties = {
+    fontSize: '16px',
+    fontWeight: 700,
+    marginBottom: '14px',
+    color: '#0f172a',
+    textAlign: 'center' as const,
+    letterSpacing: '-0.2px'
   };
 
   return (
-    <div style={{ backgroundColor: '#ffffff', color: '#000000' }}>
+    <div style={{ backgroundColor: '#ffffff', color: '#000000', fontFamily: 'Helvetica, Arial, sans-serif' }}>
       {/* Página Única - Parâmetros e Gráficos */}
       <div style={{ 
-        padding: '24px', 
+        padding: '28px 32px', 
         width: '100%', 
         maxWidth: '800px', 
         margin: '0 auto', 
@@ -143,65 +151,79 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
       }}>
         {/* Header Section */}
         <div style={{ 
-          borderBottom: '2px solid #e5e7eb', 
-          paddingBottom: '16px', 
-          marginBottom: '24px' 
+          marginBottom: '28px',
+          borderBottom: '3px solid #2563eb',
+          paddingBottom: '20px'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
-            <img 
-              src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" 
-              alt="Logo" 
-              style={{ width: '35px', height: 'auto' }} 
-            />
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <h1 style={{ 
-              fontSize: '20px', 
-              fontWeight: 700, 
-              color: '#2563eb', 
-              marginBottom: '8px' 
-            }}>
-              Parâmetros e Gráficos - Avaliação TEA
-            </h1>
-            <h2 style={{ 
-              fontSize: '16px', 
-              color: '#374151', 
-              marginBottom: '4px',
-              fontWeight: 400
-            }}>
-              Paciente: {patientName || 'Não informado'}
-            </h2>
-            <p style={{ 
-              fontSize: '14px', 
-              color: '#6b7280', 
-              marginBottom: '8px' 
-            }}>
-              Data da Avaliação: {evaluationDate ? format(evaluationDate, 'dd/MM/yyyy') : format(new Date(), 'dd/MM/yyyy')}
-            </p>
-            {overallScore && (
-              <div style={{ 
-                marginTop: '12px', 
-                padding: '12px', 
-                backgroundColor: '#eff6ff', 
-                borderRadius: '8px' 
-              }}>
-                <p style={{ 
-                  fontSize: '16px', 
-                  fontWeight: 600, 
-                  color: '#1e40af' 
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between',
+            marginBottom: '16px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <img 
+                src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" 
+                alt="Logo" 
+                style={{ width: '40px', height: 'auto' }} 
+              />
+              <div>
+                <h1 style={{ 
+                  fontSize: '22px', 
+                  fontWeight: 800, 
+                  color: '#1e3a5f', 
+                  margin: 0,
+                  letterSpacing: '-0.3px'
                 }}>
-                  Pontuação Total: {overallScore.raw}/{overallScore.max} ({overallScore.percentage}%)
+                  Relatório de Avaliação
+                </h1>
+                <p style={{ fontSize: '12px', color: '#64748b', margin: 0, marginTop: '2px' }}>
+                  Escala MuseTera - Parâmetros e Gráficos
                 </p>
+              </div>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 600 }}>
+                Data da Avaliação
+              </p>
+              <p style={{ fontSize: '15px', color: '#1e3a5f', margin: 0, fontWeight: 700 }}>
+                {evaluationDate ? format(evaluationDate, 'dd/MM/yyyy') : format(new Date(), 'dd/MM/yyyy')}
+              </p>
+            </div>
+          </div>
+          
+          {/* Patient & Score Row */}
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            backgroundColor: '#f8fafc',
+            borderRadius: '10px',
+            padding: '14px 20px',
+            border: '1px solid #e2e8f0'
+          }}>
+            <div>
+              <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 600 }}>Paciente</p>
+              <p style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', margin: 0 }}>{patientName || 'Não informado'}</p>
+            </div>
+            {overallScore && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <div style={{ textAlign: 'center' }}>
+                  <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 600 }}>Score</p>
+                  <p style={{ fontSize: '24px', fontWeight: 800, color: '#2563eb', margin: 0 }}>{overallScore.percentage}%</p>
+                </div>
                 {overallScore.evaluatedParameters != null && overallScore.totalParameters != null && (
-                  <p style={{ fontSize: '13px', color: '#3b82f6', marginTop: '4px' }}>
-                    {overallScore.evaluatedParameters} de {overallScore.totalParameters} parâmetros avaliados
-                    ({overallScore.completionPercentage || Math.round((overallScore.evaluatedParameters / (overallScore.totalParameters || 1)) * 100)}% de cobertura)
-                  </p>
-                )}
-                {evaluatedDetails.length > 0 && (
-                  <p style={{ fontSize: '12px', color: '#6b7280', marginTop: '2px' }}>
-                    Exibindo apenas os parâmetros efetivamente avaliados
-                  </p>
+                  <div style={{ 
+                    borderLeft: '2px solid #e2e8f0', 
+                    paddingLeft: '16px',
+                    textAlign: 'center'
+                  }}>
+                    <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 600 }}>Cobertura</p>
+                    <p style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+                      {overallScore.evaluatedParameters}/{overallScore.totalParameters}
+                    </p>
+                    <p style={{ fontSize: '10px', color: '#64748b', margin: 0 }}>parâmetros</p>
+                  </div>
                 )}
               </div>
             )}
@@ -1068,246 +1090,8 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
           }
         })()}
 
-        {/* Therapeutic Suggestions Section - Works with 1+ evaluations */}
-        {allEvaluations.length >= 1 && (() => {
-          const suggestions = generateSuggestions(allEvaluations);
-          if (suggestions.length === 0) return null;
-          
-          return (
-            <div style={{ 
-              ...cardLargeStyle, 
-              marginTop: '24px',
-              pageBreakBefore: 'always',
-              background: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 50%, #e0e7ff 100%)',
-              border: '1px solid #c4b5fd'
-            }}>
-              <h3 style={{ 
-                fontSize: '18px', 
-                fontWeight: 700, 
-                marginBottom: '8px', 
-                color: '#5b21b6',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}>
-                <span style={{ fontSize: '20px' }}>&#x1F4A1;</span> Sugestões Terapêuticas
-              </h3>
-              <p style={{ fontSize: '13px', color: '#7c3aed', marginBottom: '20px' }}>
-                Baseadas nos 3 domínios prioritários para intervenção
-              </p>
-              
-              {suggestions.map((suggestion, index) => (
-                <div key={index} style={{ 
-                  backgroundColor: '#ffffff',
-                  borderRadius: '10px',
-                  padding: '16px',
-                  marginBottom: index < suggestions.length - 1 ? '16px' : '0',
-                  border: '1px solid #ddd6fe',
-                  boxShadow: '0 2px 4px rgba(139, 92, 246, 0.1)'
-                }}>
-                  {/* Domain Header */}
-                  <div style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '12px',
-                    paddingBottom: '10px',
-                    borderBottom: '1px solid #ede9fe'
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{
-                        width: '28px',
-                        height: '28px',
-                        borderRadius: '50%',
-                        backgroundColor: index === 0 ? '#ef4444' : index === 1 ? '#f59e0b' : '#3b82f6',
-                        color: '#ffffff',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '14px',
-                        fontWeight: 700
-                      }}>
-                        {index + 1}
-                      </span>
-                      <span style={{ 
-                        fontSize: '15px', 
-                        fontWeight: 600, 
-                        color: '#1f2937' 
-                      }}>
-                        Domínio {suggestion.shortName}
-                      </span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{
-                        fontSize: '12px',
-                        fontWeight: 600,
-                        color: '#ffffff',
-                        backgroundColor: suggestion.score < 40 ? '#ef4444' : suggestion.score < 60 ? '#f59e0b' : '#22c55e',
-                        padding: '3px 10px',
-                        borderRadius: '12px'
-                      }}>
-                        {suggestion.score}%
-                      </span>
-                      <span style={{
-                        fontSize: '11px',
-                        color: suggestion.trend === 'improving' ? '#16a34a' : suggestion.trend === 'declining' ? '#dc2626' : '#6b7280'
-                      }}>
-                        {suggestion.trend === 'improving' ? '↑ Melhorando' : 
-                         suggestion.trend === 'declining' ? '↓ Declinando' : '→ Estável'}
-                      </span>
-                    </div>
-                  </div>
 
-                  {/* Therapeutic Objectives */}
-                  <div style={{ marginBottom: '14px' }}>
-                    <h5 style={{ 
-                      fontSize: '13px', 
-                      fontWeight: 600, 
-                      color: '#5b21b6',
-                      marginBottom: '8px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px'
-                    }}>
-                      <span>&#x1F3AF;</span> Objetivos Terapêuticos
-                    </h5>
-                    {suggestion.objectives.slice(0, 2).map((obj, objIdx) => (
-                      <div key={objIdx} style={{ 
-                        backgroundColor: '#faf5ff',
-                        borderRadius: '6px',
-                        padding: '10px',
-                        marginBottom: objIdx < 1 ? '8px' : '0'
-                      }}>
-                        <p style={{ 
-                          fontSize: '12px', 
-                          fontWeight: 600, 
-                          color: '#7c3aed',
-                          marginBottom: '6px'
-                        }}>
-                          {obj.objective}
-                        </p>
-                        <ul style={{ margin: 0, paddingLeft: '16px' }}>
-                          {obj.strategies.slice(0, 2).map((strategy, sIdx) => (
-                            <li key={sIdx} style={{ 
-                              fontSize: '11px', 
-                              color: '#4b5563',
-                              marginBottom: '2px'
-                            }}>
-                              {strategy}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
 
-                  {/* Suggested Activities */}
-                  {suggestion.activities.length > 0 && (
-                    <div style={{ marginBottom: '14px' }}>
-                      <h5 style={{ 
-                        fontSize: '13px', 
-                        fontWeight: 600, 
-                        color: '#5b21b6',
-                        marginBottom: '8px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px'
-                      }}>
-                        <span>&#x1F4CB;</span> Atividades Sugeridas
-                      </h5>
-                      <div style={{ 
-                        display: 'flex', 
-                        flexWrap: 'wrap', 
-                        gap: '8px' 
-                      }}>
-                        {suggestion.activities.slice(0, 3).map((activity, actIdx) => (
-                          <div key={actIdx} style={{
-                            backgroundColor: '#f0fdf4',
-                            border: '1px solid #bbf7d0',
-                            borderRadius: '6px',
-                            padding: '8px 10px',
-                            flex: '1 1 calc(33% - 8px)',
-                            minWidth: '140px'
-                          }}>
-                            <p style={{ 
-                              fontSize: '11px', 
-                              fontWeight: 600, 
-                              color: '#15803d',
-                              marginBottom: '2px'
-                            }}>
-                              {activity.title}
-                            </p>
-                            <p style={{ 
-                              fontSize: '10px', 
-                              color: '#4b5563',
-                              lineHeight: 1.3
-                            }}>
-                              {activity.description}
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* MuseTera Games */}
-                  {suggestion.games.length > 0 && (
-                    <div>
-                      <h5 style={{ 
-                        fontSize: '13px', 
-                        fontWeight: 600, 
-                        color: '#5b21b6',
-                        marginBottom: '8px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px'
-                      }}>
-                        <span>&#x1F3AE;</span> Jogos MuseTera Recomendados
-                      </h5>
-                      <div style={{ 
-                        display: 'flex', 
-                        flexWrap: 'wrap', 
-                        gap: '8px' 
-                      }}>
-                        {suggestion.games.slice(0, 3).map((game, gameIdx) => (
-                          <div key={gameIdx} style={{
-                            backgroundColor: '#eff6ff',
-                            border: '1px solid #bfdbfe',
-                            borderRadius: '6px',
-                            padding: '8px 10px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            flex: '1 1 calc(33% - 8px)',
-                            minWidth: '140px'
-                          }}>
-                            <span style={{ fontSize: '18px' }}>{game.icon}</span>
-                            <div>
-                              <p style={{ 
-                                fontSize: '11px', 
-                                fontWeight: 600, 
-                                color: '#1d4ed8'
-                              }}>
-                                {game.name}
-                              </p>
-                              <p style={{ 
-                                fontSize: '9px', 
-                                color: '#6b7280',
-                                lineHeight: 1.2
-                              }}>
-                                {game.benefit}
-                              </p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          );
-        })()}
 
         {/* Message when only one evaluation */}
         {allEvaluations.length === 1 && (
