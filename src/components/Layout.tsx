@@ -101,15 +101,21 @@ function LayoutContent({ children }: LayoutProps) {
           return;
         }
 
-        // Check profile status
+        // Check profile status - use maybeSingle to handle transient RLS timing issues
         const { data: profile, error } = await supabase
           .from('profiles')
           .select('status, expires_at')
           .eq('id', session.user.id)
-          .single();
+          .maybeSingle();
         
         if (error) {
           console.error("Error checking profile status:", error);
+          return;
+        }
+
+        // If profile not found (transient issue), don't log out - just skip
+        if (!profile) {
+          console.warn("Profile not found, skipping validation (may be transient)");
           return;
         }
 

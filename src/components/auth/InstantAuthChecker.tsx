@@ -61,10 +61,16 @@ export default function InstantAuthChecker() {
         .from('profiles')
         .select('status, expires_at')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
       
       if (error) {
         console.error("❌ Error checking profile status:", error);
+        return;
+      }
+
+      // If profile not found (transient RLS timing), skip - don't log out
+      if (!profile) {
+        console.warn("⚠️ Profile not found for user, skipping check");
         return;
       }
 
