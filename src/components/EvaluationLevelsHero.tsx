@@ -93,7 +93,12 @@ export function EvaluationLevelsHero() {
           </div>
           <div className="flex gap-2 self-start sm:self-center flex-shrink-0">
             <Button
-              onClick={() => window.open('/documents/artigo-musetera.pdf', '_blank')}
+              onClick={() => {
+                const link = document.createElement('a');
+                link.href = '/documents/artigo-musetera.pdf';
+                link.download = 'Artigo_MuseTera_Musicoterapia.pdf';
+                link.click();
+              }}
               className={cn(
                 "relative overflow-hidden",
                 "bg-gradient-to-r from-blue-600 via-blue-600 to-blue-700",
