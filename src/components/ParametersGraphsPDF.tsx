@@ -16,12 +16,20 @@ interface ParametersGraphsPDFProps {
     raw: number;
     max: number;
     percentage: number;
+    completionPercentage?: number;
+    evaluatedParameters?: number;
+    totalParameters?: number;
+    evaluatedDomains?: number;
+    totalDomains?: number;
   };
   evaluationDate?: Date;
   allEvaluations?: SavedEvaluation[];
   // Assinatura digital e carimbo
   professionalPhotoBase64?: string;
   digitalStampBase64?: string;
+  // Dados detalhados de avaliação
+  selectedParameters?: Record<string, string>;
+  evaluationDomains?: any[];
 }
 
 // Domain colors for line chart
@@ -31,6 +39,25 @@ const DOMAIN_COLORS: Record<string, string> = {
   "Cognitivo": "#ffc658",
   "Sensório-Motor": "#ff8042",
   "Comunicativo-Interativo": "#00C49F"
+};
+
+// Level label mapping
+const LEVEL_LABELS: Record<string, { label: string; color: string; bgColor: string }> = {
+  "nao_observado": { label: "Não Observado", color: "#6b7280", bgColor: "#f3f4f6" },
+  "emergente": { label: "Emergente", color: "#dc2626", bgColor: "#fef2f2" },
+  "inconsistente": { label: "Inconsistente", color: "#f59e0b", bgColor: "#fffbeb" },
+  "moderado": { label: "Moderado", color: "#2563eb", bgColor: "#eff6ff" },
+  "consistente": { label: "Consistente", color: "#16a34a", bgColor: "#f0fdf4" },
+  "excepcional": { label: "Excepcional", color: "#7c3aed", bgColor: "#faf5ff" },
+};
+
+const levelToScore = (level: string): number => {
+  return level === "nao_observado" ? 0 : 
+         level === "emergente" ? 20 : 
+         level === "inconsistente" ? 40 : 
+         level === "moderado" ? 60 :
+         level === "consistente" ? 80 : 
+         level === "excepcional" ? 100 : 0;
 };
 
 export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
@@ -44,8 +71,49 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
   allEvaluations = [],
   professionalPhotoBase64,
   digitalStampBase64,
+  selectedParameters = {},
+  evaluationDomains = [],
 }) => {
   const COLORS = ['#4ade80', '#ffa1b5'];
+
+  // Build evaluated parameters detail
+  const evaluatedDetails: {
+    domain: string;
+    subdomain: string;
+    parameter: string;
+    level: string;
+    score: number;
+  }[] = [];
+
+  evaluationDomains.forEach((domain: any) => {
+    domain.subdomains?.forEach((subdomain: any) => {
+      subdomain.parameters?.forEach((param: string) => {
+        const key = `${domain.title}-${subdomain.title}-${param}`;
+        const value = selectedParameters[key];
+        if (value && value !== "nao_observado") {
+          evaluatedDetails.push({
+            domain: domain.title,
+            subdomain: subdomain.title,
+            parameter: param,
+            level: value,
+            score: levelToScore(value),
+          });
+        }
+      });
+    });
+  });
+
+  // Group by domain > subdomain
+  const groupedByDomain: Record<string, Record<string, typeof evaluatedDetails>> = {};
+  evaluatedDetails.forEach(item => {
+    if (!groupedByDomain[item.domain]) groupedByDomain[item.domain] = {};
+    if (!groupedByDomain[item.domain][item.subdomain]) groupedByDomain[item.domain][item.subdomain] = [];
+    groupedByDomain[item.domain][item.subdomain].push(item);
+  });
+
+  // Filter categoryData to only show evaluated subdomains
+  const evaluatedCategoryData = categoryData.filter(item => item.value > 0);
+  const evaluatedRadarData = radarData?.filter(item => item.value > 0) || [];
 
   // Inline styles
   const cardStyle: React.CSSProperties = {
@@ -124,6 +192,17 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
                 }}>
                   Pontuação Total: {overallScore.raw}/{overallScore.max} ({overallScore.percentage}%)
                 </p>
+                {overallScore.evaluatedParameters != null && overallScore.totalParameters != null && (
+                  <p style={{ fontSize: '13px', color: '#3b82f6', marginTop: '4px' }}>
+                    {overallScore.evaluatedParameters} de {overallScore.totalParameters} parâmetros avaliados
+                    ({overallScore.completionPercentage || Math.round((overallScore.evaluatedParameters / (overallScore.totalParameters || 1)) * 100)}% de cobertura)
+                  </p>
+                )}
+                {evaluatedDetails.length > 0 && (
+                  <p style={{ fontSize: '12px', color: '#6b7280', marginTop: '2px' }}>
+                    Exibindo apenas os parâmetros efetivamente avaliados
+                  </p>
+                )}
               </div>
             )}
           </div>
@@ -153,8 +232,8 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
               alignItems: 'center', 
               height: '250px' 
             }}>
-              {radarData && radarData.length > 0 && (
-                <RadarChart width={280} height={250} data={radarData}>
+              {evaluatedRadarData && evaluatedRadarData.length > 0 && (
+                <RadarChart width={280} height={250} data={evaluatedRadarData}>
                   <PolarGrid strokeDasharray="3 3" />
                   <PolarAngleAxis dataKey="name" tick={{ fill: '#4B5563', fontSize: 10 }} />
                   <Radar
@@ -242,7 +321,7 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
             textAlign: 'center', 
             color: '#1f2937' 
           }}>
-            Desempenho por Subdomínios
+            Desempenho por Subdomínios {evaluatedCategoryData.length < categoryData.length ? '(Avaliados)' : ''}
           </h3>
           <div style={{ 
             height: '400px', 
@@ -253,7 +332,7 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
             <BarChart
               width={720}
               height={400}
-              data={categoryData}
+              data={evaluatedCategoryData}
               margin={{ top: 20, right: 30, left: 30, bottom: 80 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
@@ -266,11 +345,12 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
               />
               <YAxis domain={[0, 100]} tick={{ fill: '#4B5563' }} />
               <Bar dataKey="value" fill="#3b82f6">
-                {categoryData.map((entry, index) => (
+                {evaluatedCategoryData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={
                     entry.domain === "Musical" ? "#8884d8" :
                     entry.domain === "Psicossocial" ? "#82ca9d" :
-                    entry.domain === "Cognitivo" ? "#ffc658" : "#ff8042"
+                    entry.domain === "Cognitivo" ? "#ffc658" :
+                    entry.domain === "Sensório-Motor" ? "#ff8042" : "#00C49F"
                   } />
                 ))}
               </Bar>
@@ -278,7 +358,7 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
           </div>
         </div>
 
-        {/* Summary Table */}
+        {/* Summary Table - only evaluated */}
         <div style={{ ...cardLargeStyle, marginBottom: '24px' }}>
           <h3 style={{ 
             fontSize: '18px', 
@@ -286,48 +366,180 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
             marginBottom: '16px', 
             color: '#1f2937' 
           }}>
-            Resumo dos Parâmetros
+            Resumo dos Subdomínios Avaliados
           </h3>
           <div style={{ 
             display: 'grid', 
             gridTemplateColumns: '1fr 1fr', 
             gap: '16px' 
           }}>
-            {categoryData.map((item, index) => (
-              <div key={index} style={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center', 
-                padding: '12px', 
-                backgroundColor: '#f9fafb', 
-                borderRadius: '4px' 
-              }}>
-                <span style={{ 
-                  fontSize: '14px', 
-                  fontWeight: 500, 
-                  color: '#374151' 
-                }}>{item.name}</span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div 
-                    style={{ 
-                      width: '12px', 
-                      height: '12px', 
-                      borderRadius: '50%',
-                      backgroundColor: item.domain === "Musical" ? "#8884d8" :
-                        item.domain === "Psicossocial" ? "#82ca9d" :
-                        item.domain === "Cognitivo" ? "#ffc658" : "#ff8042"
-                    }}
-                  />
+            {evaluatedCategoryData.map((item, index) => {
+              const scoreColor = item.value >= 80 ? '#16a34a' : item.value >= 60 ? '#2563eb' : item.value >= 40 ? '#f59e0b' : '#dc2626';
+              const scoreBg = item.value >= 80 ? '#f0fdf4' : item.value >= 60 ? '#eff6ff' : item.value >= 40 ? '#fffbeb' : '#fef2f2';
+              return (
+                <div key={index} style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center', 
+                  padding: '12px', 
+                  backgroundColor: scoreBg, 
+                  borderRadius: '8px',
+                  border: `1px solid ${scoreColor}22`
+                }}>
                   <span style={{ 
-                    fontSize: '14px', 
-                    fontWeight: 600, 
-                    color: '#111827' 
-                  }}>{item.value}%</span>
+                    fontSize: '13px', 
+                    fontWeight: 500, 
+                    color: '#374151' 
+                  }}>{item.name}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div 
+                      style={{ 
+                        width: '12px', 
+                        height: '12px', 
+                        borderRadius: '50%',
+                        backgroundColor: item.domain === "Musical" ? "#8884d8" :
+                          item.domain === "Psicossocial" ? "#82ca9d" :
+                          item.domain === "Cognitivo" ? "#ffc658" :
+                          item.domain === "Sensório-Motor" ? "#ff8042" : "#00C49F"
+                      }}
+                    />
+                    <span style={{ 
+                      fontSize: '14px', 
+                      fontWeight: 700, 
+                      color: scoreColor,
+                      backgroundColor: `${scoreColor}15`,
+                      padding: '2px 10px',
+                      borderRadius: '12px'
+                    }}>{item.value}%</span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
+
+        {/* DETAILED EVALUATED PARAMETERS SECTION */}
+        {Object.keys(groupedByDomain).length > 0 && (
+          <div style={{ pageBreakBefore: 'always' }}>
+            <div style={{ 
+              ...cardLargeStyle, 
+              marginBottom: '24px',
+              background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
+              border: '2px solid #0ea5e9'
+            }}>
+              <h3 style={{ 
+                fontSize: '20px', 
+                fontWeight: 700, 
+                marginBottom: '6px', 
+                color: '#0c4a6e',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
+                Detalhamento da Avaliação
+              </h3>
+              <p style={{ fontSize: '13px', color: '#0369a1', marginBottom: '20px' }}>
+                {evaluatedDetails.length} parâmetros avaliados - Apenas itens efetivamente pontuados
+              </p>
+
+              {Object.entries(groupedByDomain).map(([domainName, subdomains]) => {
+                const domainColor = DOMAIN_COLORS[domainName.replace('Domínio ', '')] || '#3b82f6';
+                return (
+                  <div key={domainName} style={{ marginBottom: '20px' }}>
+                    <div style={{
+                      backgroundColor: domainColor,
+                      color: '#ffffff',
+                      padding: '10px 16px',
+                      borderRadius: '8px 8px 0 0',
+                      fontSize: '15px',
+                      fontWeight: 700
+                    }}>
+                      {domainName}
+                    </div>
+                    <div style={{
+                      border: `1px solid ${domainColor}40`,
+                      borderTop: 'none',
+                      borderRadius: '0 0 8px 8px',
+                      overflow: 'hidden'
+                    }}>
+                      {Object.entries(subdomains).map(([subName, params]) => (
+                        <div key={subName} style={{ borderBottom: `1px solid ${domainColor}20` }}>
+                          <div style={{
+                            backgroundColor: `${domainColor}10`,
+                            padding: '8px 16px',
+                            fontSize: '13px',
+                            fontWeight: 600,
+                            color: '#374151',
+                            borderBottom: `1px solid ${domainColor}15`
+                          }}>
+                            {subName}
+                          </div>
+                          {params.map((param, idx) => {
+                            const levelInfo = LEVEL_LABELS[param.level] || { label: param.level, color: '#6b7280', bgColor: '#f3f4f6' };
+                            return (
+                              <div key={idx} style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                padding: '8px 16px',
+                                backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fafafa',
+                                borderBottom: idx < params.length - 1 ? '1px solid #f3f4f6' : 'none'
+                              }}>
+                                <span style={{ 
+                                  fontSize: '12px', 
+                                  color: '#374151',
+                                  flex: 1,
+                                  wordWrap: 'break-word',
+                                  overflowWrap: 'break-word'
+                                }}>
+                                  {param.parameter}
+                                </span>
+                                <div style={{ 
+                                  display: 'flex', 
+                                  alignItems: 'center', 
+                                  gap: '8px',
+                                  flexShrink: 0,
+                                  marginLeft: '12px'
+                                }}>
+                                  <span style={{
+                                    fontSize: '11px',
+                                    fontWeight: 600,
+                                    color: levelInfo.color,
+                                    backgroundColor: levelInfo.bgColor,
+                                    padding: '3px 10px',
+                                    borderRadius: '12px',
+                                    border: `1px solid ${levelInfo.color}30`,
+                                    whiteSpace: 'nowrap'
+                                  }}>
+                                    {levelInfo.label}
+                                  </span>
+                                  <div style={{
+                                    width: '36px',
+                                    height: '6px',
+                                    backgroundColor: '#e5e7eb',
+                                    borderRadius: '3px',
+                                    overflow: 'hidden'
+                                  }}>
+                                    <div style={{
+                                      width: `${param.score}%`,
+                                      height: '100%',
+                                      backgroundColor: levelInfo.color,
+                                      borderRadius: '3px'
+                                    }}></div>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Evolution & Areas Section - Different display for 1 vs 2+ evaluations */}
         {allEvaluations.length >= 1 && (() => {
