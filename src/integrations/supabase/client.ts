@@ -8,4 +8,14 @@ const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiO
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+// Singleton pattern: prevents multiple Supabase clients from being created
+// (e.g. during HMR, service worker restarts, or duplicate tabs sharing storage),
+// which causes concurrent token refresh storms and 429 rate limit errors.
+export const supabase = (globalThis as any).__supabase_client ??
+  ((globalThis as any).__supabase_client = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+    },
+  }));
