@@ -125,9 +125,14 @@ export default function Evaluation() {
   }, [loadAllEvaluations]);
 
   // Auto-carregar a avaliação mais recente quando paciente é selecionado
+  const [skipAutoLoad, setSkipAutoLoad] = useState(draftLoaded);
   useEffect(() => {
-    // Não auto-carregar se está editando ou se não há avaliações ou ainda carregando
+    // Não auto-carregar se está editando, carregando, ou se acabou de restaurar draft
     if (editingEvaluationId || isLoadingEvaluations) {
+      return;
+    }
+    if (skipAutoLoad) {
+      setSkipAutoLoad(false);
       return;
     }
     
