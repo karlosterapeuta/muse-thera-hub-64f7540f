@@ -232,8 +232,8 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
               alignItems: 'center', 
               height: '250px' 
             }}>
-              {radarData && radarData.length > 0 && (
-                <RadarChart width={280} height={250} data={radarData}>
+              {evaluatedRadarData && evaluatedRadarData.length > 0 && (
+                <RadarChart width={280} height={250} data={evaluatedRadarData}>
                   <PolarGrid strokeDasharray="3 3" />
                   <PolarAngleAxis dataKey="name" tick={{ fill: '#4B5563', fontSize: 10 }} />
                   <Radar
