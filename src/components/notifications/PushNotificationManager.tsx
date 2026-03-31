@@ -71,26 +71,7 @@ export function PushNotificationManager() {
 
   if (status === 'unsupported') return null;
 
-  if (status === 'denied') {
-    return (
-      <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 z-50 animate-in slide-in-from-bottom-4">
-        <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-4 shadow-lg backdrop-blur-sm">
-          <div className="flex items-start gap-3">
-            <div className="p-2 bg-destructive/20 rounded-lg shrink-0">
-              <BellOff className="h-5 w-5 text-destructive" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h4 className="font-semibold text-sm text-foreground">Notificações bloqueadas</h4>
-              <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                As notificações foram bloqueadas. Para receber lembretes sobre as devolutivas, 
-                habilite as notificações nas configurações do seu navegador.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  if (status === 'denied') return null;
 
   return (
     <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 z-50 animate-in slide-in-from-bottom-4">
