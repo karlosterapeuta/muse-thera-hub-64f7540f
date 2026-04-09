@@ -100,24 +100,24 @@ export default function MusicoterapiaPage() {
     const currentDate = new Date().toLocaleDateString('pt-BR');
     
     return `
-      <div style="font-family: Arial, sans-serif; color: #000; background-color: #fff; padding: 40px;">
+      <div style="font-family: Arial, sans-serif; color: #000; background-color: #fff; width: 210mm; min-height: 297mm; padding: 20mm; margin: 0 auto; font-size: 12px; line-height: 1.6; box-sizing: border-box;">
         <!-- Header -->
-        <div style="text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #14b8a6;">
+        <div style="text-align: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #14b8a6; page-break-inside: avoid;">
           ${logoUrl ? `<img src="${logoUrl}" alt="Logo" style="max-width: 150px; margin-bottom: 15px;" />` : ''}
-          <h1 style="color: #0d9488; margin: 0; font-size: 28px;">Relatorio MuseTera TEA</h1>
-          <p style="color: #666; margin: 5px 0 0 0;">Musicoterapia para Transtorno do Espectro Autista</p>
+          <h1 style="color: #0d9488; margin: 0; font-size: 24px;">Relatorio MuseTera TEA</h1>
+          <p style="color: #666; margin: 5px 0 0 0; font-size: 13px;">Musicoterapia para Transtorno do Espectro Autista</p>
         </div>
 
-        <!-- Patient and Professional Info Grid -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; padding: 20px; background: #f0fdfa; border-radius: 8px;">
-          <div>
-            <h3 style="color: #0d9488; margin: 0 0 10px 0; font-size: 16px;">Dados do Paciente</h3>
+        <!-- Patient and Professional Info -->
+        <div class="section-block" style="display: flex; gap: 20px; margin-bottom: 25px; padding: 16px; background: #f0fdfa; border-radius: 8px; page-break-inside: avoid;">
+          <div style="flex: 1;">
+            <h3 style="color: #0d9488; margin: 0 0 10px 0; font-size: 14px;">Dados do Paciente</h3>
             <p style="margin: 5px 0;"><strong>Nome:</strong> ${reportDataForPDF.patientName || 'Nao informado'}</p>
             <p style="margin: 5px 0;"><strong>Idade:</strong> ${reportDataForPDF.patientAge || 'Nao informado'}</p>
             <p style="margin: 5px 0;"><strong>Diagnostico:</strong> ${reportDataForPDF.patientDiagnosis || 'Nao informado'}</p>
           </div>
-          <div>
-            <h3 style="color: #0d9488; margin: 0 0 10px 0; font-size: 16px;">Dados do Profissional</h3>
+          <div style="flex: 1;">
+            <h3 style="color: #0d9488; margin: 0 0 10px 0; font-size: 14px;">Dados do Profissional</h3>
             <p style="margin: 5px 0;"><strong>Nome:</strong> ${reportDataForPDF.professionalName || professionalData?.name || 'Nao informado'}</p>
             <p style="margin: 5px 0;"><strong>Registro:</strong> ${reportDataForPDF.professionalRegistry || professionalData?.register || 'Nao informado'}</p>
             <p style="margin: 5px 0;"><strong>Data:</strong> ${reportDataForPDF.sessionDate || currentDate}</p>
@@ -126,100 +126,109 @@ export default function MusicoterapiaPage() {
 
         <!-- Report Sections -->
         ${fields.therapeutic_objectives && fields.therapeutic_objectives.length > 0 ? `
-          <div style="margin-bottom: 25px;">
-            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px;">Objetivos Terapeuticos</h3>
-            <ul style="margin: 0; padding-left: 20px;">
-              ${fields.therapeutic_objectives.map((obj: string) => `<li style="margin: 8px 0;">${obj}</li>`).join('')}
-            </ul>
+          <div class="section-block" style="margin-bottom: 20px; page-break-inside: avoid; page-break-before: auto;">
+            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Objetivos Terapeuticos</h3>
+            ${Array.isArray(fields.therapeutic_objectives) ? `
+              <ul style="margin: 0; padding-left: 20px;">
+                ${fields.therapeutic_objectives.map((obj: string) => `<li style="margin: 6px 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${obj}</li>`).join('')}
+              </ul>
+            ` : `<p style="margin: 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${fields.therapeutic_objectives}</p>`}
           </div>
         ` : ''}
 
         ${fields.musical_techniques && fields.musical_techniques.length > 0 ? `
-          <div style="margin-bottom: 25px;">
-            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px;">Tecnicas Musicais Utilizadas</h3>
-            <ul style="margin: 0; padding-left: 20px;">
-              ${fields.musical_techniques.map((tech: string) => `<li style="margin: 8px 0;">${tech}</li>`).join('')}
-            </ul>
+          <div class="section-block" style="margin-bottom: 20px; page-break-inside: avoid; page-break-before: auto;">
+            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Tecnicas Musicais Utilizadas</h3>
+            ${Array.isArray(fields.musical_techniques) ? `
+              <ul style="margin: 0; padding-left: 20px;">
+                ${fields.musical_techniques.map((tech: string) => `<li style="margin: 6px 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${tech}</li>`).join('')}
+              </ul>
+            ` : `<p style="margin: 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${fields.musical_techniques}</p>`}
           </div>
         ` : ''}
 
         ${fields.instruments_used && fields.instruments_used.length > 0 ? `
-          <div style="margin-bottom: 25px;">
-            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px;">Instrumentos Utilizados</h3>
-            <ul style="margin: 0; padding-left: 20px;">
-              ${fields.instruments_used.map((inst: string) => `<li style="margin: 8px 0;">${inst}</li>`).join('')}
-            </ul>
+          <div class="section-block" style="margin-bottom: 20px; page-break-inside: avoid; page-break-before: auto;">
+            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Instrumentos Utilizados</h3>
+            ${Array.isArray(fields.instruments_used) ? `
+              <ul style="margin: 0; padding-left: 20px;">
+                ${fields.instruments_used.map((inst: string) => `<li style="margin: 6px 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${inst}</li>`).join('')}
+              </ul>
+            ` : `<p style="margin: 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${fields.instruments_used}</p>`}
           </div>
         ` : ''}
 
         ${fields.session_activities && fields.session_activities.length > 0 ? `
-          <div style="margin-bottom: 25px;">
-            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px;">Atividades da Sessao</h3>
-            <ul style="margin: 0; padding-left: 20px;">
-              ${fields.session_activities.map((act: string) => `<li style="margin: 8px 0;">${act}</li>`).join('')}
-            </ul>
+          <div class="section-block" style="margin-bottom: 20px; page-break-inside: avoid; page-break-before: auto;">
+            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Atividades da Sessao</h3>
+            ${Array.isArray(fields.session_activities) ? `
+              <ul style="margin: 0; padding-left: 20px;">
+                ${fields.session_activities.map((act: string) => `<li style="margin: 6px 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${act}</li>`).join('')}
+              </ul>
+            ` : `<p style="margin: 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${fields.session_activities}</p>`}
           </div>
         ` : ''}
 
         ${fields.patient_evolution && fields.patient_evolution.length > 0 ? `
-          <div style="margin-bottom: 25px;">
-            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px;">Evolucao do Paciente</h3>
-            <ul style="margin: 0; padding-left: 20px;">
-              ${fields.patient_evolution.map((evol: string) => `<li style="margin: 8px 0;">${evol}</li>`).join('')}
-            </ul>
+          <div class="section-block" style="margin-bottom: 20px; page-break-inside: avoid; page-break-before: auto;">
+            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Evolucao do Paciente</h3>
+            ${Array.isArray(fields.patient_evolution) ? `
+              <ul style="margin: 0; padding-left: 20px;">
+                ${fields.patient_evolution.map((evol: string) => `<li style="margin: 6px 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${evol}</li>`).join('')}
+              </ul>
+            ` : `<p style="margin: 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${fields.patient_evolution}</p>`}
           </div>
         ` : ''}
 
         ${fields.recommendations && fields.recommendations.length > 0 ? `
-          <div style="margin-bottom: 25px;">
-            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px;">Recomendacoes</h3>
-            <ul style="margin: 0; padding-left: 20px;">
-              ${fields.recommendations.map((rec: string) => `<li style="margin: 8px 0;">${rec}</li>`).join('')}
-            </ul>
+          <div class="section-block" style="margin-bottom: 20px; page-break-inside: avoid; page-break-before: auto;">
+            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Recomendacoes</h3>
+            ${Array.isArray(fields.recommendations) ? `
+              <ul style="margin: 0; padding-left: 20px;">
+                ${fields.recommendations.map((rec: string) => `<li style="margin: 6px 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${rec}</li>`).join('')}
+              </ul>
+            ` : `<p style="margin: 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${fields.recommendations}</p>`}
           </div>
         ` : ''}
 
         ${fields.conclusion && fields.conclusion.length > 0 ? `
-          <div style="margin-bottom: 25px;">
-            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px;">Conclusao</h3>
-            <ul style="margin: 0; padding-left: 20px;">
-              ${fields.conclusion.map((conc: string) => `<li style="margin: 8px 0;">${conc}</li>`).join('')}
-            </ul>
+          <div class="section-block" style="margin-bottom: 20px; page-break-inside: avoid; page-break-before: auto;">
+            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Conclusao</h3>
+            ${Array.isArray(fields.conclusion) ? `
+              <ul style="margin: 0; padding-left: 20px;">
+                ${fields.conclusion.map((conc: string) => `<li style="margin: 6px 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${conc}</li>`).join('')}
+              </ul>
+            ` : `<p style="margin: 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${fields.conclusion}</p>`}
           </div>
         ` : ''}
 
-        <!-- FOOTER TEAL - Design 50% menor -->
-        <div style="margin-top: 25px; border: 2px solid transparent; border-radius: 10px; overflow: hidden; background: #ffffff; background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, #0d9488, #14b8a6, #06b6d4); background-origin: border-box; background-clip: padding-box, border-box;">
+        <!-- FOOTER TEAL -->
+        <div class="section-block" style="margin-top: 25px; border: 2px solid #14b8a6; border-radius: 10px; overflow: hidden; background: #ffffff; page-break-inside: avoid; page-break-before: auto;">
           <div style="height: 4px; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%);"></div>
           
           <div style="padding: 16px;">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start;">
+            <div style="display: flex; gap: 16px; align-items: start;">
             
-              <!-- Card de Assinatura (Esquerda) - 50% menor -->
-              <div style="background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 1px solid #14b8a6; border-radius: 8px; overflow: hidden;">
+              <!-- Card de Assinatura (Esquerda) -->
+              <div style="flex: 1; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 1px solid #14b8a6; border-radius: 8px; overflow: hidden;">
                 <div style="height: 4px; background: linear-gradient(to right, #0d9488, #14b8a6, #06b6d4);"></div>
                 
                 <div style="padding: 12px;">
                   <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
                     ${photoBase64 ? `
-                      <div style="position: relative;">
-                        <div style="position: absolute; width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, rgba(20,184,166,0.4), rgba(6,182,212,0.3)); filter: blur(5px); top: -2px; left: -2px;"></div>
-                        <div style="width: 48px; height: 48px; border-radius: 50%; overflow: hidden; border: 2px solid #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.1); position: relative; background: linear-gradient(135deg, #0d9488, #14b8a6); padding: 2px;">
-                          <div style="width: 100%; height: 100%; border-radius: 50%; overflow: hidden;">
-                            <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
-                          </div>
-                        </div>
+                      <div style="width: 48px; height: 48px; border-radius: 50%; overflow: hidden; border: 2px solid #14b8a6; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+                        <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
                       </div>
                     ` : ''}
                     <div style="text-align: center;">
-                      <div style="font-size: 9px; font-weight: bold; color: #0f766e; margin-bottom: 6px; line-height: 1.3; word-wrap: break-word;">${professionalData?.name || 'Profissional'}</div>
+                      <div style="font-size: 9px; font-weight: bold; color: #0f766e; margin-bottom: 6px; line-height: 1.3; word-wrap: break-word; overflow-wrap: break-word;">${professionalData?.name || 'Profissional'}</div>
                       <div style="display: inline-flex; align-items: center; gap: 3px; background: #ccfbf1; border: 1px solid #5eead4; border-radius: 10px; padding: 3px 7px; margin-bottom: 8px;">
                         <span style="color: #0f766e; font-size: 7px;">&#9835;</span>
                         <span style="font-size: 7px; font-weight: 600; color: #0f766e;">${professionalData?.specialty || 'Musicoterapeuta'}</span>
                       </div>
                       <div style="font-size: 7px; color: #374151; line-height: 1.8;">
                         ${professionalData?.register ? `<div><strong style="color: #0f766e;">Registro:</strong> ${professionalData.register}</div>` : ''}
-                        ${professionalData?.email ? `<div style="word-wrap: break-word;"><strong style="color: #0f766e;">Email:</strong> ${professionalData.email}</div>` : ''}
+                        ${professionalData?.email ? `<div style="word-wrap: break-word; overflow-wrap: break-word;"><strong style="color: #0f766e;">Email:</strong> ${professionalData.email}</div>` : ''}
                         ${professionalData?.phone ? `<div><strong style="color: #0f766e;">Telefone:</strong> ${professionalData.phone}</div>` : ''}
                       </div>
                     </div>
@@ -236,22 +245,19 @@ export default function MusicoterapiaPage() {
                 </div>
               </div>
 
-              <!-- Carimbo Circular (Direita) - 50% menor -->
-              <div style="display: flex; flex-direction: column; align-items: center;">
+              <!-- Carimbo Circular (Direita) -->
+              <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
                 ${stampBase64 || photoBase64 ? `
                   <div style="width: 140px; height: 140px; position: relative; display: flex; align-items: center; justify-content: center;">
                     <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 2px dashed #14b8a6; opacity: 0.3;"></div>
                     <div style="position: absolute; width: 92%; height: 92%; border-radius: 50%; border: 1px solid #14b8a6; opacity: 0.5;"></div>
                     <div style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 3px solid #0d9488; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px; box-shadow: 0 4px 12px rgba(20,184,166,0.25);">
                       ${photoBase64 ? `
-                        <div style="position: relative; margin-bottom: 5px;">
-                          <div style="position: absolute; width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, rgba(20,184,166,0.4), rgba(6,182,212,0.3)); filter: blur(4px); top: -2px; left: -2px;"></div>
-                          <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; border: 2px solid #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.1); position: relative;">
-                            <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
-                          </div>
+                        <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; border: 2px solid #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.1); margin-bottom: 5px;">
+                          <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
                         </div>
                       ` : ''}
-                      <div style="font-size: 7px; font-weight: bold; color: #0f766e; text-align: center; margin-bottom: 3px; max-width: 90px; line-height: 1.3; word-wrap: break-word;">${professionalData?.name || 'Profissional'}</div>
+                      <div style="font-size: 7px; font-weight: bold; color: #0f766e; text-align: center; margin-bottom: 3px; max-width: 90px; line-height: 1.3; word-wrap: break-word; overflow-wrap: break-word;">${professionalData?.name || 'Profissional'}</div>
                       <div style="width: 30px; height: 1px; background: linear-gradient(to right, transparent, #14b8a6, transparent); margin-bottom: 3px;"></div>
                       <div style="display: inline-flex; align-items: center; gap: 2px; background: #ccfbf1; border: 1px solid #5eead4; border-radius: 8px; padding: 2px 5px; margin-bottom: 2px;">
                         <span style="font-size: 5px; color: #0f766e;">&#9835;</span>
@@ -445,7 +451,6 @@ export default function MusicoterapiaPage() {
 
       // Create temporary HTML element
       const tempDiv = document.createElement('div');
-      tempDiv.style.padding = '40px';
       tempDiv.style.fontFamily = 'Arial, sans-serif';
       tempDiv.style.color = '#000';
       tempDiv.style.backgroundColor = '#fff';
@@ -455,11 +460,12 @@ export default function MusicoterapiaPage() {
 
       // PDF configuration
       const opt = {
-        margin: [20, 20, 20, 20],
+        margin: [10, 10],
         filename: `Relatorio_Musicoterapia_${reportData.patientName}_${new Date().toISOString().split('T')[0]}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['css', 'legacy'], avoid: '.section-block' }
       };
 
       // Generate and download PDF
@@ -594,7 +600,6 @@ export default function MusicoterapiaPage() {
 
       // 3. Create temporary HTML element
       const tempDiv = document.createElement('div');
-      tempDiv.style.padding = '40px';
       tempDiv.style.fontFamily = 'Arial, sans-serif';
       tempDiv.style.color = '#000';
       tempDiv.style.backgroundColor = '#fff';
@@ -604,11 +609,12 @@ export default function MusicoterapiaPage() {
 
       // 4. PDF configuration
       const opt = {
-        margin: [20, 20, 20, 20],
+        margin: [10, 10],
         filename: `Relatorio_Musicoterapia_${reportDataForPDF.patientName?.replace(/\s+/g, '_') || 'paciente'}_${new Date(report.created_at).toISOString().split('T')[0]}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['css', 'legacy'], avoid: '.section-block' }
       };
 
       // 5. Generate and download PDF
