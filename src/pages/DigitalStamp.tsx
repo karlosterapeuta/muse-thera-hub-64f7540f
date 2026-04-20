@@ -118,8 +118,13 @@ export default function DigitalStamp() {
     reader.readAsDataURL(file);
 
     try {
-      // Upload para storage
-      const fileName = `${professionalData.id}/stamp_photo_${Date.now()}.png`;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('Usuário não autenticado');
+        return;
+      }
+      // Upload para storage (folder must be auth.uid for RLS)
+      const fileName = `${user.id}/stamp_photo_${Date.now()}.png`;
       const { error: uploadError } = await supabase.storage
         .from('digital-signatures')
         .upload(fileName, file, { contentType: file.type, upsert: true });
@@ -202,8 +207,14 @@ export default function DigitalStamp() {
         return;
       }
 
-      // Upload signature to storage
-      const signatureFileName = `${professionalData.id}/signature_${Date.now()}.png`;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('Usuário não autenticado');
+        return;
+      }
+
+      // Upload signature to storage (folder must be auth.uid for RLS)
+      const signatureFileName = `${user.id}/signature_${Date.now()}.png`;
       const { error: signatureUploadError, data: signatureData } = await supabase.storage
         .from('digital-signatures')
         .upload(signatureFileName, signatureBlob, {
@@ -217,8 +228,8 @@ export default function DigitalStamp() {
         return;
       }
 
-      // Upload stamp to storage
-      const stampFileName = `${professionalData.id}/stamp_${Date.now()}.png`;
+      // Upload stamp to storage (folder must be auth.uid for RLS)
+      const stampFileName = `${user.id}/stamp_${Date.now()}.png`;
       const { error: stampUploadError, data: stampData } = await supabase.storage
         .from('digital-signatures')
         .upload(stampFileName, stampBlob, {
