@@ -58,6 +58,7 @@ export default function Professional() {
     "Associação Catarinense de Musicoterapeutas (ACAMT)",
     "Associação Brasileira de Musicoterapeutas (ABMT)",
     "Associação cearense de Musicoterapia AMT -CE",
+    "Associação de Musicoterapia do Maranhão (AMT-MA)",
   ];
 
   // Initialize form data when professional data is loaded
