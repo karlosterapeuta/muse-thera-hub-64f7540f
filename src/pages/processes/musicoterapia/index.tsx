@@ -667,16 +667,15 @@ export default function MusicoterapiaPage() {
             {/* MOBILE: Action buttons at TOP for visibility */}
             <div className="flex flex-col space-y-2 sm:hidden">
               <Button
-                variant={viewMode === 'create' ? 'default' : 'outline'}
                 onClick={() => setViewMode(viewMode === 'create' ? 'list' : 'create')}
-                className={`w-full ${viewMode === 'create' ? 
-                  "bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 border-0" :
-                  "border-primary/30 hover:bg-primary/10"
+                className={`w-full font-semibold border-0 transition-all duration-300 ${viewMode === 'create' ?
+                  "h-12 text-base bg-gradient-to-r from-accent via-accent to-primary text-accent-foreground shadow-lg shadow-accent/40 hover:shadow-xl hover:shadow-accent/60 ring-2 ring-accent/60 hover:scale-[1.02]" :
+                  "bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg"
                 }`}
               >
                 {viewMode === 'create' ? (
                   <>
-                    <List className="h-4 w-4 mr-2" />
+                    <List className="h-5 w-5 mr-2" />
                     Ver Relatórios Salvos
                   </>
                 ) : (
