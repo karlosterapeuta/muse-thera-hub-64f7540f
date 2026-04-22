@@ -732,7 +732,7 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
 
       {/* ==================== EVOLUTION PAGE ==================== */}
       {hasEvolution && (() => {
-        pageNum = 2 + detailPages.length;
+        pageNum = (hasParentsView ? 3 : 2) + detailPages.length;
         const hasMultipleEvaluations = allEvaluations.length > 1;
 
         if (hasMultipleEvaluations) {
