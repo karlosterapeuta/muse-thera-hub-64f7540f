@@ -333,10 +333,54 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
     </div>
   );
 
+  // ===== Análise voltada aos pais =====
+  const FRIENDLY_DOMAIN: Record<string, string> = {
+    "Domínio Musical": "Música e expressão sonora",
+    "Domínio Psicossocial": "Relações e emoções",
+    "Domínio Cognitivo": "Atenção, memória e raciocínio",
+    "Domínio Sensório-Motor": "Corpo, movimento e sentidos",
+    "Domínio Comunicativo-Interativo": "Comunicação e interação",
+  };
+
+  const friendlyDomainName = (raw: string) => FRIENDLY_DOMAIN[raw] || raw.replace("Domínio ", "");
+
+  const LEVEL_FRIENDLY: Record<string, string> = {
+    nao_observado: "Ainda não observado neste momento",
+    emergente: "Começando a aparecer",
+    inconsistente: "Aparece de vez em quando",
+    moderado: "Em desenvolvimento, presente em vários momentos",
+    consistente: "Bem desenvolvido e frequente",
+    excepcional: "Habilidade muito desenvolvida e regular",
+  };
+
+  // Domínios consolidados (média) para apresentação aos pais
+  const parentsDomainSummary = (radarData || []).map((d: any) => {
+    const value = d.value ?? 0;
+    let label = "Habilidade emergente";
+    let color = "#dc2626";
+    let bg = "#fef2f2";
+    if (value >= 80) { label = "Habilidade muito desenvolvida"; color = "#15803d"; bg = "#dcfce7"; }
+    else if (value >= 60) { label = "Habilidade bem presente"; color = "#15803d"; bg = "#f0fdf4"; }
+    else if (value >= 40) { label = "Habilidade em desenvolvimento"; color = "#1d4ed8"; bg = "#eff6ff"; }
+    else if (value >= 20) { label = "Habilidade aparecendo aos poucos"; color = "#a16207"; bg = "#fef3c7"; }
+    return { name: d.name, value, label, color, bg };
+  });
+
+  // Top destaques e prioridades
+  const sortedForParents = [...evaluatedDetails].sort((a, b) => b.score - a.score);
+  const topStrengths = sortedForParents.filter(d => d.score >= 60).slice(0, 6);
+  const topPriorities = [...evaluatedDetails]
+    .filter(d => d.score > 0 && d.score < 60)
+    .sort((a, b) => a.score - b.score)
+    .slice(0, 6);
+
+  const hasParentsView = (radarData?.length || 0) > 0 || evaluatedDetails.length > 0;
+
   // Calculate total pages
   const hasEvolution = allEvaluations.length >= 1;
   const hasDetails = detailPages.length > 0;
   let totalPages = 1; // page 1: header + charts
+  if (hasParentsView) totalPages += 1;
   if (hasDetails) totalPages += detailPages.length;
   if (hasEvolution) totalPages += 1;
   let pageNum = 0;
