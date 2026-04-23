@@ -451,29 +451,29 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
   // Calculate total pages
   const hasEvolution = allEvaluations.length >= 1;
   const hasDetails = detailPages.length > 0;
-  let totalPages = 1; // page 1: header + charts
-  if (hasParentsView) totalPages += 1;
-  if (hasDetails) totalPages += detailPages.length;
-  if (hasEvolution) totalPages += 1;
+  // Page 1 always (clinical + parents). Page 2 = details + evolution merged. Overflow only if many details.
+  let totalPages = 1;
+  if (hasDetails || hasEvolution) totalPages += 1;
+  if (detailPages.length > 1) totalPages += detailPages.length - 1;
   let pageNum = 0;
 
   return (
     <div style={{ backgroundColor: '#ffffff', color: '#000000', fontFamily: 'Helvetica, Arial, sans-serif' }}>
       
-      {/* ==================== PAGE 1: Header + Charts ==================== */}
-      <div style={(hasParentsView || hasDetails || hasEvolution) ? pageStyle : lastPageStyle}>
+      {/* ==================== PAGE 1: Visão Clínica + Apresentação aos Pais ==================== */}
+      <div style={(hasDetails || hasEvolution) ? pageStyle : lastPageStyle}>
         {(() => { pageNum = 1; return null; })()}
         <HeaderSection />
 
-        {/* Radar + Pie side by side */}
-        <div style={{ display: 'flex', gap: '16px', marginBottom: '20px', pageBreakInside: 'avoid' }}>
+        {/* Radar + Pie side by side (compactos) */}
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '12px', pageBreakInside: 'avoid' }}>
           <div style={{ ...cardStyle, flex: 1 }}>
             <h3 style={sectionTitleStyle}>Perfil por Domínio</h3>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '220px' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '160px' }}>
               {evaluatedRadarData.length > 0 && (
-                <RadarChart width={260} height={220} data={evaluatedRadarData}>
+                <RadarChart width={220} height={160} data={evaluatedRadarData}>
                   <PolarGrid strokeDasharray="3 3" />
-                  <PolarAngleAxis dataKey="name" tick={{ fill: '#4B5563', fontSize: 9 }} />
+                  <PolarAngleAxis dataKey="name" tick={{ fill: '#4B5563', fontSize: 8 }} />
                   <Radar name="Perfil" dataKey="value" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
                 </RadarChart>
               )}
@@ -482,20 +482,20 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
           <div style={{ ...cardStyle, flex: 1 }}>
             <h3 style={sectionTitleStyle}>Desenvolvimento Geral</h3>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <PieChart width={260} height={200}>
-                  <Pie data={pieData} cx="50%" cy="50%" innerRadius={45} outerRadius={75} paddingAngle={5} dataKey="value">
+              <div style={{ height: '140px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <PieChart width={200} height={140}>
+                  <Pie data={pieData} cx="50%" cy="50%" innerRadius={32} outerRadius={56} paddingAngle={4} dataKey="value">
                     {pieData.map((_: any, index: number) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
                 </PieChart>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', marginTop: '4px' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '2px' }}>
                 {pieData.map((entry: any, index: number) => (
-                  <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: COLORS[index] }} />
-                    <span style={{ fontSize: '11px', color: '#4b5563' }}>{entry.name} ({entry.value}%)</span>
+                  <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: COLORS[index] }} />
+                    <span style={{ fontSize: '9.5px', color: '#4b5563' }}>{entry.name} ({entry.value}%)</span>
                   </div>
                 ))}
               </div>
@@ -503,255 +503,116 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
           </div>
         </div>
 
-        {/* Bar Chart */}
-        <div style={{ ...cardStyle, marginBottom: '16px', pageBreakInside: 'avoid' }}>
-          <h3 style={{ ...sectionTitleStyle, fontSize: '16px' }}>
-            Desempenho por Subdomínios {evaluatedCategoryData.length < categoryData.length ? '(Avaliados)' : ''}
-          </h3>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <BarChart width={680} height={320} data={evaluatedCategoryData} margin={{ top: 10, right: 20, left: 20, bottom: 70 }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" angle={-45} textAnchor="end" height={70} tick={{ fill: '#4B5563', fontSize: 9 }} />
-              <YAxis domain={[0, 100]} tick={{ fill: '#4B5563', fontSize: 10 }} />
-              <Bar dataKey="value" fill="#3b82f6">
-                {evaluatedCategoryData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={
-                    entry.domain === "Musical" ? "#8884d8" :
-                    entry.domain === "Psicossocial" ? "#82ca9d" :
-                    entry.domain === "Cognitivo" ? "#ffc658" :
-                    entry.domain === "Sensório-Motor" ? "#ff8042" : "#00C49F"
-                  } />
-                ))}
-              </Bar>
-            </BarChart>
-          </div>
-        </div>
-
-        {/* Summary Table */}
-        <div style={{ ...cardStyle, pageBreakInside: 'avoid' }}>
-          <h3 style={sectionTitleStyle}>Resumo dos Subdomínios Avaliados</h3>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-            {evaluatedCategoryData.map((item, index) => {
-              const scoreColor = item.value >= 80 ? '#16a34a' : item.value >= 60 ? '#2563eb' : item.value >= 40 ? '#f59e0b' : '#dc2626';
-              const scoreBg = item.value >= 80 ? '#f0fdf4' : item.value >= 60 ? '#eff6ff' : item.value >= 40 ? '#fffbeb' : '#fef2f2';
-              return (
-                <div key={index} style={{
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  padding: '8px 12px', backgroundColor: scoreBg, borderRadius: '6px',
-                  border: `1px solid ${scoreColor}22`, width: 'calc(50% - 4px)', boxSizing: 'border-box'
-                }}>
-                  <span style={{ fontSize: '11px', fontWeight: 500, color: '#374151' }}>{item.name}</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <div style={{
-                      width: '10px', height: '10px', borderRadius: '50%',
-                      backgroundColor: item.domain === "Musical" ? "#8884d8" :
-                        item.domain === "Psicossocial" ? "#82ca9d" :
-                        item.domain === "Cognitivo" ? "#ffc658" :
-                        item.domain === "Sensório-Motor" ? "#ff8042" : "#00C49F"
-                    }} />
+        {/* Resumo dos Subdomínios em chips de 3 colunas */}
+        {evaluatedCategoryData.length > 0 && (
+          <div style={{ ...cardStyle, marginBottom: '12px', pageBreakInside: 'avoid' }}>
+            <h3 style={{ ...sectionTitleStyle, textAlign: 'left', marginBottom: '6px' }}>Subdomínios Avaliados</h3>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+              {evaluatedCategoryData.map((item, index) => {
+                const scoreColor = item.value >= 80 ? '#16a34a' : item.value >= 60 ? '#2563eb' : item.value >= 40 ? '#f59e0b' : '#dc2626';
+                const scoreBg = item.value >= 80 ? '#f0fdf4' : item.value >= 60 ? '#eff6ff' : item.value >= 40 ? '#fffbeb' : '#fef2f2';
+                return (
+                  <div key={index} style={{
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    padding: '4px 8px', backgroundColor: scoreBg, borderRadius: '5px',
+                    border: `1px solid ${scoreColor}22`, width: 'calc(33.333% - 4px)', boxSizing: 'border-box'
+                  }}>
+                    <span style={{ fontSize: '9.5px', fontWeight: 500, color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{item.name}</span>
                     <span style={{
-                      fontSize: '12px', fontWeight: 700, color: scoreColor,
-                      backgroundColor: `${scoreColor}15`, padding: '1px 8px', borderRadius: '10px'
+                      fontSize: '10px', fontWeight: 700, color: scoreColor,
+                      backgroundColor: `${scoreColor}15`, padding: '1px 6px', borderRadius: '8px', marginLeft: '4px'
                     }}>{item.value}%</span>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
+        )}
+
+        {/* Visão geral por área avaliada (Apresentação aos Pais com sparklines) */}
+        {hasParentsView && (
+          <div style={{ ...cardStyle, marginBottom: '10px', pageBreakInside: 'avoid' }}>
+            <h3 style={{ ...sectionTitleStyle, textAlign: 'left', marginBottom: '8px' }}>
+              Visão geral por área — Apresentação aos pais
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+              {parentsDomainSummary.map((d, idx) => (
+                <div key={idx} style={{
+                  display: 'flex', flexDirection: 'column', gap: '4px',
+                  padding: '6px 10px', backgroundColor: '#f8fafc',
+                  borderLeft: `3px solid ${d.color}`, borderRadius: '5px',
+                  pageBreakInside: 'avoid'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: '11px', fontWeight: 700, color: '#0f172a' }}>
+                        {friendlyDomainName(d.name)}
+                      </div>
+                      <div style={{ fontSize: '9px', color: '#475569' }}>{d.label}</div>
+                    </div>
+                    {d.history.length >= 2 && (
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <Sparkline scores={d.history} color={d.trend.color} />
+                      </div>
+                    )}
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px', minWidth: '102px' }}>
+                      <span style={{
+                        display: 'inline-flex', alignItems: 'center', gap: '3px',
+                        fontSize: '9px', fontWeight: 700,
+                        color: d.trend.color, backgroundColor: d.trend.bg,
+                        border: `1px solid ${d.trend.border}`,
+                        padding: '1px 6px', borderRadius: '999px', lineHeight: 1.2
+                      }}>
+                        <span style={{ fontSize: '8px' }}>{d.trend.icon}</span>
+                        {d.trend.label}
+                      </span>
+                      {d.history.length >= 2 ? (
+                        <span style={{ fontSize: '7.5px', color: '#64748b', whiteSpace: 'nowrap' }}>
+                          {d.trend.last}% · {d.trend.delta >= 0 ? '+' : ''}{d.trend.delta}% · {d.trend.count} aval.
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: '7.5px', color: '#64748b', whiteSpace: 'nowrap' }}>
+                          {d.history.length === 1 ? '1 aval.' : 'sem histórico'}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ flex: 1, height: '6px', backgroundColor: '#e2e8f0', borderRadius: '999px', overflow: 'hidden' }}>
+                      <div style={{ width: `${d.value}%`, height: '100%', backgroundColor: d.color }} />
+                    </div>
+                    <div style={{ minWidth: '38px', textAlign: 'right', fontSize: '11px', fontWeight: 800, color: d.color }}>
+                      {d.value}%
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Mensagem aos pais compacta */}
+        {hasParentsView && (
+          <div style={{
+            background: 'linear-gradient(135deg, #f0fdfa 0%, #ecfeff 100%)',
+            border: '1px solid #99f6e4', borderRadius: '8px',
+            padding: '8px 12px', marginBottom: '6px', pageBreakInside: 'avoid'
+          }}>
+            <p style={{ fontSize: '9.5px', color: '#0f172a', lineHeight: 1.45, margin: 0 }}>
+              <strong style={{ color: '#0d9488' }}>Mensagem aos pais:</strong> cada paciente tem seu próprio ritmo. Os resultados refletem o momento atual e guiam o planejamento terapêutico. A participação da família — cantando, brincando e ouvindo música em casa — é parte importante desse processo.
+            </p>
+          </div>
+        )}
+
+        {/* Legenda de níveis em 1 linha minúscula */}
+        <div style={{ fontSize: '7.5px', color: '#64748b', textAlign: 'center', marginTop: '4px' }}>
+          Níveis: Não Observado · Emergente · Inconsistente · Moderado · Consistente · Excepcional
         </div>
 
-        {!hasParentsView && !hasDetails && !hasEvolution && <FooterSection />}
+        {!hasDetails && !hasEvolution && <FooterSection compact />}
         <PageNumber num={1} total={totalPages} />
       </div>
 
-      {/* ==================== PAGE 2: Apresentação para os Pais ==================== */}
-      {hasParentsView && (() => {
-        pageNum = 2;
-        const isLastPage = !hasDetails && !hasEvolution;
-        return (
-          <div key="parents-view" style={isLastPage ? lastPageStyle : pageStyle}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', paddingBottom: '10px', borderBottom: '2px solid #e2e8f0' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" alt="Logo" style={{ width: '24px', height: 'auto' }} />
-                <span style={{ fontSize: '13px', fontWeight: 700, color: '#1e3a5f' }}>Apresentação dos Resultados</span>
-              </div>
-              <span style={{ fontSize: '11px', color: '#64748b' }}>{patientName || 'Paciente'}</span>
-            </div>
-
-            <div style={{
-              background: 'linear-gradient(135deg, #eff6ff 0%, #ecfeff 100%)',
-              border: '1px solid #bae6fd', borderRadius: '10px',
-              padding: '14px 18px', marginBottom: '14px', pageBreakInside: 'avoid'
-            }}>
-              <h2 style={{ fontSize: '16px', fontWeight: 800, color: '#0c4a6e', margin: 0, marginBottom: '6px' }}>
-                Como {patientName || 'seu(a) filho(a)'} está se desenvolvendo
-              </h2>
-              <p style={{ fontSize: '11.5px', color: '#1e3a5f', lineHeight: 1.55, margin: 0 }}>
-                Esta página apresenta os resultados de forma clara e acessível. A musicoterapia avalia diferentes
-                áreas do desenvolvimento por meio da música, da escuta, do corpo e da interação. Abaixo você encontra
-                um resumo do que está bem desenvolvido, o que está em construção e o que merece atenção neste momento.
-              </p>
-            </div>
-
-            <div style={{ ...cardStyle, marginBottom: '12px', pageBreakInside: 'avoid' }}>
-              <h3 style={{ ...sectionTitleStyle, textAlign: 'left', marginBottom: '10px' }}>
-                Visão geral por área avaliada
-              </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                {parentsDomainSummary.map((d, idx) => (
-                  <div key={idx} style={{
-                    display: 'flex', flexDirection: 'column', gap: '6px',
-                    padding: '8px 12px', backgroundColor: '#f8fafc',
-                    borderLeft: `4px solid ${d.color}`, borderRadius: '6px',
-                    pageBreakInside: 'avoid'
-                  }}>
-                    {/* Linha 1: nome + sparkline + selo */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>
-                          {friendlyDomainName(d.name)}
-                        </div>
-                        <div style={{ fontSize: '10px', color: '#475569' }}>{d.label}</div>
-                      </div>
-                      {d.history.length >= 2 && (
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                          <Sparkline scores={d.history} color={d.trend.color} />
-                        </div>
-                      )}
-                      <div style={{
-                        display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px',
-                        minWidth: '108px'
-                      }}>
-                        <span style={{
-                          display: 'inline-flex', alignItems: 'center', gap: '4px',
-                          fontSize: '10px', fontWeight: 700,
-                          color: d.trend.color, backgroundColor: d.trend.bg,
-                          border: `1px solid ${d.trend.border}`,
-                          padding: '2px 7px', borderRadius: '999px', lineHeight: 1.2
-                        }}>
-                          <span style={{ fontSize: '9px' }}>{d.trend.icon}</span>
-                          {d.trend.label}
-                        </span>
-                        {d.history.length >= 2 ? (
-                          <span style={{ fontSize: '8.5px', color: '#64748b', whiteSpace: 'nowrap' }}>
-                            Última: {d.trend.last}% · {d.trend.delta >= 0 ? '+' : ''}{d.trend.delta}% · {d.trend.count} aval.
-                          </span>
-                        ) : (
-                          <span style={{ fontSize: '8.5px', color: '#64748b', whiteSpace: 'nowrap' }}>
-                            {d.history.length === 1 ? '1 avaliação registrada' : 'Sem histórico anterior'}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    {/* Linha 2: barra de % atual */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <div style={{ flex: 1, height: '8px', backgroundColor: '#e2e8f0', borderRadius: '999px', overflow: 'hidden' }}>
-                        <div style={{ width: `${d.value}%`, height: '100%', backgroundColor: d.color }} />
-                      </div>
-                      <div style={{ minWidth: '46px', textAlign: 'right', fontSize: '13px', fontWeight: 800, color: d.color }}>
-                        {d.value}%
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: '12px', marginBottom: '12px', pageBreakInside: 'avoid' }}>
-              <div style={{ ...cardStyle, flex: 1, backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0' }}>
-                <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#166534', margin: 0, marginBottom: '8px' }}>
-                  ★ Pontos fortes observados
-                </h4>
-                {topStrengths.length > 0 ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                    {topStrengths.map((s, i) => (
-                      <div key={i} style={{ backgroundColor: '#ffffff', border: '1px solid #dcfce7', borderRadius: '6px', padding: '6px 8px' }}>
-                        <div style={{ fontSize: '10.5px', fontWeight: 600, color: '#0f172a', lineHeight: 1.35 }}>
-                          {s.parameter}
-                        </div>
-                        <div style={{ fontSize: '9px', color: '#475569', marginTop: '2px' }}>
-                          {friendlyDomainName(s.domain)} · {LEVEL_FRIENDLY[s.level] || s.level}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p style={{ fontSize: '10.5px', color: '#475569', fontStyle: 'italic', margin: 0 }}>
-                    As habilidades estão começando a se desenvolver. A musicoterapia ajudará a fortalecê-las.
-                  </p>
-                )}
-              </div>
-              <div style={{ ...cardStyle, flex: 1, backgroundColor: '#fffbeb', border: '1px solid #fde68a' }}>
-                <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#92400e', margin: 0, marginBottom: '8px' }}>
-                  ◎ Áreas a estimular nas próximas sessões
-                </h4>
-                {topPriorities.length > 0 ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                    {topPriorities.map((s, i) => (
-                      <div key={i} style={{ backgroundColor: '#ffffff', border: '1px solid #fde68a', borderRadius: '6px', padding: '6px 8px' }}>
-                        <div style={{ fontSize: '10.5px', fontWeight: 600, color: '#0f172a', lineHeight: 1.35 }}>
-                          {s.parameter}
-                        </div>
-                        <div style={{ fontSize: '9px', color: '#475569', marginTop: '2px' }}>
-                          {friendlyDomainName(s.domain)} · {LEVEL_FRIENDLY[s.level] || s.level}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p style={{ fontSize: '10.5px', color: '#475569', fontStyle: 'italic', margin: 0 }}>
-                    Não há áreas críticas neste momento. Seguiremos fortalecendo o que já está bem desenvolvido.
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div style={{ ...cardStyle, marginBottom: '12px', pageBreakInside: 'avoid' }}>
-              <h4 style={{ fontSize: '12.5px', fontWeight: 700, color: '#0f172a', margin: 0, marginBottom: '8px' }}>
-                Como ler os níveis usados na avaliação
-              </h4>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                {Object.entries(LEVEL_LABELS).map(([key, info]) => (
-                  <div key={key} style={{
-                    display: 'flex', alignItems: 'center', gap: '6px',
-                    padding: '5px 8px', backgroundColor: info.bgColor,
-                    border: `1px solid ${info.color}33`, borderRadius: '6px',
-                    width: 'calc(50% - 3px)', boxSizing: 'border-box'
-                  }}>
-                    <span style={{
-                      fontSize: '9.5px', fontWeight: 700, color: info.color,
-                      backgroundColor: '#ffffff', padding: '1px 6px', borderRadius: '10px',
-                      border: `1px solid ${info.color}40`, whiteSpace: 'nowrap'
-                    }}>
-                      {info.label}
-                    </span>
-                    <span style={{ fontSize: '9.5px', color: '#374151', lineHeight: 1.3 }}>
-                      {LEVEL_FRIENDLY[key]}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div style={{
-              background: 'linear-gradient(135deg, #f0fdfa 0%, #ecfeff 100%)',
-              border: '1px solid #99f6e4', borderRadius: '10px',
-              padding: '12px 16px', pageBreakInside: 'avoid'
-            }}>
-              <p style={{ fontSize: '10.5px', color: '#0f172a', lineHeight: 1.55, margin: 0 }}>
-                <strong style={{ color: '#0d9488' }}>Mensagem aos pais:</strong> cada criança tem seu próprio ritmo
-                de desenvolvimento. Os resultados acima refletem o momento atual e servem de guia para o nosso
-                planejamento terapêutico. Continuaremos estimulando os pontos fortes e construindo passo a passo
-                as habilidades em desenvolvimento. A participação da família — cantando, brincando e ouvindo
-                música em casa — é parte importante desse processo.
-              </p>
-            </div>
-
-            {isLastPage && <FooterSection compact />}
-            <PageNumber num={pageNum} total={totalPages} />
-          </div>
-        );
-      })()}
 
       {/* ==================== DETAIL PAGES ==================== */}
       {detailPages.map((pageItems, pageIndex) => {
