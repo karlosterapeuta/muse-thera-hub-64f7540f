@@ -277,51 +277,33 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
         </div>
 
         {/* Right - Stamp */}
-        <div style={{ position: 'relative', width: '100px', height: '100px', flexShrink: 0 }}>
+        <div style={{ position: 'relative', width: '70px', height: '70px', flexShrink: 0 }}>
           <div style={{ position: 'absolute', inset: '0', borderRadius: '50%', border: '2px dashed #99f6e4', opacity: 0.5 }}></div>
-          <div style={{ position: 'absolute', inset: '4px', borderRadius: '50%', border: '1px solid #5eead4', opacity: 0.7 }}></div>
+          <div style={{ position: 'absolute', inset: '3px', borderRadius: '50%', border: '1px solid #5eead4', opacity: 0.7 }}></div>
           <div style={{
-            position: 'absolute', inset: '6px', borderRadius: '50%', border: '3px solid #0d9488',
+            position: 'absolute', inset: '5px', borderRadius: '50%', border: '2px solid #0d9488',
             backgroundColor: '#f0fdfa', display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center', padding: '6px',
-            boxShadow: '0 2px 10px rgba(13, 148, 136, 0.25)'
+            alignItems: 'center', justifyContent: 'center', padding: '3px',
+            boxShadow: '0 2px 6px rgba(13, 148, 136, 0.2)'
           }}>
-            <div style={{ position: 'relative', marginBottom: '4px' }}>
-              <div style={{ position: 'absolute', inset: '-2px', borderRadius: '50%', background: 'linear-gradient(135deg, #14b8a6, #06b6d4)', opacity: 0.7 }}></div>
-              <div style={{ position: 'relative', width: '26px', height: '26px', borderRadius: '50%', border: '1px solid #fff', overflow: 'hidden', backgroundColor: '#ccfbf1' }}>
-                {professionalPhotoBase64 ? (
-                  <img src={professionalPhotoBase64} alt="Foto" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                ) : (
-                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 'bold', color: '#0d9488' }}>
-                    {professionalData?.name?.charAt(0) || 'M'}
-                  </div>
-                )}
-              </div>
-            </div>
-            <p style={{ fontSize: '7px', fontWeight: 700, color: '#0d9488', textAlign: 'center', lineHeight: 1.2, maxWidth: '70px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: '2px' }}>
+            <p style={{ fontSize: '6px', fontWeight: 700, color: '#0d9488', textAlign: 'center', lineHeight: 1.1, maxWidth: '52px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: 0, marginBottom: '2px' }}>
               {professionalData?.name || 'Musicoterapeuta'}
             </p>
-            <div style={{ width: '24px', height: '1px', background: 'linear-gradient(to right, transparent, #14b8a6, transparent)', marginBottom: '3px' }}></div>
+            <div style={{ width: '20px', height: '1px', background: 'linear-gradient(to right, transparent, #14b8a6, transparent)', marginBottom: '2px' }}></div>
             {professionalData?.register && (
-              <p style={{ fontSize: '6px', color: '#6b7280', textAlign: 'center', marginBottom: '3px' }}>{professionalData.register}</p>
+              <p style={{ fontSize: '5px', color: '#6b7280', textAlign: 'center', margin: 0, marginBottom: '2px' }}>{professionalData.register}</p>
             )}
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '2px', background: 'linear-gradient(135deg, #0d9488, #06b6d4)', borderRadius: '6px', padding: '1px 4px' }}>
-              <span style={{ fontSize: '5px', color: '#fff' }}>✔</span>
-              <span style={{ fontSize: '4px', fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.3px' }}>MuseTera Verified</span>
-              <span style={{ fontSize: '5px', color: '#fff' }}>♪</span>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '2px', background: 'linear-gradient(135deg, #0d9488, #06b6d4)', borderRadius: '5px', padding: '1px 3px' }}>
+              <span style={{ fontSize: '4px', fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.3px' }}>MuseTera ✔</span>
             </div>
           </div>
         </div>
       </div>
-      <div style={{ borderTop: '1px solid #99f6e4', background: 'linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa)', padding: '4px 10px', textAlign: 'center' }}>
+      <div style={{ borderTop: '1px solid #99f6e4', background: 'linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa)', padding: '3px 10px', textAlign: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-          <span style={{ fontSize: '9px', color: '#0d9488' }}>✔</span>
-          <span style={{ fontSize: '8px', fontWeight: 600, color: '#0d9488' }}>Assinatura Digital Verificada</span>
-          <span style={{ fontSize: '8px', color: '#6b7280' }}>Sistema MuseTera</span>
+          <span style={{ fontSize: '8px', color: '#0d9488' }}>✔</span>
+          <span style={{ fontSize: '8px', fontWeight: 600, color: '#0d9488' }}>Assinatura Digital Verificada · Sistema MuseTera</span>
         </div>
-        <p style={{ fontSize: '7px', color: '#6b7280', marginTop: '1px' }}>
-          Documento gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
-        </p>
       </div>
     </div>
   );
