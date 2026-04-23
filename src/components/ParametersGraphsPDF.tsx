@@ -59,7 +59,7 @@ const levelToScore = (level: string): number => {
 const pageStyle: React.CSSProperties = {
   width: '210mm',
   minHeight: '297mm',
-  padding: '20mm 22mm',
+  padding: '12mm 14mm',
   backgroundColor: '#ffffff',
   boxSizing: 'border-box',
   pageBreakAfter: 'always',
