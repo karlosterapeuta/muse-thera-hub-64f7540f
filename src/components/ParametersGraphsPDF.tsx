@@ -614,94 +614,162 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
       </div>
 
 
-      {/* ==================== DETAIL PAGES ==================== */}
+      {/* ==================== DETAIL PAGES (compactas, 2 colunas) ==================== */}
       {detailPages.map((pageItems, pageIndex) => {
-        pageNum = 3 + pageIndex;
-        const isLastPage = !hasEvolution && pageIndex === detailPages.length - 1;
+        pageNum = 2 + pageIndex;
+        // Última página de detalhe leva também a evolução (se houver) e o footer
+        const isLastDetailPage = pageIndex === detailPages.length - 1;
+        const isLastPage = isLastDetailPage && !hasEvolution;
         return (
           <div key={`detail-page-${pageIndex}`} style={isLastPage ? lastPageStyle : pageStyle}>
             {/* Mini header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', paddingBottom: '10px', borderBottom: '2px solid #e2e8f0' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', paddingBottom: '6px', borderBottom: '2px solid #e2e8f0' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" alt="Logo" style={{ width: '24px', height: 'auto' }} />
-                <span style={{ fontSize: '13px', fontWeight: 700, color: '#1e3a5f' }}>Detalhamento da Avaliação</span>
+                <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" alt="Logo" style={{ width: '20px', height: 'auto' }} />
+                <span style={{ fontSize: '12px', fontWeight: 700, color: '#1e3a5f' }}>Detalhamento da Avaliação</span>
               </div>
-              <span style={{ fontSize: '11px', color: '#64748b' }}>{patientName || 'Paciente'}</span>
+              <span style={{ fontSize: '10px', color: '#64748b' }}>{patientName || 'Paciente'} · {evaluatedDetails.length} parâmetros</span>
             </div>
 
-            {pageIndex === 0 && (
-              <div style={{
-                backgroundColor: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '8px',
-                padding: '10px 16px', marginBottom: '16px', textAlign: 'center', pageBreakInside: 'avoid'
-              }}>
-                <p style={{ fontSize: '13px', fontWeight: 600, color: '#0c4a6e', margin: 0 }}>
-                  {evaluatedDetails.length} parâmetros avaliados - Apenas itens efetivamente pontuados
-                </p>
-              </div>
-            )}
-
-            {pageItems.map(({ domainName, subdomains }) => {
-              const domainColor = DOMAIN_COLORS[domainName.replace('Domínio ', '')] || '#3b82f6';
-              return (
-                <div key={domainName} style={{ marginBottom: '16px', pageBreakInside: 'avoid' }}>
-                  <div style={{
-                    backgroundColor: domainColor, color: '#ffffff', padding: '8px 14px',
-                    borderRadius: '8px 8px 0 0', fontSize: '14px', fontWeight: 700
-                  }}>
-                    {domainName}
-                  </div>
-                  <div style={{ border: `1px solid ${domainColor}40`, borderTop: 'none', borderRadius: '0 0 8px 8px', overflow: 'hidden' }}>
-                    {Object.entries(subdomains).map(([subName, params]) => (
-                      <div key={subName} style={{ borderBottom: `1px solid ${domainColor}20`, pageBreakInside: 'avoid' }}>
-                        <div style={{
-                          backgroundColor: `${domainColor}10`, padding: '6px 14px',
-                          fontSize: '12px', fontWeight: 600, color: '#374151',
-                          borderBottom: `1px solid ${domainColor}15`
-                        }}>
-                          {subName}
-                        </div>
-                        {params.map((param, idx) => {
-                          const levelInfo = LEVEL_LABELS[param.level] || { label: param.level, color: '#6b7280', bgColor: '#f3f4f6' };
-                          return (
-                            <div key={idx} style={{
-                              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                              padding: '6px 14px', backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fafafa',
-                              borderBottom: idx < params.length - 1 ? '1px solid #f3f4f6' : 'none'
-                            }}>
-                              <span style={{ fontSize: '11px', color: '#374151', flex: 1, wordWrap: 'break-word', overflowWrap: 'break-word' }}>
-                                {param.parameter}
-                              </span>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0, marginLeft: '10px' }}>
-                                <span style={{
-                                  fontSize: '10px', fontWeight: 600, color: levelInfo.color,
-                                  backgroundColor: levelInfo.bgColor, padding: '2px 8px',
-                                  borderRadius: '10px', border: `1px solid ${levelInfo.color}30`, whiteSpace: 'nowrap'
+            {/* Layout em 2 colunas paralelas para densidade */}
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+              {[0, 1].map((colIdx) => (
+                <div key={colIdx} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  {pageItems
+                    .filter((_, i) => i % 2 === colIdx)
+                    .map(({ domainName, subdomains }) => {
+                      const domainColor = DOMAIN_COLORS[domainName.replace('Domínio ', '')] || '#3b82f6';
+                      return (
+                        <div key={domainName} style={{ pageBreakInside: 'avoid' }}>
+                          <div style={{
+                            backgroundColor: domainColor, color: '#ffffff', padding: '4px 8px',
+                            borderRadius: '5px 5px 0 0', fontSize: '10.5px', fontWeight: 700
+                          }}>
+                            {domainName}
+                          </div>
+                          <div style={{ border: `1px solid ${domainColor}40`, borderTop: 'none', borderRadius: '0 0 5px 5px', overflow: 'hidden' }}>
+                            {Object.entries(subdomains).map(([subName, params]) => (
+                              <div key={subName} style={{ borderBottom: `1px solid ${domainColor}20` }}>
+                                <div style={{
+                                  backgroundColor: `${domainColor}10`, padding: '3px 8px',
+                                  fontSize: '9.5px', fontWeight: 600, color: '#374151',
                                 }}>
-                                  {levelInfo.label}
-                                </span>
-                                <div style={{ width: '32px', height: '5px', backgroundColor: '#e5e7eb', borderRadius: '3px', overflow: 'hidden' }}>
-                                  <div style={{ width: `${param.score}%`, height: '100%', backgroundColor: levelInfo.color, borderRadius: '3px' }}></div>
+                                  {subName}
                                 </div>
+                                {params.map((param, idx) => {
+                                  const levelInfo = LEVEL_LABELS[param.level] || { label: param.level, color: '#6b7280', bgColor: '#f3f4f6' };
+                                  return (
+                                    <div key={idx} style={{
+                                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                      padding: '3px 8px', backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fafafa',
+                                      gap: '6px'
+                                    }}>
+                                      <span style={{ fontSize: '9px', color: '#374151', flex: 1, lineHeight: 1.25, wordBreak: 'break-word' }}>
+                                        {param.parameter}
+                                      </span>
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
+                                        <span title={levelInfo.label} style={{
+                                          width: '14px', height: '14px', borderRadius: '50%',
+                                          backgroundColor: levelInfo.color, color: '#fff',
+                                          fontSize: '8px', fontWeight: 700,
+                                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center'
+                                        }}>
+                                          {levelInfo.label.charAt(0)}
+                                        </span>
+                                        <div style={{ width: '28px', height: '4px', backgroundColor: '#e5e7eb', borderRadius: '2px', overflow: 'hidden' }}>
+                                          <div style={{ width: `${param.score}%`, height: '100%', backgroundColor: levelInfo.color }}></div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
                               </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    ))}
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+              ))}
+            </div>
+
+            {/* Bloco de Evolução compacto na última página de detalhe */}
+            {isLastDetailPage && hasEvolution && (() => {
+              const sortedEvals = [...allEvaluations].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+              const hasMulti = sortedEvals.length > 1;
+              const firstScore = sortedEvals[0]?.content?.overallScore?.percentage || 0;
+              const lastScore = sortedEvals[sortedEvals.length - 1]?.content?.overallScore?.percentage || 0;
+              const variation = lastScore - firstScore;
+              let improved = 0, attention = 0;
+              if (hasMulti) {
+                const firstDomains = sortedEvals[0].content?.domainScores || [];
+                const lastDomains = sortedEvals[sortedEvals.length - 1].content?.domainScores || [];
+                lastDomains.forEach((ld: any) => {
+                  const fd = firstDomains.find((d: any) => d.domain === ld.domain);
+                  if (fd) {
+                    const dv = (ld.score || 0) - (fd.score || 0);
+                    if (dv > 5) improved++; else attention++;
+                  }
+                });
+              }
+              const chartData = sortedEvals.map((evaluation) => ({
+                date: format(new Date(evaluation.date), 'dd/MM/yy'),
+                "Score Global": evaluation.content?.overallScore?.percentage || 0,
+              }));
+              return (
+                <div style={{ ...cardStyle, marginTop: '10px', pageBreakInside: 'avoid' }}>
+                  <h3 style={{ ...sectionTitleStyle, textAlign: 'left', marginBottom: '6px' }}>
+                    Evolução {hasMulti ? `· ${sortedEvals.length} avaliações` : '· primeira avaliação'}
+                  </h3>
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: hasMulti ? '8px' : 0 }}>
+                    <div style={{ flex: 1, padding: '6px 8px', backgroundColor: '#f8fafc', borderRadius: '5px', textAlign: 'center' }}>
+                      <p style={{ fontSize: '8px', color: '#6b7280', margin: 0, textTransform: 'uppercase' }}>Primeira</p>
+                      <p style={{ fontSize: '14px', fontWeight: 700, color: '#374151', margin: 0 }}>{firstScore}%</p>
+                    </div>
+                    <div style={{ flex: 1, padding: '6px 8px', backgroundColor: '#f8fafc', borderRadius: '5px', textAlign: 'center' }}>
+                      <p style={{ fontSize: '8px', color: '#6b7280', margin: 0, textTransform: 'uppercase' }}>Última</p>
+                      <p style={{ fontSize: '14px', fontWeight: 700, color: '#374151', margin: 0 }}>{lastScore}%</p>
+                    </div>
+                    <div style={{ flex: 1, padding: '6px 8px', backgroundColor: variation > 0 ? '#f0fdf4' : variation < 0 ? '#fef2f2' : '#f8fafc', borderRadius: '5px', textAlign: 'center' }}>
+                      <p style={{ fontSize: '8px', color: '#6b7280', margin: 0, textTransform: 'uppercase' }}>Variação</p>
+                      <p style={{ fontSize: '14px', fontWeight: 700, color: variation > 0 ? '#10b981' : variation < 0 ? '#ef4444' : '#6b7280', margin: 0 }}>
+                        {variation > 0 ? '+' : ''}{variation.toFixed(1)}%
+                      </p>
+                    </div>
                   </div>
+                  {hasMulti && (
+                    <>
+                      <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <LineChart width={600} height={140} data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                          <XAxis dataKey="date" tick={{ fontSize: 9, fill: '#6b7280' }} />
+                          <YAxis domain={[0, 100]} tick={{ fontSize: 9, fill: '#6b7280' }} />
+                          <Line type="monotone" dataKey="Score Global" stroke="#3b82f6" strokeWidth={2.5} dot={{ fill: '#3b82f6', r: 3 }} />
+                        </LineChart>
+                      </div>
+                      <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '6px' }}>
+                        <span style={{ fontSize: '9.5px', fontWeight: 600, color: '#15803d', backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', padding: '2px 8px', borderRadius: '999px' }}>
+                          ✔ {improved} áreas melhoraram
+                        </span>
+                        <span style={{ fontSize: '9.5px', fontWeight: 600, color: '#92400e', backgroundColor: '#fffbeb', border: '1px solid #fde68a', padding: '2px 8px', borderRadius: '999px' }}>
+                          ⚠ {attention} áreas em atenção
+                        </span>
+                      </div>
+                    </>
+                  )}
                 </div>
               );
-            })}
+            })()}
 
-            {isLastPage && <FooterSection compact />}
+            {(isLastDetailPage) && <FooterSection compact />}
             <PageNumber num={pageNum} total={totalPages} />
           </div>
         );
       })}
 
-      {/* ==================== EVOLUTION PAGE ==================== */}
-      {hasEvolution && (() => {
-        pageNum = (hasParentsView ? 3 : 2) + detailPages.length;
+      {/* ==================== EVOLUTION PAGE (apenas quando não há detalhes mas há evolução) ==================== */}
+      {hasEvolution && !hasDetails && (() => {
+        pageNum = 2;
         const hasMultipleEvaluations = allEvaluations.length > 1;
 
         if (hasMultipleEvaluations) {
