@@ -150,7 +150,7 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
   const detailPages: { domainName: string; subdomains: Record<string, typeof evaluatedDetails> }[][] = [];
   let currentPageItems: typeof detailPages[0] = [];
   let currentParamCount = 0;
-  const MAX_PARAMS_PER_PAGE = 16;
+  const MAX_PARAMS_PER_PAGE = 28;
 
   domainEntries.forEach(([domainName, subdomains]) => {
     const totalParams = Object.values(subdomains).reduce((sum, p) => sum + p.length, 0);
