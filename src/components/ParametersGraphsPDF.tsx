@@ -618,21 +618,57 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {parentsDomainSummary.map((d, idx) => (
                   <div key={idx} style={{
-                    display: 'flex', alignItems: 'center', gap: '10px',
+                    display: 'flex', flexDirection: 'column', gap: '6px',
                     padding: '8px 12px', backgroundColor: '#f8fafc',
-                    borderLeft: `4px solid ${d.color}`, borderRadius: '6px'
+                    borderLeft: `4px solid ${d.color}`, borderRadius: '6px',
+                    pageBreakInside: 'avoid'
                   }}>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>
-                        {friendlyDomainName(d.name)}
+                    {/* Linha 1: nome + sparkline + selo */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>
+                          {friendlyDomainName(d.name)}
+                        </div>
+                        <div style={{ fontSize: '10px', color: '#475569' }}>{d.label}</div>
                       </div>
-                      <div style={{ fontSize: '10px', color: '#475569' }}>{d.label}</div>
+                      {d.history.length >= 2 && (
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                          <Sparkline scores={d.history} color={d.trend.color} />
+                        </div>
+                      )}
+                      <div style={{
+                        display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px',
+                        minWidth: '108px'
+                      }}>
+                        <span style={{
+                          display: 'inline-flex', alignItems: 'center', gap: '4px',
+                          fontSize: '10px', fontWeight: 700,
+                          color: d.trend.color, backgroundColor: d.trend.bg,
+                          border: `1px solid ${d.trend.border}`,
+                          padding: '2px 7px', borderRadius: '999px', lineHeight: 1.2
+                        }}>
+                          <span style={{ fontSize: '9px' }}>{d.trend.icon}</span>
+                          {d.trend.label}
+                        </span>
+                        {d.history.length >= 2 ? (
+                          <span style={{ fontSize: '8.5px', color: '#64748b', whiteSpace: 'nowrap' }}>
+                            Última: {d.trend.last}% · {d.trend.delta >= 0 ? '+' : ''}{d.trend.delta}% · {d.trend.count} aval.
+                          </span>
+                        ) : (
+                          <span style={{ fontSize: '8.5px', color: '#64748b', whiteSpace: 'nowrap' }}>
+                            {d.history.length === 1 ? '1 avaliação registrada' : 'Sem histórico anterior'}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <div style={{ width: '140px', height: '8px', backgroundColor: '#e2e8f0', borderRadius: '999px', overflow: 'hidden' }}>
-                      <div style={{ width: `${d.value}%`, height: '100%', backgroundColor: d.color }} />
-                    </div>
-                    <div style={{ minWidth: '46px', textAlign: 'right', fontSize: '13px', fontWeight: 800, color: d.color }}>
-                      {d.value}%
+                    {/* Linha 2: barra de % atual */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{ flex: 1, height: '8px', backgroundColor: '#e2e8f0', borderRadius: '999px', overflow: 'hidden' }}>
+                        <div style={{ width: `${d.value}%`, height: '100%', backgroundColor: d.color }} />
+                      </div>
+                      <div style={{ minWidth: '46px', textAlign: 'right', fontSize: '13px', fontWeight: 800, color: d.color }}>
+                        {d.value}%
+                      </div>
                     </div>
                   </div>
                 ))}
