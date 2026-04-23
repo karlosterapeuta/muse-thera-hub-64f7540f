@@ -353,6 +353,94 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
     excepcional: "Habilidade muito desenvolvida e regular",
   };
 
+  // Histórico por domínio (até 6 últimas avaliações ordenadas por data ascendente)
+  const sortedEvalsAsc = [...allEvaluations].sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+  const lastEvals = sortedEvalsAsc.slice(-6);
+  const domainHistory: Record<string, number[]> = {};
+  lastEvals.forEach((evaluation) => {
+    const ds = evaluation.content?.domainScores || [];
+    ds.forEach((entry: any) => {
+      const key = (entry.domain || "").replace("Domínio ", "").trim();
+      if (!key) return;
+      if (!domainHistory[key]) domainHistory[key] = [];
+      const pct = typeof entry.score === "number" ? entry.score : 0;
+      domainHistory[key].push(Math.max(0, Math.min(100, Math.round(pct))));
+    });
+  });
+
+  // Cálculo de tendência
+  type TrendStatus = "improved" | "stable" | "oscillated" | "first";
+  const computeTrend = (scores: number[]): {
+    status: TrendStatus;
+    delta: number;
+    last: number;
+    color: string;
+    bg: string;
+    border: string;
+    label: string;
+    icon: string;
+    count: number;
+  } => {
+    if (!scores || scores.length === 0) {
+      return { status: "first", delta: 0, last: 0, color: "#475569", bg: "#f1f5f9", border: "#cbd5e1", label: "Sem dados", icon: "—", count: 0 };
+    }
+    if (scores.length === 1) {
+      return { status: "first", delta: 0, last: scores[0], color: "#475569", bg: "#f1f5f9", border: "#cbd5e1", label: "Primeira avaliação", icon: "●", count: 1 };
+    }
+    const first = scores[0];
+    const last = scores[scores.length - 1];
+    const delta = last - first;
+    const mean = scores.reduce((a, b) => a + b, 0) / scores.length;
+    const variance = scores.reduce((s, v) => s + Math.pow(v - mean, 2), 0) / scores.length;
+    const stdev = Math.sqrt(variance);
+
+    // Detectar oscilação: alternância de sinais entre passos consecutivos
+    let signChanges = 0;
+    for (let i = 2; i < scores.length; i++) {
+      const d1 = scores[i - 1] - scores[i - 2];
+      const d2 = scores[i] - scores[i - 1];
+      if (d1 !== 0 && d2 !== 0 && Math.sign(d1) !== Math.sign(d2)) signChanges++;
+    }
+    const isOscillating = signChanges >= 2 || (stdev > 12 && Math.abs(delta) < 10);
+
+    if (isOscillating) {
+      return { status: "oscillated", delta, last, color: "#b45309", bg: "#fffbeb", border: "#fde68a", label: "Oscilou", icon: "▼▲", count: scores.length };
+    }
+    if (delta >= 5) {
+      return { status: "improved", delta, last, color: "#15803d", bg: "#f0fdf4", border: "#bbf7d0", label: "Melhorou", icon: "▲", count: scores.length };
+    }
+    if (delta <= -5) {
+      return { status: "oscillated", delta, last, color: "#b45309", bg: "#fffbeb", border: "#fde68a", label: "Oscilou", icon: "▼", count: scores.length };
+    }
+    return { status: "stable", delta, last, color: "#475569", bg: "#f1f5f9", border: "#cbd5e1", label: "Manteve", icon: "●", count: scores.length };
+  };
+
+  // Sparkline SVG inline (compatível com html2canvas)
+  const Sparkline: React.FC<{ scores: number[]; color: string }> = ({ scores, color }) => {
+    if (!scores || scores.length < 2) return null;
+    const W = 90, H = 28, PAD = 2;
+    const len = scores.length;
+    const points = scores.map((v, i) => {
+      const x = PAD + (i * (W - PAD * 2)) / (len - 1);
+      const y = H - PAD - ((Math.max(0, Math.min(100, v)) * (H - PAD * 2)) / 100);
+      return { x, y };
+    });
+    const polyline = points.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
+    const areaPath = `M ${points[0].x.toFixed(1)},${(H - PAD).toFixed(1)} L ` +
+      points.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" L ") +
+      ` L ${points[points.length - 1].x.toFixed(1)},${(H - PAD).toFixed(1)} Z`;
+    return (
+      <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ display: 'block' }}>
+        <path d={areaPath} fill={color} fillOpacity={0.15} stroke="none" />
+        <polyline points={polyline} fill="none" stroke={color} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" />
+        <circle cx={points[0].x} cy={points[0].y} r={1.8} fill={color} />
+        <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r={2.4} fill={color} stroke="#ffffff" strokeWidth={0.8} />
+      </svg>
+    );
+  };
+
   // Domínios consolidados (média) para apresentação aos pais
   const parentsDomainSummary = (radarData || []).map((d: any) => {
     const value = d.value ?? 0;
@@ -363,7 +451,9 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
     else if (value >= 60) { label = "Habilidade bem presente"; color = "#15803d"; bg = "#f0fdf4"; }
     else if (value >= 40) { label = "Habilidade em desenvolvimento"; color = "#1d4ed8"; bg = "#eff6ff"; }
     else if (value >= 20) { label = "Habilidade aparecendo aos poucos"; color = "#a16207"; bg = "#fef3c7"; }
-    return { name: d.name, value, label, color, bg };
+    const history = domainHistory[d.name] || [];
+    const trend = computeTrend(history);
+    return { name: d.name, value, label, color, bg, history, trend };
   });
 
   // Top destaques e prioridades
@@ -528,21 +618,57 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {parentsDomainSummary.map((d, idx) => (
                   <div key={idx} style={{
-                    display: 'flex', alignItems: 'center', gap: '10px',
+                    display: 'flex', flexDirection: 'column', gap: '6px',
                     padding: '8px 12px', backgroundColor: '#f8fafc',
-                    borderLeft: `4px solid ${d.color}`, borderRadius: '6px'
+                    borderLeft: `4px solid ${d.color}`, borderRadius: '6px',
+                    pageBreakInside: 'avoid'
                   }}>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>
-                        {friendlyDomainName(d.name)}
+                    {/* Linha 1: nome + sparkline + selo */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>
+                          {friendlyDomainName(d.name)}
+                        </div>
+                        <div style={{ fontSize: '10px', color: '#475569' }}>{d.label}</div>
                       </div>
-                      <div style={{ fontSize: '10px', color: '#475569' }}>{d.label}</div>
+                      {d.history.length >= 2 && (
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                          <Sparkline scores={d.history} color={d.trend.color} />
+                        </div>
+                      )}
+                      <div style={{
+                        display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px',
+                        minWidth: '108px'
+                      }}>
+                        <span style={{
+                          display: 'inline-flex', alignItems: 'center', gap: '4px',
+                          fontSize: '10px', fontWeight: 700,
+                          color: d.trend.color, backgroundColor: d.trend.bg,
+                          border: `1px solid ${d.trend.border}`,
+                          padding: '2px 7px', borderRadius: '999px', lineHeight: 1.2
+                        }}>
+                          <span style={{ fontSize: '9px' }}>{d.trend.icon}</span>
+                          {d.trend.label}
+                        </span>
+                        {d.history.length >= 2 ? (
+                          <span style={{ fontSize: '8.5px', color: '#64748b', whiteSpace: 'nowrap' }}>
+                            Última: {d.trend.last}% · {d.trend.delta >= 0 ? '+' : ''}{d.trend.delta}% · {d.trend.count} aval.
+                          </span>
+                        ) : (
+                          <span style={{ fontSize: '8.5px', color: '#64748b', whiteSpace: 'nowrap' }}>
+                            {d.history.length === 1 ? '1 avaliação registrada' : 'Sem histórico anterior'}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <div style={{ width: '140px', height: '8px', backgroundColor: '#e2e8f0', borderRadius: '999px', overflow: 'hidden' }}>
-                      <div style={{ width: `${d.value}%`, height: '100%', backgroundColor: d.color }} />
-                    </div>
-                    <div style={{ minWidth: '46px', textAlign: 'right', fontSize: '13px', fontWeight: 800, color: d.color }}>
-                      {d.value}%
+                    {/* Linha 2: barra de % atual */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{ flex: 1, height: '8px', backgroundColor: '#e2e8f0', borderRadius: '999px', overflow: 'hidden' }}>
+                        <div style={{ width: `${d.value}%`, height: '100%', backgroundColor: d.color }} />
+                      </div>
+                      <div style={{ minWidth: '46px', textAlign: 'right', fontSize: '13px', fontWeight: 800, color: d.color }}>
+                        {d.value}%
+                      </div>
                     </div>
                   </div>
                 ))}
