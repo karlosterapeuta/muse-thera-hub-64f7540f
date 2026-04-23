@@ -74,18 +74,18 @@ const lastPageStyle: React.CSSProperties = {
 };
 
 const cardStyle: React.CSSProperties = {
-  padding: '16px',
+  padding: '10px 12px',
   backgroundColor: '#ffffff',
-  borderRadius: '10px',
+  borderRadius: '8px',
   border: '1px solid #e2e8f0',
-  boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+  boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
   pageBreakInside: 'avoid',
 };
 
 const sectionTitleStyle: React.CSSProperties = {
-  fontSize: '15px',
+  fontSize: '13px',
   fontWeight: 700,
-  marginBottom: '12px',
+  marginBottom: '8px',
   color: '#0f172a',
   textAlign: 'center' as const,
   letterSpacing: '-0.2px',
