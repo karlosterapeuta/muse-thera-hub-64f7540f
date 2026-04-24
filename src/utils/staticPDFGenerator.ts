@@ -10,6 +10,12 @@ interface PDFOptions {
   quality?: number;
   format?: 'a4' | 'letter';
   orientation?: 'portrait' | 'landscape';
+  /**
+   * Quando true, mede o conteúdo renderizado e ajusta automaticamente margens,
+   * tamanho de fonte base e escala dos elementos (incluindo gráficos SVG/canvas)
+   * para garantir que cada "página lógica" caiba na folha A4 sem cortes.
+   */
+  autoFit?: boolean;
 }
 
 export const generateStaticPDF = async (
@@ -21,7 +27,8 @@ export const generateStaticPDF = async (
     waitTime = 3000,
     quality = 1.2,
     format = 'a4',
-    orientation = 'portrait'
+    orientation = 'portrait',
+    autoFit = true,
   } = options;
 
   try {
