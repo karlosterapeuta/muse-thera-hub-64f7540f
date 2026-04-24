@@ -83,7 +83,7 @@ export const ParametersGraphsPDFStatic: React.FC<ParametersGraphsPDFStaticProps>
     fontFamily: 'Helvetica, Arial, sans-serif',
     color: '#0f172a',
     boxSizing: 'border-box',
-    pageBreakAfter: 'always',
+    position: 'relative',
   };
 
   const cardStyle: React.CSSProperties = {
