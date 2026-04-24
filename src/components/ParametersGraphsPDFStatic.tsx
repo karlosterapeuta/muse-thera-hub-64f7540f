@@ -335,7 +335,7 @@ export const ParametersGraphsPDFStatic: React.FC<ParametersGraphsPDFStaticProps>
       </div>
 
       {/* ============ PÁGINA 3 — Sumário detalhado por domínio ============ */}
-      <div style={{ ...pageStyle, pageBreakAfter: 'auto' }}>
+      <div style={pageStyle}>
         <div style={{ marginBottom: '14px' }}>
           <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', margin: '0 0 4px' }}>
             Resumo Interpretativo dos Subdomínios
