@@ -59,7 +59,7 @@ const levelToScore = (level: string): number => {
 const pageStyle: React.CSSProperties = {
   width: '210mm',
   minHeight: '297mm',
-  padding: '12mm 14mm',
+  padding: '20mm 22mm',
   backgroundColor: '#ffffff',
   boxSizing: 'border-box',
   pageBreakAfter: 'always',
@@ -74,18 +74,18 @@ const lastPageStyle: React.CSSProperties = {
 };
 
 const cardStyle: React.CSSProperties = {
-  padding: '10px 12px',
+  padding: '16px',
   backgroundColor: '#ffffff',
-  borderRadius: '8px',
+  borderRadius: '10px',
   border: '1px solid #e2e8f0',
-  boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+  boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
   pageBreakInside: 'avoid',
 };
 
 const sectionTitleStyle: React.CSSProperties = {
-  fontSize: '13px',
+  fontSize: '15px',
   fontWeight: 700,
-  marginBottom: '8px',
+  marginBottom: '12px',
   color: '#0f172a',
   textAlign: 'center' as const,
   letterSpacing: '-0.2px',
@@ -150,7 +150,7 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
   const detailPages: { domainName: string; subdomains: Record<string, typeof evaluatedDetails> }[][] = [];
   let currentPageItems: typeof detailPages[0] = [];
   let currentParamCount = 0;
-  const MAX_PARAMS_PER_PAGE = 28;
+  const MAX_PARAMS_PER_PAGE = 16;
 
   domainEntries.forEach(([domainName, subdomains]) => {
     const totalParams = Object.values(subdomains).reduce((sum, p) => sum + p.length, 0);
@@ -277,33 +277,51 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
         </div>
 
         {/* Right - Stamp */}
-        <div style={{ position: 'relative', width: '70px', height: '70px', flexShrink: 0 }}>
+        <div style={{ position: 'relative', width: '100px', height: '100px', flexShrink: 0 }}>
           <div style={{ position: 'absolute', inset: '0', borderRadius: '50%', border: '2px dashed #99f6e4', opacity: 0.5 }}></div>
-          <div style={{ position: 'absolute', inset: '3px', borderRadius: '50%', border: '1px solid #5eead4', opacity: 0.7 }}></div>
+          <div style={{ position: 'absolute', inset: '4px', borderRadius: '50%', border: '1px solid #5eead4', opacity: 0.7 }}></div>
           <div style={{
-            position: 'absolute', inset: '5px', borderRadius: '50%', border: '2px solid #0d9488',
+            position: 'absolute', inset: '6px', borderRadius: '50%', border: '3px solid #0d9488',
             backgroundColor: '#f0fdfa', display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center', padding: '3px',
-            boxShadow: '0 2px 6px rgba(13, 148, 136, 0.2)'
+            alignItems: 'center', justifyContent: 'center', padding: '6px',
+            boxShadow: '0 2px 10px rgba(13, 148, 136, 0.25)'
           }}>
-            <p style={{ fontSize: '6px', fontWeight: 700, color: '#0d9488', textAlign: 'center', lineHeight: 1.1, maxWidth: '52px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: 0, marginBottom: '2px' }}>
+            <div style={{ position: 'relative', marginBottom: '4px' }}>
+              <div style={{ position: 'absolute', inset: '-2px', borderRadius: '50%', background: 'linear-gradient(135deg, #14b8a6, #06b6d4)', opacity: 0.7 }}></div>
+              <div style={{ position: 'relative', width: '26px', height: '26px', borderRadius: '50%', border: '1px solid #fff', overflow: 'hidden', backgroundColor: '#ccfbf1' }}>
+                {professionalPhotoBase64 ? (
+                  <img src={professionalPhotoBase64} alt="Foto" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 'bold', color: '#0d9488' }}>
+                    {professionalData?.name?.charAt(0) || 'M'}
+                  </div>
+                )}
+              </div>
+            </div>
+            <p style={{ fontSize: '7px', fontWeight: 700, color: '#0d9488', textAlign: 'center', lineHeight: 1.2, maxWidth: '70px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: '2px' }}>
               {professionalData?.name || 'Musicoterapeuta'}
             </p>
-            <div style={{ width: '20px', height: '1px', background: 'linear-gradient(to right, transparent, #14b8a6, transparent)', marginBottom: '2px' }}></div>
+            <div style={{ width: '24px', height: '1px', background: 'linear-gradient(to right, transparent, #14b8a6, transparent)', marginBottom: '3px' }}></div>
             {professionalData?.register && (
-              <p style={{ fontSize: '5px', color: '#6b7280', textAlign: 'center', margin: 0, marginBottom: '2px' }}>{professionalData.register}</p>
+              <p style={{ fontSize: '6px', color: '#6b7280', textAlign: 'center', marginBottom: '3px' }}>{professionalData.register}</p>
             )}
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '2px', background: 'linear-gradient(135deg, #0d9488, #06b6d4)', borderRadius: '5px', padding: '1px 3px' }}>
-              <span style={{ fontSize: '4px', fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.3px' }}>MuseTera ✔</span>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '2px', background: 'linear-gradient(135deg, #0d9488, #06b6d4)', borderRadius: '6px', padding: '1px 4px' }}>
+              <span style={{ fontSize: '5px', color: '#fff' }}>✔</span>
+              <span style={{ fontSize: '4px', fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.3px' }}>MuseTera Verified</span>
+              <span style={{ fontSize: '5px', color: '#fff' }}>♪</span>
             </div>
           </div>
         </div>
       </div>
-      <div style={{ borderTop: '1px solid #99f6e4', background: 'linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa)', padding: '3px 10px', textAlign: 'center' }}>
+      <div style={{ borderTop: '1px solid #99f6e4', background: 'linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa)', padding: '4px 10px', textAlign: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-          <span style={{ fontSize: '8px', color: '#0d9488' }}>✔</span>
-          <span style={{ fontSize: '8px', fontWeight: 600, color: '#0d9488' }}>Assinatura Digital Verificada · Sistema MuseTera</span>
+          <span style={{ fontSize: '9px', color: '#0d9488' }}>✔</span>
+          <span style={{ fontSize: '8px', fontWeight: 600, color: '#0d9488' }}>Assinatura Digital Verificada</span>
+          <span style={{ fontSize: '8px', color: '#6b7280' }}>Sistema MuseTera</span>
         </div>
+        <p style={{ fontSize: '7px', color: '#6b7280', marginTop: '1px' }}>
+          Documento gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
+        </p>
       </div>
     </div>
   );
@@ -335,94 +353,6 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
     excepcional: "Habilidade muito desenvolvida e regular",
   };
 
-  // Histórico por domínio (até 6 últimas avaliações ordenadas por data ascendente)
-  const sortedEvalsAsc = [...allEvaluations].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-  );
-  const lastEvals = sortedEvalsAsc.slice(-6);
-  const domainHistory: Record<string, number[]> = {};
-  lastEvals.forEach((evaluation) => {
-    const ds = evaluation.content?.domainScores || [];
-    ds.forEach((entry: any) => {
-      const key = (entry.domain || "").replace("Domínio ", "").trim();
-      if (!key) return;
-      if (!domainHistory[key]) domainHistory[key] = [];
-      const pct = typeof entry.score === "number" ? entry.score : 0;
-      domainHistory[key].push(Math.max(0, Math.min(100, Math.round(pct))));
-    });
-  });
-
-  // Cálculo de tendência
-  type TrendStatus = "improved" | "stable" | "oscillated" | "first";
-  const computeTrend = (scores: number[]): {
-    status: TrendStatus;
-    delta: number;
-    last: number;
-    color: string;
-    bg: string;
-    border: string;
-    label: string;
-    icon: string;
-    count: number;
-  } => {
-    if (!scores || scores.length === 0) {
-      return { status: "first", delta: 0, last: 0, color: "#475569", bg: "#f1f5f9", border: "#cbd5e1", label: "Sem dados", icon: "—", count: 0 };
-    }
-    if (scores.length === 1) {
-      return { status: "first", delta: 0, last: scores[0], color: "#475569", bg: "#f1f5f9", border: "#cbd5e1", label: "Primeira avaliação", icon: "●", count: 1 };
-    }
-    const first = scores[0];
-    const last = scores[scores.length - 1];
-    const delta = last - first;
-    const mean = scores.reduce((a, b) => a + b, 0) / scores.length;
-    const variance = scores.reduce((s, v) => s + Math.pow(v - mean, 2), 0) / scores.length;
-    const stdev = Math.sqrt(variance);
-
-    // Detectar oscilação: alternância de sinais entre passos consecutivos
-    let signChanges = 0;
-    for (let i = 2; i < scores.length; i++) {
-      const d1 = scores[i - 1] - scores[i - 2];
-      const d2 = scores[i] - scores[i - 1];
-      if (d1 !== 0 && d2 !== 0 && Math.sign(d1) !== Math.sign(d2)) signChanges++;
-    }
-    const isOscillating = signChanges >= 2 || (stdev > 12 && Math.abs(delta) < 10);
-
-    if (isOscillating) {
-      return { status: "oscillated", delta, last, color: "#b45309", bg: "#fffbeb", border: "#fde68a", label: "Oscilou", icon: "▼▲", count: scores.length };
-    }
-    if (delta >= 5) {
-      return { status: "improved", delta, last, color: "#15803d", bg: "#f0fdf4", border: "#bbf7d0", label: "Melhorou", icon: "▲", count: scores.length };
-    }
-    if (delta <= -5) {
-      return { status: "oscillated", delta, last, color: "#b45309", bg: "#fffbeb", border: "#fde68a", label: "Oscilou", icon: "▼", count: scores.length };
-    }
-    return { status: "stable", delta, last, color: "#475569", bg: "#f1f5f9", border: "#cbd5e1", label: "Manteve", icon: "●", count: scores.length };
-  };
-
-  // Sparkline SVG inline (compatível com html2canvas)
-  const Sparkline: React.FC<{ scores: number[]; color: string }> = ({ scores, color }) => {
-    if (!scores || scores.length < 2) return null;
-    const W = 90, H = 28, PAD = 2;
-    const len = scores.length;
-    const points = scores.map((v, i) => {
-      const x = PAD + (i * (W - PAD * 2)) / (len - 1);
-      const y = H - PAD - ((Math.max(0, Math.min(100, v)) * (H - PAD * 2)) / 100);
-      return { x, y };
-    });
-    const polyline = points.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
-    const areaPath = `M ${points[0].x.toFixed(1)},${(H - PAD).toFixed(1)} L ` +
-      points.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" L ") +
-      ` L ${points[points.length - 1].x.toFixed(1)},${(H - PAD).toFixed(1)} Z`;
-    return (
-      <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ display: 'block' }}>
-        <path d={areaPath} fill={color} fillOpacity={0.15} stroke="none" />
-        <polyline points={polyline} fill="none" stroke={color} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" />
-        <circle cx={points[0].x} cy={points[0].y} r={1.8} fill={color} />
-        <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r={2.4} fill={color} stroke="#ffffff" strokeWidth={0.8} />
-      </svg>
-    );
-  };
-
   // Domínios consolidados (média) para apresentação aos pais
   const parentsDomainSummary = (radarData || []).map((d: any) => {
     const value = d.value ?? 0;
@@ -433,9 +363,7 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
     else if (value >= 60) { label = "Habilidade bem presente"; color = "#15803d"; bg = "#f0fdf4"; }
     else if (value >= 40) { label = "Habilidade em desenvolvimento"; color = "#1d4ed8"; bg = "#eff6ff"; }
     else if (value >= 20) { label = "Habilidade aparecendo aos poucos"; color = "#a16207"; bg = "#fef3c7"; }
-    const history = domainHistory[d.name] || [];
-    const trend = computeTrend(history);
-    return { name: d.name, value, label, color, bg, history, trend };
+    return { name: d.name, value, label, color, bg };
   });
 
   // Top destaques e prioridades
@@ -451,29 +379,29 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
   // Calculate total pages
   const hasEvolution = allEvaluations.length >= 1;
   const hasDetails = detailPages.length > 0;
-  // Page 1 always (clinical + parents). Page 2 = details + evolution merged. Overflow only if many details.
-  let totalPages = 1;
-  if (hasDetails || hasEvolution) totalPages += 1;
-  if (detailPages.length > 1) totalPages += detailPages.length - 1;
+  let totalPages = 1; // page 1: header + charts
+  if (hasParentsView) totalPages += 1;
+  if (hasDetails) totalPages += detailPages.length;
+  if (hasEvolution) totalPages += 1;
   let pageNum = 0;
 
   return (
     <div style={{ backgroundColor: '#ffffff', color: '#000000', fontFamily: 'Helvetica, Arial, sans-serif' }}>
       
-      {/* ==================== PAGE 1: Visão Clínica + Apresentação aos Pais ==================== */}
-      <div style={(hasDetails || hasEvolution) ? pageStyle : lastPageStyle}>
+      {/* ==================== PAGE 1: Header + Charts ==================== */}
+      <div style={(hasParentsView || hasDetails || hasEvolution) ? pageStyle : lastPageStyle}>
         {(() => { pageNum = 1; return null; })()}
         <HeaderSection />
 
-        {/* Radar + Pie side by side (compactos) */}
-        <div style={{ display: 'flex', gap: '12px', marginBottom: '12px', pageBreakInside: 'avoid' }}>
+        {/* Radar + Pie side by side */}
+        <div style={{ display: 'flex', gap: '16px', marginBottom: '20px', pageBreakInside: 'avoid' }}>
           <div style={{ ...cardStyle, flex: 1 }}>
             <h3 style={sectionTitleStyle}>Perfil por Domínio</h3>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '160px' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '220px' }}>
               {evaluatedRadarData.length > 0 && (
-                <RadarChart width={220} height={160} data={evaluatedRadarData}>
+                <RadarChart width={260} height={220} data={evaluatedRadarData}>
                   <PolarGrid strokeDasharray="3 3" />
-                  <PolarAngleAxis dataKey="name" tick={{ fill: '#4B5563', fontSize: 8 }} />
+                  <PolarAngleAxis dataKey="name" tick={{ fill: '#4B5563', fontSize: 9 }} />
                   <Radar name="Perfil" dataKey="value" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
                 </RadarChart>
               )}
@@ -482,20 +410,20 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
           <div style={{ ...cardStyle, flex: 1 }}>
             <h3 style={sectionTitleStyle}>Desenvolvimento Geral</h3>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <div style={{ height: '140px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <PieChart width={200} height={140}>
-                  <Pie data={pieData} cx="50%" cy="50%" innerRadius={32} outerRadius={56} paddingAngle={4} dataKey="value">
+              <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <PieChart width={260} height={200}>
+                  <Pie data={pieData} cx="50%" cy="50%" innerRadius={45} outerRadius={75} paddingAngle={5} dataKey="value">
                     {pieData.map((_: any, index: number) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
                 </PieChart>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '2px' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', marginTop: '4px' }}>
                 {pieData.map((entry: any, index: number) => (
-                  <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: COLORS[index] }} />
-                    <span style={{ fontSize: '9.5px', color: '#4b5563' }}>{entry.name} ({entry.value}%)</span>
+                  <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: COLORS[index] }} />
+                    <span style={{ fontSize: '11px', color: '#4b5563' }}>{entry.name} ({entry.value}%)</span>
                   </div>
                 ))}
               </div>
@@ -503,273 +431,308 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
           </div>
         </div>
 
-        {/* Resumo dos Subdomínios em chips de 3 colunas */}
-        {evaluatedCategoryData.length > 0 && (
-          <div style={{ ...cardStyle, marginBottom: '12px', pageBreakInside: 'avoid' }}>
-            <h3 style={{ ...sectionTitleStyle, textAlign: 'left', marginBottom: '6px' }}>Subdomínios Avaliados</h3>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
-              {evaluatedCategoryData.map((item, index) => {
-                const scoreColor = item.value >= 80 ? '#16a34a' : item.value >= 60 ? '#2563eb' : item.value >= 40 ? '#f59e0b' : '#dc2626';
-                const scoreBg = item.value >= 80 ? '#f0fdf4' : item.value >= 60 ? '#eff6ff' : item.value >= 40 ? '#fffbeb' : '#fef2f2';
-                return (
-                  <div key={index} style={{
-                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                    padding: '4px 8px', backgroundColor: scoreBg, borderRadius: '5px',
-                    border: `1px solid ${scoreColor}22`, width: 'calc(33.333% - 4px)', boxSizing: 'border-box'
-                  }}>
-                    <span style={{ fontSize: '9.5px', fontWeight: 500, color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{item.name}</span>
-                    <span style={{
-                      fontSize: '10px', fontWeight: 700, color: scoreColor,
-                      backgroundColor: `${scoreColor}15`, padding: '1px 6px', borderRadius: '8px', marginLeft: '4px'
-                    }}>{item.value}%</span>
-                  </div>
-                );
-              })}
-            </div>
+        {/* Bar Chart */}
+        <div style={{ ...cardStyle, marginBottom: '16px', pageBreakInside: 'avoid' }}>
+          <h3 style={{ ...sectionTitleStyle, fontSize: '16px' }}>
+            Desempenho por Subdomínios {evaluatedCategoryData.length < categoryData.length ? '(Avaliados)' : ''}
+          </h3>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <BarChart width={680} height={320} data={evaluatedCategoryData} margin={{ top: 10, right: 20, left: 20, bottom: 70 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" angle={-45} textAnchor="end" height={70} tick={{ fill: '#4B5563', fontSize: 9 }} />
+              <YAxis domain={[0, 100]} tick={{ fill: '#4B5563', fontSize: 10 }} />
+              <Bar dataKey="value" fill="#3b82f6">
+                {evaluatedCategoryData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={
+                    entry.domain === "Musical" ? "#8884d8" :
+                    entry.domain === "Psicossocial" ? "#82ca9d" :
+                    entry.domain === "Cognitivo" ? "#ffc658" :
+                    entry.domain === "Sensório-Motor" ? "#ff8042" : "#00C49F"
+                  } />
+                ))}
+              </Bar>
+            </BarChart>
           </div>
-        )}
-
-        {/* Visão geral por área avaliada (Apresentação aos Pais com sparklines) */}
-        {hasParentsView && (
-          <div style={{ ...cardStyle, marginBottom: '10px', pageBreakInside: 'avoid' }}>
-            <h3 style={{ ...sectionTitleStyle, textAlign: 'left', marginBottom: '8px' }}>
-              Visão geral por área — Apresentação aos pais
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-              {parentsDomainSummary.map((d, idx) => (
-                <div key={idx} style={{
-                  display: 'flex', flexDirection: 'column', gap: '4px',
-                  padding: '6px 10px', backgroundColor: '#f8fafc',
-                  borderLeft: `3px solid ${d.color}`, borderRadius: '5px',
-                  pageBreakInside: 'avoid'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '11px', fontWeight: 700, color: '#0f172a' }}>
-                        {friendlyDomainName(d.name)}
-                      </div>
-                      <div style={{ fontSize: '9px', color: '#475569' }}>{d.label}</div>
-                    </div>
-                    {d.history.length >= 2 && (
-                      <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <Sparkline scores={d.history} color={d.trend.color} />
-                      </div>
-                    )}
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px', minWidth: '102px' }}>
-                      <span style={{
-                        display: 'inline-flex', alignItems: 'center', gap: '3px',
-                        fontSize: '9px', fontWeight: 700,
-                        color: d.trend.color, backgroundColor: d.trend.bg,
-                        border: `1px solid ${d.trend.border}`,
-                        padding: '1px 6px', borderRadius: '999px', lineHeight: 1.2
-                      }}>
-                        <span style={{ fontSize: '8px' }}>{d.trend.icon}</span>
-                        {d.trend.label}
-                      </span>
-                      {d.history.length >= 2 ? (
-                        <span style={{ fontSize: '7.5px', color: '#64748b', whiteSpace: 'nowrap' }}>
-                          {d.trend.last}% · {d.trend.delta >= 0 ? '+' : ''}{d.trend.delta}% · {d.trend.count} aval.
-                        </span>
-                      ) : (
-                        <span style={{ fontSize: '7.5px', color: '#64748b', whiteSpace: 'nowrap' }}>
-                          {d.history.length === 1 ? '1 aval.' : 'sem histórico'}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <div style={{ flex: 1, height: '6px', backgroundColor: '#e2e8f0', borderRadius: '999px', overflow: 'hidden' }}>
-                      <div style={{ width: `${d.value}%`, height: '100%', backgroundColor: d.color }} />
-                    </div>
-                    <div style={{ minWidth: '38px', textAlign: 'right', fontSize: '11px', fontWeight: 800, color: d.color }}>
-                      {d.value}%
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Mensagem aos pais compacta */}
-        {hasParentsView && (
-          <div style={{
-            background: 'linear-gradient(135deg, #f0fdfa 0%, #ecfeff 100%)',
-            border: '1px solid #99f6e4', borderRadius: '8px',
-            padding: '8px 12px', marginBottom: '6px', pageBreakInside: 'avoid'
-          }}>
-            <p style={{ fontSize: '9.5px', color: '#0f172a', lineHeight: 1.45, margin: 0 }}>
-              <strong style={{ color: '#0d9488' }}>Mensagem aos pais:</strong> cada paciente tem seu próprio ritmo. Os resultados refletem o momento atual e guiam o planejamento terapêutico. A participação da família — cantando, brincando e ouvindo música em casa — é parte importante desse processo.
-            </p>
-          </div>
-        )}
-
-        {/* Legenda de níveis em 1 linha minúscula */}
-        <div style={{ fontSize: '7.5px', color: '#64748b', textAlign: 'center', marginTop: '4px' }}>
-          Níveis: Não Observado · Emergente · Inconsistente · Moderado · Consistente · Excepcional
         </div>
 
-        {!hasDetails && !hasEvolution && <FooterSection compact />}
+        {/* Summary Table */}
+        <div style={{ ...cardStyle, pageBreakInside: 'avoid' }}>
+          <h3 style={sectionTitleStyle}>Resumo dos Subdomínios Avaliados</h3>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+            {evaluatedCategoryData.map((item, index) => {
+              const scoreColor = item.value >= 80 ? '#16a34a' : item.value >= 60 ? '#2563eb' : item.value >= 40 ? '#f59e0b' : '#dc2626';
+              const scoreBg = item.value >= 80 ? '#f0fdf4' : item.value >= 60 ? '#eff6ff' : item.value >= 40 ? '#fffbeb' : '#fef2f2';
+              return (
+                <div key={index} style={{
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  padding: '8px 12px', backgroundColor: scoreBg, borderRadius: '6px',
+                  border: `1px solid ${scoreColor}22`, width: 'calc(50% - 4px)', boxSizing: 'border-box'
+                }}>
+                  <span style={{ fontSize: '11px', fontWeight: 500, color: '#374151' }}>{item.name}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div style={{
+                      width: '10px', height: '10px', borderRadius: '50%',
+                      backgroundColor: item.domain === "Musical" ? "#8884d8" :
+                        item.domain === "Psicossocial" ? "#82ca9d" :
+                        item.domain === "Cognitivo" ? "#ffc658" :
+                        item.domain === "Sensório-Motor" ? "#ff8042" : "#00C49F"
+                    }} />
+                    <span style={{
+                      fontSize: '12px', fontWeight: 700, color: scoreColor,
+                      backgroundColor: `${scoreColor}15`, padding: '1px 8px', borderRadius: '10px'
+                    }}>{item.value}%</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {!hasParentsView && !hasDetails && !hasEvolution && <FooterSection />}
         <PageNumber num={1} total={totalPages} />
       </div>
 
+      {/* ==================== PAGE 2: Apresentação para os Pais ==================== */}
+      {hasParentsView && (() => {
+        pageNum = 2;
+        const isLastPage = !hasDetails && !hasEvolution;
+        return (
+          <div key="parents-view" style={isLastPage ? lastPageStyle : pageStyle}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', paddingBottom: '10px', borderBottom: '2px solid #e2e8f0' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" alt="Logo" style={{ width: '24px', height: 'auto' }} />
+                <span style={{ fontSize: '13px', fontWeight: 700, color: '#1e3a5f' }}>Apresentação dos Resultados</span>
+              </div>
+              <span style={{ fontSize: '11px', color: '#64748b' }}>{patientName || 'Paciente'}</span>
+            </div>
 
-      {/* ==================== DETAIL PAGES (compactas, 2 colunas) ==================== */}
+            <div style={{
+              background: 'linear-gradient(135deg, #eff6ff 0%, #ecfeff 100%)',
+              border: '1px solid #bae6fd', borderRadius: '10px',
+              padding: '14px 18px', marginBottom: '14px', pageBreakInside: 'avoid'
+            }}>
+              <h2 style={{ fontSize: '16px', fontWeight: 800, color: '#0c4a6e', margin: 0, marginBottom: '6px' }}>
+                Como {patientName || 'seu(a) filho(a)'} está se desenvolvendo
+              </h2>
+              <p style={{ fontSize: '11.5px', color: '#1e3a5f', lineHeight: 1.55, margin: 0 }}>
+                Esta página apresenta os resultados de forma clara e acessível. A musicoterapia avalia diferentes
+                áreas do desenvolvimento por meio da música, da escuta, do corpo e da interação. Abaixo você encontra
+                um resumo do que está bem desenvolvido, o que está em construção e o que merece atenção neste momento.
+              </p>
+            </div>
+
+            <div style={{ ...cardStyle, marginBottom: '12px', pageBreakInside: 'avoid' }}>
+              <h3 style={{ ...sectionTitleStyle, textAlign: 'left', marginBottom: '10px' }}>
+                Visão geral por área avaliada
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {parentsDomainSummary.map((d, idx) => (
+                  <div key={idx} style={{
+                    display: 'flex', alignItems: 'center', gap: '10px',
+                    padding: '8px 12px', backgroundColor: '#f8fafc',
+                    borderLeft: `4px solid ${d.color}`, borderRadius: '6px'
+                  }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>
+                        {friendlyDomainName(d.name)}
+                      </div>
+                      <div style={{ fontSize: '10px', color: '#475569' }}>{d.label}</div>
+                    </div>
+                    <div style={{ width: '140px', height: '8px', backgroundColor: '#e2e8f0', borderRadius: '999px', overflow: 'hidden' }}>
+                      <div style={{ width: `${d.value}%`, height: '100%', backgroundColor: d.color }} />
+                    </div>
+                    <div style={{ minWidth: '46px', textAlign: 'right', fontSize: '13px', fontWeight: 800, color: d.color }}>
+                      {d.value}%
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px', marginBottom: '12px', pageBreakInside: 'avoid' }}>
+              <div style={{ ...cardStyle, flex: 1, backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0' }}>
+                <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#166534', margin: 0, marginBottom: '8px' }}>
+                  ★ Pontos fortes observados
+                </h4>
+                {topStrengths.length > 0 ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                    {topStrengths.map((s, i) => (
+                      <div key={i} style={{ backgroundColor: '#ffffff', border: '1px solid #dcfce7', borderRadius: '6px', padding: '6px 8px' }}>
+                        <div style={{ fontSize: '10.5px', fontWeight: 600, color: '#0f172a', lineHeight: 1.35 }}>
+                          {s.parameter}
+                        </div>
+                        <div style={{ fontSize: '9px', color: '#475569', marginTop: '2px' }}>
+                          {friendlyDomainName(s.domain)} · {LEVEL_FRIENDLY[s.level] || s.level}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p style={{ fontSize: '10.5px', color: '#475569', fontStyle: 'italic', margin: 0 }}>
+                    As habilidades estão começando a se desenvolver. A musicoterapia ajudará a fortalecê-las.
+                  </p>
+                )}
+              </div>
+              <div style={{ ...cardStyle, flex: 1, backgroundColor: '#fffbeb', border: '1px solid #fde68a' }}>
+                <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#92400e', margin: 0, marginBottom: '8px' }}>
+                  ◎ Áreas a estimular nas próximas sessões
+                </h4>
+                {topPriorities.length > 0 ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                    {topPriorities.map((s, i) => (
+                      <div key={i} style={{ backgroundColor: '#ffffff', border: '1px solid #fde68a', borderRadius: '6px', padding: '6px 8px' }}>
+                        <div style={{ fontSize: '10.5px', fontWeight: 600, color: '#0f172a', lineHeight: 1.35 }}>
+                          {s.parameter}
+                        </div>
+                        <div style={{ fontSize: '9px', color: '#475569', marginTop: '2px' }}>
+                          {friendlyDomainName(s.domain)} · {LEVEL_FRIENDLY[s.level] || s.level}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p style={{ fontSize: '10.5px', color: '#475569', fontStyle: 'italic', margin: 0 }}>
+                    Não há áreas críticas neste momento. Seguiremos fortalecendo o que já está bem desenvolvido.
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div style={{ ...cardStyle, marginBottom: '12px', pageBreakInside: 'avoid' }}>
+              <h4 style={{ fontSize: '12.5px', fontWeight: 700, color: '#0f172a', margin: 0, marginBottom: '8px' }}>
+                Como ler os níveis usados na avaliação
+              </h4>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                {Object.entries(LEVEL_LABELS).map(([key, info]) => (
+                  <div key={key} style={{
+                    display: 'flex', alignItems: 'center', gap: '6px',
+                    padding: '5px 8px', backgroundColor: info.bgColor,
+                    border: `1px solid ${info.color}33`, borderRadius: '6px',
+                    width: 'calc(50% - 3px)', boxSizing: 'border-box'
+                  }}>
+                    <span style={{
+                      fontSize: '9.5px', fontWeight: 700, color: info.color,
+                      backgroundColor: '#ffffff', padding: '1px 6px', borderRadius: '10px',
+                      border: `1px solid ${info.color}40`, whiteSpace: 'nowrap'
+                    }}>
+                      {info.label}
+                    </span>
+                    <span style={{ fontSize: '9.5px', color: '#374151', lineHeight: 1.3 }}>
+                      {LEVEL_FRIENDLY[key]}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div style={{
+              background: 'linear-gradient(135deg, #f0fdfa 0%, #ecfeff 100%)',
+              border: '1px solid #99f6e4', borderRadius: '10px',
+              padding: '12px 16px', pageBreakInside: 'avoid'
+            }}>
+              <p style={{ fontSize: '10.5px', color: '#0f172a', lineHeight: 1.55, margin: 0 }}>
+                <strong style={{ color: '#0d9488' }}>Mensagem aos pais:</strong> cada criança tem seu próprio ritmo
+                de desenvolvimento. Os resultados acima refletem o momento atual e servem de guia para o nosso
+                planejamento terapêutico. Continuaremos estimulando os pontos fortes e construindo passo a passo
+                as habilidades em desenvolvimento. A participação da família — cantando, brincando e ouvindo
+                música em casa — é parte importante desse processo.
+              </p>
+            </div>
+
+            {isLastPage && <FooterSection compact />}
+            <PageNumber num={pageNum} total={totalPages} />
+          </div>
+        );
+      })()}
+
+      {/* ==================== DETAIL PAGES ==================== */}
       {detailPages.map((pageItems, pageIndex) => {
-        pageNum = 2 + pageIndex;
-        // Última página de detalhe leva também a evolução (se houver) e o footer
-        const isLastDetailPage = pageIndex === detailPages.length - 1;
-        const isLastPage = isLastDetailPage && !hasEvolution;
+        pageNum = 3 + pageIndex;
+        const isLastPage = !hasEvolution && pageIndex === detailPages.length - 1;
         return (
           <div key={`detail-page-${pageIndex}`} style={isLastPage ? lastPageStyle : pageStyle}>
             {/* Mini header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', paddingBottom: '6px', borderBottom: '2px solid #e2e8f0' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', paddingBottom: '10px', borderBottom: '2px solid #e2e8f0' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" alt="Logo" style={{ width: '20px', height: 'auto' }} />
-                <span style={{ fontSize: '12px', fontWeight: 700, color: '#1e3a5f' }}>Detalhamento da Avaliação</span>
+                <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" alt="Logo" style={{ width: '24px', height: 'auto' }} />
+                <span style={{ fontSize: '13px', fontWeight: 700, color: '#1e3a5f' }}>Detalhamento da Avaliação</span>
               </div>
-              <span style={{ fontSize: '10px', color: '#64748b' }}>{patientName || 'Paciente'} · {evaluatedDetails.length} parâmetros</span>
+              <span style={{ fontSize: '11px', color: '#64748b' }}>{patientName || 'Paciente'}</span>
             </div>
 
-            {/* Layout em 2 colunas paralelas para densidade */}
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-              {[0, 1].map((colIdx) => (
-                <div key={colIdx} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  {pageItems
-                    .filter((_, i) => i % 2 === colIdx)
-                    .map(({ domainName, subdomains }) => {
-                      const domainColor = DOMAIN_COLORS[domainName.replace('Domínio ', '')] || '#3b82f6';
-                      return (
-                        <div key={domainName} style={{ pageBreakInside: 'avoid' }}>
-                          <div style={{
-                            backgroundColor: domainColor, color: '#ffffff', padding: '4px 8px',
-                            borderRadius: '5px 5px 0 0', fontSize: '10.5px', fontWeight: 700
-                          }}>
-                            {domainName}
-                          </div>
-                          <div style={{ border: `1px solid ${domainColor}40`, borderTop: 'none', borderRadius: '0 0 5px 5px', overflow: 'hidden' }}>
-                            {Object.entries(subdomains).map(([subName, params]) => (
-                              <div key={subName} style={{ borderBottom: `1px solid ${domainColor}20` }}>
-                                <div style={{
-                                  backgroundColor: `${domainColor}10`, padding: '3px 8px',
-                                  fontSize: '9.5px', fontWeight: 600, color: '#374151',
-                                }}>
-                                  {subName}
-                                </div>
-                                {params.map((param, idx) => {
-                                  const levelInfo = LEVEL_LABELS[param.level] || { label: param.level, color: '#6b7280', bgColor: '#f3f4f6' };
-                                  return (
-                                    <div key={idx} style={{
-                                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                                      padding: '3px 8px', backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fafafa',
-                                      gap: '6px'
-                                    }}>
-                                      <span style={{ fontSize: '9px', color: '#374151', flex: 1, lineHeight: 1.25, wordBreak: 'break-word' }}>
-                                        {param.parameter}
-                                      </span>
-                                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
-                                        <span title={levelInfo.label} style={{
-                                          width: '14px', height: '14px', borderRadius: '50%',
-                                          backgroundColor: levelInfo.color, color: '#fff',
-                                          fontSize: '8px', fontWeight: 700,
-                                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center'
-                                        }}>
-                                          {levelInfo.label.charAt(0)}
-                                        </span>
-                                        <div style={{ width: '28px', height: '4px', backgroundColor: '#e5e7eb', borderRadius: '2px', overflow: 'hidden' }}>
-                                          <div style={{ width: `${param.score}%`, height: '100%', backgroundColor: levelInfo.color }}></div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      );
-                    })}
-                </div>
-              ))}
-            </div>
+            {pageIndex === 0 && (
+              <div style={{
+                backgroundColor: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '8px',
+                padding: '10px 16px', marginBottom: '16px', textAlign: 'center', pageBreakInside: 'avoid'
+              }}>
+                <p style={{ fontSize: '13px', fontWeight: 600, color: '#0c4a6e', margin: 0 }}>
+                  {evaluatedDetails.length} parâmetros avaliados - Apenas itens efetivamente pontuados
+                </p>
+              </div>
+            )}
 
-            {/* Bloco de Evolução compacto na última página de detalhe */}
-            {isLastDetailPage && hasEvolution && (() => {
-              const sortedEvals = [...allEvaluations].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-              const hasMulti = sortedEvals.length > 1;
-              const firstScore = sortedEvals[0]?.content?.overallScore?.percentage || 0;
-              const lastScore = sortedEvals[sortedEvals.length - 1]?.content?.overallScore?.percentage || 0;
-              const variation = lastScore - firstScore;
-              let improved = 0, attention = 0;
-              if (hasMulti) {
-                const firstDomains = sortedEvals[0].content?.domainScores || [];
-                const lastDomains = sortedEvals[sortedEvals.length - 1].content?.domainScores || [];
-                lastDomains.forEach((ld: any) => {
-                  const fd = firstDomains.find((d: any) => d.domain === ld.domain);
-                  if (fd) {
-                    const dv = (ld.score || 0) - (fd.score || 0);
-                    if (dv > 5) improved++; else attention++;
-                  }
-                });
-              }
-              const chartData = sortedEvals.map((evaluation) => ({
-                date: format(new Date(evaluation.date), 'dd/MM/yy'),
-                "Score Global": evaluation.content?.overallScore?.percentage || 0,
-              }));
+            {pageItems.map(({ domainName, subdomains }) => {
+              const domainColor = DOMAIN_COLORS[domainName.replace('Domínio ', '')] || '#3b82f6';
               return (
-                <div style={{ ...cardStyle, marginTop: '10px', pageBreakInside: 'avoid' }}>
-                  <h3 style={{ ...sectionTitleStyle, textAlign: 'left', marginBottom: '6px' }}>
-                    Evolução {hasMulti ? `· ${sortedEvals.length} avaliações` : '· primeira avaliação'}
-                  </h3>
-                  <div style={{ display: 'flex', gap: '8px', marginBottom: hasMulti ? '8px' : 0 }}>
-                    <div style={{ flex: 1, padding: '6px 8px', backgroundColor: '#f8fafc', borderRadius: '5px', textAlign: 'center' }}>
-                      <p style={{ fontSize: '8px', color: '#6b7280', margin: 0, textTransform: 'uppercase' }}>Primeira</p>
-                      <p style={{ fontSize: '14px', fontWeight: 700, color: '#374151', margin: 0 }}>{firstScore}%</p>
-                    </div>
-                    <div style={{ flex: 1, padding: '6px 8px', backgroundColor: '#f8fafc', borderRadius: '5px', textAlign: 'center' }}>
-                      <p style={{ fontSize: '8px', color: '#6b7280', margin: 0, textTransform: 'uppercase' }}>Última</p>
-                      <p style={{ fontSize: '14px', fontWeight: 700, color: '#374151', margin: 0 }}>{lastScore}%</p>
-                    </div>
-                    <div style={{ flex: 1, padding: '6px 8px', backgroundColor: variation > 0 ? '#f0fdf4' : variation < 0 ? '#fef2f2' : '#f8fafc', borderRadius: '5px', textAlign: 'center' }}>
-                      <p style={{ fontSize: '8px', color: '#6b7280', margin: 0, textTransform: 'uppercase' }}>Variação</p>
-                      <p style={{ fontSize: '14px', fontWeight: 700, color: variation > 0 ? '#10b981' : variation < 0 ? '#ef4444' : '#6b7280', margin: 0 }}>
-                        {variation > 0 ? '+' : ''}{variation.toFixed(1)}%
-                      </p>
-                    </div>
+                <div key={domainName} style={{ marginBottom: '16px', pageBreakInside: 'avoid' }}>
+                  <div style={{
+                    backgroundColor: domainColor, color: '#ffffff', padding: '8px 14px',
+                    borderRadius: '8px 8px 0 0', fontSize: '14px', fontWeight: 700
+                  }}>
+                    {domainName}
                   </div>
-                  {hasMulti && (
-                    <>
-                      <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        <LineChart width={600} height={140} data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                          <XAxis dataKey="date" tick={{ fontSize: 9, fill: '#6b7280' }} />
-                          <YAxis domain={[0, 100]} tick={{ fontSize: 9, fill: '#6b7280' }} />
-                          <Line type="monotone" dataKey="Score Global" stroke="#3b82f6" strokeWidth={2.5} dot={{ fill: '#3b82f6', r: 3 }} />
-                        </LineChart>
+                  <div style={{ border: `1px solid ${domainColor}40`, borderTop: 'none', borderRadius: '0 0 8px 8px', overflow: 'hidden' }}>
+                    {Object.entries(subdomains).map(([subName, params]) => (
+                      <div key={subName} style={{ borderBottom: `1px solid ${domainColor}20`, pageBreakInside: 'avoid' }}>
+                        <div style={{
+                          backgroundColor: `${domainColor}10`, padding: '6px 14px',
+                          fontSize: '12px', fontWeight: 600, color: '#374151',
+                          borderBottom: `1px solid ${domainColor}15`
+                        }}>
+                          {subName}
+                        </div>
+                        {params.map((param, idx) => {
+                          const levelInfo = LEVEL_LABELS[param.level] || { label: param.level, color: '#6b7280', bgColor: '#f3f4f6' };
+                          return (
+                            <div key={idx} style={{
+                              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                              padding: '6px 14px', backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fafafa',
+                              borderBottom: idx < params.length - 1 ? '1px solid #f3f4f6' : 'none'
+                            }}>
+                              <span style={{ fontSize: '11px', color: '#374151', flex: 1, wordWrap: 'break-word', overflowWrap: 'break-word' }}>
+                                {param.parameter}
+                              </span>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0, marginLeft: '10px' }}>
+                                <span style={{
+                                  fontSize: '10px', fontWeight: 600, color: levelInfo.color,
+                                  backgroundColor: levelInfo.bgColor, padding: '2px 8px',
+                                  borderRadius: '10px', border: `1px solid ${levelInfo.color}30`, whiteSpace: 'nowrap'
+                                }}>
+                                  {levelInfo.label}
+                                </span>
+                                <div style={{ width: '32px', height: '5px', backgroundColor: '#e5e7eb', borderRadius: '3px', overflow: 'hidden' }}>
+                                  <div style={{ width: `${param.score}%`, height: '100%', backgroundColor: levelInfo.color, borderRadius: '3px' }}></div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
-                      <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '6px' }}>
-                        <span style={{ fontSize: '9.5px', fontWeight: 600, color: '#15803d', backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', padding: '2px 8px', borderRadius: '999px' }}>
-                          ✔ {improved} áreas melhoraram
-                        </span>
-                        <span style={{ fontSize: '9.5px', fontWeight: 600, color: '#92400e', backgroundColor: '#fffbeb', border: '1px solid #fde68a', padding: '2px 8px', borderRadius: '999px' }}>
-                          ⚠ {attention} áreas em atenção
-                        </span>
-                      </div>
-                    </>
-                  )}
+                    ))}
+                  </div>
                 </div>
               );
-            })()}
+            })}
 
-            {(isLastDetailPage) && <FooterSection compact />}
+            {isLastPage && <FooterSection compact />}
             <PageNumber num={pageNum} total={totalPages} />
           </div>
         );
       })}
 
-      {/* ==================== EVOLUTION PAGE (apenas quando não há detalhes mas há evolução) ==================== */}
-      {hasEvolution && !hasDetails && (() => {
-        pageNum = 2;
+      {/* ==================== EVOLUTION PAGE ==================== */}
+      {hasEvolution && (() => {
+        pageNum = (hasParentsView ? 3 : 2) + detailPages.length;
         const hasMultipleEvaluations = allEvaluations.length > 1;
 
         if (hasMultipleEvaluations) {
