@@ -333,54 +333,10 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
     </div>
   );
 
-  // ===== Análise voltada aos pais =====
-  const FRIENDLY_DOMAIN: Record<string, string> = {
-    "Domínio Musical": "Música e expressão sonora",
-    "Domínio Psicossocial": "Relações e emoções",
-    "Domínio Cognitivo": "Atenção, memória e raciocínio",
-    "Domínio Sensório-Motor": "Corpo, movimento e sentidos",
-    "Domínio Comunicativo-Interativo": "Comunicação e interação",
-  };
-
-  const friendlyDomainName = (raw: string) => FRIENDLY_DOMAIN[raw] || raw.replace("Domínio ", "");
-
-  const LEVEL_FRIENDLY: Record<string, string> = {
-    nao_observado: "Ainda não observado neste momento",
-    emergente: "Começando a aparecer",
-    inconsistente: "Aparece de vez em quando",
-    moderado: "Em desenvolvimento, presente em vários momentos",
-    consistente: "Bem desenvolvido e frequente",
-    excepcional: "Habilidade muito desenvolvida e regular",
-  };
-
-  // Domínios consolidados (média) para apresentação aos pais
-  const parentsDomainSummary = (radarData || []).map((d: any) => {
-    const value = d.value ?? 0;
-    let label = "Habilidade emergente";
-    let color = "#dc2626";
-    let bg = "#fef2f2";
-    if (value >= 80) { label = "Habilidade muito desenvolvida"; color = "#15803d"; bg = "#dcfce7"; }
-    else if (value >= 60) { label = "Habilidade bem presente"; color = "#15803d"; bg = "#f0fdf4"; }
-    else if (value >= 40) { label = "Habilidade em desenvolvimento"; color = "#1d4ed8"; bg = "#eff6ff"; }
-    else if (value >= 20) { label = "Habilidade aparecendo aos poucos"; color = "#a16207"; bg = "#fef3c7"; }
-    return { name: d.name, value, label, color, bg };
-  });
-
-  // Top destaques e prioridades
-  const sortedForParents = [...evaluatedDetails].sort((a, b) => b.score - a.score);
-  const topStrengths = sortedForParents.filter(d => d.score >= 60).slice(0, 6);
-  const topPriorities = [...evaluatedDetails]
-    .filter(d => d.score > 0 && d.score < 60)
-    .sort((a, b) => a.score - b.score)
-    .slice(0, 6);
-
-  const hasParentsView = (radarData?.length || 0) > 0 || evaluatedDetails.length > 0;
-
   // Calculate total pages
   const hasEvolution = allEvaluations.length >= 1;
   const hasDetails = detailPages.length > 0;
   let totalPages = 1; // page 1: header + charts
-  if (hasParentsView) totalPages += 1;
   if (hasDetails) totalPages += detailPages.length;
   if (hasEvolution) totalPages += 1;
   let pageNum = 0;
@@ -389,7 +345,7 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
     <div style={{ backgroundColor: '#ffffff', color: '#000000', fontFamily: 'Helvetica, Arial, sans-serif' }}>
       
       {/* ==================== PAGE 1: Header + Charts ==================== */}
-      <div style={(hasParentsView || hasDetails || hasEvolution) ? pageStyle : lastPageStyle}>
+      <div style={hasDetails || hasEvolution ? pageStyle : lastPageStyle}>
         {(() => { pageNum = 1; return null; })()}
         <HeaderSection />
 
@@ -488,166 +444,13 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
           </div>
         </div>
 
-        {!hasParentsView && !hasDetails && !hasEvolution && <FooterSection />}
+        {!hasDetails && !hasEvolution && <FooterSection />}
         <PageNumber num={1} total={totalPages} />
       </div>
 
-      {/* ==================== PAGE 2: Apresentação para os Pais ==================== */}
-      {hasParentsView && (() => {
-        pageNum = 2;
-        const isLastPage = !hasDetails && !hasEvolution;
-        return (
-          <div key="parents-view" style={isLastPage ? lastPageStyle : pageStyle}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', paddingBottom: '10px', borderBottom: '2px solid #e2e8f0' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" alt="Logo" style={{ width: '24px', height: 'auto' }} />
-                <span style={{ fontSize: '13px', fontWeight: 700, color: '#1e3a5f' }}>Apresentação dos Resultados</span>
-              </div>
-              <span style={{ fontSize: '11px', color: '#64748b' }}>{patientName || 'Paciente'}</span>
-            </div>
-
-            <div style={{
-              background: 'linear-gradient(135deg, #eff6ff 0%, #ecfeff 100%)',
-              border: '1px solid #bae6fd', borderRadius: '10px',
-              padding: '14px 18px', marginBottom: '14px', pageBreakInside: 'avoid'
-            }}>
-              <h2 style={{ fontSize: '16px', fontWeight: 800, color: '#0c4a6e', margin: 0, marginBottom: '6px' }}>
-                Como {patientName || 'seu(a) filho(a)'} está se desenvolvendo
-              </h2>
-              <p style={{ fontSize: '11.5px', color: '#1e3a5f', lineHeight: 1.55, margin: 0 }}>
-                Esta página apresenta os resultados de forma clara e acessível. A musicoterapia avalia diferentes
-                áreas do desenvolvimento por meio da música, da escuta, do corpo e da interação. Abaixo você encontra
-                um resumo do que está bem desenvolvido, o que está em construção e o que merece atenção neste momento.
-              </p>
-            </div>
-
-            <div style={{ ...cardStyle, marginBottom: '12px', pageBreakInside: 'avoid' }}>
-              <h3 style={{ ...sectionTitleStyle, textAlign: 'left', marginBottom: '10px' }}>
-                Visão geral por área avaliada
-              </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                {parentsDomainSummary.map((d, idx) => (
-                  <div key={idx} style={{
-                    display: 'flex', alignItems: 'center', gap: '10px',
-                    padding: '8px 12px', backgroundColor: '#f8fafc',
-                    borderLeft: `4px solid ${d.color}`, borderRadius: '6px'
-                  }}>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>
-                        {friendlyDomainName(d.name)}
-                      </div>
-                      <div style={{ fontSize: '10px', color: '#475569' }}>{d.label}</div>
-                    </div>
-                    <div style={{ width: '140px', height: '8px', backgroundColor: '#e2e8f0', borderRadius: '999px', overflow: 'hidden' }}>
-                      <div style={{ width: `${d.value}%`, height: '100%', backgroundColor: d.color }} />
-                    </div>
-                    <div style={{ minWidth: '46px', textAlign: 'right', fontSize: '13px', fontWeight: 800, color: d.color }}>
-                      {d.value}%
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: '12px', marginBottom: '12px', pageBreakInside: 'avoid' }}>
-              <div style={{ ...cardStyle, flex: 1, backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0' }}>
-                <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#166534', margin: 0, marginBottom: '8px' }}>
-                  ★ Pontos fortes observados
-                </h4>
-                {topStrengths.length > 0 ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                    {topStrengths.map((s, i) => (
-                      <div key={i} style={{ backgroundColor: '#ffffff', border: '1px solid #dcfce7', borderRadius: '6px', padding: '6px 8px' }}>
-                        <div style={{ fontSize: '10.5px', fontWeight: 600, color: '#0f172a', lineHeight: 1.35 }}>
-                          {s.parameter}
-                        </div>
-                        <div style={{ fontSize: '9px', color: '#475569', marginTop: '2px' }}>
-                          {friendlyDomainName(s.domain)} · {LEVEL_FRIENDLY[s.level] || s.level}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p style={{ fontSize: '10.5px', color: '#475569', fontStyle: 'italic', margin: 0 }}>
-                    As habilidades estão começando a se desenvolver. A musicoterapia ajudará a fortalecê-las.
-                  </p>
-                )}
-              </div>
-              <div style={{ ...cardStyle, flex: 1, backgroundColor: '#fffbeb', border: '1px solid #fde68a' }}>
-                <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#92400e', margin: 0, marginBottom: '8px' }}>
-                  ◎ Áreas a estimular nas próximas sessões
-                </h4>
-                {topPriorities.length > 0 ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                    {topPriorities.map((s, i) => (
-                      <div key={i} style={{ backgroundColor: '#ffffff', border: '1px solid #fde68a', borderRadius: '6px', padding: '6px 8px' }}>
-                        <div style={{ fontSize: '10.5px', fontWeight: 600, color: '#0f172a', lineHeight: 1.35 }}>
-                          {s.parameter}
-                        </div>
-                        <div style={{ fontSize: '9px', color: '#475569', marginTop: '2px' }}>
-                          {friendlyDomainName(s.domain)} · {LEVEL_FRIENDLY[s.level] || s.level}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p style={{ fontSize: '10.5px', color: '#475569', fontStyle: 'italic', margin: 0 }}>
-                    Não há áreas críticas neste momento. Seguiremos fortalecendo o que já está bem desenvolvido.
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div style={{ ...cardStyle, marginBottom: '12px', pageBreakInside: 'avoid' }}>
-              <h4 style={{ fontSize: '12.5px', fontWeight: 700, color: '#0f172a', margin: 0, marginBottom: '8px' }}>
-                Como ler os níveis usados na avaliação
-              </h4>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                {Object.entries(LEVEL_LABELS).map(([key, info]) => (
-                  <div key={key} style={{
-                    display: 'flex', alignItems: 'center', gap: '6px',
-                    padding: '5px 8px', backgroundColor: info.bgColor,
-                    border: `1px solid ${info.color}33`, borderRadius: '6px',
-                    width: 'calc(50% - 3px)', boxSizing: 'border-box'
-                  }}>
-                    <span style={{
-                      fontSize: '9.5px', fontWeight: 700, color: info.color,
-                      backgroundColor: '#ffffff', padding: '1px 6px', borderRadius: '10px',
-                      border: `1px solid ${info.color}40`, whiteSpace: 'nowrap'
-                    }}>
-                      {info.label}
-                    </span>
-                    <span style={{ fontSize: '9.5px', color: '#374151', lineHeight: 1.3 }}>
-                      {LEVEL_FRIENDLY[key]}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div style={{
-              background: 'linear-gradient(135deg, #f0fdfa 0%, #ecfeff 100%)',
-              border: '1px solid #99f6e4', borderRadius: '10px',
-              padding: '12px 16px', pageBreakInside: 'avoid'
-            }}>
-              <p style={{ fontSize: '10.5px', color: '#0f172a', lineHeight: 1.55, margin: 0 }}>
-                <strong style={{ color: '#0d9488' }}>Mensagem aos pais:</strong> cada criança tem seu próprio ritmo
-                de desenvolvimento. Os resultados acima refletem o momento atual e servem de guia para o nosso
-                planejamento terapêutico. Continuaremos estimulando os pontos fortes e construindo passo a passo
-                as habilidades em desenvolvimento. A participação da família — cantando, brincando e ouvindo
-                música em casa — é parte importante desse processo.
-              </p>
-            </div>
-
-            {isLastPage && <FooterSection compact />}
-            <PageNumber num={pageNum} total={totalPages} />
-          </div>
-        );
-      })()}
-
       {/* ==================== DETAIL PAGES ==================== */}
       {detailPages.map((pageItems, pageIndex) => {
-        pageNum = 3 + pageIndex;
+        pageNum = 2 + pageIndex;
         const isLastPage = !hasEvolution && pageIndex === detailPages.length - 1;
         return (
           <div key={`detail-page-${pageIndex}`} style={isLastPage ? lastPageStyle : pageStyle}>
@@ -732,7 +535,7 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
 
       {/* ==================== EVOLUTION PAGE ==================== */}
       {hasEvolution && (() => {
-        pageNum = (hasParentsView ? 3 : 2) + detailPages.length;
+        pageNum = 2 + detailPages.length;
         const hasMultipleEvaluations = allEvaluations.length > 1;
 
         if (hasMultipleEvaluations) {
