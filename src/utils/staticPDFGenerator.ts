@@ -10,6 +10,12 @@ interface PDFOptions {
   quality?: number;
   format?: 'a4' | 'letter';
   orientation?: 'portrait' | 'landscape';
+  /**
+   * Quando true, mede o conteúdo renderizado e ajusta automaticamente margens,
+   * tamanho de fonte base e escala dos elementos (incluindo gráficos SVG/canvas)
+   * para garantir que cada "página lógica" caiba na folha A4 sem cortes.
+   */
+  autoFit?: boolean;
 }
 
 export const generateStaticPDF = async (
@@ -21,7 +27,8 @@ export const generateStaticPDF = async (
     waitTime = 3000,
     quality = 1.2,
     format = 'a4',
-    orientation = 'portrait'
+    orientation = 'portrait',
+    autoFit = true,
   } = options;
 
   try {
@@ -64,9 +71,76 @@ export const generateStaticPDF = async (
       throw new Error('Conteúdo insuficiente para gerar PDF');
     }
 
+    // ====== AUTO-FIT: medir conteúdo e ajustar para caber em A4 ======
+    // A4 em mm: 210 x 297 (portrait) | 297 x 210 (landscape)
+    const pageWmm = orientation === 'portrait'
+      ? (format === 'a4' ? 210 : 215.9)
+      : (format === 'a4' ? 297 : 279.4);
+    const pageHmm = orientation === 'portrait'
+      ? (format === 'a4' ? 297 : 279.4)
+      : (format === 'a4' ? 210 : 215.9);
+
+    // Margens dinâmicas — começam confortáveis e podem ser reduzidas se o conteúdo for denso
+    let marginMm = 15;
+
+    if (autoFit) {
+      // Cada filho direto do root é tratado como uma "página lógica" (padrão usado pelos PDFs do projeto)
+      const pages = Array.from(root.children) as HTMLElement[];
+      // px por mm: container tem 210mm de largura, então usamos sua largura real
+      const pxPerMm = container.getBoundingClientRect().width / 210;
+
+      // Mede a página mais alta para decidir o fator de escala global
+      let worstRatio = 1;
+      for (const pageEl of pages) {
+        const rect = pageEl.getBoundingClientRect();
+        const heightMm = rect.height / pxPerMm;
+        // espaço útil = altura A4 - 2*margem
+        const usableMm = pageHmm - marginMm * 2;
+        const ratio = heightMm / usableMm;
+        if (ratio > worstRatio) worstRatio = ratio;
+      }
+
+      // Se alguma página estoura, reduzimos margens primeiro e depois aplicamos transform: scale
+      if (worstRatio > 1) {
+        // Tenta reduzir margens até o mínimo seguro de 6mm
+        const minMargin = 6;
+        const usableAtMin = pageHmm - minMargin * 2;
+        // Recalcula a pior razão considerando margem mínima
+        let worstAtMin = 1;
+        for (const pageEl of pages) {
+          const rect = pageEl.getBoundingClientRect();
+          const heightMm = rect.height / pxPerMm;
+          const r = heightMm / usableAtMin;
+          if (r > worstAtMin) worstAtMin = r;
+        }
+
+        if (worstAtMin <= 1) {
+          // Apenas reduzir margens já resolve
+          marginMm = Math.max(minMargin, Math.ceil(pageHmm / 2 - (pageHmm / 2) / worstRatio));
+        } else {
+          // Precisamos escalar o conteúdo
+          marginMm = minMargin;
+          const scale = Math.min(1, 1 / worstAtMin) * 0.98; // 2% de folga
+          for (const pageEl of pages) {
+            pageEl.style.transformOrigin = 'top left';
+            pageEl.style.transform = `scale(${scale})`;
+            // Compensa o "buraco" deixado pelo scale ajustando largura/altura
+            pageEl.style.width = `${100 / scale}%`;
+          }
+          // Reajusta tipografia base proporcionalmente para manter legibilidade nominal
+          const baseFont = Math.max(10, Math.floor(12 * scale));
+          container.style.fontSize = `${baseFont}px`;
+          console.log(`📐 Auto-fit aplicado: scale=${scale.toFixed(3)}, margem=${marginMm}mm, fonte=${baseFont}px`);
+        }
+      }
+
+      // Aguarda reflow após mudanças de layout
+      await new Promise(resolve => requestAnimationFrame(() => resolve(undefined)));
+    }
+
     // Configurações otimizadas do PDF para artigos acadêmicos
     const opt = {
-      margin: [15, 15, 15, 15], // margem em mm
+      margin: [marginMm, marginMm, marginMm, marginMm],
       filename,
       pagebreak: { 
         mode: ['css', 'legacy'],
@@ -86,7 +160,8 @@ export const generateStaticPDF = async (
         logging: false,
         letterRendering: true,
         removeContainer: true,
-        imageTimeout: 20000
+        imageTimeout: 20000,
+        windowWidth: container.getBoundingClientRect().width,
       },
       jsPDF: { 
         unit: 'mm', 
@@ -99,7 +174,7 @@ export const generateStaticPDF = async (
     };
 
     // Gerar PDF
-    console.log('🖨️ Gerando arquivo PDF...');
+    console.log('🖨️ Gerando arquivo PDF...', { marginMm, autoFit });
     const pdfInstance = html2pdf().set(opt).from(root);
     await pdfInstance.save();
     try { const blob = await pdfInstance.outputPdf('blob'); await savePDFToStorage(blob, opt.filename || 'document.pdf', "report"); } catch(e) { console.warn(e); }
