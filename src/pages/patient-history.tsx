@@ -254,29 +254,53 @@ function usePatientHistory(patientId: string | null) {
         });
       });
 
+      const reportLabels: Record<string, string> = {
+        individual_session: "Sessão Individual",
+        group_session: "Sessão em Grupo",
+        daily_evolution: "Evolução Diária",
+        monthly_evolution: "Evolução Mensal",
+        semester_evolution: "Evolução Semestral",
+        therapeutic_discharge: "Alta Terapêutica",
+        administrative_discharge: "Alta Administrativa",
+        tea_scale: "Escala TEA",
+        family_report: "Relatório Família",
+        team_report: "Relatório Equipe",
+        technical_report: "Relatório Técnico",
+        musicoterapia: "Relatório MuseTera TEA",
+        evolution_musicoterapia: "Evolução Musicoterapia",
+        devolutiva_tea: "Devolutiva TEA",
+      };
+
+      const mapReportToType = (rt: string): Exclude<HistoryType, "report"> => {
+        switch (rt) {
+          case "musicoterapia":
+            return "musicoterapia_tea";
+          case "evolution_musicoterapia":
+            return "evolution_musicoterapia";
+          case "devolutiva_tea":
+            return "devolutiva_tea";
+          case "daily_evolution":
+          case "monthly_evolution":
+          case "semester_evolution":
+            return "evolution_report";
+          case "therapeutic_discharge":
+          case "administrative_discharge":
+            return "discharge";
+          default:
+            return "clinical_report";
+        }
+      };
+
       reportsRes.data?.forEach((r) => {
-        const reportLabels: Record<string, string> = {
-          individual_session: "Sessão Individual",
-          group_session: "Sessão em Grupo",
-          daily_evolution: "Evolução Diária",
-          monthly_evolution: "Evolução Mensal",
-          semester_evolution: "Evolução Semestral",
-          therapeutic_discharge: "Alta Terapêutica",
-          administrative_discharge: "Alta Administrativa",
-          tea_scale: "Escala TEA",
-          family_report: "Relatório Família",
-          team_report: "Relatório Equipe",
-          technical_report: "Relatório Técnico",
-          musicoterapia: "Relatório Musicoterapia",
-          evolution_musicoterapia: "Evolução Musicoterapia",
-        };
+        const subtype = mapReportToType(r.type);
+        const cfg = typeConfig[subtype];
         items.push({
           id: r.id,
-          type: "report",
-          title: reportLabels[r.type] || "Relatório",
+          type: subtype,
+          title: reportLabels[r.type] || cfg.label,
           description: `Tipo: ${reportLabels[r.type] || r.type}`,
           date: r.created_at || "",
-          ...typeConfig.report,
+          ...cfg,
         });
       });
 
