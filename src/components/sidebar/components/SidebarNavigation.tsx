@@ -1,6 +1,6 @@
 
 import { MenuSection } from "./MenuSection";
-import { mainMenuItems, clinicalMenuItems, musicalGamesMenuItems, toolsMenuItems, managementMenuItems, resourcesMenuItems, communityMenuItems, getAdminMenuItems } from "../constants";
+import { mainMenuItems, clinicalMenuItems, toolsMenuItems, managementMenuItems, resourcesMenuItems, communityMenuItems, getAdminMenuItems } from "../constants";
 
 interface SidebarNavigationProps {
   collapsed: boolean;
@@ -19,10 +19,6 @@ export function SidebarNavigation({ collapsed, onNavigate, userEmail, isAdmin }:
       {!collapsed && <div className="mx-5 my-2 border-t border-border/30" />}
       
       <MenuSection title="Clínico" items={clinicalMenuItems} collapsed={collapsed} onNavigate={onNavigate} />
-      
-      {!collapsed && <div className="mx-5 my-2 border-t border-border/30" />}
-      
-      <MenuSection title="Jogos Musicais" items={musicalGamesMenuItems} collapsed={collapsed} onNavigate={onNavigate} />
       
       {!collapsed && <div className="mx-5 my-2 border-t border-border/30" />}
       
