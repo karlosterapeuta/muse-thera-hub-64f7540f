@@ -1199,9 +1199,6 @@ export default function PatientHistoryPage() {
               </div>
             </div>
 
-            {/* Insights Cards */}
-            <PatientInsights items={historyItems} patient={selectedPatient} />
-
             {/* Tabs: Timeline / Analytics */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
               <TabsList className="bg-muted/50 border border-border">
