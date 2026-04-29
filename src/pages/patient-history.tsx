@@ -1199,9 +1199,6 @@ export default function PatientHistoryPage() {
               </div>
             </div>
 
-            {/* Insights Cards */}
-            <PatientInsights items={historyItems} patient={selectedPatient} />
-
             {/* Tabs: Timeline / Analytics */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
               <TabsList className="bg-muted/50 border border-border">
@@ -1246,45 +1243,75 @@ export default function PatientHistoryPage() {
 
               {/* Timeline Tab */}
               <TabsContent value="timeline" className="space-y-4">
-                {/* Stats Cards */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-                  {statTypeOrder.map((key) => {
-                    const config = typeConfig[key];
-                    const count = stats[key] || 0;
-                    return (
-                      <motion.div
-                        key={key}
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.3 }}
-                        onClick={() =>
-                          setTypeFilter(typeFilter === key ? "all" : key)
-                        }
-                        className={`cursor-pointer relative p-3 rounded-xl border transition-all duration-300 ${
-                          typeFilter === key
-                            ? "border-primary shadow-lg bg-primary/5"
-                            : count === 0
-                            ? "border-border/40 bg-card/40 opacity-60 hover:opacity-100"
-                            : "border-border hover:border-primary/30 bg-card"
-                        }`}
-                      >
-                        <div className="flex items-center gap-2 mb-1">
-                          <div
-                            className={`w-7 h-7 rounded-lg bg-gradient-to-r ${config.gradient} flex items-center justify-center`}
-                          >
-                            <config.icon className="h-3.5 w-3.5 text-white" />
+                {/* Stats Cards - Unified */}
+                {(() => {
+                  const daysInTreatment = historyItems.length > 0
+                    ? Math.max(1, Math.ceil((Date.now() - new Date(
+                        [...historyItems].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0].date
+                      ).getTime()) / (1000 * 60 * 60 * 24)))
+                    : 0;
+                  const now = new Date();
+                  const recordsThisMonth = historyItems.filter((i) => {
+                    const d = new Date(i.date);
+                    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+                  }).length;
+                  const contextCards = [
+                    { key: "__days", label: "Dias em Tratamento", value: daysInTreatment, suffix: " dias", icon: CalendarDays, gradient: "from-violet-500 to-purple-600" },
+                    { key: "__month", label: "Registros este Mês", value: recordsThisMonth, suffix: "", icon: TrendingUp, gradient: "from-emerald-500 to-green-600" },
+                    { key: "__total", label: "Total de Documentos", value: historyItems.length, suffix: "", icon: FileText, gradient: "from-blue-500 to-cyan-600" },
+                  ];
+                  return (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                      {contextCards.map((c) => (
+                        <motion.div
+                          key={c.key}
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.3 }}
+                          className="relative p-3 rounded-xl border border-border bg-card"
+                        >
+                          <div className="flex items-center gap-2 mb-1">
+                            <div className={`w-7 h-7 rounded-lg bg-gradient-to-r ${c.gradient} flex items-center justify-center`}>
+                              <c.icon className="h-3.5 w-3.5 text-white" />
+                            </div>
+                            <span className="text-xl font-bold text-foreground">
+                              {c.value}{c.suffix}
+                            </span>
                           </div>
-                          <span className="text-xl font-bold text-foreground">
-                            {count}
-                          </span>
-                        </div>
-                        <p className="text-[11px] text-muted-foreground font-medium truncate">
-                          {config.label}
-                        </p>
-                      </motion.div>
-                    );
-                  })}
-                </div>
+                          <p className="text-[11px] text-muted-foreground font-medium truncate">{c.label}</p>
+                        </motion.div>
+                      ))}
+                      {statTypeOrder.map((key) => {
+                        const config = typeConfig[key];
+                        const count = stats[key] || 0;
+                        return (
+                          <motion.div
+                            key={key}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.3 }}
+                            onClick={() => setTypeFilter(typeFilter === key ? "all" : key)}
+                            className={`cursor-pointer relative p-3 rounded-xl border transition-all duration-300 ${
+                              typeFilter === key
+                                ? "border-primary shadow-lg bg-primary/5"
+                                : count === 0
+                                ? "border-border/40 bg-card/40 opacity-60 hover:opacity-100"
+                                : "border-border hover:border-primary/30 bg-card"
+                            }`}
+                          >
+                            <div className="flex items-center gap-2 mb-1">
+                              <div className={`w-7 h-7 rounded-lg bg-gradient-to-r ${config.gradient} flex items-center justify-center`}>
+                                <config.icon className="h-3.5 w-3.5 text-white" />
+                              </div>
+                              <span className="text-xl font-bold text-foreground">{count}</span>
+                            </div>
+                            <p className="text-[11px] text-muted-foreground font-medium truncate">{config.label}</p>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  );
+                })()}
 
                 {/* Filter Bar */}
                 <div className="flex items-center gap-3">
