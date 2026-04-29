@@ -1007,11 +1007,32 @@ export default function PatientHistoryPage() {
       assessment: 0,
       treatment_plan: 0,
       session: 0,
-      report: 0,
+      musicoterapia_tea: 0,
+      evolution_musicoterapia: 0,
+      devolutiva_tea: 0,
+      evolution_report: 0,
+      discharge: 0,
+      clinical_report: 0,
     };
-    historyItems.forEach((item) => counts[item.type]++);
+    historyItems.forEach((item) => {
+      counts[item.type] = (counts[item.type] || 0) + 1;
+    });
     return counts;
   }, [historyItems]);
+
+  // Order shown in stat cards & filter (clinical flow)
+  const statTypeOrder: Array<keyof typeof typeConfig> = [
+    "anamnesis",
+    "assessment",
+    "treatment_plan",
+    "session",
+    "musicoterapia_tea",
+    "evolution_musicoterapia",
+    "devolutiva_tea",
+    "evolution_report",
+    "discharge",
+    "clinical_report",
+  ];
 
   return (
     <div className="min-h-screen bg-background">
