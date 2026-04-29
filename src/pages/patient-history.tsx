@@ -28,6 +28,11 @@ import {
   File,
   X,
   Trash2,
+  Music,
+  Sparkles,
+  HeartPulse,
+  FileCheck2,
+  Award,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -58,9 +63,22 @@ import {
   BarChart, Bar,
 } from "recharts";
 
+type HistoryType =
+  | "anamnesis"
+  | "assessment"
+  | "treatment_plan"
+  | "session"
+  | "musicoterapia_tea"
+  | "evolution_musicoterapia"
+  | "devolutiva_tea"
+  | "evolution_report"
+  | "discharge"
+  | "clinical_report"
+  | "report";
+
 type HistoryItem = {
   id: string;
-  type: "anamnesis" | "assessment" | "treatment_plan" | "session" | "report";
+  type: HistoryType;
   title: string;
   description: string;
   date: string;
@@ -70,7 +88,13 @@ type HistoryItem = {
   label: string;
 };
 
-const typeConfig = {
+const typeConfig: Record<Exclude<HistoryType, "report">, {
+  icon: typeof ClipboardList;
+  gradient: string;
+  badgeColor: string;
+  label: string;
+  color: string;
+}> = {
   anamnesis: {
     icon: ClipboardList,
     gradient: "from-violet-500 to-purple-600",
@@ -82,7 +106,7 @@ const typeConfig = {
     icon: BarChart2,
     gradient: "from-blue-500 to-cyan-600",
     badgeColor: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
-    label: "Avaliação",
+    label: "Avaliação MuseTera",
     color: "#3b82f6",
   },
   treatment_plan: {
@@ -99,11 +123,46 @@ const typeConfig = {
     label: "Sessão / Intervenção",
     color: "#f59e0b",
   },
-  report: {
-    icon: FileText,
+  musicoterapia_tea: {
+    icon: Music,
+    gradient: "from-fuchsia-500 to-pink-600",
+    badgeColor: "bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400 border-fuchsia-500/20",
+    label: "Relatório MuseTera TEA",
+    color: "#d946ef",
+  },
+  evolution_musicoterapia: {
+    icon: HeartPulse,
+    gradient: "from-teal-500 to-cyan-600",
+    badgeColor: "bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20",
+    label: "Evolução Musicoterapia",
+    color: "#14b8a6",
+  },
+  devolutiva_tea: {
+    icon: Sparkles,
+    gradient: "from-amber-500 to-yellow-500",
+    badgeColor: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
+    label: "Devolutiva TEA",
+    color: "#f59e0b",
+  },
+  evolution_report: {
+    icon: TrendingUp,
+    gradient: "from-indigo-500 to-blue-600",
+    badgeColor: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20",
+    label: "Evolução (Diária/Mensal)",
+    color: "#6366f1",
+  },
+  discharge: {
+    icon: Award,
+    gradient: "from-lime-500 to-emerald-600",
+    badgeColor: "bg-lime-500/10 text-lime-600 dark:text-lime-400 border-lime-500/20",
+    label: "Alta Terapêutica",
+    color: "#84cc16",
+  },
+  clinical_report: {
+    icon: FileCheck2,
     gradient: "from-pink-500 to-rose-600",
     badgeColor: "bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-500/20",
-    label: "Relatório",
+    label: "Relatório Clínico",
     color: "#ec4899",
   },
 };
@@ -195,29 +254,53 @@ function usePatientHistory(patientId: string | null) {
         });
       });
 
+      const reportLabels: Record<string, string> = {
+        individual_session: "Sessão Individual",
+        group_session: "Sessão em Grupo",
+        daily_evolution: "Evolução Diária",
+        monthly_evolution: "Evolução Mensal",
+        semester_evolution: "Evolução Semestral",
+        therapeutic_discharge: "Alta Terapêutica",
+        administrative_discharge: "Alta Administrativa",
+        tea_scale: "Escala TEA",
+        family_report: "Relatório Família",
+        team_report: "Relatório Equipe",
+        technical_report: "Relatório Técnico",
+        musicoterapia: "Relatório MuseTera TEA",
+        evolution_musicoterapia: "Evolução Musicoterapia",
+        devolutiva_tea: "Devolutiva TEA",
+      };
+
+      const mapReportToType = (rt: string): Exclude<HistoryType, "report"> => {
+        switch (rt) {
+          case "musicoterapia":
+            return "musicoterapia_tea";
+          case "evolution_musicoterapia":
+            return "evolution_musicoterapia";
+          case "devolutiva_tea":
+            return "devolutiva_tea";
+          case "daily_evolution":
+          case "monthly_evolution":
+          case "semester_evolution":
+            return "evolution_report";
+          case "therapeutic_discharge":
+          case "administrative_discharge":
+            return "discharge";
+          default:
+            return "clinical_report";
+        }
+      };
+
       reportsRes.data?.forEach((r) => {
-        const reportLabels: Record<string, string> = {
-          individual_session: "Sessão Individual",
-          group_session: "Sessão em Grupo",
-          daily_evolution: "Evolução Diária",
-          monthly_evolution: "Evolução Mensal",
-          semester_evolution: "Evolução Semestral",
-          therapeutic_discharge: "Alta Terapêutica",
-          administrative_discharge: "Alta Administrativa",
-          tea_scale: "Escala TEA",
-          family_report: "Relatório Família",
-          team_report: "Relatório Equipe",
-          technical_report: "Relatório Técnico",
-          musicoterapia: "Relatório Musicoterapia",
-          evolution_musicoterapia: "Evolução Musicoterapia",
-        };
+        const subtype = mapReportToType(r.type);
+        const cfg = typeConfig[subtype];
         items.push({
           id: r.id,
-          type: "report",
-          title: reportLabels[r.type] || "Relatório",
+          type: subtype,
+          title: reportLabels[r.type] || cfg.label,
           description: `Tipo: ${reportLabels[r.type] || r.type}`,
           date: r.created_at || "",
-          ...typeConfig.report,
+          ...cfg,
         });
       });
 
@@ -724,7 +807,18 @@ function DocumentDistributionChart({ items }: { items: HistoryItem[] }) {
 
 function MonthlyBarChart({ items }: { items: HistoryItem[] }) {
   const chartData = useMemo(() => {
-    const months: { month: string; anamnese: number; avaliação: number; plano: number; sessão: number; relatório: number }[] = [];
+    type Row = {
+      month: string;
+      anamnese: number;
+      avaliação: number;
+      plano: number;
+      sessão: number;
+      musetera: number;
+      evolução: number;
+      devolutiva: number;
+      outros: number;
+    };
+    const months: Row[] = [];
     for (let i = 5; i >= 0; i--) {
       const date = subMonths(new Date(), i);
       const start = startOfMonth(date);
@@ -741,7 +835,10 @@ function MonthlyBarChart({ items }: { items: HistoryItem[] }) {
         avaliação: monthItems.filter(i => i.type === "assessment").length,
         plano: monthItems.filter(i => i.type === "treatment_plan").length,
         sessão: monthItems.filter(i => i.type === "session").length,
-        relatório: monthItems.filter(i => i.type === "report").length,
+        musetera: monthItems.filter(i => i.type === "musicoterapia_tea").length,
+        evolução: monthItems.filter(i => i.type === "evolution_musicoterapia" || i.type === "evolution_report").length,
+        devolutiva: monthItems.filter(i => i.type === "devolutiva_tea").length,
+        outros: monthItems.filter(i => i.type === "discharge" || i.type === "clinical_report" || i.type === "report").length,
       });
     }
     return months;
@@ -785,7 +882,10 @@ function MonthlyBarChart({ items }: { items: HistoryItem[] }) {
               <Bar dataKey="avaliação" fill="#3b82f6" radius={[3, 3, 0, 0]} name="Avaliação" />
               <Bar dataKey="plano" fill="#22c55e" radius={[3, 3, 0, 0]} name="Plano" />
               <Bar dataKey="sessão" fill="#f59e0b" radius={[3, 3, 0, 0]} name="Sessão" />
-              <Bar dataKey="relatório" fill="#ec4899" radius={[3, 3, 0, 0]} name="Relatório" />
+              <Bar dataKey="musetera" fill="#d946ef" radius={[3, 3, 0, 0]} name="MuseTera TEA" />
+              <Bar dataKey="evolução" fill="#14b8a6" radius={[3, 3, 0, 0]} name="Evolução" />
+              <Bar dataKey="devolutiva" fill="#f59e0b" radius={[3, 3, 0, 0]} name="Devolutiva TEA" />
+              <Bar dataKey="outros" fill="#ec4899" radius={[3, 3, 0, 0]} name="Outros" />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -821,8 +921,10 @@ function PatientInsights({ items, patient }: { items: HistoryItem[]; patient: Pa
 
     const trend = thisMonth >= lastMonth ? "up" : "down";
     const sessionCount = items.filter(i => i.type === "session").length;
+    const museTeraCount = items.filter(i => i.type === "musicoterapia_tea").length;
+    const devolutivaCount = items.filter(i => i.type === "devolutiva_tea").length;
 
-    return { daysInTreatment, thisMonth, lastMonth, trend, sessionCount, totalRecords: items.length, firstRecord, lastRecord };
+    return { daysInTreatment, thisMonth, lastMonth, trend, sessionCount, museTeraCount, devolutivaCount, totalRecords: items.length, firstRecord, lastRecord };
   }, [items]);
 
   if (!insights) return null;
@@ -843,6 +945,20 @@ function PatientInsights({ items, patient }: { items: HistoryItem[]; patient: Pa
       suffix: "",
     },
     {
+      label: "MuseTera TEA",
+      value: insights.museTeraCount,
+      icon: Music,
+      gradient: "from-fuchsia-500 to-pink-600",
+      suffix: "",
+    },
+    {
+      label: "Devolutivas TEA",
+      value: insights.devolutivaCount,
+      icon: Sparkles,
+      gradient: "from-amber-500 to-yellow-500",
+      suffix: "",
+    },
+    {
       label: "Registros este Mês",
       value: insights.thisMonth,
       icon: TrendingUp,
@@ -860,7 +976,7 @@ function PatientInsights({ items, patient }: { items: HistoryItem[]; patient: Pa
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
       {insightCards.map((card, idx) => (
         <motion.div
           key={card.label}
@@ -924,11 +1040,32 @@ export default function PatientHistoryPage() {
       assessment: 0,
       treatment_plan: 0,
       session: 0,
-      report: 0,
+      musicoterapia_tea: 0,
+      evolution_musicoterapia: 0,
+      devolutiva_tea: 0,
+      evolution_report: 0,
+      discharge: 0,
+      clinical_report: 0,
     };
-    historyItems.forEach((item) => counts[item.type]++);
+    historyItems.forEach((item) => {
+      counts[item.type] = (counts[item.type] || 0) + 1;
+    });
     return counts;
   }, [historyItems]);
+
+  // Order shown in stat cards & filter (clinical flow)
+  const statTypeOrder: Array<keyof typeof typeConfig> = [
+    "anamnesis",
+    "assessment",
+    "treatment_plan",
+    "session",
+    "musicoterapia_tea",
+    "evolution_musicoterapia",
+    "devolutiva_tea",
+    "evolution_report",
+    "discharge",
+    "clinical_report",
+  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -1111,52 +1248,58 @@ export default function PatientHistoryPage() {
               <TabsContent value="timeline" className="space-y-4">
                 {/* Stats Cards */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-                  {Object.entries(typeConfig).map(([key, config]) => (
-                    <motion.div
-                      key={key}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.3 }}
-                      onClick={() =>
-                        setTypeFilter(typeFilter === key ? "all" : key)
-                      }
-                      className={`cursor-pointer relative p-3 rounded-xl border transition-all duration-300 ${
-                        typeFilter === key
-                          ? "border-primary shadow-lg bg-primary/5"
-                          : "border-border hover:border-primary/30 bg-card"
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 mb-1">
-                        <div
-                          className={`w-7 h-7 rounded-lg bg-gradient-to-r ${config.gradient} flex items-center justify-center`}
-                        >
-                          <config.icon className="h-3.5 w-3.5 text-white" />
+                  {statTypeOrder.map((key) => {
+                    const config = typeConfig[key];
+                    const count = stats[key] || 0;
+                    return (
+                      <motion.div
+                        key={key}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.3 }}
+                        onClick={() =>
+                          setTypeFilter(typeFilter === key ? "all" : key)
+                        }
+                        className={`cursor-pointer relative p-3 rounded-xl border transition-all duration-300 ${
+                          typeFilter === key
+                            ? "border-primary shadow-lg bg-primary/5"
+                            : count === 0
+                            ? "border-border/40 bg-card/40 opacity-60 hover:opacity-100"
+                            : "border-border hover:border-primary/30 bg-card"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <div
+                            className={`w-7 h-7 rounded-lg bg-gradient-to-r ${config.gradient} flex items-center justify-center`}
+                          >
+                            <config.icon className="h-3.5 w-3.5 text-white" />
+                          </div>
+                          <span className="text-xl font-bold text-foreground">
+                            {count}
+                          </span>
                         </div>
-                        <span className="text-xl font-bold text-foreground">
-                          {stats[key] || 0}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-muted-foreground font-medium truncate">
-                        {config.label}
-                      </p>
-                    </motion.div>
-                  ))}
+                        <p className="text-[11px] text-muted-foreground font-medium truncate">
+                          {config.label}
+                        </p>
+                      </motion.div>
+                    );
+                  })}
                 </div>
 
                 {/* Filter Bar */}
                 <div className="flex items-center gap-3">
                   <Filter className="h-4 w-4 text-muted-foreground" />
                   <Select value={typeFilter} onValueChange={setTypeFilter}>
-                    <SelectTrigger className="w-[200px] bg-card border-border">
+                    <SelectTrigger className="w-[240px] bg-card border-border">
                       <SelectValue placeholder="Filtrar por tipo" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Todos os registros</SelectItem>
-                      <SelectItem value="anamnesis">Anamnese</SelectItem>
-                      <SelectItem value="assessment">Avaliação</SelectItem>
-                      <SelectItem value="treatment_plan">Plano Terapêutico</SelectItem>
-                      <SelectItem value="session">Sessão / Intervenção</SelectItem>
-                      <SelectItem value="report">Relatório</SelectItem>
+                      {statTypeOrder.map((key) => (
+                        <SelectItem key={key} value={key}>
+                          {typeConfig[key].label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <Badge variant="outline" className="text-xs ml-auto">
