@@ -1215,52 +1215,58 @@ export default function PatientHistoryPage() {
               <TabsContent value="timeline" className="space-y-4">
                 {/* Stats Cards */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-                  {Object.entries(typeConfig).map(([key, config]) => (
-                    <motion.div
-                      key={key}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.3 }}
-                      onClick={() =>
-                        setTypeFilter(typeFilter === key ? "all" : key)
-                      }
-                      className={`cursor-pointer relative p-3 rounded-xl border transition-all duration-300 ${
-                        typeFilter === key
-                          ? "border-primary shadow-lg bg-primary/5"
-                          : "border-border hover:border-primary/30 bg-card"
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 mb-1">
-                        <div
-                          className={`w-7 h-7 rounded-lg bg-gradient-to-r ${config.gradient} flex items-center justify-center`}
-                        >
-                          <config.icon className="h-3.5 w-3.5 text-white" />
+                  {statTypeOrder.map((key) => {
+                    const config = typeConfig[key];
+                    const count = stats[key] || 0;
+                    return (
+                      <motion.div
+                        key={key}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.3 }}
+                        onClick={() =>
+                          setTypeFilter(typeFilter === key ? "all" : key)
+                        }
+                        className={`cursor-pointer relative p-3 rounded-xl border transition-all duration-300 ${
+                          typeFilter === key
+                            ? "border-primary shadow-lg bg-primary/5"
+                            : count === 0
+                            ? "border-border/40 bg-card/40 opacity-60 hover:opacity-100"
+                            : "border-border hover:border-primary/30 bg-card"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <div
+                            className={`w-7 h-7 rounded-lg bg-gradient-to-r ${config.gradient} flex items-center justify-center`}
+                          >
+                            <config.icon className="h-3.5 w-3.5 text-white" />
+                          </div>
+                          <span className="text-xl font-bold text-foreground">
+                            {count}
+                          </span>
                         </div>
-                        <span className="text-xl font-bold text-foreground">
-                          {stats[key] || 0}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-muted-foreground font-medium truncate">
-                        {config.label}
-                      </p>
-                    </motion.div>
-                  ))}
+                        <p className="text-[11px] text-muted-foreground font-medium truncate">
+                          {config.label}
+                        </p>
+                      </motion.div>
+                    );
+                  })}
                 </div>
 
                 {/* Filter Bar */}
                 <div className="flex items-center gap-3">
                   <Filter className="h-4 w-4 text-muted-foreground" />
                   <Select value={typeFilter} onValueChange={setTypeFilter}>
-                    <SelectTrigger className="w-[200px] bg-card border-border">
+                    <SelectTrigger className="w-[240px] bg-card border-border">
                       <SelectValue placeholder="Filtrar por tipo" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Todos os registros</SelectItem>
-                      <SelectItem value="anamnesis">Anamnese</SelectItem>
-                      <SelectItem value="assessment">Avaliação</SelectItem>
-                      <SelectItem value="treatment_plan">Plano Terapêutico</SelectItem>
-                      <SelectItem value="session">Sessão / Intervenção</SelectItem>
-                      <SelectItem value="report">Relatório</SelectItem>
+                      {statTypeOrder.map((key) => (
+                        <SelectItem key={key} value={key}>
+                          {typeConfig[key].label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <Badge variant="outline" className="text-xs ml-auto">
