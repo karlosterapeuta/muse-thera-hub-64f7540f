@@ -807,7 +807,18 @@ function DocumentDistributionChart({ items }: { items: HistoryItem[] }) {
 
 function MonthlyBarChart({ items }: { items: HistoryItem[] }) {
   const chartData = useMemo(() => {
-    const months: { month: string; anamnese: number; avaliação: number; plano: number; sessão: number; relatório: number }[] = [];
+    type Row = {
+      month: string;
+      anamnese: number;
+      avaliação: number;
+      plano: number;
+      sessão: number;
+      musetera: number;
+      evolução: number;
+      devolutiva: number;
+      outros: number;
+    };
+    const months: Row[] = [];
     for (let i = 5; i >= 0; i--) {
       const date = subMonths(new Date(), i);
       const start = startOfMonth(date);
@@ -824,7 +835,10 @@ function MonthlyBarChart({ items }: { items: HistoryItem[] }) {
         avaliação: monthItems.filter(i => i.type === "assessment").length,
         plano: monthItems.filter(i => i.type === "treatment_plan").length,
         sessão: monthItems.filter(i => i.type === "session").length,
-        relatório: monthItems.filter(i => i.type === "report").length,
+        musetera: monthItems.filter(i => i.type === "musicoterapia_tea").length,
+        evolução: monthItems.filter(i => i.type === "evolution_musicoterapia" || i.type === "evolution_report").length,
+        devolutiva: monthItems.filter(i => i.type === "devolutiva_tea").length,
+        outros: monthItems.filter(i => i.type === "discharge" || i.type === "clinical_report" || i.type === "report").length,
       });
     }
     return months;
