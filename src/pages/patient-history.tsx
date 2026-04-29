@@ -63,9 +63,22 @@ import {
   BarChart, Bar,
 } from "recharts";
 
+type HistoryType =
+  | "anamnesis"
+  | "assessment"
+  | "treatment_plan"
+  | "session"
+  | "musicoterapia_tea"
+  | "evolution_musicoterapia"
+  | "devolutiva_tea"
+  | "evolution_report"
+  | "discharge"
+  | "clinical_report"
+  | "report";
+
 type HistoryItem = {
   id: string;
-  type: "anamnesis" | "assessment" | "treatment_plan" | "session" | "report";
+  type: HistoryType;
   title: string;
   description: string;
   date: string;
@@ -75,7 +88,13 @@ type HistoryItem = {
   label: string;
 };
 
-const typeConfig = {
+const typeConfig: Record<Exclude<HistoryType, "report">, {
+  icon: typeof ClipboardList;
+  gradient: string;
+  badgeColor: string;
+  label: string;
+  color: string;
+}> = {
   anamnesis: {
     icon: ClipboardList,
     gradient: "from-violet-500 to-purple-600",
@@ -87,7 +106,7 @@ const typeConfig = {
     icon: BarChart2,
     gradient: "from-blue-500 to-cyan-600",
     badgeColor: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
-    label: "Avaliação",
+    label: "Avaliação MuseTera",
     color: "#3b82f6",
   },
   treatment_plan: {
@@ -104,11 +123,46 @@ const typeConfig = {
     label: "Sessão / Intervenção",
     color: "#f59e0b",
   },
-  report: {
-    icon: FileText,
+  musicoterapia_tea: {
+    icon: Music,
+    gradient: "from-fuchsia-500 to-pink-600",
+    badgeColor: "bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400 border-fuchsia-500/20",
+    label: "Relatório MuseTera TEA",
+    color: "#d946ef",
+  },
+  evolution_musicoterapia: {
+    icon: HeartPulse,
+    gradient: "from-teal-500 to-cyan-600",
+    badgeColor: "bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20",
+    label: "Evolução Musicoterapia",
+    color: "#14b8a6",
+  },
+  devolutiva_tea: {
+    icon: Sparkles,
+    gradient: "from-amber-500 to-yellow-500",
+    badgeColor: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
+    label: "Devolutiva TEA",
+    color: "#f59e0b",
+  },
+  evolution_report: {
+    icon: TrendingUp,
+    gradient: "from-indigo-500 to-blue-600",
+    badgeColor: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20",
+    label: "Evolução (Diária/Mensal)",
+    color: "#6366f1",
+  },
+  discharge: {
+    icon: Award,
+    gradient: "from-lime-500 to-emerald-600",
+    badgeColor: "bg-lime-500/10 text-lime-600 dark:text-lime-400 border-lime-500/20",
+    label: "Alta Terapêutica",
+    color: "#84cc16",
+  },
+  clinical_report: {
+    icon: FileCheck2,
     gradient: "from-pink-500 to-rose-600",
     badgeColor: "bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-500/20",
-    label: "Relatório",
+    label: "Relatório Clínico",
     color: "#ec4899",
   },
 };
