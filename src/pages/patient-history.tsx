@@ -976,7 +976,7 @@ function PatientInsights({ items, patient }: { items: HistoryItem[]; patient: Pa
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
       {insightCards.map((card, idx) => (
         <motion.div
           key={card.label}
