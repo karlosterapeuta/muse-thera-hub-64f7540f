@@ -1063,8 +1063,6 @@ export default function PatientHistoryPage() {
     "evolution_musicoterapia",
     "devolutiva_tea",
     "evolution_report",
-    "discharge",
-    "clinical_report",
   ];
 
   return (
