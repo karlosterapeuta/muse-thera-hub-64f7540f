@@ -38,12 +38,7 @@ export const clinicalMenuItems = [
   { icon: ListChecks, text: "📋 Atividades", path: "/activities", gradient: "from-emerald-500 to-green-600", isNew: true },
 ];
 
-export const musicalGamesMenuItems = [
-  { icon: Piano, text: "🎮 Jogos MuseTera", path: "/chrome-music-lab", gradient: "from-blue-500 to-purple-600", isNew: true },
-  { icon: Music, text: "🧩 TEA-Hero", path: "/tea-hero", gradient: "from-violet-500 to-purple-600", isNew: true },
-  { icon: Bell, text: "🔔 Sinos Musicais", path: "/musical-bells", gradient: "from-green-500 to-emerald-600" },
-  
-];
+export const musicalGamesMenuItems: any[] = [];
 
 export const toolsMenuItems = [
   { icon: Bot, text: "🤖 Assistente IA", path: "/ai-assistant", gradient: "from-violet-500 to-purple-600", isNew: true },
