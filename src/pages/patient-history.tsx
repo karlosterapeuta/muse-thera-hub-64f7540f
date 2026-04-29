@@ -882,7 +882,10 @@ function MonthlyBarChart({ items }: { items: HistoryItem[] }) {
               <Bar dataKey="avaliação" fill="#3b82f6" radius={[3, 3, 0, 0]} name="Avaliação" />
               <Bar dataKey="plano" fill="#22c55e" radius={[3, 3, 0, 0]} name="Plano" />
               <Bar dataKey="sessão" fill="#f59e0b" radius={[3, 3, 0, 0]} name="Sessão" />
-              <Bar dataKey="relatório" fill="#ec4899" radius={[3, 3, 0, 0]} name="Relatório" />
+              <Bar dataKey="musetera" fill="#d946ef" radius={[3, 3, 0, 0]} name="MuseTera TEA" />
+              <Bar dataKey="evolução" fill="#14b8a6" radius={[3, 3, 0, 0]} name="Evolução" />
+              <Bar dataKey="devolutiva" fill="#f59e0b" radius={[3, 3, 0, 0]} name="Devolutiva TEA" />
+              <Bar dataKey="outros" fill="#ec4899" radius={[3, 3, 0, 0]} name="Outros" />
             </BarChart>
           </ResponsiveContainer>
         </div>
