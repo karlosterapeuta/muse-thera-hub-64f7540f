@@ -921,8 +921,10 @@ function PatientInsights({ items, patient }: { items: HistoryItem[]; patient: Pa
 
     const trend = thisMonth >= lastMonth ? "up" : "down";
     const sessionCount = items.filter(i => i.type === "session").length;
+    const museTeraCount = items.filter(i => i.type === "musicoterapia_tea").length;
+    const devolutivaCount = items.filter(i => i.type === "devolutiva_tea").length;
 
-    return { daysInTreatment, thisMonth, lastMonth, trend, sessionCount, totalRecords: items.length, firstRecord, lastRecord };
+    return { daysInTreatment, thisMonth, lastMonth, trend, sessionCount, museTeraCount, devolutivaCount, totalRecords: items.length, firstRecord, lastRecord };
   }, [items]);
 
   if (!insights) return null;
@@ -940,6 +942,20 @@ function PatientInsights({ items, patient }: { items: HistoryItem[]; patient: Pa
       value: insights.sessionCount,
       icon: Activity,
       gradient: "from-orange-500 to-amber-600",
+      suffix: "",
+    },
+    {
+      label: "MuseTera TEA",
+      value: insights.museTeraCount,
+      icon: Music,
+      gradient: "from-fuchsia-500 to-pink-600",
+      suffix: "",
+    },
+    {
+      label: "Devolutivas TEA",
+      value: insights.devolutivaCount,
+      icon: Sparkles,
+      gradient: "from-amber-500 to-yellow-500",
       suffix: "",
     },
     {
