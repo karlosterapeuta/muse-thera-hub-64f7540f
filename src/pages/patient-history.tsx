@@ -28,6 +28,11 @@ import {
   File,
   X,
   Trash2,
+  Music,
+  Sparkles,
+  HeartPulse,
+  FileCheck2,
+  Award,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
