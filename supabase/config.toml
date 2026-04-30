@@ -54,6 +54,9 @@ verify_jwt = true
 [functions.send-notifications]
 verify_jwt = false
 
+[functions.public-register]
+verify_jwt = false
+
 [functions]
 timeout = 120
 cpu_limit = 0.5
