@@ -1,79 +1,96 @@
-
 ## Objetivo
 
-No "Histórico do Paciente", listar **todos os processos clínicos** do paciente — da Anamnese até a Devolutiva TEA — e, ao clicar em um paciente, mostrar na **timeline cada processo individualizado** com a **quantidade já realizada** de cada tipo.
+Substituir/atualizar a edge function pública `public-register` para receber cadastros do bot do WhatsApp, com novo secret, rate limit e painel admin para aprovar/rejeitar.
 
-## Situação atual
+## Estado atual (descobertas)
 
-A página `src/pages/patient-history.tsx` já busca dados de `anamnesis`, `assessments`, `treatment_plans`, `sessions` e `reports`, mas **agrupa tudo de `reports` como um único tipo "Relatório"**. Isso esconde processos importantes como **MuseTera TEA**, **Evolução Musicoterapia** e **Devolutiva TEA**, que são salvos em `reports.type` com valores específicos.
+- A função `supabase/functions/public-register/index.ts` **já existe** e funciona muito parecido com o pedido, mas usa o secret antigo `WHATSAPP_BOT_API_KEY` (sem timing-safe compare, sem rate limit, sem Zod).
+- A tabela `profiles` já existe com coluna `status` (default `'pending'`) e o trigger `handle_new_user` cria o perfil automaticamente.
+- A tabela `user_roles` já existe com enum `app_role = ('admin' | 'professional')` e função `has_role()`. **Não existe role `'user'`** — vou adicionar.
+- Já existe `update_user_status` RPC e o painel `PendingUsersPanel.tsx` no dashboard que aprova/rejeita. Vou criar uma página dedicada `/admin/cadastros-pendentes` mais completa.
+- `profiles` não tem coluna `phone` nem `email` — vou adicioná-las para o bot conseguir gravar/exibir.
 
-Hoje a contagem mostra apenas 5 categorias genéricas. O usuário quer ver cada processo do menu "Processos Clínicos" como um item próprio.
+## Mudanças
 
-## Mudanças propostas (apenas em `src/pages/patient-history.tsx`)
+### 1. Banco de dados (migration)
 
-### 1. Expandir o tipo `HistoryItem` e `typeConfig`
+- Adicionar valor `'user'` ao enum `public.app_role`.
+- Adicionar colunas `email text` e `phone text` em `public.profiles` (nullable).
+- Atualizar o trigger `handle_new_user` para também copiar `email` e `phone` do `raw_user_meta_data`.
+- Criar RPC `delete_pending_user(target_user_id uuid)` (security definer, só admin) que apaga `profiles` + `auth.users` para o botão "Rejeitar".
 
-Adicionar subtipos específicos para cada processo clínico, derivados de `reports.type`:
+### 2. Secrets
 
-- `anamnesis` — Anamnese (já existe)
-- `assessment` — Avaliação MuseTera (já existe)
-- `treatment_plan` — Plano Terapêutico (já existe)
-- `session` — Sessão / Intervenção (já existe)
-- `musicoterapia_tea` — **Relatório MuseTera TEA** (novo, vem de `reports.type='musicoterapia'`)
-- `evolution_musicoterapia` — **Evolução Musicoterapia** (novo)
-- `devolutiva_tea` — **Devolutiva TEA** (novo, de `reports.type='devolutiva_tea'`)
-- `evolution_report` — Evolução (diária/mensal/semestral) — agrupa `daily_evolution`, `monthly_evolution`, `semester_evolution`
-- `discharge` — Alta (terapêutica/administrativa)
-- `clinical_report` — Relatórios clínicos (família, equipe, técnico, sessão individual/grupo, escala TEA)
+- Gerar valor aleatório com `openssl rand -hex 32` e salvar como **`BOT_REGISTER_API_KEY`** via tool de secrets do Lovable Cloud.
+- Mostrar o valor uma única vez no chat (após a criação) para você copiar.
+- Manter `WHATSAPP_BOT_API_KEY` antigo intocado (você pode deletar manualmente depois).
 
-Cada subtipo recebe cor, ícone e gradiente próprios (paleta cosmic já usada no projeto).
+### 3. Edge function `public-register` (reescrever)
 
-### 2. Atualizar `usePatientHistory`
+`supabase/functions/public-register/index.ts`:
 
-Em vez de mapear todo `reports` para `type: "report"`, fazer um switch sobre `r.type` e atribuir o subtipo correto, com título e descrição apropriados (ex: "Relatório MuseTera TEA", "Devolutiva TEA — Análise Clínica").
+- `verify_jwt = false` (já está em `config.toml`).
+- CORS com header `x-api-key` permitido.
+- **Rate limit em memória**: `Map<ip, timestamps[]>`, 5 req/min por IP. Excedeu → `429 { success:false, error:"rate_limited" }`.
+- Lê `x-api-key`, compara com `BOT_REGISTER_API_KEY` usando **timing-safe compare** (loop XOR de bytes de tamanho fixo). Falha → `401 { success:false, error:"Unauthorized" }`.
+- Valida body com **Zod**: `name (1-100)`, `email (email, ≤255)`, `password (min 8, max 72)`, `phone (opcional, E.164 regex)`. Falha → `400 { success:false, error:"<mensagem>" }`.
+- `supabase.auth.admin.createUser({ email_confirm: true, user_metadata: { name, phone, registration_source: "whatsapp_bot" } })`.
+- Trigger `handle_new_user` cria o profile com `status='pending'` + email + phone.
+- Email duplicado → `409 { success:false, error:"email_exists" }`.
+- Sucesso → `200 { success:true, userId, status:"pending", message:"Cadastro recebido, aguardando aprovação" }`.
+- Logs: `console.log` apenas com email, status code e userId. **Nunca** logar `password` nem `x-api-key`.
 
-### 3. Atualizar o painel de estatísticas (`stats`)
+### 4. Painel admin `/admin/cadastros-pendentes`
 
-Trocar os 5 contadores fixos por uma grade dinâmica com **um card por subtipo presente**, mostrando ícone + label + quantidade (ex: "3 Anamneses", "5 MuseTera TEA", "2 Devolutivas TEA"). Ordem fixa seguindo o fluxo clínico: Anamnese → Avaliação → Plano → Sessão → MuseTera TEA → Evolução Musicoterapia → Devolutiva TEA → Outros relatórios.
+Nova página `src/pages/admin/CadastrosPendentes.tsx` + rota em `src/App.tsx`:
 
-### 4. Atualizar timeline
+- Protegida via `useAdmin()` (redireciona se não-admin).
+- Lista `profiles` com `status='pending'` (nome, email, phone, created_at).
+- Botão **Aprovar** → chama RPC `update_user_status(id, 'active')` + insere `user_roles { user_id, role: 'user' }`.
+- Botão **Rejeitar** → chama RPC `delete_pending_user(id)` (apaga auth.users + profile).
+- Toasts de sucesso/erro, loading states, refetch automático.
+- Adicionar link no menu admin do sidebar.
 
-A timeline já renderiza `filteredHistory`. Como cada item agora tem subtipo, ícone e cor próprios, automaticamente cada processo aparece individualizado e identificável visualmente.
+### 5. Resposta final ao usuário
 
-### 5. Atualizar filtros (`typeFilter`)
+Após deploy, mostrar:
 
-O `Select` de filtro passa a listar todos os subtipos disponíveis em vez de só 5 categorias.
+```
+URL:         https://jztbkimlcrfndooyhohg.supabase.co/functions/v1/public-register
+API KEY:     <valor gerado de 64 hex chars>
+```
 
-### 6. Atualizar gráficos (`MonthlyBarChart`, `DocumentDistributionChart`, `ActivityChart`)
-
-- **DocumentDistributionChart** (pizza): já é dinâmico via `typeConfig`, basta funcionar com os novos subtipos.
-- **MonthlyBarChart**: adicionar barras para `musicoterapia_tea`, `evolution_musicoterapia`, `devolutiva_tea`. Para evitar excesso visual, agrupar relatórios "secundários" (alta, família, equipe) em uma barra única "Outros".
-- **ActivityChart** (área): mantém total + sessões.
-
-### 7. Atualizar `PatientInsights`
-
-Acrescentar mais dois cards: "Devolutivas TEA" e "Relatórios MuseTera TEA" para destaque rápido dos processos principais.
-
-## Arquivos afetados
-
-- `src/pages/patient-history.tsx` (única alteração necessária — toda a lógica está concentrada lá)
+Para o bot configurar como `MUSETERA_REGISTER_URL` e `MUSETERA_REGISTER_API_KEY`.
 
 ## Detalhes técnicos
 
-- Sem mudanças de banco — todos os dados já existem em `anamnesis`, `assessments`, `treatment_plans`, `sessions`, `reports`.
-- Mapeamento em `reports.type`:
-  - `'musicoterapia'` → subtipo `musicoterapia_tea`
-  - `'evolution_musicoterapia'` → subtipo `evolution_musicoterapia`
-  - `'devolutiva_tea'` → subtipo `devolutiva_tea`
-  - `'daily_evolution' | 'monthly_evolution' | 'semester_evolution'` → `evolution_report`
-  - `'therapeutic_discharge' | 'administrative_discharge'` → `discharge`
-  - resto → `clinical_report`
-- Manter retrocompatibilidade: itens antigos com `type: "report"` continuam sendo renderizados via fallback.
-- Performance preservada: mesma única query paralela já existente.
+```text
+Fluxo de cadastro:
+  Bot WhatsApp
+    │ POST + x-api-key + JSON body
+    ▼
+  public-register (edge function)
+    ├─ rate limit (5/min/IP)
+    ├─ timing-safe API key check
+    ├─ Zod validate
+    ├─ auth.admin.createUser ──► trigger handle_new_user ──► profiles (status=pending)
+    └─ 200 { userId, status:"pending" }
 
-## Resultado visual
+Fluxo de aprovação:
+  Admin abre /admin/cadastros-pendentes
+    ├─ Aprovar ──► update_user_status('active') + insert user_roles(role='user')
+    └─ Rejeitar ──► delete_pending_user() (auth.users + profile cascade)
+```
 
-Ao selecionar um paciente:
-- Aparece uma fileira de **chips/cards de contagem por processo** (ex: "Anamnese: 1 • Avaliação: 4 • Plano: 2 • Sessão: 18 • MuseTera TEA: 3 • Devolutiva TEA: 1").
-- A **timeline** mostra cada processo com seu próprio ícone/cor (Devolutiva TEA com cor distinta de Anamnese, etc.), em ordem cronológica.
-- O filtro permite ver apenas um tipo de processo por vez.
+## Arquivos
+
+- **migration SQL** (alter enum + alter table + update trigger + new RPC)
+- `supabase/functions/public-register/index.ts` (reescrita)
+- `src/pages/admin/CadastrosPendentes.tsx` (novo)
+- `src/App.tsx` (rota)
+- `src/components/sidebar/constants.ts` ou similar (link no menu)
+
+## Pontos de confirmação
+
+1. Posso adicionar `'user'` ao enum `app_role`? (atualmente só tem `admin` e `professional`)
+2. O secret antigo `WHATSAPP_BOT_API_KEY` continuará existindo — quer que eu remova depois ou prefere manter?
