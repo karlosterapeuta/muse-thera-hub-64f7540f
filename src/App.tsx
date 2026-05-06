@@ -141,8 +141,6 @@ const App = () => {
         <ShadcnToaster />
         
         <BrowserRouter>
-        <InstantAuthChecker />
-        <AuthStatusChecker />
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/reset-password" element={<ResetPassword />} />
