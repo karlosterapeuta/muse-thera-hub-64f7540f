@@ -5,7 +5,8 @@ export const usePatientsCount = () => {
   return useQuery({
     queryKey: ["patients-count"],
     queryFn: async (): Promise<number> => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       if (!user) {
         throw new Error("Usuário não encontrado");
       }
@@ -31,7 +32,8 @@ export const useAnamnesisCount = () => {
   return useQuery({
     queryKey: ["anamnesis-count"],
     queryFn: async (): Promise<number> => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       if (!user) {
         throw new Error("Usuário não encontrado");
       }
@@ -57,7 +59,8 @@ export const useReportsCount = () => {
   return useQuery({
     queryKey: ["reports-count", "musicoterapia"],
     queryFn: async (): Promise<number> => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       if (!user) {
         throw new Error("Usuário não encontrado");
       }
@@ -103,7 +106,8 @@ export const useInterventionsCount = () => {
   return useQuery({
     queryKey: ["interventions-count"],
     queryFn: async (): Promise<number> => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       if (!user) {
         throw new Error("Usuário não encontrado");
       }

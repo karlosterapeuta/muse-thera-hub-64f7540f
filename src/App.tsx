@@ -9,8 +9,7 @@ import "./App.css";
 import Layout from "./components/Layout";
 import { useEffect } from "react";
 import { globalCacheManager } from "@/utils/cacheManager";
-import InstantAuthChecker from "@/components/auth/InstantAuthChecker";
-import AuthStatusChecker from "@/components/auth/AuthStatusChecker";
+// Auth state validation is centralized in Layout.tsx to avoid token refresh storms
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { PWAInstallProvider } from "@/contexts/PWAInstallContext";
 import Index from "./pages/Index";
@@ -142,8 +141,6 @@ const App = () => {
         <ShadcnToaster />
         
         <BrowserRouter>
-        <InstantAuthChecker />
-        <AuthStatusChecker />
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/reset-password" element={<ResetPassword />} />

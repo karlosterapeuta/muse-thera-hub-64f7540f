@@ -84,7 +84,8 @@ export default function CreatorLoginPage() {
         return;
       }
       
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       if (user) {
         // Check if user is a creator
         const { data: creator } = await supabase

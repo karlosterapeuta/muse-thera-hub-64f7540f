@@ -23,13 +23,8 @@ export function useProfessionalData() {
     queryKey: ["professional-data"],
     queryFn: async (): Promise<ProfessionalData | null> => {
       try {
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        
-        if (userError) {
-          console.error('Erro ao obter usuário:', userError);
-          throw userError;
-        }
-        
+        const { data: { session } } = await supabase.auth.getSession();
+        const user = session?.user;
         if (!user) {
           console.log('Nenhum usuário logado encontrado');
           return null;

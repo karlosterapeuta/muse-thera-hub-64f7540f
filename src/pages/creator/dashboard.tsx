@@ -69,10 +69,11 @@ export default function CreatorDashboardPage() {
       setIsLoading(true);
       
       try {
-        // Get authenticated user
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        // Get authenticated user from local session (no network call)
+        const { data: { session } } = await supabase.auth.getSession();
+        const user = session?.user;
         
-        if (userError || !user) {
+        if (!user) {
           navigate('/creator-login');
           return;
         }

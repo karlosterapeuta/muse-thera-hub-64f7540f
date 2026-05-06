@@ -1,96 +1,78 @@
-## Objetivo
+## Diagnóstico
 
-Substituir/atualizar a edge function pública `public-register` para receber cadastros do bot do WhatsApp, com novo secret, rate limit e painel admin para aprovar/rejeitar.
+Os logs do Supabase Auth mostram **dezenas de eventos `token_revoked` por segundo** vindos de `/creator-login` e culminando em **HTTP 429 (rate limit)**. Quando o refresh token falha por 429, o SDK do Supabase derruba a sessão silenciosamente — exatamente o que você descreve: "desloga sozinho, sem mensagem".
 
-## Estado atual (descobertas)
+A causa é uma **avalanche de chamadas paralelas a `supabase.auth.getUser()`** disparada simultaneamente por vários componentes ao montar:
 
-- A função `supabase/functions/public-register/index.ts` **já existe** e funciona muito parecido com o pedido, mas usa o secret antigo `WHATSAPP_BOT_API_KEY` (sem timing-safe compare, sem rate limit, sem Zod).
-- A tabela `profiles` já existe com coluna `status` (default `'pending'`) e o trigger `handle_new_user` cria o perfil automaticamente.
-- A tabela `user_roles` já existe com enum `app_role = ('admin' | 'professional')` e função `has_role()`. **Não existe role `'user'`** — vou adicionar.
-- Já existe `update_user_status` RPC e o painel `PendingUsersPanel.tsx` no dashboard que aprova/rejeita. Vou criar uma página dedicada `/admin/cadastros-pendentes` mais completa.
-- `profiles` não tem coluna `phone` nem `email` — vou adicioná-las para o bot conseguir gravar/exibir.
+- `InstantAuthChecker` (em `App.tsx`)
+- `AuthStatusChecker` (em `App.tsx`, refaz checagem a cada 1 min)
+- `Layout` (route guard com getSession + profile)
+- `Index.tsx` (verifica sessão + profile)
+- `useAdmin` (getUser + RPC)
+- `usePatientsData`, `useDashboardCounts`, `useProfessionalData`, `useCourses*`, `UserExpirationWarning`, `PushNotificationManager`, `SidebarFooter`, `creator/dashboard`, `creator/login` — todos chamam `getUser()` ao montar.
+
+Cada `getUser()` força um round-trip ao servidor e, se o token estiver perto de expirar, dispara um refresh. Múltiplas instâncias paralelas tentam refrescar o mesmo refresh token → o servidor revoga o anterior, retorna 429, e a sessão é descartada localmente. Resultado: redirect silencioso para `/login` em qualquer navegação.
+
+Além disso, **`Index.tsx`** faz `await supabase.auth.signOut()` se o profile vier nulo (transient) — sem mostrar toast, completando o quadro do "logout sem mensagem".
 
 ## Mudanças
 
-### 1. Banco de dados (migration)
+### 1. Trocar `getUser()` por `getSession()` em todo o código cliente
+`getSession()` lê do localStorage (sem rede, sem refresh forçado). `getUser()` só é necessário quando se exige validação server-side do JWT — o que **não é o nosso caso** em queries de perfil/contadores/etc., já que RLS já valida.
 
-- Adicionar valor `'user'` ao enum `public.app_role`.
-- Adicionar colunas `email text` e `phone text` em `public.profiles` (nullable).
-- Atualizar o trigger `handle_new_user` para também copiar `email` e `phone` do `raw_user_meta_data`.
-- Criar RPC `delete_pending_user(target_user_id uuid)` (security definer, só admin) que apaga `profiles` + `auth.users` para o botão "Rejeitar".
+Arquivos a converter:
+- `src/hooks/use-admin.ts`
+- `src/hooks/usePatientsData.ts` (2 chamadas)
+- `src/hooks/useDashboardCounts.ts` (4 chamadas)
+- `src/hooks/useProfessionalData.ts`
+- `src/hooks/useCourses.ts`, `useCoursesWithStats.ts`, `useCourseProgress.ts` (4 chamadas)
+- `src/components/auth/UserExpirationWarning.tsx`
+- `src/components/sidebar/hooks/useSidebarData.ts`
+- `src/pages/creator/login.tsx` (verificação de sessão pré-login)
+- `src/pages/creator/dashboard.tsx`
 
-### 2. Secrets
-
-- Gerar valor aleatório com `openssl rand -hex 32` e salvar como **`BOT_REGISTER_API_KEY`** via tool de secrets do Lovable Cloud.
-- Mostrar o valor uma única vez no chat (após a criação) para você copiar.
-- Manter `WHATSAPP_BOT_API_KEY` antigo intocado (você pode deletar manualmente depois).
-
-### 3. Edge function `public-register` (reescrever)
-
-`supabase/functions/public-register/index.ts`:
-
-- `verify_jwt = false` (já está em `config.toml`).
-- CORS com header `x-api-key` permitido.
-- **Rate limit em memória**: `Map<ip, timestamps[]>`, 5 req/min por IP. Excedeu → `429 { success:false, error:"rate_limited" }`.
-- Lê `x-api-key`, compara com `BOT_REGISTER_API_KEY` usando **timing-safe compare** (loop XOR de bytes de tamanho fixo). Falha → `401 { success:false, error:"Unauthorized" }`.
-- Valida body com **Zod**: `name (1-100)`, `email (email, ≤255)`, `password (min 8, max 72)`, `phone (opcional, E.164 regex)`. Falha → `400 { success:false, error:"<mensagem>" }`.
-- `supabase.auth.admin.createUser({ email_confirm: true, user_metadata: { name, phone, registration_source: "whatsapp_bot" } })`.
-- Trigger `handle_new_user` cria o profile com `status='pending'` + email + phone.
-- Email duplicado → `409 { success:false, error:"email_exists" }`.
-- Sucesso → `200 { success:true, userId, status:"pending", message:"Cadastro recebido, aguardando aprovação" }`.
-- Logs: `console.log` apenas com email, status code e userId. **Nunca** logar `password` nem `x-api-key`.
-
-### 4. Painel admin `/admin/cadastros-pendentes`
-
-Nova página `src/pages/admin/CadastrosPendentes.tsx` + rota em `src/App.tsx`:
-
-- Protegida via `useAdmin()` (redireciona se não-admin).
-- Lista `profiles` com `status='pending'` (nome, email, phone, created_at).
-- Botão **Aprovar** → chama RPC `update_user_status(id, 'active')` + insere `user_roles { user_id, role: 'user' }`.
-- Botão **Rejeitar** → chama RPC `delete_pending_user(id)` (apaga auth.users + profile).
-- Toasts de sucesso/erro, loading states, refetch automático.
-- Adicionar link no menu admin do sidebar.
-
-### 5. Resposta final ao usuário
-
-Após deploy, mostrar:
-
-```
-URL:         https://jztbkimlcrfndooyhohg.supabase.co/functions/v1/public-register
-API KEY:     <valor gerado de 64 hex chars>
+Padrão:
+```ts
+const { data: { session } } = await supabase.auth.getSession();
+const user = session?.user;
+if (!user) { /* sair sem signOut */ }
 ```
 
-Para o bot configurar como `MUSETERA_REGISTER_URL` e `MUSETERA_REGISTER_API_KEY`.
+### 2. Consolidar os 3 auth-checkers redundantes
+Remover `AuthStatusChecker` (intervalo de 1 min só piora a tempestade) e simplificar `InstantAuthChecker` para **apenas reagir a `SIGNED_OUT`** sem chamar `getUser()`/profile na montagem. O `Layout` já faz a validação completa por rota e é suficiente.
+
+- `src/App.tsx` — remover `<AuthStatusChecker />` e `<InstantAuthChecker />` (Layout assume).
+- Manter `src/components/auth/AuthStatusChecker.tsx` no projeto (caso seja reusado depois) mas desligar do app.
+
+### 3. Não chamar `signOut()` em estados transitórios
+- `src/pages/Index.tsx`: usar `.maybeSingle()`; se `profile` vier nulo, **navegar para `/dashboard`** (Layout decide), nunca `signOut()` silencioso.
+
+### 4. Reduzir trabalho no startup do Dashboard
+- `src/pages/Dashboard/*` e seus hooks só executam queries depois que `getSession()` retornar `session?.user`. Isso evita a explosão inicial de `getUser()` paralelos enquanto a sessão ainda está sendo hidratada do storage.
+
+### 5. Validação
+Após aplicar:
+- Logar com `musicoterapeutakarlos@gmail.com` e navegar entre páginas — não deve sair sozinho.
+- Conferir Auth logs do Supabase: a quantidade de `token_revoked` por minuto deve cair drasticamente e não deve aparecer 429.
 
 ## Detalhes técnicos
 
 ```text
-Fluxo de cadastro:
-  Bot WhatsApp
-    │ POST + x-api-key + JSON body
-    ▼
-  public-register (edge function)
-    ├─ rate limit (5/min/IP)
-    ├─ timing-safe API key check
-    ├─ Zod validate
-    ├─ auth.admin.createUser ──► trigger handle_new_user ──► profiles (status=pending)
-    └─ 200 { userId, status:"pending" }
+ANTES (montagem do Dashboard):
+  Layout.getSession ─┐
+  InstantAuth.getSession ─┤
+  AuthStatusChecker.getSession ─┤  → 6+ requests
+  useAdmin.getUser ─┤              → /user + refresh
+  useDashboardCountsx4.getUser ─┤  → 4× /user
+  usePatientsData.getUser ─┤
+  useProfessionalData.getUser ┘
+  → /token refresh storm → 429 → SIGNED_OUT silencioso
 
-Fluxo de aprovação:
-  Admin abre /admin/cadastros-pendentes
-    ├─ Aprovar ──► update_user_status('active') + insert user_roles(role='user')
-    └─ Rejeitar ──► delete_pending_user() (auth.users + profile cascade)
+DEPOIS:
+  Layout.getSession (única fonte de verdade) → 1 leitura local
+  hooks usam getSession (sem rede)
+  InstantAuthChecker só escuta SIGNED_OUT
+  → zero refreshes em paralelo
 ```
 
-## Arquivos
-
-- **migration SQL** (alter enum + alter table + update trigger + new RPC)
-- `supabase/functions/public-register/index.ts` (reescrita)
-- `src/pages/admin/CadastrosPendentes.tsx` (novo)
-- `src/App.tsx` (rota)
-- `src/components/sidebar/constants.ts` ou similar (link no menu)
-
-## Pontos de confirmação
-
-1. Posso adicionar `'user'` ao enum `app_role`? (atualmente só tem `admin` e `professional`)
-2. O secret antigo `WHATSAPP_BOT_API_KEY` continuará existindo — quer que eu remova depois ou prefere manter?
+Sem mudança de schema, sem mudança em Edge Functions, sem alterar comportamento de bloqueio de usuários inativos/expirados (continua sendo feito pelo `Layout`).

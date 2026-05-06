@@ -13,24 +13,21 @@ const Index = () => {
         const { data: { session } } = await supabase.auth.getSession();
         
         if (session?.user) {
-          // Validar status do perfil
+          // Validate status without forcing refresh; Layout does deeper checks
           const { data: profile } = await supabase
             .from('profiles')
             .select('status, expires_at')
             .eq('id', session.user.id)
-            .single();
+            .maybeSingle();
           
           const isExpired = profile?.expires_at 
             ? new Date(profile.expires_at) < new Date() 
             : false;
           
-          if (profile?.status === 'pending') {
-            // Pending users go to dashboard where they'll see the approval screen
-            navigate('/dashboard', { replace: true });
-          } else if (profile?.status === 'active' && !isExpired) {
+          // If profile missing (transient) or pending/active, let Layout decide
+          if (!profile || profile.status === 'pending' || (profile.status === 'active' && !isExpired)) {
             navigate('/dashboard', { replace: true });
           } else {
-            await supabase.auth.signOut();
             navigate('/login', { replace: true });
           }
         } else {
