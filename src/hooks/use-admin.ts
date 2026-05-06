@@ -37,9 +37,10 @@ export function useAdmin() {
   return useQuery({
     queryKey: ["isAdmin"],
     queryFn: async () => {
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       
-      if (authError || !user) {
+      if (!user) {
         console.log("[useAdmin] No user found");
         return false;
       }
