@@ -152,6 +152,7 @@ function LayoutContent({ children }: LayoutProps) {
     };
 
     validateAccess();
+    return () => { cancelled = true; };
   }, [location.pathname, navigate, toast]);
 
   if (isPending) {
