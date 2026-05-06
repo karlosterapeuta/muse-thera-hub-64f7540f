@@ -66,7 +66,8 @@ export function useCreateCourse() {
 
   return useMutation({
     mutationFn: async (course: Partial<Course>) => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       if (!user) throw new Error("Usuário não autenticado");
 
       const { data, error } = await supabase

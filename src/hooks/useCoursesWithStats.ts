@@ -6,7 +6,8 @@ export function useCoursesWithStats() {
   return useQuery({
     queryKey: ["courses-with-stats"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       
       // Fetch all courses
       const { data: courses, error: coursesError } = await supabase

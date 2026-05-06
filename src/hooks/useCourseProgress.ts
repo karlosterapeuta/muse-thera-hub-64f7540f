@@ -8,7 +8,8 @@ export function useCourseProgress(courseId: string | undefined) {
     queryFn: async () => {
       if (!courseId) return [];
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       if (!user) return [];
 
       // Get all lessons for this course
@@ -47,7 +48,8 @@ export function useAllCoursesProgress() {
   return useQuery({
     queryKey: ["all-courses-progress"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       if (!user) return [];
 
       const { data: progress, error } = await supabase
@@ -100,7 +102,8 @@ export function useMarkLessonComplete() {
 
   return useMutation({
     mutationFn: async ({ lessonId, courseId }: { lessonId: string; courseId: string }) => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       if (!user) throw new Error("Usuário não autenticado");
 
       const { data, error } = await supabase
@@ -131,7 +134,8 @@ export function useUpdateWatchTime() {
 
   return useMutation({
     mutationFn: async ({ lessonId, watchTimeSeconds, courseId }: { lessonId: string; watchTimeSeconds: number; courseId: string }) => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       if (!user) throw new Error("Usuário não autenticado");
 
       const { data, error } = await supabase

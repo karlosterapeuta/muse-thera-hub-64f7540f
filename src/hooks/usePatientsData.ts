@@ -22,7 +22,8 @@ export const usePatientsData = () => {
   return useQuery({
     queryKey: ["patients"],
     queryFn: async (): Promise<Patient[]> => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       if (!user) {
         throw new Error("Usuário não encontrado");
       }
@@ -97,7 +98,8 @@ export const useDeleteAllPatients = () => {
 
   return useMutation({
     mutationFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       if (!user) {
         throw new Error("Usuário não encontrado");
       }
