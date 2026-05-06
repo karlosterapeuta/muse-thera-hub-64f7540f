@@ -91,13 +91,21 @@ function LayoutContent({ children }: LayoutProps) {
       return;
     }
 
+    let cancelled = false;
+
     const validateAccess = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        // If no session, redirect to login
+        // Tolerant session check: retry briefly to survive transient 429s / token refresh races
+        let session = (await supabase.auth.getSession()).data.session;
         if (!session?.user) {
-          navigate('/login');
+          await new Promise((r) => setTimeout(r, 600));
+          if (cancelled) return;
+          session = (await supabase.auth.getSession()).data.session;
+        }
+
+        if (!session?.user) {
+          // Still no session after retry — do NOT auto-redirect, let user retry navigation
+          console.warn('[Layout] No session after retry, skipping redirect to avoid auto-logout loop');
           return;
         }
 
