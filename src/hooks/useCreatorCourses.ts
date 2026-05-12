@@ -251,7 +251,7 @@ export function useCreatorCourses(creatorId: string | null) {
     try {
       const { error } = await supabase
         .from("course_modules")
-        .update(data)
+        .update(data as any)
         .eq("id", moduleId);
 
       if (error) throw error;
