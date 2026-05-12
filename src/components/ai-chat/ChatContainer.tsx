@@ -7,8 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
 import SuggestedQuestions from "./SuggestedQuestions";
-import museteraBotGreeting from "@/assets/musetera-bot-greeting.png";
-import museteraBotHappy from "@/assets/musetera-bot-happy.png";
+import museteraMascot from "@/assets/musetera-mascot.png";
 
 interface Message {
   role: "user" | "assistant";

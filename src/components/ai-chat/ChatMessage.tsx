@@ -1,7 +1,6 @@
 import { cn } from "@/lib/utils";
 import { User } from "lucide-react";
-import museteraBotHappy from "@/assets/musetera-bot-happy.png";
-import museteraBotThinking from "@/assets/musetera-bot-thinking.png";
+import museteraMascot from "@/assets/musetera-mascot.png";
 
 interface ChatMessageProps {
   role: "user" | "assistant";
