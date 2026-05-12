@@ -32,13 +32,11 @@ export function SidebarFooter({ collapsed, onNavigate }: SidebarFooterProps) {
         console.log("Logout realizado com sucesso");
       }
       onNavigate?.();
-      window.location.href = '/login';
-      window.location.reload();
+      window.location.replace('/login');
     } catch (error) {
       console.error("Erro durante o logout:", error);
       onNavigate?.();
-      window.location.href = '/login';
-      window.location.reload();
+      window.location.replace('/login');
     }
   };
 
