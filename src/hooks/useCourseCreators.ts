@@ -118,7 +118,7 @@ export function useUpdateCreator() {
 
       const { data, error } = await supabase
         .from("course_creators")
-        .update(updateData)
+        .update(updateData as any)
         .eq("id", creator.id)
         .select()
         .single();
