@@ -185,9 +185,9 @@ const ChatContainer = () => {
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-purple-500/30">
+          <div className="w-12 h-12 rounded-full overflow-hidden ring-2 ring-purple-500/30">
             <img 
-              src={museteraBotHappy} 
+              src={museteraMascot} 
               alt="Assistente MuseTera"
               className="w-full h-full object-cover"
             />
@@ -214,9 +214,9 @@ const ChatContainer = () => {
       <ScrollArea className="flex-1 p-4" ref={scrollRef}>
         {showWelcome ? (
           <div className="flex flex-col items-center justify-center h-full text-center py-8">
-            <div className="w-16 h-16 rounded-full overflow-hidden mb-4 ring-2 ring-purple-500/30">
+            <div className="w-20 h-20 rounded-full overflow-hidden mb-4 ring-2 ring-purple-500/30">
               <img 
-                src={museteraBotGreeting} 
+                src={museteraMascot} 
                 alt="Assistente MuseTera"
                 className="w-full h-full object-cover"
               />

@@ -32,7 +32,7 @@ const ChatMessage = ({ role, content, isStreaming }: ChatMessageProps) => {
           <User className="w-4 h-4" />
         ) : (
           <img 
-            src={isStreaming ? museteraBotThinking : museteraBotHappy} 
+            src={museteraMascot} 
             alt="MuseBot"
             className="w-full h-full object-cover rounded-full"
           />
