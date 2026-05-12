@@ -17,7 +17,12 @@ export const useAnamnesisData = () => {
   return useQuery({
     queryKey: ANAMNESIS_QUERY_KEY,
     queryFn: async (): Promise<AnamnesisItem[]> => {
-      const { data: { user } } = await supabase.auth.getUser();
+      let { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        await new Promise((r) => setTimeout(r, 600));
+        ({ data: { session } } = await supabase.auth.getSession());
+      }
+      const user = session?.user;
       if (!user) throw new Error("User not authenticated");
 
       const { data, error } = await supabase
