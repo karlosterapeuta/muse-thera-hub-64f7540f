@@ -527,11 +527,21 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
       )}
 
       {renderTextSection(
-        "Tratamento e Medicação",
+        "Medicação em Uso",
         Stethoscope,
         "from-red-500 to-orange-500",
         [
-          { key: 'current_medication', label: 'Medicação atual' },
+          { key: 'current_medication', label: 'Medicação Atual' },
+          { key: 'medication_schedule', label: 'Horários e Dosagens' },
+          { key: 'medication_effects', label: 'Efeitos Observados' }
+        ]
+      )}
+
+      {renderTextSection(
+        "Objetivos e Abordagem Terapêutica",
+        Activity,
+        "from-emerald-500 to-teal-500",
+        [
           { key: 'therapeutic_goals', label: 'Objetivos terapêuticos' },
           { key: 'treatment_approach', label: 'Abordagem de tratamento' }
         ]
