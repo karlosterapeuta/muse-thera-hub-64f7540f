@@ -438,10 +438,12 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         </Card>
       </div>
 
-      {/* Patient Info Section */}
-      {(anamnesisData.legal_guardian || anamnesisData.family_relationship || 
-        anamnesisData.referral_professional || anamnesisData.main_clinical_demand) && (
-        <ModernFormCard title="Informações do Paciente" icon={User} gradient="from-blue-500 to-cyan-500">
+      {/* Identificação e Encaminhamento */}
+      {(anamnesisData.legal_guardian || anamnesisData.family_relationship ||
+        anamnesisData.referral_professional || anamnesisData.main_clinical_demand ||
+        anamnesisData.diagnosis_details || anamnesisData.cid_code ||
+        anamnesisData.clinical_details) && (
+        <ModernFormCard title="Identificação e Encaminhamento" icon={User} gradient="from-blue-500 to-cyan-500">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {anamnesisData.legal_guardian && (
               <div>
@@ -461,11 +463,33 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
                 <p className="font-medium text-white">{anamnesisData.referral_professional}</p>
               </div>
             )}
+            {anamnesisData.cid_code && (
+              <div>
+                <p className="text-sm font-semibold text-gray-400">CID-10/11</p>
+                <p className="font-medium text-white">{anamnesisData.cid_code}</p>
+              </div>
+            )}
             {anamnesisData.main_clinical_demand && (
               <div className="md:col-span-2">
                 <p className="text-sm font-semibold text-gray-400">Demanda Clínica Principal</p>
                 <div className="bg-gray-800 p-3 rounded-lg border border-gray-700 mt-1">
-                  <p className="text-white leading-relaxed">{anamnesisData.main_clinical_demand}</p>
+                  <p className="text-white leading-relaxed whitespace-pre-wrap">{anamnesisData.main_clinical_demand}</p>
+                </div>
+              </div>
+            )}
+            {anamnesisData.diagnosis_details && (
+              <div className="md:col-span-2">
+                <p className="text-sm font-semibold text-gray-400">Diagnóstico(s) Existente(s)</p>
+                <div className="bg-gray-800 p-3 rounded-lg border border-gray-700 mt-1">
+                  <p className="text-white leading-relaxed whitespace-pre-wrap">{anamnesisData.diagnosis_details}</p>
+                </div>
+              </div>
+            )}
+            {anamnesisData.clinical_details && (
+              <div className="md:col-span-2">
+                <p className="text-sm font-semibold text-gray-400">Detalhes Clínicos Adicionais</p>
+                <div className="bg-gray-800 p-3 rounded-lg border border-gray-700 mt-1">
+                  <p className="text-white leading-relaxed whitespace-pre-wrap">{anamnesisData.clinical_details}</p>
                 </div>
               </div>
             )}
@@ -503,11 +527,21 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
       )}
 
       {renderTextSection(
-        "Tratamento e Medicação",
+        "Medicação em Uso",
         Stethoscope,
         "from-red-500 to-orange-500",
         [
-          { key: 'current_medication', label: 'Medicação atual' },
+          { key: 'current_medication', label: 'Medicação Atual' },
+          { key: 'medication_schedule', label: 'Horários e Dosagens' },
+          { key: 'medication_effects', label: 'Efeitos Observados' }
+        ]
+      )}
+
+      {renderTextSection(
+        "Objetivos e Abordagem Terapêutica",
+        Activity,
+        "from-emerald-500 to-teal-500",
+        [
           { key: 'therapeutic_goals', label: 'Objetivos terapêuticos' },
           { key: 'treatment_approach', label: 'Abordagem de tratamento' }
         ]

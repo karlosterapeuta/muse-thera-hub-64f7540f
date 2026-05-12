@@ -50,7 +50,10 @@ const basicDatabaseFields = [
   // Campos da História Sonora e Musical Detalhada
   'pregnancy_sound_experiences', 'mother_movements_songs', 'childhood_sound_environment',
   'parents_sound_reactions', 'typical_house_sounds', 'night_body_sounds',
-  'family_musical_history', 'patient_musical_history'
+  'family_musical_history', 'patient_musical_history',
+  // Identificação/Encaminhamento e Medicação adicionais
+  'diagnosis_details', 'cid_code', 'clinical_details',
+  'medication_schedule', 'medication_effects'
 ];
 
 // Campos que podem não existir (dependem da migração)
