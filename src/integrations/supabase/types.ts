@@ -121,11 +121,14 @@ export type Database = {
           children_repertoire: boolean | null
           choral_activities: boolean | null
           chronic_encephalopathy: boolean | null
+          cid_code: string | null
           classical_music: boolean | null
+          clinical_details: string | null
           country_music: boolean | null
           crawling_pattern: boolean | null
           created_at: string | null
           current_medication: string | null
+          diagnosis_details: string | null
           down_syndrome: boolean | null
           echolalia: boolean | null
           emotional_ability: boolean | null
@@ -146,6 +149,8 @@ export type Database = {
           legal_guardian: string | null
           low_frustration_tolerance: boolean | null
           main_clinical_demand: string | null
+          medication_effects: string | null
+          medication_schedule: string | null
           mother_movements_songs: string | null
           musical_education: boolean | null
           night_body_sounds: string | null
@@ -208,11 +213,14 @@ export type Database = {
           children_repertoire?: boolean | null
           choral_activities?: boolean | null
           chronic_encephalopathy?: boolean | null
+          cid_code?: string | null
           classical_music?: boolean | null
+          clinical_details?: string | null
           country_music?: boolean | null
           crawling_pattern?: boolean | null
           created_at?: string | null
           current_medication?: string | null
+          diagnosis_details?: string | null
           down_syndrome?: boolean | null
           echolalia?: boolean | null
           emotional_ability?: boolean | null
@@ -233,6 +241,8 @@ export type Database = {
           legal_guardian?: string | null
           low_frustration_tolerance?: boolean | null
           main_clinical_demand?: string | null
+          medication_effects?: string | null
+          medication_schedule?: string | null
           mother_movements_songs?: string | null
           musical_education?: boolean | null
           night_body_sounds?: string | null
@@ -295,11 +305,14 @@ export type Database = {
           children_repertoire?: boolean | null
           choral_activities?: boolean | null
           chronic_encephalopathy?: boolean | null
+          cid_code?: string | null
           classical_music?: boolean | null
+          clinical_details?: string | null
           country_music?: boolean | null
           crawling_pattern?: boolean | null
           created_at?: string | null
           current_medication?: string | null
+          diagnosis_details?: string | null
           down_syndrome?: boolean | null
           echolalia?: boolean | null
           emotional_ability?: boolean | null
@@ -320,6 +333,8 @@ export type Database = {
           legal_guardian?: string | null
           low_frustration_tolerance?: boolean | null
           main_clinical_demand?: string | null
+          medication_effects?: string | null
+          medication_schedule?: string | null
           mother_movements_songs?: string | null
           musical_education?: boolean | null
           night_body_sounds?: string | null
