@@ -1,0 +1,21 @@
+
+ALTER TABLE public.anamnesis
+  ADD COLUMN IF NOT EXISTS cerebral_palsy boolean DEFAULT false,
+  ADD COLUMN IF NOT EXISTS epilepsy boolean DEFAULT false,
+  ADD COLUMN IF NOT EXISTS williams_syndrome boolean DEFAULT false,
+  ADD COLUMN IF NOT EXISTS fragile_x_syndrome boolean DEFAULT false,
+  ADD COLUMN IF NOT EXISTS rett_syndrome boolean DEFAULT false,
+  ADD COLUMN IF NOT EXISTS alzheimer boolean DEFAULT false,
+  ADD COLUMN IF NOT EXISTS parkinson boolean DEFAULT false,
+  ADD COLUMN IF NOT EXISTS depression boolean DEFAULT false,
+  ADD COLUMN IF NOT EXISTS bipolar_disorder boolean DEFAULT false,
+  ADD COLUMN IF NOT EXISTS aba_therapy boolean DEFAULT false,
+  ADD COLUMN IF NOT EXISTS sensory_integration boolean DEFAULT false,
+  ADD COLUMN IF NOT EXISTS psychomotricity boolean DEFAULT false,
+  ADD COLUMN IF NOT EXISTS nutrition boolean DEFAULT false,
+  ADD COLUMN IF NOT EXISTS music_therapy boolean DEFAULT false,
+  ADD COLUMN IF NOT EXISTS therapy_frequency text,
+  ADD COLUMN IF NOT EXISTS therapy_observations text,
+  ADD COLUMN IF NOT EXISTS instruments_played text,
+  ADD COLUMN IF NOT EXISTS music_practice_time text,
+  ADD COLUMN IF NOT EXISTS family_support_network text;

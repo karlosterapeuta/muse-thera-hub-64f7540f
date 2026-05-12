@@ -522,7 +522,8 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         [
           { key: 'school_enrollment', label: 'Matrícula escolar' },
           { key: 'school_adaptation', label: 'Adaptação escolar' },
-          { key: 'extracurricular_activities', label: 'Atividades extracurriculares' }
+          { key: 'extracurricular_activities', label: 'Atividades extracurriculares' },
+          { key: 'family_support_network', label: 'Rede de Apoio Familiar' }
         ]
       )}
 
@@ -534,6 +535,26 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
           { key: 'current_medication', label: 'Medicação Atual' },
           { key: 'medication_schedule', label: 'Horários e Dosagens' },
           { key: 'medication_effects', label: 'Efeitos Observados' }
+        ]
+      )}
+
+      {renderTextSection(
+        "Acompanhamento Terapêutico",
+        Heart,
+        "from-rose-500 to-pink-500",
+        [
+          { key: 'therapy_frequency', label: 'Frequência das Terapias' },
+          { key: 'therapy_observations', label: 'Observações sobre Evolução' }
+        ]
+      )}
+
+      {renderTextSection(
+        "Detalhes Musicais do Paciente",
+        Music,
+        "from-violet-500 to-fuchsia-500",
+        [
+          { key: 'instruments_played', label: 'Instrumento(s) que toca/tocou' },
+          { key: 'music_practice_time', label: 'Tempo de Prática Musical' }
         ]
       )}
 
@@ -552,14 +573,19 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         "Terapias e Suporte",
         Heart,
         "from-pink-500 to-rose-500",
-        ['psychological_support', 'psychopedagogical', 'occupational_therapy', 'physiotherapy', 'equine_therapy', 'speech_therapy'],
+        ['psychological_support', 'psychopedagogical', 'occupational_therapy', 'physiotherapy', 'equine_therapy', 'speech_therapy', 'aba_therapy', 'sensory_integration', 'psychomotricity', 'nutrition', 'music_therapy'],
         {
           psychological_support: 'Apoio psicológico',
           psychopedagogical: 'Psicopedagógico',
           occupational_therapy: 'Terapia ocupacional',
           physiotherapy: 'Fisioterapia',
           equine_therapy: 'Equoterapia',
-          speech_therapy: 'Fonoaudiologia'
+          speech_therapy: 'Fonoaudiologia',
+          aba_therapy: 'Terapia ABA',
+          sensory_integration: 'Integração Sensorial',
+          psychomotricity: 'Psicomotricidade',
+          nutrition: 'Nutrição',
+          music_therapy: 'Musicoterapia'
         }
       )}
 
@@ -679,7 +705,7 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         "Transtornos e Condições",
         Brain,
         "from-orange-500 to-red-500",
-        ['autism_spectrum', 'down_syndrome', 'intellectual_disability', 'other_diagnoses', 'adhd', 'chronic_encephalopathy', 'anxiety_disorders'],
+        ['autism_spectrum', 'down_syndrome', 'intellectual_disability', 'other_diagnoses', 'adhd', 'chronic_encephalopathy', 'anxiety_disorders', 'cerebral_palsy', 'epilepsy', 'williams_syndrome', 'fragile_x_syndrome', 'rett_syndrome', 'alzheimer', 'parkinson', 'depression', 'bipolar_disorder'],
         {
           autism_spectrum: 'Espectro autista',
           down_syndrome: 'Síndrome de Down',
@@ -687,7 +713,16 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
           other_diagnoses: 'Outros diagnósticos',
           adhd: 'TDAH',
           chronic_encephalopathy: 'Encefalopatia crônica',
-          anxiety_disorders: 'Transtornos de ansiedade'
+          anxiety_disorders: 'Transtornos de ansiedade',
+          cerebral_palsy: 'Paralisia Cerebral',
+          epilepsy: 'Epilepsia',
+          williams_syndrome: 'Síndrome de Williams',
+          fragile_x_syndrome: 'Síndrome X Frágil',
+          rett_syndrome: 'Síndrome de Rett',
+          alzheimer: 'Doença de Alzheimer',
+          parkinson: 'Doença de Parkinson',
+          depression: 'Depressão',
+          bipolar_disorder: 'Transtorno Bipolar'
         }
       )}
 

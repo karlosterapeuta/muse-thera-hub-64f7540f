@@ -53,15 +53,21 @@ const basicDatabaseFields = [
   'family_musical_history', 'patient_musical_history',
   // Identificação/Encaminhamento e Medicação adicionais
   'diagnosis_details', 'cid_code', 'clinical_details',
-  'medication_schedule', 'medication_effects'
+  'medication_schedule', 'medication_effects',
+  // Diagnósticos adicionais
+  'cerebral_palsy', 'epilepsy', 'williams_syndrome', 'fragile_x_syndrome',
+  'rett_syndrome', 'alzheimer', 'parkinson', 'depression', 'bipolar_disorder',
+  // Terapias adicionais
+  'aba_therapy', 'sensory_integration', 'psychomotricity', 'nutrition', 'music_therapy',
+  'therapy_frequency', 'therapy_observations',
+  // Perfil musical adicional
+  'instruments_played', 'music_practice_time',
+  // Contexto social adicional
+  'family_support_network'
 ];
 
 // Campos que podem não existir (dependem da migração)
-const optionalDatabaseFields = [
-  'cerebral_palsy', 'fragile_x_syndrome', 'epilepsy', 'williams_syndrome', 
-  'depression', 'bipolar_disorder', 'rett_syndrome', 'aba_therapy', 
-  'psychomotricity', 'music_therapy', 'nutrition', 'sensory_integration', 'alzheimer', 'parkinson'
-];
+const optionalDatabaseFields: string[] = [];
 
 // Cache para colunas verificadas
 let columnCheckCache: string[] | null = null;

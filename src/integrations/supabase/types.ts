@@ -102,20 +102,24 @@ export type Database = {
       }
       anamnesis: {
         Row: {
+          aba_therapy: boolean | null
           active_musical_listening: boolean | null
           active_sound_search: boolean | null
           adhd: boolean | null
           adverse_sound_reactivity: boolean | null
+          alzheimer: boolean | null
           anxiety: boolean | null
           anxiety_disorders: boolean | null
           auditory_hypersensitivity: boolean | null
           autism_spectrum: boolean | null
           autonomous_walking: boolean | null
           babbling: boolean | null
+          bipolar_disorder: boolean | null
           body_expression: boolean | null
           body_musical_expression: boolean | null
           brazilian_popular: boolean | null
           broad_motor_dev: boolean | null
+          cerebral_palsy: boolean | null
           cervical_control: boolean | null
           childhood_sound_environment: string | null
           children_repertoire: boolean | null
@@ -128,22 +132,27 @@ export type Database = {
           crawling_pattern: boolean | null
           created_at: string | null
           current_medication: string | null
+          depression: boolean | null
           diagnosis_details: string | null
           down_syndrome: boolean | null
           echolalia: boolean | null
           emotional_ability: boolean | null
+          epilepsy: boolean | null
           equine_therapy: boolean | null
           extracurricular_activities: string | null
           family_musical_history: string | null
           family_relationship: string | null
+          family_support_network: string | null
           fine_motor_dev: boolean | null
           first_words: boolean | null
+          fragile_x_syndrome: boolean | null
           frequent_crying: boolean | null
           heteroaggressive: boolean | null
           id: string
           independent_sitting: boolean | null
           instrumental_exploration: boolean | null
           instrumental_practice: boolean | null
+          instruments_played: string | null
           intellectual_disability: boolean | null
           irritability: boolean | null
           legal_guardian: string | null
@@ -152,15 +161,19 @@ export type Database = {
           medication_effects: string | null
           medication_schedule: string | null
           mother_movements_songs: string | null
+          music_practice_time: string | null
+          music_therapy: boolean | null
           musical_education: boolean | null
           night_body_sounds: string | null
           no_musical_experience: boolean | null
           nominal_call_response: boolean | null
           nonverbal_communication: boolean | null
+          nutrition: boolean | null
           occupational_therapy: boolean | null
           other_diagnoses: boolean | null
           other_musical_genres: boolean | null
           parents_sound_reactions: string | null
+          parkinson: boolean | null
           patient_id: string | null
           patient_musical_history: string | null
           peer_interaction: boolean | null
@@ -169,13 +182,16 @@ export type Database = {
           pregnancy_sound_experiences: string | null
           professional_id: string | null
           psychological_support: boolean | null
+          psychomotricity: boolean | null
           psychopedagogical: boolean | null
           referral_professional: string | null
           restricted_interests: boolean | null
+          rett_syndrome: boolean | null
           rock_genre: boolean | null
           sacred_gospel: boolean | null
           school_adaptation: string | null
           school_enrollment: string | null
+          sensory_integration: boolean | null
           shared_play: boolean | null
           simple_phrases: boolean | null
           social_isolation: boolean | null
@@ -186,28 +202,35 @@ export type Database = {
           spontaneous_vocal: boolean | null
           stereotyped_behavior: boolean | null
           therapeutic_goals: string | null
+          therapy_frequency: string | null
+          therapy_observations: string | null
           treatment_approach: string | null
           typical_house_sounds: string | null
           updated_at: string | null
           verbal_language_absence: boolean | null
           visual_contact: boolean | null
           vocal_expression: boolean | null
+          williams_syndrome: boolean | null
         }
         Insert: {
+          aba_therapy?: boolean | null
           active_musical_listening?: boolean | null
           active_sound_search?: boolean | null
           adhd?: boolean | null
           adverse_sound_reactivity?: boolean | null
+          alzheimer?: boolean | null
           anxiety?: boolean | null
           anxiety_disorders?: boolean | null
           auditory_hypersensitivity?: boolean | null
           autism_spectrum?: boolean | null
           autonomous_walking?: boolean | null
           babbling?: boolean | null
+          bipolar_disorder?: boolean | null
           body_expression?: boolean | null
           body_musical_expression?: boolean | null
           brazilian_popular?: boolean | null
           broad_motor_dev?: boolean | null
+          cerebral_palsy?: boolean | null
           cervical_control?: boolean | null
           childhood_sound_environment?: string | null
           children_repertoire?: boolean | null
@@ -220,22 +243,27 @@ export type Database = {
           crawling_pattern?: boolean | null
           created_at?: string | null
           current_medication?: string | null
+          depression?: boolean | null
           diagnosis_details?: string | null
           down_syndrome?: boolean | null
           echolalia?: boolean | null
           emotional_ability?: boolean | null
+          epilepsy?: boolean | null
           equine_therapy?: boolean | null
           extracurricular_activities?: string | null
           family_musical_history?: string | null
           family_relationship?: string | null
+          family_support_network?: string | null
           fine_motor_dev?: boolean | null
           first_words?: boolean | null
+          fragile_x_syndrome?: boolean | null
           frequent_crying?: boolean | null
           heteroaggressive?: boolean | null
           id?: string
           independent_sitting?: boolean | null
           instrumental_exploration?: boolean | null
           instrumental_practice?: boolean | null
+          instruments_played?: string | null
           intellectual_disability?: boolean | null
           irritability?: boolean | null
           legal_guardian?: string | null
@@ -244,15 +272,19 @@ export type Database = {
           medication_effects?: string | null
           medication_schedule?: string | null
           mother_movements_songs?: string | null
+          music_practice_time?: string | null
+          music_therapy?: boolean | null
           musical_education?: boolean | null
           night_body_sounds?: string | null
           no_musical_experience?: boolean | null
           nominal_call_response?: boolean | null
           nonverbal_communication?: boolean | null
+          nutrition?: boolean | null
           occupational_therapy?: boolean | null
           other_diagnoses?: boolean | null
           other_musical_genres?: boolean | null
           parents_sound_reactions?: string | null
+          parkinson?: boolean | null
           patient_id?: string | null
           patient_musical_history?: string | null
           peer_interaction?: boolean | null
@@ -261,13 +293,16 @@ export type Database = {
           pregnancy_sound_experiences?: string | null
           professional_id?: string | null
           psychological_support?: boolean | null
+          psychomotricity?: boolean | null
           psychopedagogical?: boolean | null
           referral_professional?: string | null
           restricted_interests?: boolean | null
+          rett_syndrome?: boolean | null
           rock_genre?: boolean | null
           sacred_gospel?: boolean | null
           school_adaptation?: string | null
           school_enrollment?: string | null
+          sensory_integration?: boolean | null
           shared_play?: boolean | null
           simple_phrases?: boolean | null
           social_isolation?: boolean | null
@@ -278,28 +313,35 @@ export type Database = {
           spontaneous_vocal?: boolean | null
           stereotyped_behavior?: boolean | null
           therapeutic_goals?: string | null
+          therapy_frequency?: string | null
+          therapy_observations?: string | null
           treatment_approach?: string | null
           typical_house_sounds?: string | null
           updated_at?: string | null
           verbal_language_absence?: boolean | null
           visual_contact?: boolean | null
           vocal_expression?: boolean | null
+          williams_syndrome?: boolean | null
         }
         Update: {
+          aba_therapy?: boolean | null
           active_musical_listening?: boolean | null
           active_sound_search?: boolean | null
           adhd?: boolean | null
           adverse_sound_reactivity?: boolean | null
+          alzheimer?: boolean | null
           anxiety?: boolean | null
           anxiety_disorders?: boolean | null
           auditory_hypersensitivity?: boolean | null
           autism_spectrum?: boolean | null
           autonomous_walking?: boolean | null
           babbling?: boolean | null
+          bipolar_disorder?: boolean | null
           body_expression?: boolean | null
           body_musical_expression?: boolean | null
           brazilian_popular?: boolean | null
           broad_motor_dev?: boolean | null
+          cerebral_palsy?: boolean | null
           cervical_control?: boolean | null
           childhood_sound_environment?: string | null
           children_repertoire?: boolean | null
@@ -312,22 +354,27 @@ export type Database = {
           crawling_pattern?: boolean | null
           created_at?: string | null
           current_medication?: string | null
+          depression?: boolean | null
           diagnosis_details?: string | null
           down_syndrome?: boolean | null
           echolalia?: boolean | null
           emotional_ability?: boolean | null
+          epilepsy?: boolean | null
           equine_therapy?: boolean | null
           extracurricular_activities?: string | null
           family_musical_history?: string | null
           family_relationship?: string | null
+          family_support_network?: string | null
           fine_motor_dev?: boolean | null
           first_words?: boolean | null
+          fragile_x_syndrome?: boolean | null
           frequent_crying?: boolean | null
           heteroaggressive?: boolean | null
           id?: string
           independent_sitting?: boolean | null
           instrumental_exploration?: boolean | null
           instrumental_practice?: boolean | null
+          instruments_played?: string | null
           intellectual_disability?: boolean | null
           irritability?: boolean | null
           legal_guardian?: string | null
@@ -336,15 +383,19 @@ export type Database = {
           medication_effects?: string | null
           medication_schedule?: string | null
           mother_movements_songs?: string | null
+          music_practice_time?: string | null
+          music_therapy?: boolean | null
           musical_education?: boolean | null
           night_body_sounds?: string | null
           no_musical_experience?: boolean | null
           nominal_call_response?: boolean | null
           nonverbal_communication?: boolean | null
+          nutrition?: boolean | null
           occupational_therapy?: boolean | null
           other_diagnoses?: boolean | null
           other_musical_genres?: boolean | null
           parents_sound_reactions?: string | null
+          parkinson?: boolean | null
           patient_id?: string | null
           patient_musical_history?: string | null
           peer_interaction?: boolean | null
@@ -353,13 +404,16 @@ export type Database = {
           pregnancy_sound_experiences?: string | null
           professional_id?: string | null
           psychological_support?: boolean | null
+          psychomotricity?: boolean | null
           psychopedagogical?: boolean | null
           referral_professional?: string | null
           restricted_interests?: boolean | null
+          rett_syndrome?: boolean | null
           rock_genre?: boolean | null
           sacred_gospel?: boolean | null
           school_adaptation?: string | null
           school_enrollment?: string | null
+          sensory_integration?: boolean | null
           shared_play?: boolean | null
           simple_phrases?: boolean | null
           social_isolation?: boolean | null
@@ -370,12 +424,15 @@ export type Database = {
           spontaneous_vocal?: boolean | null
           stereotyped_behavior?: boolean | null
           therapeutic_goals?: string | null
+          therapy_frequency?: string | null
+          therapy_observations?: string | null
           treatment_approach?: string | null
           typical_house_sounds?: string | null
           updated_at?: string | null
           verbal_language_absence?: boolean | null
           visual_contact?: boolean | null
           vocal_expression?: boolean | null
+          williams_syndrome?: boolean | null
         }
         Relationships: [
           {
