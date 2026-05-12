@@ -125,12 +125,15 @@ export function FinalReviewSection({
 
     setIsUploadingLogo(true);
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Usuário não autenticado");
+
       const fileExt = file.name.split('.').pop();
-      const fileName = `logo-${Date.now()}.${fileExt}`;
+      const fileName = `${user.id}/logo-${Date.now()}.${fileExt}`;
       
       const { data, error } = await supabase.storage
         .from('report-logos')
-        .upload(fileName, file);
+        .upload(fileName, file, { upsert: true });
 
       if (error) throw error;
 
