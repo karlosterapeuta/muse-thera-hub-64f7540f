@@ -1,78 +1,33 @@
-## Diagnóstico
+## Problema
 
-Os logs do Supabase Auth mostram **dezenas de eventos `token_revoked` por segundo** vindos de `/creator-login` e culminando em **HTTP 429 (rate limit)**. Quando o refresh token falha por 429, o SDK do Supabase derruba a sessão silenciosamente — exatamente o que você descreve: "desloga sozinho, sem mensagem".
+Os blocos **"Identificação e Encaminhamento"** e **"Medicação em Uso"** não aparecem na anamnese salva nem no PDF exportado porque:
 
-A causa é uma **avalanche de chamadas paralelas a `supabase.auth.getUser()`** disparada simultaneamente por vários componentes ao montar:
-
-- `InstantAuthChecker` (em `App.tsx`)
-- `AuthStatusChecker` (em `App.tsx`, refaz checagem a cada 1 min)
-- `Layout` (route guard com getSession + profile)
-- `Index.tsx` (verifica sessão + profile)
-- `useAdmin` (getUser + RPC)
-- `usePatientsData`, `useDashboardCounts`, `useProfessionalData`, `useCourses*`, `UserExpirationWarning`, `PushNotificationManager`, `SidebarFooter`, `creator/dashboard`, `creator/login` — todos chamam `getUser()` ao montar.
-
-Cada `getUser()` força um round-trip ao servidor e, se o token estiver perto de expirar, dispara um refresh. Múltiplas instâncias paralelas tentam refrescar o mesmo refresh token → o servidor revoga o anterior, retorna 429, e a sessão é descartada localmente. Resultado: redirect silencioso para `/login` em qualquer navegação.
-
-Além disso, **`Index.tsx`** faz `await supabase.auth.signOut()` se o profile vier nulo (transient) — sem mostrar toast, completando o quadro do "logout sem mensagem".
+1. **Colunas inexistentes no banco** — os campos `diagnosis_details`, `cid_code`, `clinical_details`, `medication_schedule` e `medication_effects` são preenchidos no formulário mas a tabela `anamnesis` não possui essas colunas. O `filterDatabaseFields` em `AnamnesisFormWrapper.tsx` descarta tudo que não existe no banco, então esses dados nunca são gravados.
+2. **`AnamnesisView` desatualizado** — mostra "Informações do Paciente" e "Tratamento e Medicação" sem renderizar `diagnosis_details`, `cid_code`, `medication_schedule` nem `medication_effects` (mesmo que existissem no banco).
+3. **PDF** — o gerador (`anamnesisePDFGenerator.ts`) já renderiza esses campos, então só falta a persistência funcionar.
 
 ## Mudanças
 
-### 1. Trocar `getUser()` por `getSession()` em todo o código cliente
-`getSession()` lê do localStorage (sem rede, sem refresh forçado). `getUser()` só é necessário quando se exige validação server-side do JWT — o que **não é o nosso caso** em queries de perfil/contadores/etc., já que RLS já valida.
+### 1. Migração no banco (Lovable Cloud)
+Adicionar colunas faltantes na tabela `public.anamnesis`:
+- `diagnosis_details text`
+- `cid_code text`
+- `clinical_details text`
+- `medication_schedule text`
+- `medication_effects text`
 
-Arquivos a converter:
-- `src/hooks/use-admin.ts`
-- `src/hooks/usePatientsData.ts` (2 chamadas)
-- `src/hooks/useDashboardCounts.ts` (4 chamadas)
-- `src/hooks/useProfessionalData.ts`
-- `src/hooks/useCourses.ts`, `useCoursesWithStats.ts`, `useCourseProgress.ts` (4 chamadas)
-- `src/components/auth/UserExpirationWarning.tsx`
-- `src/components/sidebar/hooks/useSidebarData.ts`
-- `src/pages/creator/login.tsx` (verificação de sessão pré-login)
-- `src/pages/creator/dashboard.tsx`
+### 2. `src/pages/anamnesis/AnamnesisFormWrapper.tsx`
+Incluir os 5 novos campos no array `basicDatabaseFields` para que sejam reconhecidos como persistíveis e o cache de colunas seja invalidado.
 
-Padrão:
-```ts
-const { data: { session } } = await supabase.auth.getSession();
-const user = session?.user;
-if (!user) { /* sair sem signOut */ }
-```
+### 3. `src/pages/anamnesis/components/AnamnesisView.tsx`
+- Renomear o bloco "Informações do Paciente" para **"Identificação e Encaminhamento"** e adicionar `diagnosis_details` e `cid_code`.
+- Renomear "Tratamento e Medicação" para **"Medicação em Uso"** e exibir `current_medication`, `medication_schedule` e `medication_effects` (mover `therapeutic_goals`/`treatment_approach` para um bloco separado "Objetivos Terapêuticos").
+- Garantir que os blocos apareçam quando qualquer um dos campos estiver preenchido.
 
-### 2. Consolidar os 3 auth-checkers redundantes
-Remover `AuthStatusChecker` (intervalo de 1 min só piora a tempestade) e simplificar `InstantAuthChecker` para **apenas reagir a `SIGNED_OUT`** sem chamar `getUser()`/profile na montagem. O `Layout` já faz a validação completa por rota e é suficiente.
+### 4. Validação
+Após implementar:
+- Criar/editar uma anamnese, preencher os campos das seções 1 e 3, salvar.
+- Reabrir a visualização → confirmar que os blocos aparecem com os dados.
+- Exportar o PDF → confirmar que os blocos aparecem.
 
-- `src/App.tsx` — remover `<AuthStatusChecker />` e `<InstantAuthChecker />` (Layout assume).
-- Manter `src/components/auth/AuthStatusChecker.tsx` no projeto (caso seja reusado depois) mas desligar do app.
-
-### 3. Não chamar `signOut()` em estados transitórios
-- `src/pages/Index.tsx`: usar `.maybeSingle()`; se `profile` vier nulo, **navegar para `/dashboard`** (Layout decide), nunca `signOut()` silencioso.
-
-### 4. Reduzir trabalho no startup do Dashboard
-- `src/pages/Dashboard/*` e seus hooks só executam queries depois que `getSession()` retornar `session?.user`. Isso evita a explosão inicial de `getUser()` paralelos enquanto a sessão ainda está sendo hidratada do storage.
-
-### 5. Validação
-Após aplicar:
-- Logar com `musicoterapeutakarlos@gmail.com` e navegar entre páginas — não deve sair sozinho.
-- Conferir Auth logs do Supabase: a quantidade de `token_revoked` por minuto deve cair drasticamente e não deve aparecer 429.
-
-## Detalhes técnicos
-
-```text
-ANTES (montagem do Dashboard):
-  Layout.getSession ─┐
-  InstantAuth.getSession ─┤
-  AuthStatusChecker.getSession ─┤  → 6+ requests
-  useAdmin.getUser ─┤              → /user + refresh
-  useDashboardCountsx4.getUser ─┤  → 4× /user
-  usePatientsData.getUser ─┤
-  useProfessionalData.getUser ┘
-  → /token refresh storm → 429 → SIGNED_OUT silencioso
-
-DEPOIS:
-  Layout.getSession (única fonte de verdade) → 1 leitura local
-  hooks usam getSession (sem rede)
-  InstantAuthChecker só escuta SIGNED_OUT
-  → zero refreshes em paralelo
-```
-
-Sem mudança de schema, sem mudança em Edge Functions, sem alterar comportamento de bloqueio de usuários inativos/expirados (continua sendo feito pelo `Layout`).
+Não vou alterar a lógica de outras seções nem mexer no formulário em si — apenas habilitar a persistência e a exibição dos campos que já existem na UI.
