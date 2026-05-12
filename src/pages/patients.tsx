@@ -42,7 +42,7 @@ import { PatientList } from "./components/patients/PatientList";
 import { PatientCard } from "./components/patients/PatientCard";
 import { AddPatientDialog, EditPatientDialog } from "./components/patients/PatientDialogs";
 import { ViewAnamnesisDialog } from "./components/patients/ViewAnamnesisDialog";
-import { usePatientsData, useDeletePatient, useDeleteAllPatients, Patient } from "@/hooks/usePatientsData";
+import { PATIENTS_QUERY_KEY, usePatientsData, useDeletePatient, useDeleteAllPatients, Patient } from "@/hooks/usePatientsData";
 import { useQueryClient } from "@tanstack/react-query";
 
 type Anamnesis = {
@@ -101,7 +101,7 @@ export default function PatientsPage() {
   };
 
   const loadPatients = () => {
-    queryClient.invalidateQueries({ queryKey: ["patients"] });
+    queryClient.invalidateQueries({ queryKey: PATIENTS_QUERY_KEY });
     queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
   };
 

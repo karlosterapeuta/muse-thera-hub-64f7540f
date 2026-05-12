@@ -16,11 +16,13 @@ export type Patient = {
   professional_id: string;
 };
 
+export const PATIENTS_QUERY_KEY = ["patients", "list"] as const;
+
 export const usePatientsData = () => {
   const { toast } = useToast();
   
   return useQuery({
-    queryKey: ["patients"],
+    queryKey: PATIENTS_QUERY_KEY,
     queryFn: async (): Promise<Patient[]> => {
       const { data: { session } } = await supabase.auth.getSession();
       const user = session?.user;
@@ -74,7 +76,7 @@ export const useDeletePatient = () => {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["patients"] });
+      queryClient.invalidateQueries({ queryKey: PATIENTS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
       toast({
         title: "Sucesso",
@@ -114,7 +116,7 @@ export const useDeleteAllPatients = () => {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["patients"] });
+      queryClient.invalidateQueries({ queryKey: PATIENTS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
       toast({
         title: "Sucesso",
