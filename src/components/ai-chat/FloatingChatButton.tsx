@@ -5,7 +5,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import museteraBotGreeting from "@/assets/musetera-bot-greeting.png";
+import museteraBotGreeting from "@/assets/musetera-mascot.png";
 
 interface FloatingChatButtonProps {
   onClick: () => void;
