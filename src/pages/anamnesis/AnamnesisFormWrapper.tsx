@@ -323,7 +323,7 @@ export default function AnamnesisFormWrapper({
         console.log("🔄 Atualizando anamnese existente:", existingAnamnesisId);
         result = await supabase
           .from("anamnesis")
-          .update(anamnesisData)
+          .update(anamnesisData as any)
           .eq("id", existingAnamnesisId);
       } else {
         console.log("➕ Criando nova anamnese");
