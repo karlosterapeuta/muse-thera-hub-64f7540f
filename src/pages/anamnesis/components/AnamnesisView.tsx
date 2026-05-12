@@ -573,14 +573,19 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         "Terapias e Suporte",
         Heart,
         "from-pink-500 to-rose-500",
-        ['psychological_support', 'psychopedagogical', 'occupational_therapy', 'physiotherapy', 'equine_therapy', 'speech_therapy'],
+        ['psychological_support', 'psychopedagogical', 'occupational_therapy', 'physiotherapy', 'equine_therapy', 'speech_therapy', 'aba_therapy', 'sensory_integration', 'psychomotricity', 'nutrition', 'music_therapy'],
         {
           psychological_support: 'Apoio psicológico',
           psychopedagogical: 'Psicopedagógico',
           occupational_therapy: 'Terapia ocupacional',
           physiotherapy: 'Fisioterapia',
           equine_therapy: 'Equoterapia',
-          speech_therapy: 'Fonoaudiologia'
+          speech_therapy: 'Fonoaudiologia',
+          aba_therapy: 'Terapia ABA',
+          sensory_integration: 'Integração Sensorial',
+          psychomotricity: 'Psicomotricidade',
+          nutrition: 'Nutrição',
+          music_therapy: 'Musicoterapia'
         }
       )}
 
