@@ -95,7 +95,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
   const createRecurringRecord = useCreateRecurringRecord();
   
   const { data: patients = [], isLoading: patientsLoading } = useQuery({
-    queryKey: ["patients"],
+    queryKey: ["financial-patients"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       
