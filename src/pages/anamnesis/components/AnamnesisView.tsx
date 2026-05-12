@@ -522,7 +522,8 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         [
           { key: 'school_enrollment', label: 'Matrícula escolar' },
           { key: 'school_adaptation', label: 'Adaptação escolar' },
-          { key: 'extracurricular_activities', label: 'Atividades extracurriculares' }
+          { key: 'extracurricular_activities', label: 'Atividades extracurriculares' },
+          { key: 'family_support_network', label: 'Rede de Apoio Familiar' }
         ]
       )}
 
@@ -534,6 +535,26 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
           { key: 'current_medication', label: 'Medicação Atual' },
           { key: 'medication_schedule', label: 'Horários e Dosagens' },
           { key: 'medication_effects', label: 'Efeitos Observados' }
+        ]
+      )}
+
+      {renderTextSection(
+        "Acompanhamento Terapêutico",
+        Heart,
+        "from-rose-500 to-pink-500",
+        [
+          { key: 'therapy_frequency', label: 'Frequência das Terapias' },
+          { key: 'therapy_observations', label: 'Observações sobre Evolução' }
+        ]
+      )}
+
+      {renderTextSection(
+        "Detalhes Musicais do Paciente",
+        Music,
+        "from-violet-500 to-fuchsia-500",
+        [
+          { key: 'instruments_played', label: 'Instrumento(s) que toca/tocou' },
+          { key: 'music_practice_time', label: 'Tempo de Prática Musical' }
         ]
       )}
 
