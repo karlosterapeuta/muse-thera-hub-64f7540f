@@ -6,6 +6,7 @@ import { Music, User, Calendar, FileText, Target, Activity, TrendingUp, Lightbul
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import type { ReportData } from '@/data/musicoterapiaTemplate';
+import { musicoterapiaTemplate, reportSections, scaleFieldIds } from '@/data/musicoterapiaTemplate';
 
 interface MusicoterapiaPreviewProps {
   reportData: ReportData;
