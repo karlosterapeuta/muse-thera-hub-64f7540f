@@ -55,6 +55,7 @@ import { SessionStatusBadge } from "./components/SessionStatusBadge";
 import { FinancialStatCards } from "./components/FinancialStatCards";
 import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
 import { parseDateLocal } from "@/utils/dateUtils";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function FinancialRecords() {
   const navigate = useNavigate();
