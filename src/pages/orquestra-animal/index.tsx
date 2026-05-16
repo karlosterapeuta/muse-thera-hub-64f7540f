@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { orchestraAnimals, type Section } from "./data/orchestraAnimals";
 import { orchestraAudio } from "./utils/orchestraAudioEngine";
 import { AnimalMusician } from "./components/AnimalMusician";
