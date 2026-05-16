@@ -1,12 +1,29 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -23,26 +40,31 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { format, parseISO, startOfWeek, endOfWeek, addDays, isSameDay, isToday } from "date-fns";
+import { format, startOfWeek, endOfWeek, addDays, isSameDay, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { PlusIcon, MoreHorizontalIcon, PencilIcon, TrashIcon, SearchIcon, ClockIcon, CalendarIcon, UserIcon, BuildingIcon, DollarSignIcon, InfoIcon, ListIcon, TableIcon, LayoutGridIcon, BarChart2Icon, Trash2Icon, PrinterIcon, PinIcon } from "lucide-react";
+import { PlusIcon, MoreHorizontalIcon, PencilIcon, TrashIcon, SearchIcon, ClockIcon, CalendarIcon, UserIcon, BuildingIcon, DollarSignIcon, InfoIcon, ListIcon, TableIcon, LayoutGridIcon, BarChart2Icon, Trash2Icon, PrinterIcon, PinIcon, DownloadIcon, FilterIcon } from "lucide-react";
 import { useFinancialRecords, useDeleteFinancialRecord, useClearAllFinancialRecords } from "./hooks/useFinancialData";
 import { FinancialRecordForm } from "./components/FinancialRecordForm";
 import { DateRangeFilter } from "./components/DateRangeFilter";
-import { PeriodFilter, FinancialRecord } from "./types";
+import { PeriodFilter, FinancialRecord, SessionStatus } from "./types";
 import { useToast } from "@/hooks/use-toast";
 import { ClinicForm } from "./components/ClinicForm";
 import { RecurringRecordIndicator } from "./components/RecurringRecordIndicator";
 import { RecurringRecordActions } from "./components/RecurringRecordActions";
 import { SessionStatusBadge } from "./components/SessionStatusBadge";
+import { FinancialStatCards } from "./components/FinancialStatCards";
 import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
+import { parseDateLocal } from "@/utils/dateUtils";
 
 export default function FinancialRecords() {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
   const [dateFilter, setDateFilter] = useState<PeriodFilter | undefined>();
+  const [searchInput, setSearchInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [clinicFilter, setClinicFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [formOpen, setFormOpen] = useState(false);
   const [clinicFormOpen, setClinicFormOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<FinancialRecord | undefined>();
@@ -50,9 +72,16 @@ export default function FinancialRecords() {
   const [recordToDelete, setRecordToDelete] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"list" | "fixed">("fixed");
   const [clearAllDialogOpen, setClearAllDialogOpen] = useState(false);
+  const [clearAllConfirmText, setClearAllConfirmText] = useState("");
   const isMobile = useIsMobile();
   const isTablet = useIsTablet();
-  
+
+  // Debounce do campo de busca
+  useEffect(() => {
+    const t = setTimeout(() => setSearchTerm(searchInput.trim()), 300);
+    return () => clearTimeout(t);
+  }, [searchInput]);
+
   const { data: records = [], isLoading, refetch } = useFinancialRecords(dateFilter);
   const { data: allRecords = [] } = useFinancialRecords(undefined);
   const deleteRecord = useDeleteFinancialRecord();
