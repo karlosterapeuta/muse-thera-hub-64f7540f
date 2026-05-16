@@ -22,11 +22,17 @@ export function preloadAnimalSounds(animals: AnimalMusician[]) {
   });
 }
 
+const activeAudios = new Set<HTMLAudioElement>();
+const activeSynths = new Set<{ osc: OscillatorNode; gain: GainNode }>();
+const activeTimeouts = new Set<ReturnType<typeof setTimeout>>();
+
 function playUrl(url: string, volume = 1): Promise<void> {
   // Clone so overlapping clicks don't cut each other off
   const base = getAudio(url);
   const el = base.cloneNode(true) as HTMLAudioElement;
   el.volume = volume;
+  activeAudios.add(el);
+  el.addEventListener("ended", () => activeAudios.delete(el));
   const p = el.play();
   return p instanceof Promise ? p.then(() => {}) : Promise.resolve();
 }
@@ -57,6 +63,9 @@ function synthFallback(animal: AnimalMusician) {
   gain.connect(ctx.destination);
   osc.start(t0);
   osc.stop(t0 + 1.05);
+  const entry = { osc, gain };
+  activeSynths.add(entry);
+  osc.onended = () => activeSynths.delete(entry);
 }
 
 // ---------- Public API ----------
@@ -77,13 +86,35 @@ export const orchestraAudio = {
   playTutti(animals: AnimalMusician[]) {
     console.log("[OrchestraAudio] playTutti()");
     animals.forEach((a, i) => {
-      setTimeout(() => {
+      const t = setTimeout(() => {
+        activeTimeouts.delete(t);
         if (a.soundUrl) {
           playUrl(a.soundUrl, 0.55).catch(() => synthFallback(a));
         } else {
           synthFallback(a);
         }
       }, i * 90);
+      activeTimeouts.add(t);
     });
+  },
+
+  stopAll() {
+    console.log("[OrchestraAudio] stopAll()");
+    activeTimeouts.forEach((t) => clearTimeout(t));
+    activeTimeouts.clear();
+    activeAudios.forEach((el) => {
+      try { el.pause(); el.currentTime = 0; } catch { /* noop */ }
+    });
+    activeAudios.clear();
+    activeSynths.forEach(({ osc, gain }) => {
+      try {
+        const now = (_ctx?.currentTime ?? 0);
+        gain.gain.cancelScheduledValues(now);
+        gain.gain.setValueAtTime(gain.gain.value, now);
+        gain.gain.linearRampToValueAtTime(0, now + 0.03);
+        osc.stop(now + 0.04);
+      } catch { /* noop */ }
+    });
+    activeSynths.clear();
   },
 };
