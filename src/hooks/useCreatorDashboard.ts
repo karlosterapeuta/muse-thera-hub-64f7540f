@@ -75,13 +75,12 @@ export function useCreatorDashboard(creatorId: string | undefined) {
       if (coursesError) throw coursesError;
 
       // Fetch all sales/purchases
-      const { data: sales, error: salesError } = await supabase
-        .from("course_purchases")
+      const { data: sales, error: salesError } = await (supabase as any)
+        .from("creator_course_purchases")
         .select(`
           id,
           course_id,
           buyer_name,
-          buyer_email,
           amount_cents,
           creator_amount_cents,
           payment_status,
@@ -108,12 +107,12 @@ export function useCreatorDashboard(creatorId: string | undefined) {
       });
 
       // Process sales with course titles
-      const salesWithTitles = (sales || []).map((sale) => ({
+      const salesWithTitles = (sales || []).map((sale: any) => ({
         id: sale.id,
         course_id: sale.course_id || "",
         course_title: (sale.courses as any)?.title || "Curso removido",
         buyer_name: sale.buyer_name,
-        buyer_email: sale.buyer_email,
+        buyer_email: "",
         amount_cents: sale.amount_cents,
         creator_amount_cents: sale.creator_amount_cents,
         payment_status: sale.payment_status || "pending",
@@ -124,7 +123,7 @@ export function useCreatorDashboard(creatorId: string | undefined) {
       // Calculate stats
       const confirmedSales = salesWithTitles.filter((s) => s.payment_status === "confirmed");
       const pendingSales = salesWithTitles.filter((s) => s.payment_status === "pending");
-      const uniqueStudents = new Set(confirmedSales.map((s) => s.buyer_email)).size;
+      const uniqueStudents = new Set(confirmedSales.map((s) => `${s.buyer_name}|${s.course_id}`)).size;
 
       const stats = {
         totalRevenue: confirmedSales.reduce((sum, s) => sum + s.creator_amount_cents, 0) / 100,
@@ -173,8 +172,8 @@ export function useCreatorSales(creatorId: string | undefined) {
     queryFn: async () => {
       if (!creatorId) throw new Error("Creator ID required");
 
-      const { data, error } = await supabase
-        .from("course_purchases")
+      const { data, error } = await (supabase as any)
+        .from("creator_course_purchases")
         .select(`
           *,
           courses(title, thumbnail_url)
