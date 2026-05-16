@@ -115,6 +115,7 @@ export function useUpdateRecurringSeries() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["financial-records"] });
+      queryClient.invalidateQueries({ queryKey: ["finance-dashboard"] });
       toast.success("Série recorrente atualizada com sucesso!");
     },
     onError: (error) => {
