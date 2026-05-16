@@ -26,7 +26,7 @@ const MODES: { key: ModeKey; emoji: string; label: string; desc: string; color: 
 ];
 
 function DinoRitmosInner() {
-  const { settings } = useDinoSettings();
+  const { settings, update: toggleCalm } = useDinoSettings();
   const [screen, setScreen] = useState<Screen>("home");
   const [mode, setMode] = useState<ModeKey>("free");
   const [showSettings, setShowSettings] = useState(false);
@@ -159,7 +159,11 @@ function DinoRitmosInner() {
               <div className="flex flex-col gap-3 max-w-xs mx-auto">
                 <HomeButton onClick={start} color="from-purple-500 to-pink-500" label="▶️ Jogar" />
                 <HomeButton onClick={() => setShowSettings(true)} color="from-amber-400 to-orange-500" label="⚙️ Configurações" />
-                <HomeButton onClick={() => { useDinoSettingsToggleCalm(); }} color="from-indigo-500 to-blue-600" label="🌙 Modo Calmo" />
+                <HomeButton
+                  onClick={() => toggleCalm("calmMode", !settings.calmMode)}
+                  color="from-indigo-500 to-blue-600"
+                  label={settings.calmMode ? "☀️ Modo Normal" : "🌙 Modo Calmo"}
+                />
               </div>
 
               <p className={`mt-8 text-xs ${calm ? "text-indigo-300" : "text-purple-900/60"} flex items-center justify-center gap-1`}>
@@ -249,13 +253,6 @@ function Badge({ icon, value }: { icon: React.ReactNode; value: number }) {
       <span className="tabular-nums">{value}</span>
     </div>
   );
-}
-
-// helper hook to toggle calm mode from button (kept inline for simplicity)
-function useDinoSettingsToggleCalm() {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { settings, update } = useDinoSettings();
-  update("calmMode", !settings.calmMode);
 }
 
 export default function DinoRitmos() {
