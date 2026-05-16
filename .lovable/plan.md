@@ -1,78 +1,46 @@
-## Mudanças no Relatório MuseTera TEA
+## Substituir auto-preenchimento por seletor de templates
 
-### 1. Remover tópicos 2, 3, 4 e 5
+Nas etapas **Comunicação e Linguagem**, **Plano Terapêutico Futuro** e **Fundamentação Teórica** do wizard MuseTera TEA, trocar o auto-preenchimento por uma **galeria de opções de templates** que o usuário escolhe manualmente.
 
-Em `src/components/musicoterapia/MusicoterapiaReportWizard.tsx`, remover do array `STEPS`:
+### Mudanças em `src/components/musicoterapia/MusicoterapiaReportWizard.tsx`
 
-- **2. Identificação Clínica** (`clinical_identification`)
-- **3. Identidade Sonora (ISO)** (`iso_identity`)
-- **4. Avaliação Sensório-Musical** (`sensory_profile`)
-- **5. Domínios IMTAP** (`imtap_domains`)
+1. **Remover** o `useEffect` que chama `applyStepTemplate(false)` ao entrar na etapa — nada é preenchido automaticamente.
 
-O wizard passa de 16 para **12 etapas**. As demais são renumeradas automaticamente pela ordem do array (títulos passam a ser "2. Objetivos Terapêuticos", "3. Sessão e Atividades", etc.). Os campos das seções removidas permanecem definidos no template para não quebrar geração de PDF/IA, apenas deixam de aparecer no wizard.
-
-### 2. Templates prontos nos tópicos 9, 11 e 13
-
-Após a renumeração, esses passam a ser:
-
-- **9 → Fundamentação Teórica** (`theoretical_foundation`)
-- **11 → (não existe mais, total = 12)** — *ver nota abaixo*
-- **13 → (não existe mais)** — *ver nota abaixo*
-
-**Nota importante:** com a remoção de 4 etapas, só restam 12 etapas, então "tópico 11" e "tópico 13" originais (Plano Terapêutico Futuro e Fundamentação Teórica) precisam ser identificados pelo conteúdo, não pelo número antigo. Assumindo que o usuário se refere aos tópicos **conforme numeração atual antes da remoção**:
-
-- **9. Comunicação e Linguagem** (`communication_language`)
-- **11. Plano Terapêutico Futuro** (`future_plan`)
-- **13. Fundamentação Teórica** (`theoretical_foundation`)
-
-Para cada um, criar um objeto `STEP_TEMPLATES` em `MusicoterapiaReportWizard.tsx` mapeando `fieldId → texto pronto`. Ao entrar na etapa, se o campo estiver vazio, pré-preencher com o template via `handleFieldUpdate`. Também adicionar um botão **"Aplicar template"** no topo da etapa para reaplicar.
-
-**Templates propostos:**
-
-**Comunicação e Linguagem (9):**
-- `vocalizations_observed`: "Paciente apresenta vocalizações espontâneas durante atividades musicais, com variação de altura e intensidade, especialmente em resposta a estímulos melódicos preferidos."
-- `verbal_output_during_music`: "Observa-se aumento da produção verbal durante o canto e atividades rítmicas, com tentativas de acompanhar trechos de canções familiares."
-- `echolalia_musical`: "Presença de ecolalia musical funcional, com repetição de fragmentos melódicos e refrões como forma de comunicação e autorregulação."
-- `aac_use`: "Não utiliza sistema de Comunicação Aumentativa e Alternativa (CAA) no momento. Comunicação predominantemente gestual e vocal."
-- `pragmatic_skills`: "Habilidades pragmáticas em desenvolvimento, com iniciativa comunicativa crescente em contexto musical estruturado, troca de turnos com apoio do terapeuta."
-
-**Plano Terapêutico Futuro (11):**
-- `next_objectives_short`: "Curto prazo (1-3 meses): Ampliar repertório de canções funcionais; consolidar troca de turnos musicais; aumentar tempo de atenção compartilhada."
-- `next_objectives_medium`: "Médio prazo (3-6 meses): Desenvolver autorregulação por meio de improvisações estruturadas; estimular comunicação intencional via instrumentos."
-- `next_objectives_long`: "Longo prazo (6-12 meses): Promover autonomia musical, generalização de habilidades para outros contextos e participação em atividades grupais."
-- `proposed_interventions`: "Intervenções receptivas, recriativas e improvisacionais conforme modelo de Bruscia, com foco em ISO de Benenzon e adaptações sensoriais."
-- `expected_outcomes`: "Espera-se evolução nas dimensões comunicativa, socioemocional e sensório-motora, com generalização para contextos familiar e escolar."
-- `revaluation_date`: "Reavaliação prevista em 3 meses, com aplicação de escalas IMTAP e registro qualitativo."
-
-**Fundamentação Teórica (13):**
-- `theoretical_framework`: "O presente relatório fundamenta-se no Modelo Benenzon (Princípio do ISO), nas práticas de Nordoff-Robbins (Musicoterapia Criativa), no modelo de Bruscia (níveis de prática) e nos domínios clínicos da IMTAP (Individualized Music Therapy Assessment Profile), associados às diretrizes de intervenção em TEA conforme DSM-5-TR e CID-11."
-- `assessment_tools_used`: "Instrumentos: IMTAP (Baxter et al., 2007), Escala MuseTera de avaliação musicoterapêutica, observação clínica sistematizada e Perfil Sensorial de Dunn."
-- `references_cited`: "Benenzon, R. (1985). Manual de Musicoterapia. Bruscia, K. (2000). Definindo Musicoterapia. Nordoff, P.; Robbins, C. (2007). Creative Music Therapy. Baxter et al. (2007). The Individualized Music Therapy Assessment Profile. APA (2022). DSM-5-TR."
-
-### 3. Mecânica de aplicação
-
-No componente, adicionar:
+2. **Reestruturar `STEP_TEMPLATES`** para suportar múltiplas variantes por etapa:
 
 ```ts
-const STEP_TEMPLATES: Record<string, Record<string, string>> = { ... }
-
-useEffect(() => {
-  const tmpl = STEP_TEMPLATES[currentStepData.id];
-  if (!tmpl) return;
-  const updates: Record<string, any> = {};
-  Object.entries(tmpl).forEach(([fid, txt]) => {
-    if (!reportData.fieldValues?.[fid]) updates[fid] = txt;
-  });
-  if (Object.keys(updates).length) {
-    onUpdateData({ ...reportData, fieldValues: { ...reportData.fieldValues, ...updates }});
-  }
-}, [currentStep]);
+const STEP_TEMPLATES: Record<string, { id: string; label: string; description: string; values: Record<string,string> }[]> = {
+  communication_language: [
+    { id: 'verbal_emerging', label: 'Comunicação verbal emergente', description: 'Paciente com vocalizações e produção verbal em desenvolvimento.', values: {...} },
+    { id: 'nonverbal_caa', label: 'Não-verbal com CAA', description: 'Paciente não-verbal que utiliza Comunicação Aumentativa e Alternativa.', values: {...} },
+    { id: 'echolalic_functional', label: 'Ecolalia funcional', description: 'Paciente com ecolalia musical como recurso comunicativo.', values: {...} },
+  ],
+  future_plan: [
+    { id: 'initial_stage', label: 'Início de tratamento', description: 'Foco em vínculo, exploração e regulação básica.', values: {...} },
+    { id: 'consolidation', label: 'Fase de consolidação', description: 'Ampliação de habilidades e generalização.', values: {...} },
+    { id: 'advanced', label: 'Fase avançada / alta', description: 'Autonomia musical e preparação para alta terapêutica.', values: {...} },
+  ],
+  theoretical_foundation: [
+    { id: 'benenzon_iso', label: 'Modelo Benenzon (ISO)', description: 'Fundamentação centrada no Princípio do ISO.', values: {...} },
+    { id: 'nordoff_robbins', label: 'Nordoff-Robbins Criativa', description: 'Musicoterapia Criativa de Nordoff-Robbins.', values: {...} },
+    { id: 'bruscia_imtap', label: 'Bruscia + IMTAP', description: 'Modelo de Bruscia com avaliação IMTAP.', values: {...} },
+    { id: 'integrative', label: 'Abordagem integrativa', description: 'Combinação de Benenzon, Bruscia, Nordoff-Robbins e IMTAP.', values: {...} },
+  ],
+};
 ```
 
-E botão "Aplicar template padrão" acima dos campos quando `STEP_TEMPLATES[currentStepData.id]` existir, que força a sobrescrita.
+Cada variante traz textos diferentes para os mesmos campos da etapa (mesma estrutura dos templates atuais, mas em 3-4 versões cada).
+
+3. **Novo bloco de UI** acima dos campos, quando a etapa tem templates: em vez do banner único + botão "Aplicar", renderizar **cards selecionáveis** (1 por variante) com `label`, `description` e botão "Usar este template". Ao clicar:
+   - Confirma se já há conteúdo nos campos (toast simples), e
+   - Aplica os valores da variante via `handleFieldUpdate` para cada campo.
+   - Marca a variante como ativa (estado `selectedTemplate[stepId]`).
+
+4. **Comportamento padrão**: os campos começam **vazios**. O usuário pode escolher uma variante, editar livremente, ou preencher do zero.
+
+5. Manter o resto do wizard (validação opcional, navegação, IA, salvar/baixar) intacto.
 
 ### Arquivos alterados
-
 - `src/components/musicoterapia/MusicoterapiaReportWizard.tsx` (único)
 
-Nenhuma alteração em template/PDF/IA — os campos continuam existindo e sendo exportados normalmente.
+Nenhuma alteração em template/PDF/IA.
