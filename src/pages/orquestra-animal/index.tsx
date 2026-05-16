@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { orchestraAnimals, type Section } from "./data/orchestraAnimals";
-import { orchestraAudio } from "./utils/orchestraAudioEngine";
+import { orchestraAudio, preloadAnimalSounds } from "./utils/orchestraAudioEngine";
 import { AnimalMusician } from "./components/AnimalMusician";
 import { SectionFilter } from "./components/SectionFilter";
 import { InstrumentInfoCard } from "./components/InstrumentInfoCard";
