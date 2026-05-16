@@ -1,110 +1,145 @@
-## Escopo
-Análise completa do fluxo de **Gestão Financeira** (`/finance`, `/finance/records`, `/finance/clinics`, `/finance/reports`) — corrigir bugs conhecidos e entregar melhorias de UX, performance e segurança.
+## Objetivo
 
----
+Transformar o "Relatório MuseTera TEA" em um documento clínico de padrão profissional, alinhado às boas práticas internacionais de musicoterapia para TEA (modelos Nordoff‑Robbins, Benenzon/ISO, Bruscia, IMTAP) e à classificação diagnóstica vigente (DSM‑5‑TR / CID‑11 6A02), mantendo o fluxo de wizard e o PDF atuais.
 
-## Bugs identificados (com causa raiz)
+## Novas etapas e campos do wizard
 
-### 1. Travamento ao excluir agenda (raiz definitiva)
-- Hoje há um workaround forçando `body.style.pointerEvents=""`. A causa real: o diálogo de confirmação é aberto a partir de um `DropdownMenu`. O Radix mantém o focus trap do menu enquanto o Dialog monta, sobrepondo overlays e travando ponteiros.
-- **Correção:** trocar o `Dialog` de confirmação por `AlertDialog`, abrir com `requestAnimationFrame` após fechar o dropdown, e remover o hack do `pointerEvents`.
+Os campos atuais permanecem; a expansão acrescenta 6 novas etapas (passando de 8 → 14) e enriquece as existentes. Tudo continua opcional (regra já adotada na Anamnese).
 
-### 2. `useFinancialRecords` sem filtro `professional_id`
-- Depende só de RLS. Se houver bug no policy, vaza dados; sem filtro também não usa o índice composto.
-- **Correção:** filtrar `.eq("professional_id", user.id)` explicitamente (defense-in-depth) e padronizar com `useFinanceDashboard`.
+### 1. Identificação clínica ampliada (etapa 1)
+- `cid_code` — CID‑11 (6A02) / DSM‑5‑TR equivalente
+- `support_level` — Nível de suporte (1, 2 ou 3)
+- `comorbidities` — Comorbidades (TDAH, deficiência intelectual, ansiedade, epilepsia, TPS…)
+- `current_medications` — Medicações em uso
+- `referral_source` — Encaminhamento (neuropediatra, escola, família…)
+- `session_count` / `treatment_start_date` / `session_frequency` / `session_duration`
 
-### 3. Página `records.tsx` busca lista 2x
-- `useFinancialRecords(dateFilter)` + `useFinancialRecords(undefined)` baixam quase os mesmos dados; em conexões móveis dobra latência.
-- **Correção:** baixar uma única vez sem filtro e aplicar o filtro de período no cliente (volume típico baixo) **ou** derivar a "agenda fixa" a partir do mesmo dataset filtrado.
+### 2. Identidade Sonora (ISO de Benenzon) — NOVA etapa
+- `iso_gestational` — ISO Gestacional
+- `iso_universal` — ISO Universal
+- `iso_cultural` — ISO Cultural
+- `iso_complementary` — ISO Complementar
+- `iso_group` — ISO Grupal
+- `sound_preferences` — Sons/timbres preferidos e aversivos
+- `musical_repertoire_favorites` — Repertório significativo
 
-### 4. `useUpdateFinancialRecord` perde campos
-- Faz `update` apenas de 5 colunas, descartando `session_status`, `is_recurring`, `recurrence_type`, etc. ao editar um registro recorrente.
-- **Correção:** só enviar os campos realmente presentes no payload (`Object.fromEntries` filtrando `undefined`).
+### 3. Avaliação Sensório‑Musical (perfil sensorial) — NOVA etapa
+Escalas 1–10 + observações livres:
+- `auditory_processing` — Processamento auditivo
+- `sound_tolerance` — Tolerância a volume/timbre
+- `vestibular_response_music` — Resposta vestibular ao ritmo
+- `tactile_instrument_response` — Resposta tátil a instrumentos
+- `proprioceptive_response` — Resposta proprioceptiva
+- `sensory_seeking_vs_avoiding` — Buscador vs. evitador sensorial
+- `sensory_profile_notes` — Síntese descritiva
 
-### 5. Hooks de mutação não invalidam o dashboard
-- `useDeleteFinancialRecord` e `useUpdateSessionStatus` não invalidam `["finance-dashboard"]`; cards e gráficos ficam desatualizados até refresh manual.
-- **Correção:** invalidar ambas as queries em todos os hooks (add/update/delete/clearAll/recurring/status).
+### 4. Avaliação clínica musicoterapêutica (IMTAP/inspirada) — NOVA etapa
+Domínios avaliados em escala 1–10 com campo de evidências:
+- `domain_musicality` — Musicalidade (ritmo, melodia, dinâmica)
+- `domain_communication_verbal` — Comunicação verbal via música
+- `domain_communication_nonverbal` — Comunicação não‑verbal/gestual
+- `domain_social_interaction` — Interação social musical
+- `domain_emotional` — Expressão e regulação emocional
+- `domain_cognitive` — Cognição (atenção, memória, sequenciamento)
+- `domain_motor_gross` — Motricidade ampla
+- `domain_motor_fine` — Motricidade fina (manuseio instrumental)
+- `domain_sensory_integration` — Integração sensorial
+- `domain_autonomy` — Autonomia e iniciativa musical
+- `domain_evidences` — Evidências clínicas observadas em cada domínio
 
-### 6. Bug de regex no form de edição
-- `FinancialRecordForm.tsx` linha ~230 tem `\\s` (escape duplo) na regex de limpeza usada no `useEffect`, então ao editar a descrição vem suja com "Dia da semana: … | Horário: … | Duração: …".
-- **Correção:** usar a mesma regex do `getCleanDescription` (helper compartilhado).
+### 5. Sessão estruturada — expansão da etapa 3
+- `session_setting` — Setting (individual, dupla, familiar)
+- `session_structure` — Estrutura (hello song, exploração, fechamento)
+- `improvisation_use` — Uso de improvisação clínica (modelo Bruscia)
+- `receptive_techniques` — Técnicas receptivas (audição dirigida, GIM adaptado)
+- `recreative_techniques` — Técnicas recriativas (canto/canção, performance)
+- `compositional_techniques` — Técnicas composicionais (songwriting terapêutico)
+- `instruments_used` — Instrumentos (mantém)
+- `musical_genres` — Gêneros e modos musicais
+- `tempo_dynamics_used` — Andamentos e dinâmicas exploradas
+- `vocal_work` — Trabalho vocal
 
-### 7. Recorrência: descrição duplica "(Recorrente)" e quebra parser
-- `generateFutureRecords` faz `description: \`${parentRecord.description || ''} (Recorrente)\``. Como o `description` do pai já contém `Dia da semana: … | Horário: … | Duração: … | <texto>`, o sufixo é colado **depois** dos pipes e fica dentro do bloco de texto. Em edições subsequentes, vira `... (Recorrente) (Recorrente)`.
-- **Correção:** ao gerar filhos, preservar exatamente o `description` do pai (sem sufixo) e usar o badge `RecurringRecordIndicator` para sinalizar visualmente.
+### 6. Análise comportamental durante a sessão — NOVA etapa
+- `eye_contact_quality` — Contato visual (escala)
+- `joint_attention` — Atenção compartilhada (escala)
+- `stereotypies_during_music` — Estereotipias durante a música
+- `self_regulation_strategies` — Estratégias de autorregulação observadas
+- `meltdown_shutdown_episodes` — Episódios de meltdown/shutdown
+- `transitions_response` — Resposta a transições
+- `imitation_skills` — Imitação musical e gestual (escala)
+- `turn_taking_musical` — Alternância de turnos musicais (escala)
 
-### 8. Datas em UTC violando a regra do projeto
-- `parseISO(record.session_date)` interpreta `yyyy-MM-dd` como UTC midnight → off-by-one em fusos negativos.
-- **Correção:** criar helper `parseDateLocal(yyyyMMdd)` (já existe em `src/utils/dateUtils.ts` — usar) e substituir todas as chamadas `parseISO` em records/dashboard.
+### 7. Comunicação e linguagem — NOVA etapa
+- `vocalizations_observed` — Vocalizações observadas
+- `verbal_output_during_music` — Produção verbal durante a música
+- `echolalia_musical` — Ecolalia musical (funcional/não funcional)
+- `aac_use` — Uso de CAA (comunicação aumentativa)
+- `pragmatic_skills` — Habilidades pragmáticas musicais
 
-### 9. Dedupe da agenda fixa cancela pacientes sem nome
-- A chave é `patient_name + time + clinic_name`. Quando `patient_name` é `undefined`, todos viram a mesma chave e somem.
-- **Correção:** usar `record.id` ou `patient_id ?? record.id` na chave de dedupe.
+### 8. Evolução clínica — expansão da etapa 4
+Mantém `patient_evolution` e adiciona:
+- `evolution_compared_baseline` — Comparativo com avaliação inicial
+- `goals_achieved` — Objetivos alcançados (lista)
+- `goals_in_progress` — Em progresso (lista)
+- `goals_not_achieved` — Não alcançados + hipóteses
+- `quantitative_indicators` — Indicadores quantitativos (frequência, duração)
 
-### 10. "Editar Série" é botão morto
-- `RecurringRecordActions` mostra toast "Funcionalidade em desenvolvimento".
-- **Correção:** ligar ao hook `useUpdateRecurringSeries` que já existe, abrindo o `FinancialRecordForm` em modo "editar série" com flag.
+### 9. Plano terapêutico futuro — NOVA etapa
+- `next_objectives` — Próximos objetivos (curto/médio/longo prazo)
+- `proposed_interventions` — Intervenções propostas
+- `expected_outcomes` — Resultados esperados
+- `revaluation_date` — Data de reavaliação prevista
 
-### 11. `Limpar Tudo` perigoso demais
-- Um clique + uma confirmação simples apagam **todo** o histórico financeiro do profissional. Sem backup.
-- **Correção:** exigir digitar `EXCLUIR` para liberar o botão; mostrar contagem de registros que serão apagados.
+### 10. Orientações à família e equipe — expansão da etapa 5
+- `home_activities` (mantém)
+- `family_guidance` (mantém)
+- `school_recommendations` — Orientações à escola
+- `interdisciplinary_team_notes` — Articulação com equipe (fono, TO, psicologia)
+- `playlist_recommended` — Playlist recomendada para casa
+- `red_flags_to_monitor` — Sinais de alerta para a família monitorar
 
-### 12. Agregação semanal e dashboard
-- `format(date, 'w')` não é ISO; chave colide entre anos próximos. Também não há gráfico de status (concluída/falta/agendada) nem de receita por paciente.
+### 11. Fundamentação teórica — NOVA etapa
+- `theoretical_framework` — Abordagem (Nordoff‑Robbins, Benenzon, Bruscia, GIM, Neurologic Music Therapy…)
+- `references_cited` — Referências bibliográficas citadas
+- `assessment_tools_used` — Instrumentos de avaliação aplicados (IMTAP, MAKS, ABA musical etc.)
 
-### 13. Limite de 1.000 linhas do Supabase
-- Sem `range()` nem paginação. Profissionais com mais de 1.000 sessões nunca verão todas.
-- **Correção:** paginar (`range(0, 4999)` com aviso) ou agregar no servidor via RPC.
+### 12. Conclusão, observações, assinatura
+Mantém etapas atuais (Conclusão, Observações Complementares, Revisão Final/Assinatura) integradas após as novas etapas.
 
-### 14. Print quebrado
-- `window.print()` no header de `index.tsx` mas não há `@media print` escondendo header/sidebar/abas.
-- **Correção:** stylesheet `print:hidden` nas áreas certas (já parcialmente feito) e bloco `print:block` com o resumo.
+## Mudanças no PDF (`generatePDFContent`)
 
----
+- Renderizar todas as novas seções condicionalmente (só aparecem se preenchidas).
+- Adicionar bloco "Resumo Quantitativo" com tabela das escalas 1–10 (domínios IMTAP + sensoriais + comportamentais) para leitura rápida.
+- Sumário executivo opcional no topo (Diagnóstico • Nível de suporte • Nº de sessões • Data de reavaliação).
+- Página de fundamentação teórica e referências ao final, antes do rodapé com carimbo (mantém o footer atual com assinatura digital e carimbo dourado).
+- Numeração de páginas e cabeçalho compacto a partir da página 2 (nome do paciente + data).
 
-## Melhorias
+## Mudanças no Wizard
 
-1. **Totais e KPIs no topo de `records.tsx`** — Receita do período, nº de sessões, ticket médio, taxa de falta — reaproveitando `FinancialStatCards`.
-2. **Filtros na lista** — clínica, paciente, status (chips); persistir em querystring.
-3. **Exportar CSV** dos registros filtrados (`papaparse` já é leve, sem nova dep usar `Blob`).
-4. **Debounce** do campo de busca (300 ms) para evitar re-render a cada tecla.
-5. **Loader esqueleto** ao invés de spinner com texto, mantendo a altura da tabela.
-6. **Tooltip** no card da agenda fixa explicando "Permanente — não muda com o mês".
-7. **Confirmação por digitação** no "Limpar Tudo".
-8. **Atalho rápido** "Marcar todas as sessões de hoje como concluídas" no cabeçalho da agenda da semana.
-9. **Acessibilidade** — `aria-label` nos botões só-ícone do header e nos cards da agenda; foco visível.
-10. **Mensagens de erro humanas** — substituir `error.message` cru por mensagens em português.
-11. **Memoização** — `useMemo` em `sortedRecords`, `recordsByWeekday`, `weeklyAgenda` para evitar recomputar a cada digitação.
+- Atualizar `STEPS` em `MusicoterapiaReportWizard.tsx` para 14 etapas; manter o ícone, descrição e agrupamento.
+- Reaproveitar componentes existentes (`MusicoterapiaFormField`, escala, textarea, multiselect).
+- Aplicar a regra já vigente: nenhum campo obrigatório bloqueia salvar/baixar.
+- Manter scroll-to-top suave entre etapas (regra de memória do projeto).
+- Quick‑fill (frases pré‑definidas) será estendido com sugestões clínicas para cada novo domínio em `src/data/musicoterapiaPhrases.ts`.
 
----
+## Arquivos a alterar
 
-## Detalhes técnicos
+- `src/data/musicoterapiaTemplate.ts` — acrescentar ~60 novos campos com `guidance` clínico.
+- `src/data/musicoterapiaPhrases.ts` — frases pré‑definidas para cada novo campo.
+- `src/components/musicoterapia/MusicoterapiaReportWizard.tsx` — novos passos no array `STEPS`.
+- `src/pages/processes/musicoterapia/index.tsx` — função `generatePDFContent`: novas seções, tabela‑resumo de escalas, sumário executivo, página de fundamentação.
+- `src/components/musicoterapia/MusicoterapiaPreview.tsx` — espelhar novas seções no preview.
 
-### Arquivos a alterar
-```
-src/pages/finance/records.tsx
-src/pages/finance/index.tsx
-src/pages/finance/components/FinancialRecordForm.tsx
-src/pages/finance/components/RecurringRecordActions.tsx
-src/pages/finance/hooks/useFinancialData.ts
-src/pages/finance/hooks/useFinanceDashboard.ts
-src/pages/finance/hooks/useUpdateSessionStatus.ts
-src/pages/finance/hooks/useRecurringFinancialRecords.ts
-src/utils/dateUtils.ts (adicionar parseDateLocal se faltar)
-```
+## Fora de escopo nesta entrega
 
-Nenhuma migração de banco necessária — todos os campos já existem.
+- Persistir novos campos no banco (já são salvos como JSON em `fieldValues` — sem migração necessária).
+- Mudar identidade visual / cores (mantém o teal atual + carimbo dourado MuseTera).
+- Reescrever o wizard em outra arquitetura.
 
-### Ordem de implementação
-1. Bugs críticos: 1, 4, 5, 6, 7, 8, 9 (corrigem dados errados/UI travada).
-2. Refator de hooks e dedupe (2, 3, 12 parcial).
-3. Recurso "Editar Série" (10).
-4. Guard de "Limpar Tudo" (11).
-5. Filtros, CSV, KPIs, debounce (melhorias 1–5).
-6. Polimento (6–11).
+## Critérios de aceite
 
----
-
-## Pergunta antes de implementar
-
-Quer que eu execute **tudo** num único build, ou prefere que eu vá em duas etapas — primeiro só os bugs críticos (1, 4, 5, 6, 7, 8, 9), valide com você, e depois aplico as melhorias?
+1. 14 etapas no wizard, todas opcionais, salvando e baixando PDF mesmo em branco.
+2. PDF inclui apenas seções preenchidas; tabela resumo só aparece se houver ao menos uma escala preenchida.
+3. Frases pré‑definidas disponíveis nos novos campos.
+4. Preview na tela espelha o PDF.
+5. Build limpo, sem alterações no fluxo de assinatura/carimbo/storage.

@@ -209,5 +209,100 @@ export const musicoterapiaPhrases: PhraseBank[] = [
       'a resposta terapêutica observada recomenda manutenção e aprofundamento da abordagem musical'
     ],
     fieldContext: ['conclusion']
+  },
+  {
+    id: 'iso_phrases',
+    name: 'Identidade Sonora (ISO)',
+    phrases: [
+      'apresenta forte ressonância com sons graves e contínuos, sugerindo ISO gestacional preservado',
+      'demonstra preferência por timbres da voz humana feminina, evocando vínculo com a figura materna',
+      'identifica e responde a repertório musical brasileiro tradicional, evidenciando ISO cultural consolidado',
+      'apresenta ISO complementar marcado por trilhas de mídia infantil específicas (desenhos animados)',
+      'no contexto familiar, o ISO grupal é mediado por canções religiosas e celebrações musicais',
+      'a avaliação revelou aversão sensorial a sons agudos súbitos e preferência por timbres melódicos suaves',
+      'o repertório significativo inclui canções de roda da infância e músicas associadas a rotinas domésticas'
+    ],
+    fieldContext: ['iso_gestational','iso_universal','iso_cultural','iso_complementary','iso_group','sound_preferences','musical_repertoire_favorites']
+  },
+  {
+    id: 'sensory_phrases',
+    name: 'Perfil Sensorial',
+    phrases: [
+      'apresenta hipersensibilidade auditiva a estímulos acima de 75dB, requerendo modulação dinâmica cuidadosa',
+      'demonstra busca proprioceptiva ativa, especialmente com instrumentos de percussão grave',
+      'mostra-se evitador tátil para instrumentos de superfícies rugosas, com boa aceitação de superfícies lisas',
+      'apresenta resposta vestibular organizadora a ritmos lentos e regulares (60-80 bpm)',
+      'demonstra processamento auditivo seletivo, com melhor resposta a estímulos isolados que sobrepostos',
+      'perfil predominantemente buscador, com fascínio por vibrações e ressonâncias sustentadas',
+      'integração sensorial favorecida por atividades multimodais combinando som, movimento e toque'
+    ],
+    fieldContext: ['sensory_profile_notes','auditory_processing','sound_tolerance','tactile_instrument_response']
+  },
+  {
+    id: 'imtap_phrases',
+    name: 'Domínios IMTAP',
+    phrases: [
+      'no domínio da musicalidade, demonstra capacidade emergente de manter pulso por períodos curtos',
+      'no domínio comunicativo não-verbal, utiliza gestos musicais funcionais para fazer pedidos',
+      'no domínio social, inicia trocas musicais espontâneas em pelo menos 30% das oportunidades',
+      'no domínio emocional, utiliza atividades musicais como recurso autorregulatório consistente',
+      'no domínio cognitivo, demonstra sequenciamento musical de até 4 elementos com modelo',
+      'no domínio motor fino, manuseia instrumentos pequenos com preensão funcional',
+      'no domínio da autonomia, faz escolhas musicais espontâneas a partir de oferta de 2-3 opções'
+    ],
+    fieldContext: ['domain_evidences']
+  },
+  {
+    id: 'behavioral_phrases',
+    name: 'Análise Comportamental',
+    phrases: [
+      'estereotipias motoras observadas durante a música apresentam função autorregulatória, organizando o engajamento',
+      'utiliza espontaneamente instrumento preferido como recurso de autorregulação em momentos de desorganização',
+      'transições mediadas por canção-ponte mostram-se efetivas, reduzindo significativamente comportamentos de resistência',
+      'episódios de meltdown não foram observados na sessão; música regulatória preveniu desorganizações',
+      'imitação musical demonstra evolução progressiva, com ampliação do repertório imitativo a cada sessão',
+      'alternância de turnos musicais mostra-se consistente em diálogos rítmicos curtos de 2-3 trocas',
+      'contato visual é facilitado pelo contexto musical, especialmente durante canções de saudação e fechamento'
+    ],
+    fieldContext: ['stereotypies_during_music','self_regulation_strategies','transitions_response','meltdown_shutdown_episodes']
+  },
+  {
+    id: 'communication_phrases',
+    name: 'Comunicação e Linguagem',
+    phrases: [
+      'apresenta vocalizações melódicas espontâneas em padrões de glissando ascendente',
+      'a produção verbal é facilitada pelo contexto musical, observando-se emergência de palavras-chave de canções',
+      'ecolalia musical funcional observada, com repetição diferida de trechos significativos de canções',
+      'utiliza pranchas de CAA integradas ao setting musical para fazer pedidos e expressar preferências',
+      'demonstra habilidades pragmáticas musicais de pedir, comentar e recusar através de gestos e vocalizações',
+      'observa-se aumento progressivo da intencionalidade comunicativa em contextos musicais previsíveis'
+    ],
+    fieldContext: ['vocalizations_observed','verbal_output_during_music','echolalia_musical','aac_use','pragmatic_skills']
+  },
+  {
+    id: 'future_plan_phrases',
+    name: 'Plano Terapêutico Futuro',
+    phrases: [
+      'a curto prazo, prevê-se ampliação do repertório de canções funcionais aplicáveis a rotinas diárias',
+      'a médio prazo, planeja-se introdução gradual em setting de dupla, com par cuidadosamente selecionado',
+      'a longo prazo, objetiva-se generalização das habilidades musicais para contextos escolares e familiares',
+      'propõe-se introdução de Neurologic Music Therapy (NMT) com técnicas de AMMT para estimulação da fala',
+      'recomenda-se inclusão de songwriting terapêutico para favorecer expressão verbal e autoconhecimento',
+      'estima-se evolução de 20-30% nas pontuações dos domínios IMTAP ao final do próximo ciclo de 12 sessões'
+    ],
+    fieldContext: ['next_objectives_short','next_objectives_medium','next_objectives_long','proposed_interventions','expected_outcomes']
+  },
+  {
+    id: 'theoretical_phrases',
+    name: 'Fundamentação Teórica',
+    phrases: [
+      'a prática clínica fundamenta-se no modelo Nordoff-Robbins (Creative Music Therapy), priorizando improvisação clínica',
+      'integra-se o referencial Benenzon de Identidade Sonora (ISO) para personalização do repertório terapêutico',
+      'adota-se classificação de experiências musicais de Bruscia (2014): improvisação, recriação, composição e receptiva',
+      'utiliza-se Neurologic Music Therapy (NMT - Thaut) para intervenções em domínios sensoriomotor e cognitivo-linguístico',
+      'instrumento de avaliação aplicado: IMTAP (Individualized Music Therapy Assessment Profile) - Baxter et al. (2007)',
+      'fundamentação adicional na Revisão Cochrane de Geretsegger et al. (2014) sobre musicoterapia para TEA'
+    ],
+    fieldContext: ['theoretical_framework','assessment_tools_used','references_cited']
   }
 ];
