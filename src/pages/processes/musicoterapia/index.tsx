@@ -202,6 +202,114 @@ export default function MusicoterapiaPage() {
           </div>
         ` : ''}
 
+        ${(() => {
+          // ===== SEÇÕES CLÍNICAS EXPANDIDAS =====
+          const renderField = (id: string) => {
+            const value = fields[id];
+            if (value === undefined || value === null || value === '') return '';
+            const fieldDef = (musicoterapiaTemplate.fields as any[]).find((f) => f.id === id);
+            const label = fieldDef?.label || id;
+            if (fieldDef?.type === 'scale') {
+              const n = Number(value);
+              if (!n) return '';
+              const pct = Math.max(0, Math.min(100, (n / 10) * 100));
+              const color = n >= 8 ? '#10b981' : n >= 6 ? '#f59e0b' : n >= 4 ? '#f97316' : '#ef4444';
+              return `<div style="margin: 8px 0;">
+                <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px;">
+                  <strong style="color: #0f766e;">${label}</strong>
+                  <span style="font-weight: bold; color: ${color};">${n}/10</span>
+                </div>
+                <div style="background: #e5e7eb; border-radius: 6px; height: 8px; overflow: hidden;">
+                  <div style="width: ${pct}%; height: 100%; background: ${color};"></div>
+                </div>
+              </div>`;
+            }
+            const text = Array.isArray(value) ? value.join(', ') : String(value);
+            if (!text.trim()) return '';
+            return `<div style="margin: 8px 0;">
+              <strong style="color: #0f766e; font-size: 11px;">${label}:</strong>
+              <p style="margin: 3px 0 0 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; font-size: 11px;">${text}</p>
+            </div>`;
+          };
+
+          const renderSection = (title: string, ids: string[]) => {
+            const content = ids.map(renderField).join('');
+            if (!content.trim()) return '';
+            return `<div class="section-block" style="margin-bottom: 20px; page-break-inside: avoid;">
+              <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">${title}</h3>
+              ${content}
+            </div>`;
+          };
+
+          // Resumo Quantitativo (tabela com todas as escalas preenchidas)
+          const filledScales = scaleFieldIds
+            .map((id) => {
+              const v = Number(fields[id]);
+              if (!v) return null;
+              const fd = (musicoterapiaTemplate.fields as any[]).find((f) => f.id === id);
+              return { label: fd?.label || id, value: v };
+            })
+            .filter(Boolean) as { label: string; value: number }[];
+
+          const scalesTable = filledScales.length > 0 ? `
+            <div class="section-block" style="margin-bottom: 20px; page-break-inside: avoid;">
+              <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Resumo Quantitativo - Escalas Clínicas</h3>
+              <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                <thead>
+                  <tr style="background: #f0fdfa;">
+                    <th style="text-align: left; padding: 6px; border: 1px solid #99f6e4; color: #0f766e;">Domínio / Indicador</th>
+                    <th style="text-align: center; padding: 6px; border: 1px solid #99f6e4; color: #0f766e; width: 80px;">Pontuação</th>
+                    <th style="text-align: center; padding: 6px; border: 1px solid #99f6e4; color: #0f766e; width: 90px;">Classificação</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${filledScales.map((s) => {
+                    const cls = s.value >= 8 ? 'Excelente' : s.value >= 6 ? 'Adequado' : s.value >= 4 ? 'Em desenvolvimento' : 'Necessita suporte';
+                    const color = s.value >= 8 ? '#10b981' : s.value >= 6 ? '#f59e0b' : s.value >= 4 ? '#f97316' : '#ef4444';
+                    return `<tr>
+                      <td style="padding: 6px; border: 1px solid #e5e7eb;">${s.label}</td>
+                      <td style="padding: 6px; border: 1px solid #e5e7eb; text-align: center; font-weight: bold; color: ${color};">${s.value}/10</td>
+                      <td style="padding: 6px; border: 1px solid #e5e7eb; text-align: center; color: ${color};">${cls}</td>
+                    </tr>`;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          ` : '';
+
+          // Sumário executivo
+          const execItems: string[] = [];
+          if (fields.cid_code) execItems.push(`<strong>Diagnóstico:</strong> ${fields.cid_code}`);
+          if (fields.support_level) execItems.push(`<strong>Nível de Suporte:</strong> ${fields.support_level}`);
+          if (fields.session_count) execItems.push(`<strong>Sessões realizadas:</strong> ${fields.session_count}`);
+          if (fields.session_frequency) execItems.push(`<strong>Frequência:</strong> ${fields.session_frequency}`);
+          if (fields.revaluation_date) execItems.push(`<strong>Próxima reavaliação:</strong> ${fields.revaluation_date}`);
+          const execSummary = execItems.length > 0 ? `
+            <div class="section-block" style="margin-bottom: 20px; padding: 12px 16px; background: linear-gradient(135deg, #f0fdfa, #ecfeff); border-left: 4px solid #0d9488; border-radius: 6px; page-break-inside: avoid;">
+              <h3 style="color: #0d9488; margin: 0 0 8px 0; font-size: 13px;">Sumário Executivo</h3>
+              <div style="display: flex; flex-wrap: wrap; gap: 12px; font-size: 11px;">
+                ${execItems.map((i) => `<span>${i}</span>`).join('')}
+              </div>
+            </div>
+          ` : '';
+
+          return `
+            ${execSummary}
+            ${renderSection('Identificação Clínica', ['cid_code','support_level','comorbidities','current_medications','referral_source','treatment_start_date','session_count','session_frequency','session_duration'])}
+            ${renderSection('Identidade Sonora (ISO de Benenzon)', ['iso_gestational','iso_universal','iso_cultural','iso_complementary','iso_group','sound_preferences','musical_repertoire_favorites'])}
+            ${renderSection('Avaliação Sensório-Musical', ['auditory_processing','sound_tolerance','vestibular_response_music','tactile_instrument_response','proprioceptive_response','sensory_seeking_vs_avoiding','sensory_profile_notes'])}
+            ${renderSection('Avaliação Clínica - Domínios IMTAP', ['domain_musicality','domain_communication_verbal','domain_communication_nonverbal','domain_social_interaction','domain_emotional','domain_cognitive','domain_motor_gross','domain_motor_fine','domain_sensory_integration','domain_autonomy','domain_evidences'])}
+            ${renderSection('Detalhamento Clínico da Sessão', ['session_setting','session_structure','improvisation_use','receptive_techniques','recreative_techniques','compositional_techniques','tempo_dynamics_used','vocal_work'])}
+            ${renderSection('Análise Comportamental', ['eye_contact_quality','joint_attention','stereotypies_during_music','self_regulation_strategies','meltdown_shutdown_episodes','transitions_response','imitation_skills','turn_taking_musical'])}
+            ${renderSection('Comunicação e Linguagem', ['vocalizations_observed','verbal_output_during_music','echolalia_musical','aac_use','pragmatic_skills'])}
+            ${renderSection('Evolução Clínica Detalhada', ['evolution_compared_baseline','goals_achieved','goals_in_progress','goals_not_achieved','quantitative_indicators'])}
+            ${renderSection('Plano Terapêutico Futuro', ['next_objectives_short','next_objectives_medium','next_objectives_long','proposed_interventions','expected_outcomes','revaluation_date'])}
+            ${renderSection('Orientações Ampliadas', ['school_recommendations','interdisciplinary_team_notes','playlist_recommended','red_flags_to_monitor'])}
+            ${scalesTable}
+            ${renderSection('Fundamentação Teórica e Referências', ['theoretical_framework','assessment_tools_used','references_cited'])}
+          `;
+        })()}
+
         <!-- FOOTER TEAL -->
         <div class="section-block" style="margin-top: 25px; border: 2px solid #14b8a6; border-radius: 10px; overflow: hidden; background: #ffffff; page-break-inside: avoid; page-break-before: auto;">
           <div style="height: 4px; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%);"></div>
