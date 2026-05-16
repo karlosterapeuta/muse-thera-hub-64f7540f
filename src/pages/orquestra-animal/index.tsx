@@ -10,6 +10,10 @@ export default function OrquestraAnimal() {
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState<Section | "tutti">("tutti");
 
+  useEffect(() => {
+    preloadAnimalSounds(orchestraAnimals);
+  }, []);
+
   const filtered = useMemo(() => {
     if (activeSection === "tutti") return orchestraAnimals;
     return orchestraAnimals.filter((a) => a.section === activeSection);
