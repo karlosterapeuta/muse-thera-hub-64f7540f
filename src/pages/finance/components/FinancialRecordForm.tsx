@@ -383,7 +383,12 @@ export function FinancialRecordForm({ onSuccess, onCancel, record, seriesMode = 
   return (
     <Card className={`w-full ${isMobile ? 'rounded-none border-0 shadow-none h-screen flex flex-col' : 'max-h-[85vh] flex flex-col'}`}>
       <CardHeader className={`${isMobile ? 'px-4 py-3' : ''} flex-shrink-0`}>
-        <CardTitle>{isUpdating ? "Editar Registro" : "Novo Registro Financeiro"}</CardTitle>
+        <CardTitle>{seriesMode ? "Editar Série Recorrente" : isUpdating ? "Editar Registro" : "Novo Registro Financeiro"}</CardTitle>
+        {seriesMode && (
+          <p className="text-xs text-muted-foreground mt-1">
+            As alterações serão aplicadas ao registro principal e regenerarão todas as ocorrências futuras.
+          </p>
+        )}
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
