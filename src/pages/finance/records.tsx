@@ -282,18 +282,15 @@ export default function FinancialRecords() {
   
   const handleDeleteClick = (id: string) => {
     setRecordToDelete(id);
-    setConfirmDialogOpen(true);
+    // Defere a abertura para depois do fechamento do DropdownMenu (evita travamento Radix)
+    requestAnimationFrame(() => setConfirmDialogOpen(true));
   };
-  
+
   const confirmDelete = async () => {
     if (!recordToDelete) return;
-
     const idToDelete = recordToDelete;
-
-    // Fecha o diálogo imediatamente para evitar congelamento do Radix (pointer-events stuck no body)
     setConfirmDialogOpen(false);
     setRecordToDelete(null);
-
     try {
       await deleteRecord.mutateAsync(idToDelete);
       toast({
@@ -306,32 +303,20 @@ export default function FinancialRecords() {
         description: error.message || "Não foi possível excluir o registro.",
         variant: "destructive",
       });
-    } finally {
-      // Garante que o body volte a receber eventos caso o Radix deixe travado
-      if (typeof document !== "undefined") {
-        setTimeout(() => {
-          document.body.style.pointerEvents = "";
-        }, 100);
-      }
     }
   };
-  
+
   const handleClearAll = () => {
+    setClearAllConfirmText("");
     setClearAllDialogOpen(true);
   };
-  
+
   const confirmClearAll = async () => {
+    if (clearAllConfirmText !== "EXCLUIR") return;
     try {
-      // Close dialog immediately to prevent UI freeze
       setClearAllDialogOpen(false);
-      
-      // Execute deletion
+      setClearAllConfirmText("");
       await clearAllRecords.mutateAsync();
-      
-      toast({
-        title: "Registros excluídos",
-        description: "Todos os registros financeiros foram excluídos com sucesso.",
-      });
     } catch (error: any) {
       toast({
         title: "Erro ao excluir",
@@ -340,7 +325,35 @@ export default function FinancialRecords() {
       });
     }
   };
-  
+
+  const handleExportCsv = () => {
+    if (!sortedRecords.length) {
+      toast({ title: "Nada para exportar", description: "Nenhum registro no período selecionado." });
+      return;
+    }
+    const headers = ["Data", "Dia", "Horário", "Duração", "Clínica", "Paciente", "Valor", "Status", "Descrição"];
+    const escape = (v: string) => `"${(v || "").replace(/"/g, '""')}"`;
+    const rows = sortedRecords.map(r => [
+      format(parseDateLocal(r.session_date), "dd/MM/yyyy"),
+      getWeekdayLabel(r.description) || "",
+      getAppointmentTime(r.description) || "",
+      getAppointmentDuration(r.description) || "",
+      r.clinic_name || "",
+      r.patient_name || "",
+      Number(r.amount || 0).toFixed(2).replace(".", ","),
+      r.session_status || "scheduled",
+      getCleanDescription(r.description) || "",
+    ].map(v => escape(String(v))).join(";"));
+    const csv = "\uFEFF" + [headers.join(";"), ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `registros-financeiros-${format(new Date(), "yyyy-MM-dd")}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const handleDateFilter = (start_date: string, end_date: string) => {
     setDateFilter({ start_date, end_date });
   };
