@@ -558,6 +558,13 @@ export type Database = {
             referencedRelation: "course_purchases"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "course_access_purchase_id_fkey"
+            columns: ["purchase_id"]
+            isOneToOne: false
+            referencedRelation: "creator_course_purchases"
+            referencedColumns: ["id"]
+          },
         ]
       }
       course_creators: {
@@ -1740,6 +1747,73 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      creator_course_purchases: {
+        Row: {
+          amount_cents: number | null
+          buyer_name: string | null
+          confirmed_by_creator_at: string | null
+          course_id: string | null
+          created_at: string | null
+          creator_amount_cents: number | null
+          creator_id: string | null
+          id: string | null
+          paid_at: string | null
+          payment_status: string | null
+          platform_amount_cents: number | null
+          user_id: string | null
+        }
+        Insert: {
+          amount_cents?: number | null
+          buyer_name?: string | null
+          confirmed_by_creator_at?: string | null
+          course_id?: string | null
+          created_at?: string | null
+          creator_amount_cents?: number | null
+          creator_id?: string | null
+          id?: string | null
+          paid_at?: string | null
+          payment_status?: string | null
+          platform_amount_cents?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          amount_cents?: number | null
+          buyer_name?: string | null
+          confirmed_by_creator_at?: string | null
+          course_id?: string | null
+          created_at?: string | null
+          creator_amount_cents?: number | null
+          creator_id?: string | null
+          id?: string | null
+          paid_at?: string | null
+          payment_status?: string | null
+          platform_amount_cents?: number | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_purchases_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_purchases_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "course_creators"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_purchases_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "course_creators_secure"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Functions: {
