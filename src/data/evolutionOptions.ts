@@ -13,7 +13,8 @@ export const evolutionOptions = {
     "Instrumentos melódicos (metalofone, xilofone), maracas e pandeirola",
     "Recursos tecnológicos (caixas de som, aplicativos musicais) e instrumentos diversos",
     "Instrumentos de corda (violão, cavaquinho), percussão corporal e voz",
-    "Boomwhackers, instrumentos de sopro adaptados e recursos rítmicos variados"
+    "Boomwhackers, instrumentos de sopro adaptados e recursos rítmicos variados",
+    "Handpan Drum (instrumento melódico de percussão com timbre suave e harmônico)"
   ],
 
   dynamics_used: [
