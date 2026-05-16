@@ -589,14 +589,44 @@ export default function FinancialRecords() {
         <DateRangeFilter onFilter={handleDateFilter} />
       </div>
       <div className="flex flex-col space-y-2">
-        <div className="relative bg-card/80 backdrop-blur-sm rounded-lg shadow-sm border border-border p-1.5">
-          <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            className="pl-9"
-            placeholder="Pesquisar registros..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+          <div className="relative bg-card/80 backdrop-blur-sm rounded-lg shadow-sm border border-border p-1.5">
+            <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              className="pl-9"
+              placeholder="Pesquisar registros..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+            />
+          </div>
+          <div className="bg-card/80 backdrop-blur-sm rounded-lg shadow-sm border border-border p-1.5">
+            <Select value={clinicFilter} onValueChange={setClinicFilter}>
+              <SelectTrigger>
+                <FilterIcon className="h-4 w-4 mr-2 text-muted-foreground" />
+                <SelectValue placeholder="Clínica" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas as clínicas</SelectItem>
+                {clinicOptions.map(c => (
+                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="bg-card/80 backdrop-blur-sm rounded-lg shadow-sm border border-border p-1.5">
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger>
+                <FilterIcon className="h-4 w-4 mr-2 text-muted-foreground" />
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os status</SelectItem>
+                <SelectItem value="scheduled">Agendada</SelectItem>
+                <SelectItem value="completed">Concluída</SelectItem>
+                <SelectItem value="no_show">Falta</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         <div className="bg-card/80 backdrop-blur-sm rounded-lg shadow-sm border border-border p-1.5 flex justify-center">
           <Button 
@@ -619,7 +649,7 @@ export default function FinancialRecords() {
           </Button>
         </div>
       </div>
-      
+
       
       <Card className="shadow-md border-border overflow-hidden">
         <CardHeader className="pb-2 bg-gradient-to-r from-primary/5 to-primary/10">
