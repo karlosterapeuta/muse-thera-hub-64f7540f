@@ -179,7 +179,7 @@ export default function FinancialRecords() {
     
     // Filter records for current week
     const weekRecords = filteredRecords.filter(record => {
-      const recordDate = parseISO(record.session_date);
+      const recordDate = parseDateLocal(record.session_date);
       return recordDate >= startDate && recordDate <= endDate;
     });
     
@@ -188,7 +188,7 @@ export default function FinancialRecords() {
     for (let i = 0; i < 7; i++) {
       const date = addDays(startDate, i);
       const dayRecords = weekRecords.filter(record => 
-        isSameDay(parseISO(record.session_date), date)
+        isSameDay(parseDateLocal(record.session_date), date)
       ).sort((a, b) => {
         const timeA = getAppointmentTime(a.description) || "00:00";
         const timeB = getAppointmentTime(b.description) || "00:00";
@@ -225,7 +225,7 @@ export default function FinancialRecords() {
     const short = getWeekdayShort(record.description);
     if (short) return short;
     
-    const date = parseISO(record.session_date);
+    const date = parseDateLocal(record.session_date);
     const dayOfWeek = date.getDay(); // 0=Sun, 1=Mon...6=Sat
     const dayMap: Record<number, string> = { 1: "SEG", 2: "TER", 3: "QUA", 4: "QUI", 5: "SEX", 6: "SAB", 0: "DOM" };
     return dayMap[dayOfWeek] || "DOM";
@@ -473,7 +473,7 @@ export default function FinancialRecords() {
         
         <div className="flex items-center justify-between pt-2 border-t border-border">
           <div className="text-xs text-muted-foreground">
-            Dia da semana: {getWeekdayLabel(record.description) || format(parseISO(record.session_date), "EEEE", { locale: ptBR })}
+            Dia da semana: {getWeekdayLabel(record.description) || format(parseDateLocal(record.session_date), "EEEE", { locale: ptBR })}
           </div>
           <div className="font-bold text-primary text-lg">
             {formatCurrency(record.amount)}
@@ -741,7 +741,7 @@ export default function FinancialRecords() {
                       {sortedRecords.map((record) => (
                         <TableRow key={record.id} className="hover:bg-primary/5 transition-colors">
                           <TableCell className="whitespace-nowrap font-medium text-xs md:text-sm">
-                            {format(parseISO(record.session_date), "dd/MM/yyyy", { locale: ptBR })}
+                            {format(parseDateLocal(record.session_date), "dd/MM/yyyy", { locale: ptBR })}
                           </TableCell>
                           {!isMobile && (
                             <TableCell className="whitespace-nowrap text-xs md:text-sm">
