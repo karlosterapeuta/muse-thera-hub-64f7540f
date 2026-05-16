@@ -207,7 +207,7 @@ async function generateFutureRecords(parentRecord: any) {
       patient_id: parentRecord.patient_id,
       amount: parentRecord.amount,
       session_date: format(currentDate, "yyyy-MM-dd"),
-      description: `${parentRecord.description || ''} (Recorrente)`,
+      description: parentRecord.description || '',
       is_recurring: false,
       parent_record_id: parentRecord.id,
       recurrence_pattern: parentRecord.recurrence_pattern
