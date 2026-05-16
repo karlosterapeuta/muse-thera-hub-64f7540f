@@ -1,33 +1,110 @@
-## Problema
+## Escopo
+Análise completa do fluxo de **Gestão Financeira** (`/finance`, `/finance/records`, `/finance/clinics`, `/finance/reports`) — corrigir bugs conhecidos e entregar melhorias de UX, performance e segurança.
 
-Os blocos **"Identificação e Encaminhamento"** e **"Medicação em Uso"** não aparecem na anamnese salva nem no PDF exportado porque:
+---
 
-1. **Colunas inexistentes no banco** — os campos `diagnosis_details`, `cid_code`, `clinical_details`, `medication_schedule` e `medication_effects` são preenchidos no formulário mas a tabela `anamnesis` não possui essas colunas. O `filterDatabaseFields` em `AnamnesisFormWrapper.tsx` descarta tudo que não existe no banco, então esses dados nunca são gravados.
-2. **`AnamnesisView` desatualizado** — mostra "Informações do Paciente" e "Tratamento e Medicação" sem renderizar `diagnosis_details`, `cid_code`, `medication_schedule` nem `medication_effects` (mesmo que existissem no banco).
-3. **PDF** — o gerador (`anamnesisePDFGenerator.ts`) já renderiza esses campos, então só falta a persistência funcionar.
+## Bugs identificados (com causa raiz)
 
-## Mudanças
+### 1. Travamento ao excluir agenda (raiz definitiva)
+- Hoje há um workaround forçando `body.style.pointerEvents=""`. A causa real: o diálogo de confirmação é aberto a partir de um `DropdownMenu`. O Radix mantém o focus trap do menu enquanto o Dialog monta, sobrepondo overlays e travando ponteiros.
+- **Correção:** trocar o `Dialog` de confirmação por `AlertDialog`, abrir com `requestAnimationFrame` após fechar o dropdown, e remover o hack do `pointerEvents`.
 
-### 1. Migração no banco (Lovable Cloud)
-Adicionar colunas faltantes na tabela `public.anamnesis`:
-- `diagnosis_details text`
-- `cid_code text`
-- `clinical_details text`
-- `medication_schedule text`
-- `medication_effects text`
+### 2. `useFinancialRecords` sem filtro `professional_id`
+- Depende só de RLS. Se houver bug no policy, vaza dados; sem filtro também não usa o índice composto.
+- **Correção:** filtrar `.eq("professional_id", user.id)` explicitamente (defense-in-depth) e padronizar com `useFinanceDashboard`.
 
-### 2. `src/pages/anamnesis/AnamnesisFormWrapper.tsx`
-Incluir os 5 novos campos no array `basicDatabaseFields` para que sejam reconhecidos como persistíveis e o cache de colunas seja invalidado.
+### 3. Página `records.tsx` busca lista 2x
+- `useFinancialRecords(dateFilter)` + `useFinancialRecords(undefined)` baixam quase os mesmos dados; em conexões móveis dobra latência.
+- **Correção:** baixar uma única vez sem filtro e aplicar o filtro de período no cliente (volume típico baixo) **ou** derivar a "agenda fixa" a partir do mesmo dataset filtrado.
 
-### 3. `src/pages/anamnesis/components/AnamnesisView.tsx`
-- Renomear o bloco "Informações do Paciente" para **"Identificação e Encaminhamento"** e adicionar `diagnosis_details` e `cid_code`.
-- Renomear "Tratamento e Medicação" para **"Medicação em Uso"** e exibir `current_medication`, `medication_schedule` e `medication_effects` (mover `therapeutic_goals`/`treatment_approach` para um bloco separado "Objetivos Terapêuticos").
-- Garantir que os blocos apareçam quando qualquer um dos campos estiver preenchido.
+### 4. `useUpdateFinancialRecord` perde campos
+- Faz `update` apenas de 5 colunas, descartando `session_status`, `is_recurring`, `recurrence_type`, etc. ao editar um registro recorrente.
+- **Correção:** só enviar os campos realmente presentes no payload (`Object.fromEntries` filtrando `undefined`).
 
-### 4. Validação
-Após implementar:
-- Criar/editar uma anamnese, preencher os campos das seções 1 e 3, salvar.
-- Reabrir a visualização → confirmar que os blocos aparecem com os dados.
-- Exportar o PDF → confirmar que os blocos aparecem.
+### 5. Hooks de mutação não invalidam o dashboard
+- `useDeleteFinancialRecord` e `useUpdateSessionStatus` não invalidam `["finance-dashboard"]`; cards e gráficos ficam desatualizados até refresh manual.
+- **Correção:** invalidar ambas as queries em todos os hooks (add/update/delete/clearAll/recurring/status).
 
-Não vou alterar a lógica de outras seções nem mexer no formulário em si — apenas habilitar a persistência e a exibição dos campos que já existem na UI.
+### 6. Bug de regex no form de edição
+- `FinancialRecordForm.tsx` linha ~230 tem `\\s` (escape duplo) na regex de limpeza usada no `useEffect`, então ao editar a descrição vem suja com "Dia da semana: … | Horário: … | Duração: …".
+- **Correção:** usar a mesma regex do `getCleanDescription` (helper compartilhado).
+
+### 7. Recorrência: descrição duplica "(Recorrente)" e quebra parser
+- `generateFutureRecords` faz `description: \`${parentRecord.description || ''} (Recorrente)\``. Como o `description` do pai já contém `Dia da semana: … | Horário: … | Duração: … | <texto>`, o sufixo é colado **depois** dos pipes e fica dentro do bloco de texto. Em edições subsequentes, vira `... (Recorrente) (Recorrente)`.
+- **Correção:** ao gerar filhos, preservar exatamente o `description` do pai (sem sufixo) e usar o badge `RecurringRecordIndicator` para sinalizar visualmente.
+
+### 8. Datas em UTC violando a regra do projeto
+- `parseISO(record.session_date)` interpreta `yyyy-MM-dd` como UTC midnight → off-by-one em fusos negativos.
+- **Correção:** criar helper `parseDateLocal(yyyyMMdd)` (já existe em `src/utils/dateUtils.ts` — usar) e substituir todas as chamadas `parseISO` em records/dashboard.
+
+### 9. Dedupe da agenda fixa cancela pacientes sem nome
+- A chave é `patient_name + time + clinic_name`. Quando `patient_name` é `undefined`, todos viram a mesma chave e somem.
+- **Correção:** usar `record.id` ou `patient_id ?? record.id` na chave de dedupe.
+
+### 10. "Editar Série" é botão morto
+- `RecurringRecordActions` mostra toast "Funcionalidade em desenvolvimento".
+- **Correção:** ligar ao hook `useUpdateRecurringSeries` que já existe, abrindo o `FinancialRecordForm` em modo "editar série" com flag.
+
+### 11. `Limpar Tudo` perigoso demais
+- Um clique + uma confirmação simples apagam **todo** o histórico financeiro do profissional. Sem backup.
+- **Correção:** exigir digitar `EXCLUIR` para liberar o botão; mostrar contagem de registros que serão apagados.
+
+### 12. Agregação semanal e dashboard
+- `format(date, 'w')` não é ISO; chave colide entre anos próximos. Também não há gráfico de status (concluída/falta/agendada) nem de receita por paciente.
+
+### 13. Limite de 1.000 linhas do Supabase
+- Sem `range()` nem paginação. Profissionais com mais de 1.000 sessões nunca verão todas.
+- **Correção:** paginar (`range(0, 4999)` com aviso) ou agregar no servidor via RPC.
+
+### 14. Print quebrado
+- `window.print()` no header de `index.tsx` mas não há `@media print` escondendo header/sidebar/abas.
+- **Correção:** stylesheet `print:hidden` nas áreas certas (já parcialmente feito) e bloco `print:block` com o resumo.
+
+---
+
+## Melhorias
+
+1. **Totais e KPIs no topo de `records.tsx`** — Receita do período, nº de sessões, ticket médio, taxa de falta — reaproveitando `FinancialStatCards`.
+2. **Filtros na lista** — clínica, paciente, status (chips); persistir em querystring.
+3. **Exportar CSV** dos registros filtrados (`papaparse` já é leve, sem nova dep usar `Blob`).
+4. **Debounce** do campo de busca (300 ms) para evitar re-render a cada tecla.
+5. **Loader esqueleto** ao invés de spinner com texto, mantendo a altura da tabela.
+6. **Tooltip** no card da agenda fixa explicando "Permanente — não muda com o mês".
+7. **Confirmação por digitação** no "Limpar Tudo".
+8. **Atalho rápido** "Marcar todas as sessões de hoje como concluídas" no cabeçalho da agenda da semana.
+9. **Acessibilidade** — `aria-label` nos botões só-ícone do header e nos cards da agenda; foco visível.
+10. **Mensagens de erro humanas** — substituir `error.message` cru por mensagens em português.
+11. **Memoização** — `useMemo` em `sortedRecords`, `recordsByWeekday`, `weeklyAgenda` para evitar recomputar a cada digitação.
+
+---
+
+## Detalhes técnicos
+
+### Arquivos a alterar
+```
+src/pages/finance/records.tsx
+src/pages/finance/index.tsx
+src/pages/finance/components/FinancialRecordForm.tsx
+src/pages/finance/components/RecurringRecordActions.tsx
+src/pages/finance/hooks/useFinancialData.ts
+src/pages/finance/hooks/useFinanceDashboard.ts
+src/pages/finance/hooks/useUpdateSessionStatus.ts
+src/pages/finance/hooks/useRecurringFinancialRecords.ts
+src/utils/dateUtils.ts (adicionar parseDateLocal se faltar)
+```
+
+Nenhuma migração de banco necessária — todos os campos já existem.
+
+### Ordem de implementação
+1. Bugs críticos: 1, 4, 5, 6, 7, 8, 9 (corrigem dados errados/UI travada).
+2. Refator de hooks e dedupe (2, 3, 12 parcial).
+3. Recurso "Editar Série" (10).
+4. Guard de "Limpar Tudo" (11).
+5. Filtros, CSV, KPIs, debounce (melhorias 1–5).
+6. Polimento (6–11).
+
+---
+
+## Pergunta antes de implementar
+
+Quer que eu execute **tudo** num único build, ou prefere que eu vá em duas etapas — primeiro só os bugs críticos (1, 4, 5, 6, 7, 8, 9), valide com você, e depois aplico as melhorias?
