@@ -138,7 +138,7 @@ export function RecurringRecordActions({ record, onEdit, onEditSeries }: Recurri
               {isParent && (
                 <DropdownMenuItem 
                   className="flex items-center cursor-pointer text-blue-600"
-                  onClick={() => toast.info("Funcionalidade em desenvolvimento")}
+                  onClick={() => onEditSeries?.(record)}
                 >
                   <PencilIcon className="mr-2 h-4 w-4" />
                   Editar Série
