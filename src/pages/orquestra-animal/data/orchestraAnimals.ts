@@ -8,8 +8,10 @@ export interface AnimalMusician {
   instrumentEmoji: string;
   section: Section;
   color: string;
-  frequency: number; // base note Hz
+  frequency: number; // base note Hz (fallback synth)
   fact: string;
+  /** Real animal sound (Wikimedia Commons, CC-licensed). */
+  soundUrl?: string;
 }
 
 export const sectionLabels: Record<Section | "tutti", string> = {
