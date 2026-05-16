@@ -958,80 +958,54 @@ export default function FinancialRecords() {
         </Dialog>
       )}
       
-      <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
-        <DialogContent className={isMobile ? "w-[95vw] max-w-md rounded-lg" : "sm:max-w-md"}>
-          <div className="space-y-4">
-            <DialogTitle>Confirmar exclusão</DialogTitle>
-            <DialogDescription>Você tem certeza que deseja excluir este registro financeiro? Esta ação não pode ser desfeita.</DialogDescription>
-            <div className="flex items-center space-x-3">
-              <div className="bg-destructive/10 p-2 rounded-full">
-                <TrashIcon className="h-5 w-5 text-destructive" />
-              </div>
-            </div>
-            <div className="flex justify-end space-x-2">
-              <Button
-                variant="outline"
-                onClick={() => setConfirmDialogOpen(false)}
-                disabled={deleteRecord.isPending}
-              >
-                Cancelar
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={confirmDelete}
-                disabled={deleteRecord.isPending}
-                className="shadow-sm hover:shadow-md transition-colors"
-              >
-                {deleteRecord.isPending ? (
-                  <>
-                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                    Excluindo...
-                  </>
-                ) : (
-                  "Excluir"
-                )}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-      
-      <Dialog open={clearAllDialogOpen} onOpenChange={setClearAllDialogOpen}>
-        <DialogContent className={isMobile ? "w-[95vw] max-w-md rounded-lg" : "sm:max-w-md"}>
-          <div className="space-y-4">
-            <DialogTitle>Confirmar exclusão total</DialogTitle>
-            <DialogDescription>Você tem certeza que deseja excluir <strong>TODOS</strong> os registros financeiros? Esta ação não pode ser desfeita.</DialogDescription>
-            <div className="flex items-center space-x-3">
-              <div className="bg-destructive/10 p-2 rounded-full">
-                <Trash2Icon className="h-5 w-5 text-destructive" />
-              </div>
-            </div>
-            <div className="flex justify-end space-x-2">
-              <Button
-                variant="outline"
-                onClick={() => setClearAllDialogOpen(false)}
-              >
-                Cancelar
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={confirmClearAll}
-                disabled={clearAllRecords.isPending}
-                className="shadow-sm hover:shadow-md transition-colors"
-              >
-                {clearAllRecords.isPending ? (
-                  <>
-                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                    Excluindo...
-                  </>
-                ) : (
-                  "Excluir Todos"
-                )}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <AlertDialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+            <AlertDialogDescription>
+              Você tem certeza que deseja excluir este registro financeiro? Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleteRecord.isPending}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              disabled={deleteRecord.isPending}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              {deleteRecord.isPending ? "Excluindo..." : "Excluir"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={clearAllDialogOpen} onOpenChange={setClearAllDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar exclusão total</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação apaga <strong>TODOS</strong> os {allRecords.length} registros financeiros do seu histórico e não pode ser desfeita.
+              Para confirmar, digite <strong>EXCLUIR</strong> abaixo.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <Input
+            value={clearAllConfirmText}
+            onChange={(e) => setClearAllConfirmText(e.target.value)}
+            placeholder="Digite EXCLUIR para confirmar"
+            autoFocus
+          />
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={clearAllRecords.isPending}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmClearAll}
+              disabled={clearAllRecords.isPending || clearAllConfirmText !== "EXCLUIR"}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              {clearAllRecords.isPending ? "Excluindo..." : "Excluir Todos"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
