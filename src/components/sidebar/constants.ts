@@ -23,6 +23,7 @@ import {
   Bot,
   FolderOpen,
   History,
+  Music2,
 } from "lucide-react";
 
 export const mainMenuItems = [
@@ -42,6 +43,7 @@ export const musicalGamesMenuItems: any[] = [];
 
 export const toolsMenuItems = [
   { icon: Bot, text: "🤖 Assistente IA", path: "/ai-assistant", gradient: "from-violet-500 to-purple-600", isNew: true },
+  { icon: Music2, text: "🎺 Orquestra Animal", path: "/orquestra-animal", gradient: "from-orange-500 to-pink-600", isNew: true },
   { icon: Waves, text: "🧠 Frequências Binaurais", path: "/binaural-frequencies", gradient: "from-green-500 to-emerald-600" },
   { icon: GraduationCap, text: "Curso Flix", path: "/courses", gradient: "from-red-600 to-red-700", isNew: true, isNetflixStyle: true },
 ];
