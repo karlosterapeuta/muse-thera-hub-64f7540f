@@ -69,3 +69,17 @@ export const formatBirthDateForDisplay = (
   
   return dateObj.toLocaleDateString(locale);
 };
+
+/**
+ * Faz parse de uma string yyyy-MM-dd (ou ISO) no timezone LOCAL.
+ * Evita o off-by-one causado por parseISO que interpreta yyyy-MM-dd como UTC.
+ */
+export const parseDateLocal = (input: string | Date | null | undefined): Date => {
+  if (!input) return new Date(NaN);
+  if (input instanceof Date) return input;
+  const ymd = input.length >= 10 ? input.substring(0, 10) : input;
+  const [year, month, day] = ymd.split('-').map(Number);
+  if (!year || !month || !day) return new Date(input);
+  return new Date(year, month - 1, day);
+};
+

@@ -53,6 +53,7 @@ export function useCreateRecurringRecord() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["financial-records"] });
+      queryClient.invalidateQueries({ queryKey: ["finance-dashboard"] });
       toast.success("Registro recorrente criado com sucesso!");
     },
     onError: (error) => {
@@ -114,6 +115,7 @@ export function useUpdateRecurringSeries() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["financial-records"] });
+      queryClient.invalidateQueries({ queryKey: ["finance-dashboard"] });
       toast.success("Série recorrente atualizada com sucesso!");
     },
     onError: (error) => {
@@ -173,6 +175,7 @@ export function useDeleteRecurringSeries() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["financial-records"] });
+      queryClient.invalidateQueries({ queryKey: ["finance-dashboard"] });
       toast.success("Registro(s) excluído(s) com sucesso!");
     },
     onError: (error) => {
@@ -204,7 +207,7 @@ async function generateFutureRecords(parentRecord: any) {
       patient_id: parentRecord.patient_id,
       amount: parentRecord.amount,
       session_date: format(currentDate, "yyyy-MM-dd"),
-      description: `${parentRecord.description || ''} (Recorrente)`,
+      description: parentRecord.description || '',
       is_recurring: false,
       parent_record_id: parentRecord.id,
       recurrence_pattern: parentRecord.recurrence_pattern

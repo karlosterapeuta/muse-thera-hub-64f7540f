@@ -1,12 +1,29 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -23,26 +40,31 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { format, parseISO, startOfWeek, endOfWeek, addDays, isSameDay, isToday } from "date-fns";
+import { format, startOfWeek, endOfWeek, addDays, isSameDay, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { PlusIcon, MoreHorizontalIcon, PencilIcon, TrashIcon, SearchIcon, ClockIcon, CalendarIcon, UserIcon, BuildingIcon, DollarSignIcon, InfoIcon, ListIcon, TableIcon, LayoutGridIcon, BarChart2Icon, Trash2Icon, PrinterIcon, PinIcon } from "lucide-react";
+import { PlusIcon, MoreHorizontalIcon, PencilIcon, TrashIcon, SearchIcon, ClockIcon, CalendarIcon, UserIcon, BuildingIcon, DollarSignIcon, InfoIcon, ListIcon, TableIcon, LayoutGridIcon, BarChart2Icon, Trash2Icon, PrinterIcon, PinIcon, DownloadIcon, FilterIcon } from "lucide-react";
 import { useFinancialRecords, useDeleteFinancialRecord, useClearAllFinancialRecords } from "./hooks/useFinancialData";
 import { FinancialRecordForm } from "./components/FinancialRecordForm";
 import { DateRangeFilter } from "./components/DateRangeFilter";
-import { PeriodFilter, FinancialRecord } from "./types";
+import { PeriodFilter, FinancialRecord, SessionStatus } from "./types";
 import { useToast } from "@/hooks/use-toast";
 import { ClinicForm } from "./components/ClinicForm";
 import { RecurringRecordIndicator } from "./components/RecurringRecordIndicator";
 import { RecurringRecordActions } from "./components/RecurringRecordActions";
 import { SessionStatusBadge } from "./components/SessionStatusBadge";
+import { FinancialStatCards } from "./components/FinancialStatCards";
 import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
+import { parseDateLocal } from "@/utils/dateUtils";
 
 export default function FinancialRecords() {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
   const [dateFilter, setDateFilter] = useState<PeriodFilter | undefined>();
+  const [searchInput, setSearchInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [clinicFilter, setClinicFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [formOpen, setFormOpen] = useState(false);
   const [clinicFormOpen, setClinicFormOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<FinancialRecord | undefined>();
@@ -50,9 +72,16 @@ export default function FinancialRecords() {
   const [recordToDelete, setRecordToDelete] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"list" | "fixed">("fixed");
   const [clearAllDialogOpen, setClearAllDialogOpen] = useState(false);
+  const [clearAllConfirmText, setClearAllConfirmText] = useState("");
   const isMobile = useIsMobile();
   const isTablet = useIsTablet();
-  
+
+  // Debounce do campo de busca
+  useEffect(() => {
+    const t = setTimeout(() => setSearchTerm(searchInput.trim()), 300);
+    return () => clearTimeout(t);
+  }, [searchInput]);
+
   const { data: records = [], isLoading, refetch } = useFinancialRecords(dateFilter);
   const { data: allRecords = [] } = useFinancialRecords(undefined);
   const deleteRecord = useDeleteFinancialRecord();
@@ -114,60 +143,69 @@ export default function FinancialRecords() {
     return description.replace(/Dia da semana: [a-z]+\s*\|\s*Horário: \d{2}:\d{2}\s*\|\s*Duração: \d+ minutos\s*\|\s*/, "");
   };
   
-  const filteredRecords = records.filter(record => 
-    record.clinic_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    record.patient_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    record.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  const matchesFilters = (record: FinancialRecord) => {
+    const term = searchTerm.toLowerCase();
+    const textOk = !term ||
+      record.clinic_name?.toLowerCase().includes(term) ||
+      record.patient_name?.toLowerCase().includes(term) ||
+      record.description?.toLowerCase().includes(term);
+    const clinicOk = clinicFilter === "all" || record.clinic_id === clinicFilter;
+    const statusOk = statusFilter === "all" || (record.session_status || "scheduled") === statusFilter;
+    return textOk && clinicOk && statusOk;
+  };
+
+  const filteredRecords = useMemo(
+    () => records.filter(matchesFilters),
+    [records, searchTerm, clinicFilter, statusFilter]
   );
-  
-  const sortedRecords = [...filteredRecords].sort((a, b) => {
-    const weekdayA = getWeekdayLabel(a.description);
-    const weekdayB = getWeekdayLabel(b.description);
-    
+
+  const sortedRecords = useMemo(() => {
     const weekdayOrder: Record<string, number> = {
-      "Segunda-feira": 1,
-      "Terça-feira": 2, 
-      "Quarta-feira": 3,
-      "Quinta-feira": 4,
-      "Sexta-feira": 5,
-      "Sábado": 6
+      "Segunda-feira": 1, "Terça-feira": 2, "Quarta-feira": 3,
+      "Quinta-feira": 4, "Sexta-feira": 5, "Sábado": 6,
     };
-    
-    if (weekdayOrder[weekdayA] !== weekdayOrder[weekdayB]) {
-      return (weekdayOrder[weekdayA] || 99) - (weekdayOrder[weekdayB] || 99);
-    }
-    
-    const timeA = getAppointmentTime(a.description);
-    const timeB = getAppointmentTime(b.description);
-    return timeA.localeCompare(timeB);
-  });
-  
+    return [...filteredRecords].sort((a, b) => {
+      const weekdayA = getWeekdayLabel(a.description);
+      const weekdayB = getWeekdayLabel(b.description);
+      if (weekdayOrder[weekdayA] !== weekdayOrder[weekdayB]) {
+        return (weekdayOrder[weekdayA] || 99) - (weekdayOrder[weekdayB] || 99);
+      }
+      const timeA = getAppointmentTime(a.description);
+      const timeB = getAppointmentTime(b.description);
+      return timeA.localeCompare(timeB);
+    });
+  }, [filteredRecords]);
+
+  // KPIs do período
+  const periodKpis = useMemo(() => {
+    const total = filteredRecords.reduce((s, r) => s + Number(r.amount || 0), 0);
+    const count = filteredRecords.length;
+    const avg = count > 0 ? total / count : 0;
+    return { total, count, avg };
+  }, [filteredRecords]);
+
   // Smart weekly agenda organization - group by current week
-  const organizeWeeklyAgenda = () => {
+  const weeklyAgenda = useMemo(() => {
     const today = new Date();
     const startDate = startOfWeek(today, { weekStartsOn: 0 });
     const endDate = endOfWeek(today, { weekStartsOn: 0 });
-    
-    // Filter records for current week
+
     const weekRecords = filteredRecords.filter(record => {
-      const recordDate = parseISO(record.session_date);
+      const recordDate = parseDateLocal(record.session_date);
       return recordDate >= startDate && recordDate <= endDate;
     });
-    
-    // Create week structure
+
     const weekDays = [];
     for (let i = 0; i < 7; i++) {
       const date = addDays(startDate, i);
-      const dayRecords = weekRecords.filter(record => 
-        isSameDay(parseISO(record.session_date), date)
+      const dayRecords = weekRecords.filter(record =>
+        isSameDay(parseDateLocal(record.session_date), date)
       ).sort((a, b) => {
         const timeA = getAppointmentTime(a.description) || "00:00";
         const timeB = getAppointmentTime(b.description) || "00:00";
         return timeA.localeCompare(timeB);
       });
-      
       const dayTotal = dayRecords.reduce((sum, record) => sum + record.amount, 0);
-      
       weekDays.push({
         date,
         dayName: format(date, "EEEE", { locale: ptBR }),
@@ -175,60 +213,61 @@ export default function FinancialRecords() {
         formatted: format(date, "dd/MM", { locale: ptBR }),
         records: dayRecords,
         total: dayTotal,
-        isToday: isToday(date)
+        isToday: isToday(date),
       });
     }
-    
     return weekDays;
-  };
-  
-  const weeklyAgenda = organizeWeeklyAgenda();
-  
-  // Fixed agenda: use ALL records grouped by session_date weekday
-  const fixedFilteredRecords = allRecords.filter(record => 
-    record.clinic_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    record.patient_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    record.description?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-  
-  const getRecordWeekday = (record: FinancialRecord): string => {
-    // First try description pattern, then fall back to session_date
-    const short = getWeekdayShort(record.description);
-    if (short) return short;
-    
-    const date = parseISO(record.session_date);
-    const dayOfWeek = date.getDay(); // 0=Sun, 1=Mon...6=Sat
-    const dayMap: Record<number, string> = { 1: "SEG", 2: "TER", 3: "QUA", 4: "QUI", 5: "SEX", 6: "SAB", 0: "DOM" };
-    return dayMap[dayOfWeek] || "DOM";
-  };
-  
-  const recordsByWeekday = {
-    "SEG": fixedFilteredRecords.filter(record => getRecordWeekday(record) === "SEG"),
-    "TER": fixedFilteredRecords.filter(record => getRecordWeekday(record) === "TER"),
-    "QUA": fixedFilteredRecords.filter(record => getRecordWeekday(record) === "QUA"),
-    "QUI": fixedFilteredRecords.filter(record => getRecordWeekday(record) === "QUI"),
-    "SEX": fixedFilteredRecords.filter(record => getRecordWeekday(record) === "SEX"),
-    "SAB": fixedFilteredRecords.filter(record => getRecordWeekday(record) === "SAB"),
-  };
-  
-  // Deduplicate fixed agenda by patient+weekday+time (show unique slots only)
-  Object.keys(recordsByWeekday).forEach(day => {
-    const seen = new Set<string>();
-    recordsByWeekday[day as keyof typeof recordsByWeekday] = 
-      recordsByWeekday[day as keyof typeof recordsByWeekday]
+  }, [filteredRecords]);
+
+  // Lista única de clínicas para o filtro
+  const clinicOptions = useMemo(() => {
+    const map = new Map<string, string>();
+    allRecords.forEach(r => {
+      if (r.clinic_id && r.clinic_name) map.set(r.clinic_id, r.clinic_name);
+    });
+    return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
+  }, [allRecords]);
+
+  // Agenda fixa: aplica os mesmos filtros sobre todos os registros
+  const recordsByWeekday = useMemo(() => {
+    const fixedFilteredRecords = allRecords.filter(matchesFilters);
+    const getRecordWeekday = (record: FinancialRecord): string => {
+      const short = getWeekdayShort(record.description);
+      if (short) return short;
+      const date = parseDateLocal(record.session_date);
+      const dayMap: Record<number, string> = { 1: "SEG", 2: "TER", 3: "QUA", 4: "QUI", 5: "SEX", 6: "SAB", 0: "DOM" };
+      return dayMap[date.getDay()] || "DOM";
+    };
+
+    const byDay: Record<string, FinancialRecord[]> = {
+      SEG: [], TER: [], QUA: [], QUI: [], SEX: [], SAB: [],
+    };
+    fixedFilteredRecords.forEach(r => {
+      const d = getRecordWeekday(r);
+      if (byDay[d]) byDay[d].push(r);
+    });
+
+    // Dedup por slot único: usa patient_id (ou id quando não há paciente) + horário + clinic_id
+    Object.keys(byDay).forEach(day => {
+      const seen = new Set<string>();
+      byDay[day] = byDay[day]
         .sort((a, b) => {
           const timeA = getAppointmentTime(a.description) || "00:00";
           const timeB = getAppointmentTime(b.description) || "00:00";
           return timeA.localeCompare(timeB);
         })
         .filter(record => {
-          const key = `${record.patient_name}-${getAppointmentTime(record.description)}-${record.clinic_name}`;
+          const slotOwner = record.patient_id || record.id;
+          const key = `${slotOwner}-${getAppointmentTime(record.description)}-${record.clinic_id}`;
           if (seen.has(key)) return false;
           seen.add(key);
           return true;
         });
-  });
-  
+    });
+
+    return byDay;
+  }, [allRecords, searchTerm, clinicFilter, statusFilter]);
+
   useEffect(() => {
     if (location.state?.openForm) {
       setFormOpen(true);
@@ -243,18 +282,15 @@ export default function FinancialRecords() {
   
   const handleDeleteClick = (id: string) => {
     setRecordToDelete(id);
-    setConfirmDialogOpen(true);
+    // Defere a abertura para depois do fechamento do DropdownMenu (evita travamento Radix)
+    requestAnimationFrame(() => setConfirmDialogOpen(true));
   };
-  
+
   const confirmDelete = async () => {
     if (!recordToDelete) return;
-
     const idToDelete = recordToDelete;
-
-    // Fecha o diálogo imediatamente para evitar congelamento do Radix (pointer-events stuck no body)
     setConfirmDialogOpen(false);
     setRecordToDelete(null);
-
     try {
       await deleteRecord.mutateAsync(idToDelete);
       toast({
@@ -267,32 +303,20 @@ export default function FinancialRecords() {
         description: error.message || "Não foi possível excluir o registro.",
         variant: "destructive",
       });
-    } finally {
-      // Garante que o body volte a receber eventos caso o Radix deixe travado
-      if (typeof document !== "undefined") {
-        setTimeout(() => {
-          document.body.style.pointerEvents = "";
-        }, 100);
-      }
     }
   };
-  
+
   const handleClearAll = () => {
+    setClearAllConfirmText("");
     setClearAllDialogOpen(true);
   };
-  
+
   const confirmClearAll = async () => {
+    if (clearAllConfirmText !== "EXCLUIR") return;
     try {
-      // Close dialog immediately to prevent UI freeze
       setClearAllDialogOpen(false);
-      
-      // Execute deletion
+      setClearAllConfirmText("");
       await clearAllRecords.mutateAsync();
-      
-      toast({
-        title: "Registros excluídos",
-        description: "Todos os registros financeiros foram excluídos com sucesso.",
-      });
     } catch (error: any) {
       toast({
         title: "Erro ao excluir",
@@ -301,7 +325,35 @@ export default function FinancialRecords() {
       });
     }
   };
-  
+
+  const handleExportCsv = () => {
+    if (!sortedRecords.length) {
+      toast({ title: "Nada para exportar", description: "Nenhum registro no período selecionado." });
+      return;
+    }
+    const headers = ["Data", "Dia", "Horário", "Duração", "Clínica", "Paciente", "Valor", "Status", "Descrição"];
+    const escape = (v: string) => `"${(v || "").replace(/"/g, '""')}"`;
+    const rows = sortedRecords.map(r => [
+      format(parseDateLocal(r.session_date), "dd/MM/yyyy"),
+      getWeekdayLabel(r.description) || "",
+      getAppointmentTime(r.description) || "",
+      getAppointmentDuration(r.description) || "",
+      r.clinic_name || "",
+      r.patient_name || "",
+      Number(r.amount || 0).toFixed(2).replace(".", ","),
+      r.session_status || "scheduled",
+      getCleanDescription(r.description) || "",
+    ].map(v => escape(String(v))).join(";"));
+    const csv = "\uFEFF" + [headers.join(";"), ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `registros-financeiros-${format(new Date(), "yyyy-MM-dd")}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const handleDateFilter = (start_date: string, end_date: string) => {
     setDateFilter({ start_date, end_date });
   };
@@ -444,7 +496,7 @@ export default function FinancialRecords() {
         
         <div className="flex items-center justify-between pt-2 border-t border-border">
           <div className="text-xs text-muted-foreground">
-            Dia da semana: {getWeekdayLabel(record.description) || format(parseISO(record.session_date), "EEEE", { locale: ptBR })}
+            Dia da semana: {getWeekdayLabel(record.description) || format(parseDateLocal(record.session_date), "EEEE", { locale: ptBR })}
           </div>
           <div className="font-bold text-primary text-lg">
             {formatCurrency(record.amount)}
@@ -500,6 +552,17 @@ export default function FinancialRecords() {
             {isMobile && <span className="ml-1 text-xs">Novo</span>}
             {!isMobile && <span className="inline">Novo Registro</span>}
           </Button>
+          <Button
+            onClick={handleExportCsv}
+            variant="outline"
+            size={isMobile ? "sm" : "default"}
+            className="shadow-sm hover:shadow-md transition-all"
+            disabled={!sortedRecords.length}
+          >
+            <DownloadIcon className="h-4 w-4 sm:h-5 sm:w-5 text-[#0EA5E9]" />
+            {isMobile && <span className="ml-1 text-xs">CSV</span>}
+            {!isMobile && <span className="inline">Exportar CSV</span>}
+          </Button>
           {records.length > 0 && (
             <Button
               onClick={handleClearAll}
@@ -514,20 +577,56 @@ export default function FinancialRecords() {
           )}
         </div>
       </div>
-      
+
+      <FinancialStatCards
+        totalEarnings={periodKpis.total}
+        totalSessions={periodKpis.count}
+        averagePerSession={periodKpis.avg}
+      />
+
       
       <div className="md:col-span-3 bg-card/80 backdrop-blur-sm rounded-lg p-2 md:p-3 shadow-sm border border-border">
         <DateRangeFilter onFilter={handleDateFilter} />
       </div>
       <div className="flex flex-col space-y-2">
-        <div className="relative bg-card/80 backdrop-blur-sm rounded-lg shadow-sm border border-border p-1.5">
-          <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            className="pl-9"
-            placeholder="Pesquisar registros..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+          <div className="relative bg-card/80 backdrop-blur-sm rounded-lg shadow-sm border border-border p-1.5">
+            <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              className="pl-9"
+              placeholder="Pesquisar registros..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+            />
+          </div>
+          <div className="bg-card/80 backdrop-blur-sm rounded-lg shadow-sm border border-border p-1.5">
+            <Select value={clinicFilter} onValueChange={setClinicFilter}>
+              <SelectTrigger>
+                <FilterIcon className="h-4 w-4 mr-2 text-muted-foreground" />
+                <SelectValue placeholder="Clínica" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas as clínicas</SelectItem>
+                {clinicOptions.map(c => (
+                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="bg-card/80 backdrop-blur-sm rounded-lg shadow-sm border border-border p-1.5">
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger>
+                <FilterIcon className="h-4 w-4 mr-2 text-muted-foreground" />
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os status</SelectItem>
+                <SelectItem value="scheduled">Agendada</SelectItem>
+                <SelectItem value="completed">Concluída</SelectItem>
+                <SelectItem value="no_show">Falta</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         <div className="bg-card/80 backdrop-blur-sm rounded-lg shadow-sm border border-border p-1.5 flex justify-center">
           <Button 
@@ -550,7 +649,7 @@ export default function FinancialRecords() {
           </Button>
         </div>
       </div>
-      
+
       
       <Card className="shadow-md border-border overflow-hidden">
         <CardHeader className="pb-2 bg-gradient-to-r from-primary/5 to-primary/10">
@@ -712,7 +811,7 @@ export default function FinancialRecords() {
                       {sortedRecords.map((record) => (
                         <TableRow key={record.id} className="hover:bg-primary/5 transition-colors">
                           <TableCell className="whitespace-nowrap font-medium text-xs md:text-sm">
-                            {format(parseISO(record.session_date), "dd/MM/yyyy", { locale: ptBR })}
+                            {format(parseDateLocal(record.session_date), "dd/MM/yyyy", { locale: ptBR })}
                           </TableCell>
                           {!isMobile && (
                             <TableCell className="whitespace-nowrap text-xs md:text-sm">
@@ -859,80 +958,54 @@ export default function FinancialRecords() {
         </Dialog>
       )}
       
-      <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
-        <DialogContent className={isMobile ? "w-[95vw] max-w-md rounded-lg" : "sm:max-w-md"}>
-          <div className="space-y-4">
-            <DialogTitle>Confirmar exclusão</DialogTitle>
-            <DialogDescription>Você tem certeza que deseja excluir este registro financeiro? Esta ação não pode ser desfeita.</DialogDescription>
-            <div className="flex items-center space-x-3">
-              <div className="bg-destructive/10 p-2 rounded-full">
-                <TrashIcon className="h-5 w-5 text-destructive" />
-              </div>
-            </div>
-            <div className="flex justify-end space-x-2">
-              <Button
-                variant="outline"
-                onClick={() => setConfirmDialogOpen(false)}
-                disabled={deleteRecord.isPending}
-              >
-                Cancelar
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={confirmDelete}
-                disabled={deleteRecord.isPending}
-                className="shadow-sm hover:shadow-md transition-colors"
-              >
-                {deleteRecord.isPending ? (
-                  <>
-                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                    Excluindo...
-                  </>
-                ) : (
-                  "Excluir"
-                )}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-      
-      <Dialog open={clearAllDialogOpen} onOpenChange={setClearAllDialogOpen}>
-        <DialogContent className={isMobile ? "w-[95vw] max-w-md rounded-lg" : "sm:max-w-md"}>
-          <div className="space-y-4">
-            <DialogTitle>Confirmar exclusão total</DialogTitle>
-            <DialogDescription>Você tem certeza que deseja excluir <strong>TODOS</strong> os registros financeiros? Esta ação não pode ser desfeita.</DialogDescription>
-            <div className="flex items-center space-x-3">
-              <div className="bg-destructive/10 p-2 rounded-full">
-                <Trash2Icon className="h-5 w-5 text-destructive" />
-              </div>
-            </div>
-            <div className="flex justify-end space-x-2">
-              <Button
-                variant="outline"
-                onClick={() => setClearAllDialogOpen(false)}
-              >
-                Cancelar
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={confirmClearAll}
-                disabled={clearAllRecords.isPending}
-                className="shadow-sm hover:shadow-md transition-colors"
-              >
-                {clearAllRecords.isPending ? (
-                  <>
-                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                    Excluindo...
-                  </>
-                ) : (
-                  "Excluir Todos"
-                )}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <AlertDialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+            <AlertDialogDescription>
+              Você tem certeza que deseja excluir este registro financeiro? Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleteRecord.isPending}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              disabled={deleteRecord.isPending}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              {deleteRecord.isPending ? "Excluindo..." : "Excluir"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={clearAllDialogOpen} onOpenChange={setClearAllDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar exclusão total</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação apaga <strong>TODOS</strong> os {allRecords.length} registros financeiros do seu histórico e não pode ser desfeita.
+              Para confirmar, digite <strong>EXCLUIR</strong> abaixo.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <Input
+            value={clearAllConfirmText}
+            onChange={(e) => setClearAllConfirmText(e.target.value)}
+            placeholder="Digite EXCLUIR para confirmar"
+            autoFocus
+          />
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={clearAllRecords.isPending}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmClearAll}
+              disabled={clearAllRecords.isPending || clearAllConfirmText !== "EXCLUIR"}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              {clearAllRecords.isPending ? "Excluindo..." : "Excluir Todos"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
