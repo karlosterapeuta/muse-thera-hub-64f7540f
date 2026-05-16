@@ -4,30 +4,21 @@ class OrchestraAudioEngine {
   private ctx: AudioContext | null = null;
   private masterGain: GainNode | null = null;
 
-  init() {
-    if (this.ctx) return;
-    const AC = (window.AudioContext || (window as any).webkitAudioContext) as typeof AudioContext;
-    this.ctx = new AC();
-    this.masterGain = this.ctx.createGain();
-    this.masterGain.gain.value = 0.6;
-    this.masterGain.connect(this.ctx.destination);
-  }
-
-  async resume() {
-    this.init();
-    if (this.ctx && this.ctx.state === "suspended") {
-      await this.ctx.resume();
+  /** Must be called from a user gesture (click/tap). Returns a live AudioContext. */
+  private ensure(): { ctx: AudioContext; master: GainNode } {
+    if (!this.ctx || this.ctx.state === "closed") {
+      const AC = (window.AudioContext ||
+        (window as any).webkitAudioContext) as typeof AudioContext;
+      this.ctx = new AC();
+      this.masterGain = this.ctx.createGain();
+      this.masterGain.gain.value = 0.8;
+      this.masterGain.connect(this.ctx.destination);
     }
-  }
-
-  private getCtx() {
-    this.init();
-    return this.ctx!;
-  }
-
-  private getMaster() {
-    this.init();
-    return this.masterGain!;
+    // Resume if suspended (best-effort; fire-and-forget is fine inside a gesture)
+    if (this.ctx.state === "suspended") {
+      this.ctx.resume().catch(() => {});
+    }
+    return { ctx: this.ctx, master: this.masterGain! };
   }
 
   private playInstrumentBySection(
@@ -36,13 +27,12 @@ class OrchestraAudioEngine {
     duration = 1.2,
     when = 0
   ) {
-    const ctx = this.getCtx();
-    const master = this.getMaster();
+    const { ctx, master } = this.ensure();
     const t0 = ctx.currentTime + when;
 
     if (section === "percussao") {
-      // Noise burst (drum-like) + tonal click
-      const bufferSize = ctx.sampleRate * 0.4;
+      // Noise burst
+      const bufferSize = Math.floor(ctx.sampleRate * 0.4);
       const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
       const data = buffer.getChannelData(0);
       for (let i = 0; i < bufferSize; i++) {
@@ -52,24 +42,23 @@ class OrchestraAudioEngine {
       noise.buffer = buffer;
       const filter = ctx.createBiquadFilter();
       filter.type = frequency > 500 ? "highpass" : "lowpass";
-      filter.frequency.value = frequency > 500 ? 2000 : 200;
-      const gain = ctx.createGain();
-      gain.gain.setValueAtTime(0.0001, t0);
-      gain.gain.exponentialRampToValueAtTime(0.5, t0 + 0.005);
-      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.4);
-      noise.connect(filter).connect(gain).connect(master);
+      filter.frequency.value = frequency > 500 ? 2000 : 250;
+      const ng = ctx.createGain();
+      ng.gain.setValueAtTime(0, t0);
+      ng.gain.linearRampToValueAtTime(0.7, t0 + 0.005);
+      ng.gain.linearRampToValueAtTime(0, t0 + 0.4);
+      noise.connect(filter).connect(ng).connect(master);
       noise.start(t0);
       noise.stop(t0 + 0.45);
 
-      // tonal accent for xylophone-like
       if (frequency > 500) {
         const osc = ctx.createOscillator();
         osc.type = "sine";
         osc.frequency.value = frequency;
         const g = ctx.createGain();
-        g.gain.setValueAtTime(0.0001, t0);
-        g.gain.exponentialRampToValueAtTime(0.4, t0 + 0.005);
-        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.8);
+        g.gain.setValueAtTime(0, t0);
+        g.gain.linearRampToValueAtTime(0.5, t0 + 0.005);
+        g.gain.linearRampToValueAtTime(0, t0 + 0.8);
         osc.connect(g).connect(master);
         osc.start(t0);
         osc.stop(t0 + 0.85);
@@ -82,25 +71,22 @@ class OrchestraAudioEngine {
     const gain = ctx.createGain();
 
     let attack = 0.05;
-    let release = duration;
-    let peak = 0.35;
+    let peak = 0.45;
 
     switch (section) {
       case "cordas":
         osc.type = "sawtooth";
         filter.type = "lowpass";
         filter.frequency.value = 2200;
-        filter.Q.value = 1;
         attack = 0.08;
-        peak = 0.28;
+        peak = 0.35;
         break;
       case "madeiras":
         osc.type = "triangle";
         filter.type = "lowpass";
         filter.frequency.value = 3500;
         attack = 0.06;
-        peak = 0.4;
-        // vibrato
+        peak = 0.5;
         {
           const lfo = ctx.createOscillator();
           const lfoGain = ctx.createGain();
@@ -115,107 +101,91 @@ class OrchestraAudioEngine {
         osc.type = "square";
         filter.type = "lowpass";
         filter.frequency.value = 2800;
-        filter.Q.value = 2;
         attack = 0.03;
-        peak = 0.32;
+        peak = 0.4;
         break;
     }
 
     osc.frequency.value = frequency;
-    gain.gain.setValueAtTime(0.0001, t0);
-    gain.gain.exponentialRampToValueAtTime(peak, t0 + attack);
-    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + release);
+    gain.gain.setValueAtTime(0, t0);
+    gain.gain.linearRampToValueAtTime(peak, t0 + attack);
+    gain.gain.linearRampToValueAtTime(0, t0 + duration);
 
     osc.connect(filter).connect(gain).connect(master);
     osc.start(t0);
-    osc.stop(t0 + release + 0.1);
+    osc.stop(t0 + duration + 0.1);
   }
 
   private playAnimalSound(animalId: string, when = 0) {
-    const ctx = this.getCtx();
-    const master = this.getMaster();
+    const { ctx, master } = this.ensure();
     const t0 = ctx.currentTime + when;
 
     const osc = ctx.createOscillator();
     const g = ctx.createGain();
     osc.connect(g).connect(master);
-    g.gain.setValueAtTime(0.0001, t0);
-    g.gain.exponentialRampToValueAtTime(0.18, t0 + 0.02);
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(0.3, t0 + 0.02);
+
+    const stopAt = (dur: number) => {
+      g.gain.linearRampToValueAtTime(0, t0 + dur);
+      osc.start(t0);
+      osc.stop(t0 + dur + 0.05);
+    };
 
     switch (animalId) {
       case "lion-tuba":
         osc.type = "sawtooth";
         osc.frequency.setValueAtTime(110, t0);
-        osc.frequency.exponentialRampToValueAtTime(55, t0 + 0.6);
-        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.7);
-        osc.start(t0);
-        osc.stop(t0 + 0.75);
+        osc.frequency.linearRampToValueAtTime(55, t0 + 0.6);
+        stopAt(0.7);
         break;
       case "cat-violin":
         osc.type = "triangle";
         osc.frequency.setValueAtTime(700, t0);
-        osc.frequency.exponentialRampToValueAtTime(500, t0 + 0.4);
-        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.5);
-        osc.start(t0);
-        osc.stop(t0 + 0.55);
+        osc.frequency.linearRampToValueAtTime(500, t0 + 0.4);
+        stopAt(0.5);
         break;
       case "dog-drums":
         osc.type = "square";
         osc.frequency.setValueAtTime(220, t0);
-        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.18);
-        osc.start(t0);
-        osc.stop(t0 + 0.2);
+        stopAt(0.18);
         break;
       case "frog-bass":
         osc.type = "square";
         osc.frequency.setValueAtTime(80, t0);
-        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.25);
-        osc.start(t0);
-        osc.stop(t0 + 0.3);
+        stopAt(0.25);
         break;
       case "owl-clarinet":
         osc.type = "sine";
         osc.frequency.setValueAtTime(400, t0);
-        osc.frequency.exponentialRampToValueAtTime(300, t0 + 0.5);
-        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.6);
-        osc.start(t0);
-        osc.stop(t0 + 0.65);
+        osc.frequency.linearRampToValueAtTime(300, t0 + 0.5);
+        stopAt(0.6);
         break;
       case "elephant-trumpet":
         osc.type = "sawtooth";
         osc.frequency.setValueAtTime(180, t0);
-        osc.frequency.exponentialRampToValueAtTime(120, t0 + 0.5);
-        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.6);
-        osc.start(t0);
-        osc.stop(t0 + 0.65);
+        osc.frequency.linearRampToValueAtTime(120, t0 + 0.5);
+        stopAt(0.6);
         break;
       default:
         osc.type = "sine";
         osc.frequency.value = 440;
-        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.3);
-        osc.start(t0);
-        osc.stop(t0 + 0.35);
+        stopAt(0.3);
     }
   }
 
-  async play(animal: AnimalMusician) {
-    await this.resume();
+  /** Call this from a user click handler. Synchronous scheduling. */
+  play(animal: AnimalMusician) {
+    this.ensure();
     this.playAnimalSound(animal.id, 0);
     this.playInstrumentBySection(animal.section, animal.frequency, 1.4, 0.25);
   }
 
-  async playTutti(animals: AnimalMusician[]) {
-    await this.resume();
+  playTutti(animals: AnimalMusician[]) {
+    this.ensure();
     animals.forEach((a, i) => {
       this.playInstrumentBySection(a.section, a.frequency, 2.0, i * 0.05);
     });
-  }
-
-  stopAll() {
-    if (!this.ctx) return;
-    this.ctx.close();
-    this.ctx = null;
-    this.masterGain = null;
   }
 }
 
