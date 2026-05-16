@@ -247,6 +247,15 @@ export default function EvolutionReport() {
 
   return (
     <div className="container mx-auto p-4 sm:p-6 max-w-6xl">
+      <Button
+        variant="ghost"
+        onClick={() => navigate(-1)}
+        className="mb-4 gap-2 hover:bg-blue-50 dark:hover:bg-gray-800"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Voltar
+      </Button>
+
       {/* Enhanced Organized Header */}
       <div className="relative mb-6 lg:mb-10 overflow-hidden">
         {/* Main Header Container */}
