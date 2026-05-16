@@ -387,6 +387,40 @@
   * {
     -webkit-print-color-adjust: exact !important;
     color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  /* Hide app chrome on print */
+  [data-sidebar],
+  [data-sidebar="sidebar"],
+  aside,
+  nav,
+  header,
+  .no-print,
+  button {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  /* Reset main layout for print */
+  body, html, #root, main {
+    background: white !important;
+    color: black !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+  .page-container, .layout-optimized {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+  /* Avoid page breaks inside cards */
+  .card, [class*="rounded"], table, tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 }
 
