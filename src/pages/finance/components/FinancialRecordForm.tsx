@@ -83,9 +83,10 @@ interface FinancialRecordFormProps {
   onSuccess?: () => void;
   onCancel?: () => void;
   record?: FinancialRecord;
+  seriesMode?: boolean;
 }
 
-export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRecordFormProps) {
+export function FinancialRecordForm({ onSuccess, onCancel, record, seriesMode = false }: FinancialRecordFormProps) {
   const isUpdating = !!record;
   const isMobile = useIsMobile();
   const isTablet = useIsTablet();
@@ -93,6 +94,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
   const addRecord = useAddFinancialRecord();
   const updateRecord = useUpdateFinancialRecord();
   const createRecurringRecord = useCreateRecurringRecord();
+  const updateRecurringSeries = useUpdateRecurringSeries();
   
   const { data: patients = [], isLoading: patientsLoading } = useQuery({
     queryKey: ["financial-patients"],
