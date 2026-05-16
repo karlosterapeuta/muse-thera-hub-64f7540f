@@ -249,20 +249,31 @@ export default function FinancialRecords() {
   const confirmDelete = async () => {
     if (!recordToDelete) return;
 
+    const idToDelete = recordToDelete;
+
+    // Fecha o diálogo imediatamente para evitar congelamento do Radix (pointer-events stuck no body)
+    setConfirmDialogOpen(false);
+    setRecordToDelete(null);
+
     try {
-      await deleteRecord.mutateAsync(recordToDelete);
+      await deleteRecord.mutateAsync(idToDelete);
       toast({
         title: "Registro excluído",
         description: "O registro financeiro foi excluído com sucesso.",
       });
-      setConfirmDialogOpen(false);
-      setRecordToDelete(null);
     } catch (error: any) {
       toast({
         title: "Erro ao excluir",
         description: error.message || "Não foi possível excluir o registro.",
         variant: "destructive",
       });
+    } finally {
+      // Garante que o body volte a receber eventos caso o Radix deixe travado
+      if (typeof document !== "undefined") {
+        setTimeout(() => {
+          document.body.style.pointerEvents = "";
+        }, 100);
+      }
     }
   };
   
