@@ -40,6 +40,11 @@ export default function OrquestraAnimal() {
     setTimeout(() => setPlayingId(null), 2200);
   };
 
+  const handleStop = () => {
+    orchestraAudio.stopAll();
+    setPlayingId(null);
+  };
+
   return (
     <div className="min-h-[calc(100vh-4rem)] relative overflow-hidden">
       {/* Stage background — red curtains + wooden floor */}
@@ -113,6 +118,19 @@ export default function OrquestraAnimal() {
                 Maestro Pinguim
               </span>
               <span className="text-[10px] sm:text-xs opacity-90">Toca tudo junto!</span>
+            </button>
+          </div>
+
+          {/* Stop button */}
+          <div className="flex justify-center mb-4">
+            <button
+              onClick={handleStop}
+              aria-label="Parar todos os sons"
+              className="flex items-center gap-2 bg-gradient-to-br from-red-600 to-red-700 text-white rounded-full px-5 py-2 border-4 border-yellow-300 shadow-lg hover:scale-105 active:scale-95 transition-all font-black uppercase tracking-wider text-sm"
+              style={{ fontFamily: "'Fredoka', 'Comic Sans MS', sans-serif" }}
+            >
+              <span className="text-xl leading-none">⏹</span>
+              Parar Som
             </button>
           </div>
 
