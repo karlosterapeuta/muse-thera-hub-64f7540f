@@ -14,18 +14,8 @@ interface ValidationResult {
   completionPercentage: number;
 }
 
-// Definição dos campos obrigatórios por seção
-const requiredFields: Record<number, { field: string; label: string; sectionTitle: string }[]> = {
-  1: [
-    { field: "main_clinical_demand", label: "Demanda Clínica Principal", sectionTitle: "Identificação e Encaminhamento" }
-  ],
-  6: [
-    { field: "family_musical_history", label: "História Musical Familiar", sectionTitle: "Identidade Sonora (ISO)" }
-  ],
-  12: [
-    { field: "therapeutic_goals", label: "Objetivos Terapêuticos", sectionTitle: "Objetivos Terapêuticos" }
-  ]
-};
+// Campos obrigatórios desativados: o profissional pode salvar/baixar mesmo com seções em branco.
+const requiredFields: Record<number, { field: string; label: string; sectionTitle: string }[]> = {};
 
 // Todos os campos para cálculo de progresso (não obrigatórios, mas contam para completude)
 const allTrackableFields = [
