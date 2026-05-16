@@ -1,5 +1,6 @@
 
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +14,8 @@ import {
   Search,
   Calendar,
   User,
-  FileText
+  FileText,
+  ArrowLeft
 } from "lucide-react";
 import {
   AlertDialog,
@@ -36,6 +38,7 @@ interface AnamnesesListProps {
 }
 
 export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProps) {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const { data: anamneses = [], isLoading, error } = useAnamnesisData();
   const deleteAnamnesis = useDeleteAnamnesis();
@@ -91,6 +94,17 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
 
   return (
     <div className="space-y-6">
+      {/* Back button */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => navigate("/processes")}
+        className="gap-2 -ml-2"
+      >
+        <ArrowLeft size={16} />
+        Voltar
+      </Button>
+
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
