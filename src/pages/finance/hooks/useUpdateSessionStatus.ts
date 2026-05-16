@@ -19,8 +19,8 @@ export function useUpdateSessionStatus() {
       return data;
     },
     onSuccess: (data, variables) => {
-      // Invalidate and refetch financial records
       queryClient.invalidateQueries({ queryKey: ['financial-records'] });
+      queryClient.invalidateQueries({ queryKey: ['finance-dashboard'] });
       
       const statusLabels = {
         scheduled: 'agendada',
