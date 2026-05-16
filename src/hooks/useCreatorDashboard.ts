@@ -172,8 +172,8 @@ export function useCreatorSales(creatorId: string | undefined) {
     queryFn: async () => {
       if (!creatorId) throw new Error("Creator ID required");
 
-      const { data, error } = await supabase
-        .from("course_purchases")
+      const { data, error } = await (supabase as any)
+        .from("creator_course_purchases")
         .select(`
           *,
           courses(title, thumbnail_url)
