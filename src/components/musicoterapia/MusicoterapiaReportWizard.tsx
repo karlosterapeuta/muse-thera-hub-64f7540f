@@ -389,24 +389,42 @@ export function MusicoterapiaReportWizard({
       currentStepData.fields.includes(field.id)
     );
 
-    const hasTemplate = !!STEP_TEMPLATES[currentStepData.id];
+    const templateOptions = STEP_TEMPLATES[currentStepData.id];
+    const activeTemplateId = selectedTemplate[currentStepData.id];
 
     return (
       <div className="space-y-6">
-        {hasTemplate && (
-          <div className="flex items-center justify-between gap-3 p-4 rounded-lg border border-purple-200 bg-purple-50 dark:bg-purple-950/30 dark:border-purple-800">
-            <div className="text-sm text-purple-900 dark:text-purple-100">
-              <strong>Template profissional disponível.</strong> Os campos já foram preenchidos com texto padrão — edite à vontade ou reaplique o modelo.
+        {templateOptions && (
+          <div className="p-4 rounded-lg border border-purple-200 bg-purple-50/60 dark:bg-purple-950/20 dark:border-purple-800 space-y-3">
+            <div className="flex items-start gap-2">
+              <Wand2 className="h-4 w-4 text-purple-600 dark:text-purple-300 mt-0.5" />
+              <div className="text-sm text-purple-900 dark:text-purple-100">
+                <strong>Templates profissionais (opcional).</strong> Escolha o modelo que mais se aproxima do perfil do paciente — os campos serão preenchidos e você poderá editá-los livremente. Se preferir, deixe em branco e escreva do zero.
+              </div>
             </div>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => applyStepTemplate(true)}
-            >
-              <Wand2 className="h-4 w-4 mr-2" />
-              Aplicar template
-            </Button>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {templateOptions.map((opt) => {
+                const isActive = activeTemplateId === opt.id;
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => applyTemplateOption(opt)}
+                    className={`text-left p-3 rounded-lg border-2 transition-all ${
+                      isActive
+                        ? 'border-purple-500 bg-white dark:bg-purple-900/40 shadow-md'
+                        : 'border-purple-200 bg-white/70 dark:bg-purple-950/30 hover:border-purple-400 hover:bg-white'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <span className="font-semibold text-sm text-purple-900 dark:text-purple-100">{opt.label}</span>
+                      {isActive && <Check className="h-4 w-4 text-purple-600" />}
+                    </div>
+                    <p className="text-xs text-purple-700/80 dark:text-purple-200/80">{opt.description}</p>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         )}
         {stepFields.map((field) => (
