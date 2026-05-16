@@ -113,8 +113,8 @@ export default function CreatorDashboardPage() {
         }
 
         // Load purchases for creator's courses (only with existing courses - INNER JOIN)
-        const { data: purchasesData } = await supabase
-          .from('course_purchases')
+        const { data: purchasesData } = await (supabase as any)
+          .from('creator_course_purchases')
           .select(`
             *,
             course:courses!inner(id, title, thumbnail_url)
