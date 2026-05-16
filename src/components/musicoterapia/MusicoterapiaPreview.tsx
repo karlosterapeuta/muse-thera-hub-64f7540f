@@ -335,6 +335,69 @@ export function MusicoterapiaPreview({ reportData, professionalData }: Musicoter
         </Card>
       )}
 
+      {/* ===== Seções Clínicas Expandidas ===== */}
+      {reportSections.map((section) => {
+        const filledFields = section.fieldIds
+          .map((id) => {
+            const value = reportData.fieldValues?.[id];
+            if (value === undefined || value === null || value === '') return null;
+            if (Array.isArray(value) && value.length === 0) return null;
+            const def = musicoterapiaTemplate.fields.find((f) => f.id === id);
+            return def ? { def, value } : null;
+          })
+          .filter(Boolean) as { def: typeof musicoterapiaTemplate.fields[number]; value: any }[];
+
+        if (filledFields.length === 0) return null;
+
+        return (
+          <Card key={section.id} className="border-primary/10">
+            <CardHeader>
+              <CardTitle className="text-lg text-primary">{section.title}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {filledFields.map(({ def, value }) =>
+                def.type === 'scale' ? (
+                  <div key={def.id}>{renderScaleValue(Number(value), def.label)}</div>
+                ) : (
+                  <div key={def.id} className="space-y-1">
+                    <h4 className="font-medium text-primary text-sm">{def.label}</h4>
+                    <p className="text-sm whitespace-pre-wrap leading-relaxed text-muted-foreground">
+                      {Array.isArray(value) ? value.join(', ') : String(value)}
+                    </p>
+                  </div>
+                )
+              )}
+            </CardContent>
+          </Card>
+        );
+      })}
+
+      {/* Resumo Quantitativo */}
+      {(() => {
+        const filled = scaleFieldIds
+          .map((id) => {
+            const v = Number(reportData.fieldValues?.[id]);
+            if (!v) return null;
+            const def = musicoterapiaTemplate.fields.find((f) => f.id === id);
+            return def ? { label: def.label, value: v } : null;
+          })
+          .filter(Boolean) as { label: string; value: number }[];
+        if (filled.length === 0) return null;
+        return (
+          <Card className="border-primary/20">
+            <CardHeader>
+              <CardTitle className="text-lg text-primary">Resumo Quantitativo das Escalas</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {filled.map((s) => (
+                <div key={s.label}>{renderScaleValue(s.value, s.label)}</div>
+              ))}
+            </CardContent>
+          </Card>
+        );
+      })()}
+
+
       {/* Footer */}
       <Card className="border-2 border-primary/20">
         <CardContent className="pt-6">
