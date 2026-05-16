@@ -56,6 +56,16 @@ export default function FinanceDashboard() {
   
   return (
     <div className="container px-2 sm:px-4 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => navigate("/")}
+        className="gap-2 -ml-2"
+      >
+        <ArrowLeftIcon className="h-4 w-4" />
+        Voltar
+      </Button>
+
       {/* Header MuseTera */}
       <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 p-6 text-white shadow-xl">
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
