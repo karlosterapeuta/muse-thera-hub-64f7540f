@@ -113,7 +113,7 @@ export const useUpdateFinancialRecord = () => {
 
       const { data, error } = await supabase
         .from("financial_records")
-        .update(payload)
+        .update(payload as any)
         .eq("id", id)
         .select()
         .single();
