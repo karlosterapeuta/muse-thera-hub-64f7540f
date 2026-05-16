@@ -31,50 +31,106 @@ const STEPS = [
     fields: ['patient_name', 'patient_age', 'patient_diagnosis', 'session_date', 'professional_name', 'professional_registry']
   },
   {
+    id: 'clinical_identification',
+    title: '2. Identificação Clínica',
+    description: 'CID, comorbidades, frequência',
+    icon: Brain,
+    fields: ['cid_code', 'support_level', 'comorbidities', 'current_medications', 'referral_source', 'treatment_start_date', 'session_count', 'session_frequency', 'session_duration']
+  },
+  {
+    id: 'iso_identity',
+    title: '3. Identidade Sonora (ISO)',
+    description: 'Modelo Benenzon',
+    icon: Music,
+    fields: ['iso_gestational', 'iso_universal', 'iso_cultural', 'iso_complementary', 'iso_group', 'sound_preferences', 'musical_repertoire_favorites']
+  },
+  {
+    id: 'sensory_profile',
+    title: '4. Avaliação Sensório-Musical',
+    description: 'Perfil sensorial e respostas',
+    icon: Heart,
+    fields: ['auditory_processing', 'sound_tolerance', 'vestibular_response_music', 'tactile_instrument_response', 'proprioceptive_response', 'sensory_seeking_vs_avoiding', 'sensory_profile_notes']
+  },
+  {
+    id: 'imtap_domains',
+    title: '5. Domínios IMTAP',
+    description: 'Avaliação clínica por domínios',
+    icon: Target,
+    fields: ['domain_musicality', 'domain_communication_verbal', 'domain_communication_nonverbal', 'domain_social_interaction', 'domain_emotional', 'domain_cognitive', 'domain_motor_gross', 'domain_motor_fine', 'domain_sensory_integration', 'domain_autonomy', 'domain_evidences']
+  },
+  {
     id: 'therapeutic_objectives',
-    title: '2. Objetivos Terapêuticos',
-    description: 'Metas e planejamento terapêutico',
+    title: '6. Objetivos Terapêuticos',
+    description: 'Metas e planejamento',
     icon: Target,
     fields: ['therapeutic_objectives', 'specific_goals']
   },
   {
     id: 'session_activities',
-    title: '3. Descrição das Sessões/Atividades Realizadas',
-    description: 'Detalhamento das atividades musicais',
+    title: '7. Sessão e Atividades',
+    description: 'Detalhamento clínico das técnicas',
     icon: Music,
-    fields: ['session_activities', 'instruments_used', 'musical_techniques', 'musical_genres']
+    fields: ['session_setting', 'session_structure', 'session_activities', 'instruments_used', 'musical_techniques', 'musical_genres', 'improvisation_use', 'receptive_techniques', 'recreative_techniques', 'compositional_techniques', 'tempo_dynamics_used', 'vocal_work']
+  },
+  {
+    id: 'behavioral_analysis',
+    title: '8. Análise Comportamental',
+    description: 'Comportamentos durante a sessão',
+    icon: Brain,
+    fields: ['eye_contact_quality', 'joint_attention', 'stereotypies_during_music', 'self_regulation_strategies', 'meltdown_shutdown_episodes', 'transitions_response', 'imitation_skills', 'turn_taking_musical']
+  },
+  {
+    id: 'communication_language',
+    title: '9. Comunicação e Linguagem',
+    description: 'Vocalizações, CAA e pragmática',
+    icon: Music,
+    fields: ['vocalizations_observed', 'verbal_output_during_music', 'echolalia_musical', 'aac_use', 'pragmatic_skills']
   },
   {
     id: 'patient_evolution',
-    title: '4. Evolução do Paciente',
-    description: 'Progressos e desenvolvimentos observados',
+    title: '10. Evolução do Paciente',
+    description: 'Comparativos, metas e indicadores',
     icon: Heart,
-    fields: ['patient_evolution', 'behavioral_changes', 'skill_improvements']
+    fields: ['patient_evolution', 'behavioral_changes', 'skill_improvements', 'evolution_compared_baseline', 'goals_achieved', 'goals_in_progress', 'goals_not_achieved', 'quantitative_indicators']
+  },
+  {
+    id: 'future_plan',
+    title: '11. Plano Terapêutico Futuro',
+    description: 'Próximos passos e prognóstico',
+    icon: Target,
+    fields: ['next_objectives_short', 'next_objectives_medium', 'next_objectives_long', 'proposed_interventions', 'expected_outcomes', 'revaluation_date']
   },
   {
     id: 'recommendations',
-    title: '5. Encaminhamentos e Recomendações',
-    description: 'Orientações e próximos passos',
+    title: '12. Encaminhamentos',
+    description: 'Família, escola e equipe',
     icon: Home,
-    fields: ['recommendations', 'home_activities', 'family_guidance']
+    fields: ['recommendations', 'home_activities', 'family_guidance', 'school_recommendations', 'interdisciplinary_team_notes', 'playlist_recommended', 'red_flags_to_monitor']
+  },
+  {
+    id: 'theoretical_foundation',
+    title: '13. Fundamentação Teórica',
+    description: 'Abordagens e referências',
+    icon: Brain,
+    fields: ['theoretical_framework', 'assessment_tools_used', 'references_cited']
   },
   {
     id: 'conclusion',
-    title: '6. Conclusão',
-    description: 'Síntese dos resultados',
+    title: '14. Conclusão',
+    description: 'Síntese e resumo',
     icon: Brain,
     fields: ['conclusion', 'treatment_summary']
   },
   {
     id: 'complementary_observations',
-    title: '7. Observações Complementares',
-    description: 'Informações adicionais relevantes',
+    title: '15. Observações Complementares',
+    description: 'Notas adicionais',
     icon: Heart,
     fields: ['complementary_observations', 'additional_notes']
   },
   {
     id: 'final_review',
-    title: '8. Revisão Final',
+    title: '16. Revisão Final',
     description: 'Verificação e finalização',
     icon: Target,
     fields: ['signature', 'review_notes']
