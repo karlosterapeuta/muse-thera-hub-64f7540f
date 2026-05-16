@@ -4,12 +4,21 @@ import { supabase } from "@/integrations/supabase/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Clinic, FinancialRecord, PeriodFilter } from "../types";
 
+const invalidateFinance = (queryClient: ReturnType<typeof useQueryClient>) => {
+  queryClient.invalidateQueries({ queryKey: ["financial-records"] });
+  queryClient.invalidateQueries({ queryKey: ["finance-dashboard"] });
+};
+
 export const useFinancialRecords = (filter?: PeriodFilter) => {
   const { toast } = useToast();
   
   return useQuery({
     queryKey: ["financial-records", filter],
     queryFn: async () => {
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+      if (!userData.user) throw new Error("Usuário não autenticado");
+
       let query = supabase
         .from("financial_records")
         .select(`
@@ -17,7 +26,9 @@ export const useFinancialRecords = (filter?: PeriodFilter) => {
           clinics:clinic_id (name),
           patients:patient_id (name)
         `)
-        .order("session_date", { ascending: false });
+        .eq("professional_id", userData.user.id)
+        .order("session_date", { ascending: false })
+        .range(0, 4999);
         
       if (filter?.start_date && filter?.end_date) {
         query = query.gte("session_date", filter.start_date).lte("session_date", filter.end_date);
@@ -75,8 +86,7 @@ export const useAddFinancialRecord = () => {
         title: "Registro adicionado",
         description: "Registro financeiro adicionado com sucesso.",
       });
-      queryClient.invalidateQueries({ queryKey: ["financial-records"] });
-      queryClient.invalidateQueries({ queryKey: ["finance-dashboard"] });
+      invalidateFinance(queryClient);
     },
     onError: (error) => {
       toast({
@@ -94,16 +104,17 @@ export const useUpdateFinancialRecord = () => {
   
   return useMutation({
     mutationFn: async (record: Partial<FinancialRecord> & { id: string }) => {
+      const { id, clinic_name, patient_name, created_at, updated_at, professional_id, ...rest } = record;
+
+      // Apenas campos definidos são enviados — preserva session_status, is_recurring, etc.
+      const payload = Object.fromEntries(
+        Object.entries(rest).filter(([, v]) => v !== undefined)
+      );
+
       const { data, error } = await supabase
         .from("financial_records")
-        .update({
-          clinic_id: record.clinic_id,
-          patient_id: record.patient_id,
-          amount: record.amount,
-          session_date: record.session_date,
-          description: record.description,
-        })
-        .eq("id", record.id)
+        .update(payload)
+        .eq("id", id)
         .select()
         .single();
         
@@ -118,8 +129,7 @@ export const useUpdateFinancialRecord = () => {
         title: "Registro atualizado",
         description: "Registro financeiro atualizado com sucesso.",
       });
-      queryClient.invalidateQueries({ queryKey: ["financial-records"] });
-      queryClient.invalidateQueries({ queryKey: ["finance-dashboard"] });
+      invalidateFinance(queryClient);
     },
     onError: (error) => {
       toast({
@@ -148,7 +158,7 @@ export const useDeleteFinancialRecord = () => {
       return id;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["financial-records"] });
+      invalidateFinance(queryClient);
     }
   });
 };
@@ -165,7 +175,6 @@ export const useClearAllFinancialRecords = () => {
         throw new Error("Usuário não autenticado");
       }
       
-      // Delete only records where professional_id matches the current user's ID
       const { error } = await supabase
         .from("financial_records")
         .delete()
@@ -182,8 +191,7 @@ export const useClearAllFinancialRecords = () => {
         title: "Registros excluídos",
         description: "Todos os registros financeiros foram excluídos com sucesso.",
       });
-      queryClient.invalidateQueries({ queryKey: ["financial-records"] });
-      queryClient.invalidateQueries({ queryKey: ["finance-dashboard"] });
+      invalidateFinance(queryClient);
     },
     onError: (error) => {
       toast({
@@ -194,4 +202,3 @@ export const useClearAllFinancialRecords = () => {
     },
   });
 };
-
