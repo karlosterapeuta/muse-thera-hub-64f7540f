@@ -381,6 +381,7 @@ export default function FinancialRecords() {
   const handleFormSuccess = () => {
     setFormOpen(false);
     setSelectedRecord(undefined);
+    setSeriesEditMode(false);
     refetch();
     toast({
       title: "Registro salvo",
@@ -392,6 +393,7 @@ export default function FinancialRecords() {
   const handleCloseForm = () => {
     setFormOpen(false);
     setSelectedRecord(undefined);
+    setSeriesEditMode(false);
   };
   
   const formatCurrency = (value: number) => {
