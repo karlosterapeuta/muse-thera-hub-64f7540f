@@ -276,7 +276,25 @@ export default function FinancialRecords() {
   }, [location, navigate]);
   
   const handleEditRecord = (record: FinancialRecord) => {
+    setSeriesEditMode(false);
     setSelectedRecord({...record});
+    setFormOpen(true);
+  };
+
+  const handleEditSeries = async (record: FinancialRecord) => {
+    // Always edit the parent record of the series
+    const parentId = record.parent_record_id || record.id;
+    let target = record;
+    if (parentId !== record.id) {
+      const { data } = await supabase
+        .from("financial_records")
+        .select("*")
+        .eq("id", parentId)
+        .maybeSingle();
+      if (data) target = data as any;
+    }
+    setSeriesEditMode(true);
+    setSelectedRecord({...target});
     setFormOpen(true);
   };
   
