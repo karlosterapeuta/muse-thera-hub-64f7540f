@@ -309,6 +309,25 @@ export function FinancialRecordForm({ onSuccess, onCancel, record, seriesMode = 
           },
         }
       );
+    } else if (isUpdating && record && seriesMode) {
+      // Update parent + regenerate all future occurrences
+      updateRecurringSeries.mutate(
+        {
+          parentId: record.id,
+          updateAll: true,
+          updateData: {
+            clinic_id: values.clinic_id,
+            patient_id: values.patient_id === "no-patient" ? undefined : values.patient_id,
+            amount: values.amount,
+            session_date: format(sessionDate, "yyyy-MM-dd"),
+            description: enhancedDescription,
+            is_recurring: true,
+            recurrence_type: values.recurrence_type || 'weekly',
+            recurrence_end_date: values.recurrence_end_date ? format(values.recurrence_end_date, "yyyy-MM-dd") : undefined,
+          },
+        },
+        { onSuccess: () => onSuccess?.() }
+      );
     } else if (isUpdating && record) {
       updateRecord.mutate(
         { 
