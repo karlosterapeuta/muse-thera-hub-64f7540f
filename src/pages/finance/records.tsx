@@ -425,7 +425,7 @@ export default function FinancialRecords() {
         className={`${getCardStatusClasses(record.session_status)} rounded-md p-3 shadow-sm mb-2 hover:shadow-md transition-all hover:border-opacity-50 relative group`}
       >
         <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <RecurringRecordActions record={record} onEdit={handleEditRecord} />
+          <RecurringRecordActions record={record} onEdit={handleEditRecord} onEditSeries={handleEditSeries} />
         </div>
         
         <div className="flex items-center mb-2">
@@ -479,7 +479,7 @@ export default function FinancialRecords() {
         className={`${getCardStatusClasses(record.session_status)} rounded-lg p-3 shadow-sm mb-2 hover:shadow-md transition-all hover:border-opacity-50 relative group`}
       >
         <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <RecurringRecordActions record={record} onEdit={handleEditRecord} />
+          <RecurringRecordActions record={record} onEdit={handleEditRecord} onEditSeries={handleEditSeries} />
         </div>
         
         <div className="flex items-center justify-between mb-2">
