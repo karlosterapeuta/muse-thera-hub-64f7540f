@@ -1,145 +1,78 @@
-## Objetivo
+## Mudanças no Relatório MuseTera TEA
 
-Transformar o "Relatório MuseTera TEA" em um documento clínico de padrão profissional, alinhado às boas práticas internacionais de musicoterapia para TEA (modelos Nordoff‑Robbins, Benenzon/ISO, Bruscia, IMTAP) e à classificação diagnóstica vigente (DSM‑5‑TR / CID‑11 6A02), mantendo o fluxo de wizard e o PDF atuais.
+### 1. Remover tópicos 2, 3, 4 e 5
 
-## Novas etapas e campos do wizard
+Em `src/components/musicoterapia/MusicoterapiaReportWizard.tsx`, remover do array `STEPS`:
 
-Os campos atuais permanecem; a expansão acrescenta 6 novas etapas (passando de 8 → 14) e enriquece as existentes. Tudo continua opcional (regra já adotada na Anamnese).
+- **2. Identificação Clínica** (`clinical_identification`)
+- **3. Identidade Sonora (ISO)** (`iso_identity`)
+- **4. Avaliação Sensório-Musical** (`sensory_profile`)
+- **5. Domínios IMTAP** (`imtap_domains`)
 
-### 1. Identificação clínica ampliada (etapa 1)
-- `cid_code` — CID‑11 (6A02) / DSM‑5‑TR equivalente
-- `support_level` — Nível de suporte (1, 2 ou 3)
-- `comorbidities` — Comorbidades (TDAH, deficiência intelectual, ansiedade, epilepsia, TPS…)
-- `current_medications` — Medicações em uso
-- `referral_source` — Encaminhamento (neuropediatra, escola, família…)
-- `session_count` / `treatment_start_date` / `session_frequency` / `session_duration`
+O wizard passa de 16 para **12 etapas**. As demais são renumeradas automaticamente pela ordem do array (títulos passam a ser "2. Objetivos Terapêuticos", "3. Sessão e Atividades", etc.). Os campos das seções removidas permanecem definidos no template para não quebrar geração de PDF/IA, apenas deixam de aparecer no wizard.
 
-### 2. Identidade Sonora (ISO de Benenzon) — NOVA etapa
-- `iso_gestational` — ISO Gestacional
-- `iso_universal` — ISO Universal
-- `iso_cultural` — ISO Cultural
-- `iso_complementary` — ISO Complementar
-- `iso_group` — ISO Grupal
-- `sound_preferences` — Sons/timbres preferidos e aversivos
-- `musical_repertoire_favorites` — Repertório significativo
+### 2. Templates prontos nos tópicos 9, 11 e 13
 
-### 3. Avaliação Sensório‑Musical (perfil sensorial) — NOVA etapa
-Escalas 1–10 + observações livres:
-- `auditory_processing` — Processamento auditivo
-- `sound_tolerance` — Tolerância a volume/timbre
-- `vestibular_response_music` — Resposta vestibular ao ritmo
-- `tactile_instrument_response` — Resposta tátil a instrumentos
-- `proprioceptive_response` — Resposta proprioceptiva
-- `sensory_seeking_vs_avoiding` — Buscador vs. evitador sensorial
-- `sensory_profile_notes` — Síntese descritiva
+Após a renumeração, esses passam a ser:
 
-### 4. Avaliação clínica musicoterapêutica (IMTAP/inspirada) — NOVA etapa
-Domínios avaliados em escala 1–10 com campo de evidências:
-- `domain_musicality` — Musicalidade (ritmo, melodia, dinâmica)
-- `domain_communication_verbal` — Comunicação verbal via música
-- `domain_communication_nonverbal` — Comunicação não‑verbal/gestual
-- `domain_social_interaction` — Interação social musical
-- `domain_emotional` — Expressão e regulação emocional
-- `domain_cognitive` — Cognição (atenção, memória, sequenciamento)
-- `domain_motor_gross` — Motricidade ampla
-- `domain_motor_fine` — Motricidade fina (manuseio instrumental)
-- `domain_sensory_integration` — Integração sensorial
-- `domain_autonomy` — Autonomia e iniciativa musical
-- `domain_evidences` — Evidências clínicas observadas em cada domínio
+- **9 → Fundamentação Teórica** (`theoretical_foundation`)
+- **11 → (não existe mais, total = 12)** — *ver nota abaixo*
+- **13 → (não existe mais)** — *ver nota abaixo*
 
-### 5. Sessão estruturada — expansão da etapa 3
-- `session_setting` — Setting (individual, dupla, familiar)
-- `session_structure` — Estrutura (hello song, exploração, fechamento)
-- `improvisation_use` — Uso de improvisação clínica (modelo Bruscia)
-- `receptive_techniques` — Técnicas receptivas (audição dirigida, GIM adaptado)
-- `recreative_techniques` — Técnicas recriativas (canto/canção, performance)
-- `compositional_techniques` — Técnicas composicionais (songwriting terapêutico)
-- `instruments_used` — Instrumentos (mantém)
-- `musical_genres` — Gêneros e modos musicais
-- `tempo_dynamics_used` — Andamentos e dinâmicas exploradas
-- `vocal_work` — Trabalho vocal
+**Nota importante:** com a remoção de 4 etapas, só restam 12 etapas, então "tópico 11" e "tópico 13" originais (Plano Terapêutico Futuro e Fundamentação Teórica) precisam ser identificados pelo conteúdo, não pelo número antigo. Assumindo que o usuário se refere aos tópicos **conforme numeração atual antes da remoção**:
 
-### 6. Análise comportamental durante a sessão — NOVA etapa
-- `eye_contact_quality` — Contato visual (escala)
-- `joint_attention` — Atenção compartilhada (escala)
-- `stereotypies_during_music` — Estereotipias durante a música
-- `self_regulation_strategies` — Estratégias de autorregulação observadas
-- `meltdown_shutdown_episodes` — Episódios de meltdown/shutdown
-- `transitions_response` — Resposta a transições
-- `imitation_skills` — Imitação musical e gestual (escala)
-- `turn_taking_musical` — Alternância de turnos musicais (escala)
+- **9. Comunicação e Linguagem** (`communication_language`)
+- **11. Plano Terapêutico Futuro** (`future_plan`)
+- **13. Fundamentação Teórica** (`theoretical_foundation`)
 
-### 7. Comunicação e linguagem — NOVA etapa
-- `vocalizations_observed` — Vocalizações observadas
-- `verbal_output_during_music` — Produção verbal durante a música
-- `echolalia_musical` — Ecolalia musical (funcional/não funcional)
-- `aac_use` — Uso de CAA (comunicação aumentativa)
-- `pragmatic_skills` — Habilidades pragmáticas musicais
+Para cada um, criar um objeto `STEP_TEMPLATES` em `MusicoterapiaReportWizard.tsx` mapeando `fieldId → texto pronto`. Ao entrar na etapa, se o campo estiver vazio, pré-preencher com o template via `handleFieldUpdate`. Também adicionar um botão **"Aplicar template"** no topo da etapa para reaplicar.
 
-### 8. Evolução clínica — expansão da etapa 4
-Mantém `patient_evolution` e adiciona:
-- `evolution_compared_baseline` — Comparativo com avaliação inicial
-- `goals_achieved` — Objetivos alcançados (lista)
-- `goals_in_progress` — Em progresso (lista)
-- `goals_not_achieved` — Não alcançados + hipóteses
-- `quantitative_indicators` — Indicadores quantitativos (frequência, duração)
+**Templates propostos:**
 
-### 9. Plano terapêutico futuro — NOVA etapa
-- `next_objectives` — Próximos objetivos (curto/médio/longo prazo)
-- `proposed_interventions` — Intervenções propostas
-- `expected_outcomes` — Resultados esperados
-- `revaluation_date` — Data de reavaliação prevista
+**Comunicação e Linguagem (9):**
+- `vocalizations_observed`: "Paciente apresenta vocalizações espontâneas durante atividades musicais, com variação de altura e intensidade, especialmente em resposta a estímulos melódicos preferidos."
+- `verbal_output_during_music`: "Observa-se aumento da produção verbal durante o canto e atividades rítmicas, com tentativas de acompanhar trechos de canções familiares."
+- `echolalia_musical`: "Presença de ecolalia musical funcional, com repetição de fragmentos melódicos e refrões como forma de comunicação e autorregulação."
+- `aac_use`: "Não utiliza sistema de Comunicação Aumentativa e Alternativa (CAA) no momento. Comunicação predominantemente gestual e vocal."
+- `pragmatic_skills`: "Habilidades pragmáticas em desenvolvimento, com iniciativa comunicativa crescente em contexto musical estruturado, troca de turnos com apoio do terapeuta."
 
-### 10. Orientações à família e equipe — expansão da etapa 5
-- `home_activities` (mantém)
-- `family_guidance` (mantém)
-- `school_recommendations` — Orientações à escola
-- `interdisciplinary_team_notes` — Articulação com equipe (fono, TO, psicologia)
-- `playlist_recommended` — Playlist recomendada para casa
-- `red_flags_to_monitor` — Sinais de alerta para a família monitorar
+**Plano Terapêutico Futuro (11):**
+- `next_objectives_short`: "Curto prazo (1-3 meses): Ampliar repertório de canções funcionais; consolidar troca de turnos musicais; aumentar tempo de atenção compartilhada."
+- `next_objectives_medium`: "Médio prazo (3-6 meses): Desenvolver autorregulação por meio de improvisações estruturadas; estimular comunicação intencional via instrumentos."
+- `next_objectives_long`: "Longo prazo (6-12 meses): Promover autonomia musical, generalização de habilidades para outros contextos e participação em atividades grupais."
+- `proposed_interventions`: "Intervenções receptivas, recriativas e improvisacionais conforme modelo de Bruscia, com foco em ISO de Benenzon e adaptações sensoriais."
+- `expected_outcomes`: "Espera-se evolução nas dimensões comunicativa, socioemocional e sensório-motora, com generalização para contextos familiar e escolar."
+- `revaluation_date`: "Reavaliação prevista em 3 meses, com aplicação de escalas IMTAP e registro qualitativo."
 
-### 11. Fundamentação teórica — NOVA etapa
-- `theoretical_framework` — Abordagem (Nordoff‑Robbins, Benenzon, Bruscia, GIM, Neurologic Music Therapy…)
-- `references_cited` — Referências bibliográficas citadas
-- `assessment_tools_used` — Instrumentos de avaliação aplicados (IMTAP, MAKS, ABA musical etc.)
+**Fundamentação Teórica (13):**
+- `theoretical_framework`: "O presente relatório fundamenta-se no Modelo Benenzon (Princípio do ISO), nas práticas de Nordoff-Robbins (Musicoterapia Criativa), no modelo de Bruscia (níveis de prática) e nos domínios clínicos da IMTAP (Individualized Music Therapy Assessment Profile), associados às diretrizes de intervenção em TEA conforme DSM-5-TR e CID-11."
+- `assessment_tools_used`: "Instrumentos: IMTAP (Baxter et al., 2007), Escala MuseTera de avaliação musicoterapêutica, observação clínica sistematizada e Perfil Sensorial de Dunn."
+- `references_cited`: "Benenzon, R. (1985). Manual de Musicoterapia. Bruscia, K. (2000). Definindo Musicoterapia. Nordoff, P.; Robbins, C. (2007). Creative Music Therapy. Baxter et al. (2007). The Individualized Music Therapy Assessment Profile. APA (2022). DSM-5-TR."
 
-### 12. Conclusão, observações, assinatura
-Mantém etapas atuais (Conclusão, Observações Complementares, Revisão Final/Assinatura) integradas após as novas etapas.
+### 3. Mecânica de aplicação
 
-## Mudanças no PDF (`generatePDFContent`)
+No componente, adicionar:
 
-- Renderizar todas as novas seções condicionalmente (só aparecem se preenchidas).
-- Adicionar bloco "Resumo Quantitativo" com tabela das escalas 1–10 (domínios IMTAP + sensoriais + comportamentais) para leitura rápida.
-- Sumário executivo opcional no topo (Diagnóstico • Nível de suporte • Nº de sessões • Data de reavaliação).
-- Página de fundamentação teórica e referências ao final, antes do rodapé com carimbo (mantém o footer atual com assinatura digital e carimbo dourado).
-- Numeração de páginas e cabeçalho compacto a partir da página 2 (nome do paciente + data).
+```ts
+const STEP_TEMPLATES: Record<string, Record<string, string>> = { ... }
 
-## Mudanças no Wizard
+useEffect(() => {
+  const tmpl = STEP_TEMPLATES[currentStepData.id];
+  if (!tmpl) return;
+  const updates: Record<string, any> = {};
+  Object.entries(tmpl).forEach(([fid, txt]) => {
+    if (!reportData.fieldValues?.[fid]) updates[fid] = txt;
+  });
+  if (Object.keys(updates).length) {
+    onUpdateData({ ...reportData, fieldValues: { ...reportData.fieldValues, ...updates }});
+  }
+}, [currentStep]);
+```
 
-- Atualizar `STEPS` em `MusicoterapiaReportWizard.tsx` para 14 etapas; manter o ícone, descrição e agrupamento.
-- Reaproveitar componentes existentes (`MusicoterapiaFormField`, escala, textarea, multiselect).
-- Aplicar a regra já vigente: nenhum campo obrigatório bloqueia salvar/baixar.
-- Manter scroll-to-top suave entre etapas (regra de memória do projeto).
-- Quick‑fill (frases pré‑definidas) será estendido com sugestões clínicas para cada novo domínio em `src/data/musicoterapiaPhrases.ts`.
+E botão "Aplicar template padrão" acima dos campos quando `STEP_TEMPLATES[currentStepData.id]` existir, que força a sobrescrita.
 
-## Arquivos a alterar
+### Arquivos alterados
 
-- `src/data/musicoterapiaTemplate.ts` — acrescentar ~60 novos campos com `guidance` clínico.
-- `src/data/musicoterapiaPhrases.ts` — frases pré‑definidas para cada novo campo.
-- `src/components/musicoterapia/MusicoterapiaReportWizard.tsx` — novos passos no array `STEPS`.
-- `src/pages/processes/musicoterapia/index.tsx` — função `generatePDFContent`: novas seções, tabela‑resumo de escalas, sumário executivo, página de fundamentação.
-- `src/components/musicoterapia/MusicoterapiaPreview.tsx` — espelhar novas seções no preview.
+- `src/components/musicoterapia/MusicoterapiaReportWizard.tsx` (único)
 
-## Fora de escopo nesta entrega
-
-- Persistir novos campos no banco (já são salvos como JSON em `fieldValues` — sem migração necessária).
-- Mudar identidade visual / cores (mantém o teal atual + carimbo dourado MuseTera).
-- Reescrever o wizard em outra arquitetura.
-
-## Critérios de aceite
-
-1. 14 etapas no wizard, todas opcionais, salvando e baixando PDF mesmo em branco.
-2. PDF inclui apenas seções preenchidas; tabela resumo só aparece se houver ao menos uma escala preenchida.
-3. Frases pré‑definidas disponíveis nos novos campos.
-4. Preview na tela espelha o PDF.
-5. Build limpo, sem alterações no fluxo de assinatura/carimbo/storage.
+Nenhuma alteração em template/PDF/IA — os campos continuam existindo e sendo exportados normalmente.

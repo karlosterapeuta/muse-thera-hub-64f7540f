@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -31,111 +31,106 @@ const STEPS = [
     fields: ['patient_name', 'patient_age', 'patient_diagnosis', 'session_date', 'professional_name', 'professional_registry']
   },
   {
-    id: 'clinical_identification',
-    title: '2. Identificação Clínica',
-    description: 'CID, comorbidades, frequência',
-    icon: Brain,
-    fields: ['cid_code', 'support_level', 'comorbidities', 'current_medications', 'referral_source', 'treatment_start_date', 'session_count', 'session_frequency', 'session_duration']
-  },
-  {
-    id: 'iso_identity',
-    title: '3. Identidade Sonora (ISO)',
-    description: 'Modelo Benenzon',
-    icon: Music,
-    fields: ['iso_gestational', 'iso_universal', 'iso_cultural', 'iso_complementary', 'iso_group', 'sound_preferences', 'musical_repertoire_favorites']
-  },
-  {
-    id: 'sensory_profile',
-    title: '4. Avaliação Sensório-Musical',
-    description: 'Perfil sensorial e respostas',
-    icon: Heart,
-    fields: ['auditory_processing', 'sound_tolerance', 'vestibular_response_music', 'tactile_instrument_response', 'proprioceptive_response', 'sensory_seeking_vs_avoiding', 'sensory_profile_notes']
-  },
-  {
-    id: 'imtap_domains',
-    title: '5. Domínios IMTAP',
-    description: 'Avaliação clínica por domínios',
-    icon: Target,
-    fields: ['domain_musicality', 'domain_communication_verbal', 'domain_communication_nonverbal', 'domain_social_interaction', 'domain_emotional', 'domain_cognitive', 'domain_motor_gross', 'domain_motor_fine', 'domain_sensory_integration', 'domain_autonomy', 'domain_evidences']
-  },
-  {
     id: 'therapeutic_objectives',
-    title: '6. Objetivos Terapêuticos',
+    title: '2. Objetivos Terapêuticos',
     description: 'Metas e planejamento',
     icon: Target,
     fields: ['therapeutic_objectives', 'specific_goals']
   },
   {
     id: 'session_activities',
-    title: '7. Sessão e Atividades',
+    title: '3. Sessão e Atividades',
     description: 'Detalhamento clínico das técnicas',
     icon: Music,
     fields: ['session_setting', 'session_structure', 'session_activities', 'instruments_used', 'musical_techniques', 'musical_genres', 'improvisation_use', 'receptive_techniques', 'recreative_techniques', 'compositional_techniques', 'tempo_dynamics_used', 'vocal_work']
   },
   {
     id: 'behavioral_analysis',
-    title: '8. Análise Comportamental',
+    title: '4. Análise Comportamental',
     description: 'Comportamentos durante a sessão',
     icon: Brain,
     fields: ['eye_contact_quality', 'joint_attention', 'stereotypies_during_music', 'self_regulation_strategies', 'meltdown_shutdown_episodes', 'transitions_response', 'imitation_skills', 'turn_taking_musical']
   },
   {
     id: 'communication_language',
-    title: '9. Comunicação e Linguagem',
+    title: '5. Comunicação e Linguagem',
     description: 'Vocalizações, CAA e pragmática',
     icon: Music,
     fields: ['vocalizations_observed', 'verbal_output_during_music', 'echolalia_musical', 'aac_use', 'pragmatic_skills']
   },
   {
     id: 'patient_evolution',
-    title: '10. Evolução do Paciente',
+    title: '6. Evolução do Paciente',
     description: 'Comparativos, metas e indicadores',
     icon: Heart,
     fields: ['patient_evolution', 'behavioral_changes', 'skill_improvements', 'evolution_compared_baseline', 'goals_achieved', 'goals_in_progress', 'goals_not_achieved', 'quantitative_indicators']
   },
   {
     id: 'future_plan',
-    title: '11. Plano Terapêutico Futuro',
+    title: '7. Plano Terapêutico Futuro',
     description: 'Próximos passos e prognóstico',
     icon: Target,
     fields: ['next_objectives_short', 'next_objectives_medium', 'next_objectives_long', 'proposed_interventions', 'expected_outcomes', 'revaluation_date']
   },
   {
     id: 'recommendations',
-    title: '12. Encaminhamentos',
+    title: '8. Encaminhamentos',
     description: 'Família, escola e equipe',
     icon: Home,
     fields: ['recommendations', 'home_activities', 'family_guidance', 'school_recommendations', 'interdisciplinary_team_notes', 'playlist_recommended', 'red_flags_to_monitor']
   },
   {
     id: 'theoretical_foundation',
-    title: '13. Fundamentação Teórica',
+    title: '9. Fundamentação Teórica',
     description: 'Abordagens e referências',
     icon: Brain,
     fields: ['theoretical_framework', 'assessment_tools_used', 'references_cited']
   },
   {
     id: 'conclusion',
-    title: '14. Conclusão',
+    title: '10. Conclusão',
     description: 'Síntese e resumo',
     icon: Brain,
     fields: ['conclusion', 'treatment_summary']
   },
   {
     id: 'complementary_observations',
-    title: '15. Observações Complementares',
+    title: '11. Observações Complementares',
     description: 'Notas adicionais',
     icon: Heart,
     fields: ['complementary_observations', 'additional_notes']
   },
   {
     id: 'final_review',
-    title: '16. Revisão Final',
+    title: '12. Revisão Final',
     description: 'Verificação e finalização',
     icon: Target,
     fields: ['signature', 'review_notes']
   }
 ];
+
+const STEP_TEMPLATES: Record<string, Record<string, string>> = {
+  communication_language: {
+    vocalizations_observed: 'Paciente apresenta vocalizações espontâneas durante atividades musicais, com variação de altura e intensidade, especialmente em resposta a estímulos melódicos preferidos.',
+    verbal_output_during_music: 'Observa-se aumento da produção verbal durante o canto e atividades rítmicas, com tentativas de acompanhar trechos de canções familiares.',
+    echolalia_musical: 'Presença de ecolalia musical funcional, com repetição de fragmentos melódicos e refrões como forma de comunicação e autorregulação.',
+    aac_use: 'Não utiliza sistema de Comunicação Aumentativa e Alternativa (CAA) no momento. Comunicação predominantemente gestual e vocal.',
+    pragmatic_skills: 'Habilidades pragmáticas em desenvolvimento, com iniciativa comunicativa crescente em contexto musical estruturado, troca de turnos com apoio do terapeuta.'
+  },
+  future_plan: {
+    next_objectives_short: 'Curto prazo (1-3 meses): Ampliar repertório de canções funcionais; consolidar troca de turnos musicais; aumentar tempo de atenção compartilhada.',
+    next_objectives_medium: 'Médio prazo (3-6 meses): Desenvolver autorregulação por meio de improvisações estruturadas; estimular comunicação intencional via instrumentos.',
+    next_objectives_long: 'Longo prazo (6-12 meses): Promover autonomia musical, generalização de habilidades para outros contextos e participação em atividades grupais.',
+    proposed_interventions: 'Intervenções receptivas, recriativas e improvisacionais conforme modelo de Bruscia, com foco em ISO de Benenzon e adaptações sensoriais.',
+    expected_outcomes: 'Espera-se evolução nas dimensões comunicativa, socioemocional e sensório-motora, com generalização para contextos familiar e escolar.',
+    revaluation_date: 'Reavaliação prevista em 3 meses, com aplicação de escalas IMTAP e registro qualitativo.'
+  },
+  theoretical_foundation: {
+    theoretical_framework: 'O presente relatório fundamenta-se no Modelo Benenzon (Princípio do ISO), nas práticas de Nordoff-Robbins (Musicoterapia Criativa), no modelo de Bruscia (níveis de prática) e nos domínios clínicos da IMTAP (Individualized Music Therapy Assessment Profile), associados às diretrizes de intervenção em TEA conforme DSM-5-TR e CID-11.',
+    assessment_tools_used: 'Instrumentos: IMTAP (Baxter et al., 2007), Escala MuseTera de avaliação musicoterapêutica, observação clínica sistematizada e Perfil Sensorial de Dunn.',
+    references_cited: 'Benenzon, R. (1985). Manual de Musicoterapia. Bruscia, K. (2000). Definindo Musicoterapia. Nordoff, P.; Robbins, C. (2007). Creative Music Therapy. Baxter et al. (2007). The Individualized Music Therapy Assessment Profile. APA (2022). DSM-5-TR.'
+  }
+};
 
 export function MusicoterapiaReportWizard({ 
   reportData, 
@@ -198,6 +193,32 @@ export function MusicoterapiaReportWizard({
       });
     }
   };
+
+  const applyStepTemplate = useCallback((overwrite: boolean) => {
+    const tmpl = STEP_TEMPLATES[currentStepData.id];
+    if (!tmpl) return;
+    const updates: Record<string, any> = {};
+    Object.entries(tmpl).forEach(([fid, txt]) => {
+      const existing = reportData.fieldValues?.[fid];
+      if (overwrite || !existing || (typeof existing === 'string' && !existing.trim())) {
+        updates[fid] = txt;
+      }
+    });
+    if (Object.keys(updates).length) {
+      onUpdateData({
+        ...reportData,
+        fieldValues: { ...reportData.fieldValues, ...updates }
+      });
+      if (overwrite) {
+        toast({ title: 'Template aplicado', description: 'Os campos foram preenchidos com o texto padrão.' });
+      }
+    }
+  }, [currentStepData.id, reportData, onUpdateData, toast]);
+
+  useEffect(() => {
+    applyStepTemplate(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentStep]);
 
   const validateCurrentStep = () => {
     // Validação especial para a primeira etapa (Informações Básicas)
@@ -272,8 +293,26 @@ export function MusicoterapiaReportWizard({
       currentStepData.fields.includes(field.id)
     );
 
+    const hasTemplate = !!STEP_TEMPLATES[currentStepData.id];
+
     return (
       <div className="space-y-6">
+        {hasTemplate && (
+          <div className="flex items-center justify-between gap-3 p-4 rounded-lg border border-purple-200 bg-purple-50 dark:bg-purple-950/30 dark:border-purple-800">
+            <div className="text-sm text-purple-900 dark:text-purple-100">
+              <strong>Template profissional disponível.</strong> Os campos já foram preenchidos com texto padrão — edite à vontade ou reaplique o modelo.
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => applyStepTemplate(true)}
+            >
+              <Wand2 className="h-4 w-4 mr-2" />
+              Aplicar template
+            </Button>
+          </div>
+        )}
         {stepFields.map((field) => (
           <div key={field.id} className="space-y-3">
             <MusicoterapiaFormField
