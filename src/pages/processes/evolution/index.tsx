@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -395,9 +396,12 @@ export default function EvolutionReport() {
                     <Clock className="h-4 w-4 text-green-600" />
                     Data da Sessão
                   </Label>
-                  <div className="h-10 sm:h-12 p-3 bg-gradient-to-r from-muted/30 to-blue-50/50 rounded-lg border-2 border-border flex items-center font-medium text-foreground text-sm sm:text-base">
-                    {new Date().toLocaleDateString('pt-BR')}
-                  </div>
+                  <Input
+                    type="date"
+                    value={formData.date || new Date().toISOString().split('T')[0]}
+                    onChange={(e) => updateField('date', e.target.value)}
+                    className="h-10 sm:h-12 border-2 border-border focus:border-blue-500 bg-background text-sm sm:text-base font-medium"
+                  />
                 </div>
               </div>
             </CardContent>
