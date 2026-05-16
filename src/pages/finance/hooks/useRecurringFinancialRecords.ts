@@ -175,6 +175,7 @@ export function useDeleteRecurringSeries() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["financial-records"] });
+      queryClient.invalidateQueries({ queryKey: ["finance-dashboard"] });
       toast.success("Registro(s) excluído(s) com sucesso!");
     },
     onError: (error) => {
