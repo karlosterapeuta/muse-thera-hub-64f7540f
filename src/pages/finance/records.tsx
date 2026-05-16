@@ -933,6 +933,7 @@ export default function FinancialRecords() {
                 record={selectedRecord}
                 onSuccess={handleFormSuccess}
                 onCancel={handleCloseForm}
+                seriesMode={seriesEditMode}
               />
             </div>
           </SheetContent>
