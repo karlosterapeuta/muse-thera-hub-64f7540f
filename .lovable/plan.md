@@ -1,85 +1,37 @@
+# Sons reais dos animais na Orquestra Animal
 
-# Orquestra Animal Infantil
+## Objetivo
+Substituir os sons sintetizados (Web Audio API) por **gravações reais** de cada animal (leão, elefante, gato, etc.), usando uma fonte gratuita.
 
-Nova página interativa onde a criança clica em personagens animais dispostos num palco e cada um toca o som de um instrumento (sintetizado via Web Audio API) misturado a um efeito do animal.
+## Análise das APIs sugeridas
 
-## O que será criado
+- **Xeno-canto** — Excelente, mas **só pássaros**. Cobre apenas coruja (de 10 animais). Não serve sozinho.
+- **animalaudiograms.org** — É um banco de **audiogramas** (gráficos de sensibilidade auditiva), **não** gravações de sons. Não serve.
+- **freeanimalsounds.org** — Site de download manual, sem API pública.
 
-### 1. Nova rota e página
-- Rota: `/orquestra-animal`
-- Arquivo: `src/pages/orquestra-animal/index.tsx`
-- Registrar em `src/App.tsx` (mesmo padrão das outras páginas)
+### Solução proposta
+Usar **Wikimedia Commons API** (gratuita, sem chave, CC-licensed) como fonte principal — tem MP3/OGG de praticamente todos os animais (lion roar, elephant trumpet, cat meow, dog bark, frog croak, etc.). Complementar com **Xeno-canto** para a coruja (qualidade superior em pássaros).
 
-### 2. Item no menu lateral
-Em `src/components/sidebar/constants.ts`, adicionar em `toolsMenuItems`:
-```
-{ icon: Music2, text: "🎺 Orquestra Animal", path: "/orquestra-animal", gradient: "from-orange-500 to-pink-600", isNew: true }
-```
+Alternativa caso o usuário prefira: pré-baixar ~10 arquivos curtos de domínio público e servir do próprio projeto (mais rápido, offline, sem CORS).
 
-### 3. Estrutura visual (estilo infantil / circo musical)
-- Cenário de palco com cortinas vermelhas (inspirado no site de referência)
-- Arco semicircular com 10 animais-músicos dispostos como uma orquestra
-- Maestro central (animal regente) que, ao ser clicado, toca todos os instrumentos juntos (TUTTI)
-- Tipografia infantil (fonte arredondada), cores saturadas, animações suaves
-- Animais saltitam/balançam enquanto tocam; partículas de notas musicais sobem do instrumento
-- Card lateral mostrando o animal selecionado com nome, instrumento e curiosidade
+## Mudanças
 
-### 4. Elenco (10 animais + instrumentos)
-| Animal | Instrumento | Naipe |
-|---|---|---|
-| 🦁 Leão | Tuba | Metais |
-| 🐘 Elefante | Trompete | Metais |
-| 🦒 Girafa | Trombone | Metais |
-| 🐰 Coelho | Flauta | Madeiras |
-| 🦉 Coruja | Clarinete | Madeiras |
-| 🐱 Gato | Violino | Cordas |
-| 🐻 Urso | Violoncelo | Cordas |
-| 🐸 Sapo | Contrabaixo | Cordas |
-| 🐶 Cachorro | Bateria | Percussão |
-| 🐵 Macaco | Xilofone | Percussão |
+1. **`src/pages/orquestra-animal/data/orchestraAnimals.ts`**
+   - Adicionar campo `soundUrl` em cada animal apontando para o MP3/OGG (Wikimedia direct file URL, ex: `https://upload.wikimedia.org/wikipedia/commons/.../Lion_roar.ogg`).
 
-Filtros por naipe (botões coloridos): Tutti / Cordas / Madeiras / Metais / Percussão.
+2. **`src/pages/orquestra-animal/utils/orchestraAudioEngine.ts`**
+   - Reescrever para usar `HTMLAudioElement` (`new Audio(url)`) — toca arquivo real.
+   - Manter `playInstrument()` sintetizado para a parte musical do instrumento (tuba, flauta…), tocando **junto** com o som do animal, OU substituir por apenas o som do animal (a decidir abaixo).
+   - `playTutti()`: toca todos os sons de animais em sequência rápida (cacofonia divertida) ou sobrepostos.
 
-### 5. Áudio (Web Audio API — sem arquivos externos)
-Criar `src/pages/orquestra-animal/utils/orchestraAudioEngine.ts`:
-- AudioContext singleton inicializado no primeiro clique
-- Função `playInstrument(instrumentId)` com timbres distintos:
-  - **Cordas**: oscilador sawtooth + filtro passa-baixa + envelope com ataque suave (~80ms)
-  - **Madeiras**: oscilador triangle/sine + leve vibrato (LFO 5Hz)
-  - **Metais**: oscilador square + filtro + ataque mais marcado, brilho metálico
-  - **Percussão**: ruído branco filtrado (bateria) ou onda curta com decay rápido (xilofone)
-- Função `playAnimalSound(animalId)` com sons curtos sintetizados que evocam o animal (rugido grave, latido, miado agudo) — tudo via osciladores e ruído filtrado
-- Função `playTutti()` que dispara todos os instrumentos em harmonia (acorde C maior distribuído)
-- Reaproveitar padrão já existente em `src/pages/musicogram/utils/teaAudioService.ts` e `src/utils/teaAudioEngine.ts`
+3. **`src/pages/orquestra-animal/index.tsx`**
+   - Sem mudanças estruturais; apenas chama o engine novo.
 
-### 6. Componentes
-```
-src/pages/orquestra-animal/
-  index.tsx                          # página principal
-  components/
-    OrchestraStage.tsx               # palco com cortinas e arco de animais
-    AnimalMusician.tsx               # personagem clicável (emoji grande + instrumento + animação)
-    InstrumentInfoCard.tsx           # card lateral com info do animal selecionado
-    SectionFilter.tsx                # botões de naipe (Tutti/Cordas/...)
-    ConductorButton.tsx              # maestro central que toca tutti
-    MusicalNotesParticles.tsx        # notas musicais flutuando quando toca
-  data/
-    orchestraAnimals.ts              # array com os 10 animais
-  utils/
-    orchestraAudioEngine.ts          # motor de áudio Web Audio API
-```
+## Detalhes técnicos
+- Wikimedia URLs são CORS-friendly para `<audio>`/`new Audio()`.
+- Pré-carregar (`audio.preload = 'auto'`) ao montar a página para tocar instantaneamente no clique.
+- Fallback: se o fetch falhar, cair no sintetizador atual.
 
-### 7. Acessibilidade & responsividade
-- Mobile: layout 2 colunas com grid de animais grandes (touch-friendly)
-- Desktop: arco semicircular renderizado com posicionamento absoluto + transformações
-- Botão "Parar tudo" sempre visível
-- `aria-label` em cada animal: "Clique para ouvir o leão tocar tuba"
-
-## Fora do escopo
-- **Spleeter**: roda em Python/TensorFlow, inviável no navegador. Sons reais separados não serão usados nesta entrega. Caso queira no futuro, podemos hospedar MP3 prontos no Supabase Storage.
-- Não modifica páginas existentes (Musicograma, Bell Hero, etc.).
-
-## Arquivos tocados
-- ✏️ `src/components/sidebar/constants.ts` (adicionar item)
-- ✏️ `src/App.tsx` (registrar rota)
-- 🆕 9 arquivos novos em `src/pages/orquestra-animal/`
+## Perguntas antes de implementar
+1. Ao clicar no animal, você quer ouvir **só o som do animal** (rugido, miado) ou **animal + instrumento** tocando juntos?
+2. Posso usar **Wikimedia Commons** (CC-licensed, sem chave, funciona já) como fonte principal? Ou prefere que eu baixe ~10 arquivos curtos e coloque dentro do projeto (mais rápido, funciona offline)?
