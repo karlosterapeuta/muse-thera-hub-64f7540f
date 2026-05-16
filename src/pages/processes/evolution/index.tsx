@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, FileText, Download, Save, Trash2, Eye, RefreshCw, TrendingUp, Sparkles, Clock, User, Calendar, Activity, Brain, Heart, Users, Target, MessageCircle, CheckCircle, List } from "lucide-react";
+import { Loader2, FileText, Download, Save, Trash2, Eye, RefreshCw, TrendingUp, Sparkles, Clock, User, Calendar, Activity, Brain, Heart, Users, Target, MessageCircle, CheckCircle, List, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useEvolutionReport } from "@/hooks/useEvolutionReport";
 import { evolutionSections } from "@/data/evolutionTemplate";
@@ -247,6 +247,15 @@ export default function EvolutionReport() {
 
   return (
     <div className="container mx-auto p-4 sm:p-6 max-w-6xl">
+      <Button
+        variant="ghost"
+        onClick={() => navigate(-1)}
+        className="mb-4 gap-2 hover:bg-blue-50 dark:hover:bg-gray-800"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Voltar
+      </Button>
+
       {/* Enhanced Organized Header */}
       <div className="relative mb-6 lg:mb-10 overflow-hidden">
         {/* Main Header Container */}
