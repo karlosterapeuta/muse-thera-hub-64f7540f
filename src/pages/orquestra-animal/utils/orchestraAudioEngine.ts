@@ -13,10 +13,12 @@ class OrchestraAudioEngine {
       this.masterGain = this.ctx.createGain();
       this.masterGain.gain.value = 0.8;
       this.masterGain.connect(this.ctx.destination);
+      console.log("[OrchestraAudio] AudioContext created. state=", this.ctx.state);
     }
-    // Resume if suspended (best-effort; fire-and-forget is fine inside a gesture)
     if (this.ctx.state === "suspended") {
-      this.ctx.resume().catch(() => {});
+      this.ctx.resume().then(() => {
+        console.log("[OrchestraAudio] resumed. state=", this.ctx?.state);
+      }).catch((e) => console.warn("[OrchestraAudio] resume failed", e));
     }
     return { ctx: this.ctx, master: this.masterGain! };
   }
