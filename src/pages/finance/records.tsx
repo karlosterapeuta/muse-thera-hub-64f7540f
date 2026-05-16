@@ -70,6 +70,7 @@ export default function FinancialRecords() {
   const [clinicFormOpen, setClinicFormOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<FinancialRecord | undefined>();
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [seriesEditMode, setSeriesEditMode] = useState(false);
   const [recordToDelete, setRecordToDelete] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"list" | "fixed">("fixed");
   const [clearAllDialogOpen, setClearAllDialogOpen] = useState(false);
