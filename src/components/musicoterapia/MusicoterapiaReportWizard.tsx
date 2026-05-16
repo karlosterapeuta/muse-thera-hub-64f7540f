@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -31,36 +31,8 @@ const STEPS = [
     fields: ['patient_name', 'patient_age', 'patient_diagnosis', 'session_date', 'professional_name', 'professional_registry']
   },
   {
-    id: 'clinical_identification',
-    title: '2. Identificação Clínica',
-    description: 'CID, comorbidades, frequência',
-    icon: Brain,
-    fields: ['cid_code', 'support_level', 'comorbidities', 'current_medications', 'referral_source', 'treatment_start_date', 'session_count', 'session_frequency', 'session_duration']
-  },
-  {
-    id: 'iso_identity',
-    title: '3. Identidade Sonora (ISO)',
-    description: 'Modelo Benenzon',
-    icon: Music,
-    fields: ['iso_gestational', 'iso_universal', 'iso_cultural', 'iso_complementary', 'iso_group', 'sound_preferences', 'musical_repertoire_favorites']
-  },
-  {
-    id: 'sensory_profile',
-    title: '4. Avaliação Sensório-Musical',
-    description: 'Perfil sensorial e respostas',
-    icon: Heart,
-    fields: ['auditory_processing', 'sound_tolerance', 'vestibular_response_music', 'tactile_instrument_response', 'proprioceptive_response', 'sensory_seeking_vs_avoiding', 'sensory_profile_notes']
-  },
-  {
-    id: 'imtap_domains',
-    title: '5. Domínios IMTAP',
-    description: 'Avaliação clínica por domínios',
-    icon: Target,
-    fields: ['domain_musicality', 'domain_communication_verbal', 'domain_communication_nonverbal', 'domain_social_interaction', 'domain_emotional', 'domain_cognitive', 'domain_motor_gross', 'domain_motor_fine', 'domain_sensory_integration', 'domain_autonomy', 'domain_evidences']
-  },
-  {
     id: 'therapeutic_objectives',
-    title: '6. Objetivos Terapêuticos',
+    title: '2. Objetivos Terapêuticos',
     description: 'Metas e planejamento',
     icon: Target,
     fields: ['therapeutic_objectives', 'specific_goals']
