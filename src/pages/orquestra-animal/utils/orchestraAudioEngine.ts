@@ -1,136 +1,89 @@
-import type { AnimalMusician, Section } from "../data/orchestraAnimals";
+import type { AnimalMusician } from "../data/orchestraAnimals";
 
-// Global singleton AudioContext (created on first user gesture)
+// ---------- Real animal sounds (HTMLAudioElement pool) ----------
+
+const audioPool = new Map<string, HTMLAudioElement>();
+
+function getAudio(url: string): HTMLAudioElement {
+  let el = audioPool.get(url);
+  if (!el) {
+    el = new Audio(url);
+    el.crossOrigin = "anonymous";
+    el.preload = "auto";
+    audioPool.set(url, el);
+  }
+  return el;
+}
+
+/** Pre-load every animal sound once (best-effort). */
+export function preloadAnimalSounds(animals: AnimalMusician[]) {
+  animals.forEach((a) => {
+    if (a.soundUrl) getAudio(a.soundUrl);
+  });
+}
+
+function playUrl(url: string, volume = 1): Promise<void> {
+  // Clone so overlapping clicks don't cut each other off
+  const base = getAudio(url);
+  const el = base.cloneNode(true) as HTMLAudioElement;
+  el.volume = volume;
+  const p = el.play();
+  return p instanceof Promise ? p.then(() => {}) : Promise.resolve();
+}
+
+// ---------- Synth fallback (used only if URL fails) ----------
+
 let _ctx: AudioContext | null = null;
-
 function getCtx(): AudioContext {
   if (!_ctx || _ctx.state === "closed") {
-    const AC = (window.AudioContext || (window as any).webkitAudioContext) as typeof AudioContext;
+    const AC = (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext);
     _ctx = new AC();
-    console.log("[OrchestraAudio] AudioContext created, state:", _ctx.state);
   }
-  if (_ctx.state === "suspended") {
-    _ctx.resume().then(() => console.log("[OrchestraAudio] resumed"));
-  }
+  if (_ctx.state === "suspended") _ctx.resume();
   return _ctx;
 }
 
-/** Plays a simple tone with envelope. Volume is loud enough to be unmistakable. */
-function playTone(
-  type: OscillatorType,
-  frequency: number,
-  duration: number,
-  delay = 0,
-  volume = 0.3
-) {
+function synthFallback(animal: AnimalMusician) {
   const ctx = getCtx();
-  const t0 = ctx.currentTime + delay;
+  const t0 = ctx.currentTime;
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
-  osc.type = type;
-  osc.frequency.value = frequency;
-  // Simple envelope: quick attack, slow release
-  gain.gain.value = 0;
+  osc.type = animal.section === "cordas" ? "sawtooth" : animal.section === "metais" ? "square" : "triangle";
+  osc.frequency.value = animal.frequency;
   gain.gain.setValueAtTime(0, t0);
-  gain.gain.linearRampToValueAtTime(volume, t0 + 0.02);
-  gain.gain.linearRampToValueAtTime(0, t0 + duration);
+  gain.gain.linearRampToValueAtTime(0.3, t0 + 0.02);
+  gain.gain.linearRampToValueAtTime(0, t0 + 1);
   osc.connect(gain);
   gain.connect(ctx.destination);
   osc.start(t0);
-  osc.stop(t0 + duration + 0.05);
+  osc.stop(t0 + 1.05);
 }
 
-function playNoise(duration: number, delay = 0, volume = 0.4, highpass = false) {
-  const ctx = getCtx();
-  const t0 = ctx.currentTime + delay;
-  const sampleCount = Math.floor(ctx.sampleRate * duration);
-  const buffer = ctx.createBuffer(1, sampleCount, ctx.sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < sampleCount; i++) {
-    data[i] = (Math.random() * 2 - 1) * (1 - i / sampleCount);
-  }
-  const src = ctx.createBufferSource();
-  src.buffer = buffer;
-  const filter = ctx.createBiquadFilter();
-  filter.type = highpass ? "highpass" : "lowpass";
-  filter.frequency.value = highpass ? 2000 : 250;
-  const gain = ctx.createGain();
-  gain.gain.value = volume;
-  src.connect(filter);
-  filter.connect(gain);
-  gain.connect(ctx.destination);
-  src.start(t0);
-  src.stop(t0 + duration);
-}
-
-function timbreForSection(section: Section): OscillatorType {
-  switch (section) {
-    case "cordas":
-      return "sawtooth";
-    case "madeiras":
-      return "triangle";
-    case "metais":
-      return "square";
-    default:
-      return "sine";
-  }
-}
-
-function playInstrument(animal: AnimalMusician, delay = 0) {
-  if (animal.section === "percussao") {
-    if (animal.frequency > 500) {
-      // Xilofone — tom + clique
-      playTone("sine", animal.frequency, 0.8, delay, 0.35);
-      playTone("sine", animal.frequency * 2, 0.4, delay, 0.15);
-    } else {
-      // Bateria — só ruído filtrado
-      playNoise(0.35, delay, 0.5, false);
-    }
-    return;
-  }
-  const type = timbreForSection(animal.section);
-  // Main note
-  playTone(type, animal.frequency, 1.2, delay, 0.3);
-  // Harmonic (octave above) for richer sound
-  playTone(type, animal.frequency * 2, 1.2, delay, 0.12);
-}
-
-function playAnimalSfx(animalId: string, delay = 0) {
-  switch (animalId) {
-    case "lion-tuba":
-      playTone("sawtooth", 110, 0.6, delay, 0.25);
-      break;
-    case "cat-violin":
-      playTone("triangle", 700, 0.4, delay, 0.2);
-      break;
-    case "dog-drums":
-      playTone("square", 220, 0.15, delay, 0.25);
-      break;
-    case "frog-bass":
-      playTone("square", 80, 0.25, delay, 0.3);
-      break;
-    case "owl-clarinet":
-      playTone("sine", 400, 0.5, delay, 0.2);
-      break;
-    case "elephant-trumpet":
-      playTone("sawtooth", 180, 0.5, delay, 0.25);
-      break;
-    default:
-      playTone("sine", 440, 0.2, delay, 0.2);
-  }
-}
+// ---------- Public API ----------
 
 export const orchestraAudio = {
-  /** Call from a click handler. Synchronous. */
   play(animal: AnimalMusician) {
-    console.log("[OrchestraAudio] play()", animal.name);
-    getCtx(); // ensure created in gesture
-    playAnimalSfx(animal.id, 0);
-    playInstrument(animal, 0.2);
+    console.log("[OrchestraAudio] play()", animal.name, animal.soundUrl);
+    if (animal.soundUrl) {
+      playUrl(animal.soundUrl, 1).catch((err) => {
+        console.warn("[OrchestraAudio] real sound failed, using synth:", err);
+        synthFallback(animal);
+      });
+      return;
+    }
+    synthFallback(animal);
   },
+
   playTutti(animals: AnimalMusician[]) {
     console.log("[OrchestraAudio] playTutti()");
-    getCtx();
-    animals.forEach((a, i) => playInstrument(a, i * 0.05));
+    animals.forEach((a, i) => {
+      setTimeout(() => {
+        if (a.soundUrl) {
+          playUrl(a.soundUrl, 0.55).catch(() => synthFallback(a));
+        } else {
+          synthFallback(a);
+        }
+      }, i * 90);
+    });
   },
 };

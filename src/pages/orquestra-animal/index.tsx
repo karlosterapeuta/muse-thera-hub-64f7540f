@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { orchestraAnimals, type Section } from "./data/orchestraAnimals";
-import { orchestraAudio } from "./utils/orchestraAudioEngine";
+import { orchestraAudio, preloadAnimalSounds } from "./utils/orchestraAudioEngine";
 import { AnimalMusician } from "./components/AnimalMusician";
 import { SectionFilter } from "./components/SectionFilter";
 import { InstrumentInfoCard } from "./components/InstrumentInfoCard";
@@ -9,6 +9,10 @@ export default function OrquestraAnimal() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState<Section | "tutti">("tutti");
+
+  useEffect(() => {
+    preloadAnimalSounds(orchestraAnimals);
+  }, []);
 
   const filtered = useMemo(() => {
     if (activeSection === "tutti") return orchestraAnimals;
