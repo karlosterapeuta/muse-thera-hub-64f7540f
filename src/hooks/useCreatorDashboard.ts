@@ -75,13 +75,12 @@ export function useCreatorDashboard(creatorId: string | undefined) {
       if (coursesError) throw coursesError;
 
       // Fetch all sales/purchases
-      const { data: sales, error: salesError } = await supabase
-        .from("course_purchases")
+      const { data: sales, error: salesError } = await (supabase as any)
+        .from("creator_course_purchases")
         .select(`
           id,
           course_id,
           buyer_name,
-          buyer_email,
           amount_cents,
           creator_amount_cents,
           payment_status,
