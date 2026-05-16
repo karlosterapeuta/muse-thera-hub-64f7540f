@@ -862,12 +862,10 @@ export default function Evaluation() {
         cleanup();
       }
       
-      toast.dismiss();
-      toast.success("PDF da avaliação baixado com sucesso!");
+      toast.success("PDF da avaliação baixado com sucesso!", { id: loadingToast });
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
-      toast.dismiss();
-      toast.error("Erro ao gerar PDF. Por favor, tente novamente.");
+      toast.error("Erro ao gerar PDF. Por favor, tente novamente.", { id: loadingToast });
     }
   };
 
