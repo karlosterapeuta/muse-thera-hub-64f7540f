@@ -53,6 +53,7 @@ export function useCreateRecurringRecord() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["financial-records"] });
+      queryClient.invalidateQueries({ queryKey: ["finance-dashboard"] });
       toast.success("Registro recorrente criado com sucesso!");
     },
     onError: (error) => {
