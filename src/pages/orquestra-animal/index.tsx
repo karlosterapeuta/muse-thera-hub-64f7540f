@@ -20,24 +20,19 @@ export default function OrquestraAnimal() {
     [selectedId]
   );
 
-  useEffect(() => {
-    return () => {
-      orchestraAudio.stopAll();
-    };
-  }, []);
-
-  const handleAnimalClick = async (id: string) => {
+  const handleAnimalClick = (id: string) => {
     const animal = orchestraAnimals.find((a) => a.id === id);
     if (!animal) return;
+    // Call audio FIRST, synchronously, inside the user gesture
+    orchestraAudio.play(animal);
     setSelectedId(id);
     setPlayingId(id);
-    await orchestraAudio.play(animal);
     setTimeout(() => setPlayingId(null), 1600);
   };
 
-  const handlePlayTutti = async () => {
+  const handlePlayTutti = () => {
+    orchestraAudio.playTutti(orchestraAnimals);
     setPlayingId("__tutti__");
-    await orchestraAudio.playTutti(orchestraAnimals);
     setTimeout(() => setPlayingId(null), 2200);
   };
 
