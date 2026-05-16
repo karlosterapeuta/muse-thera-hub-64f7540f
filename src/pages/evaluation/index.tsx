@@ -24,7 +24,7 @@ import { ParametersGraphsPDF } from "@/components/ParametersGraphsPDF";
 import { MuseteraReportPDF } from "@/components/MuseteraReportPDF";
 import { EnhancedMuseteraReportPDF } from "@/components/EnhancedMuseteraReportPDF";
 import { EvaluationTextPDF } from "@/components/EvaluationTextPDF";
-import ReactDOM from 'react-dom';
+import { renderForPdf } from '@/utils/renderForPdf';
 import { PatientSelect } from "../anamnesis/components/PatientSelect";
 import { EvaluationLevelsHero } from "@/components/EvaluationLevelsHero";
 import { 
@@ -763,7 +763,7 @@ export default function Evaluation() {
   const { data: professionalData } = useProfessionalData();
 
   const handleDownloadSavedEvaluation = async (evaluation: SavedEvaluation) => {
-    toast.loading("Gerando PDF da avaliação salva...");
+    const loadingToast = toast.loading("Gerando PDF da avaliação salva...");
     
     try {
       // Converter URLs para Base64
@@ -829,15 +829,8 @@ export default function Evaluation() {
         </div>
       );
 
-      const container = document.createElement('div');
-      container.style.position = 'absolute';
-      container.style.left = '-9999px';
-      document.body.appendChild(container);
-
-      const root = document.createElement('div');
-      container.appendChild(root);
-
-      ReactDOM.render(pdfContent, root);
+      const { root, cleanup } = renderForPdf(pdfContent);
+      try {
 
       await new Promise(resolve => setTimeout(resolve, 2000));
 
@@ -865,14 +858,14 @@ export default function Evaluation() {
       await pdfInst1.save();
       try { const blob = await pdfInst1.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
       
-      document.body.removeChild(container);
+      } finally {
+        cleanup();
+      }
       
-      toast.dismiss();
-      toast.success("PDF da avaliação baixado com sucesso!");
+      toast.success("PDF da avaliação baixado com sucesso!", { id: loadingToast });
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
-      toast.dismiss();
-      toast.error("Erro ao gerar PDF. Por favor, tente novamente.");
+      toast.error("Erro ao gerar PDF. Por favor, tente novamente.", { id: loadingToast });
     }
   };
 
@@ -944,15 +937,8 @@ export default function Evaluation() {
         </div>
       );
 
-      const container = document.createElement('div');
-      container.style.position = 'absolute';
-      container.style.left = '-9999px';
-      document.body.appendChild(container);
-
-      const root = document.createElement('div');
-      container.appendChild(root);
-
-      ReactDOM.render(pdfContent, root);
+      const { root, cleanup } = renderForPdf(pdfContent);
+      try {
 
       await new Promise(resolve => setTimeout(resolve, 1500));
 
@@ -980,7 +966,9 @@ export default function Evaluation() {
       await pdfInst2.save();
       try { const blob = await pdfInst2.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
       
-      document.body.removeChild(container);
+      } finally {
+        cleanup();
+      }
       
       toast.success("PDF de Parâmetros e Gráficos gerado com sucesso!", { id: loadingToast });
     } catch (error) {
@@ -1071,15 +1059,8 @@ export default function Evaluation() {
         </div>
       );
 
-      const container = document.createElement('div');
-      container.style.position = 'absolute';
-      container.style.left = '-9999px';
-      document.body.appendChild(container);
-
-      const root = document.createElement('div');
-      container.appendChild(root);
-
-      ReactDOM.render(pdfContent, root);
+      const { root, cleanup } = renderForPdf(pdfContent);
+      try {
 
       await new Promise(resolve => setTimeout(resolve, 1500));
 
@@ -1105,7 +1086,9 @@ export default function Evaluation() {
       await pdfInst3.save();
       try { const blob = await pdfInst3.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
       
-      document.body.removeChild(container);
+      } finally {
+        cleanup();
+      }
       
       toast.success("PDF de Gráficos gerado com sucesso!", { id: loadingToast });
     } catch (error) {
@@ -1166,15 +1149,8 @@ export default function Evaluation() {
         </div>
       );
 
-      const container = document.createElement('div');
-      container.style.position = 'absolute';
-      container.style.left = '-9999px';
-      document.body.appendChild(container);
-
-      const root = document.createElement('div');
-      container.appendChild(root);
-
-      ReactDOM.render(pdfContent, root);
+      const { root, cleanup } = renderForPdf(pdfContent);
+      try {
 
       await new Promise(resolve => setTimeout(resolve, 2000));
 
@@ -1204,7 +1180,9 @@ export default function Evaluation() {
       await pdfInst4.save();
       try { const blob = await pdfInst4.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
       
-      document.body.removeChild(container);
+      } finally {
+        cleanup();
+      }
       
       toast.success("Relatório MuseTera Aprimorado gerado com sucesso!", { id: loadingToast });
     } catch (error) {
@@ -1401,15 +1379,8 @@ export default function Evaluation() {
         </div>
       );
 
-      const container = document.createElement('div');
-      container.style.position = 'absolute';
-      container.style.left = '-9999px';
-      document.body.appendChild(container);
-
-      const root = document.createElement('div');
-      container.appendChild(root);
-
-      ReactDOM.render(pdfContent, root);
+      const { root, cleanup } = renderForPdf(pdfContent);
+      try {
 
       await new Promise(resolve => setTimeout(resolve, 1500));
 
@@ -1438,7 +1409,9 @@ export default function Evaluation() {
       await pdfInst5.save();
       try { const blob = await pdfInst5.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
       
-      document.body.removeChild(container);
+      } finally {
+        cleanup();
+      }
       
       toast.dismiss();
       toast.success("Texto de Avaliação gerado com sucesso!");
@@ -1540,15 +1513,8 @@ export default function Evaluation() {
         </div>
       );
 
-      const container = document.createElement('div');
-      container.style.position = 'absolute';
-      container.style.left = '-9999px';
-      document.body.appendChild(container);
-
-      const root = document.createElement('div');
-      container.appendChild(root);
-
-      ReactDOM.render(pdfContent, root);
+      const { root, cleanup } = renderForPdf(pdfContent);
+      try {
 
       await new Promise(resolve => setTimeout(resolve, 1500));
 
@@ -1577,7 +1543,9 @@ export default function Evaluation() {
       await pdfInst6.save();
       try { const blob = await pdfInst6.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
       
-      document.body.removeChild(container);
+      } finally {
+        cleanup();
+      }
       
       toast.dismiss();
       toast.success("Texto de Avaliação gerado com sucesso!");
