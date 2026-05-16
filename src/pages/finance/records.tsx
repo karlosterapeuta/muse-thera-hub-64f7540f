@@ -143,60 +143,69 @@ export default function FinancialRecords() {
     return description.replace(/Dia da semana: [a-z]+\s*\|\s*Horário: \d{2}:\d{2}\s*\|\s*Duração: \d+ minutos\s*\|\s*/, "");
   };
   
-  const filteredRecords = records.filter(record => 
-    record.clinic_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    record.patient_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    record.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  const matchesFilters = (record: FinancialRecord) => {
+    const term = searchTerm.toLowerCase();
+    const textOk = !term ||
+      record.clinic_name?.toLowerCase().includes(term) ||
+      record.patient_name?.toLowerCase().includes(term) ||
+      record.description?.toLowerCase().includes(term);
+    const clinicOk = clinicFilter === "all" || record.clinic_id === clinicFilter;
+    const statusOk = statusFilter === "all" || (record.session_status || "scheduled") === statusFilter;
+    return textOk && clinicOk && statusOk;
+  };
+
+  const filteredRecords = useMemo(
+    () => records.filter(matchesFilters),
+    [records, searchTerm, clinicFilter, statusFilter]
   );
-  
-  const sortedRecords = [...filteredRecords].sort((a, b) => {
-    const weekdayA = getWeekdayLabel(a.description);
-    const weekdayB = getWeekdayLabel(b.description);
-    
+
+  const sortedRecords = useMemo(() => {
     const weekdayOrder: Record<string, number> = {
-      "Segunda-feira": 1,
-      "Terça-feira": 2, 
-      "Quarta-feira": 3,
-      "Quinta-feira": 4,
-      "Sexta-feira": 5,
-      "Sábado": 6
+      "Segunda-feira": 1, "Terça-feira": 2, "Quarta-feira": 3,
+      "Quinta-feira": 4, "Sexta-feira": 5, "Sábado": 6,
     };
-    
-    if (weekdayOrder[weekdayA] !== weekdayOrder[weekdayB]) {
-      return (weekdayOrder[weekdayA] || 99) - (weekdayOrder[weekdayB] || 99);
-    }
-    
-    const timeA = getAppointmentTime(a.description);
-    const timeB = getAppointmentTime(b.description);
-    return timeA.localeCompare(timeB);
-  });
-  
+    return [...filteredRecords].sort((a, b) => {
+      const weekdayA = getWeekdayLabel(a.description);
+      const weekdayB = getWeekdayLabel(b.description);
+      if (weekdayOrder[weekdayA] !== weekdayOrder[weekdayB]) {
+        return (weekdayOrder[weekdayA] || 99) - (weekdayOrder[weekdayB] || 99);
+      }
+      const timeA = getAppointmentTime(a.description);
+      const timeB = getAppointmentTime(b.description);
+      return timeA.localeCompare(timeB);
+    });
+  }, [filteredRecords]);
+
+  // KPIs do período
+  const periodKpis = useMemo(() => {
+    const total = filteredRecords.reduce((s, r) => s + Number(r.amount || 0), 0);
+    const count = filteredRecords.length;
+    const avg = count > 0 ? total / count : 0;
+    return { total, count, avg };
+  }, [filteredRecords]);
+
   // Smart weekly agenda organization - group by current week
-  const organizeWeeklyAgenda = () => {
+  const weeklyAgenda = useMemo(() => {
     const today = new Date();
     const startDate = startOfWeek(today, { weekStartsOn: 0 });
     const endDate = endOfWeek(today, { weekStartsOn: 0 });
-    
-    // Filter records for current week
+
     const weekRecords = filteredRecords.filter(record => {
       const recordDate = parseDateLocal(record.session_date);
       return recordDate >= startDate && recordDate <= endDate;
     });
-    
-    // Create week structure
+
     const weekDays = [];
     for (let i = 0; i < 7; i++) {
       const date = addDays(startDate, i);
-      const dayRecords = weekRecords.filter(record => 
+      const dayRecords = weekRecords.filter(record =>
         isSameDay(parseDateLocal(record.session_date), date)
       ).sort((a, b) => {
         const timeA = getAppointmentTime(a.description) || "00:00";
         const timeB = getAppointmentTime(b.description) || "00:00";
         return timeA.localeCompare(timeB);
       });
-      
       const dayTotal = dayRecords.reduce((sum, record) => sum + record.amount, 0);
-      
       weekDays.push({
         date,
         dayName: format(date, "EEEE", { locale: ptBR }),
@@ -204,60 +213,61 @@ export default function FinancialRecords() {
         formatted: format(date, "dd/MM", { locale: ptBR }),
         records: dayRecords,
         total: dayTotal,
-        isToday: isToday(date)
+        isToday: isToday(date),
       });
     }
-    
     return weekDays;
-  };
-  
-  const weeklyAgenda = organizeWeeklyAgenda();
-  
-  // Fixed agenda: use ALL records grouped by session_date weekday
-  const fixedFilteredRecords = allRecords.filter(record => 
-    record.clinic_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    record.patient_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    record.description?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-  
-  const getRecordWeekday = (record: FinancialRecord): string => {
-    // First try description pattern, then fall back to session_date
-    const short = getWeekdayShort(record.description);
-    if (short) return short;
-    
-    const date = parseDateLocal(record.session_date);
-    const dayOfWeek = date.getDay(); // 0=Sun, 1=Mon...6=Sat
-    const dayMap: Record<number, string> = { 1: "SEG", 2: "TER", 3: "QUA", 4: "QUI", 5: "SEX", 6: "SAB", 0: "DOM" };
-    return dayMap[dayOfWeek] || "DOM";
-  };
-  
-  const recordsByWeekday = {
-    "SEG": fixedFilteredRecords.filter(record => getRecordWeekday(record) === "SEG"),
-    "TER": fixedFilteredRecords.filter(record => getRecordWeekday(record) === "TER"),
-    "QUA": fixedFilteredRecords.filter(record => getRecordWeekday(record) === "QUA"),
-    "QUI": fixedFilteredRecords.filter(record => getRecordWeekday(record) === "QUI"),
-    "SEX": fixedFilteredRecords.filter(record => getRecordWeekday(record) === "SEX"),
-    "SAB": fixedFilteredRecords.filter(record => getRecordWeekday(record) === "SAB"),
-  };
-  
-  // Deduplicate fixed agenda by patient+weekday+time (show unique slots only)
-  Object.keys(recordsByWeekday).forEach(day => {
-    const seen = new Set<string>();
-    recordsByWeekday[day as keyof typeof recordsByWeekday] = 
-      recordsByWeekday[day as keyof typeof recordsByWeekday]
+  }, [filteredRecords]);
+
+  // Lista única de clínicas para o filtro
+  const clinicOptions = useMemo(() => {
+    const map = new Map<string, string>();
+    allRecords.forEach(r => {
+      if (r.clinic_id && r.clinic_name) map.set(r.clinic_id, r.clinic_name);
+    });
+    return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
+  }, [allRecords]);
+
+  // Agenda fixa: aplica os mesmos filtros sobre todos os registros
+  const recordsByWeekday = useMemo(() => {
+    const fixedFilteredRecords = allRecords.filter(matchesFilters);
+    const getRecordWeekday = (record: FinancialRecord): string => {
+      const short = getWeekdayShort(record.description);
+      if (short) return short;
+      const date = parseDateLocal(record.session_date);
+      const dayMap: Record<number, string> = { 1: "SEG", 2: "TER", 3: "QUA", 4: "QUI", 5: "SEX", 6: "SAB", 0: "DOM" };
+      return dayMap[date.getDay()] || "DOM";
+    };
+
+    const byDay: Record<string, FinancialRecord[]> = {
+      SEG: [], TER: [], QUA: [], QUI: [], SEX: [], SAB: [],
+    };
+    fixedFilteredRecords.forEach(r => {
+      const d = getRecordWeekday(r);
+      if (byDay[d]) byDay[d].push(r);
+    });
+
+    // Dedup por slot único: usa patient_id (ou id quando não há paciente) + horário + clinic_id
+    Object.keys(byDay).forEach(day => {
+      const seen = new Set<string>();
+      byDay[day] = byDay[day]
         .sort((a, b) => {
           const timeA = getAppointmentTime(a.description) || "00:00";
           const timeB = getAppointmentTime(b.description) || "00:00";
           return timeA.localeCompare(timeB);
         })
         .filter(record => {
-          const key = `${record.patient_name}-${getAppointmentTime(record.description)}-${record.clinic_name}`;
+          const slotOwner = record.patient_id || record.id;
+          const key = `${slotOwner}-${getAppointmentTime(record.description)}-${record.clinic_id}`;
           if (seen.has(key)) return false;
           seen.add(key);
           return true;
         });
-  });
-  
+    });
+
+    return byDay;
+  }, [allRecords, searchTerm, clinicFilter, statusFilter]);
+
   useEffect(() => {
     if (location.state?.openForm) {
       setFormOpen(true);
