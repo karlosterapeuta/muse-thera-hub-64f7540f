@@ -227,7 +227,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
   useEffect(() => {
     if (record) {
       const cleanDescription = record.description 
-        ? record.description.replace(/Dia da semana: [a-z]+\\s*\\|\\s*Horário: \\d{2}:\\d{2}\\s*\\|\\s*Duração: \\d+ minutos\\s*\\|\\s*/, "")
+        ? record.description.replace(/Dia da semana: [a-z]+\s*\|\s*Horário: \d{2}:\d{2}\s*\|\s*Duração: \d+ minutos\s*\|\s*/, "").replace(/\s*\(Recorrente\)\s*$/i, "")
         : "";
         
       form.reset({
