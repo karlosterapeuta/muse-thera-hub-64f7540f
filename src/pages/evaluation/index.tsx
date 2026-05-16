@@ -763,7 +763,7 @@ export default function Evaluation() {
   const { data: professionalData } = useProfessionalData();
 
   const handleDownloadSavedEvaluation = async (evaluation: SavedEvaluation) => {
-    toast.loading("Gerando PDF da avaliação salva...");
+    const loadingToast = toast.loading("Gerando PDF da avaliação salva...");
     
     try {
       // Converter URLs para Base64
