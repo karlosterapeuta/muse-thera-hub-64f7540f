@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useClinics } from "../hooks/useClinics";
 import { useAddFinancialRecord, useUpdateFinancialRecord } from "../hooks/useFinancialData";
-import { useCreateRecurringRecord } from "../hooks/useRecurringFinancialRecords";
+import { useCreateRecurringRecord, useUpdateRecurringSeries } from "../hooks/useRecurringFinancialRecords";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format, parse } from "date-fns";
@@ -83,9 +83,10 @@ interface FinancialRecordFormProps {
   onSuccess?: () => void;
   onCancel?: () => void;
   record?: FinancialRecord;
+  seriesMode?: boolean;
 }
 
-export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRecordFormProps) {
+export function FinancialRecordForm({ onSuccess, onCancel, record, seriesMode = false }: FinancialRecordFormProps) {
   const isUpdating = !!record;
   const isMobile = useIsMobile();
   const isTablet = useIsTablet();
@@ -93,6 +94,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
   const addRecord = useAddFinancialRecord();
   const updateRecord = useUpdateFinancialRecord();
   const createRecurringRecord = useCreateRecurringRecord();
+  const updateRecurringSeries = useUpdateRecurringSeries();
   
   const { data: patients = [], isLoading: patientsLoading } = useQuery({
     queryKey: ["financial-patients"],
@@ -307,6 +309,25 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
           },
         }
       );
+    } else if (isUpdating && record && seriesMode) {
+      // Update parent + regenerate all future occurrences
+      updateRecurringSeries.mutate(
+        {
+          parentId: record.id,
+          updateAll: true,
+          updateData: {
+            clinic_id: values.clinic_id,
+            patient_id: values.patient_id === "no-patient" ? undefined : values.patient_id,
+            amount: values.amount,
+            session_date: format(sessionDate, "yyyy-MM-dd"),
+            description: enhancedDescription,
+            is_recurring: true,
+            recurrence_type: values.recurrence_type || 'weekly',
+            recurrence_end_date: values.recurrence_end_date ? format(values.recurrence_end_date, "yyyy-MM-dd") : undefined,
+          },
+        },
+        { onSuccess: () => onSuccess?.() }
+      );
     } else if (isUpdating && record) {
       updateRecord.mutate(
         { 
@@ -362,7 +383,12 @@ export function FinancialRecordForm({ onSuccess, onCancel, record }: FinancialRe
   return (
     <Card className={`w-full ${isMobile ? 'rounded-none border-0 shadow-none h-screen flex flex-col' : 'max-h-[85vh] flex flex-col'}`}>
       <CardHeader className={`${isMobile ? 'px-4 py-3' : ''} flex-shrink-0`}>
-        <CardTitle>{isUpdating ? "Editar Registro" : "Novo Registro Financeiro"}</CardTitle>
+        <CardTitle>{seriesMode ? "Editar Série Recorrente" : isUpdating ? "Editar Registro" : "Novo Registro Financeiro"}</CardTitle>
+        {seriesMode && (
+          <p className="text-xs text-muted-foreground mt-1">
+            As alterações serão aplicadas ao registro principal e regenerarão todas as ocorrências futuras.
+          </p>
+        )}
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">

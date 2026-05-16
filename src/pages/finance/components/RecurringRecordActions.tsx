@@ -27,9 +27,10 @@ import { toast } from "sonner";
 interface RecurringRecordActionsProps {
   record: FinancialRecord;
   onEdit?: (record: FinancialRecord) => void;
+  onEditSeries?: (record: FinancialRecord) => void;
 }
 
-export function RecurringRecordActions({ record, onEdit }: RecurringRecordActionsProps) {
+export function RecurringRecordActions({ record, onEdit, onEditSeries }: RecurringRecordActionsProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteType, setDeleteType] = useState<'single' | 'all'>('single');
   const deleteRecurringSeries = useDeleteRecurringSeries();
@@ -137,7 +138,7 @@ export function RecurringRecordActions({ record, onEdit }: RecurringRecordAction
               {isParent && (
                 <DropdownMenuItem 
                   className="flex items-center cursor-pointer text-blue-600"
-                  onClick={() => toast.info("Funcionalidade em desenvolvimento")}
+                  onClick={() => onEditSeries?.(record)}
                 >
                   <PencilIcon className="mr-2 h-4 w-4" />
                   Editar Série

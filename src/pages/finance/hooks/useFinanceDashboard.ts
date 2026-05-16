@@ -84,7 +84,8 @@ export const useFinanceDashboard = (filter?: PeriodFilter) => {
         
         records.forEach(record => {
           const date = parseISO(record.session_date);
-          const weekKey = `${format(date, 'w', { locale: ptBR })}-${format(date, 'yyyy')}`;
+          // ISO week key (RRRR = ISO week-numbering year, II = ISO week) — prevents year-boundary collisions
+          const weekKey = format(date, "RRRR-'W'II");
           const monthKey = format(date, 'MMM/yyyy', { locale: ptBR });
           const yearKey = format(date, 'yyyy', { locale: ptBR });
           

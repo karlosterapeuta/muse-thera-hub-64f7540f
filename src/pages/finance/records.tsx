@@ -55,6 +55,7 @@ import { SessionStatusBadge } from "./components/SessionStatusBadge";
 import { FinancialStatCards } from "./components/FinancialStatCards";
 import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
 import { parseDateLocal } from "@/utils/dateUtils";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function FinancialRecords() {
   const navigate = useNavigate();
@@ -69,6 +70,7 @@ export default function FinancialRecords() {
   const [clinicFormOpen, setClinicFormOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<FinancialRecord | undefined>();
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [seriesEditMode, setSeriesEditMode] = useState(false);
   const [recordToDelete, setRecordToDelete] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"list" | "fixed">("fixed");
   const [clearAllDialogOpen, setClearAllDialogOpen] = useState(false);
@@ -276,7 +278,25 @@ export default function FinancialRecords() {
   }, [location, navigate]);
   
   const handleEditRecord = (record: FinancialRecord) => {
+    setSeriesEditMode(false);
     setSelectedRecord({...record});
+    setFormOpen(true);
+  };
+
+  const handleEditSeries = async (record: FinancialRecord) => {
+    // Always edit the parent record of the series
+    const parentId = record.parent_record_id || record.id;
+    let target = record;
+    if (parentId !== record.id) {
+      const { data } = await supabase
+        .from("financial_records")
+        .select("*")
+        .eq("id", parentId)
+        .maybeSingle();
+      if (data) target = data as any;
+    }
+    setSeriesEditMode(true);
+    setSelectedRecord({...target});
     setFormOpen(true);
   };
   
@@ -361,6 +381,7 @@ export default function FinancialRecords() {
   const handleFormSuccess = () => {
     setFormOpen(false);
     setSelectedRecord(undefined);
+    setSeriesEditMode(false);
     refetch();
     toast({
       title: "Registro salvo",
@@ -372,6 +393,7 @@ export default function FinancialRecords() {
   const handleCloseForm = () => {
     setFormOpen(false);
     setSelectedRecord(undefined);
+    setSeriesEditMode(false);
   };
   
   const formatCurrency = (value: number) => {
@@ -405,7 +427,7 @@ export default function FinancialRecords() {
         className={`${getCardStatusClasses(record.session_status)} rounded-md p-3 shadow-sm mb-2 hover:shadow-md transition-all hover:border-opacity-50 relative group`}
       >
         <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <RecurringRecordActions record={record} onEdit={handleEditRecord} />
+          <RecurringRecordActions record={record} onEdit={handleEditRecord} onEditSeries={handleEditSeries} />
         </div>
         
         <div className="flex items-center mb-2">
@@ -459,7 +481,7 @@ export default function FinancialRecords() {
         className={`${getCardStatusClasses(record.session_status)} rounded-lg p-3 shadow-sm mb-2 hover:shadow-md transition-all hover:border-opacity-50 relative group`}
       >
         <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <RecurringRecordActions record={record} onEdit={handleEditRecord} />
+          <RecurringRecordActions record={record} onEdit={handleEditRecord} onEditSeries={handleEditSeries} />
         </div>
         
         <div className="flex items-center justify-between mb-2">
@@ -911,6 +933,7 @@ export default function FinancialRecords() {
                 record={selectedRecord}
                 onSuccess={handleFormSuccess}
                 onCancel={handleCloseForm}
+                seriesMode={seriesEditMode}
               />
             </div>
           </SheetContent>
@@ -924,6 +947,7 @@ export default function FinancialRecords() {
               record={selectedRecord}
               onSuccess={handleFormSuccess}
               onCancel={handleCloseForm}
+              seriesMode={seriesEditMode}
             />
           </DialogContent>
         </Dialog>
