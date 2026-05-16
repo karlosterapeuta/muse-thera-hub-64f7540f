@@ -38,6 +38,7 @@ interface AnamnesesListProps {
 }
 
 export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProps) {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const { data: anamneses = [], isLoading, error } = useAnamnesisData();
   const deleteAnamnesis = useDeleteAnamnesis();
