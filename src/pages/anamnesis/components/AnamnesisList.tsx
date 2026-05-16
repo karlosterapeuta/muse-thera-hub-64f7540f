@@ -94,6 +94,17 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
 
   return (
     <div className="space-y-6">
+      {/* Back button */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => navigate("/processes")}
+        className="gap-2 -ml-2"
+      >
+        <ArrowLeft size={16} />
+        Voltar
+      </Button>
+
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
