@@ -552,6 +552,17 @@ export default function FinancialRecords() {
             {isMobile && <span className="ml-1 text-xs">Novo</span>}
             {!isMobile && <span className="inline">Novo Registro</span>}
           </Button>
+          <Button
+            onClick={handleExportCsv}
+            variant="outline"
+            size={isMobile ? "sm" : "default"}
+            className="shadow-sm hover:shadow-md transition-all"
+            disabled={!sortedRecords.length}
+          >
+            <DownloadIcon className="h-4 w-4 sm:h-5 sm:w-5 text-[#0EA5E9]" />
+            {isMobile && <span className="ml-1 text-xs">CSV</span>}
+            {!isMobile && <span className="inline">Exportar CSV</span>}
+          </Button>
           {records.length > 0 && (
             <Button
               onClick={handleClearAll}
@@ -566,7 +577,13 @@ export default function FinancialRecords() {
           )}
         </div>
       </div>
-      
+
+      <FinancialStatCards
+        totalEarnings={periodKpis.total}
+        totalSessions={periodKpis.count}
+        averagePerSession={periodKpis.avg}
+      />
+
       
       <div className="md:col-span-3 bg-card/80 backdrop-blur-sm rounded-lg p-2 md:p-3 shadow-sm border border-border">
         <DateRangeFilter onFilter={handleDateFilter} />
