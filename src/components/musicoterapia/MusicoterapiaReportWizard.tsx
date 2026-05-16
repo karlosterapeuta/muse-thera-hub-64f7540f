@@ -109,27 +109,135 @@ const STEPS = [
   }
 ];
 
-const STEP_TEMPLATES: Record<string, Record<string, string>> = {
-  communication_language: {
-    vocalizations_observed: 'Paciente apresenta vocalizações espontâneas durante atividades musicais, com variação de altura e intensidade, especialmente em resposta a estímulos melódicos preferidos.',
-    verbal_output_during_music: 'Observa-se aumento da produção verbal durante o canto e atividades rítmicas, com tentativas de acompanhar trechos de canções familiares.',
-    echolalia_musical: 'Presença de ecolalia musical funcional, com repetição de fragmentos melódicos e refrões como forma de comunicação e autorregulação.',
-    aac_use: 'Não utiliza sistema de Comunicação Aumentativa e Alternativa (CAA) no momento. Comunicação predominantemente gestual e vocal.',
-    pragmatic_skills: 'Habilidades pragmáticas em desenvolvimento, com iniciativa comunicativa crescente em contexto musical estruturado, troca de turnos com apoio do terapeuta.'
-  },
-  future_plan: {
-    next_objectives_short: 'Curto prazo (1-3 meses): Ampliar repertório de canções funcionais; consolidar troca de turnos musicais; aumentar tempo de atenção compartilhada.',
-    next_objectives_medium: 'Médio prazo (3-6 meses): Desenvolver autorregulação por meio de improvisações estruturadas; estimular comunicação intencional via instrumentos.',
-    next_objectives_long: 'Longo prazo (6-12 meses): Promover autonomia musical, generalização de habilidades para outros contextos e participação em atividades grupais.',
-    proposed_interventions: 'Intervenções receptivas, recriativas e improvisacionais conforme modelo de Bruscia, com foco em ISO de Benenzon e adaptações sensoriais.',
-    expected_outcomes: 'Espera-se evolução nas dimensões comunicativa, socioemocional e sensório-motora, com generalização para contextos familiar e escolar.',
-    revaluation_date: 'Reavaliação prevista em 3 meses, com aplicação de escalas IMTAP e registro qualitativo.'
-  },
-  theoretical_foundation: {
-    theoretical_framework: 'O presente relatório fundamenta-se no Modelo Benenzon (Princípio do ISO), nas práticas de Nordoff-Robbins (Musicoterapia Criativa), no modelo de Bruscia (níveis de prática) e nos domínios clínicos da IMTAP (Individualized Music Therapy Assessment Profile), associados às diretrizes de intervenção em TEA conforme DSM-5-TR e CID-11.',
-    assessment_tools_used: 'Instrumentos: IMTAP (Baxter et al., 2007), Escala MuseTera de avaliação musicoterapêutica, observação clínica sistematizada e Perfil Sensorial de Dunn.',
-    references_cited: 'Benenzon, R. (1985). Manual de Musicoterapia. Bruscia, K. (2000). Definindo Musicoterapia. Nordoff, P.; Robbins, C. (2007). Creative Music Therapy. Baxter et al. (2007). The Individualized Music Therapy Assessment Profile. APA (2022). DSM-5-TR.'
-  }
+interface TemplateOption {
+  id: string;
+  label: string;
+  description: string;
+  values: Record<string, string>;
+}
+
+const STEP_TEMPLATES: Record<string, TemplateOption[]> = {
+  communication_language: [
+    {
+      id: 'verbal_emerging',
+      label: 'Comunicação verbal emergente',
+      description: 'Paciente com vocalizações e produção verbal em desenvolvimento.',
+      values: {
+        vocalizations_observed: 'Paciente apresenta vocalizações espontâneas durante atividades musicais, com variação de altura e intensidade, especialmente em resposta a estímulos melódicos preferidos.',
+        verbal_output_during_music: 'Observa-se aumento da produção verbal durante o canto e atividades rítmicas, com tentativas de acompanhar trechos de canções familiares.',
+        echolalia_musical: 'Ecolalia musical ocasional, com repetição de palavras-chave de canções logo após o terapeuta.',
+        aac_use: 'Não utiliza CAA no momento. Comunicação predominantemente verbal e gestual.',
+        pragmatic_skills: 'Habilidades pragmáticas em desenvolvimento, com iniciativa comunicativa crescente em contexto musical estruturado e troca de turnos com apoio do terapeuta.'
+      }
+    },
+    {
+      id: 'nonverbal_caa',
+      label: 'Não-verbal com CAA',
+      description: 'Paciente não-verbal que utiliza Comunicação Aumentativa e Alternativa.',
+      values: {
+        vocalizations_observed: 'Paciente apresenta vocalizações pré-linguísticas (sons vocálicos prolongados, balbucios) durante atividades musicais, em especial diante de estímulos rítmicos preferidos.',
+        verbal_output_during_music: 'Sem produção verbal significativa. Comunicação ocorre por meio de gestos, expressões faciais e uso do sistema de CAA.',
+        echolalia_musical: 'Ausência de ecolalia verbal; observa-se imitação rítmica e melódica corporal.',
+        aac_use: 'Utiliza sistema de Comunicação Aumentativa e Alternativa (pranchas de PCS / aplicativo de CAA) durante a sessão para indicar instrumentos, músicas e estados emocionais.',
+        pragmatic_skills: 'Pragmática emergente com apoio de CAA: realiza pedidos, escolhas e protestos por meio dos recursos comunicativos disponíveis durante atividades musicais.'
+      }
+    },
+    {
+      id: 'echolalic_functional',
+      label: 'Ecolalia funcional',
+      description: 'Paciente com ecolalia musical como recurso comunicativo principal.',
+      values: {
+        vocalizations_observed: 'Vocalizações ricas, com variação prosódica vinculadas a fragmentos melódicos de canções conhecidas.',
+        verbal_output_during_music: 'Produção verbal predominantemente vinculada a trechos de canções, jingles e falas de mídia, utilizados de forma contextual.',
+        echolalia_musical: 'Ecolalia musical funcional acentuada, com uso de refrões e fragmentos de canções como forma de comunicação, autorregulação e solicitação.',
+        aac_use: 'Não utiliza CAA formal; a própria ecolalia musical funciona como recurso comunicativo.',
+        pragmatic_skills: 'Pragmática mediada por ecolalia: o paciente utiliza trechos musicais para pedir, comentar e expressar afeto, com gradual ampliação do uso espontâneo e funcional.'
+      }
+    }
+  ],
+  future_plan: [
+    {
+      id: 'initial_stage',
+      label: 'Início de tratamento',
+      description: 'Foco em vínculo, exploração sonora e regulação básica.',
+      values: {
+        next_objectives_short: 'Curto prazo (1-3 meses): Estabelecer vínculo terapêutico; favorecer exploração livre de instrumentos; ampliar tempo de permanência no setting.',
+        next_objectives_medium: 'Médio prazo (3-6 meses): Desenvolver atenção compartilhada em atividades musicais simples; introduzir rotinas sonoras previsíveis.',
+        next_objectives_long: 'Longo prazo (6-12 meses): Consolidar repertório de canções funcionais e iniciar trocas musicais recíprocas com o terapeuta.',
+        proposed_interventions: 'Intervenções predominantemente receptivas e exploratórias, com base no ISO de Benenzon e adaptações sensoriais individualizadas.',
+        expected_outcomes: 'Espera-se maior tolerância ao setting, ampliação do repertório sonoro aceito e início de respostas comunicativas musicais.',
+        revaluation_date: 'Reavaliação prevista em 3 meses, com observação clínica sistemática e registro qualitativo.'
+      }
+    },
+    {
+      id: 'consolidation',
+      label: 'Fase de consolidação',
+      description: 'Ampliação de habilidades e generalização para outros contextos.',
+      values: {
+        next_objectives_short: 'Curto prazo (1-3 meses): Ampliar repertório de canções funcionais; consolidar troca de turnos musicais; aumentar tempo de atenção compartilhada.',
+        next_objectives_medium: 'Médio prazo (3-6 meses): Desenvolver autorregulação por meio de improvisações estruturadas; estimular comunicação intencional via instrumentos.',
+        next_objectives_long: 'Longo prazo (6-12 meses): Promover generalização das habilidades musicais para contextos familiar e escolar.',
+        proposed_interventions: 'Intervenções receptivas, recriativas e improvisacionais conforme modelo de Bruscia, com foco em ISO de Benenzon e adaptações sensoriais.',
+        expected_outcomes: 'Espera-se evolução nas dimensões comunicativa, socioemocional e sensório-motora, com generalização para contextos familiar e escolar.',
+        revaluation_date: 'Reavaliação prevista em 3 meses, com aplicação de escalas IMTAP e registro qualitativo.'
+      }
+    },
+    {
+      id: 'advanced',
+      label: 'Fase avançada / preparação para alta',
+      description: 'Autonomia musical e preparação para alta terapêutica.',
+      values: {
+        next_objectives_short: 'Curto prazo (1-3 meses): Estimular autonomia na escolha de atividades musicais; consolidar autorregulação via música.',
+        next_objectives_medium: 'Médio prazo (3-6 meses): Promover participação em atividades musicais grupais; transferir estratégias para o cotidiano.',
+        next_objectives_long: 'Longo prazo (6-12 meses): Preparar alta terapêutica gradual com orientações de continuidade musical em ambiente familiar e/ou escolar.',
+        proposed_interventions: 'Intervenções improvisacionais e compositivas centradas na autonomia do paciente, com orientação familiar e interdisciplinar para sustentação dos ganhos.',
+        expected_outcomes: 'Espera-se que o paciente utilize a música como recurso autorregulatório e comunicativo de forma autônoma e generalizada.',
+        revaluation_date: 'Reavaliação prevista em 3 meses, com discussão de plano de alta junto à equipe interdisciplinar e família.'
+      }
+    }
+  ],
+  theoretical_foundation: [
+    {
+      id: 'benenzon_iso',
+      label: 'Modelo Benenzon (ISO)',
+      description: 'Fundamentação centrada no Princípio do ISO de Benenzon.',
+      values: {
+        theoretical_framework: 'O presente relatório fundamenta-se no Modelo Benenzon de Musicoterapia, com ênfase no Princípio do ISO (Identidade Sonora) — gestacional, universal, cultural, complementar e grupal — articulado às diretrizes de intervenção em TEA conforme DSM-5-TR e CID-11.',
+        assessment_tools_used: 'Instrumentos: observação clínica sistematizada, mapeamento do ISO, registro de respostas sonoro-musicais e diário clínico de sessões.',
+        references_cited: 'Benenzon, R. (1985). Manual de Musicoterapia. Petrópolis: Vozes. Benenzon, R. (2007). La nueva musicoterapia. Lumen. APA (2022). DSM-5-TR. OMS (2022). CID-11.'
+      }
+    },
+    {
+      id: 'nordoff_robbins',
+      label: 'Nordoff-Robbins Criativa',
+      description: 'Musicoterapia Criativa de Nordoff-Robbins.',
+      values: {
+        theoretical_framework: 'A intervenção fundamenta-se na Musicoterapia Criativa de Nordoff-Robbins, que enfatiza a improvisação clínica e o desenvolvimento do "Music Child", articulada às diretrizes de intervenção em TEA conforme DSM-5-TR e CID-11.',
+        assessment_tools_used: 'Instrumentos: escalas Nordoff-Robbins (Child-Therapist Relationship in Coactive Musical Experience e Musical Communicativeness), observação clínica e registro audiovisual de sessões.',
+        references_cited: 'Nordoff, P.; Robbins, C. (2007). Creative Music Therapy: A Guide to Fostering Clinical Musicianship. Barcelona Publishers. APA (2022). DSM-5-TR. OMS (2022). CID-11.'
+      }
+    },
+    {
+      id: 'bruscia_imtap',
+      label: 'Bruscia + IMTAP',
+      description: 'Modelo de Bruscia com avaliação clínica IMTAP.',
+      values: {
+        theoretical_framework: 'A prática fundamenta-se no modelo de Kenneth Bruscia (níveis e métodos de musicoterapia — receptivo, recriativo, improvisacional e compositivo) associado aos domínios clínicos da IMTAP (Individualized Music Therapy Assessment Profile), em consonância com as diretrizes do DSM-5-TR e CID-11 para TEA.',
+        assessment_tools_used: 'Instrumentos: IMTAP (Baxter et al., 2007), observação clínica sistematizada e registro qualitativo por método.',
+        references_cited: 'Bruscia, K. (2000). Definindo Musicoterapia. Enelivros. Baxter, H. T. et al. (2007). The Individualized Music Therapy Assessment Profile (IMTAP). Jessica Kingsley. APA (2022). DSM-5-TR.'
+      }
+    },
+    {
+      id: 'integrative',
+      label: 'Abordagem integrativa',
+      description: 'Combinação de Benenzon, Bruscia, Nordoff-Robbins e IMTAP.',
+      values: {
+        theoretical_framework: 'O presente relatório fundamenta-se em abordagem integrativa: Modelo Benenzon (Princípio do ISO), Musicoterapia Criativa de Nordoff-Robbins, modelo de Bruscia (níveis e métodos) e domínios clínicos da IMTAP, associados às diretrizes de intervenção em TEA conforme DSM-5-TR e CID-11.',
+        assessment_tools_used: 'Instrumentos: IMTAP (Baxter et al., 2007), Escala MuseTera de avaliação musicoterapêutica, mapeamento do ISO, escalas Nordoff-Robbins, observação clínica sistematizada e Perfil Sensorial de Dunn.',
+        references_cited: 'Benenzon, R. (1985). Manual de Musicoterapia. Bruscia, K. (2000). Definindo Musicoterapia. Nordoff, P.; Robbins, C. (2007). Creative Music Therapy. Baxter et al. (2007). The Individualized Music Therapy Assessment Profile. APA (2022). DSM-5-TR. OMS (2022). CID-11.'
+      }
+    }
+  ]
 };
 
 export function MusicoterapiaReportWizard({ 
