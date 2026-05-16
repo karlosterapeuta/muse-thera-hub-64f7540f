@@ -302,31 +302,19 @@ export function MusicoterapiaReportWizard({
     }
   };
 
-  const applyStepTemplate = useCallback((overwrite: boolean) => {
-    const tmpl = STEP_TEMPLATES[currentStepData.id];
-    if (!tmpl) return;
-    const updates: Record<string, any> = {};
-    Object.entries(tmpl).forEach(([fid, txt]) => {
-      const existing = reportData.fieldValues?.[fid];
-      if (overwrite || !existing || (typeof existing === 'string' && !existing.trim())) {
-        updates[fid] = txt;
-      }
-    });
-    if (Object.keys(updates).length) {
-      onUpdateData({
-        ...reportData,
-        fieldValues: { ...reportData.fieldValues, ...updates }
-      });
-      if (overwrite) {
-        toast({ title: 'Template aplicado', description: 'Os campos foram preenchidos com o texto padrão.' });
-      }
-    }
-  }, [currentStepData.id, reportData, onUpdateData, toast]);
+  const [selectedTemplate, setSelectedTemplate] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    applyStepTemplate(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentStep]);
+  const applyTemplateOption = useCallback((option: TemplateOption) => {
+    onUpdateData({
+      ...reportData,
+      fieldValues: { ...reportData.fieldValues, ...option.values }
+    });
+    setSelectedTemplate(prev => ({ ...prev, [currentStepData.id]: option.id }));
+    toast({
+      title: 'Template aplicado',
+      description: `"${option.label}" preencheu os campos desta etapa. Edite livremente.`
+    });
+  }, [currentStepData.id, reportData, onUpdateData, toast]);
 
   const validateCurrentStep = () => {
     // Validação especial para a primeira etapa (Informações Básicas)
