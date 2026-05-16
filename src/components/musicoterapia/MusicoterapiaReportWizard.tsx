@@ -293,8 +293,26 @@ export function MusicoterapiaReportWizard({
       currentStepData.fields.includes(field.id)
     );
 
+    const hasTemplate = !!STEP_TEMPLATES[currentStepData.id];
+
     return (
       <div className="space-y-6">
+        {hasTemplate && (
+          <div className="flex items-center justify-between gap-3 p-4 rounded-lg border border-purple-200 bg-purple-50 dark:bg-purple-950/30 dark:border-purple-800">
+            <div className="text-sm text-purple-900 dark:text-purple-100">
+              <strong>Template profissional disponível.</strong> Os campos já foram preenchidos com texto padrão — edite à vontade ou reaplique o modelo.
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => applyStepTemplate(true)}
+            >
+              <Wand2 className="h-4 w-4 mr-2" />
+              Aplicar template
+            </Button>
+          </div>
+        )}
         {stepFields.map((field) => (
           <div key={field.id} className="space-y-3">
             <MusicoterapiaFormField
