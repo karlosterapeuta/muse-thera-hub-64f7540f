@@ -85,6 +85,7 @@ import AIAssistant from "./pages/ai-assistant";
 // Resources
 import Resources from "./pages/Resources";
 import OrquestraAnimal from "./pages/orquestra-animal";
+import DinoRitmos from "./pages/dino-ritmos";
 
 // Creator pages (separate from MuseTera)
 import CreatorLoginPage from "./pages/creator/login";
@@ -207,6 +208,7 @@ const App = () => {
             <Route path="ai-assistant" element={<AIAssistant />} />
             <Route path="resources" element={<Resources />} />
             <Route path="orquestra-animal" element={<OrquestraAnimal />} />
+            <Route path="dino-ritmos" element={<DinoRitmos />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
