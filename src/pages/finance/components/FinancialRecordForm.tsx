@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useClinics } from "../hooks/useClinics";
 import { useAddFinancialRecord, useUpdateFinancialRecord } from "../hooks/useFinancialData";
-import { useCreateRecurringRecord } from "../hooks/useRecurringFinancialRecords";
+import { useCreateRecurringRecord, useUpdateRecurringSeries } from "../hooks/useRecurringFinancialRecords";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format, parse } from "date-fns";
