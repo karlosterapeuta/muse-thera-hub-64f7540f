@@ -323,33 +323,31 @@ export default function EvolutionReport() {
         </TabsList>
 
         <TabsContent value="form" className="space-y-4 lg:space-y-6">
-          {/* Enhanced Patient Selection */}
-          <Card className="border-0 shadow-lg bg-gradient-to-r from-white via-blue-50/30 to-indigo-50/30">
-            <CardHeader className="pb-3 lg:pb-4">
-              <CardTitle className="flex items-center gap-2 lg:gap-3 text-lg lg:text-xl">
-                <div className="p-1.5 lg:p-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg">
+          {/* Session Info */}
+          <Card className="border border-border/60 bg-card/60 backdrop-blur-xl shadow-lg">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-3 text-lg lg:text-xl">
+                <div className="p-2 rounded-lg bg-gradient-to-br from-primary to-amber-500 shadow-md">
                   <User className="h-4 w-4 lg:h-5 lg:w-5 text-white" />
                 </div>
-                <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
-                  Informações da Sessão
-                </span>
+                <span className="font-semibold">Informações da Sessão</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="patient" className="text-sm font-semibold text-foreground flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-blue-600" />
+                    <Calendar className="h-4 w-4 text-primary" />
                     Paciente *
                   </Label>
-                  <Select 
-                    value={selectedPatient?.id || ""} 
+                  <Select
+                    value={selectedPatient?.id || ""}
                     onValueChange={handlePatientSelection}
                   >
-                    <SelectTrigger className="h-10 sm:h-12 border-2 border-border focus:border-blue-500 transition-colors bg-background">
+                    <SelectTrigger className="h-11 sm:h-12 border-border/60 bg-background/50 backdrop-blur focus:border-primary transition-colors">
                       <SelectValue placeholder={isLoadingPatients ? "Carregando..." : "Selecione um paciente"} />
                     </SelectTrigger>
-                    <SelectContent className="bg-white border shadow-lg z-50">
+                    <SelectContent className="bg-popover border shadow-lg z-50">
                       {patients.map((patient) => (
                         <SelectItem key={patient.id} value={patient.id} className="hover:bg-muted/50">
                           {patient.name}
