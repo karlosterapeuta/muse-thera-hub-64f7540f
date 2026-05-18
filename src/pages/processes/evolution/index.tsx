@@ -358,14 +358,14 @@ export default function EvolutionReport() {
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm font-semibold text-foreground flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-green-600" />
+                    <Clock className="h-4 w-4 text-emerald-500" />
                     Data da Sessão
                   </Label>
                   <Input
                     type="date"
                     value={formData.date || new Date().toISOString().split('T')[0]}
                     onChange={(e) => updateField('date', e.target.value)}
-                    className="h-10 sm:h-12 border-2 border-border focus:border-blue-500 bg-background text-sm sm:text-base font-medium"
+                    className="h-11 sm:h-12 border-border/60 bg-background/50 backdrop-blur focus:border-primary text-sm sm:text-base font-medium"
                   />
                 </div>
               </div>
