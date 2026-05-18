@@ -768,93 +768,99 @@ export default function MusicoterapiaPage() {
   }, [professionalId]);
 
   return (
-    <div className="w-full max-w-full mx-auto px-0 py-0 space-y-6">
-      {/* Header */}
-      <Card className="border-2 border-primary/20 rounded-none sm:rounded-lg">
-        <CardHeader className="p-4 sm:p-6">
-          <div className="flex flex-col space-y-4">
-            {/* MOBILE: Action buttons at TOP for visibility */}
-            <div className="flex flex-col space-y-2 sm:hidden">
-              <Button
-                onClick={() => setViewMode(viewMode === 'create' ? 'list' : 'create')}
-                className={`w-full font-semibold border-0 transition-all duration-300 ${viewMode === 'create' ?
-                  "h-12 text-base bg-gradient-to-r from-accent via-accent to-primary text-accent-foreground shadow-lg shadow-accent/40 hover:shadow-xl hover:shadow-accent/60 ring-2 ring-accent/60 hover:scale-[1.02]" :
-                  "bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg"
-                }`}
-              >
-                {viewMode === 'create' ? (
-                  <>
-                    <List className="h-5 w-5 mr-2" />
-                    Ver Relatórios Salvos
-                  </>
-                ) : (
-                  <>
-                    <Wand2 className="h-4 w-4 mr-2" />
-                    Criar Novo Relatório
-                  </>
-                )}
-              </Button>
+    <div className="relative min-h-screen">
+      {/* Ambient cosmic background */}
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
+        <div className="absolute top-1/3 -right-32 h-96 w-96 rounded-full bg-amber-400/10 blur-3xl" />
+        <div className="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-primary/5 blur-3xl" />
+      </div>
 
-              {viewMode === 'create' && (
-                <Button
-                  variant="outline"
-                  onClick={handleSaveReport}
-                  disabled={isSaving}
-                  className="w-full"
-                >
-                  {isSaving ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2" />
-                      Salvando...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="h-4 w-4 mr-2" />
-                      Salvar
-                    </>
-                  )}
-                </Button>
+      <div className="container mx-auto p-4 sm:p-6 max-w-6xl space-y-6">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate('/dashboard')}
+          className="gap-2 text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Voltar
+        </Button>
+
+        {/* MOBILE: Action buttons at TOP for visibility */}
+        <div className="flex flex-col gap-2 sm:hidden">
+          <Button
+            onClick={() => setViewMode(viewMode === 'create' ? 'list' : 'create')}
+            className="w-full h-12 font-semibold border-0 bg-gradient-to-br from-primary to-amber-500 text-white shadow-lg hover:opacity-90 transition-all duration-300"
+          >
+            {viewMode === 'create' ? (
+              <>
+                <List className="h-5 w-5 mr-2" />
+                Ver Relatórios Salvos
+              </>
+            ) : (
+              <>
+                <Wand2 className="h-4 w-4 mr-2" />
+                Criar Novo Relatório
+              </>
+            )}
+          </Button>
+          {viewMode === 'create' && (
+            <Button
+              variant="outline"
+              onClick={handleSaveReport}
+              disabled={isSaving}
+              className="w-full border-border/60 bg-card/60 backdrop-blur-xl"
+            >
+              {isSaving ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2" />
+                  Salvando...
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4 mr-2" />
+                  Salvar
+                </>
               )}
-            </div>
+            </Button>
+          )}
+        </div>
 
-            {/* Header with title and desktop buttons */}
-            <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-              {/* Left: Back button + Title */}
-              <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:space-x-4 sm:space-y-0">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigate('/dashboard')}
-                  className="w-fit"
-                >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Voltar
-                </Button>
-                
-                <div className="flex items-center space-x-3">
-                  <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 shrink-0">
-                    <Music className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+        {/* Refined Premium Header */}
+        <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-card/60 backdrop-blur-xl shadow-2xl">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-amber-400/5" />
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+
+          <div className="relative p-6 sm:p-8 lg:p-10">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+              <div className="flex items-start gap-5">
+                <div className="relative flex-shrink-0">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary to-amber-500 blur-xl opacity-40" />
+                  <div className="relative p-4 rounded-2xl bg-gradient-to-br from-primary to-amber-500 shadow-lg">
+                    <Music className="h-7 w-7 lg:h-8 lg:w-8 text-white" />
                   </div>
-                  <div className="min-w-0">
-                    <CardTitle className="text-lg sm:text-2xl flex flex-wrap items-center gap-2">
-                      <span>Relatório MuseTera TEA</span>
-                      <Badge variant="secondary" className="text-xs">TEA</Badge>
-                    </CardTitle>
-                    <CardDescription className="text-xs sm:text-sm">
-                      Relatórios clínicos especializados
-                    </CardDescription>
+                </div>
+                <div className="space-y-2 min-w-0">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border/60 bg-background/40 backdrop-blur text-xs font-medium text-muted-foreground">
+                    <Sparkles className="h-3 w-3 text-amber-500" />
+                    Relatório Clínico · IA Integrada
+                    <Badge variant="secondary" className="text-[10px] ml-1">TEA</Badge>
                   </div>
+                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight bg-gradient-to-br from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
+                    Relatório MuseTera TEA
+                  </h1>
+                  <p className="text-sm sm:text-base text-muted-foreground max-w-2xl leading-relaxed">
+                    Documente avaliação, objetivos, técnicas e evolução do paciente em sessões de musicoterapia para o Transtorno do Espectro Autista.
+                  </p>
                 </div>
               </div>
 
-              {/* DESKTOP: Action buttons on right */}
-              <div className="hidden sm:flex sm:flex-row sm:space-x-2">
+              {/* DESKTOP action buttons */}
+              <div className="hidden sm:flex sm:flex-col sm:gap-2 sm:items-end">
                 <Button
                   onClick={() => setViewMode(viewMode === 'create' ? 'list' : 'create')}
-                  className={`font-semibold border-0 transition-all duration-300 ${viewMode === 'create' ?
-                    "h-11 px-6 text-base bg-gradient-to-r from-accent via-accent to-primary text-accent-foreground shadow-lg shadow-accent/40 hover:shadow-xl hover:shadow-accent/60 ring-2 ring-accent/60 hover:scale-[1.03]" :
-                    "bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg"
-                  }`}
+                  className="font-semibold border-0 bg-gradient-to-br from-primary to-amber-500 text-white shadow-lg hover:opacity-90 transition-all duration-300"
                 >
                   {viewMode === 'create' ? (
                     <>
@@ -868,12 +874,12 @@ export default function MusicoterapiaPage() {
                     </>
                   )}
                 </Button>
-
                 {viewMode === 'create' && (
                   <Button
                     variant="outline"
                     onClick={handleSaveReport}
                     disabled={isSaving}
+                    className="border-border/60 bg-background/40 backdrop-blur"
                   >
                     {isSaving ? (
                       <>
@@ -890,33 +896,49 @@ export default function MusicoterapiaPage() {
                 )}
               </div>
             </div>
+
+            {/* Status pills */}
+            <div className="mt-6 flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border/60 bg-background/40 backdrop-blur text-xs font-medium">
+                <Brain className="h-3.5 w-3.5 text-primary" /> Clínico
+              </div>
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border/60 bg-background/40 backdrop-blur text-xs font-medium">
+                <Wand2 className="h-3.5 w-3.5 text-amber-500" /> Assistente IA
+              </div>
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border/60 bg-background/40 backdrop-blur text-xs font-medium">
+                <FileText className="h-3.5 w-3.5 text-amber-500" /> Exportar PDF
+              </div>
+            </div>
           </div>
-        </CardHeader>
-      </Card>
+        </div>
 
       {viewMode === 'create' ? (
         <>
           {/* Export PDF Card */}
-          <Card className="border-2 border-primary/20 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 rounded-none sm:rounded-lg">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500">
-                    <Download className="h-6 w-6 text-white" />
+          <Card className="relative overflow-hidden border border-border/60 bg-card/60 backdrop-blur-xl shadow-lg rounded-2xl">
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary via-amber-500 to-primary" />
+            <CardContent className="p-5 sm:p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="relative flex-shrink-0">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary to-amber-500 blur-lg opacity-40" />
+                    <div className="relative flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-amber-500 shadow-md">
+                      <Download className="h-6 w-6 text-white" />
+                    </div>
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                      Exportar PDF
+                    <h3 className="text-lg font-semibold bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
+                      Exportar Relatório em PDF
                     </h3>
                     <p className="text-sm text-muted-foreground">
-                      Gere o relatório em formato PDF para impressão ou compartilhamento
+                      Gere o documento formatado para impressão ou compartilhamento.
                     </p>
                   </div>
                 </div>
                 <Button
                   onClick={handleExportPDF}
                   disabled={isExporting}
-                  className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                  className="bg-gradient-to-br from-primary to-amber-500 hover:opacity-90 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200 font-semibold"
                 >
                   {isExporting ? (
                     <>
@@ -935,15 +957,17 @@ export default function MusicoterapiaPage() {
           </Card>
 
           {/* Main Content */}
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="wizard" className="flex items-center space-x-2">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 lg:space-y-6">
+            <TabsList className="grid w-full grid-cols-2 h-11 sm:h-12 p-1 bg-card/60 backdrop-blur-xl border border-border/60 rounded-xl">
+              <TabsTrigger value="wizard" className="flex items-center gap-2 text-sm sm:text-base rounded-lg data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary data-[state=active]:to-amber-500 data-[state=active]:text-white data-[state=active]:shadow-md">
                 <Wand2 className="h-4 w-4" />
-                <span>Assistente de Criação</span>
+                <span className="hidden sm:inline">Assistente de Criação</span>
+                <span className="sm:hidden">Assistente</span>
               </TabsTrigger>
-              <TabsTrigger value="preview" className="flex items-center space-x-2">
+              <TabsTrigger value="preview" className="flex items-center gap-2 text-sm sm:text-base rounded-lg data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary data-[state=active]:to-amber-500 data-[state=active]:text-white data-[state=active]:shadow-md">
                 <FileText className="h-4 w-4" />
-                <span>Visualização</span>
+                <span className="hidden sm:inline">Visualização</span>
+                <span className="sm:hidden">Preview</span>
               </TabsTrigger>
             </TabsList>
 
