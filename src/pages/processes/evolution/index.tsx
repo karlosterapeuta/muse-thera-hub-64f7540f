@@ -609,6 +609,7 @@ export default function EvolutionReport() {
           </Card>
         </TabsContent>
       </Tabs>
+      </div>
     </div>
   );
 }
