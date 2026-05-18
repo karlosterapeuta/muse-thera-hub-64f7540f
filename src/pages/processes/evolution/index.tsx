@@ -484,42 +484,40 @@ export default function EvolutionReport() {
                 <Button
                   onClick={handleSave}
                   disabled={isSaving || !selectedPatient}
-                  className="bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 h-10 sm:h-12 text-sm sm:text-base"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-md hover:shadow-lg transition-all duration-200 h-11 text-sm font-semibold"
                 >
                   {isSaving ? (
-                    <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 animate-spin" />
+                    <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
                   ) : (
-                    <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                    <Save className="h-4 w-4 mr-1.5" />
                   )}
-                  <span className="hidden sm:inline">Salvar Relatório</span>
+                  <span className="hidden sm:inline">Salvar</span>
                   <span className="sm:hidden">Salvar</span>
                 </Button>
 
                 <Button
                   onClick={handleGeneratePDF}
                   disabled={isGeneratingPDF || !selectedPatient}
-                  className="bg-red-600 hover:bg-red-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 h-10 sm:h-12 text-sm sm:text-base"
+                  className="bg-foreground text-background hover:bg-foreground/90 shadow-md hover:shadow-lg transition-all duration-200 h-11 text-sm font-semibold"
                 >
                   {isGeneratingPDF ? (
-                    <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 animate-spin" />
+                    <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
                   ) : (
-                    <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                    <Download className="h-4 w-4 mr-1.5" />
                   )}
                   <span className="hidden sm:inline">
-                    {isGeneratingPDF ? 'Exportando...' : 'Exportar PDF'}
-                  </span>
-                  <span className="sm:hidden">
                     {isGeneratingPDF ? 'Exportando...' : 'PDF'}
                   </span>
+                  <span className="sm:hidden">PDF</span>
                 </Button>
 
                 <Button
                   variant="outline"
                   onClick={() => navigate("/processes/reports?type=daily_evolution")}
-                  className="border-orange-200 hover:bg-orange-50 hover:border-orange-400 transition-all duration-200 h-10 sm:h-12 text-sm sm:text-base text-orange-700"
+                  className="border-border/60 bg-background/40 hover:bg-primary/5 hover:border-primary/40 transition-all duration-200 h-11 text-sm"
                 >
-                  <List className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                  <span className="hidden sm:inline">Ver Relatórios</span>
+                  <List className="h-4 w-4 mr-1.5" />
+                  <span className="hidden sm:inline">Relatórios</span>
                   <span className="sm:hidden">Lista</span>
                 </Button>
 
@@ -527,9 +525,9 @@ export default function EvolutionReport() {
                   variant="outline"
                   onClick={() => setActiveTab("preview")}
                   disabled={!selectedPatient}
-                  className="border-blue-200 hover:bg-blue-50 hover:border-blue-400 transition-all duration-200 h-10 sm:h-12 text-sm sm:text-base"
+                  className="border-border/60 bg-background/40 hover:bg-primary/5 hover:border-primary/40 transition-all duration-200 h-11 text-sm"
                 >
-                  <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  <Eye className="h-4 w-4 mr-1.5" />
                   <span className="hidden sm:inline">Visualizar</span>
                   <span className="sm:hidden">Ver</span>
                 </Button>
@@ -537,20 +535,19 @@ export default function EvolutionReport() {
                 <Button
                   variant="outline"
                   onClick={resetForm}
-                  className="text-red-600 border-red-200 hover:bg-red-50 hover:border-red-400 transition-all duration-200 h-10 sm:h-12 text-sm sm:text-base"
+                  className="text-destructive border-destructive/30 bg-background/40 hover:bg-destructive/10 hover:border-destructive/50 transition-all duration-200 h-11 text-sm"
                 >
-                  <RefreshCw className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                  <span className="hidden sm:inline">Limpar Formulário</span>
+                  <RefreshCw className="h-4 w-4 mr-1.5" />
+                  <span className="hidden sm:inline">Limpar</span>
                   <span className="sm:hidden">Limpar</span>
                 </Button>
               </div>
-              
+
               {!selectedPatient && (
-                <div className="mt-4 lg:mt-6 p-3 lg:p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                  <p className="text-xs sm:text-sm text-amber-800 text-center flex items-center justify-center gap-2">
+                <div className="mt-4 p-3 rounded-lg border border-amber-500/30 bg-amber-500/10">
+                  <p className="text-xs sm:text-sm text-amber-700 dark:text-amber-300 text-center flex items-center justify-center gap-2">
                     <User className="h-4 w-4" />
-                    <span className="hidden sm:inline">Selecione um paciente para habilitar as funcionalidades</span>
-                    <span className="sm:hidden">Selecione um paciente</span>
+                    Selecione um paciente para habilitar as ações
                   </p>
                 </div>
               )}
