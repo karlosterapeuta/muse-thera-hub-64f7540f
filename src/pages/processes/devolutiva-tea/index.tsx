@@ -236,39 +236,85 @@ export default function DevolutivaTea() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <Card className="mb-8 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-2">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-gradient-to-br from-pink-500 to-rose-500 rounded-xl shadow-lg">
-                <Heart className="h-8 w-8 text-white" />
+    <div className="min-h-screen relative w-full overflow-x-hidden bg-background">
+      {/* Ambient cosmic blobs */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
+        <div className="absolute top-1/3 -right-32 h-96 w-96 rounded-full bg-amber-400/10 blur-3xl" />
+        <div className="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-primary/5 blur-3xl" />
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+        {/* Premium Header */}
+        <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-card/60 backdrop-blur-xl shadow-2xl">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-amber-400/5" />
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+
+          <div className="relative p-6 sm:p-8 lg:p-10">
+            <div className="flex items-start gap-5">
+              <div className="relative flex-shrink-0">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary to-amber-500 blur-xl opacity-40" />
+                <div className="relative p-4 rounded-2xl bg-gradient-to-br from-primary to-amber-500 shadow-lg">
+                  <Heart className="h-7 w-7 lg:h-8 lg:w-8 text-white" />
+                </div>
               </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              <div className="space-y-2 min-w-0">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border/60 bg-background/40 backdrop-blur text-xs font-medium text-muted-foreground">
+                  <Sparkles className="h-3 w-3 text-amber-500" />
+                  Relatório Familiar · IA Integrada
+                </div>
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight bg-gradient-to-br from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
                   Devolutiva Musicoterapia TEA
                 </h1>
-                <p className="text-gray-800 dark:text-gray-100 font-medium">
-                  Relatório simplificado para famílias de pacientes com TEA
+                <p className="text-sm sm:text-base text-muted-foreground max-w-2xl leading-relaxed">
+                  Relatório simplificado para famílias de pacientes com TEA, com linguagem acessível e acolhedora.
                 </p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+
+            {/* Status pills */}
+            <div className="mt-6 flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border/60 bg-background/40 backdrop-blur text-xs font-medium">
+                <Heart className="h-3.5 w-3.5 text-primary" /> Acolhedor
+              </div>
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border/60 bg-background/40 backdrop-blur text-xs font-medium">
+                <Sparkles className="h-3.5 w-3.5 text-amber-500" /> Assistente IA
+              </div>
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border/60 bg-background/40 backdrop-blur text-xs font-medium">
+                <FileDown className="h-3.5 w-3.5 text-rose-400" /> Exportar PDF
+              </div>
+            </div>
+          </div>
+        </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="form">📝 Formulário</TabsTrigger>
-            <TabsTrigger value="preview">👁️ Preview</TabsTrigger>
-            <TabsTrigger value="history">📚 Histórico</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 bg-card/60 backdrop-blur-xl border border-border/60 rounded-xl p-1 h-auto">
+            <TabsTrigger
+              value="form"
+              className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary data-[state=active]:to-amber-500 data-[state=active]:text-white rounded-lg"
+            >
+              📝 Formulário
+            </TabsTrigger>
+            <TabsTrigger
+              value="preview"
+              className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary data-[state=active]:to-amber-500 data-[state=active]:text-white rounded-lg"
+            >
+              👁️ Preview
+            </TabsTrigger>
+            <TabsTrigger
+              value="history"
+              className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary data-[state=active]:to-amber-500 data-[state=active]:text-white rounded-lg"
+            >
+              📚 Histórico
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="form" className="space-y-6 mt-6">
-            <Card>
+            <Card className="bg-card/60 backdrop-blur-xl border-border/60 shadow-xl">
               <CardContent className="pt-6 space-y-6">
                 <div className="grid md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label>Paciente *</Label>
+                    <Label className="text-xs uppercase tracking-wider text-muted-foreground">Paciente *</Label>
                     <PatientSelect
                       patients={patients}
                       selectedPatient={formData.patient_id}
@@ -277,7 +323,7 @@ export default function DevolutivaTea() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Data da Sessão *</Label>
+                    <Label className="text-xs uppercase tracking-wider text-muted-foreground">Data da Sessão *</Label>
                     <Input
                       type="date"
                       value={formData.session_date}
@@ -285,7 +331,7 @@ export default function DevolutivaTea() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Número da Sessão</Label>
+                    <Label className="text-xs uppercase tracking-wider text-muted-foreground">Número da Sessão</Label>
                     <Input
                       type="number"
                       min="1"
@@ -312,21 +358,28 @@ export default function DevolutivaTea() {
               ))}
             </div>
 
-            <div className="flex gap-4 justify-end">
-              <Button
-                variant="outline"
-                onClick={() => setActiveTab("preview")}
-              >
-                Visualizar Preview
-              </Button>
-              <Button
-                onClick={handleSave}
-                disabled={isSaving}
-                className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600"
-              >
-                <Save className="h-4 w-4 mr-2" />
-                {isSaving ? 'Salvando...' : 'Salvar Devolutiva'}
-              </Button>
+            {/* Sticky action bar */}
+            <div className="sticky bottom-4 z-20">
+              <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-card/70 backdrop-blur-xl shadow-2xl">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-amber-400/5" />
+                <div className="relative p-4 flex gap-3 justify-end flex-wrap">
+                  <Button
+                    variant="outline"
+                    onClick={() => setActiveTab("preview")}
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    Visualizar Preview
+                  </Button>
+                  <Button
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    className="bg-gradient-to-br from-primary to-amber-500 text-white border-0 shadow-md hover:opacity-90 transition-all duration-200 font-semibold"
+                  >
+                    <Save className="h-4 w-4 mr-2" />
+                    {isSaving ? 'Salvando...' : 'Salvar Devolutiva'}
+                  </Button>
+                </div>
+              </div>
             </div>
           </TabsContent>
 
