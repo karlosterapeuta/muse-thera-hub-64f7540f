@@ -2,10 +2,9 @@ import { Sparkles } from "lucide-react";
 
 export function HeaderLogo() {
   return (
-    <div className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-pink-500/10 rounded-xl border border-purple-300/30 dark:border-purple-700/30 hover:scale-105 transition-all duration-300 cursor-pointer group">
-      {/* Logo com glow effect */}
+    <div className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-primary/10 via-amber-400/10 to-primary/10 rounded-xl border border-border/60 hover:scale-105 transition-all duration-300 cursor-pointer group backdrop-blur">
       <div className="relative">
-        <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-blue-600 to-pink-600 rounded-lg blur opacity-30 group-hover:opacity-60 transition-all animate-gradient"></div>
+        <div className="absolute -inset-1 bg-gradient-to-br from-primary to-amber-500 rounded-lg blur opacity-40 group-hover:opacity-70 transition-all"></div>
         <img 
           src="/lovable-uploads/musetera-logo-new.png"
           alt="MuseTera"
@@ -13,12 +12,11 @@ export function HeaderLogo() {
         />
       </div>
       
-      {/* Nome com gradiente */}
       <div className="hidden sm:flex items-center gap-1.5">
-        <span className="text-sm font-bold bg-gradient-to-r from-purple-700 via-blue-600 to-pink-600 bg-clip-text text-transparent">
+        <span className="text-sm font-bold bg-gradient-to-br from-primary to-amber-500 bg-clip-text text-transparent">
           MuseTera
         </span>
-        <Sparkles className="w-3 h-3 text-purple-500 animate-pulse" />
+        <Sparkles className="w-3 h-3 text-amber-500 animate-pulse" />
       </div>
     </div>
   );
