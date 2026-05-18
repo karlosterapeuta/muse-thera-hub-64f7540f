@@ -246,119 +246,77 @@ export default function EvolutionReport() {
   };
 
   return (
-    <div className="container mx-auto p-4 sm:p-6 max-w-6xl">
-      <Button
-        variant="ghost"
-        onClick={() => navigate(-1)}
-        className="mb-4 gap-2 hover:bg-blue-50 dark:hover:bg-gray-800"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Voltar
-      </Button>
+    <div className="relative min-h-screen">
+      {/* Ambient cosmic background */}
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
+        <div className="absolute top-1/3 -right-32 h-96 w-96 rounded-full bg-amber-400/10 blur-3xl" />
+      </div>
 
-      {/* Enhanced Organized Header */}
-      <div className="relative mb-6 lg:mb-10 overflow-hidden">
-        {/* Main Header Container */}
-        <div className="relative rounded-2xl lg:rounded-3xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-2 border-blue-100/60 dark:border-gray-700 shadow-xl">
-          {/* Background Pattern */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_50%)]" />
-          <div className="absolute inset-0 bg-grid-blue-100/20 [mask-image:linear-gradient(0deg,transparent,black,transparent)]" />
-          
-          <div className="relative p-4 sm:p-6 lg:p-10">
-            {/* Header Content */}
-            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-              {/* Left Side - Main Content */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 w-full lg:w-auto">
-                {/* Icon Container */}
+      <div className="container mx-auto p-4 sm:p-6 max-w-6xl">
+        <Button
+          variant="ghost"
+          onClick={() => navigate(-1)}
+          className="mb-4 gap-2 text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Voltar
+        </Button>
+
+        {/* Refined Premium Header */}
+        <div className="relative mb-6 lg:mb-8 overflow-hidden rounded-3xl border border-border/60 bg-card/60 backdrop-blur-xl shadow-2xl">
+          {/* Subtle gradient wash */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-amber-400/5" />
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+
+          <div className="relative p-6 sm:p-8 lg:p-10">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+              <div className="flex items-start gap-5">
                 <div className="relative flex-shrink-0">
-                  <div className="p-3 sm:p-4 lg:p-5 bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 rounded-2xl lg:rounded-3xl shadow-2xl">
-                    <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 lg:h-10 lg:w-10 text-white" />
-                  </div>
-                  {/* Floating Badge */}
-                  <div className="absolute -top-1 -right-1 lg:-top-2 lg:-right-2 p-1.5 lg:p-2 bg-gradient-to-br from-emerald-400 to-green-500 rounded-full shadow-lg animate-pulse">
-                    <Sparkles className="h-3 w-3 lg:h-4 lg:w-4 text-white" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary to-amber-500 blur-xl opacity-40" />
+                  <div className="relative p-4 rounded-2xl bg-gradient-to-br from-primary to-amber-500 shadow-lg">
+                    <TrendingUp className="h-7 w-7 lg:h-8 lg:w-8 text-white" />
                   </div>
                 </div>
-                
-                {/* Text Content */}
-                <div className="space-y-2 lg:space-y-4 w-full">
-                  {/* Title Section */}
-                  <div className="space-y-1 lg:space-y-2">
-                    <h1 className="text-2xl sm:text-3xl lg:text-5xl font-black bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 bg-clip-text text-transparent leading-tight tracking-tight">
-                      Evolução Diária MuseTera
-                    </h1>
-                    
-                    {/* Subtitle with decorative line */}
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                      <div className="h-1 w-16 sm:w-20 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-full shadow-sm" />
-                  <span className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">
-                    Relatório de Evolução MuseTera
-                  </span>
-                      <div className="hidden sm:block h-1 w-8 sm:w-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full shadow-sm" />
-                    </div>
+                <div className="space-y-2">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border/60 bg-background/40 backdrop-blur text-xs font-medium text-muted-foreground">
+                    <Sparkles className="h-3 w-3 text-amber-500" />
+                    Sessão Terapêutica · IA Integrada
                   </div>
-                  
-                  {/* Description */}
-                  <p className="text-gray-700 dark:text-gray-200 text-sm sm:text-base lg:text-lg max-w-3xl leading-relaxed font-medium">
-                    Sistema profissional para documentação detalhada da evolução do paciente durante sessões de musicoterapia, 
-                    registrando progressos, comportamentos e interações terapêuticas de forma estruturada.
+                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight bg-gradient-to-br from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
+                    Relatório de Evolução
+                  </h1>
+                  <p className="text-sm sm:text-base text-muted-foreground max-w-2xl leading-relaxed">
+                    Documente com clareza a evolução do paciente em cada sessão de musicoterapia — comportamentos, respostas musicais e progressos terapêuticos.
                   </p>
                 </div>
               </div>
 
-              {/* Right Side - Quick Stats */}
-              <div className="hidden xl:flex flex-col gap-3">
-                <div className="text-right">
-                  <div className="text-3xl font-black text-blue-600">+</div>
-                  <div className="text-sm font-semibold text-muted-foreground">Profissional</div>
+              {/* Compact status pills */}
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border/60 bg-background/40 backdrop-blur text-xs font-medium">
+                  <Brain className="h-3.5 w-3.5 text-primary" /> Clínico
                 </div>
-                <div className="text-right">
-                  <div className="text-3xl font-black text-indigo-600">AI</div>
-                  <div className="text-sm font-semibold text-muted-foreground">Organização</div>
+                <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border/60 bg-background/40 backdrop-blur text-xs font-medium">
+                  <Heart className="h-3.5 w-3.5 text-rose-400" /> Evolutivo
                 </div>
-                <div className="text-right">
-                  <div className="text-3xl font-black text-purple-600">PDF</div>
-                  <div className="text-sm font-semibold text-muted-foreground">Export</div>
+                <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border/60 bg-background/40 backdrop-blur text-xs font-medium">
+                  <FileText className="h-3.5 w-3.5 text-amber-500" /> PDF
                 </div>
-              </div>
-            </div>
-            
-            {/* Feature Pills */}
-            <div className="mt-4 lg:mt-8 flex flex-wrap items-center gap-2 lg:gap-4">
-              <div className="flex items-center gap-1.5 lg:gap-2 px-2.5 lg:px-4 py-1.5 lg:py-2.5 bg-white/80 backdrop-blur-sm text-blue-700 rounded-xl lg:rounded-2xl shadow-lg border border-blue-200/50 font-semibold text-sm lg:text-base">
-                <Clock className="h-4 w-4 lg:h-5 lg:w-5" />
-                <span className="hidden sm:inline">Sessão Terapêutica</span>
-                <span className="sm:hidden">Sessão</span>
-              </div>
-              <div className="flex items-center gap-1.5 lg:gap-2 px-2.5 lg:px-4 py-1.5 lg:py-2.5 bg-white/80 backdrop-blur-sm text-indigo-700 rounded-xl lg:rounded-2xl shadow-lg border border-indigo-200/50 font-semibold text-sm lg:text-base">
-                <Brain className="h-4 w-4 lg:h-5 lg:w-5" />
-                <span className="hidden sm:inline">Análise Clínica</span>
-                <span className="sm:hidden">Análise</span>
-              </div>
-              <div className="flex items-center gap-1.5 lg:gap-2 px-2.5 lg:px-4 py-1.5 lg:py-2.5 bg-white/80 backdrop-blur-sm text-purple-700 rounded-xl lg:rounded-2xl shadow-lg border border-purple-200/50 font-semibold text-sm lg:text-base">
-                <Heart className="h-4 w-4 lg:h-5 lg:w-5" />
-                <span className="hidden sm:inline">Evolução Terapêutica</span>
-                <span className="sm:hidden">Evolução</span>
-              </div>
-              <div className="flex items-center gap-1.5 lg:gap-2 px-2.5 lg:px-4 py-1.5 lg:py-2.5 bg-white/80 backdrop-blur-sm text-emerald-700 rounded-xl lg:rounded-2xl shadow-lg border border-emerald-200/50 font-semibold text-sm lg:text-base">
-                <Sparkles className="h-4 w-4 lg:h-5 lg:w-5" />
-                <span className="hidden sm:inline">IA Integrada</span>
-                <span className="sm:hidden">IA</span>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 lg:space-y-6">
-        <TabsList className="grid w-full grid-cols-2 h-10 sm:h-12">
-          <TabsTrigger value="form" className="flex items-center gap-1 sm:gap-2 text-sm sm:text-base">
-            <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
+        <TabsList className="grid w-full grid-cols-2 h-11 sm:h-12 p-1 bg-card/60 backdrop-blur-xl border border-border/60 rounded-xl">
+          <TabsTrigger value="form" className="flex items-center gap-2 text-sm sm:text-base rounded-lg data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary data-[state=active]:to-amber-500 data-[state=active]:text-white data-[state=active]:shadow-md">
+            <FileText className="h-4 w-4" />
             <span className="hidden sm:inline">Formulário</span>
             <span className="sm:hidden">Form</span>
           </TabsTrigger>
-          <TabsTrigger value="preview" className="flex items-center gap-1 sm:gap-2 text-sm sm:text-base">
-            <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
+          <TabsTrigger value="preview" className="flex items-center gap-2 text-sm sm:text-base rounded-lg data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary data-[state=active]:to-amber-500 data-[state=active]:text-white data-[state=active]:shadow-md">
+            <Eye className="h-4 w-4" />
             <span className="hidden sm:inline">Visualização</span>
             <span className="sm:hidden">Preview</span>
           </TabsTrigger>
