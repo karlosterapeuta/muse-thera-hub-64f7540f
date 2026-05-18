@@ -1196,6 +1196,7 @@ export default function MusicoterapiaPage() {
           onDeleteSuccess={handleDeleteSuccess}
         />
       )}
+      </div>
     </div>
   );
 }
