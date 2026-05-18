@@ -1,6 +1,4 @@
-
-import { Music, Users, Brain, Activity, Heart } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Music, Users, Brain, Activity, Heart, Sparkles } from "lucide-react";
 
 interface ModernAnamnesisHeaderProps {
   editMode?: boolean;
@@ -8,49 +6,57 @@ interface ModernAnamnesisHeaderProps {
 
 export function ModernAnamnesisHeader({ editMode = false }: ModernAnamnesisHeaderProps) {
   return (
-    <div className="relative overflow-hidden">
-      {/* Gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-emerald-500/10 animate-fade-in" />
-      
-      {/* Musical notes pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="flex items-center justify-center h-full">
-          <Music className="h-32 w-32 text-primary transform rotate-12" />
-          <Music className="h-24 w-24 text-primary transform -rotate-12 ml-8" />
-          <Music className="h-20 w-20 text-primary transform rotate-45 ml-6" />
-        </div>
+    <div className="relative w-full">
+      {/* Ambient cosmic blobs */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-3xl">
+        <div className="absolute -top-20 -left-20 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
+        <div className="absolute -top-20 right-0 h-72 w-72 rounded-full bg-amber-400/10 blur-3xl" />
       </div>
-      
-      <div className="relative z-10 p-8 text-center">
-        <div className="inline-flex items-center gap-3 mb-4">
-          <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full">
-            <Music className="h-8 w-8 text-white" />
-          </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-emerald-600 bg-clip-text text-transparent">
-            {editMode ? "Editar Anamnese" : "Nova Anamnese Musicoterapêutica"}
-          </h1>
-        </div>
-        
-        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-          Avaliação completa do paciente através de uma abordagem musicoterapêutica integral
-        </p>
-        
-        {/* Progress indicators */}
-        <div className="flex justify-center mt-6 gap-2">
-          {[
-            { icon: Users, label: "Pessoal", color: "from-blue-500 to-blue-600" },
-            { icon: Music, label: "Musical", color: "from-purple-500 to-purple-600" },
-            { icon: Activity, label: "Clínico", color: "from-emerald-500 to-emerald-600" },
-            { icon: Brain, label: "Cognitivo", color: "from-amber-500 to-amber-600" },
-            { icon: Heart, label: "Emocional", color: "from-rose-500 to-rose-600" }
-          ].map((item, index) => (
-            <div key={index} className="flex flex-col items-center group">
-              <div className={`p-2 bg-gradient-to-r ${item.color} rounded-full mb-1 transition-transform group-hover:scale-110`}>
-                <item.icon className="h-4 w-4 text-white" />
+
+      <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-card/60 backdrop-blur-xl shadow-2xl">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-amber-400/5" />
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+
+        <div className="relative p-6 sm:p-8 lg:p-10">
+          <div className="flex items-start gap-5">
+            <div className="relative flex-shrink-0">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary to-amber-500 blur-xl opacity-40" />
+              <div className="relative p-4 rounded-2xl bg-gradient-to-br from-primary to-amber-500 shadow-lg">
+                <Music className="h-7 w-7 lg:h-8 lg:w-8 text-white" />
               </div>
-              <span className="text-xs text-muted-foreground font-medium">{item.label}</span>
             </div>
-          ))}
+            <div className="space-y-2 min-w-0">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border/60 bg-background/40 backdrop-blur text-xs font-medium text-muted-foreground">
+                <Sparkles className="h-3 w-3 text-amber-500" />
+                Avaliação Clínica · Musicoterapia
+              </div>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight bg-gradient-to-br from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
+                {editMode ? "Editar Anamnese" : "Nova Anamnese Musicoterapêutica"}
+              </h1>
+              <p className="text-sm sm:text-base text-muted-foreground max-w-2xl leading-relaxed">
+                Avaliação completa do paciente através de uma abordagem musicoterapêutica integral.
+              </p>
+            </div>
+          </div>
+
+          {/* Domain pills */}
+          <div className="mt-6 flex flex-wrap gap-2">
+            {[
+              { icon: Users, label: "Pessoal" },
+              { icon: Music, label: "Musical" },
+              { icon: Activity, label: "Clínico" },
+              { icon: Brain, label: "Cognitivo" },
+              { icon: Heart, label: "Emocional" },
+            ].map((item, index) => (
+              <div
+                key={index}
+                className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border/60 bg-background/40 backdrop-blur text-xs font-medium"
+              >
+                <item.icon className="h-3.5 w-3.5 text-primary" />
+                {item.label}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
