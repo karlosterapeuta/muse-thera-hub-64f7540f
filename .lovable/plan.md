@@ -1,101 +1,96 @@
-# Sistema de Recibos Premium — Expansão
 
-Vou evoluir o sistema atual de "Recibos" (que já tem emissão básica, validação CPF/CNPJ via BrasilAPI, PDF com QR Code/hash, histórico simples) para um módulo completo estilo SaaS premium.
+# Repaginação profissional do módulo Financeiro
 
-## 1. Banco de dados (migrations)
+Tom: linguagem **financeira corporativa** (sem termos musicais, sem emojis decorativos no corpo, sem metáforas). Visual limpo, sóbrio, foco em dados.
 
-**Novas tabelas:**
-- `receipt_clients` — cadastro de pagadores reutilizáveis (nome, CPF/CNPJ, email, telefone, endereço) por usuário, com RLS.
-- `receipt_templates` — modelos prontos de recibo (título, descrição padrão, valor sugerido, forma de pagamento) por usuário.
+## O que está errado hoje
 
-**Alterações em tabelas existentes:**
-- `payment_receipts`: adicionar `city`, `observations`, `template_id`, `unique_code` (código único curto tipo `REC-2026-XXXXXX`), índice em `unique_code`.
-- `receipt_issuer_profiles`: adicionar `signature_url` (URL de assinatura manual carregada no bucket `digital-signatures`).
+- Copy poluída com termos musicais em contexto financeiro: "Partituras Financeiras", "Calculadora IR Musical", "Receita de Musicoterapia", "Harmonia financeira acumulada", "Melodias terapêuticas realizadas", "Crescendo do valor terapêutico", "Harmonizando seus dados financeiros".
+- Cabeçalho com **6 botões** competindo por atenção, sem hierarquia.
+- Subpáginas (`records`, `receipts`, `clinics`, `reports`) **desconectadas**, cada uma com header e botão Voltar próprios.
+- Duplicação de ações ("Nova Sessão" e "Registros" abrem a mesma página; "Perfil Emissor" só redireciona).
+- Calculadora de IR no mesmo nível dos gráficos principais — não é tarefa diária.
 
-Tudo com RLS `auth.uid() = user_id`.
+## Nova arquitetura
 
-## 2. Hooks de dados
-- `useReceiptClients` — list/create/update/delete clientes.
-- `useReceiptTemplates` — list/create/delete modelos.
-- Estender `useReceiptIssuerProfile` para `signature_url`.
-- Estender `usePaymentReceipts` para os novos campos + função `duplicateReceipt`.
+Shell único em `/finance` com **navegação por abas** (sidebar no desktop, abas com scroll horizontal no mobile). Rotas antigas continuam funcionando via redirect para `/finance?tab=...`.
 
-## 3. Geração de PDF (`receiptPDFGenerator.ts`)
-- Incluir `city`, `observations`, `unique_code` (impresso ao lado do número).
-- Renderizar imagem da assinatura digital (se houver) acima da linha de assinatura.
-- Valor por extenso já existe — manter.
-- Botão "Imprimir" usando `window.print()` num iframe com o blob, no dialog.
+```text
+┌──────────────────────────────────────────────────┐
+│ Gestão Financeira              [+ Atendimento]   │
+├──────────┬───────────────────────────────────────┤
+│ Visão    │                                       │
+│ Atendim. │   Conteúdo da aba ativa               │
+│ Agenda   │                                       │
+│ Recibos  │                                       │
+│ Clínicas │                                       │
+│ Relatóri.│                                       │
+│ Imposto  │                                       │
+└──────────┴───────────────────────────────────────┘
+```
 
-## 4. UI — nova arquitetura de páginas Finance / Recibos
+## Abas
 
-### `/finance/receipts` — Dashboard + Histórico (substitui a página atual)
-Tabs: **Dashboard | Recibos | Clientes | Modelos | Emissor**
+1. **Visão geral** — KPIs (Receita total, Atendimentos, Ticket médio, A receber), gráfico de evolução, distribuição por clínica, últimos atendimentos, últimos recibos.
+2. **Atendimentos** — antiga `/finance/records`. Tabela filtrável, busca, status (Agendado / Realizado / Faltou / **Pago**), botão "Emitir recibo" inline.
+3. **Agenda** — visão semanal fixa de atendimentos.
+4. **Recibos** — antiga `/finance/receipts` com sub-abas (Histórico, Clientes, Modelos, Emissor) preservadas.
+5. **Clínicas** — cadastro e gestão.
+6. **Relatórios** — exportação CSV/PDF por período.
+7. **Imposto de Renda** — calculadora movida pra cá.
 
-**Dashboard tab:**
-- Cards: Total recebido no mês, Qtde de recibos no mês, Ticket médio, Recibos cancelados.
-- Gráfico (Recharts) de receita por dia nos últimos 30 dias.
-- Lista "Últimos 5 recibos".
-- Top 5 clientes mais frequentes.
-- Distribuição de métodos de pagamento (pizza).
+## Copy reescrita (antes → depois)
 
-**Recibos tab:**
-- Busca por nome / CPF / data / valor / código único.
-- Filtros: status, período, método.
-- Ações por recibo: visualizar, baixar PDF, imprimir, **duplicar**, cancelar.
+| Antes | Depois |
+|---|---|
+| Gestão Financeira – MuseTera | Gestão Financeira |
+| Controle financeiro especializado para musicoterapeutas | Controle de receitas, atendimentos e recibos |
+| Receita de Musicoterapia | Receita total |
+| Sessões de Musicoterapia | Atendimentos |
+| Valor Médio por Sessão | Ticket médio |
+| Harmonia financeira acumulada | Faturamento no período |
+| Melodias terapêuticas realizadas | Sessões registradas |
+| Crescendo do valor terapêutico | Valor médio por atendimento |
+| Partituras Financeiras | Análise gráfica |
+| Calculadora IR Musical | Calculadora de IR |
+| Harmonizando seus dados financeiros... | Carregando dados... |
+| Relatório Financeiro MuseTera | Relatório financeiro |
+| Partitura gerada em | Gerado em |
 
-**Clientes tab:**
-- CRUD de pagadores com validação CPF/CNPJ (BrasilAPI para CNPJ).
-- Busca rápida.
+## Design
 
-**Modelos tab:**
-- CRUD de modelos prontos. Botão "Emitir a partir deste modelo".
+- Tipografia: títulos `font-semibold tracking-tight`, dados numéricos com `tabular-nums`.
+- Paleta sóbria: superfícies em `card`, acentos em `primary`, status em `emerald` (positivo) / `amber` (pendente) / `destructive` (negativo).
+- Remover gradientes azul→roxo e ícones musicais; usar ícones financeiros (`WalletIcon`, `ReceiptIcon`, `TrendingUpIcon`, `ClipboardListIcon`, `CalendarIcon`).
+- KPIs em cards limpos, sem decorações curvas; bordas finas, hover sutil.
+- Loading com **skeletons**, não spinner com texto temático.
+- Empty states discretos com CTA contextual ("Cadastre seu primeiro atendimento").
+- Aplicar padrão de dark mode já memorizado para Finance.
 
-**Emissor tab:**
-- Form do `receipt_issuer_profile` + upload de assinatura digital (bucket `digital-signatures`, pasta `${userId}/signature.png`).
+## Mudanças nas rotas
 
-### Dialog de emissão melhorado (`EmitReceiptDialog`)
-- Autocomplete de clientes já cadastrados (Combobox); ao escolher, preenche nome+documento.
-- Seletor de modelo pronto (preenche descrição/valor/método).
-- Campos novos: **Cidade**, **Observações**.
-- Valor por extenso exibido em tempo real abaixo do input.
-- **Pré-visualização ao vivo** do recibo (painel lateral) atualizada conforme digita.
-- Anti-duplicidade: avisa se já existe recibo com mesmo `financial_record_id` ou mesmo (cliente + valor + data) nas últimas 24h.
-- Salvamento automático em `sessionStorage` (rascunho).
-- Botão "Emitir e Imprimir" além do "Emitir e Baixar".
+| Rota atual | Comportamento novo |
+|---|---|
+| `/finance` | Shell unificado com abas |
+| `/finance/records` | Redireciona para `/finance?tab=atendimentos` |
+| `/finance/receipts` | Redireciona para `/finance?tab=recibos` (preserva `?tab=` interno) |
+| `/finance/clinics` | Redireciona para `/finance?tab=clinicas` |
+| `/finance/reports` | Redireciona para `/finance?tab=relatorios` |
+| `/finance/receipt-profile` | Redireciona para `/finance?tab=recibos&sub=emissor` |
 
-## 5. Tema claro/escuro
-Já existe `useTheme`. Garantir que todas as novas telas usem tokens semânticos do design system (sem cores hard-coded) e respondam ao tema.
+## Detalhes técnicos
 
-## 6. Responsivo mobile
-- Tabs roláveis horizontalmente em telas pequenas.
-- Cards de dashboard em grid 1-col no mobile, 2-col em md, 4-col em lg.
-- Dialog vira full-screen no mobile.
+- Refatorar `src/pages/finance/index.tsx` em `FinanceShell` controlado por `useSearchParams("tab")`.
+- Mover conteúdo de `records.tsx`, `receipts.tsx`, `clinics.tsx`, `reports.tsx` para `src/pages/finance/sections/`, **sem headers próprios e sem botão Voltar**.
+- Atualizar `src/App.tsx` com `<Navigate>` para todas as rotas antigas.
+- Reescrever `FinancialStatCards.tsx` (já está com copy musical).
+- Atualizar `FinanceCharts.tsx`, `IncomeTaxCalculator.tsx`, `DateRangeFilter.tsx` para remover qualquer copy musical/emoji decorativo.
+- Sidebar do app: garantir que o link "Finanças" leve para `/finance` (não para subrotas).
 
-## 7. Detalhes técnicos
-- Código único gerado client-side: `REC-${ano}-${nano(6)}` checado contra DB antes de inserir.
-- Assinatura: usuário pode desenhar (canvas) **ou** fazer upload de imagem PNG. Salva no bucket existente `digital-signatures` (já criado).
-- Impressão: abrir blob em iframe oculto e chamar `print()`.
-- Toda validação de input com zod nos forms.
+## Fora do escopo
 
-## Arquivos a criar
-- `supabase/migrations/<ts>_receipt_clients_templates.sql`
-- `src/hooks/useReceiptClients.ts`
-- `src/hooks/useReceiptTemplates.ts`
-- `src/components/finance/receipts/ReceiptsDashboard.tsx`
-- `src/components/finance/receipts/ReceiptsHistory.tsx`
-- `src/components/finance/receipts/ClientsManager.tsx`
-- `src/components/finance/receipts/TemplatesManager.tsx`
-- `src/components/finance/receipts/IssuerProfileForm.tsx`
-- `src/components/finance/receipts/SignaturePad.tsx`
-- `src/components/finance/receipts/ReceiptLivePreview.tsx`
-- `src/utils/uniqueCodeGenerator.ts`
+- Cálculos de IR, geração de PDF dos recibos, lógica de recorrência: **inalterados**.
+- Esquema de banco: **inalterado**.
+- Integração com gateways de pagamento: próxima iteração.
 
-## Arquivos a modificar
-- `src/pages/finance/receipts.tsx` (vira shell com Tabs)
-- `src/pages/finance/receipt-profile.tsx` (redirect para `/finance/receipts?tab=emissor`)
-- `src/components/finance/EmitReceiptDialog.tsx` (autocomplete, modelos, preview, cidade, observações)
-- `src/utils/receiptPDFGenerator.ts` (assinatura, cidade, observações, código único)
-- `src/hooks/usePaymentReceipts.ts` (novos campos + duplicate)
-- `src/hooks/useReceiptIssuerProfile.ts` (signature_url)
-
-Confirma que posso começar?
+Aprova essa repaginação completa, ou quer ajustar alguma aba/copy antes?
