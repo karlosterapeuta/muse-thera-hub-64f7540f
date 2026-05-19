@@ -124,6 +124,26 @@ export default function FinanceDashboard() {
               {isMobile && <span className="ml-1 text-xs">Histórico</span>}
               {!isMobile && "Histórico de Sessões"}
             </Button>
+
+            <Button
+              variant="outline"
+              size={isMobile ? "sm" : "default"}
+              onClick={() => navigate("/finance/receipts")}
+              className="h-9 sm:h-10 bg-white text-amber-700 hover:bg-amber-50 border-amber-200"
+            >
+              <ReceiptIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+              {isMobile ? <span className="ml-1 text-xs">Recibos</span> : "Emitir Recibo"}
+            </Button>
+
+            <Button
+              variant="outline"
+              size={isMobile ? "sm" : "default"}
+              onClick={() => navigate("/finance/receipt-profile")}
+              className="h-9 sm:h-10 bg-white/10 border-white/20 text-white hover:bg-white/20"
+            >
+              <ShieldCheckIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+              {isMobile ? <span className="ml-1 text-xs">Emissor</span> : "Perfil Emissor"}
+            </Button>
           </div>
         </div>
         <div className="absolute top-0 right-0 -mt-4 -mr-4 opacity-10">
