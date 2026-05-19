@@ -9,8 +9,11 @@ interface ReceiptData {
   patientName: string;
   patientDocument?: string;
   serviceDescription: string;
-  paymentDate: string; // ISO date
+  paymentDate: string;
   paymentMethod: string;
+  city?: string;
+  observations?: string;
+  uniqueCode?: string;
   issuer: {
     documentType: "cpf" | "cnpj";
     documentNumber: string;
@@ -21,6 +24,7 @@ interface ReceiptData {
     state?: string | null;
     phone?: string | null;
     email?: string | null;
+    signatureUrl?: string | null;
   };
   verificationId?: string;
   verificationHash?: string;
