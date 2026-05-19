@@ -21,7 +21,9 @@ import {
   LayoutGridIcon,
   MusicIcon,
   HeadphonesIcon,
-  ArrowLeftIcon
+  ArrowLeftIcon,
+  ReceiptIcon,
+  ShieldCheckIcon
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useFinancialRecords } from "./hooks/useFinancialData";
