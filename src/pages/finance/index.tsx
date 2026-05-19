@@ -101,11 +101,11 @@ export default function FinanceDashboard() {
         </div>
 
         {/* Atalhos secundários */}
-        <nav className="mt-5 grid grid-cols-2 sm:grid-cols-5 gap-2">
-          {shortcuts.map(({ label, icon: Icon, to, state }) => (
+        <nav className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {shortcuts.map(({ label, icon: Icon, to }) => (
             <button
               key={label}
-              onClick={() => navigate(to, state ? { state } : undefined)}
+              onClick={() => navigate(to)}
               className="flex items-center justify-center gap-2 rounded-md border border-border/60 bg-background px-3 py-2 text-sm font-medium text-foreground hover:bg-muted/60 hover:border-border transition-colors"
             >
               <Icon className="h-4 w-4 text-muted-foreground" />
