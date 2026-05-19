@@ -69,6 +69,7 @@ export default function FinancialRecords() {
   const [searchTerm, setSearchTerm] = useState("");
   const [clinicFilter, setClinicFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [paymentFilter, setPaymentFilter] = useState<string>("all");
   const [formOpen, setFormOpen] = useState(false);
   const [clinicFormOpen, setClinicFormOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<FinancialRecord | undefined>();
@@ -77,6 +78,8 @@ export default function FinancialRecords() {
   const [recordToDelete, setRecordToDelete] = useState<string | null>(null);
   const [receiptRecord, setReceiptRecord] = useState<FinancialRecord | null>(null);
   const [receiptDialogOpen, setReceiptDialogOpen] = useState(false);
+  const [paymentRecord, setPaymentRecord] = useState<FinancialRecord | null>(null);
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"list" | "fixed">("fixed");
   const [clearAllDialogOpen, setClearAllDialogOpen] = useState(false);
   const [clearAllConfirmText, setClearAllConfirmText] = useState("");
