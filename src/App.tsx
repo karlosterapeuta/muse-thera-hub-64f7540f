@@ -64,6 +64,9 @@ import DevolutivaTea from "./pages/processes/devolutiva-tea";
 import FinanceRecords from "./pages/finance/records";
 import FinanceReports from "./pages/finance/reports";
 import FinanceClinics from "./pages/finance/clinics";
+import ReceiptProfile from "./pages/finance/receipt-profile";
+import ReceiptsList from "./pages/finance/receipts";
+import VerifyReceipt from "./pages/verify-receipt";
 
 // Activities pages
 import ActivityFavorites from "./pages/activities/favorites";
