@@ -542,29 +542,18 @@ export default function FinancialRecords() {
   
   return (
     <div className="container px-2 sm:px-4 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6 animate-fade-in">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => navigate("/finance")}
+        className="gap-2 -ml-2 text-muted-foreground"
+      >
+        <ArrowLeftIcon className="h-4 w-4" />
+        Voltar
+      </Button>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-2xl md:text-3xl font-bold text-primary">Registros Financeiros</h1>
         <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end">
-          <Button
-            onClick={() => navigate("/finance")}
-            variant="outline"
-            size={isMobile ? "sm" : "default"}
-            className="shadow-sm hover:shadow-md transition-all"
-          >
-            <BarChart2Icon className="h-4 w-4 sm:h-5 sm:w-5 text-[#8B5CF6]" />
-            {isMobile && <span className="ml-1 text-xs">Dashboard</span>}
-            {!isMobile && <span className="inline">Dashboard</span>}
-          </Button>
-          <Button
-            onClick={() => setClinicFormOpen(true)}
-            variant="outline"
-            size={isMobile ? "sm" : "default"}
-            className="shadow-sm hover:shadow-md transition-all"
-          >
-            <BuildingIcon className="h-4 w-4 sm:h-5 sm:w-5 text-[#D946EF]" />
-            {isMobile && <span className="ml-1 text-xs">Clínica</span>}
-            {!isMobile && <span className="inline">Nova Clínica</span>}
-          </Button>
           <Button
             onClick={() => {
               setSelectedRecord(undefined);

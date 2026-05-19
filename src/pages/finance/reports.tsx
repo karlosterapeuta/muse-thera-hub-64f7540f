@@ -14,8 +14,10 @@ import {
   CalendarIcon,
   PieChartIcon,
   BarChart2Icon,
-  CalculatorIcon
+  CalculatorIcon,
+  ArrowLeftIcon,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table, 
@@ -31,6 +33,7 @@ import { useFinancialRecords } from "./hooks/useFinancialData";
 import { IncomeTaxCalculator } from "./components/IncomeTaxCalculator";
 
 export default function FinancialReports() {
+  const navigate = useNavigate();
   const [dateFilter, setDateFilter] = useState<PeriodFilter | undefined>();
   const { data: dashboardData, isLoading: isDashboardLoading } = useFinanceDashboard(dateFilter);
   const { data: records = [], isLoading: isRecordsLoading } = useFinancialRecords(dateFilter);
@@ -78,6 +81,10 @@ export default function FinancialReports() {
   
   return (
     <div className="container py-6 space-y-6">
+      <Button variant="ghost" size="sm" onClick={() => navigate("/finance")} className="gap-2 -ml-2 text-muted-foreground print:hidden">
+        <ArrowLeftIcon className="h-4 w-4" />
+        Voltar
+      </Button>
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Relatórios Financeiros</h1>
         <div className="flex space-x-2">
