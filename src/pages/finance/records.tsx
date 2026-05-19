@@ -1111,6 +1111,15 @@ export default function FinancialRecords() {
         onClose={() => { setReceiptDialogOpen(false); setReceiptRecord(null); }}
         record={receiptRecord}
       />
+      <ConfirmPaymentDialog
+        open={paymentDialogOpen}
+        onClose={() => { setPaymentDialogOpen(false); setPaymentRecord(null); }}
+        record={paymentRecord}
+        onConfirmed={(updated) => {
+          setReceiptRecord(updated);
+          requestAnimationFrame(() => setReceiptDialogOpen(true));
+        }}
+      />
     </div>
   );
 }
