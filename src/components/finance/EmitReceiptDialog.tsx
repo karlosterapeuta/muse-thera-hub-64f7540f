@@ -1,18 +1,28 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ReceiptIcon, DownloadIcon, MessageCircleIcon, MailIcon, Loader2Icon, AlertCircleIcon, ShieldCheckIcon } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import {
+  ReceiptIcon, DownloadIcon, MessageCircleIcon, MailIcon, Loader2Icon,
+  AlertCircleIcon, ShieldCheckIcon, PrinterIcon, EyeIcon, EyeOffIcon, UsersIcon, FileTextIcon,
+} from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useReceiptIssuerProfile } from "@/hooks/useReceiptIssuerProfile";
-import { useCreatePaymentReceipt } from "@/hooks/usePaymentReceipts";
+import { useCreatePaymentReceipt, usePaymentReceipts } from "@/hooks/usePaymentReceipts";
+import { useReceiptClients } from "@/hooks/useReceiptClients";
+import { useReceiptTemplates } from "@/hooks/useReceiptTemplates";
 import { generateReceiptPDF } from "@/utils/receiptPDFGenerator";
 import { savePDFToStorage } from "@/utils/pdfStorageUtils";
 import { supabase } from "@/integrations/supabase/client";
+import { ReceiptLivePreview } from "@/components/finance/receipts/ReceiptLivePreview";
+import { valorPorExtenso } from "@/utils/numberToWords";
+import { maskCPF, maskCNPJ, onlyDigits } from "@/utils/cpfCnpjUtils";
 import type { FinancialRecord } from "@/pages/finance/types";
 
 interface Props {
@@ -21,11 +31,18 @@ interface Props {
   record: FinancialRecord | null;
 }
 
+const draftKey = (id: string) => `receipt-draft:${id}`;
+
 export function EmitReceiptDialog({ open, onClose, record }: Props) {
   const navigate = useNavigate();
   const { data: issuer, isLoading: loadingIssuer } = useReceiptIssuerProfile();
+  const { data: clients = [] } = useReceiptClients();
+  const { data: templates = [] } = useReceiptTemplates();
+  const { data: existingReceipts = [] } = usePaymentReceipts();
   const createReceipt = useCreatePaymentReceipt();
   const [generating, setGenerating] = useState(false);
+  const [showPreview, setShowPreview] = useState(true);
+  const [clientPopOpen, setClientPopOpen] = useState(false);
   const [lastReceipt, setLastReceipt] = useState<{ id: string; number: number; blob: Blob; publicUrl?: string } | null>(null);
 
   const [form, setForm] = useState({
@@ -38,24 +55,68 @@ export function EmitReceiptDialog({ open, onClose, record }: Props) {
   });
 
   useEffect(() => {
-    if (record) {
+    if (!record) return;
+    const draftRaw = sessionStorage.getItem(draftKey(record.id));
+    if (draftRaw) {
+      try { setForm(JSON.parse(draftRaw)); } catch { /* noop */ }
+    } else {
       setForm({
         patient_name: record.patient_name || "",
         patient_document: "",
         service_description: record.description || "Sessão de Musicoterapia",
         payment_method: "pix",
-        city: "",
+        city: issuer?.city || "",
         observations: "",
       });
-      setLastReceipt(null);
     }
-  }, [record]);
+    setLastReceipt(null);
+  }, [record, issuer?.city]);
+
+  useEffect(() => {
+    if (record && !lastReceipt) {
+      sessionStorage.setItem(draftKey(record.id), JSON.stringify(form));
+    }
+  }, [form, record, lastReceipt]);
+
+  // Anti-duplicidade: já existe recibo emitido nas últimas 24h para esse financial_record?
+  const duplicateWarning = useMemo(() => {
+    if (!record) return null;
+    const recent = existingReceipts.find(
+      (r) => r.financial_record_id === record.id && r.status === "issued"
+    );
+    return recent
+      ? `Já existe um recibo Nº ${String(recent.receipt_number).padStart(4, "0")} emitido para este lançamento.`
+      : null;
+  }, [existingReceipts, record]);
 
   if (!record) return null;
 
   const missingProfile = !loadingIssuer && (!issuer || !issuer.legal_name || !issuer.document_number);
 
-  const handleGenerate = async () => {
+  const handleSelectClient = (clientId: string) => {
+    const c = clients.find((x) => x.id === clientId);
+    if (!c) return;
+    const doc = c.document_number ? (c.document_type === "cnpj" ? maskCNPJ(c.document_number) : maskCPF(c.document_number)) : "";
+    setForm((f) => ({
+      ...f,
+      patient_name: c.name,
+      patient_document: doc,
+      city: c.city || f.city,
+    }));
+    setClientPopOpen(false);
+  };
+
+  const handleSelectTemplate = (tplId: string) => {
+    const t = templates.find((x) => x.id === tplId);
+    if (!t) return;
+    setForm((f) => ({
+      ...f,
+      service_description: t.description || t.title,
+      payment_method: t.payment_method || f.payment_method,
+    }));
+  };
+
+  const doGenerate = async (alsoPrint: boolean) => {
     if (!issuer) return;
     setGenerating(true);
     try {
@@ -65,7 +126,7 @@ export function EmitReceiptDialog({ open, onClose, record }: Props) {
         financial_record_id: record.id,
         patient_id: record.patient_id || null,
         patient_name: form.patient_name,
-        patient_document: form.patient_document || null,
+        patient_document: form.patient_document ? onlyDigits(form.patient_document) : null,
         amount: record.amount,
         service_description: form.service_description,
         payment_method: form.payment_method,
@@ -118,17 +179,25 @@ export function EmitReceiptDialog({ open, onClose, record }: Props) {
       }
 
       setLastReceipt({ id: created.id, number: created.receipt_number, blob, publicUrl });
+      sessionStorage.removeItem(draftKey(record.id));
 
-      // Download automático do PDF ao confirmar
-      const filenameDl = `recibo-${String(created.receipt_number).padStart(4, "0")}.pdf`;
+      // Download
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = filenameDl;
+      a.download = filename;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+      // Impressão opcional
+      if (alsoPrint) {
+        const w = window.open(url, "_blank");
+        if (w) {
+          w.addEventListener("load", () => { try { w.print(); } catch { /* noop */ } });
+        }
+      }
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
 
       toast.success(`Recibo Nº ${String(created.receipt_number).padStart(4, "0")} emitido e baixado!`);
     } catch (e: any) {
@@ -148,6 +217,13 @@ export function EmitReceiptDialog({ open, onClose, record }: Props) {
     URL.revokeObjectURL(url);
   };
 
+  const handlePrint = () => {
+    if (!lastReceipt) return;
+    const url = URL.createObjectURL(lastReceipt.blob);
+    const w = window.open(url, "_blank");
+    if (w) w.addEventListener("load", () => { try { w.print(); } catch { /* noop */ } });
+  };
+
   const handleWhatsApp = () => {
     if (!lastReceipt) return;
     const msg = `Olá, ${form.patient_name}! Segue seu recibo de pagamento Nº ${String(lastReceipt.number).padStart(4, "0")}.\n\n${lastReceipt.publicUrl || "Recibo em anexo"}`;
@@ -163,7 +239,7 @@ export function EmitReceiptDialog({ open, onClose, record }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-xl bg-card/95 backdrop-blur-xl">
+      <DialogContent className="max-w-5xl bg-card/95 backdrop-blur-xl max-h-[92vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
             <div className="bg-gradient-to-br from-primary to-amber-500 p-2 rounded-lg">
@@ -185,12 +261,12 @@ export function EmitReceiptDialog({ open, onClose, record }: Props) {
               <div>
                 <h4 className="font-semibold">Complete seu perfil de emissor</h4>
                 <p className="text-sm text-muted-foreground">
-                  Para emitir recibos válidos, configure seu CPF/CNPJ, razão social e endereço. CNPJ é validado automaticamente na Receita Federal via BrasilAPI (gratuito).
+                  Configure CPF/CNPJ, razão social, endereço e assinatura digital antes de emitir.
                 </p>
               </div>
             </div>
             <Button
-              onClick={() => { onClose(); navigate("/finance/receipt-profile"); }}
+              onClick={() => { onClose(); navigate("/finance/receipts?tab=emissor"); }}
               className="w-full bg-gradient-to-r from-primary to-amber-500 text-white"
             >
               <ShieldCheckIcon className="h-4 w-4 mr-2" />
@@ -198,50 +274,150 @@ export function EmitReceiptDialog({ open, onClose, record }: Props) {
             </Button>
           </div>
         ) : !lastReceipt ? (
-          <div className="space-y-4">
-            <div className="rounded-lg bg-primary/5 border border-primary/20 p-3 text-sm">
-              <div className="flex justify-between"><span className="text-muted-foreground">Valor:</span><span className="font-bold text-primary">
-                {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(record.amount)}
-              </span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Data:</span><span>{new Date(record.session_date + "T00:00:00").toLocaleDateString("pt-BR")}</span></div>
+          <div className="grid md:grid-cols-2 gap-5">
+            <div className="space-y-4">
+              <div className="rounded-lg bg-primary/5 border border-primary/20 p-3 text-sm">
+                <div className="flex justify-between"><span className="text-muted-foreground">Valor:</span><span className="font-bold text-primary">
+                  {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(record.amount)}
+                </span></div>
+                <div className="text-[11px] text-muted-foreground italic mt-0.5">
+                  ({valorPorExtenso(record.amount)})
+                </div>
+                <div className="flex justify-between mt-1"><span className="text-muted-foreground">Data:</span><span>{new Date(record.session_date + "T00:00:00").toLocaleDateString("pt-BR")}</span></div>
+              </div>
+
+              {duplicateWarning && (
+                <div className="rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-300 flex gap-2">
+                  <AlertCircleIcon className="h-4 w-4 shrink-0" />
+                  <span>{duplicateWarning} Você pode emitir mesmo assim ou cancelar o anterior na aba Recibos.</span>
+                </div>
+              )}
+
+              {/* Cliente / Modelo */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div>
+                  <Label className="flex items-center gap-1 text-xs"><UsersIcon className="h-3 w-3" /> Cliente cadastrado</Label>
+                  <Popover open={clientPopOpen} onOpenChange={setClientPopOpen}>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" size="sm" className="w-full justify-start mt-1 font-normal text-muted-foreground">
+                        {clients.length ? "Selecionar cliente..." : "Nenhum cliente"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="p-0 w-[300px]" align="start">
+                      <Command>
+                        <CommandInput placeholder="Buscar por nome ou CPF..." />
+                        <CommandList>
+                          <CommandEmpty>Nenhum cliente encontrado.</CommandEmpty>
+                          <CommandGroup>
+                            {clients.map((c) => (
+                              <CommandItem key={c.id} value={`${c.name} ${c.document_number ?? ""}`} onSelect={() => handleSelectClient(c.id)}>
+                                <div className="flex flex-col">
+                                  <span>{c.name}</span>
+                                  {c.document_number && <span className="text-[10px] text-muted-foreground">{c.document_number}</span>}
+                                </div>
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div>
+                  <Label className="flex items-center gap-1 text-xs"><FileTextIcon className="h-3 w-3" /> Modelo de recibo</Label>
+                  <Select onValueChange={handleSelectTemplate}>
+                    <SelectTrigger className="mt-1"><SelectValue placeholder={templates.length ? "Aplicar modelo..." : "Nenhum modelo"} /></SelectTrigger>
+                    <SelectContent>
+                      {templates.map((t) => (
+                        <SelectItem key={t.id} value={t.id}>{t.title}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <Label>Nome do Pagador *</Label>
+                <Input value={form.patient_name} onChange={(e) => setForm({ ...form, patient_name: e.target.value })} />
+              </div>
+              <div>
+                <Label>CPF/CNPJ do Pagador (opcional)</Label>
+                <Input
+                  value={form.patient_document}
+                  onChange={(e) => {
+                    const d = onlyDigits(e.target.value);
+                    const masked = d.length > 11 ? maskCNPJ(e.target.value) : maskCPF(e.target.value);
+                    setForm({ ...form, patient_document: masked });
+                  }}
+                />
+              </div>
+              <div>
+                <Label>Descrição do Serviço</Label>
+                <Textarea rows={2} value={form.service_description} onChange={(e) => setForm({ ...form, service_description: e.target.value })} />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <Label>Forma de Pagamento</Label>
+                  <Select value={form.payment_method} onValueChange={(v) => setForm({ ...form, payment_method: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pix">PIX</SelectItem>
+                      <SelectItem value="dinheiro">Dinheiro</SelectItem>
+                      <SelectItem value="cartão de crédito">Cartão de Crédito</SelectItem>
+                      <SelectItem value="cartão de débito">Cartão de Débito</SelectItem>
+                      <SelectItem value="transferência">Transferência Bancária</SelectItem>
+                      <SelectItem value="boleto">Boleto</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Cidade</Label>
+                  <Input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="Local de emissão" />
+                </div>
+              </div>
+              <div>
+                <Label>Observações</Label>
+                <Textarea rows={2} value={form.observations} onChange={(e) => setForm({ ...form, observations: e.target.value })} placeholder="Informações adicionais (opcional)" />
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button
+                  onClick={() => doGenerate(false)}
+                  disabled={generating || !form.patient_name.trim()}
+                  className="flex-1 bg-gradient-to-r from-primary to-amber-500 text-white"
+                  size="lg"
+                >
+                  {generating ? <Loader2Icon className="h-4 w-4 mr-2 animate-spin" /> : <ReceiptIcon className="h-4 w-4 mr-2" />}
+                  Gerar PDF
+                </Button>
+                <Button
+                  onClick={() => doGenerate(true)}
+                  disabled={generating || !form.patient_name.trim()}
+                  variant="outline"
+                  size="lg"
+                >
+                  <PrinterIcon className="h-4 w-4 mr-2" /> Emitir e Imprimir
+                </Button>
+              </div>
+              <Button variant="ghost" size="sm" onClick={() => setShowPreview((s) => !s)} className="w-full md:hidden">
+                {showPreview ? <EyeOffIcon className="h-3 w-3 mr-1" /> : <EyeIcon className="h-3 w-3 mr-1" />}
+                {showPreview ? "Ocultar pré-visualização" : "Mostrar pré-visualização"}
+              </Button>
             </div>
 
-            <div>
-              <Label>Nome do Pagador *</Label>
-              <Input value={form.patient_name} onChange={(e) => setForm({ ...form, patient_name: e.target.value })} />
+            <div className={`${showPreview ? "block" : "hidden"} md:block`}>
+              <ReceiptLivePreview
+                amount={record.amount}
+                patientName={form.patient_name}
+                patientDocument={form.patient_document}
+                serviceDescription={form.service_description}
+                paymentDate={record.session_date}
+                paymentMethod={form.payment_method}
+                city={form.city}
+                observations={form.observations}
+                issuer={issuer}
+              />
             </div>
-            <div>
-              <Label>CPF/CNPJ do Pagador (opcional)</Label>
-              <Input value={form.patient_document} onChange={(e) => setForm({ ...form, patient_document: e.target.value })} />
-            </div>
-            <div>
-              <Label>Descrição do Serviço</Label>
-              <Textarea rows={2} value={form.service_description} onChange={(e) => setForm({ ...form, service_description: e.target.value })} />
-            </div>
-            <div>
-              <Label>Forma de Pagamento</Label>
-              <Select value={form.payment_method} onValueChange={(v) => setForm({ ...form, payment_method: v })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pix">PIX</SelectItem>
-                  <SelectItem value="dinheiro">Dinheiro</SelectItem>
-                  <SelectItem value="cartão de crédito">Cartão de Crédito</SelectItem>
-                  <SelectItem value="cartão de débito">Cartão de Débito</SelectItem>
-                  <SelectItem value="transferência">Transferência Bancária</SelectItem>
-                  <SelectItem value="boleto">Boleto</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <Button
-              onClick={handleGenerate}
-              disabled={generating || !form.patient_name.trim()}
-              className="w-full bg-gradient-to-r from-primary to-amber-500 text-white"
-              size="lg"
-            >
-              {generating ? <Loader2Icon className="h-4 w-4 mr-2 animate-spin" /> : <ReceiptIcon className="h-4 w-4 mr-2" />}
-              Gerar Recibo em PDF
-            </Button>
           </div>
         ) : (
           <div className="space-y-4">
@@ -250,9 +426,12 @@ export function EmitReceiptDialog({ open, onClose, record }: Props) {
               <h3 className="font-bold text-lg">Recibo Nº {String(lastReceipt.number).padStart(4, "0")} emitido!</h3>
               <p className="text-sm text-muted-foreground">Salvo automaticamente no sistema com hash de autenticidade.</p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <Button onClick={handleDownload} className="bg-gradient-to-r from-primary to-amber-500 text-white">
                 <DownloadIcon className="h-4 w-4 mr-2" /> Baixar
+              </Button>
+              <Button onClick={handlePrint} variant="outline">
+                <PrinterIcon className="h-4 w-4 mr-2" /> Imprimir
               </Button>
               <Button onClick={handleWhatsApp} variant="outline" className="border-green-500/50">
                 <MessageCircleIcon className="h-4 w-4 mr-2 text-green-600" /> WhatsApp
