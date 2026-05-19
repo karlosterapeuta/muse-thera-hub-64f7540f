@@ -23,7 +23,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { PlusIcon, MoreHorizontalIcon, PencilIcon, TrashIcon, SearchIcon, CalendarIcon, UsersIcon } from "lucide-react";
+import { PlusIcon, MoreHorizontalIcon, PencilIcon, TrashIcon, SearchIcon, CalendarIcon, UsersIcon, ArrowLeftIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useClinics, useDeleteClinic } from "./hooks/useClinics";
 import { ClinicForm } from "./components/ClinicForm";
 import { Clinic } from "./types";
@@ -43,6 +44,7 @@ const WEEKDAY_LABELS = {
 };
 
 export default function ClinicsManagement() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [formOpen, setFormOpen] = useState(false);
   const [selectedClinic, setSelectedClinic] = useState<Clinic | undefined>();
@@ -131,6 +133,10 @@ export default function ClinicsManagement() {
   
   return (
     <div className="container py-6 space-y-6">
+      <Button variant="ghost" size="sm" onClick={() => navigate("/finance")} className="gap-2 -ml-2 text-muted-foreground">
+        <ArrowLeftIcon className="h-4 w-4" />
+        Voltar
+      </Button>
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Gerenciar Clínicas</h1>
         <Button
