@@ -161,12 +161,13 @@ export default function FinancialRecords() {
       record.description?.toLowerCase().includes(term);
     const clinicOk = clinicFilter === "all" || record.clinic_id === clinicFilter;
     const statusOk = statusFilter === "all" || (record.session_status || "scheduled") === statusFilter;
-    return textOk && clinicOk && statusOk;
+    const paymentOk = paymentFilter === "all" || (record.payment_status || "pendente") === paymentFilter;
+    return textOk && clinicOk && statusOk && paymentOk;
   };
 
   const filteredRecords = useMemo(
     () => records.filter(matchesFilters),
-    [records, searchTerm, clinicFilter, statusFilter]
+    [records, searchTerm, clinicFilter, statusFilter, paymentFilter]
   );
 
   const sortedRecords = useMemo(() => {
