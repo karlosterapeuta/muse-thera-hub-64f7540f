@@ -1043,6 +1043,11 @@ export default function FinancialRecords() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <EmitReceiptDialog
+        open={receiptDialogOpen}
+        onClose={() => { setReceiptDialogOpen(false); setReceiptRecord(null); }}
+        record={receiptRecord}
+      />
     </div>
   );
 }
