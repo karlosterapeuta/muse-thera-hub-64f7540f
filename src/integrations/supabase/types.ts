@@ -1081,6 +1081,69 @@ export type Database = {
           },
         ]
       }
+      payment_receipts: {
+        Row: {
+          amount: number
+          created_at: string
+          financial_record_id: string | null
+          id: string
+          issued_at: string
+          issuer_snapshot: Json | null
+          patient_document: string | null
+          patient_id: string | null
+          patient_name: string
+          payment_date: string
+          payment_method: string
+          pdf_path: string | null
+          receipt_number: number
+          service_description: string
+          status: string
+          updated_at: string
+          user_id: string
+          verification_hash: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          financial_record_id?: string | null
+          id?: string
+          issued_at?: string
+          issuer_snapshot?: Json | null
+          patient_document?: string | null
+          patient_id?: string | null
+          patient_name: string
+          payment_date: string
+          payment_method?: string
+          pdf_path?: string | null
+          receipt_number: number
+          service_description: string
+          status?: string
+          updated_at?: string
+          user_id: string
+          verification_hash?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          financial_record_id?: string | null
+          id?: string
+          issued_at?: string
+          issuer_snapshot?: Json | null
+          patient_document?: string | null
+          patient_id?: string | null
+          patient_name?: string
+          payment_date?: string
+          payment_method?: string
+          pdf_path?: string | null
+          receipt_number?: number
+          service_description?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+          verification_hash?: string | null
+        }
+        Relationships: []
+      }
       professionals: {
         Row: {
           association: string | null
@@ -1201,6 +1264,63 @@ export type Database = {
           timezone?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      receipt_issuer_profiles: {
+        Row: {
+          address: string | null
+          city: string | null
+          created_at: string
+          document_number: string
+          document_type: string
+          email: string | null
+          id: string
+          legal_name: string
+          phone: string | null
+          state: string | null
+          trade_name: string | null
+          updated_at: string
+          user_id: string
+          verified: boolean
+          verified_at: string | null
+          zip_code: string | null
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          document_number: string
+          document_type: string
+          email?: string | null
+          id?: string
+          legal_name: string
+          phone?: string | null
+          state?: string | null
+          trade_name?: string | null
+          updated_at?: string
+          user_id: string
+          verified?: boolean
+          verified_at?: string | null
+          zip_code?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          document_number?: string
+          document_type?: string
+          email?: string | null
+          id?: string
+          legal_name?: string
+          phone?: string | null
+          state?: string | null
+          trade_name?: string | null
+          updated_at?: string
+          user_id?: string
+          verified?: boolean
+          verified_at?: string | null
+          zip_code?: string | null
         }
         Relationships: []
       }

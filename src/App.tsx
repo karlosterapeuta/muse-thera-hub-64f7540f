@@ -64,6 +64,9 @@ import DevolutivaTea from "./pages/processes/devolutiva-tea";
 import FinanceRecords from "./pages/finance/records";
 import FinanceReports from "./pages/finance/reports";
 import FinanceClinics from "./pages/finance/clinics";
+import ReceiptProfile from "./pages/finance/receipt-profile";
+import ReceiptsList from "./pages/finance/receipts";
+import VerifyReceipt from "./pages/verify-receipt";
 
 // Activities pages
 import ActivityFavorites from "./pages/activities/favorites";
@@ -145,6 +148,7 @@ const App = () => {
         <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/verify-receipt/:id" element={<VerifyReceipt />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/creator-login" element={<CreatorLoginPage />} />
           <Route path="/creator-register" element={<CreatorRegisterPage />} />
@@ -179,6 +183,8 @@ const App = () => {
             <Route path="finance/records" element={<FinanceRecords />} />
             <Route path="finance/reports" element={<FinanceReports />} />
             <Route path="finance/clinics" element={<FinanceClinics />} />
+            <Route path="finance/receipt-profile" element={<ReceiptProfile />} />
+            <Route path="finance/receipts" element={<ReceiptsList />} />
             <Route path="scientific-article" element={<ScientificArticle />} />
             <Route path="activities" element={<ProfessionalActivitiesPage />} />
             <Route path="activities/explore" element={<Activities />} />
