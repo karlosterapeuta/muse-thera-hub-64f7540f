@@ -52,7 +52,6 @@ export default function FinanceDashboard() {
 
   const shortcuts = [
     { label: "Atendimentos", icon: ClipboardListIcon, to: "/finance/records" },
-    { label: "Agenda", icon: CalendarIcon, to: "/finance/records", state: { viewMode: "agenda" } },
     { label: "Recibos", icon: ReceiptIcon, to: "/finance/receipts" },
     { label: "Clínicas", icon: Building2Icon, to: "/finance/clinics" },
     { label: "Relatórios", icon: FileBarChart2Icon, to: "/finance/reports" },
