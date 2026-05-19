@@ -1084,11 +1084,14 @@ export type Database = {
       payment_receipts: {
         Row: {
           amount: number
+          city: string | null
+          client_id: string | null
           created_at: string
           financial_record_id: string | null
           id: string
           issued_at: string
           issuer_snapshot: Json | null
+          observations: string | null
           patient_document: string | null
           patient_id: string | null
           patient_name: string
@@ -1098,17 +1101,22 @@ export type Database = {
           receipt_number: number
           service_description: string
           status: string
+          template_id: string | null
+          unique_code: string | null
           updated_at: string
           user_id: string
           verification_hash: string | null
         }
         Insert: {
           amount: number
+          city?: string | null
+          client_id?: string | null
           created_at?: string
           financial_record_id?: string | null
           id?: string
           issued_at?: string
           issuer_snapshot?: Json | null
+          observations?: string | null
           patient_document?: string | null
           patient_id?: string | null
           patient_name: string
@@ -1118,17 +1126,22 @@ export type Database = {
           receipt_number: number
           service_description: string
           status?: string
+          template_id?: string | null
+          unique_code?: string | null
           updated_at?: string
           user_id: string
           verification_hash?: string | null
         }
         Update: {
           amount?: number
+          city?: string | null
+          client_id?: string | null
           created_at?: string
           financial_record_id?: string | null
           id?: string
           issued_at?: string
           issuer_snapshot?: Json | null
+          observations?: string | null
           patient_document?: string | null
           patient_id?: string | null
           patient_name?: string
@@ -1138,6 +1151,8 @@ export type Database = {
           receipt_number?: number
           service_description?: string
           status?: string
+          template_id?: string | null
+          unique_code?: string | null
           updated_at?: string
           user_id?: string
           verification_hash?: string | null
@@ -1267,6 +1282,54 @@ export type Database = {
         }
         Relationships: []
       }
+      receipt_clients: {
+        Row: {
+          address: string | null
+          city: string | null
+          created_at: string
+          document_number: string | null
+          document_type: string | null
+          email: string | null
+          id: string
+          name: string
+          phone: string | null
+          state: string | null
+          updated_at: string
+          user_id: string
+          zip_code: string | null
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          document_number?: string | null
+          document_type?: string | null
+          email?: string | null
+          id?: string
+          name: string
+          phone?: string | null
+          state?: string | null
+          updated_at?: string
+          user_id: string
+          zip_code?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          document_number?: string | null
+          document_type?: string | null
+          email?: string | null
+          id?: string
+          name?: string
+          phone?: string | null
+          state?: string | null
+          updated_at?: string
+          user_id?: string
+          zip_code?: string | null
+        }
+        Relationships: []
+      }
       receipt_issuer_profiles: {
         Row: {
           address: string | null
@@ -1278,6 +1341,7 @@ export type Database = {
           id: string
           legal_name: string
           phone: string | null
+          signature_url: string | null
           state: string | null
           trade_name: string | null
           updated_at: string
@@ -1296,6 +1360,7 @@ export type Database = {
           id?: string
           legal_name: string
           phone?: string | null
+          signature_url?: string | null
           state?: string | null
           trade_name?: string | null
           updated_at?: string
@@ -1314,6 +1379,7 @@ export type Database = {
           id?: string
           legal_name?: string
           phone?: string | null
+          signature_url?: string | null
           state?: string | null
           trade_name?: string | null
           updated_at?: string
@@ -1321,6 +1387,39 @@ export type Database = {
           verified?: boolean
           verified_at?: string | null
           zip_code?: string | null
+        }
+        Relationships: []
+      }
+      receipt_templates: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          payment_method: string | null
+          suggested_amount: number | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          payment_method?: string | null
+          suggested_amount?: number | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          payment_method?: string | null
+          suggested_amount?: number | null
+          title?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
