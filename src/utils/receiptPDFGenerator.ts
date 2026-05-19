@@ -76,6 +76,10 @@ export async function generateReceiptPDF(data: ReceiptData): Promise<{ blob: Blo
   doc.setFontSize(9);
   const dateTxt = `Emitido em ${new Date().toLocaleDateString("pt-BR")}`;
   doc.text(dateTxt, W - 14 - doc.getTextWidth(dateTxt), 21);
+  if (data.uniqueCode) {
+    doc.setFontSize(8);
+    doc.text(data.uniqueCode, W - 14 - doc.getTextWidth(data.uniqueCode), 26);
+  }
 
   doc.setTextColor(30, 30, 30);
 
