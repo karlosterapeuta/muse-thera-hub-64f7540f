@@ -281,7 +281,7 @@ export default function FinancialRecords() {
     });
 
     return byDay;
-  }, [allRecords, searchTerm, clinicFilter, statusFilter]);
+  }, [allRecords, searchTerm, clinicFilter, statusFilter, paymentFilter]);
 
   useEffect(() => {
     if (location.state?.openForm) {
