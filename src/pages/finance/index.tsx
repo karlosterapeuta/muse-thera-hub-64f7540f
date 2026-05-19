@@ -115,14 +115,14 @@ export default function FinanceDashboard() {
             </Button>
             
             <Button
-              variant="outline"
+              variant="default"
               size={isMobile ? "sm" : "default"}
               onClick={() => navigate("/finance/records", { state: { viewMode: "list" } })}
-              className="h-9 sm:h-10 bg-white/10 border-white/20 text-white hover:bg-white/20"
+              className="h-9 sm:h-10 bg-amber-400 text-amber-950 hover:bg-amber-300 font-semibold shadow-lg ring-2 ring-amber-200/50"
             >
               <HeadphonesIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-              {isMobile && <span className="ml-1 text-xs">Histórico</span>}
-              {!isMobile && "Histórico de Sessões"}
+              {isMobile && <span className="ml-1 text-xs">Registros</span>}
+              {!isMobile && "Registros / Atendimentos"}
             </Button>
 
             <Button
