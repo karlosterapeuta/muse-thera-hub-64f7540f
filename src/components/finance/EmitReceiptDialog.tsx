@@ -33,6 +33,8 @@ export function EmitReceiptDialog({ open, onClose, record }: Props) {
     patient_document: "",
     service_description: "Sessão de Musicoterapia",
     payment_method: "pix",
+    city: "",
+    observations: "",
   });
 
   useEffect(() => {
@@ -42,6 +44,8 @@ export function EmitReceiptDialog({ open, onClose, record }: Props) {
         patient_document: "",
         service_description: record.description || "Sessão de Musicoterapia",
         payment_method: "pix",
+        city: "",
+        observations: "",
       });
       setLastReceipt(null);
     }
