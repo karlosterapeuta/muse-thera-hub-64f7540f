@@ -148,6 +148,7 @@ const App = () => {
         <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/verify-receipt/:id" element={<VerifyReceipt />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/creator-login" element={<CreatorLoginPage />} />
           <Route path="/creator-register" element={<CreatorRegisterPage />} />
