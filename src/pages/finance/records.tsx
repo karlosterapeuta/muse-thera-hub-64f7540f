@@ -882,49 +882,94 @@ export default function FinancialRecords() {
                           <TableCell className="font-bold text-primary text-xs md:text-sm">
                             {formatCurrency(record.amount)}
                           </TableCell>
+                          <TableCell>
+                            <PaymentStatusBadge status={record.payment_status as any} />
+                          </TableCell>
                           {!isMobile && (
                             <TableCell className="max-w-[150px] md:max-w-[200px] truncate text-xs md:text-sm">
                               {getCleanDescription(record.description) || '-'}
                             </TableCell>
                           )}
                           <TableCell>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="hover:bg-primary/10 transition-colors h-8 w-8">
-                                  <MoreHorizontalIcon className="h-4 w-4" />
-                                  <span className="sr-only">Abrir menu</span>
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="w-[160px]">
-                                <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem 
-                                  className="flex items-center cursor-pointer"
-                                  onClick={() => handleEditRecord(record)}
+                            <div className="flex items-center gap-1 justify-end">
+                              {(record.payment_status || "pendente") === "pendente" ? (
+                                <Button
+                                  size="sm"
+                                  className="h-8 bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:opacity-90"
+                                  onClick={() => {
+                                    setPaymentRecord(record);
+                                    requestAnimationFrame(() => setPaymentDialogOpen(true));
+                                  }}
                                 >
-                                  <PencilIcon className="mr-2 h-4 w-4 text-primary" />
-                                  Editar
-                                </DropdownMenuItem>
-                                <DropdownMenuItem 
-                                  className="flex items-center cursor-pointer"
+                                  <CheckCircle2Icon className="h-3.5 w-3.5 mr-1" />
+                                  {isMobile ? "" : "Receber"}
+                                </Button>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-8"
                                   onClick={() => {
                                     setReceiptRecord(record);
                                     requestAnimationFrame(() => setReceiptDialogOpen(true));
                                   }}
                                 >
-                                  <ReceiptIcon className="mr-2 h-4 w-4 text-primary" />
-                                  Emitir Recibo
-                                </DropdownMenuItem>
-                                <DropdownMenuItem 
-                                  className="flex items-center text-destructive focus:text-destructive cursor-pointer"
-                                  onClick={() => handleDeleteClick(record.id)}
-                                >
-                                  <TrashIcon className="mr-2 h-4 w-4" />
-                                  Excluir
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
+                                  <ReceiptIcon className="h-3.5 w-3.5 mr-1" />
+                                  {isMobile ? "" : "Recibo"}
+                                </Button>
+                              )}
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="hover:bg-primary/10 transition-colors h-8 w-8">
+                                    <MoreHorizontalIcon className="h-4 w-4" />
+                                    <span className="sr-only">Abrir menu</span>
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-[180px]">
+                                  <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem
+                                    className="flex items-center cursor-pointer"
+                                    onClick={() => handleEditRecord(record)}
+                                  >
+                                    <PencilIcon className="mr-2 h-4 w-4 text-primary" />
+                                    Editar
+                                  </DropdownMenuItem>
+                                  {(record.payment_status || "pendente") === "pendente" ? (
+                                    <DropdownMenuItem
+                                      className="flex items-center cursor-pointer"
+                                      onClick={() => {
+                                        setPaymentRecord(record);
+                                        requestAnimationFrame(() => setPaymentDialogOpen(true));
+                                      }}
+                                    >
+                                      <CheckCircle2Icon className="mr-2 h-4 w-4 text-green-600" />
+                                      Confirmar Recebimento
+                                    </DropdownMenuItem>
+                                  ) : (
+                                    <DropdownMenuItem
+                                      className="flex items-center cursor-pointer"
+                                      onClick={() => {
+                                        setReceiptRecord(record);
+                                        requestAnimationFrame(() => setReceiptDialogOpen(true));
+                                      }}
+                                    >
+                                      <ReceiptIcon className="mr-2 h-4 w-4 text-primary" />
+                                      Emitir/Reenviar Recibo
+                                    </DropdownMenuItem>
+                                  )}
+                                  <DropdownMenuItem
+                                    className="flex items-center text-destructive focus:text-destructive cursor-pointer"
+                                    onClick={() => handleDeleteClick(record.id)}
+                                  >
+                                    <TrashIcon className="mr-2 h-4 w-4" />
+                                    Excluir
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
                           </TableCell>
+
                         </TableRow>
                       ))}
                     </TableBody>
