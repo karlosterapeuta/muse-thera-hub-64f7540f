@@ -82,8 +82,34 @@ export function IssuerProfileForm() {
       });
       if (upErr) throw upErr;
       const { data: pub } = supabase.storage.from("digital-signatures").getPublicUrl(path);
-      setForm((f) => ({ ...f, signature_url: pub.publicUrl }));
-      toast.success("Assinatura salva!");
+      const publicUrl = `${pub.publicUrl}?t=${Date.now()}`;
+      setForm((f) => ({ ...f, signature_url: publicUrl }));
+
+      // Persistir imediatamente no banco (não esperar o usuário clicar em "Salvar Perfil")
+      if (form.legal_name.trim() && form.document_number) {
+        try {
+          await save.mutateAsync({
+            document_type: docType,
+            document_number: onlyDigits(form.document_number),
+            legal_name: form.legal_name,
+            trade_name: form.trade_name || null,
+            address: form.address || null,
+            city: form.city || null,
+            state: form.state || null,
+            zip_code: form.zip_code || null,
+            phone: form.phone || null,
+            email: form.email || null,
+            signature_url: publicUrl,
+            verified,
+            verified_at: verified ? new Date().toISOString() : null,
+          });
+          toast.success("Assinatura salva e persistida!");
+        } catch (persistErr: any) {
+          toast.warning("Assinatura enviada, mas o perfil precisa ser salvo. Clique em 'Salvar Perfil'.");
+        }
+      } else {
+        toast.success("Assinatura enviada! Preencha os dados e clique em 'Salvar Perfil' para finalizar.");
+      }
     } catch (e: any) {
       toast.error(e.message || "Erro ao enviar assinatura");
     } finally { setUploadingSig(false); }
