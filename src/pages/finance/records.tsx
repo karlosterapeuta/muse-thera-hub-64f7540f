@@ -190,9 +190,13 @@ export default function FinancialRecords() {
   // KPIs do período
   const periodKpis = useMemo(() => {
     const total = filteredRecords.reduce((s, r) => s + Number(r.amount || 0), 0);
+    const received = filteredRecords
+      .filter((r) => (r.payment_status || "pendente") === "pago")
+      .reduce((s, r) => s + Number(r.amount || 0), 0);
+    const pending = total - received;
     const count = filteredRecords.length;
     const avg = count > 0 ? total / count : 0;
-    return { total, count, avg };
+    return { total, received, pending, count, avg };
   }, [filteredRecords]);
 
   // Smart weekly agenda organization - group by current week
