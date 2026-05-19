@@ -2107,6 +2107,20 @@ export type Database = {
         Args: { invite_code: string; user_id: string }
         Returns: boolean
       }
+      verify_receipt: {
+        Args: { p_id: string }
+        Returns: {
+          amount: number
+          issued_at: string
+          issuer_snapshot: Json
+          patient_name: string
+          payment_date: string
+          receipt_number: number
+          service_description: string
+          status: string
+          verification_hash: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "professional"
