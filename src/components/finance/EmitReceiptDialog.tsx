@@ -106,7 +106,19 @@ export function EmitReceiptDialog({ open, onClose, record }: Props) {
       }
 
       setLastReceipt({ id: created.id, number: created.receipt_number, blob, publicUrl });
-      toast.success(`Recibo Nº ${String(created.receipt_number).padStart(4, "0")} emitido!`);
+
+      // Download automático do PDF ao confirmar
+      const filenameDl = `recibo-${String(created.receipt_number).padStart(4, "0")}.pdf`;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filenameDl;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+      toast.success(`Recibo Nº ${String(created.receipt_number).padStart(4, "0")} emitido e baixado!`);
     } catch (e: any) {
       toast.error(e.message || "Erro ao gerar recibo");
     } finally {
