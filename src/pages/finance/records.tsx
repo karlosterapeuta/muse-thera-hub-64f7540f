@@ -613,7 +613,7 @@ export default function FinancialRecords() {
         <DateRangeFilter onFilter={handleDateFilter} />
       </div>
       <div className="flex flex-col space-y-2">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
           <div className="relative bg-card/80 backdrop-blur-sm rounded-lg shadow-sm border border-border p-1.5">
             <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -641,13 +641,26 @@ export default function FinancialRecords() {
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger>
                 <FilterIcon className="h-4 w-4 mr-2 text-muted-foreground" />
-                <SelectValue placeholder="Status" />
+                <SelectValue placeholder="Sessão" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos os status</SelectItem>
+                <SelectItem value="all">Todas as sessões</SelectItem>
                 <SelectItem value="scheduled">Agendada</SelectItem>
                 <SelectItem value="completed">Concluída</SelectItem>
                 <SelectItem value="no_show">Falta</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="bg-card/80 backdrop-blur-sm rounded-lg shadow-sm border border-border p-1.5">
+            <Select value={paymentFilter} onValueChange={setPaymentFilter}>
+              <SelectTrigger>
+                <CheckCircle2Icon className="h-4 w-4 mr-2 text-muted-foreground" />
+                <SelectValue placeholder="Pagamento" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os pagamentos</SelectItem>
+                <SelectItem value="pendente">Pendentes</SelectItem>
+                <SelectItem value="pago">Recebidos</SelectItem>
               </SelectContent>
             </Select>
           </div>
