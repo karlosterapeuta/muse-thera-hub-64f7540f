@@ -912,8 +912,13 @@ export type Database = {
           description: string | null
           id: string
           is_recurring: boolean | null
+          paid_at: string | null
           parent_record_id: string | null
           patient_id: string | null
+          payment_method: string | null
+          payment_notes: string | null
+          payment_proof_url: string | null
+          payment_status: string
           professional_id: string
           recurrence_end_date: string | null
           recurrence_pattern: Json | null
@@ -929,8 +934,13 @@ export type Database = {
           description?: string | null
           id?: string
           is_recurring?: boolean | null
+          paid_at?: string | null
           parent_record_id?: string | null
           patient_id?: string | null
+          payment_method?: string | null
+          payment_notes?: string | null
+          payment_proof_url?: string | null
+          payment_status?: string
           professional_id: string
           recurrence_end_date?: string | null
           recurrence_pattern?: Json | null
@@ -946,8 +956,13 @@ export type Database = {
           description?: string | null
           id?: string
           is_recurring?: boolean | null
+          paid_at?: string | null
           parent_record_id?: string | null
           patient_id?: string | null
+          payment_method?: string | null
+          payment_notes?: string | null
+          payment_proof_url?: string | null
+          payment_status?: string
           professional_id?: string
           recurrence_end_date?: string | null
           recurrence_pattern?: Json | null
