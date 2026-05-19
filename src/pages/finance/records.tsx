@@ -42,8 +42,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { format, startOfWeek, endOfWeek, addDays, isSameDay, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { PlusIcon, MoreHorizontalIcon, PencilIcon, TrashIcon, SearchIcon, ClockIcon, CalendarIcon, UserIcon, BuildingIcon, DollarSignIcon, InfoIcon, ListIcon, TableIcon, LayoutGridIcon, BarChart2Icon, Trash2Icon, PrinterIcon, PinIcon, DownloadIcon, FilterIcon, ReceiptIcon, ArrowLeftIcon } from "lucide-react";
+import { PlusIcon, MoreHorizontalIcon, PencilIcon, TrashIcon, SearchIcon, ClockIcon, CalendarIcon, UserIcon, BuildingIcon, DollarSignIcon, InfoIcon, ListIcon, TableIcon, LayoutGridIcon, BarChart2Icon, Trash2Icon, PrinterIcon, PinIcon, DownloadIcon, FilterIcon, ReceiptIcon, ArrowLeftIcon, CheckCircle2Icon } from "lucide-react";
 import { EmitReceiptDialog } from "@/components/finance/EmitReceiptDialog";
+import { ConfirmPaymentDialog } from "@/components/finance/ConfirmPaymentDialog";
+import { PaymentStatusBadge } from "./components/PaymentStatusBadge";
 import { useFinancialRecords, useDeleteFinancialRecord, useClearAllFinancialRecords } from "./hooks/useFinancialData";
 import { FinancialRecordForm } from "./components/FinancialRecordForm";
 import { DateRangeFilter } from "./components/DateRangeFilter";
@@ -67,6 +69,7 @@ export default function FinancialRecords() {
   const [searchTerm, setSearchTerm] = useState("");
   const [clinicFilter, setClinicFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [paymentFilter, setPaymentFilter] = useState<string>("all");
   const [formOpen, setFormOpen] = useState(false);
   const [clinicFormOpen, setClinicFormOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<FinancialRecord | undefined>();
@@ -75,6 +78,8 @@ export default function FinancialRecords() {
   const [recordToDelete, setRecordToDelete] = useState<string | null>(null);
   const [receiptRecord, setReceiptRecord] = useState<FinancialRecord | null>(null);
   const [receiptDialogOpen, setReceiptDialogOpen] = useState(false);
+  const [paymentRecord, setPaymentRecord] = useState<FinancialRecord | null>(null);
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"list" | "fixed">("fixed");
   const [clearAllDialogOpen, setClearAllDialogOpen] = useState(false);
   const [clearAllConfirmText, setClearAllConfirmText] = useState("");
@@ -156,12 +161,13 @@ export default function FinancialRecords() {
       record.description?.toLowerCase().includes(term);
     const clinicOk = clinicFilter === "all" || record.clinic_id === clinicFilter;
     const statusOk = statusFilter === "all" || (record.session_status || "scheduled") === statusFilter;
-    return textOk && clinicOk && statusOk;
+    const paymentOk = paymentFilter === "all" || (record.payment_status || "pendente") === paymentFilter;
+    return textOk && clinicOk && statusOk && paymentOk;
   };
 
   const filteredRecords = useMemo(
     () => records.filter(matchesFilters),
-    [records, searchTerm, clinicFilter, statusFilter]
+    [records, searchTerm, clinicFilter, statusFilter, paymentFilter]
   );
 
   const sortedRecords = useMemo(() => {
@@ -184,9 +190,13 @@ export default function FinancialRecords() {
   // KPIs do período
   const periodKpis = useMemo(() => {
     const total = filteredRecords.reduce((s, r) => s + Number(r.amount || 0), 0);
+    const received = filteredRecords
+      .filter((r) => (r.payment_status || "pendente") === "pago")
+      .reduce((s, r) => s + Number(r.amount || 0), 0);
+    const pending = total - received;
     const count = filteredRecords.length;
     const avg = count > 0 ? total / count : 0;
-    return { total, count, avg };
+    return { total, received, pending, count, avg };
   }, [filteredRecords]);
 
   // Smart weekly agenda organization - group by current week
@@ -271,7 +281,7 @@ export default function FinancialRecords() {
     });
 
     return byDay;
-  }, [allRecords, searchTerm, clinicFilter, statusFilter]);
+  }, [allRecords, searchTerm, clinicFilter, statusFilter, paymentFilter]);
 
   useEffect(() => {
     if (location.state?.openForm) {
@@ -596,6 +606,8 @@ export default function FinancialRecords() {
         totalEarnings={periodKpis.total}
         totalSessions={periodKpis.count}
         averagePerSession={periodKpis.avg}
+        receivedAmount={periodKpis.received}
+        pendingAmount={periodKpis.pending}
       />
 
       
@@ -603,7 +615,7 @@ export default function FinancialRecords() {
         <DateRangeFilter onFilter={handleDateFilter} />
       </div>
       <div className="flex flex-col space-y-2">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
           <div className="relative bg-card/80 backdrop-blur-sm rounded-lg shadow-sm border border-border p-1.5">
             <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -631,13 +643,26 @@ export default function FinancialRecords() {
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger>
                 <FilterIcon className="h-4 w-4 mr-2 text-muted-foreground" />
-                <SelectValue placeholder="Status" />
+                <SelectValue placeholder="Sessão" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos os status</SelectItem>
+                <SelectItem value="all">Todas as sessões</SelectItem>
                 <SelectItem value="scheduled">Agendada</SelectItem>
                 <SelectItem value="completed">Concluída</SelectItem>
                 <SelectItem value="no_show">Falta</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="bg-card/80 backdrop-blur-sm rounded-lg shadow-sm border border-border p-1.5">
+            <Select value={paymentFilter} onValueChange={setPaymentFilter}>
+              <SelectTrigger>
+                <CheckCircle2Icon className="h-4 w-4 mr-2 text-muted-foreground" />
+                <SelectValue placeholder="Pagamento" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os pagamentos</SelectItem>
+                <SelectItem value="pendente">Pendentes</SelectItem>
+                <SelectItem value="pago">Recebidos</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -810,6 +835,12 @@ export default function FinancialRecords() {
                             Valor
                           </div>
                         </TableHead>
+                        <TableHead className="whitespace-nowrap">
+                          <div className="flex items-center">
+                            <CheckCircle2Icon className="mr-2 h-3.5 w-3.5 text-primary" />
+                            Pagamento
+                          </div>
+                        </TableHead>
                         {!isMobile && (
                           <TableHead className="whitespace-nowrap">
                             <div className="flex items-center">
@@ -853,49 +884,94 @@ export default function FinancialRecords() {
                           <TableCell className="font-bold text-primary text-xs md:text-sm">
                             {formatCurrency(record.amount)}
                           </TableCell>
+                          <TableCell>
+                            <PaymentStatusBadge status={record.payment_status as any} />
+                          </TableCell>
                           {!isMobile && (
                             <TableCell className="max-w-[150px] md:max-w-[200px] truncate text-xs md:text-sm">
                               {getCleanDescription(record.description) || '-'}
                             </TableCell>
                           )}
                           <TableCell>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="hover:bg-primary/10 transition-colors h-8 w-8">
-                                  <MoreHorizontalIcon className="h-4 w-4" />
-                                  <span className="sr-only">Abrir menu</span>
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="w-[160px]">
-                                <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem 
-                                  className="flex items-center cursor-pointer"
-                                  onClick={() => handleEditRecord(record)}
+                            <div className="flex items-center gap-1 justify-end">
+                              {(record.payment_status || "pendente") === "pendente" ? (
+                                <Button
+                                  size="sm"
+                                  className="h-8 bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:opacity-90"
+                                  onClick={() => {
+                                    setPaymentRecord(record);
+                                    requestAnimationFrame(() => setPaymentDialogOpen(true));
+                                  }}
                                 >
-                                  <PencilIcon className="mr-2 h-4 w-4 text-primary" />
-                                  Editar
-                                </DropdownMenuItem>
-                                <DropdownMenuItem 
-                                  className="flex items-center cursor-pointer"
+                                  <CheckCircle2Icon className="h-3.5 w-3.5 mr-1" />
+                                  {isMobile ? "" : "Receber"}
+                                </Button>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-8"
                                   onClick={() => {
                                     setReceiptRecord(record);
                                     requestAnimationFrame(() => setReceiptDialogOpen(true));
                                   }}
                                 >
-                                  <ReceiptIcon className="mr-2 h-4 w-4 text-primary" />
-                                  Emitir Recibo
-                                </DropdownMenuItem>
-                                <DropdownMenuItem 
-                                  className="flex items-center text-destructive focus:text-destructive cursor-pointer"
-                                  onClick={() => handleDeleteClick(record.id)}
-                                >
-                                  <TrashIcon className="mr-2 h-4 w-4" />
-                                  Excluir
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
+                                  <ReceiptIcon className="h-3.5 w-3.5 mr-1" />
+                                  {isMobile ? "" : "Recibo"}
+                                </Button>
+                              )}
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="hover:bg-primary/10 transition-colors h-8 w-8">
+                                    <MoreHorizontalIcon className="h-4 w-4" />
+                                    <span className="sr-only">Abrir menu</span>
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-[180px]">
+                                  <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem
+                                    className="flex items-center cursor-pointer"
+                                    onClick={() => handleEditRecord(record)}
+                                  >
+                                    <PencilIcon className="mr-2 h-4 w-4 text-primary" />
+                                    Editar
+                                  </DropdownMenuItem>
+                                  {(record.payment_status || "pendente") === "pendente" ? (
+                                    <DropdownMenuItem
+                                      className="flex items-center cursor-pointer"
+                                      onClick={() => {
+                                        setPaymentRecord(record);
+                                        requestAnimationFrame(() => setPaymentDialogOpen(true));
+                                      }}
+                                    >
+                                      <CheckCircle2Icon className="mr-2 h-4 w-4 text-green-600" />
+                                      Confirmar Recebimento
+                                    </DropdownMenuItem>
+                                  ) : (
+                                    <DropdownMenuItem
+                                      className="flex items-center cursor-pointer"
+                                      onClick={() => {
+                                        setReceiptRecord(record);
+                                        requestAnimationFrame(() => setReceiptDialogOpen(true));
+                                      }}
+                                    >
+                                      <ReceiptIcon className="mr-2 h-4 w-4 text-primary" />
+                                      Emitir/Reenviar Recibo
+                                    </DropdownMenuItem>
+                                  )}
+                                  <DropdownMenuItem
+                                    className="flex items-center text-destructive focus:text-destructive cursor-pointer"
+                                    onClick={() => handleDeleteClick(record.id)}
+                                  >
+                                    <TrashIcon className="mr-2 h-4 w-4" />
+                                    Excluir
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
                           </TableCell>
+
                         </TableRow>
                       ))}
                     </TableBody>
@@ -1036,6 +1112,15 @@ export default function FinancialRecords() {
         open={receiptDialogOpen}
         onClose={() => { setReceiptDialogOpen(false); setReceiptRecord(null); }}
         record={receiptRecord}
+      />
+      <ConfirmPaymentDialog
+        open={paymentDialogOpen}
+        onClose={() => { setPaymentDialogOpen(false); setPaymentRecord(null); }}
+        record={paymentRecord}
+        onConfirmed={(updated) => {
+          setReceiptRecord(updated);
+          requestAnimationFrame(() => setReceiptDialogOpen(true));
+        }}
       />
     </div>
   );

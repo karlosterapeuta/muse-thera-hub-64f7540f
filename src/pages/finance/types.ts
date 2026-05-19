@@ -10,6 +10,7 @@ export interface Clinic {
 }
 
 export type SessionStatus = 'scheduled' | 'completed' | 'no_show';
+export type PaymentStatus = 'pendente' | 'pago';
 
 export interface FinancialRecord {
   id: string;
@@ -24,6 +25,13 @@ export interface FinancialRecord {
   
   // Session status
   session_status?: SessionStatus;
+
+  // Payment tracking
+  payment_status?: PaymentStatus;
+  paid_at?: string | null;
+  payment_method?: string | null;
+  payment_proof_url?: string | null;
+  payment_notes?: string | null;
   
   // Recurrence fields
   is_recurring?: boolean;
