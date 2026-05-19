@@ -9,8 +9,11 @@ interface ReceiptData {
   patientName: string;
   patientDocument?: string;
   serviceDescription: string;
-  paymentDate: string; // ISO date
+  paymentDate: string;
   paymentMethod: string;
+  city?: string;
+  observations?: string;
+  uniqueCode?: string;
   issuer: {
     documentType: "cpf" | "cnpj";
     documentNumber: string;
@@ -21,6 +24,7 @@ interface ReceiptData {
     state?: string | null;
     phone?: string | null;
     email?: string | null;
+    signatureUrl?: string | null;
   };
   verificationId?: string;
   verificationHash?: string;
@@ -72,6 +76,10 @@ export async function generateReceiptPDF(data: ReceiptData): Promise<{ blob: Blo
   doc.setFontSize(9);
   const dateTxt = `Emitido em ${new Date().toLocaleDateString("pt-BR")}`;
   doc.text(dateTxt, W - 14 - doc.getTextWidth(dateTxt), 21);
+  if (data.uniqueCode) {
+    doc.setFontSize(8);
+    doc.text(data.uniqueCode, W - 14 - doc.getTextWidth(data.uniqueCode), 26);
+  }
 
   doc.setTextColor(30, 30, 30);
 
@@ -159,12 +167,43 @@ export async function generateReceiptPDF(data: ReceiptData): Promise<{ blob: Blo
   doc.setFontSize(10);
   doc.setTextColor(40, 40, 40);
   doc.text(clauseLines, 14, y + 6);
-  y += clauseH + 10;
+  y += clauseH + 6;
+
+  // Observações
+  if (data.observations) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.text("Observações:", 14, y);
+    y += 5;
+    doc.setFont("helvetica", "normal");
+    const obs = doc.splitTextToSize(data.observations, W - 28);
+    doc.text(obs, 14, y);
+    y += obs.length * 5 + 4;
+  }
 
   // Local, data, assinatura
-  const localData = `${data.issuer.city || "_______________"}, ${fmtDate(data.paymentDate)}.`;
+  const cityFinal = data.city || data.issuer.city || "_______________";
+  const localData = `${cityFinal}, ${fmtDate(data.paymentDate)}.`;
   doc.text(localData, 14, y);
-  y += 18;
+  y += 6;
+
+  // Assinatura digital (imagem) acima da linha
+  if (data.issuer.signatureUrl) {
+    try {
+      const imgRes = await fetch(data.issuer.signatureUrl);
+      const blob = await imgRes.blob();
+      const dataUrl: string = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.readAsDataURL(blob);
+      });
+      doc.addImage(dataUrl, "PNG", (W - 60) / 2, y, 60, 18);
+      y += 18;
+    } catch { y += 8; }
+  } else {
+    y += 8;
+  }
+
   doc.setDrawColor(60, 60, 60);
   doc.line(40, y, W - 40, y);
   y += 5;

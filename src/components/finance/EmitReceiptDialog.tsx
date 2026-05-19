@@ -33,6 +33,8 @@ export function EmitReceiptDialog({ open, onClose, record }: Props) {
     patient_document: "",
     service_description: "Sessão de Musicoterapia",
     payment_method: "pix",
+    city: "",
+    observations: "",
   });
 
   useEffect(() => {
@@ -42,6 +44,8 @@ export function EmitReceiptDialog({ open, onClose, record }: Props) {
         patient_document: "",
         service_description: record.description || "Sessão de Musicoterapia",
         payment_method: "pix",
+        city: "",
+        observations: "",
       });
       setLastReceipt(null);
     }
@@ -55,7 +59,8 @@ export function EmitReceiptDialog({ open, onClose, record }: Props) {
     if (!issuer) return;
     setGenerating(true);
     try {
-      // Pre-cria registro para ter ID e número sequencial
+      const { generateUniqueReceiptCode } = await import("@/utils/uniqueCodeGenerator");
+      const uniqueCode = await generateUniqueReceiptCode();
       const created = await createReceipt.mutateAsync({
         financial_record_id: record.id,
         patient_id: record.patient_id || null,
@@ -65,6 +70,9 @@ export function EmitReceiptDialog({ open, onClose, record }: Props) {
         service_description: form.service_description,
         payment_method: form.payment_method,
         payment_date: record.session_date,
+        city: form.city || null,
+        observations: form.observations || null,
+        unique_code: uniqueCode,
         issuer_snapshot: issuer,
       });
 
@@ -76,6 +84,9 @@ export function EmitReceiptDialog({ open, onClose, record }: Props) {
         serviceDescription: form.service_description,
         paymentDate: record.session_date,
         paymentMethod: form.payment_method,
+        city: form.city || undefined,
+        observations: form.observations || undefined,
+        uniqueCode,
         issuer: {
           documentType: issuer.document_type,
           documentNumber: issuer.document_number,
@@ -86,6 +97,7 @@ export function EmitReceiptDialog({ open, onClose, record }: Props) {
           state: issuer.state,
           phone: issuer.phone,
           email: issuer.email,
+          signatureUrl: issuer.signature_url,
         },
         verificationId: created.id,
       });

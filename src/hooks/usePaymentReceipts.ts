@@ -18,6 +18,11 @@ export interface PaymentReceipt {
   verification_hash?: string | null;
   status: "issued" | "cancelled";
   issuer_snapshot?: any;
+  city?: string | null;
+  observations?: string | null;
+  unique_code?: string | null;
+  template_id?: string | null;
+  client_id?: string | null;
 }
 
 export function usePaymentReceipts() {

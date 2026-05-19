@@ -16,6 +16,7 @@ export interface ReceiptIssuerProfile {
   email?: string | null;
   verified?: boolean;
   verified_at?: string | null;
+  signature_url?: string | null;
 }
 
 export function useReceiptIssuerProfile() {
