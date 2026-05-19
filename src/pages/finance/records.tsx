@@ -833,6 +833,12 @@ export default function FinancialRecords() {
                             Valor
                           </div>
                         </TableHead>
+                        <TableHead className="whitespace-nowrap">
+                          <div className="flex items-center">
+                            <CheckCircle2Icon className="mr-2 h-3.5 w-3.5 text-primary" />
+                            Pagamento
+                          </div>
+                        </TableHead>
                         {!isMobile && (
                           <TableHead className="whitespace-nowrap">
                             <div className="flex items-center">
