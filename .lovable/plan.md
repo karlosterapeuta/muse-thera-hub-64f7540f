@@ -1,84 +1,101 @@
-## Visão geral
+# Sistema de Recibos Premium — Expansão
 
-Adicionar emissão de recibos de pagamento em PDF profissional na Gestão Financeira, com perfil de "Emissor de Recibos" validado via BrasilAPI (CNPJ gratuito e público).
+Vou evoluir o sistema atual de "Recibos" (que já tem emissão básica, validação CPF/CNPJ via BrasilAPI, PDF com QR Code/hash, histórico simples) para um módulo completo estilo SaaS premium.
 
-## 1. Perfil Profissional Validado (Emissor)
+## 1. Banco de dados (migrations)
 
-Nova tabela `receipt_issuer_profiles` (1 por usuário):
-- `user_id`, `document_type` ('cpf'|'cnpj'), `document_number`, `legal_name`, `trade_name`, `address`, `city`, `state`, `zip_code`, `phone`, `email`, `verified` (bool), `verified_at`.
-- Valida CNPJ pela **BrasilAPI** pública e gratuita: `https://brasilapi.com.br/api/cnpj/v1/{cnpj}` — autopreenche razão social, endereço, etc.
-- Para CPF: valida apenas algoritmo (dígitos verificadores) — não existe API pública gratuita oficial para consulta de CPF.
-- RLS: usuário só lê/edita o próprio perfil.
+**Novas tabelas:**
+- `receipt_clients` — cadastro de pagadores reutilizáveis (nome, CPF/CNPJ, email, telefone, endereço) por usuário, com RLS.
+- `receipt_templates` — modelos prontos de recibo (título, descrição padrão, valor sugerido, forma de pagamento) por usuário.
 
-Tela: `/finance/receipt-profile` — formulário com input de CNPJ que dispara busca automática, badge "✓ Validado" após sucesso.
+**Alterações em tabelas existentes:**
+- `payment_receipts`: adicionar `city`, `observations`, `template_id`, `unique_code` (código único curto tipo `REC-2026-XXXXXX`), índice em `unique_code`.
+- `receipt_issuer_profiles`: adicionar `signature_url` (URL de assinatura manual carregada no bucket `digital-signatures`).
 
-## 2. Tabela de Recibos Emitidos
+Tudo com RLS `auth.uid() = user_id`.
 
-`payment_receipts`:
-- `id`, `user_id`, `receipt_number` (sequencial por usuário: 0001, 0002...), `financial_record_id` (FK), `patient_name`, `patient_document` (opcional), `amount`, `service_description`, `payment_date`, `issued_at`, `pdf_path` (storage), `verification_hash` (SHA-256).
-- RLS: dono.
-- Trigger gera `receipt_number` sequencial por `user_id`.
+## 2. Hooks de dados
+- `useReceiptClients` — list/create/update/delete clientes.
+- `useReceiptTemplates` — list/create/delete modelos.
+- Estender `useReceiptIssuerProfile` para `signature_url`.
+- Estender `usePaymentReceipts` para os novos campos + função `duplicateReceipt`.
 
-## 3. Botão "Emitir Recibo"
+## 3. Geração de PDF (`receiptPDFGenerator.ts`)
+- Incluir `city`, `observations`, `unique_code` (impresso ao lado do número).
+- Renderizar imagem da assinatura digital (se houver) acima da linha de assinatura.
+- Valor por extenso já existe — manter.
+- Botão "Imprimir" usando `window.print()` num iframe com o blob, no dialog.
 
-Na página `src/pages/finance/index.tsx` e na lista de registros (`/finance/records`):
-- Botão "📄 Emitir Recibo" em cada `FinancialRecord` (ícone Receipt).
-- Pré-condição: usuário precisa ter `receipt_issuer_profile` completo — se não tiver, abre modal "Complete seu perfil de emissor" com link para `/finance/receipt-profile`.
-- Ao clicar: abre modal `ReceiptPreviewDialog` com dados pré-preenchidos da sessão (paciente, valor, data, descrição editável, forma de pagamento).
-- Ações no modal: **Gerar PDF**, **Download**, **Compartilhar WhatsApp**, **Compartilhar Email**.
+## 4. UI — nova arquitetura de páginas Finance / Recibos
 
-## 4. Geração de PDF (premium, A4)
+### `/finance/receipts` — Dashboard + Histórico (substitui a página atual)
+Tabs: **Dashboard | Recibos | Clientes | Modelos | Emissor**
 
-Usar **jsPDF + html2canvas** (já no projeto) seguindo padrão dos PDFs clínicos:
-- Cabeçalho dourado/cosmic com logo MuseTera
-- Bloco "RECIBO Nº 0001"
-- Dados do emissor (validado ✓), dados do pagador, valor por extenso (BRL), descrição do serviço, data
-- Cláusula de quitação: *"Para clareza, firmo o presente recibo dando plena, geral e irrevogável quitação da quantia acima especificada."*
-- Local, data, assinatura digital do profissional (busca em `professionals.digital_signature_url`)
-- Rodapé: hash SHA-256 + QR Code de verificação (`/verify-receipt/{id}`)
-- Salvar automaticamente em bucket `clinical-pdfs` (`{user_id}/receipts/recibo-{number}.pdf`)
+**Dashboard tab:**
+- Cards: Total recebido no mês, Qtde de recibos no mês, Ticket médio, Recibos cancelados.
+- Gráfico (Recharts) de receita por dia nos últimos 30 dias.
+- Lista "Últimos 5 recibos".
+- Top 5 clientes mais frequentes.
+- Distribuição de métodos de pagamento (pizza).
 
-## 5. Compartilhamento
+**Recibos tab:**
+- Busca por nome / CPF / data / valor / código único.
+- Filtros: status, período, método.
+- Ações por recibo: visualizar, baixar PDF, imprimir, **duplicar**, cancelar.
 
-- **WhatsApp**: `https://wa.me/?text=...` com link público do PDF
-- **Email**: `mailto:` com assunto e corpo pré-preenchido
-- **Download** direto
+**Clientes tab:**
+- CRUD de pagadores com validação CPF/CNPJ (BrasilAPI para CNPJ).
+- Busca rápida.
 
-## 6. Histórico de Recibos
+**Modelos tab:**
+- CRUD de modelos prontos. Botão "Emitir a partir deste modelo".
 
-Nova aba "Recibos Emitidos" em Finance ou rota `/finance/receipts`:
-- Lista com filtro por período/paciente
-- Reimprimir, baixar novamente, marcar como cancelado
+**Emissor tab:**
+- Form do `receipt_issuer_profile` + upload de assinatura digital (bucket `digital-signatures`, pasta `${userId}/signature.png`).
 
-## 7. Página pública de verificação
+### Dialog de emissão melhorado (`EmitReceiptDialog`)
+- Autocomplete de clientes já cadastrados (Combobox); ao escolher, preenche nome+documento.
+- Seletor de modelo pronto (preenche descrição/valor/método).
+- Campos novos: **Cidade**, **Observações**.
+- Valor por extenso exibido em tempo real abaixo do input.
+- **Pré-visualização ao vivo** do recibo (painel lateral) atualizada conforme digita.
+- Anti-duplicidade: avisa se já existe recibo com mesmo `financial_record_id` ou mesmo (cliente + valor + data) nas últimas 24h.
+- Salvamento automático em `sessionStorage` (rascunho).
+- Botão "Emitir e Imprimir" além do "Emitir e Baixar".
 
-`/verify-receipt/:id` — mostra dados públicos do recibo (número, valor, data, emissor, hash) provando autenticidade via QR Code.
+## 5. Tema claro/escuro
+Já existe `useTheme`. Garantir que todas as novas telas usem tokens semânticos do design system (sem cores hard-coded) e respondam ao tema.
 
-## Arquivos
+## 6. Responsivo mobile
+- Tabs roláveis horizontalmente em telas pequenas.
+- Cards de dashboard em grid 1-col no mobile, 2-col em md, 4-col em lg.
+- Dialog vira full-screen no mobile.
 
-**Novos:**
-- `supabase/migrations/*.sql` (2 tabelas + trigger + RLS)
-- `supabase/functions/validate-cnpj/index.ts` (proxy BrasilAPI com cache)
-- `src/pages/finance/receipt-profile/index.tsx`
-- `src/pages/finance/receipts/index.tsx`
-- `src/pages/verify-receipt/[id].tsx`
-- `src/components/finance/EmitReceiptDialog.tsx`
-- `src/components/finance/ReceiptPDF.tsx`
-- `src/hooks/useReceiptIssuerProfile.ts`
-- `src/hooks/usePaymentReceipts.ts`
-- `src/utils/receiptPDFGenerator.ts`
-- `src/utils/cpfCnpjUtils.ts` (validação algorítmica + máscaras)
-- `src/utils/numberToWords.ts` (valor por extenso BRL)
+## 7. Detalhes técnicos
+- Código único gerado client-side: `REC-${ano}-${nano(6)}` checado contra DB antes de inserir.
+- Assinatura: usuário pode desenhar (canvas) **ou** fazer upload de imagem PNG. Salva no bucket existente `digital-signatures` (já criado).
+- Impressão: abrir blob em iframe oculto e chamar `print()`.
+- Toda validação de input com zod nos forms.
 
-**Modificados:**
-- `src/pages/finance/index.tsx` (botão "Recibos Emitidos" + "Perfil Emissor")
-- `src/pages/finance/records/*` (ação "Emitir Recibo" por linha)
-- `src/nav-items.tsx` (rotas)
+## Arquivos a criar
+- `supabase/migrations/<ts>_receipt_clients_templates.sql`
+- `src/hooks/useReceiptClients.ts`
+- `src/hooks/useReceiptTemplates.ts`
+- `src/components/finance/receipts/ReceiptsDashboard.tsx`
+- `src/components/finance/receipts/ReceiptsHistory.tsx`
+- `src/components/finance/receipts/ClientsManager.tsx`
+- `src/components/finance/receipts/TemplatesManager.tsx`
+- `src/components/finance/receipts/IssuerProfileForm.tsx`
+- `src/components/finance/receipts/SignaturePad.tsx`
+- `src/components/finance/receipts/ReceiptLivePreview.tsx`
+- `src/utils/uniqueCodeGenerator.ts`
 
-## Design
+## Arquivos a modificar
+- `src/pages/finance/receipts.tsx` (vira shell com Tabs)
+- `src/pages/finance/receipt-profile.tsx` (redirect para `/finance/receipts?tab=emissor`)
+- `src/components/finance/EmitReceiptDialog.tsx` (autocomplete, modelos, preview, cidade, observações)
+- `src/utils/receiptPDFGenerator.ts` (assinatura, cidade, observações, código único)
+- `src/hooks/usePaymentReceipts.ts` (novos campos + duplicate)
+- `src/hooks/useReceiptIssuerProfile.ts` (signature_url)
 
-Mesma identidade cosmic/dourada glassmorphic já aplicada: `bg-card/60 backdrop-blur-xl`, gradient `from-primary to-amber-500`, blobs ambientais, ícones lucide (`Receipt`, `FileCheck`, `ShieldCheck`, `QrCode`).
-
-## API gratuita usada
-
-**BrasilAPI** (https://brasilapi.com.br) — 100% gratuita, sem chave, mantida pela comunidade. Sem necessidade de secrets.
+Confirma que posso começar?
