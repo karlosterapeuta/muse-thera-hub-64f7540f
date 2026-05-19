@@ -98,14 +98,11 @@ export const IncomeTaxCalculator: React.FC<IncomeTaxCalculatorProps> = ({ record
   };
 
   return (
-    <Card className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/40 dark:to-purple-950/40 border-blue-200 dark:border-blue-800">
+    <Card>
       <CardHeader>
-        <CardTitle className="text-blue-900 dark:text-blue-200 flex items-center space-x-2">
-          <span>🧮</span>
-          <span>Calculadora IR - Musicoterapeutas</span>
-        </CardTitle>
-        <CardDescription className="text-blue-700 dark:text-blue-400">
-          🎵 Calcule o imposto de renda devido para profissionais de musicoterapia com base em diferentes regimes tributários.
+        <CardTitle className="text-base">Calculadora de Imposto de Renda</CardTitle>
+        <CardDescription>
+          Calcule o imposto de renda devido com base em diferentes regimes tributários.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
@@ -182,9 +179,7 @@ export const IncomeTaxCalculator: React.FC<IncomeTaxCalculatorProps> = ({ record
         </Tabs>
       </CardContent>
       <CardFooter>
-        <Button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700">
-          🎯 Calcular Harmonia Fiscal
-        </Button>
+        <Button>Calcular imposto</Button>
       </CardFooter>
     </Card>
   );
