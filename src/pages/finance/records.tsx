@@ -606,6 +606,8 @@ export default function FinancialRecords() {
         totalEarnings={periodKpis.total}
         totalSessions={periodKpis.count}
         averagePerSession={periodKpis.avg}
+        receivedAmount={periodKpis.received}
+        pendingAmount={periodKpis.pending}
       />
 
       
