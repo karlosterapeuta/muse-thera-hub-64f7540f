@@ -886,6 +886,16 @@ export default function FinancialRecords() {
                                   Editar
                                 </DropdownMenuItem>
                                 <DropdownMenuItem 
+                                  className="flex items-center cursor-pointer"
+                                  onClick={() => {
+                                    setReceiptRecord(record);
+                                    requestAnimationFrame(() => setReceiptDialogOpen(true));
+                                  }}
+                                >
+                                  <ReceiptIcon className="mr-2 h-4 w-4 text-primary" />
+                                  Emitir Recibo
+                                </DropdownMenuItem>
+                                <DropdownMenuItem 
                                   className="flex items-center text-destructive focus:text-destructive cursor-pointer"
                                   onClick={() => handleDeleteClick(record.id)}
                                 >
