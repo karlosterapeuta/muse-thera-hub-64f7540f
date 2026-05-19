@@ -96,15 +96,8 @@ export default function FinanceDashboard() {
               <PrinterIcon className="h-4 w-4" />
               {!isMobile && <span className="ml-2">Imprimir</span>}
             </Button>
-            <Button
-              size="sm"
-              onClick={() => navigate("/finance/records")}
-              className="h-9"
-            >
-              <PlusIcon className="h-4 w-4" />
-              <span className="ml-2">Novo atendimento</span>
-            </Button>
           </div>
+
         </div>
 
         {/* Atalhos secundários */}
