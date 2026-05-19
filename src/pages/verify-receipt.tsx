@@ -11,12 +11,9 @@ export default function VerifyReceiptPage() {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase
-        .from("payment_receipts" as any)
-        .select("receipt_number,amount,patient_name,payment_date,service_description,issued_at,status,verification_hash,issuer_snapshot")
-        .eq("id", id)
-        .maybeSingle();
-      setReceipt(data);
+      const { data } = await supabase.rpc("verify_receipt" as any, { p_id: id });
+      const row = Array.isArray(data) ? data[0] : data;
+      setReceipt(row ?? null);
       setLoading(false);
     })();
   }, [id]);
