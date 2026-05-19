@@ -52,7 +52,6 @@ export default function FinanceDashboard() {
 
   const shortcuts = [
     { label: "Atendimentos", icon: ClipboardListIcon, to: "/finance/records" },
-    { label: "Agenda", icon: CalendarIcon, to: "/finance/records", state: { viewMode: "agenda" } },
     { label: "Recibos", icon: ReceiptIcon, to: "/finance/receipts" },
     { label: "Clínicas", icon: Building2Icon, to: "/finance/clinics" },
     { label: "Relatórios", icon: FileBarChart2Icon, to: "/finance/reports" },
@@ -97,23 +96,16 @@ export default function FinanceDashboard() {
               <PrinterIcon className="h-4 w-4" />
               {!isMobile && <span className="ml-2">Imprimir</span>}
             </Button>
-            <Button
-              size="sm"
-              onClick={() => navigate("/finance/records")}
-              className="h-9"
-            >
-              <PlusIcon className="h-4 w-4" />
-              <span className="ml-2">Novo atendimento</span>
-            </Button>
           </div>
+
         </div>
 
         {/* Atalhos secundários */}
-        <nav className="mt-5 grid grid-cols-2 sm:grid-cols-5 gap-2">
-          {shortcuts.map(({ label, icon: Icon, to, state }) => (
+        <nav className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {shortcuts.map(({ label, icon: Icon, to }) => (
             <button
               key={label}
-              onClick={() => navigate(to, state ? { state } : undefined)}
+              onClick={() => navigate(to)}
               className="flex items-center justify-center gap-2 rounded-md border border-border/60 bg-background px-3 py-2 text-sm font-medium text-foreground hover:bg-muted/60 hover:border-border transition-colors"
             >
               <Icon className="h-4 w-4 text-muted-foreground" />
