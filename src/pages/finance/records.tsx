@@ -73,6 +73,8 @@ export default function FinancialRecords() {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [seriesEditMode, setSeriesEditMode] = useState(false);
   const [recordToDelete, setRecordToDelete] = useState<string | null>(null);
+  const [receiptRecord, setReceiptRecord] = useState<FinancialRecord | null>(null);
+  const [receiptDialogOpen, setReceiptDialogOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"list" | "fixed">("fixed");
   const [clearAllDialogOpen, setClearAllDialogOpen] = useState(false);
   const [clearAllConfirmText, setClearAllConfirmText] = useState("");
