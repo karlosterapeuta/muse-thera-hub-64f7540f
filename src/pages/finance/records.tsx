@@ -73,6 +73,8 @@ export default function FinancialRecords() {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [seriesEditMode, setSeriesEditMode] = useState(false);
   const [recordToDelete, setRecordToDelete] = useState<string | null>(null);
+  const [receiptRecord, setReceiptRecord] = useState<FinancialRecord | null>(null);
+  const [receiptDialogOpen, setReceiptDialogOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"list" | "fixed">("fixed");
   const [clearAllDialogOpen, setClearAllDialogOpen] = useState(false);
   const [clearAllConfirmText, setClearAllConfirmText] = useState("");
@@ -886,6 +888,16 @@ export default function FinancialRecords() {
                                   Editar
                                 </DropdownMenuItem>
                                 <DropdownMenuItem 
+                                  className="flex items-center cursor-pointer"
+                                  onClick={() => {
+                                    setReceiptRecord(record);
+                                    requestAnimationFrame(() => setReceiptDialogOpen(true));
+                                  }}
+                                >
+                                  <ReceiptIcon className="mr-2 h-4 w-4 text-primary" />
+                                  Emitir Recibo
+                                </DropdownMenuItem>
+                                <DropdownMenuItem 
                                   className="flex items-center text-destructive focus:text-destructive cursor-pointer"
                                   onClick={() => handleDeleteClick(record.id)}
                                 >
@@ -1031,6 +1043,11 @@ export default function FinancialRecords() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <EmitReceiptDialog
+        open={receiptDialogOpen}
+        onClose={() => { setReceiptDialogOpen(false); setReceiptRecord(null); }}
+        record={receiptRecord}
+      />
     </div>
   );
 }
