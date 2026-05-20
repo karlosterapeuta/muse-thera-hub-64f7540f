@@ -25,6 +25,7 @@ import { MuseteraReportPDF } from "@/components/MuseteraReportPDF";
 import { EnhancedMuseteraReportPDF } from "@/components/EnhancedMuseteraReportPDF";
 import { EvaluationTextPDF } from "@/components/EvaluationTextPDF";
 import { renderForPdf } from '@/utils/renderForPdf';
+import { PDFPreviewDialog } from "@/components/PDFPreviewDialog";
 import { PatientSelect } from "../anamnesis/components/PatientSelect";
 import { EvaluationLevelsHero } from "@/components/EvaluationLevelsHero";
 import { 
@@ -91,6 +92,10 @@ export default function Evaluation() {
   const [editingEvaluationId, setEditingEvaluationId] = useState<string | null>(null);
   const [evolutionPatientId, setEvolutionPatientId] = useState<string | null>(null);
   const [draftLoaded] = useState(!!draft);
+  const [pdfPreviewOpen, setPdfPreviewOpen] = useState(false);
+  const [pdfPreviewBlob, setPdfPreviewBlob] = useState<Blob | null>(null);
+  const [pdfPreviewFilename, setPdfPreviewFilename] = useState<string>("documento.pdf");
+  const [pdfPreviewBuilding, setPdfPreviewBuilding] = useState(false);
 
   // Persist draft to sessionStorage on changes
   useEffect(() => {
@@ -1067,33 +1072,41 @@ export default function Evaluation() {
 
       await new Promise(resolve => setTimeout(resolve, 1500));
 
+      const filename = `graficos-${patientName}-${format(evalDate, 'yyyy-MM-dd')}.pdf`;
       const opt = {
         margin: [10, 10],
-        filename: `graficos-${patientName}-${format(evalDate, 'yyyy-MM-dd')}.pdf`,
+        filename,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
+        html2canvas: {
           scale: 2,
           useCORS: true,
           allowTaint: true,
           backgroundColor: '#ffffff'
         },
-        jsPDF: { 
-          unit: 'mm', 
-          format: 'a4', 
+        jsPDF: {
+          unit: 'mm',
+          format: 'a4',
           orientation: 'portrait',
           compress: true
         }
       };
 
+      // Gera o PDF como Blob para pré-visualização página-a-página
       const pdfInst3 = html2pdf().set(opt).from(root);
-      await pdfInst3.save();
-      try { const blob = await pdfInst3.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
-      
+      const blob: Blob = await pdfInst3.outputPdf('blob');
+
+      setPdfPreviewBlob(blob);
+      setPdfPreviewFilename(filename);
+      setPdfPreviewOpen(true);
+
+      // Persistência silenciosa no storage (mesmo fluxo anterior)
+      try { await savePDFToStorage(blob, filename, "evaluation"); } catch(e) { console.warn(e); }
+
       } finally {
         cleanup();
       }
-      
-      toast.success("PDF de Gráficos gerado com sucesso!", { id: loadingToast });
+
+      toast.success("Pré-visualização pronta. Revise as páginas e clique em Baixar PDF.", { id: loadingToast });
     } catch (error) {
       console.error("Erro ao gerar PDF de gráficos:", error);
       toast.error("Erro ao gerar PDF. Por favor, tente novamente.", { id: loadingToast });
@@ -2528,6 +2541,15 @@ export default function Evaluation() {
           </Tabs>
         </Card>
       </div>
+
+      <PDFPreviewDialog
+        open={pdfPreviewOpen}
+        onOpenChange={setPdfPreviewOpen}
+        pdfBlob={pdfPreviewBlob}
+        filename={pdfPreviewFilename}
+        title="Pré-visualização — Baixar Gráfico"
+        isBuilding={pdfPreviewBuilding}
+      />
     </div>
   );
 }
