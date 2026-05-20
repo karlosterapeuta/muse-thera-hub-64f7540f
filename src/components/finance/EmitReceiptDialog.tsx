@@ -32,13 +32,10 @@ const draftKey = (id: string) => `receipt-draft:${id}`;
 export function EmitReceiptDialog({ open, onClose, record }: Props) {
   const navigate = useNavigate();
   const { data: issuer, isLoading: loadingIssuer } = useReceiptIssuerProfile();
-  const { data: clients = [] } = useReceiptClients();
-  const { data: templates = [] } = useReceiptTemplates();
   const { data: existingReceipts = [] } = usePaymentReceipts();
   const createReceipt = useCreatePaymentReceipt();
   const [generating, setGenerating] = useState(false);
   const [showPreview, setShowPreview] = useState(true);
-  const [clientPopOpen, setClientPopOpen] = useState(false);
   const [lastReceipt, setLastReceipt] = useState<{ id: string; number: number; blob: Blob; publicUrl?: string } | null>(null);
 
   const [form, setForm] = useState({
