@@ -2541,6 +2541,15 @@ export default function Evaluation() {
           </Tabs>
         </Card>
       </div>
+
+      <PDFPreviewDialog
+        open={pdfPreviewOpen}
+        onOpenChange={setPdfPreviewOpen}
+        pdfBlob={pdfPreviewBlob}
+        filename={pdfPreviewFilename}
+        title="Pré-visualização — Baixar Gráfico"
+        isBuilding={pdfPreviewBuilding}
+      />
     </div>
   );
 }
