@@ -14,8 +14,21 @@ export function SignaturePad({ initialUrl, onSave, saving }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawing = useRef(false);
   const [preview, setPreview] = useState<string | null>(initialUrl || null);
+  const [hasInk, setHasInk] = useState(false);
 
   useEffect(() => { setPreview(initialUrl || null); }, [initialUrl]);
+
+  const paintWhite = () => {
+    const c = canvasRef.current;
+    const ctx = c?.getContext("2d");
+    if (!c || !ctx) return;
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, c.width, c.height);
+  };
+
+  useEffect(() => {
+    paintWhite();
+  }, []);
 
   const getCtx = () => canvasRef.current?.getContext("2d");
 
