@@ -228,7 +228,7 @@ export const ParametersGraphsPDFStatic: React.FC<ParametersGraphsPDFStaticProps>
           <StaticChart
             data={categoryData}
             type="bar"
-            width={720}
+            width={620}
             height={360}
             colors={categoryData.map((d) => getDomainColor(d.domain))}
           />
