@@ -1,25 +1,23 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Eye, Edit, Trash2, Search, Filter, Calendar, User, Download } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Plus, Search, Filter, Sparkles, ClipboardList } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { useMusicotherapyTreatmentPlans, MusicotherapyTreatmentPlanSummary } from '@/hooks/useMusicotherapyTreatmentPlans';
+import { useMusicotherapyTreatmentPlans } from '@/hooks/useMusicotherapyTreatmentPlans';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import { toast as sonnerToast } from 'sonner';
 import { TreatmentPlanViewModal } from './components/TreatmentPlanViewModal';
 import { MusicotherapyTreatmentPlanPDF } from '@/components/MusicotherapyTreatmentPlanPDF';
 import { generateStaticPDF } from '@/utils/staticPDFGenerator';
 import { useProfessionalData } from '@/hooks/useProfessionalData';
 import { imageUrlToBase64 } from '@/utils/imageToBase64';
+import { PlanStatsHeader } from '@/components/treatment-plan/PlanStatsHeader';
+import { PlanListCard } from '@/components/treatment-plan/PlanListCard';
 
 export default function MusicotherapyTreatmentPlans() {
   const navigate = useNavigate();
@@ -27,127 +25,103 @@ export default function MusicotherapyTreatmentPlans() {
   const { data: professionalData } = useProfessionalData();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  
+
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('updated_at');
   const [viewingPlanId, setViewingPlanId] = useState<string | null>(null);
   const [isDownloading, setIsDownloading] = useState<string | null>(null);
+  const [isDuplicating, setIsDuplicating] = useState<string | null>(null);
 
-  const getStatusColor = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case 'active':
-      case 'ativo':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'completed':
-      case 'concluído':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'draft':
-      case 'rascunho':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'archived':
-      case 'arquivado':
-        return 'bg-gray-100 text-gray-800 border-gray-200';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
+  const stats = useMemo(() => {
+    const list = plans || [];
+    const norm = (s?: string) => (s || 'draft').toLowerCase();
+    return {
+      total: list.length,
+      active: list.filter(p => norm(p.status) === 'active' || norm(p.status) === 'ativo').length,
+      draft: list.filter(p => norm(p.status) === 'draft' || norm(p.status) === 'rascunho').length,
+      completed: list.filter(p => norm(p.status) === 'completed' || norm(p.status) === 'concluído').length,
+    };
+  }, [plans]);
 
-  const getStatusLabel = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case 'active':
-        return 'Ativo';
-      case 'completed':
-        return 'Concluído';
-      case 'draft':
-        return 'Rascunho';
-      case 'archived':
-        return 'Arquivado';
-      default:
-        return status || 'Sem status';
-    }
-  };
-
-  const filteredPlans = plans?.filter(plan => {
-    const matchesSearch = plan.patient_full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         plan.clinical_diagnosis?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || plan.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  }) || [];
-
-  const sortedPlans = [...filteredPlans].sort((a, b) => {
-    switch (sortBy) {
-      case 'patient_name':
-        return (a.patient_full_name || '').localeCompare(b.patient_full_name || '');
-      case 'status':
-        return (a.status || '').localeCompare(b.status || '');
-      case 'created_at':
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-      case 'updated_at':
-      default:
-        return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
-    }
-  });
+  const filteredPlans = useMemo(() => {
+    const list = plans || [];
+    const term = searchTerm.toLowerCase();
+    return list.filter(plan => {
+      const matchesSearch = !term ||
+        plan.patient_full_name?.toLowerCase().includes(term) ||
+        plan.clinical_diagnosis?.toLowerCase().includes(term) ||
+        plan.responsible_person?.toLowerCase().includes(term);
+      const matchesStatus = statusFilter === 'all' || (plan.status || 'draft') === statusFilter;
+      return matchesSearch && matchesStatus;
+    }).sort((a, b) => {
+      switch (sortBy) {
+        case 'patient_name': return (a.patient_full_name || '').localeCompare(b.patient_full_name || '');
+        case 'status': return (a.status || '').localeCompare(b.status || '');
+        case 'created_at': return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        default: return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+      }
+    });
+  }, [plans, searchTerm, statusFilter, sortBy]);
 
   const handleDelete = async (planId: string) => {
     try {
-      const { error } = await supabase
-        .from('treatment_plans')
-        .delete()
-        .eq('id', planId);
-
+      const { error } = await supabase.from('treatment_plans').delete().eq('id', planId);
       if (error) throw error;
-
-      toast({
-        title: 'Plano excluído',
-        description: 'O plano musicoterapêutico foi excluído com sucesso.',
-      });
-      
+      toast({ title: 'Plano excluído', description: 'O plano foi removido com sucesso.' });
       queryClient.invalidateQueries({ queryKey: ['musicotherapy-treatment-plans'] });
-    } catch (error) {
-      console.error('Error deleting plan:', error);
-      toast({
-        title: 'Erro ao excluir',
-        description: 'Não foi possível excluir o plano. Tente novamente.',
-        variant: 'destructive',
-      });
+    } catch (e) {
+      toast({ title: 'Erro ao excluir', description: 'Não foi possível excluir o plano.', variant: 'destructive' });
+    }
+  };
+
+  const handleDuplicate = async (planId: string) => {
+    setIsDuplicating(planId);
+    const loadingId = sonnerToast.loading('Duplicando plano...');
+    try {
+      const { data: original, error: fetchErr } = await supabase
+        .from('treatment_plans').select('*').eq('id', planId).single();
+      if (fetchErr || !original) throw fetchErr || new Error('Plano não encontrado');
+
+      const { id, created_at, updated_at, ...rest } = original as any;
+      const copy = {
+        ...rest,
+        status: 'draft',
+        patient_full_name: `${original.patient_full_name || 'Plano'} (Cópia)`,
+        plan_start_date: new Date().toISOString().split('T')[0],
+      };
+      const { data: inserted, error: insertErr } = await supabase
+        .from('treatment_plans').insert(copy).select('id').single();
+      if (insertErr) throw insertErr;
+
+      sonnerToast.success('Plano duplicado com sucesso!', { id: loadingId });
+      queryClient.invalidateQueries({ queryKey: ['musicotherapy-treatment-plans'] });
+      if (inserted?.id) navigate(`/musicotherapy-treatment-plan/${inserted.id}`);
+    } catch (e) {
+      sonnerToast.error('Erro ao duplicar plano.', { id: loadingId });
+    } finally {
+      setIsDuplicating(null);
     }
   };
 
   const handleDownloadPDF = async (planId: string) => {
     setIsDownloading(planId);
-    let loadingToast: string | number | undefined;
-    
+    const loadingId = sonnerToast.loading('Gerando PDF do plano...');
     try {
-      loadingToast = sonnerToast.loading("Gerando PDF do plano...");
+      const { data: planData, error } = await supabase
+        .from('treatment_plans').select('*').eq('id', planId).single();
+      if (error || !planData) throw new Error('Plano não encontrado');
 
-      // Fetch complete plan data
-      const { data: planData, error: planError } = await supabase
-        .from('treatment_plans')
-        .select('*')
-        .eq('id', planId)
-        .single();
-
-      if (planError || !planData) {
-        throw new Error('Plano não encontrado');
-      }
-
-      // Parse JSON fields
       const parseJsonField = (field: any): string[] => {
         if (!field) return [];
         if (Array.isArray(field)) return field;
         if (typeof field === 'string') {
-          try {
-            const parsed = JSON.parse(field);
-            return Array.isArray(parsed) ? parsed : [];
-          } catch {
-            return [];
-          }
+          try { const p = JSON.parse(field); return Array.isArray(p) ? p : []; } catch { return []; }
         }
         return [];
       };
 
-      const parsedPlanData = {
+      const parsed = {
         ...planData,
         general_objectives: parseJsonField(planData.general_objectives),
         specific_objectives: parseJsonField(planData.specific_objectives),
@@ -158,263 +132,167 @@ export default function MusicotherapyTreatmentPlans() {
         evaluation_criteria_list: parseJsonField(planData.evaluation_criteria_list),
       };
 
-      // Convert professional images to Base64
       const photoUrl = professionalData?.stamp_photo_url || professionalData?.avatar_url;
-      const professionalPhotoBase64 = photoUrl ? await imageUrlToBase64(photoUrl) : null;
-      const digitalStampBase64 = professionalData?.digital_stamp_url 
-        ? await imageUrlToBase64(professionalData.digital_stamp_url) 
-        : null;
+      const photoBase64 = photoUrl ? await imageUrlToBase64(photoUrl) : null;
+      const stampBase64 = professionalData?.digital_stamp_url ? await imageUrlToBase64(professionalData.digital_stamp_url) : null;
 
-      // Generate PDF
       const success = await generateStaticPDF(
         <MusicotherapyTreatmentPlanPDF
-          planData={parsedPlanData}
+          planData={parsed as any}
           therapistName={professionalData?.name}
-          professionalPhotoUrl={professionalPhotoBase64 || undefined}
-          digitalStampUrl={digitalStampBase64 || undefined}
+          professionalPhotoUrl={photoBase64 || undefined}
+          digitalStampUrl={stampBase64 || undefined}
           professionalEmail={professionalData?.email || undefined}
           professionalPhone={professionalData?.phone || undefined}
           professionalSpecialty={professionalData?.specialty || undefined}
           professionalRegistry={professionalData?.register || undefined}
         />,
-        {
-          filename: `Plano_Musicoterapeutico_${planData.patient_full_name?.replace(/\s+/g, '_') || 'paciente'}.pdf`,
-          waitTime: 2000,
-        }
+        { filename: `Plano_Musicoterapeutico_${(planData.patient_full_name || 'paciente').replace(/\s+/g, '_')}.pdf`, waitTime: 2000 }
       );
-
-      if (success) {
-        sonnerToast.success("PDF gerado com sucesso!", { id: loadingToast });
-      } else {
-        throw new Error('Falha ao gerar PDF');
-      }
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-      sonnerToast.error("Erro ao gerar PDF. Tente novamente.", { id: loadingToast });
+      if (success) sonnerToast.success('PDF gerado!', { id: loadingId });
+      else throw new Error('Falha ao gerar PDF');
+    } catch {
+      sonnerToast.error('Erro ao gerar PDF.', { id: loadingId });
     } finally {
       setIsDownloading(null);
     }
   };
 
-  const formatDate = (dateString: string) => {
-    try {
-      return format(new Date(dateString), 'dd/MM/yyyy', { locale: ptBR });
-    } catch {
-      return 'Data inválida';
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <div className="container mx-auto py-6">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Planos Musicoterapêuticos</h1>
-          <p className="text-muted-foreground">Gerencie seus planos de tratamento salvos</p>
-        </div>
-        <Button onClick={() => navigate('/musicotherapy-treatment-plan')} className="gap-2">
-          <Plus className="h-4 w-4" />
-          Novo Plano
-        </Button>
-      </div>
-
-      {/* Filters */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar por paciente ou diagnóstico..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-6 lg:py-10 max-w-7xl space-y-6">
+        {/* Header */}
+        <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium mb-3">
+              <Sparkles className="h-3 w-3" />
+              Etapa 3 do fluxo musicoterapêutico
             </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full md:w-[180px]">
-                <Filter className="h-4 w-4" />
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos os status</SelectItem>
-                <SelectItem value="active">Ativo</SelectItem>
-                <SelectItem value="draft">Rascunho</SelectItem>
-                <SelectItem value="completed">Concluído</SelectItem>
-                <SelectItem value="archived">Arquivado</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-full md:w-[180px]">
-                <SelectValue placeholder="Ordenar por" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="updated_at">Última atualização</SelectItem>
-                <SelectItem value="created_at">Data de criação</SelectItem>
-                <SelectItem value="patient_name">Nome do paciente</SelectItem>
-                <SelectItem value="status">Status</SelectItem>
-              </SelectContent>
-            </Select>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-foreground">
+              Planos{' '}
+              <span className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                Musicoterapêuticos
+              </span>
+            </h1>
+            <p className="text-sm sm:text-base text-muted-foreground mt-1">
+              Crie, organize e acompanhe os planos de tratamento dos seus pacientes
+            </p>
           </div>
-        </CardContent>
-      </Card>
+          <Button
+            onClick={() => navigate('/musicotherapy-treatment-plan')}
+            size="lg"
+            className="gap-2 shadow-lg shadow-primary/20"
+          >
+            <Plus className="h-4 w-4" />
+            Novo Plano
+          </Button>
+        </motion.div>
 
-      {/* Plans List */}
-      {sortedPlans.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <div className="text-center space-y-4">
-              <div className="mx-auto w-12 h-12 bg-muted rounded-full flex items-center justify-center">
-                <Calendar className="h-6 w-6 text-muted-foreground" />
+        {/* Stats */}
+        <PlanStatsHeader total={stats.total} active={stats.active} draft={stats.draft} completed={stats.completed} />
+
+        {/* Filters */}
+        <Card className="border border-border/60">
+          <CardContent className="pt-5 pb-5">
+            <div className="flex flex-col md:flex-row gap-3">
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar por paciente, diagnóstico ou responsável..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 h-10"
+                />
+              </div>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-full md:w-[180px] h-10">
+                  <Filter className="h-4 w-4 mr-1" />
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os status</SelectItem>
+                  <SelectItem value="active">Ativo</SelectItem>
+                  <SelectItem value="draft">Rascunho</SelectItem>
+                  <SelectItem value="completed">Concluído</SelectItem>
+                  <SelectItem value="archived">Arquivado</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-full md:w-[200px] h-10">
+                  <SelectValue placeholder="Ordenar" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="updated_at">Última atualização</SelectItem>
+                  <SelectItem value="created_at">Data de criação</SelectItem>
+                  <SelectItem value="patient_name">Nome do paciente</SelectItem>
+                  <SelectItem value="status">Status</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Content */}
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Card key={i} className="h-56 animate-pulse bg-muted/40" />
+            ))}
+          </div>
+        ) : filteredPlans.length === 0 ? (
+          <Card className="border-dashed border-2 border-border/50 bg-muted/20">
+            <CardContent className="flex flex-col items-center justify-center py-16 text-center space-y-5">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-purple-500/20 flex items-center justify-center">
+                <ClipboardList className="h-8 w-8 text-primary" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold">Nenhum plano encontrado</h3>
-                <p className="text-muted-foreground">
-                  {searchTerm || statusFilter !== 'all' 
-                    ? 'Tente ajustar os filtros de busca.' 
-                    : 'Comece criando seu primeiro plano musicoterapêutico.'
-                  }
+                <h3 className="text-lg font-semibold text-foreground">
+                  {searchTerm || statusFilter !== 'all' ? 'Nenhum plano encontrado' : 'Comece seu primeiro plano'}
+                </h3>
+                <p className="text-sm text-muted-foreground mt-1 max-w-md">
+                  {searchTerm || statusFilter !== 'all'
+                    ? 'Tente ajustar a busca ou os filtros aplicados.'
+                    : 'Construa um plano musicoterapêutico completo em 10 seções clínicas estruturadas.'}
                 </p>
               </div>
               {!searchTerm && statusFilter === 'all' && (
                 <Button onClick={() => navigate('/musicotherapy-treatment-plan')} className="gap-2">
                   <Plus className="h-4 w-4" />
-                  Criar Primeiro Plano
+                  Criar primeiro plano
                 </Button>
               )}
+            </CardContent>
+          </Card>
+        ) : (
+          <>
+            <p className="text-sm text-muted-foreground">
+              {filteredPlans.length} {filteredPlans.length === 1 ? 'plano encontrado' : 'planos encontrados'}
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
+              {filteredPlans.map((plan, idx) => (
+                <PlanListCard
+                  key={plan.id}
+                  plan={plan}
+                  index={idx}
+                  isDownloading={isDownloading === plan.id}
+                  isDuplicating={isDuplicating === plan.id}
+                  onView={() => setViewingPlanId(plan.id)}
+                  onEdit={() => navigate(`/musicotherapy-treatment-plan/${plan.id}`)}
+                  onDownload={() => handleDownloadPDF(plan.id)}
+                  onDuplicate={() => handleDuplicate(plan.id)}
+                  onDelete={() => handleDelete(plan.id)}
+                />
+              ))}
             </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
-              {sortedPlans.length} plano{sortedPlans.length !== 1 ? 's' : ''} encontrado{sortedPlans.length !== 1 ? 's' : ''}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Paciente</TableHead>
-                    <TableHead>Diagnóstico</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Última atualização</TableHead>
-                    <TableHead className="text-right">Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {sortedPlans.map((plan) => (
-                    <TableRow key={plan.id}>
-                      <TableCell className="font-medium">
-                        <div className="flex items-center gap-2">
-                          <User className="h-4 w-4 text-muted-foreground" />
-                          <div>
-                            <div>{plan.patient_full_name || 'Nome não informado'}</div>
-                            {plan.patient_age && (
-                              <div className="text-sm text-muted-foreground">{plan.patient_age}</div>
-                            )}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="max-w-xs truncate" title={plan.clinical_diagnosis}>
-                          {plan.clinical_diagnosis || 'Não informado'}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={getStatusColor(plan.status || 'draft')}>
-                          {getStatusLabel(plan.status || 'draft')}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {formatDate(plan.updated_at)}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setViewingPlanId(plan.id)}
-                            className="gap-1"
-                          >
-                            <Eye className="h-4 w-4" />
-                            Ver
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDownloadPDF(plan.id)}
-                            disabled={isDownloading === plan.id}
-                            className="gap-1"
-                          >
-                            <Download className="h-4 w-4" />
-                            {isDownloading === plan.id ? '...' : 'PDF'}
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => navigate(`/musicotherapy-treatment-plan/${plan.id}`)}
-                            className="gap-1"
-                          >
-                            <Edit className="h-4 w-4" />
-                            Editar
-                          </Button>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button variant="ghost" size="sm" className="gap-1 text-destructive hover:text-destructive">
-                                <Trash2 className="h-4 w-4" />
-                                Excluir
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Excluir plano musicoterapêutico</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Tem certeza que deseja excluir o plano de <strong>{plan.patient_full_name}</strong>? 
-                                  Esta ação não pode ser desfeita.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => handleDelete(plan.id)}
-                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                >
-                                  Excluir
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+          </>
+        )}
 
-      {/* View Modal */}
-      <TreatmentPlanViewModal
-        planId={viewingPlanId}
-        open={!!viewingPlanId}
-        onClose={() => setViewingPlanId(null)}
-      />
+        <TreatmentPlanViewModal
+          planId={viewingPlanId}
+          open={!!viewingPlanId}
+          onClose={() => setViewingPlanId(null)}
+        />
+      </div>
     </div>
   );
 }
