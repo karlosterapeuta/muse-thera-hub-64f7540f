@@ -253,7 +253,7 @@ export const ParametersGraphsPDFStatic: React.FC<ParametersGraphsPDFStaticProps>
         const perf = getPerformanceLabel(avg);
         const color = getDomainColor(domain);
         return (
-          <div key={domain} style={{ marginBottom: 14, breakInside: 'avoid' }}>
+          <div key={domain} className="page-break-avoid" style={{ marginBottom: 14, breakInside: 'avoid', pageBreakInside: 'avoid' }}>
             <div
               style={{
                 display: 'flex',
