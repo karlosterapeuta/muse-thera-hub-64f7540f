@@ -55,22 +55,24 @@ const levelToScore = (level: string): number => {
          level === "excepcional" ? 100 : 0;
 };
 
-// A4 page wrapper style
+// A4 page wrapper style — height fixa para evitar overflow que gera páginas em branco
 const pageStyle: React.CSSProperties = {
   width: '210mm',
-  minHeight: '297mm',
-  padding: '20mm 22mm',
+  height: '297mm',
+  padding: '18mm 20mm',
   backgroundColor: '#ffffff',
   boxSizing: 'border-box',
   pageBreakAfter: 'always',
-  pageBreakInside: 'avoid',
+  breakAfter: 'page',
   position: 'relative',
   margin: '0 auto',
+  overflow: 'hidden',
 };
 
 const lastPageStyle: React.CSSProperties = {
   ...pageStyle,
   pageBreakAfter: 'auto',
+  breakAfter: 'auto',
 };
 
 const cardStyle: React.CSSProperties = {
