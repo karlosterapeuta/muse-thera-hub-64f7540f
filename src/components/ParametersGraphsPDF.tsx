@@ -563,7 +563,7 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
             {pageItems.map(({ domainName, subdomains }) => {
               const domainColor = DOMAIN_COLORS[domainName.replace('Domínio ', '')] || '#3b82f6';
               return (
-                <div key={domainName} style={{ marginBottom: '16px', pageBreakInside: 'avoid' }}>
+                <div key={domainName} className="pdf-domain-group" style={{ marginBottom: '16px', breakInside: 'avoid', pageBreakInside: 'avoid' }}>
                   <div style={{
                     backgroundColor: domainColor, color: '#ffffff', padding: '8px 14px',
                     borderRadius: '8px 8px 0 0', fontSize: '14px', fontWeight: 700
@@ -572,7 +572,7 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
                   </div>
                   <div style={{ border: `1px solid ${domainColor}40`, borderTop: 'none', borderRadius: '0 0 8px 8px', overflow: 'hidden' }}>
                     {Object.entries(subdomains).map(([subName, params]) => (
-                      <div key={subName} style={{ borderBottom: `1px solid ${domainColor}20`, pageBreakInside: 'avoid' }}>
+                      <div key={subName} className="pdf-subdomain-group" style={{ borderBottom: `1px solid ${domainColor}20`, breakInside: 'avoid', pageBreakInside: 'avoid' }}>
                         <div style={{
                           backgroundColor: `${domainColor}10`, padding: '6px 14px',
                           fontSize: '12px', fontWeight: 600, color: '#374151',
@@ -583,11 +583,13 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
                         {params.map((param, idx) => {
                           const levelInfo = LEVEL_LABELS[param.level] || { label: param.level, color: '#6b7280', bgColor: '#f3f4f6' };
                           return (
-                            <div key={idx} style={{
+                            <div key={idx} className="pdf-param-row" style={{
                               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                               padding: '6px 14px', backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fafafa',
-                              borderBottom: idx < params.length - 1 ? '1px solid #f3f4f6' : 'none'
+                              borderBottom: idx < params.length - 1 ? '1px solid #f3f4f6' : 'none',
+                              breakInside: 'avoid', pageBreakInside: 'avoid'
                             }}>
+
                               <span style={{ fontSize: '11px', color: '#374151', flex: 1, wordWrap: 'break-word', overflowWrap: 'break-word' }}>
                                 {param.parameter}
                               </span>
