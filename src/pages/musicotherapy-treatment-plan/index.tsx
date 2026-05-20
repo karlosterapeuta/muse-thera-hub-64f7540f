@@ -297,6 +297,37 @@ export default function MusicotherapyTreatmentPlanPage() {
     { id: "re-evaluation", label: "10. Reavaliação", icon: RefreshCw },
   ];
 
+  // Completion percentage across key fields
+  const completion = (() => {
+    const checks: boolean[] = [
+      !!planData.patient_full_name,
+      !!planData.patient_age,
+      !!planData.clinical_diagnosis,
+      !!planData.responsible_person,
+      !!planData.clinical_family_history,
+      !!planData.physical_cognitive_conditions,
+      !!planData.interaction_communication_level,
+      !!planData.musical_interests,
+      !!planData.observed_behaviors,
+      (planData.general_objectives?.length || 0) > 0,
+      (planData.specific_objectives?.length || 0) > 0,
+      (planData.musical_instruments?.length || 0) > 0,
+      (planData.technological_resources?.length || 0) > 0 ||
+        (planData.voice_body_resources?.length || 0) > 0 ||
+        (planData.complementary_materials?.length || 0) > 0,
+      !!planData.musical_improvisation || !!planData.musical_recreation || !!planData.musical_composition,
+      !!planData.receptive_listening || !!planData.rhythmic_dynamics,
+      !!planData.weekly_sessions && !!planData.session_duration_minutes,
+      (planData.evaluation_criteria_list?.length || 0) > 0,
+      !!planData.session_structure,
+      !!planData.activity_sequence || !!planData.flexibility_adjustments,
+      !!planData.reevaluation_frequency || !!planData.evolution_recording,
+    ];
+    const filled = checks.filter(Boolean).length;
+    return Math.round((filled / checks.length) * 100);
+  })();
+
+
   if (isLoading && id) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
