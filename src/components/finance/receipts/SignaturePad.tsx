@@ -83,11 +83,13 @@ export function SignaturePad({ initialUrl, onSave, saving }: Props) {
 
   return (
     <div className="space-y-3">
-      {preview && (
-        <div className="rounded-lg border border-border bg-background/50 p-3 flex items-center justify-center">
+      <div className="rounded-lg border border-border bg-white p-3 flex items-center justify-center min-h-[110px]">
+        {preview ? (
           <img src={preview} alt="Assinatura" className="h-20 object-contain" />
-        </div>
-      )}
+        ) : (
+          <span className="text-xs text-muted-foreground">Sua assinatura salva aparecerá aqui</span>
+        )}
+      </div>
       <Tabs defaultValue="draw">
         <TabsList>
           <TabsTrigger value="draw">Desenhar</TabsTrigger>
