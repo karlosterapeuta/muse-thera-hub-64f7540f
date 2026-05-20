@@ -92,6 +92,10 @@ export default function Evaluation() {
   const [editingEvaluationId, setEditingEvaluationId] = useState<string | null>(null);
   const [evolutionPatientId, setEvolutionPatientId] = useState<string | null>(null);
   const [draftLoaded] = useState(!!draft);
+  const [pdfPreviewOpen, setPdfPreviewOpen] = useState(false);
+  const [pdfPreviewBlob, setPdfPreviewBlob] = useState<Blob | null>(null);
+  const [pdfPreviewFilename, setPdfPreviewFilename] = useState<string>("documento.pdf");
+  const [pdfPreviewBuilding, setPdfPreviewBuilding] = useState(false);
 
   // Persist draft to sessionStorage on changes
   useEffect(() => {
