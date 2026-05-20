@@ -409,6 +409,26 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
 
   return (
     <div style={{ backgroundColor: '#ffffff', color: '#000000', fontFamily: 'Helvetica, Arial, sans-serif' }}>
+      {/* Regras globais de quebra para tabelas e grupos de domínio */}
+      <style>{`
+        .pdf-no-break,
+        .pdf-no-break * {
+          break-inside: avoid !important;
+          page-break-inside: avoid !important;
+        }
+        .pdf-domain-group,
+        .pdf-subdomain-group,
+        .pdf-param-row,
+        .pdf-card,
+        table, thead, tbody, tfoot, tr {
+          break-inside: avoid !important;
+          page-break-inside: avoid !important;
+        }
+        thead { display: table-header-group; }
+        tfoot { display: table-footer-group; }
+        .pdf-domain-group { break-before: auto; page-break-before: auto; }
+      `}</style>
+
       
       {/* ==================== PAGE 1: Header + Charts ==================== */}
       <div style={hasDetails || hasEvolution ? pageStyle : lastPageStyle}>
