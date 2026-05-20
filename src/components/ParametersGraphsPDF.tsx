@@ -147,26 +147,90 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
   const evaluatedCategoryData = categoryData.filter(item => item.value > 0);
   const evaluatedRadarData = radarData?.filter(item => item.value > 0) || [];
 
-  // Split domain groups into chunks that fit pages (~18 params per page)
+  // Paginação por peso visual — mantém domínios e subdomínios íntegros
+  const PAGE_CAPACITY = 100;          // página útil de detalhe ≈ 100 unidades
+  const DOMAIN_HEADER_WEIGHT = 5;
+  const SUBDOMAIN_HEADER_WEIGHT = 3;
+  const PARAM_ROW_WEIGHT = 3.2;
+  const DOMAIN_SPACING = 2;
+  const INFO_BANNER_WEIGHT = 6;       // banner "X parâmetros avaliados" (só 1ª pág detalhes)
+
+  const computeDomainWeight = (subs: Record<string, typeof evaluatedDetails>) => {
+    let w = DOMAIN_HEADER_WEIGHT + DOMAIN_SPACING;
+    Object.values(subs).forEach(params => {
+      w += SUBDOMAIN_HEADER_WEIGHT + params.length * PARAM_ROW_WEIGHT;
+    });
+    return w;
+  };
+
+  // Divide um domínio grande mantendo cada subdomínio íntegro
+  const splitDomainBySubdomains = (
+    domainName: string,
+    subs: Record<string, typeof evaluatedDetails>,
+    availableFirst: number
+  ) => {
+    const chunks: { domainName: string; subdomains: Record<string, typeof evaluatedDetails>; weight: number }[] = [];
+    let current: Record<string, typeof evaluatedDetails> = {};
+    let curWeight = DOMAIN_HEADER_WEIGHT + DOMAIN_SPACING;
+    let budget = availableFirst;
+    const flush = () => {
+      if (Object.keys(current).length > 0) {
+        chunks.push({ domainName, subdomains: current, weight: curWeight });
+      }
+      current = {};
+      curWeight = DOMAIN_HEADER_WEIGHT + DOMAIN_SPACING;
+      budget = PAGE_CAPACITY;
+    };
+    Object.entries(subs).forEach(([subName, params]) => {
+      const subWeight = SUBDOMAIN_HEADER_WEIGHT + params.length * PARAM_ROW_WEIGHT;
+      if (curWeight + subWeight > budget && Object.keys(current).length > 0) flush();
+      current[subName] = params;
+      curWeight += subWeight;
+    });
+    flush();
+    return chunks;
+  };
+
   const domainEntries = Object.entries(groupedByDomain);
   const detailPages: { domainName: string; subdomains: Record<string, typeof evaluatedDetails> }[][] = [];
   let currentPageItems: typeof detailPages[0] = [];
-  let currentParamCount = 0;
-  const MAX_PARAMS_PER_PAGE = 16;
+  let currentPageWeight = 0;
+  let firstDetailPage = true;
 
-  domainEntries.forEach(([domainName, subdomains]) => {
-    const totalParams = Object.values(subdomains).reduce((sum, p) => sum + p.length, 0);
-    if (currentParamCount + totalParams > MAX_PARAMS_PER_PAGE && currentPageItems.length > 0) {
+  const flushPage = () => {
+    if (currentPageItems.length > 0) {
       detailPages.push(currentPageItems);
       currentPageItems = [];
-      currentParamCount = 0;
+      currentPageWeight = 0;
+      firstDetailPage = false;
     }
-    currentPageItems.push({ domainName, subdomains });
-    currentParamCount += totalParams;
+  };
+
+  domainEntries.forEach(([domainName, subdomains]) => {
+    const weight = computeDomainWeight(subdomains);
+    const capacity = PAGE_CAPACITY - (firstDetailPage && currentPageItems.length === 0 ? INFO_BANNER_WEIGHT : 0);
+
+    if (currentPageWeight + weight <= capacity) {
+      currentPageItems.push({ domainName, subdomains });
+      currentPageWeight += weight;
+      return;
+    }
+    if (weight <= PAGE_CAPACITY) {
+      flushPage();
+      currentPageItems.push({ domainName, subdomains });
+      currentPageWeight = weight;
+      return;
+    }
+    // domínio maior que a página: dividir por subdomínios
+    const available = capacity - currentPageWeight;
+    const chunks = splitDomainBySubdomains(domainName, subdomains, available);
+    chunks.forEach((chunk, idx) => {
+      if (idx > 0) flushPage();
+      currentPageItems.push({ domainName: chunk.domainName, subdomains: chunk.subdomains });
+      currentPageWeight += chunk.weight;
+    });
   });
-  if (currentPageItems.length > 0) {
-    detailPages.push(currentPageItems);
-  }
+  flushPage();
 
   // Header component reused
   const HeaderSection = () => (
@@ -345,6 +409,26 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
 
   return (
     <div style={{ backgroundColor: '#ffffff', color: '#000000', fontFamily: 'Helvetica, Arial, sans-serif' }}>
+      {/* Regras globais de quebra para tabelas e grupos de domínio */}
+      <style>{`
+        .pdf-no-break,
+        .pdf-no-break * {
+          break-inside: avoid !important;
+          page-break-inside: avoid !important;
+        }
+        .pdf-domain-group,
+        .pdf-subdomain-group,
+        .pdf-param-row,
+        .pdf-card,
+        table, thead, tbody, tfoot, tr {
+          break-inside: avoid !important;
+          page-break-inside: avoid !important;
+        }
+        thead { display: table-header-group; }
+        tfoot { display: table-footer-group; }
+        .pdf-domain-group { break-before: auto; page-break-before: auto; }
+      `}</style>
+
       
       {/* ==================== PAGE 1: Header + Charts ==================== */}
       <div style={hasDetails || hasEvolution ? pageStyle : lastPageStyle}>
@@ -479,7 +563,7 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
             {pageItems.map(({ domainName, subdomains }) => {
               const domainColor = DOMAIN_COLORS[domainName.replace('Domínio ', '')] || '#3b82f6';
               return (
-                <div key={domainName} style={{ marginBottom: '16px', pageBreakInside: 'avoid' }}>
+                <div key={domainName} className="pdf-domain-group" style={{ marginBottom: '16px', breakInside: 'avoid', pageBreakInside: 'avoid' }}>
                   <div style={{
                     backgroundColor: domainColor, color: '#ffffff', padding: '8px 14px',
                     borderRadius: '8px 8px 0 0', fontSize: '14px', fontWeight: 700
@@ -488,7 +572,7 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
                   </div>
                   <div style={{ border: `1px solid ${domainColor}40`, borderTop: 'none', borderRadius: '0 0 8px 8px', overflow: 'hidden' }}>
                     {Object.entries(subdomains).map(([subName, params]) => (
-                      <div key={subName} style={{ borderBottom: `1px solid ${domainColor}20`, pageBreakInside: 'avoid' }}>
+                      <div key={subName} className="pdf-subdomain-group" style={{ borderBottom: `1px solid ${domainColor}20`, breakInside: 'avoid', pageBreakInside: 'avoid' }}>
                         <div style={{
                           backgroundColor: `${domainColor}10`, padding: '6px 14px',
                           fontSize: '12px', fontWeight: 600, color: '#374151',
@@ -499,11 +583,13 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
                         {params.map((param, idx) => {
                           const levelInfo = LEVEL_LABELS[param.level] || { label: param.level, color: '#6b7280', bgColor: '#f3f4f6' };
                           return (
-                            <div key={idx} style={{
+                            <div key={idx} className="pdf-param-row" style={{
                               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                               padding: '6px 14px', backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fafafa',
-                              borderBottom: idx < params.length - 1 ? '1px solid #f3f4f6' : 'none'
+                              borderBottom: idx < params.length - 1 ? '1px solid #f3f4f6' : 'none',
+                              breakInside: 'avoid', pageBreakInside: 'avoid'
                             }}>
+
                               <span style={{ fontSize: '11px', color: '#374151', flex: 1, wordWrap: 'break-word', overflowWrap: 'break-word' }}>
                                 {param.parameter}
                               </span>
