@@ -1,109 +1,82 @@
 
-# Reforma completa – Planos Musicoterapêuticos
+## Objetivo
 
-Objetivo: transformar o módulo num fluxo profissional, fluido e responsivo, integrado ao restante do ciclo clínico (Anamnese → Avaliação → Plano → Intervenção → Reavaliação), com templates, IA, versionamento e PDF clínico repaginado.
+Refazer do zero o PDF do botão **"Baixar Gráfico"** para que:
+1. Mostre **todos os dados avaliados** sem cortes nem páginas em branco.
+2. Tenha visual **profissional, limpo e bonito** (alinhado à identidade MuseTera).
+3. Reflita fielmente a estrutura da página Avaliação (5 domínios, 16 subdomínios, 128 parâmetros).
 
-## 1. Reformulação visual e UX
+## Diagnóstico do problema atual
 
-**Página de lista (`/musicotherapy-treatment-plans`)**
-- Substituir a tabela atual por **cards clínicos premium** (grid responsivo: 1 col mobile, 2 col tablet, 3 col desktop) com foto/iniciais do paciente, diagnóstico, status colorido, barra de progresso de preenchimento, data de início e ações rápidas (Ver / Editar / Duplicar / PDF / Arquivar).
-- Header com **estatísticas** (Total, Ativos, Rascunhos, Concluídos) em cards glassmorphism.
-- Busca inteligente (paciente, diagnóstico, objetivos), filtros por status e diagnóstico, ordenação.
-- Empty state ilustrado com CTA destacado.
-- Ação **"Duplicar plano"** (gera novo rascunho a partir de plano existente).
+O fluxo atual (`html2pdf.js` renderizando um único DOM gigante) sofre de:
+- Quebra de página por fatiamento de pixel → corta tabelas no meio.
+- Mistura de `pagebreak: ['css']` com `height: 297mm + overflow:hidden` → páginas brancas quando o conteúdo não bate exato.
+- Conteúdo longo (16 subdomínios × 8 parâmetros) excede a página e é "engolido" pelo `overflow:hidden`.
 
-**Página de edição (`/musicotherapy-treatment-plan/:id?`)**
-- Layout **híbrido responsivo**:
-  - Mobile: wizard puro (1 etapa por tela, barra de progresso fixa no topo, botões Voltar/Próximo sticky no rodapé).
-  - Desktop: sidebar lateral com lista das 10 seções, badge de validação por seção (✓ completo, ● parcial, ! pendente), conteúdo da seção ativa no centro.
-- Header sticky com: nome do paciente, status, badge de autosave ("Salvo há Xs"), botão Salvar, botão Gerar PDF, botão Voltar.
-- Cada seção dividida em **cards menores** com microcopy explicativa ("Por que isso importa?") em popovers.
-- Inputs de array (objetivos, instrumentos, etc.) com chips clicáveis e sugestões pré-definidas por diagnóstico.
-- Resumo final ("Revisar e Salvar") antes de marcar como Ativo, mostrando pendências.
+→ Conclusão: precisamos abandonar a estratégia "um DOM gigante → fatiar" e adotar **captura por seções** com `html2canvas` + `jsPDF` manual, que é o padrão recomendado para relatórios longos.
 
-## 2. Novas funcionalidades
+## Novo PDF — Estrutura (4–6 páginas A4 retrato)
 
-**Templates por diagnóstico**
-- Biblioteca de templates pré-preenchidos: TEA, Síndrome de Down, Alzheimer, Parkinson, Paralisia Cerebral, AVC, Ansiedade/Depressão, Desenvolvimento Infantil.
-- Cada template traz objetivos sugeridos, recursos típicos, frequência e critérios de avaliação.
-- Ao escolher diagnóstico no passo 1, o app oferece "Aplicar template MuseTera para [diagnóstico]?".
+**Página 1 — Capa / Identificação**
+- Cabeçalho dourado com logo MuseTera 3D
+- Bloco de identificação: Paciente · Idade · Data · Musicoterapeuta · CRM/Registro
+- Cartão "Síntese Executiva": 4 KPIs (Pontuação, Desempenho %, Domínios avaliados, Parâmetros avaliados)
+- Barra de progresso geral colorida por faixa de desempenho
 
-**Preenchimento por IA (a partir de Anamnese + Avaliação)**
-- Botão "🪄 Gerar plano com IA" no topo do formulário.
-- Edge Function `generate-treatment-plan` consulta a anamnese e a última avaliação do paciente, gera proposta de objetivos gerais/específicos, recursos e estratégias usando Lovable AI Gateway (google/gemini-2.5-flash).
-- Usuário revisa e edita antes de salvar.
+**Página 2 — Visão Gráfica Consolidada**
+- Radar por Domínio (StaticChart SVG, 5 eixos)
+- Pizza Desenvolvido vs. A desenvolver
+- Legenda de domínios com cores oficiais
 
-**Versionamento**
-- Toda alteração após "Ativo" cria uma nova versão (snapshot). Histórico acessível pelo botão "Versões anteriores" com diff visual simplificado.
-- Permite reverter ou comparar.
+**Página 3 — Desempenho por Subdomínio**
+- Gráfico de barras horizontais (16 subdomínios), cor por domínio
+- Legenda de classificação (Excelente/Satisfatório/Em Desenvolvimento/Necessita Atenção)
 
-**Integrações com o ciclo clínico**
-- Pré-popular paciente, diagnóstico e idade a partir da Anamnese ao criar plano.
-- Vincular plano ativo às sessões de Intervenção (mostrar objetivos do plano na tela de sessão).
-- Botão "Gerar Reavaliação" a partir de um plano ativo.
-- Card do paciente em `patient-history` mostra plano ativo + link rápido.
+**Páginas 4+ — Detalhamento por Domínio (uma seção por domínio, paginada automaticamente)**
+Para cada um dos 5 domínios:
+- Faixa colorida com nome do domínio + média % + classificação
+- Tabela de subdomínios: nome · % · barra de progresso · classificação
+- Lista expandida dos parâmetros avaliados (nome + frequência marcada), exibindo **todos** os 128 itens — paginado seção-a-seção para nunca cortar uma tabela ao meio.
 
-**Status com lógica**
-- Rascunho (autosave), Ativo (após preencher mínimos + revisão), Em revisão, Concluído (com data de encerramento), Arquivado.
-- Transições automáticas e indicação de "campos faltando para ativar".
+**Última página — Rodapé profissional**
+- Carimbo digital + foto do profissional (se houver)
+- Dados de contato
+- Aviso de confidencialidade
+- Data/hora de emissão
 
-## 3. PDF clínico repaginado
+## Implementação técnica
 
-Novo `MusicotherapyTreatmentPlanPDF.tsx` (html2canvas, A4, [10,10], Base64):
+### Arquivos novos
+- `src/components/pdf/GraphReportPDF.tsx` — novo componente renderizado off-screen, dividido em blocos `<section data-pdf-section>` (cabeçalho, gráficos, tabela barras, e **um bloco por domínio**, com sub-blocos `data-pdf-section` por subdomínio quando o domínio for muito longo).
+- `src/utils/sectionPdfGenerator.ts` — utilitário que:
+  1. Renderiza o componente em container off-screen (`renderForPdf`).
+  2. Itera por `[data-pdf-section]`.
+  3. Para cada seção: `html2canvas(scale: 2, backgroundColor: '#fff')` → mm.
+  4. Se `heightMM > espaçoRestante && currentY > margem` → `pdf.addPage()`.
+  5. `pdf.addImage(..., 'JPEG', 0.92)` e atualiza `currentY += heightMM + 4`.
+  6. Retorna `Blob` (para pré-visualização) e dispara `save()`.
+  - Constantes: A4 210×297, margem 10 mm, gap 4 mm.
 
-- **Capa**: logo dourada MuseTera, título "Plano Musicoterapêutico", nome do paciente, diagnóstico, número do plano, data, profissional responsável.
-- **Sumário** com paginação.
-- **10 seções clínicas** com tipografia hierárquica (Inter/Lora), cabeçalho colorido por seção, ícone, microcopy de contexto.
-- **Cabeçalho/rodapé** em todas as páginas: paciente + nº plano (header), assinatura digital + carimbo + paginação (footer).
-- Bloco final com assinatura digital + carimbo do profissional, registro, contato e QR code de verificação (link público read-only do plano).
-- Salvo automaticamente em `clinical-pdfs/{user_id}/treatment-plan/`.
+### Arquivos editados
+- `src/pages/evaluation/index.tsx`:
+  - Substituir corpo de `handleGenerateParametersPDF` e `handleGenerateParametersPDFFromSaved` para usar `generateSectionPdf(<GraphReportPDF .../>)`.
+  - Manter o `PDFPreviewDialog` existente exibindo o Blob retornado.
+- Manter `ParametersGraphsPDF.tsx` antigo intocado (não é mais usado por este botão; pode ser removido em passo futuro).
 
-## 4. Mudanças técnicas (resumo)
+### Garantias de completude
+- Cada subdomínio com seus 8 parâmetros vira `<section data-pdf-section>` independente → impossível cortar no meio.
+- Sem `height: 297mm` nem `overflow: hidden` → conteúdo nunca é "escondido".
+- Sem `pagebreak` do html2pdf → sem páginas brancas por dupla quebra.
+- StaticChart (SVG) usado para todos os gráficos → renderização determinística no canvas.
 
-```text
-NOVOS ARQUIVOS
-├─ src/data/treatmentPlanTemplates.ts        # templates por diagnóstico
-├─ src/components/treatment-plan/
-│  ├─ PlanListCard.tsx                       # card premium da lista
-│  ├─ PlanStatsHeader.tsx                    # 4 cards de estatística
-│  ├─ PlanWizardLayout.tsx                   # layout responsivo wizard/sidebar
-│  ├─ PlanSectionSidebar.tsx                 # nav + validação por seção
-│  ├─ PlanStickyHeader.tsx                   # header com autosave + ações
-│  ├─ PlanReviewSummary.tsx                  # tela final de revisão
-│  ├─ PlanVersionHistory.tsx                 # versões anteriores
-│  ├─ ApplyTemplateDialog.tsx                # escolher template
-│  └─ AIGeneratePlanButton.tsx               # botão IA + revisão
-├─ supabase/functions/generate-treatment-plan/index.ts
-└─ src/components/MusicotherapyTreatmentPlanPDFv2.tsx
+### QA antes de entregar
+- Após implementar, abrir o `PDFPreviewDialog` e validar que:
+  - Não há páginas em branco.
+  - Todos os 5 domínios e 16 subdomínios aparecem.
+  - Tabelas não cortam linhas entre páginas.
+  - Cabeçalho e rodapé presentes.
 
-REESCRITOS
-├─ src/pages/musicotherapy-treatment-plans/index.tsx   # lista em cards
-└─ src/pages/musicotherapy-treatment-plan/index.tsx    # quebrado em <300 linhas
-
-BANCO (migração)
-├─ ALTER TABLE treatment_plans
-│  ADD COLUMN plan_number serial,
-│  ADD COLUMN completion_percent int,
-│  ADD COLUMN ended_at timestamptz,
-│  ADD COLUMN source_template text,
-│  ADD COLUMN parent_plan_id uuid REFERENCES treatment_plans(id);
-├─ CREATE TABLE treatment_plan_versions (
-│  id, plan_id, version_number, snapshot jsonb, created_at, created_by)
-│  + RLS (dono via plan_id → professional_id)
-```
-
-## 5. Entrega faseada
-
-1. **Fase 1 (visual + UX)**: lista em cards + stats + duplicar; wizard responsivo; sticky header; review summary; sidebar de validação.
-2. **Fase 2 (PDF v2)**: novo layout clínico com capa, sumário, QR.
-3. **Fase 3 (Templates + IA)**: biblioteca de templates + Edge Function de geração via Lovable AI.
-4. **Fase 4 (Versionamento + integrações)**: tabela de versões, histórico, vínculo com Intervenção e Reavaliação.
-
-## 6. Fora de escopo
-
-- Reformular o hub `/processes` (mantém o visual atual).
-- Migração retroativa de planos antigos para o novo schema de versões (versões só começam a partir desta atualização).
-
----
-
-Confirma este plano? Posso começar pela Fase 1 assim que aprovar, ou prefere reorganizar a ordem das fases.
+## O que NÃO muda
+- Lógica de cálculo de scores, `selections`, `evaluationDomains` — usados como-está.
+- Botão "Baixar Gráfico" e fluxo de pré-visualização permanecem.
+- `ParametersGraphsPDFStatic` (usado por outros lugares via `useEvaluationPDF`) fica intocado.
