@@ -15,6 +15,7 @@ export default function ReceiptsListPage() {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const tab = params.get("tab") || "dashboard";
+  const [importOpen, setImportOpen] = useState(false);
 
   return (
     <div className="container max-w-6xl py-6 space-y-5 relative">
