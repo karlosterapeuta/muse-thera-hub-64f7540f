@@ -13,8 +13,6 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useReceiptIssuerProfile } from "@/hooks/useReceiptIssuerProfile";
 import { useCreatePaymentReceipt, usePaymentReceipts } from "@/hooks/usePaymentReceipts";
-import { useReceiptClients } from "@/hooks/useReceiptClients";
-import { useReceiptTemplates } from "@/hooks/useReceiptTemplates";
 import { generateReceiptPDF } from "@/utils/receiptPDFGenerator";
 import { savePDFToStorage } from "@/utils/pdfStorageUtils";
 import { supabase } from "@/integrations/supabase/client";
