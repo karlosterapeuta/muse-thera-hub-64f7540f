@@ -53,7 +53,7 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
     return Math.min(Math.round((filledFields / totalFields) * 100), 100);
   }, [content]);
 
-  // Check section completion
+  // Check section completion (>= 50% of fields filled)
   const isSectionComplete = (fields: string[]): boolean => {
     const filledCount = fields.filter(f => {
       const val = content[f];
@@ -62,8 +62,23 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
     return filledCount >= Math.ceil(fields.length * 0.5);
   };
 
+  // Section 2 uses a different rule: any diagnosis selected OR clinical details filled
+  const isSection2Complete = (fields: string[]): boolean => {
+    return fields.some(f => {
+      const val = content[f];
+      return val && val !== "" && val !== false;
+    });
+  };
+
   const section1Fields = ["referral_professional", "main_clinical_demand", "diagnosis_details", "cid_code"];
-  const section2Fields = ["autism_spectrum", "adhd", "down_syndrome", "intellectual_disability", "cerebral_palsy", "epilepsy"];
+  const section2Fields = [
+    "autism_spectrum", "adhd", "down_syndrome", "intellectual_disability",
+    "cerebral_palsy", "epilepsy", "chronic_encephalopathy", "williams_syndrome",
+    "fragile_x_syndrome", "rett_syndrome", "alzheimer", "parkinson",
+    "depression", "bipolar_disorder", "anxiety_disorders", "other_diagnoses",
+    "clinical_details",
+  ];
+
   const section3Fields = ["current_medication", "medication_schedule", "medication_effects"];
   const section4Fields = ["speech_therapy", "psychological_support", "occupational_therapy", "physiotherapy"];
   const section5Fields = ["musical_education", "instrumental_practice", "patient_musical_history"];
@@ -82,7 +97,7 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
         totalSections={11}
         completedSections={[
           isSectionComplete(section1Fields),
-          isSectionComplete(section2Fields),
+          isSection2Complete(section2Fields),
           isSectionComplete(section3Fields),
           isSectionComplete(section4Fields),
           isSectionComplete(section5Fields),
@@ -151,7 +166,7 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
         title="Histórico Clínico e Médico"
         icon={Stethoscope}
         sectionNumber={2}
-        isComplete={isSectionComplete(section2Fields)}
+        isComplete={isSection2Complete(section2Fields)}
       >
         <div className="space-y-6">
           <ModernCheckboxGrid
