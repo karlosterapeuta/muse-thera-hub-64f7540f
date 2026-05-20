@@ -82,21 +82,21 @@ export default function MusicotherapyTreatmentPlanPage() {
   const [aiOpen, setAiOpen] = useState(false);
 
   const applyPartialPlan = (partial: Partial<MusicotherapyTreatmentPlan>) => {
+    const updates: Record<string, any> = {};
     Object.entries(partial).forEach(([key, value]) => {
       if (value === undefined || value === null) return;
-      // merge arrays (avoid duplicates), overwrite scalars only if currently empty/short
       const current = (planData as any)[key];
       if (Array.isArray(value)) {
-        const merged = Array.from(new Set([...(Array.isArray(current) ? current : []), ...value]));
-        updatePlanData(key as any, merged as any);
+        updates[key] = Array.from(new Set([...(Array.isArray(current) ? current : []), ...value]));
       } else if (typeof value === 'string') {
         if (!current || (typeof current === 'string' && current.trim().length < 3)) {
-          updatePlanData(key as any, value as any);
+          updates[key] = value;
         }
       } else {
-        if (!current) updatePlanData(key as any, value as any);
+        if (!current) updates[key] = value;
       }
     });
+    if (Object.keys(updates).length) updatePlanData(updates as Partial<MusicotherapyTreatmentPlan>);
   };
 
   // Warning for unsaved changes
