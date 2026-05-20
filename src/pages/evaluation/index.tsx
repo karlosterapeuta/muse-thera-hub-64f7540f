@@ -1074,21 +1074,23 @@ export default function Evaluation() {
 
       const filename = `graficos-${patientName}-${format(evalDate, 'yyyy-MM-dd')}.pdf`;
       const opt = {
-        margin: [10, 10],
+        margin: 0,
         filename,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: {
           scale: 2,
           useCORS: true,
           allowTaint: true,
-          backgroundColor: '#ffffff'
+          backgroundColor: '#ffffff',
+          windowWidth: 794, // 210mm em px (96dpi)
         },
         jsPDF: {
           unit: 'mm',
           format: 'a4',
           orientation: 'portrait',
-          compress: true
-        }
+          compress: true,
+        },
+        pagebreak: { mode: ['css'] as any },
       };
 
       // Gera o PDF como Blob para pré-visualização página-a-página
