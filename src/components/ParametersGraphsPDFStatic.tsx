@@ -193,53 +193,56 @@ export const ParametersGraphsPDFStatic: React.FC<ParametersGraphsPDFStaticProps>
       )}
 
       {/* CHARTS — RADAR + PIE */}
-      <div style={sectionTitle}>Visão Gráfica Consolidada</div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 22 }}>
-        <div style={{ border: '1px solid #e2e8f0', borderRadius: 6, padding: 12 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#0f172a', marginBottom: 8, textAlign: 'center' }}>
-            Perfil por Domínio
+      <div className="page-break-avoid" style={{ breakInside: 'avoid', pageBreakInside: 'avoid', marginBottom: 22 }}>
+        <div style={sectionTitle}>Visão Gráfica Consolidada</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+          <div style={{ border: '1px solid #e2e8f0', borderRadius: 6, padding: 12 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#0f172a', marginBottom: 8, textAlign: 'center' }}>
+              Perfil por Domínio
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              {radarData && <StaticChart data={radarData} type="radar" width={300} height={240} colors={['#6366f1']} />}
+            </div>
+            <div style={{ fontSize: 8, color: '#64748b', textAlign: 'center', marginTop: 6 }}>
+              Distribuição percentual por domínio clínico
+            </div>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            {radarData && <StaticChart data={radarData} type="radar" width={300} height={240} colors={['#6366f1']} />}
-          </div>
-          <div style={{ fontSize: 8, color: '#64748b', textAlign: 'center', marginTop: 6 }}>
-            Distribuição percentual por domínio clínico
-          </div>
-        </div>
 
-        <div style={{ border: '1px solid #e2e8f0', borderRadius: 6, padding: 12 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#0f172a', marginBottom: 8, textAlign: 'center' }}>
-            Desenvolvimento Geral
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <StaticChart data={pieData} type="pie" width={300} height={240} colors={['#10b981', '#f1f5f9']} />
-          </div>
-          <div style={{ fontSize: 8, color: '#64748b', textAlign: 'center', marginTop: 6 }}>
-            Proporção de avanço sobre o potencial total
+          <div style={{ border: '1px solid #e2e8f0', borderRadius: 6, padding: 12 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#0f172a', marginBottom: 8, textAlign: 'center' }}>
+              Desenvolvimento Geral
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <StaticChart data={pieData} type="pie" width={300} height={240} colors={['#10b981', '#f1f5f9']} />
+            </div>
+            <div style={{ fontSize: 8, color: '#64748b', textAlign: 'center', marginTop: 6 }}>
+              Proporção de avanço sobre o potencial total
+            </div>
           </div>
         </div>
       </div>
 
-      {/* BAR CHART — page break before for clarity */}
-      <div style={{ pageBreakBefore: 'always' }} />
-      <div style={sectionTitle}>Desempenho por Subdomínio</div>
-      <div style={{ border: '1px solid #e2e8f0', borderRadius: 6, padding: 14, marginBottom: 22 }}>
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <StaticChart
-            data={categoryData}
-            type="bar"
-            width={620}
-            height={360}
-            colors={categoryData.map((d) => getDomainColor(d.domain))}
-          />
-        </div>
-        <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center', marginTop: 12 }}>
-          {Object.keys(grouped).map((dom) => (
-            <div key={dom} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 9, color: '#334155' }}>
-              <span style={{ width: 10, height: 10, background: getDomainColor(dom), borderRadius: 2, display: 'inline-block' }} />
-              {dom}
-            </div>
-          ))}
+      {/* BAR CHART */}
+      <div className="page-break-avoid" style={{ breakInside: 'avoid', pageBreakInside: 'avoid', marginBottom: 22 }}>
+        <div style={sectionTitle}>Desempenho por Subdomínio</div>
+        <div style={{ border: '1px solid #e2e8f0', borderRadius: 6, padding: 14 }}>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <StaticChart
+              data={categoryData}
+              type="bar"
+              width={620}
+              height={320}
+              colors={categoryData.map((d) => getDomainColor(d.domain))}
+            />
+          </div>
+          <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center', marginTop: 12 }}>
+            {Object.keys(grouped).map((dom) => (
+              <div key={dom} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 9, color: '#334155' }}>
+                <span style={{ width: 10, height: 10, background: getDomainColor(dom), borderRadius: 2, display: 'inline-block' }} />
+                {dom}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -250,7 +253,7 @@ export const ParametersGraphsPDFStatic: React.FC<ParametersGraphsPDFStaticProps>
         const perf = getPerformanceLabel(avg);
         const color = getDomainColor(domain);
         return (
-          <div key={domain} style={{ marginBottom: 14, breakInside: 'avoid' }}>
+          <div key={domain} className="page-break-avoid" style={{ marginBottom: 14, breakInside: 'avoid', pageBreakInside: 'avoid' }}>
             <div
               style={{
                 display: 'flex',
