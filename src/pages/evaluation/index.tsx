@@ -987,7 +987,11 @@ export default function Evaluation() {
       );
 
       const patientName = evaluation.patient_name || "Paciente";
-      const evalDate = new Date(evaluation.date);
+      // Usa a data escolhida pelo usuário no calendário (estado atual);
+      // se não houver, cai no fallback da data salva na avaliação.
+      const evalDate = evaluationDate instanceof Date && !isNaN(evaluationDate.getTime())
+        ? evaluationDate
+        : new Date(evaluation.date);
       const patient = patients.find(p => p.id === evaluation.patient_id);
       const patientAge = calculateAgeFromBirthDate(patient?.birth_date) ?? (patient?.age ?? null);
 
