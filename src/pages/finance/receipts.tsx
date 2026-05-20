@@ -1,13 +1,15 @@
+import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { ArrowLeftIcon, ReceiptIcon, LayoutDashboardIcon, UsersIcon, FileTextIcon, ShieldCheckIcon } from "lucide-react";
+import { ArrowLeftIcon, ReceiptIcon, LayoutDashboardIcon, UsersIcon, FileTextIcon, ShieldCheckIcon, SparklesIcon } from "lucide-react";
 import { ReceiptsDashboard } from "@/components/finance/receipts/ReceiptsDashboard";
 import { ReceiptsHistory } from "@/components/finance/receipts/ReceiptsHistory";
 import { ClientsManager } from "@/components/finance/receipts/ClientsManager";
 import { TemplatesManager } from "@/components/finance/receipts/TemplatesManager";
 import { IssuerProfileForm } from "@/components/finance/receipts/IssuerProfileForm";
+import { ImportProofDialog } from "@/components/finance/receipts/ImportProofDialog";
 
 export default function ReceiptsListPage() {
   const navigate = useNavigate();
