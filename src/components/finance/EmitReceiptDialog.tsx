@@ -142,7 +142,7 @@ export function EmitReceiptDialog({ open, onClose, record }: Props) {
       const { generateUniqueReceiptCode } = await import("@/utils/uniqueCodeGenerator");
       const uniqueCode = await generateUniqueReceiptCode();
       const created = await createReceipt.mutateAsync({
-        financial_record_id: record.id,
+        financial_record_id: isVirtualRecord ? null : record.id,
         patient_id: record.patient_id || null,
         patient_name: form.patient_name,
         patient_document: form.patient_document ? onlyDigits(form.patient_document) : null,
@@ -154,7 +154,8 @@ export function EmitReceiptDialog({ open, onClose, record }: Props) {
         observations: form.observations || null,
         unique_code: uniqueCode,
         issuer_snapshot: issuer,
-      });
+        ...(proofPath ? { payment_proof_path: proofPath } : {}),
+      } as any);
 
       const { blob, hash } = await generateReceiptPDF({
         receiptNumber: created.receipt_number,
