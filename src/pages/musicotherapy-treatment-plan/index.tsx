@@ -30,7 +30,7 @@ import { useMusicotherapyTreatmentPlan } from '@/hooks/useMusicotherapyTreatment
 import { useProfessionalData } from '@/hooks/useProfessionalData';
 import { MusicotherapyTreatmentPlan } from '@/types/musicotherapy-plan';
 import { generateStaticPDF } from '@/utils/staticPDFGenerator';
-import { MusicotherapyTreatmentPlanPDF } from '@/components/MusicotherapyTreatmentPlanPDF';
+import { MusicotherapyTreatmentPlanPDFv2 as MusicotherapyTreatmentPlanPDF } from '@/components/MusicotherapyTreatmentPlanPDFv2';
 import { supabase } from '@/integrations/supabase/client';
 import { PromptSelector } from '@/components/musicotherapy/PromptSelector';
 import { DiagnosisSelector } from '@/components/musicotherapy/DiagnosisSelector';

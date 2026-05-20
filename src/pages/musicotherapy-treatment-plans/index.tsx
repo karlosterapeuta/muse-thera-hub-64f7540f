@@ -12,7 +12,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast as sonnerToast } from 'sonner';
 import { TreatmentPlanViewModal } from './components/TreatmentPlanViewModal';
-import { MusicotherapyTreatmentPlanPDF } from '@/components/MusicotherapyTreatmentPlanPDF';
+import { MusicotherapyTreatmentPlanPDFv2 as MusicotherapyTreatmentPlanPDF } from '@/components/MusicotherapyTreatmentPlanPDFv2';
 import { generateStaticPDF } from '@/utils/staticPDFGenerator';
 import { useProfessionalData } from '@/hooks/useProfessionalData';
 import { imageUrlToBase64 } from '@/utils/imageToBase64';
