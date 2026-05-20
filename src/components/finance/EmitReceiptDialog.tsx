@@ -313,49 +313,6 @@ export function EmitReceiptDialog({ open, onClose, record }: Props) {
                 </div>
               )}
 
-              {/* Cliente / Modelo */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <div>
-                  <Label className="flex items-center gap-1 text-xs"><UsersIcon className="h-3 w-3" /> Cliente cadastrado</Label>
-                  <Popover open={clientPopOpen} onOpenChange={setClientPopOpen}>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" size="sm" className="w-full justify-start mt-1 font-normal text-muted-foreground">
-                        {clients.length ? "Selecionar cliente..." : "Nenhum cliente"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="p-0 w-[300px]" align="start">
-                      <Command>
-                        <CommandInput placeholder="Buscar por nome ou CPF..." />
-                        <CommandList>
-                          <CommandEmpty>Nenhum cliente encontrado.</CommandEmpty>
-                          <CommandGroup>
-                            {clients.map((c) => (
-                              <CommandItem key={c.id} value={`${c.name} ${c.document_number ?? ""}`} onSelect={() => handleSelectClient(c.id)}>
-                                <div className="flex flex-col">
-                                  <span>{c.name}</span>
-                                  {c.document_number && <span className="text-[10px] text-muted-foreground">{c.document_number}</span>}
-                                </div>
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div>
-                  <Label className="flex items-center gap-1 text-xs"><FileTextIcon className="h-3 w-3" /> Modelo de recibo</Label>
-                  <Select onValueChange={handleSelectTemplate}>
-                    <SelectTrigger className="mt-1"><SelectValue placeholder={templates.length ? "Aplicar modelo..." : "Nenhum modelo"} /></SelectTrigger>
-                    <SelectContent>
-                      {templates.map((t) => (
-                        <SelectItem key={t.id} value={t.id}>{t.title}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
               <div>
                 <Label>Nome do Pagador *</Label>
                 <Input value={form.patient_name} onChange={(e) => setForm({ ...form, patient_name: e.target.value })} />
