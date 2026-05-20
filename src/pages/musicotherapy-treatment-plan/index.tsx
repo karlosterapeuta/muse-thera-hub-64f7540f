@@ -43,7 +43,9 @@ import { formatAgeString } from '@/utils/dateUtils';
 import { PlanStickyHeader } from '@/components/treatment-plan/PlanStickyHeader';
 import { PlanTemplatesDialog } from '@/components/treatment-plan/PlanTemplatesDialog';
 import { PlanAIGeneratorDialog } from '@/components/treatment-plan/PlanAIGeneratorDialog';
-import { Sparkles, Wand2 } from 'lucide-react';
+import { PlanImportClinicalDialog } from '@/components/treatment-plan/PlanImportClinicalDialog';
+import { PlanVersionsDialog } from '@/components/treatment-plan/PlanVersionsDialog';
+import { Sparkles, Wand2, FileSearch, History } from 'lucide-react';
 
 type Patient = {
   id: string;
