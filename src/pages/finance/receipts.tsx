@@ -1,18 +1,21 @@
+import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { ArrowLeftIcon, ReceiptIcon, LayoutDashboardIcon, UsersIcon, FileTextIcon, ShieldCheckIcon } from "lucide-react";
+import { ArrowLeftIcon, ReceiptIcon, LayoutDashboardIcon, UsersIcon, FileTextIcon, ShieldCheckIcon, SparklesIcon } from "lucide-react";
 import { ReceiptsDashboard } from "@/components/finance/receipts/ReceiptsDashboard";
 import { ReceiptsHistory } from "@/components/finance/receipts/ReceiptsHistory";
 import { ClientsManager } from "@/components/finance/receipts/ClientsManager";
 import { TemplatesManager } from "@/components/finance/receipts/TemplatesManager";
 import { IssuerProfileForm } from "@/components/finance/receipts/IssuerProfileForm";
+import { ImportProofDialog } from "@/components/finance/receipts/ImportProofDialog";
 
 export default function ReceiptsListPage() {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const tab = params.get("tab") || "dashboard";
+  const [importOpen, setImportOpen] = useState(false);
 
   return (
     <div className="container max-w-6xl py-6 space-y-5 relative">
@@ -29,14 +32,24 @@ export default function ReceiptsListPage() {
           <div className="bg-gradient-to-br from-primary to-amber-500 p-3 rounded-xl">
             <ReceiptIcon className="h-7 w-7 text-white" />
           </div>
-          <div>
+          <div className="flex-1 min-w-0">
             <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-amber-500 bg-clip-text text-transparent">
               Recibos de Pagamento
             </h1>
             <p className="text-sm text-muted-foreground">Dashboard, histórico, clientes, modelos e perfil de emissor</p>
           </div>
+          <Button
+            onClick={() => setImportOpen(true)}
+            className="shrink-0 bg-gradient-to-r from-primary to-amber-500 text-white gap-2 shadow-lg"
+          >
+            <SparklesIcon className="h-4 w-4" />
+            <span className="hidden sm:inline">Importar Comprovante</span>
+            <span className="sm:hidden">Importar</span>
+          </Button>
         </CardContent>
       </Card>
+
+      <ImportProofDialog open={importOpen} onClose={() => setImportOpen(false)} />
 
       <Tabs value={tab} onValueChange={(v) => setParams({ tab: v })}>
         <TabsList className="w-full overflow-x-auto flex justify-start sm:grid sm:grid-cols-5">

@@ -1112,6 +1112,7 @@ export type Database = {
           patient_name: string
           payment_date: string
           payment_method: string
+          payment_proof_path: string | null
           pdf_path: string | null
           receipt_number: number
           service_description: string
@@ -1137,6 +1138,7 @@ export type Database = {
           patient_name: string
           payment_date: string
           payment_method?: string
+          payment_proof_path?: string | null
           pdf_path?: string | null
           receipt_number: number
           service_description: string
@@ -1162,6 +1164,7 @@ export type Database = {
           patient_name?: string
           payment_date?: string
           payment_method?: string
+          payment_proof_path?: string | null
           pdf_path?: string | null
           receipt_number?: number
           service_description?: string
