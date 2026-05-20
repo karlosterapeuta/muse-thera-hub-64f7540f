@@ -1,66 +1,109 @@
-## Objetivo
 
-Na aba **Financeiro → Recibos**, adicionar um botão "Importar Comprovante" que aceita JPG/PNG/PDF do comprovante de pagamento (PIX, transferência, etc.), extrai automaticamente os dados do pagador (nome, CPF/CNPJ, valor, data, método) via IA, e abre o diálogo de emissão de recibo já pré-preenchido para revisão antes de gerar o PDF.
+# Reforma completa – Planos Musicoterapêuticos
 
-## Fluxo do usuário
+Objetivo: transformar o módulo num fluxo profissional, fluido e responsivo, integrado ao restante do ciclo clínico (Anamnese → Avaliação → Plano → Intervenção → Reavaliação), com templates, IA, versionamento e PDF clínico repaginado.
 
-1. Usuário clica em **"Importar Comprovante"** (botão novo, destacado, no topo da aba Recibos).
-2. Seleciona ou arrasta um arquivo (JPG/PNG/PDF, até 10 MB).
-3. Loading: "Lendo comprovante..." (2–6 s).
-4. Abre o diálogo **Emitir Recibo** já preenchido com:
-   - Nome do pagador
-   - CPF/CNPJ (se detectado)
-   - Valor
-   - Data do pagamento
-   - Método (PIX/TED/dinheiro)
-   - Descrição padrão ("Sessão de Musicoterapia") — editável
-5. Usuário revisa, ajusta o que precisar e clica **Gerar PDF**.
-6. Comprovante original fica salvo no bucket `payment-proofs` e vinculado ao recibo.
+## 1. Reformulação visual e UX
 
-## Detalhes técnicos
+**Página de lista (`/musicotherapy-treatment-plans`)**
+- Substituir a tabela atual por **cards clínicos premium** (grid responsivo: 1 col mobile, 2 col tablet, 3 col desktop) com foto/iniciais do paciente, diagnóstico, status colorido, barra de progresso de preenchimento, data de início e ações rápidas (Ver / Editar / Duplicar / PDF / Arquivar).
+- Header com **estatísticas** (Total, Ativos, Rascunhos, Concluídos) em cards glassmorphism.
+- Busca inteligente (paciente, diagnóstico, objetivos), filtros por status e diagnóstico, ordenação.
+- Empty state ilustrado com CTA destacado.
+- Ação **"Duplicar plano"** (gera novo rascunho a partir de plano existente).
 
-### 1. Edge Function `parse-payment-proof`
-- Recebe `{ fileBase64, mimeType }`.
-- Para PDF: envia direto pro Gemini (suporta PDF nativamente). Para imagem: envia como `inline_data`.
-- Usa **Lovable AI Gateway** (`LOVABLE_API_KEY`, modelo `google/gemini-2.5-flash`) com `response_format` JSON Schema:
-  ```
-  { payer_name, payer_document, amount, payment_date (YYYY-MM-DD),
-    payment_method (pix|transferência|boleto|dinheiro|cartão),
-    bank_origin?, transaction_id?, confidence (0-1) }
-  ```
-- Prompt instrui a extrair somente o **pagador** (não o beneficiário/recebedor), retornar `null` em campos não encontrados e detectar moeda BRL.
-- Trata `429`/`402` retornando mensagem amigável.
-- Faz upload do arquivo original para `payment-proofs/{user_id}/{uuid}.{ext}` e retorna o path.
+**Página de edição (`/musicotherapy-treatment-plan/:id?`)**
+- Layout **híbrido responsivo**:
+  - Mobile: wizard puro (1 etapa por tela, barra de progresso fixa no topo, botões Voltar/Próximo sticky no rodapé).
+  - Desktop: sidebar lateral com lista das 10 seções, badge de validação por seção (✓ completo, ● parcial, ! pendente), conteúdo da seção ativa no centro.
+- Header sticky com: nome do paciente, status, badge de autosave ("Salvo há Xs"), botão Salvar, botão Gerar PDF, botão Voltar.
+- Cada seção dividida em **cards menores** com microcopy explicativa ("Por que isso importa?") em popovers.
+- Inputs de array (objetivos, instrumentos, etc.) com chips clicáveis e sugestões pré-definidas por diagnóstico.
+- Resumo final ("Revisar e Salvar") antes de marcar como Ativo, mostrando pendências.
 
-### 2. Frontend — `ImportProofButton.tsx` + `ImportProofDialog.tsx`
-- Novo componente em `src/components/finance/receipts/`.
-- Dropzone simples (input file + drag&drop), preview da miniatura.
-- Chama `supabase.functions.invoke('parse-payment-proof', ...)`.
-- Em sucesso: monta um `FinancialRecord` "virtual" (sem `id` real, com `_isVirtual: true`) contendo os dados extraídos e dispara `EmitReceiptDialog`.
+## 2. Novas funcionalidades
 
-### 3. Ajustes em `EmitReceiptDialog`
-- Aceitar `record` virtual (sem `financial_record_id`): salvar recibo com `financial_record_id = null`.
-- Quando vier de comprovante, exibir badge "Importado de comprovante" e link para visualizar o arquivo original.
-- Passar `payment_proof_path` opcional no insert do `payment_receipts` (campo já existe via observations ou novo campo).
+**Templates por diagnóstico**
+- Biblioteca de templates pré-preenchidos: TEA, Síndrome de Down, Alzheimer, Parkinson, Paralisia Cerebral, AVC, Ansiedade/Depressão, Desenvolvimento Infantil.
+- Cada template traz objetivos sugeridos, recursos típicos, frequência e critérios de avaliação.
+- Ao escolher diagnóstico no passo 1, o app oferece "Aplicar template MuseTera para [diagnóstico]?".
 
-### 4. Migration mínima
-- Adicionar coluna `payment_proof_path TEXT` em `payment_receipts` para guardar o caminho do comprovante original no bucket `payment-proofs` (bucket já existe e é privado).
-- Garantir policy de SELECT em `storage.objects` para `payment-proofs` restrita ao dono via `(storage.foldername(name))[1] = auth.uid()::text`.
+**Preenchimento por IA (a partir de Anamnese + Avaliação)**
+- Botão "🪄 Gerar plano com IA" no topo do formulário.
+- Edge Function `generate-treatment-plan` consulta a anamnese e a última avaliação do paciente, gera proposta de objetivos gerais/específicos, recursos e estratégias usando Lovable AI Gateway (google/gemini-2.5-flash).
+- Usuário revisa e edita antes de salvar.
 
-### 5. Integração na UI
-- Em `src/pages/finance/FinancePage.tsx` (ou onde a aba Recibos é renderizada), adicionar o `<ImportProofButton />` ao lado do título da seção Recibos.
+**Versionamento**
+- Toda alteração após "Ativo" cria uma nova versão (snapshot). Histórico acessível pelo botão "Versões anteriores" com diff visual simplificado.
+- Permite reverter ou comparar.
 
-## Bibliotecas
-- Nenhuma nova. Usa `supabase.functions.invoke`, `react-dropzone` nativo via `<input type="file">`, `sonner` para toasts.
+**Integrações com o ciclo clínico**
+- Pré-popular paciente, diagnóstico e idade a partir da Anamnese ao criar plano.
+- Vincular plano ativo às sessões de Intervenção (mostrar objetivos do plano na tela de sessão).
+- Botão "Gerar Reavaliação" a partir de um plano ativo.
+- Card do paciente em `patient-history` mostra plano ativo + link rápido.
 
-## Custos / privacidade
-- Lovable AI Gateway: ~$0.001 por comprovante (Gemini 2.5 Flash).
-- Comprovantes ficam em bucket privado, acessíveis apenas pelo dono.
+**Status com lógica**
+- Rascunho (autosave), Ativo (após preencher mínimos + revisão), Em revisão, Concluído (com data de encerramento), Arquivado.
+- Transições automáticas e indicação de "campos faltando para ativar".
 
-## Arquivos a criar/editar
-- `supabase/functions/parse-payment-proof/index.ts` (novo)
-- `src/components/finance/receipts/ImportProofDialog.tsx` (novo)
-- `src/hooks/useParsePaymentProof.ts` (novo)
-- `src/components/finance/EmitReceiptDialog.tsx` (ajuste: aceitar record virtual + exibir badge/origem)
-- `src/pages/finance/...` (botão "Importar Comprovante" na aba Recibos)
-- Migration: `ALTER TABLE payment_receipts ADD COLUMN payment_proof_path TEXT` + policies de storage para `payment-proofs`.
+## 3. PDF clínico repaginado
+
+Novo `MusicotherapyTreatmentPlanPDF.tsx` (html2canvas, A4, [10,10], Base64):
+
+- **Capa**: logo dourada MuseTera, título "Plano Musicoterapêutico", nome do paciente, diagnóstico, número do plano, data, profissional responsável.
+- **Sumário** com paginação.
+- **10 seções clínicas** com tipografia hierárquica (Inter/Lora), cabeçalho colorido por seção, ícone, microcopy de contexto.
+- **Cabeçalho/rodapé** em todas as páginas: paciente + nº plano (header), assinatura digital + carimbo + paginação (footer).
+- Bloco final com assinatura digital + carimbo do profissional, registro, contato e QR code de verificação (link público read-only do plano).
+- Salvo automaticamente em `clinical-pdfs/{user_id}/treatment-plan/`.
+
+## 4. Mudanças técnicas (resumo)
+
+```text
+NOVOS ARQUIVOS
+├─ src/data/treatmentPlanTemplates.ts        # templates por diagnóstico
+├─ src/components/treatment-plan/
+│  ├─ PlanListCard.tsx                       # card premium da lista
+│  ├─ PlanStatsHeader.tsx                    # 4 cards de estatística
+│  ├─ PlanWizardLayout.tsx                   # layout responsivo wizard/sidebar
+│  ├─ PlanSectionSidebar.tsx                 # nav + validação por seção
+│  ├─ PlanStickyHeader.tsx                   # header com autosave + ações
+│  ├─ PlanReviewSummary.tsx                  # tela final de revisão
+│  ├─ PlanVersionHistory.tsx                 # versões anteriores
+│  ├─ ApplyTemplateDialog.tsx                # escolher template
+│  └─ AIGeneratePlanButton.tsx               # botão IA + revisão
+├─ supabase/functions/generate-treatment-plan/index.ts
+└─ src/components/MusicotherapyTreatmentPlanPDFv2.tsx
+
+REESCRITOS
+├─ src/pages/musicotherapy-treatment-plans/index.tsx   # lista em cards
+└─ src/pages/musicotherapy-treatment-plan/index.tsx    # quebrado em <300 linhas
+
+BANCO (migração)
+├─ ALTER TABLE treatment_plans
+│  ADD COLUMN plan_number serial,
+│  ADD COLUMN completion_percent int,
+│  ADD COLUMN ended_at timestamptz,
+│  ADD COLUMN source_template text,
+│  ADD COLUMN parent_plan_id uuid REFERENCES treatment_plans(id);
+├─ CREATE TABLE treatment_plan_versions (
+│  id, plan_id, version_number, snapshot jsonb, created_at, created_by)
+│  + RLS (dono via plan_id → professional_id)
+```
+
+## 5. Entrega faseada
+
+1. **Fase 1 (visual + UX)**: lista em cards + stats + duplicar; wizard responsivo; sticky header; review summary; sidebar de validação.
+2. **Fase 2 (PDF v2)**: novo layout clínico com capa, sumário, QR.
+3. **Fase 3 (Templates + IA)**: biblioteca de templates + Edge Function de geração via Lovable AI.
+4. **Fase 4 (Versionamento + integrações)**: tabela de versões, histórico, vínculo com Intervenção e Reavaliação.
+
+## 6. Fora de escopo
+
+- Reformular o hub `/processes` (mantém o visual atual).
+- Migração retroativa de planos antigos para o novo schema de versões (versões só começam a partir desta atualização).
+
+---
+
+Confirma este plano? Posso começar pela Fase 1 assim que aprovar, ou prefere reorganizar a ordem das fases.
