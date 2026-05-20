@@ -41,6 +41,9 @@ import { ValidationSummary } from '@/components/musicotherapy/ValidationSummary'
 import { imageUrlToBase64 } from '@/utils/imageToBase64';
 import { formatAgeString } from '@/utils/dateUtils';
 import { PlanStickyHeader } from '@/components/treatment-plan/PlanStickyHeader';
+import { PlanTemplatesDialog } from '@/components/treatment-plan/PlanTemplatesDialog';
+import { PlanAIGeneratorDialog } from '@/components/treatment-plan/PlanAIGeneratorDialog';
+import { Sparkles, Wand2 } from 'lucide-react';
 
 type Patient = {
   id: string;
@@ -75,6 +78,26 @@ export default function MusicotherapyTreatmentPlanPage() {
   const [isLoadingPatients, setIsLoadingPatients] = useState(true);
   const [activeTab, setActiveTab] = useState("identification");
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [templatesOpen, setTemplatesOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useState(false);
+
+  const applyPartialPlan = (partial: Partial<MusicotherapyTreatmentPlan>) => {
+    const updates: Record<string, any> = {};
+    Object.entries(partial).forEach(([key, value]) => {
+      if (value === undefined || value === null) return;
+      const current = (planData as any)[key];
+      if (Array.isArray(value)) {
+        updates[key] = Array.from(new Set([...(Array.isArray(current) ? current : []), ...value]));
+      } else if (typeof value === 'string') {
+        if (!current || (typeof current === 'string' && current.trim().length < 3)) {
+          updates[key] = value;
+        }
+      } else {
+        if (!current) updates[key] = value;
+      }
+    });
+    if (Object.keys(updates).length) updatePlanData(updates as Partial<MusicotherapyTreatmentPlan>);
+  };
 
   // Warning for unsaved changes
   useEffect(() => {
@@ -360,6 +383,41 @@ export default function MusicotherapyTreatmentPlanPage() {
           onBack={() => navigate(-1)}
           onSave={() => savePlan()}
           onDownload={handleDownloadPDF}
+        />
+
+        {/* Smart actions: templates + AI */}
+        <div className="flex flex-wrap items-center gap-2 mb-4 mt-2 p-3 rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 via-background to-primary/5">
+          <div className="flex-1 min-w-[180px]">
+            <div className="text-sm font-semibold flex items-center gap-1.5">
+              <Sparkles className="h-4 w-4 text-primary" />
+              Acelere a criação do plano
+            </div>
+            <div className="text-xs text-muted-foreground">Aplique um template clínico ou gere uma sugestão com IA.</div>
+          </div>
+          <Button variant="outline" size="sm" onClick={() => setTemplatesOpen(true)}>
+            <Sparkles className="h-4 w-4 mr-2" />
+            Templates
+          </Button>
+          <Button size="sm" onClick={() => setAiOpen(true)} className="bg-gradient-to-r from-primary to-primary/80">
+            <Wand2 className="h-4 w-4 mr-2" />
+            Gerar com IA
+          </Button>
+        </div>
+
+        <PlanTemplatesDialog
+          open={templatesOpen}
+          onOpenChange={setTemplatesOpen}
+          onApply={applyPartialPlan}
+        />
+        <PlanAIGeneratorDialog
+          open={aiOpen}
+          onOpenChange={setAiOpen}
+          patientContext={{
+            patient_full_name: planData.patient_full_name,
+            patient_age: planData.patient_age,
+            clinical_diagnosis: planData.clinical_diagnosis,
+          }}
+          onGenerated={applyPartialPlan}
         />
 
         {/* Validation Summary */}
