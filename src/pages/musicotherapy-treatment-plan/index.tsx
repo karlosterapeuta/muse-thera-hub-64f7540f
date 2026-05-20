@@ -82,6 +82,8 @@ export default function MusicotherapyTreatmentPlanPage() {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [templatesOpen, setTemplatesOpen] = useState(false);
   const [aiOpen, setAiOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
+  const [versionsOpen, setVersionsOpen] = useState(false);
 
   const applyPartialPlan = (partial: Partial<MusicotherapyTreatmentPlan>) => {
     const updates: Record<string, any> = {};
