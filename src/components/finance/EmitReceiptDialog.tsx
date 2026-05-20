@@ -60,17 +60,36 @@ export function EmitReceiptDialog({ open, onClose, record }: Props) {
     if (draftRaw) {
       try { setForm(JSON.parse(draftRaw)); } catch { /* noop */ }
     } else {
+      // Optional hint left by ImportProofDialog (extracted by AI)
+      let hint: { patient_document?: string; payment_method?: string; proof_path?: string | null } = {};
+      try {
+        const raw = sessionStorage.getItem(`receipt-import:${record.id}`);
+        if (raw) hint = JSON.parse(raw);
+      } catch { /* noop */ }
       setForm({
         patient_name: record.patient_name || "",
-        patient_document: "",
+        patient_document: hint.patient_document
+          ? (onlyDigits(hint.patient_document).length > 11
+              ? maskCNPJ(hint.patient_document)
+              : maskCPF(hint.patient_document))
+          : "",
         service_description: record.description || "Sessão de Musicoterapia",
-        payment_method: "pix",
+        payment_method: hint.payment_method || (record as any).payment_method || "pix",
         city: issuer?.city || "",
         observations: "",
       });
     }
     setLastReceipt(null);
   }, [record, issuer?.city]);
+
+  const isVirtualRecord = !!record && record.id.startsWith("virtual-");
+  const proofPath: string | null = (() => {
+    if (!record) return null;
+    try {
+      const raw = sessionStorage.getItem(`receipt-import:${record.id}`);
+      return raw ? (JSON.parse(raw).proof_path ?? null) : null;
+    } catch { return null; }
+  })();
 
   useEffect(() => {
     if (record && !lastReceipt) {
