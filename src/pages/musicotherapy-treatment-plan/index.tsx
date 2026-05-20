@@ -385,6 +385,41 @@ export default function MusicotherapyTreatmentPlanPage() {
           onDownload={handleDownloadPDF}
         />
 
+        {/* Smart actions: templates + AI */}
+        <div className="flex flex-wrap items-center gap-2 mb-4 mt-2 p-3 rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 via-background to-primary/5">
+          <div className="flex-1 min-w-[180px]">
+            <div className="text-sm font-semibold flex items-center gap-1.5">
+              <Sparkles className="h-4 w-4 text-primary" />
+              Acelere a criação do plano
+            </div>
+            <div className="text-xs text-muted-foreground">Aplique um template clínico ou gere uma sugestão com IA.</div>
+          </div>
+          <Button variant="outline" size="sm" onClick={() => setTemplatesOpen(true)}>
+            <Sparkles className="h-4 w-4 mr-2" />
+            Templates
+          </Button>
+          <Button size="sm" onClick={() => setAiOpen(true)} className="bg-gradient-to-r from-primary to-primary/80">
+            <Wand2 className="h-4 w-4 mr-2" />
+            Gerar com IA
+          </Button>
+        </div>
+
+        <PlanTemplatesDialog
+          open={templatesOpen}
+          onOpenChange={setTemplatesOpen}
+          onApply={applyPartialPlan}
+        />
+        <PlanAIGeneratorDialog
+          open={aiOpen}
+          onOpenChange={setAiOpen}
+          patientContext={{
+            patient_full_name: planData.patient_full_name,
+            patient_age: planData.patient_age,
+            clinical_diagnosis: planData.clinical_diagnosis,
+          }}
+          onGenerated={applyPartialPlan}
+        />
+
         {/* Validation Summary */}
         <ValidationSummary
           errors={getValidationErrors()}
