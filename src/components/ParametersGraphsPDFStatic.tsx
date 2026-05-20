@@ -74,7 +74,7 @@ export const ParametersGraphsPDFStatic: React.FC<ParametersGraphsPDFStaticProps>
   };
 
   return (
-    <div style={{ ...baseText, background: '#ffffff', width: '210mm', padding: '14mm 14mm 16mm' }}>
+    <div style={{ ...baseText, background: '#ffffff', width: '100%', fontSize: 11, lineHeight: 1.45 }}>
       {/* HEADER */}
       <div
         style={{
