@@ -25,6 +25,8 @@ import { MuseteraReportPDF } from "@/components/MuseteraReportPDF";
 import { EnhancedMuseteraReportPDF } from "@/components/EnhancedMuseteraReportPDF";
 import { EvaluationTextPDF } from "@/components/EvaluationTextPDF";
 import { renderForPdf } from '@/utils/renderForPdf';
+import { generateSectionPdf } from '@/utils/sectionPdfGenerator';
+import { GraphReportPDF } from '@/components/pdf/GraphReportPDF';
 import { PDFPreviewDialog } from "@/components/PDFPreviewDialog";
 import { PatientSelect } from "../anamnesis/components/PatientSelect";
 import { EvaluationLevelsHero } from "@/components/EvaluationLevelsHero";
@@ -896,88 +898,45 @@ export default function Evaluation() {
   const handleGenerateParametersPDF = async () => {
     let loadingToast: string | number | undefined;
     try {
-      loadingToast = toast.loading("Gerando PDF de Parâmetros e Gráficos...");
-      
-      // Obter todas as avaliações do paciente selecionado
-      const patientAllEvaluations = selectedPatient 
-        ? allEvaluations.filter(e => e.patient_id === selectedPatient) 
-        : [];
+      loadingToast = toast.loading("Gerando PDF de Gráficos...");
 
-      // Converter imagens para Base64
       let professionalPhotoBase64: string | undefined;
       let digitalStampBase64: string | undefined;
-
       const photoUrl = professionalData?.stamp_photo_url || professionalData?.avatar_url;
       if (photoUrl) {
-        try {
-          professionalPhotoBase64 = await imageUrlToBase64(photoUrl);
-        } catch (e) {
-          console.warn("Não foi possível converter foto do profissional:", e);
-        }
+        try { professionalPhotoBase64 = await imageUrlToBase64(photoUrl); } catch (e) { console.warn(e); }
       }
-
       if (professionalData?.digital_stamp_url) {
-        try {
-          digitalStampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
-        } catch (e) {
-          console.warn("Não foi possível converter carimbo digital:", e);
-        }
+        try { digitalStampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url); } catch (e) { console.warn(e); }
       }
 
-      const pdfContent = (
-        <div id="pdf-content" style={{ display: 'block' }}>
-          <ParametersGraphsPDF
-            categoryData={subdomainScores}
-            pieData={pieData}
-            patientName={selectedPatientData?.name}
-            professionalData={professionalData}
-            radarData={domainScores}
-            overallScore={overallScore}
-            evaluationDate={evaluationDate}
-            allEvaluations={patientAllEvaluations}
-            professionalPhotoBase64={professionalPhotoBase64}
-            digitalStampBase64={digitalStampBase64}
-            selectedParameters={selections}
-            evaluationDomains={evaluationDomains}
-          />
-        </div>
+      const filename = `graficos-${(selectedPatientData?.name || 'paciente').replace(/\s+/g, '_')}-${format(evaluationDate, 'yyyy-MM-dd')}.pdf`;
+      const patientAge = calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? (selectedPatientData?.age ?? null);
+
+      const blob = await generateSectionPdf(
+        <GraphReportPDF
+          patientName={selectedPatientData?.name}
+          patientAge={patientAge}
+          professionalData={professionalData}
+          evaluationDate={evaluationDate}
+          selections={selections}
+          evaluationDomains={evaluationDomains}
+          categoryData={subdomainScores}
+          pieData={pieData}
+          radarData={domainScores}
+          overallScore={overallScore}
+          professionalPhotoBase64={professionalPhotoBase64}
+          digitalStampBase64={digitalStampBase64}
+        />,
+        { filename }
       );
 
-      const { root, ready, cleanup } = renderForPdf(pdfContent);
-      await ready;
-      try {
+      setPdfPreviewBlob(blob);
+      setPdfPreviewFilename(filename);
+      setPdfPreviewOpen(true);
+      try { await savePDFToStorage(blob, filename, "evaluation"); } catch (e) { console.warn(e); }
 
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      const opt = {
-        margin: [10, 10],
-        filename: `parametros-graficos-${selectedPatientData?.name || 'paciente'}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: '#ffffff',
-          logging: false,
-          letterRendering: true
-        },
-        jsPDF: { 
-          unit: 'mm', 
-          format: 'a4', 
-          orientation: 'portrait',
-          compress: true
-        }
-      };
-
-      const pdfInst2 = html2pdf().set(opt).from(root);
-      await pdfInst2.save();
-      try { const blob = await pdfInst2.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
-      
-      } finally {
-        cleanup();
-      }
-      
-      toast.success("PDF de Parâmetros e Gráficos gerado com sucesso!", { id: loadingToast });
+      toast.success("Pré-visualização pronta. Revise e clique em Baixar PDF.", { id: loadingToast });
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
       toast.error("Erro ao gerar PDF. Por favor, tente novamente.", { id: loadingToast });
