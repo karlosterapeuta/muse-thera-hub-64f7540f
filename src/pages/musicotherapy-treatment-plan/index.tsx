@@ -40,6 +40,7 @@ import { EvaluationCriteriaSelector } from '@/components/musicotherapy/Evaluatio
 import { ValidationSummary } from '@/components/musicotherapy/ValidationSummary';
 import { imageUrlToBase64 } from '@/utils/imageToBase64';
 import { formatAgeString } from '@/utils/dateUtils';
+import { PlanStickyHeader } from '@/components/treatment-plan/PlanStickyHeader';
 
 type Patient = {
   id: string;
@@ -296,6 +297,37 @@ export default function MusicotherapyTreatmentPlanPage() {
     { id: "re-evaluation", label: "10. Reavaliação", icon: RefreshCw },
   ];
 
+  // Completion percentage across key fields
+  const completion = (() => {
+    const checks: boolean[] = [
+      !!planData.patient_full_name,
+      !!planData.patient_age,
+      !!planData.clinical_diagnosis,
+      !!planData.responsible_person,
+      !!planData.clinical_family_history,
+      !!planData.physical_cognitive_conditions,
+      !!planData.interaction_communication_level,
+      !!planData.musical_interests,
+      !!planData.observed_behaviors,
+      (planData.general_objectives?.length || 0) > 0,
+      (planData.specific_objectives?.length || 0) > 0,
+      (planData.musical_instruments?.length || 0) > 0,
+      (planData.technological_resources?.length || 0) > 0 ||
+        (planData.voice_body_resources?.length || 0) > 0 ||
+        (planData.complementary_materials?.length || 0) > 0,
+      !!planData.musical_improvisation || !!planData.musical_recreation || !!planData.musical_composition,
+      !!planData.receptive_listening || !!planData.rhythmic_dynamics,
+      !!planData.weekly_sessions && !!planData.session_duration_minutes,
+      (planData.evaluation_criteria_list?.length || 0) > 0,
+      !!planData.session_structure,
+      !!planData.activity_sequence || !!planData.flexibility_adjustments,
+      !!planData.reevaluation_frequency || !!planData.evolution_recording,
+    ];
+    const filled = checks.filter(Boolean).length;
+    return Math.round((filled / checks.length) * 100);
+  })();
+
+
   if (isLoading && id) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -311,79 +343,34 @@ export default function MusicotherapyTreatmentPlanPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background py-8 px-4">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              onClick={() => navigate(-1)}
-              className="p-2"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                {id ? 'Editar' : 'Novo'} Plano Musicoterapêutico
-              </h1>
-              <p className="text-muted-foreground">
-                Modelo profissional completo em 10 seções
-              </p>
-            </div>
-          </div>
-          
-          <div className="flex gap-2 items-center">
-            {/* Save status indicator */}
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              {isAutoSaving && (
-                <div className="flex items-center gap-1">
-                  <RefreshCw className="h-3 w-3 animate-spin" />
-                  <span>Salvando automaticamente...</span>
-                </div>
-              )}
-              {hasUnsavedChanges && !isAutoSaving && (
-                <div className="flex items-center gap-1 text-amber-600">
-                  <div className="h-2 w-2 rounded-full bg-amber-600" />
-                  <span>Alterações não salvas</span>
-                </div>
-              )}
-              {lastSaved && !hasUnsavedChanges && !isAutoSaving && (
-                <div className="flex items-center gap-1 text-green-600">
-                  <CheckCircle className="h-3 w-3" />
-                  <span>Salvo às {lastSaved.toLocaleTimeString()}</span>
-                </div>
-              )}
-            </div>
-            
-            <Button
-              onClick={() => savePlan()}
-              disabled={isSaving || isAutoSaving}
-              className="bg-green-600 hover:bg-green-700"
-            >
-              <Save className="h-4 w-4 mr-2" />
-              {isSaving ? 'Salvando...' : 'Salvar Plano'}
-            </Button>
-            <Button
-              onClick={handleDownloadPDF}
-              variant="outline"
-              disabled={!planData.patient_full_name || isGeneratingPDF}
-            >
-              <Download className="h-4 w-4 mr-2" />
-              {isGeneratingPDF ? 'Gerando PDF...' : 'Baixar PDF'}
-            </Button>
-          </div>
-        </div>
+    <div className="min-h-screen bg-background">
+      <div className="max-w-6xl mx-auto px-4 pb-10">
+        {/* Sticky Header */}
+        <PlanStickyHeader
+          isEditing={!!id}
+          patientName={planData.patient_full_name}
+          status={planData.status}
+          completion={completion}
+          isAutoSaving={isAutoSaving}
+          isSaving={isSaving}
+          hasUnsavedChanges={hasUnsavedChanges}
+          lastSaved={lastSaved}
+          isGeneratingPDF={isGeneratingPDF}
+          canDownload={!!planData.patient_full_name}
+          onBack={() => navigate(-1)}
+          onSave={() => savePlan()}
+          onDownload={handleDownloadPDF}
+        />
 
         {/* Validation Summary */}
-        <ValidationSummary 
-          errors={getValidationErrors()} 
+        <ValidationSummary
+          errors={getValidationErrors()}
           isValid={validateRequiredFields()}
           className="mb-6"
         />
 
         {/* Tabs Navigation */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="w-full">
           <TabsList className="grid grid-cols-5 lg:grid-cols-10 gap-1 h-auto p-1 bg-muted/50">
             {tabSections.map((section) => {
               const IconComponent = section.icon;
@@ -391,6 +378,7 @@ export default function MusicotherapyTreatmentPlanPage() {
                 <TabsTrigger
                   key={section.id}
                   value={section.id}
+
                   className="flex flex-col items-center gap-1 p-3 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                 >
                   <IconComponent className="h-4 w-4" />
