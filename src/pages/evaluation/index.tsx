@@ -829,7 +829,8 @@ export default function Evaluation() {
         </div>
       );
 
-      const { root, cleanup } = renderForPdf(pdfContent);
+      const { root, ready, cleanup } = renderForPdf(pdfContent);
+      await ready;
       try {
 
       await new Promise(resolve => setTimeout(resolve, 2000));
@@ -937,7 +938,8 @@ export default function Evaluation() {
         </div>
       );
 
-      const { root, cleanup } = renderForPdf(pdfContent);
+      const { root, ready, cleanup } = renderForPdf(pdfContent);
+      await ready;
       try {
 
       await new Promise(resolve => setTimeout(resolve, 1500));
@@ -1059,7 +1061,8 @@ export default function Evaluation() {
         </div>
       );
 
-      const { root, cleanup } = renderForPdf(pdfContent);
+      const { root, ready, cleanup } = renderForPdf(pdfContent);
+      await ready;
       try {
 
       await new Promise(resolve => setTimeout(resolve, 1500));
@@ -1149,7 +1152,8 @@ export default function Evaluation() {
         </div>
       );
 
-      const { root, cleanup } = renderForPdf(pdfContent);
+      const { root, ready, cleanup } = renderForPdf(pdfContent);
+      await ready;
       try {
 
       await new Promise(resolve => setTimeout(resolve, 2000));
@@ -1379,7 +1383,8 @@ export default function Evaluation() {
         </div>
       );
 
-      const { root, cleanup } = renderForPdf(pdfContent);
+      const { root, ready, cleanup } = renderForPdf(pdfContent);
+      await ready;
       try {
 
       await new Promise(resolve => setTimeout(resolve, 1500));
@@ -1513,7 +1518,8 @@ export default function Evaluation() {
         </div>
       );
 
-      const { root, cleanup } = renderForPdf(pdfContent);
+      const { root, ready, cleanup } = renderForPdf(pdfContent);
+      await ready;
       try {
 
       await new Promise(resolve => setTimeout(resolve, 1500));
