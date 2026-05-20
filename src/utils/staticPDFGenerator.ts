@@ -69,10 +69,10 @@ export const generateStaticPDF = async (
       margin: [15, 15, 15, 15], // margem em mm
       filename,
       pagebreak: { 
-        mode: ['css', 'legacy'],
+        mode: ['css', 'legacy', 'avoid-all'],
         before: '.page-break-before',
         after: '.page-break-after',
-        avoid: '.page-break-avoid'
+        avoid: ['.page-break-avoid', 'table', 'tr', 'thead', 'tbody', 'svg']
       },
       image: { 
         type: 'jpeg', 
