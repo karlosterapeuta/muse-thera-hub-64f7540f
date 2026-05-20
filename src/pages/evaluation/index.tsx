@@ -25,6 +25,7 @@ import { MuseteraReportPDF } from "@/components/MuseteraReportPDF";
 import { EnhancedMuseteraReportPDF } from "@/components/EnhancedMuseteraReportPDF";
 import { EvaluationTextPDF } from "@/components/EvaluationTextPDF";
 import { renderForPdf } from '@/utils/renderForPdf';
+import { PDFPreviewDialog } from "@/components/PDFPreviewDialog";
 import { PatientSelect } from "../anamnesis/components/PatientSelect";
 import { EvaluationLevelsHero } from "@/components/EvaluationLevelsHero";
 import { 
