@@ -451,124 +451,141 @@ export function MusicoterapiaReportWizard({
   const StepIcon = currentStepData.icon;
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
-      {/* Hero Header Section */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-purple-600 via-purple-700 to-pink-600 rounded-2xl shadow-2xl">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 bg-white/10">
-          <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-transparent"></div>
+    <div className="max-w-3xl mx-auto space-y-12 sm:space-y-16 px-2 sm:px-0" style={{ fontFamily: "'Work Sans', sans-serif" }}>
+      {/* Editorial Hero — Monolithic noir & gold */}
+      <header className="flex flex-col items-center text-center space-y-6 sm:space-y-8 pt-2">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#c9a84c]/30 bg-[#c9a84c]/5 text-[#f0d78c] text-[10px] font-bold tracking-[0.2em] uppercase">
+          Protocolo Clínico · TEA
         </div>
-        
-        <div className="relative p-8 lg:p-12">
-          {/* Title Section */}
-          <div className="flex items-center space-x-4 mb-8">
-            <div className="flex items-center justify-center w-16 h-16 bg-white/20 backdrop-blur-sm rounded-xl shadow-lg">
-              <Music className="h-8 w-8 text-white" />
-            </div>
-            <div>
-              <h1 className="text-3xl lg:text-4xl font-bold text-white mb-2">
-                Relatório de Musicoterapia
-              </h1>
-              <p className="text-lg text-white/90">
-                Especializado para Transtorno do Espectro Autista (TEA)
-              </p>
-            </div>
-          </div>
-          
-          {/* Progress Section */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-white font-medium">Progresso do Relatório</span>
-              <span className="text-white text-lg font-bold">{Math.round(progress)}%</span>
-            </div>
-            <div className="bg-white/20 rounded-full h-3 mb-6 overflow-hidden">
-              <div 
-                className="bg-gradient-to-r from-white to-yellow-200 h-full rounded-full transition-all duration-500 ease-out shadow-lg"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-            
-            {/* Step Navigation Grid */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-              {STEPS.map((step, index) => {
-                const isCompleted = index < currentStep;
-                const isCurrent = index === currentStep;
-                const Icon = step.icon;
-                
-                return (
-                  <button
-                    key={step.id}
-                    onClick={() => setCurrentStep(index)}
-                    className={`
-                      relative p-4 rounded-xl text-left transition-all duration-300 border-2
-                      ${isCurrent 
-                        ? 'bg-white text-purple-700 border-white shadow-lg scale-105' 
-                        : isCompleted 
-                        ? 'bg-white/25 text-white border-white/40 hover:bg-white/35' 
-                        : 'bg-white/10 text-white/80 border-white/20 hover:bg-white/20'
-                      }
-                    `}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div className={`
-                        flex items-center justify-center w-8 h-8 rounded-lg
-                        ${isCurrent ? 'bg-purple-100' : isCompleted ? 'bg-white/30' : 'bg-white/20'}
-                      `}>
-                        <Icon className={`h-4 w-4 ${isCurrent ? 'text-purple-700' : 'text-white'}`} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className={`text-sm font-bold truncate ${isCurrent ? 'text-purple-700' : 'text-white drop-shadow-sm'}`}>
-                          {step.title}
-                        </div>
-                        <div className={`text-xs truncate ${isCurrent ? 'text-purple-500' : isCompleted ? 'text-yellow-200' : 'text-pink-200'}`}>
-                          {step.description}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Completion indicator */}
-                    {isCompleted && !isCurrent && (
-                      <div className="absolute top-2 right-2">
-                        <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
-                          <Check className="h-3 w-3 text-white" />
-                        </div>
-                      </div>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Step Content */}
-      <div ref={stepContentRef} className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Main Content */}
-        <div className="lg:col-span-3">
-          <Card className="overflow-hidden border-0 shadow-lg">
-            {/* Step Header with gradient accent */}
-            <div className="relative bg-gradient-to-r from-purple-600 via-purple-500 to-pink-500 p-6">
-              <div className="absolute inset-0 bg-white/10 backdrop-blur-sm" />
-              <div className="relative flex items-center gap-4">
-                <div className="flex items-center justify-center w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl shadow-lg">
-                  <StepIcon className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-white">{currentStepData.title}</h2>
-                  <p className="text-white/80 text-sm mt-1">{currentStepData.description}</p>
-                </div>
-              </div>
-            </div>
-            <CardContent className="p-8">
-              
-              {renderStepFields()}
-            </CardContent>
-          </Card>
+        <div className="space-y-3 sm:space-y-4">
+          <h1
+            className="text-5xl sm:text-6xl md:text-7xl text-[#f0d78c] leading-[1.05]"
+            style={{ fontFamily: "'Instrument Serif', serif" }}
+          >
+            Relatório MuseTera TEA
+          </h1>
+          <p className="text-gray-400 max-w-xl mx-auto text-base sm:text-lg font-light leading-relaxed">
+            Estrutura premium para documentação de avaliação, objetivos, técnicas e evolução clínica em musicoterapia.
+          </p>
         </div>
+
+        {/* Progresso editorial */}
+        <div className="w-full max-w-md pt-2">
+          <div className="flex justify-between items-center mb-2 text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold">
+            <span>Progresso</span>
+            <span className="text-[#c9a84c]">{Math.round(progress)}%</span>
+          </div>
+          <div className="h-[2px] bg-white/5 overflow-hidden rounded-full">
+            <div
+              className="h-full bg-gradient-to-r from-[#c9a84c] to-[#f0d78c] transition-all duration-500"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
+      </header>
+
+      {/* Stepper Indicator — horizontal numbered */}
+      <nav className="relative px-2 overflow-x-auto">
+        <div className="absolute top-5 left-0 w-full h-[1px] bg-white/5" />
+        <ul className="relative flex justify-between min-w-[640px] sm:min-w-0">
+          {STEPS.map((step, index) => {
+            const isCompleted = index < currentStep;
+            const isCurrent = index === currentStep;
+            return (
+              <li key={step.id} className="flex flex-col items-center gap-2 sm:gap-3 flex-1">
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(index)}
+                  className={`h-10 w-10 rounded-full flex items-center justify-center text-xs font-black ring-8 ring-[#0d0d0d] transition-all
+                    ${isCurrent
+                      ? 'bg-[#c9a84c] text-[#0d0d0d] shadow-[0_0_24px_rgba(201,168,76,0.35)] scale-110'
+                      : isCompleted
+                        ? 'bg-[#1a1a1a] border border-[#c9a84c]/60 text-[#f0d78c]'
+                        : 'bg-[#1a1a1a] border border-white/15 text-white/60 hover:border-[#c9a84c]/40'
+                    }`}
+                >
+                  {isCompleted ? <Check className="h-4 w-4" /> : String(index + 1).padStart(2, '0')}
+                </button>
+                <span
+                  className={`text-[9px] uppercase tracking-widest font-bold text-center transition-colors
+                    ${isCurrent ? 'text-[#c9a84c]' : isCompleted ? 'text-[#f0d78c]/70' : 'text-gray-500'}`}
+                  style={{ fontFamily: "'Work Sans'" }}
+                >
+                  {step.title.replace(/^\d+\.\s*/, '').split(' ').slice(0, 2).join(' ')}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+
+      {/* Main Wizard Card — Monolithic */}
+      <div ref={stepContentRef} className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <section className="lg:col-span-3 bg-[#1a1a1a] rounded-[2rem] sm:rounded-[2.5rem] border border-white/5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden relative">
+          {/* Premium accent light */}
+          <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#c9a84c]/10 blur-[100px] rounded-full pointer-events-none" />
+
+          <div className="p-6 sm:p-10 lg:p-12 space-y-10 relative z-10">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-[#c9a84c] font-bold">
+                <StepIcon className="h-3.5 w-3.5" />
+                Etapa {String(currentStep + 1).padStart(2, '0')} de {String(STEPS.length).padStart(2, '0')}
+              </div>
+              <h2
+                className="text-3xl sm:text-4xl text-[#f0d78c]"
+                style={{ fontFamily: "'Instrument Serif', serif" }}
+              >
+                {currentStepData.title.replace(/^\d+\.\s*/, '')}
+              </h2>
+              <p className="text-sm text-gray-500 font-light">{currentStepData.description}</p>
+            </div>
+
+            <div className="text-foreground">
+              {renderStepFields()}
+            </div>
+
+            <footer className="pt-8 flex flex-col sm:flex-row items-center justify-between border-t border-white/5 gap-6">
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-[#c9a84c] animate-pulse" />
+                <span className="text-[10px] text-gray-500 uppercase tracking-widest font-medium">
+                  Sincronizado com Nuvem
+                </span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="ghost"
+                  onClick={handlePrevStep}
+                  disabled={currentStep === 0}
+                  className="text-gray-400 hover:text-[#f0d78c] hover:bg-white/5"
+                >
+                  <ChevronLeft className="h-4 w-4 mr-2" />
+                  Anterior
+                </Button>
+                <button
+                  type="button"
+                  onClick={handleNextStep}
+                  disabled={currentStep === STEPS.length - 1 || !canProceed()}
+                  className="group flex items-center gap-3 bg-[#c9a84c] hover:bg-[#f0d78c] disabled:opacity-40 disabled:cursor-not-allowed text-[#0d0d0d] px-6 sm:px-10 py-3 sm:py-4 rounded-2xl font-bold transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+                  style={{ fontFamily: "'Work Sans'" }}
+                >
+                  Próxima Seção
+                  <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
+            </footer>
+
+            {!canProceed() && (
+              <p className="text-xs text-destructive text-center">
+                Preencha os campos obrigatórios para continuar
+              </p>
+            )}
+          </div>
+        </section>
 
         {/* Quick Fill Panel */}
-        <div className="space-y-4">
+        <aside className="space-y-4">
           {showQuickFill && (
             <MusicoterapiaQuickFill
               activeField={activeField}
@@ -576,40 +593,8 @@ export function MusicoterapiaReportWizard({
               onClose={() => setShowQuickFill(false)}
             />
           )}
-        </div>
+        </aside>
       </div>
-
-      {/* Navigation Controls */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex items-center justify-between">
-            <Button
-              variant="outline"
-              onClick={handlePrevStep}
-              disabled={currentStep === 0}
-            >
-              <ChevronLeft className="h-4 w-4 mr-2" />
-              Anterior
-            </Button>
-
-            <div className="text-sm text-muted-foreground">
-              {!canProceed() && (
-                <span className="text-destructive">
-                  Preencha os campos obrigatórios para continuar
-                </span>
-              )}
-            </div>
-
-            <Button
-              onClick={handleNextStep}
-              disabled={currentStep === STEPS.length - 1 || !canProceed()}
-            >
-              Próxima
-              <ChevronRight className="h-4 w-4 ml-2" />
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
