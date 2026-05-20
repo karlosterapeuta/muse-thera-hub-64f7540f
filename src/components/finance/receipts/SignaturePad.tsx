@@ -14,8 +14,21 @@ export function SignaturePad({ initialUrl, onSave, saving }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawing = useRef(false);
   const [preview, setPreview] = useState<string | null>(initialUrl || null);
+  const [hasInk, setHasInk] = useState(false);
 
   useEffect(() => { setPreview(initialUrl || null); }, [initialUrl]);
+
+  const paintWhite = () => {
+    const c = canvasRef.current;
+    const ctx = c?.getContext("2d");
+    if (!c || !ctx) return;
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, c.width, c.height);
+  };
+
+  useEffect(() => {
+    paintWhite();
+  }, []);
 
   const getCtx = () => canvasRef.current?.getContext("2d");
 
@@ -37,21 +50,22 @@ export function SignaturePad({ initialUrl, onSave, saving }: Props) {
     ctx.lineWidth = 2.2;
     ctx.lineCap = "round";
     ctx.stroke();
+    if (!hasInk) setHasInk(true);
   };
   const end = () => { drawing.current = false; };
 
   const clear = () => {
-    const ctx = getCtx();
-    if (!ctx || !canvasRef.current) return;
-    ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    paintWhite();
+    setHasInk(false);
   };
 
   const saveDraw = async () => {
     const c = canvasRef.current;
     if (!c) return;
+    if (!hasInk) { toast.error("Desenhe sua assinatura antes de salvar"); return; }
     const dataUrl = c.toDataURL("image/png");
-    await onSave(dataUrl);
     setPreview(dataUrl);
+    await onSave(dataUrl);
   };
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,11 +83,13 @@ export function SignaturePad({ initialUrl, onSave, saving }: Props) {
 
   return (
     <div className="space-y-3">
-      {preview && (
-        <div className="rounded-lg border border-border bg-background/50 p-3 flex items-center justify-center">
+      <div className="rounded-lg border border-border bg-white p-3 flex items-center justify-center min-h-[110px]">
+        {preview ? (
           <img src={preview} alt="Assinatura" className="h-20 object-contain" />
-        </div>
-      )}
+        ) : (
+          <span className="text-xs text-muted-foreground">Sua assinatura salva aparecerá aqui</span>
+        )}
+      </div>
       <Tabs defaultValue="draw">
         <TabsList>
           <TabsTrigger value="draw">Desenhar</TabsTrigger>

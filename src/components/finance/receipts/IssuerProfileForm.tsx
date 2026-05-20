@@ -85,30 +85,34 @@ export function IssuerProfileForm() {
       const publicUrl = `${pub.publicUrl}?t=${Date.now()}`;
       setForm((f) => ({ ...f, signature_url: publicUrl }));
 
-      // Persistir imediatamente no banco (não esperar o usuário clicar em "Salvar Perfil")
-      if (form.legal_name.trim() && form.document_number) {
-        try {
-          await save.mutateAsync({
-            document_type: docType,
-            document_number: onlyDigits(form.document_number),
-            legal_name: form.legal_name,
-            trade_name: form.trade_name || null,
-            address: form.address || null,
-            city: form.city || null,
-            state: form.state || null,
-            zip_code: form.zip_code || null,
-            phone: form.phone || null,
-            email: form.email || null,
-            signature_url: publicUrl,
-            verified,
-            verified_at: verified ? new Date().toISOString() : null,
-          });
-          toast.success("Assinatura salva e persistida!");
-        } catch (persistErr: any) {
-          toast.warning("Assinatura enviada, mas o perfil precisa ser salvo. Clique em 'Salvar Perfil'.");
-        }
+      // Persistir imediatamente
+      if (existing?.id) {
+        // Já existe perfil → patch direto da coluna signature_url
+        const { error: updErr } = await supabase
+          .from("receipt_issuer_profiles" as any)
+          .update({ signature_url: publicUrl })
+          .eq("user_id", user.id);
+        if (updErr) throw updErr;
+        toast.success("Assinatura salva!");
+      } else if (form.legal_name.trim() && form.document_number) {
+        await save.mutateAsync({
+          document_type: docType,
+          document_number: onlyDigits(form.document_number),
+          legal_name: form.legal_name,
+          trade_name: form.trade_name || null,
+          address: form.address || null,
+          city: form.city || null,
+          state: form.state || null,
+          zip_code: form.zip_code || null,
+          phone: form.phone || null,
+          email: form.email || null,
+          signature_url: publicUrl,
+          verified,
+          verified_at: verified ? new Date().toISOString() : null,
+        });
+        toast.success("Assinatura salva!");
       } else {
-        toast.success("Assinatura enviada! Preencha os dados e clique em 'Salvar Perfil' para finalizar.");
+        toast.warning("Assinatura carregada. Preencha CNPJ/CPF e Nome e clique em 'Salvar Perfil' para persistir.");
       }
     } catch (e: any) {
       toast.error(e.message || "Erro ao enviar assinatura");
