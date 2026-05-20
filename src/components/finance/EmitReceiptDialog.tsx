@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   ReceiptIcon, DownloadIcon, MessageCircleIcon, MailIcon, Loader2Icon,
-  AlertCircleIcon, ShieldCheckIcon, PrinterIcon, EyeIcon, EyeOffIcon, UsersIcon, FileTextIcon,
+  AlertCircleIcon, ShieldCheckIcon, PrinterIcon, EyeIcon, EyeOffIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
