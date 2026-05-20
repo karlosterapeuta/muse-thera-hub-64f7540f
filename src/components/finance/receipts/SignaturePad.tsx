@@ -50,21 +50,22 @@ export function SignaturePad({ initialUrl, onSave, saving }: Props) {
     ctx.lineWidth = 2.2;
     ctx.lineCap = "round";
     ctx.stroke();
+    if (!hasInk) setHasInk(true);
   };
   const end = () => { drawing.current = false; };
 
   const clear = () => {
-    const ctx = getCtx();
-    if (!ctx || !canvasRef.current) return;
-    ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    paintWhite();
+    setHasInk(false);
   };
 
   const saveDraw = async () => {
     const c = canvasRef.current;
     if (!c) return;
+    if (!hasInk) { toast.error("Desenhe sua assinatura antes de salvar"); return; }
     const dataUrl = c.toDataURL("image/png");
-    await onSave(dataUrl);
     setPreview(dataUrl);
+    await onSave(dataUrl);
   };
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
