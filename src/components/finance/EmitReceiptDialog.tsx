@@ -105,29 +105,6 @@ export function EmitReceiptDialog({ open, onClose, record }: Props) {
 
   const missingProfile = !loadingIssuer && (!issuer || !issuer.legal_name || !issuer.document_number);
 
-  const handleSelectClient = (clientId: string) => {
-    const c = clients.find((x) => x.id === clientId);
-    if (!c) return;
-    const doc = c.document_number ? (c.document_type === "cnpj" ? maskCNPJ(c.document_number) : maskCPF(c.document_number)) : "";
-    setForm((f) => ({
-      ...f,
-      patient_name: c.name,
-      patient_document: doc,
-      city: c.city || f.city,
-    }));
-    setClientPopOpen(false);
-  };
-
-  const handleSelectTemplate = (tplId: string) => {
-    const t = templates.find((x) => x.id === tplId);
-    if (!t) return;
-    setForm((f) => ({
-      ...f,
-      service_description: t.description || t.title,
-      payment_method: t.payment_method || f.payment_method,
-    }));
-  };
-
   const doGenerate = async (alsoPrint: boolean) => {
     if (!issuer) return;
     setGenerating(true);
