@@ -43,7 +43,9 @@ import { formatAgeString } from '@/utils/dateUtils';
 import { PlanStickyHeader } from '@/components/treatment-plan/PlanStickyHeader';
 import { PlanTemplatesDialog } from '@/components/treatment-plan/PlanTemplatesDialog';
 import { PlanAIGeneratorDialog } from '@/components/treatment-plan/PlanAIGeneratorDialog';
-import { Sparkles, Wand2 } from 'lucide-react';
+import { PlanImportClinicalDialog } from '@/components/treatment-plan/PlanImportClinicalDialog';
+import { PlanVersionsDialog } from '@/components/treatment-plan/PlanVersionsDialog';
+import { Sparkles, Wand2, FileSearch, History } from 'lucide-react';
 
 type Patient = {
   id: string;
@@ -80,6 +82,8 @@ export default function MusicotherapyTreatmentPlanPage() {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [templatesOpen, setTemplatesOpen] = useState(false);
   const [aiOpen, setAiOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
+  const [versionsOpen, setVersionsOpen] = useState(false);
 
   const applyPartialPlan = (partial: Partial<MusicotherapyTreatmentPlan>) => {
     const updates: Record<string, any> = {};
@@ -394,9 +398,17 @@ export default function MusicotherapyTreatmentPlanPage() {
             </div>
             <div className="text-xs text-muted-foreground">Aplique um template clínico ou gere uma sugestão com IA.</div>
           </div>
+          <Button variant="outline" size="sm" onClick={() => setImportOpen(true)} disabled={!planData.patient_id}>
+            <FileSearch className="h-4 w-4 mr-2" />
+            Importar prontuário
+          </Button>
           <Button variant="outline" size="sm" onClick={() => setTemplatesOpen(true)}>
             <Sparkles className="h-4 w-4 mr-2" />
             Templates
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => setVersionsOpen(true)} disabled={!planData.id}>
+            <History className="h-4 w-4 mr-2" />
+            Versões
           </Button>
           <Button size="sm" onClick={() => setAiOpen(true)} className="bg-gradient-to-r from-primary to-primary/80">
             <Wand2 className="h-4 w-4 mr-2" />
@@ -418,6 +430,20 @@ export default function MusicotherapyTreatmentPlanPage() {
             clinical_diagnosis: planData.clinical_diagnosis,
           }}
           onGenerated={applyPartialPlan}
+        />
+        <PlanImportClinicalDialog
+          open={importOpen}
+          onOpenChange={setImportOpen}
+          patientId={planData.patient_id}
+          onApply={applyPartialPlan}
+        />
+        <PlanVersionsDialog
+          open={versionsOpen}
+          onOpenChange={setVersionsOpen}
+          planId={planData.id}
+          professionalId={planData.professional_id}
+          currentData={planData}
+          onRestore={(snap) => updatePlanData(snap)}
         />
 
         {/* Validation Summary */}

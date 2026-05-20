@@ -1559,6 +1559,36 @@ export type Database = {
           },
         ]
       }
+      treatment_plan_versions: {
+        Row: {
+          created_at: string
+          id: string
+          label: string | null
+          plan_id: string
+          professional_id: string
+          snapshot: Json
+          version_number: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label?: string | null
+          plan_id: string
+          professional_id: string
+          snapshot: Json
+          version_number: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string | null
+          plan_id?: string
+          professional_id?: string
+          snapshot?: Json
+          version_number?: number
+        }
+        Relationships: []
+      }
       treatment_plans: {
         Row: {
           activity_sequence: string | null
