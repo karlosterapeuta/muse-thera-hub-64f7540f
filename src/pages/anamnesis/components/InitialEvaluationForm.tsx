@@ -97,7 +97,7 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
         totalSections={11}
         completedSections={[
           isSectionComplete(section1Fields),
-          isSectionComplete(section2Fields),
+          isSection2Complete(section2Fields),
           isSectionComplete(section3Fields),
           isSectionComplete(section4Fields),
           isSectionComplete(section5Fields),
@@ -166,7 +166,7 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
         title="Histórico Clínico e Médico"
         icon={Stethoscope}
         sectionNumber={2}
-        isComplete={isSectionComplete(section2Fields)}
+        isComplete={isSection2Complete(section2Fields)}
       >
         <div className="space-y-6">
           <ModernCheckboxGrid
