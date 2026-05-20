@@ -220,26 +220,27 @@ export const ParametersGraphsPDFStatic: React.FC<ParametersGraphsPDFStaticProps>
         </div>
       </div>
 
-      {/* BAR CHART — page break before for clarity */}
-      <div style={{ pageBreakBefore: 'always' }} />
-      <div style={sectionTitle}>Desempenho por Subdomínio</div>
-      <div style={{ border: '1px solid #e2e8f0', borderRadius: 6, padding: 14, marginBottom: 22 }}>
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <StaticChart
-            data={categoryData}
-            type="bar"
-            width={620}
-            height={360}
-            colors={categoryData.map((d) => getDomainColor(d.domain))}
-          />
-        </div>
-        <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center', marginTop: 12 }}>
-          {Object.keys(grouped).map((dom) => (
-            <div key={dom} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 9, color: '#334155' }}>
-              <span style={{ width: 10, height: 10, background: getDomainColor(dom), borderRadius: 2, display: 'inline-block' }} />
-              {dom}
-            </div>
-          ))}
+      {/* BAR CHART */}
+      <div className="page-break-avoid" style={{ breakInside: 'avoid', pageBreakInside: 'avoid', marginBottom: 22 }}>
+        <div style={sectionTitle}>Desempenho por Subdomínio</div>
+        <div style={{ border: '1px solid #e2e8f0', borderRadius: 6, padding: 14 }}>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <StaticChart
+              data={categoryData}
+              type="bar"
+              width={620}
+              height={320}
+              colors={categoryData.map((d) => getDomainColor(d.domain))}
+            />
+          </div>
+          <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center', marginTop: 12 }}>
+            {Object.keys(grouped).map((dom) => (
+              <div key={dom} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 9, color: '#334155' }}>
+                <span style={{ width: 10, height: 10, background: getDomainColor(dom), borderRadius: 2, display: 'inline-block' }} />
+                {dom}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
