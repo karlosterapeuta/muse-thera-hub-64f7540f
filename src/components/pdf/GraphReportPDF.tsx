@@ -161,7 +161,7 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <img
-              src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png"
+              src="/lovable-uploads/musetera-logo-new.png"
               alt="MuseTera"
               style={{ width: 46, height: 'auto' }}
               crossOrigin="anonymous"
