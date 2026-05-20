@@ -78,6 +78,26 @@ export default function MusicotherapyTreatmentPlanPage() {
   const [isLoadingPatients, setIsLoadingPatients] = useState(true);
   const [activeTab, setActiveTab] = useState("identification");
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [templatesOpen, setTemplatesOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useState(false);
+
+  const applyPartialPlan = (partial: Partial<MusicotherapyTreatmentPlan>) => {
+    Object.entries(partial).forEach(([key, value]) => {
+      if (value === undefined || value === null) return;
+      // merge arrays (avoid duplicates), overwrite scalars only if currently empty/short
+      const current = (planData as any)[key];
+      if (Array.isArray(value)) {
+        const merged = Array.from(new Set([...(Array.isArray(current) ? current : []), ...value]));
+        updatePlanData(key as any, merged as any);
+      } else if (typeof value === 'string') {
+        if (!current || (typeof current === 'string' && current.trim().length < 3)) {
+          updatePlanData(key as any, value as any);
+        }
+      } else {
+        if (!current) updatePlanData(key as any, value as any);
+      }
+    });
+  };
 
   // Warning for unsaved changes
   useEffect(() => {
