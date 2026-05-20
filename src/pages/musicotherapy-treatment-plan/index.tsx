@@ -40,6 +40,7 @@ import { EvaluationCriteriaSelector } from '@/components/musicotherapy/Evaluatio
 import { ValidationSummary } from '@/components/musicotherapy/ValidationSummary';
 import { imageUrlToBase64 } from '@/utils/imageToBase64';
 import { formatAgeString } from '@/utils/dateUtils';
+import { PlanStickyHeader } from '@/components/treatment-plan/PlanStickyHeader';
 
 type Patient = {
   id: string;
