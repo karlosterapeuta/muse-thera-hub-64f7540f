@@ -193,29 +193,31 @@ export const ParametersGraphsPDFStatic: React.FC<ParametersGraphsPDFStaticProps>
       )}
 
       {/* CHARTS — RADAR + PIE */}
-      <div style={sectionTitle}>Visão Gráfica Consolidada</div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 22 }}>
-        <div style={{ border: '1px solid #e2e8f0', borderRadius: 6, padding: 12 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#0f172a', marginBottom: 8, textAlign: 'center' }}>
-            Perfil por Domínio
+      <div className="page-break-avoid" style={{ breakInside: 'avoid', pageBreakInside: 'avoid', marginBottom: 22 }}>
+        <div style={sectionTitle}>Visão Gráfica Consolidada</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+          <div style={{ border: '1px solid #e2e8f0', borderRadius: 6, padding: 12 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#0f172a', marginBottom: 8, textAlign: 'center' }}>
+              Perfil por Domínio
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              {radarData && <StaticChart data={radarData} type="radar" width={300} height={240} colors={['#6366f1']} />}
+            </div>
+            <div style={{ fontSize: 8, color: '#64748b', textAlign: 'center', marginTop: 6 }}>
+              Distribuição percentual por domínio clínico
+            </div>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            {radarData && <StaticChart data={radarData} type="radar" width={300} height={240} colors={['#6366f1']} />}
-          </div>
-          <div style={{ fontSize: 8, color: '#64748b', textAlign: 'center', marginTop: 6 }}>
-            Distribuição percentual por domínio clínico
-          </div>
-        </div>
 
-        <div style={{ border: '1px solid #e2e8f0', borderRadius: 6, padding: 12 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#0f172a', marginBottom: 8, textAlign: 'center' }}>
-            Desenvolvimento Geral
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <StaticChart data={pieData} type="pie" width={300} height={240} colors={['#10b981', '#f1f5f9']} />
-          </div>
-          <div style={{ fontSize: 8, color: '#64748b', textAlign: 'center', marginTop: 6 }}>
-            Proporção de avanço sobre o potencial total
+          <div style={{ border: '1px solid #e2e8f0', borderRadius: 6, padding: 12 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#0f172a', marginBottom: 8, textAlign: 'center' }}>
+              Desenvolvimento Geral
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <StaticChart data={pieData} type="pie" width={300} height={240} colors={['#10b981', '#f1f5f9']} />
+            </div>
+            <div style={{ fontSize: 8, color: '#64748b', textAlign: 'center', marginTop: 6 }}>
+              Proporção de avanço sobre o potencial total
+            </div>
           </div>
         </div>
       </div>
