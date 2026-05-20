@@ -41,6 +41,9 @@ import { ValidationSummary } from '@/components/musicotherapy/ValidationSummary'
 import { imageUrlToBase64 } from '@/utils/imageToBase64';
 import { formatAgeString } from '@/utils/dateUtils';
 import { PlanStickyHeader } from '@/components/treatment-plan/PlanStickyHeader';
+import { PlanTemplatesDialog } from '@/components/treatment-plan/PlanTemplatesDialog';
+import { PlanAIGeneratorDialog } from '@/components/treatment-plan/PlanAIGeneratorDialog';
+import { Sparkles, Wand2 } from 'lucide-react';
 
 type Patient = {
   id: string;
