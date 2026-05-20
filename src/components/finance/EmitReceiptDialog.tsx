@@ -5,18 +5,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import {
   ReceiptIcon, DownloadIcon, MessageCircleIcon, MailIcon, Loader2Icon,
-  AlertCircleIcon, ShieldCheckIcon, PrinterIcon, EyeIcon, EyeOffIcon, UsersIcon, FileTextIcon,
+  AlertCircleIcon, ShieldCheckIcon, PrinterIcon, EyeIcon, EyeOffIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useReceiptIssuerProfile } from "@/hooks/useReceiptIssuerProfile";
 import { useCreatePaymentReceipt, usePaymentReceipts } from "@/hooks/usePaymentReceipts";
-import { useReceiptClients } from "@/hooks/useReceiptClients";
-import { useReceiptTemplates } from "@/hooks/useReceiptTemplates";
 import { generateReceiptPDF } from "@/utils/receiptPDFGenerator";
 import { savePDFToStorage } from "@/utils/pdfStorageUtils";
 import { supabase } from "@/integrations/supabase/client";
@@ -36,13 +32,10 @@ const draftKey = (id: string) => `receipt-draft:${id}`;
 export function EmitReceiptDialog({ open, onClose, record }: Props) {
   const navigate = useNavigate();
   const { data: issuer, isLoading: loadingIssuer } = useReceiptIssuerProfile();
-  const { data: clients = [] } = useReceiptClients();
-  const { data: templates = [] } = useReceiptTemplates();
   const { data: existingReceipts = [] } = usePaymentReceipts();
   const createReceipt = useCreatePaymentReceipt();
   const [generating, setGenerating] = useState(false);
   const [showPreview, setShowPreview] = useState(true);
-  const [clientPopOpen, setClientPopOpen] = useState(false);
   const [lastReceipt, setLastReceipt] = useState<{ id: string; number: number; blob: Blob; publicUrl?: string } | null>(null);
 
   const [form, setForm] = useState({
@@ -111,29 +104,6 @@ export function EmitReceiptDialog({ open, onClose, record }: Props) {
   if (!record) return null;
 
   const missingProfile = !loadingIssuer && (!issuer || !issuer.legal_name || !issuer.document_number);
-
-  const handleSelectClient = (clientId: string) => {
-    const c = clients.find((x) => x.id === clientId);
-    if (!c) return;
-    const doc = c.document_number ? (c.document_type === "cnpj" ? maskCNPJ(c.document_number) : maskCPF(c.document_number)) : "";
-    setForm((f) => ({
-      ...f,
-      patient_name: c.name,
-      patient_document: doc,
-      city: c.city || f.city,
-    }));
-    setClientPopOpen(false);
-  };
-
-  const handleSelectTemplate = (tplId: string) => {
-    const t = templates.find((x) => x.id === tplId);
-    if (!t) return;
-    setForm((f) => ({
-      ...f,
-      service_description: t.description || t.title,
-      payment_method: t.payment_method || f.payment_method,
-    }));
-  };
 
   const doGenerate = async (alsoPrint: boolean) => {
     if (!issuer) return;
@@ -312,49 +282,6 @@ export function EmitReceiptDialog({ open, onClose, record }: Props) {
                   <span>{duplicateWarning} Você pode emitir mesmo assim ou cancelar o anterior na aba Recibos.</span>
                 </div>
               )}
-
-              {/* Cliente / Modelo */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <div>
-                  <Label className="flex items-center gap-1 text-xs"><UsersIcon className="h-3 w-3" /> Cliente cadastrado</Label>
-                  <Popover open={clientPopOpen} onOpenChange={setClientPopOpen}>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" size="sm" className="w-full justify-start mt-1 font-normal text-muted-foreground">
-                        {clients.length ? "Selecionar cliente..." : "Nenhum cliente"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="p-0 w-[300px]" align="start">
-                      <Command>
-                        <CommandInput placeholder="Buscar por nome ou CPF..." />
-                        <CommandList>
-                          <CommandEmpty>Nenhum cliente encontrado.</CommandEmpty>
-                          <CommandGroup>
-                            {clients.map((c) => (
-                              <CommandItem key={c.id} value={`${c.name} ${c.document_number ?? ""}`} onSelect={() => handleSelectClient(c.id)}>
-                                <div className="flex flex-col">
-                                  <span>{c.name}</span>
-                                  {c.document_number && <span className="text-[10px] text-muted-foreground">{c.document_number}</span>}
-                                </div>
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div>
-                  <Label className="flex items-center gap-1 text-xs"><FileTextIcon className="h-3 w-3" /> Modelo de recibo</Label>
-                  <Select onValueChange={handleSelectTemplate}>
-                    <SelectTrigger className="mt-1"><SelectValue placeholder={templates.length ? "Aplicar modelo..." : "Nenhum modelo"} /></SelectTrigger>
-                    <SelectContent>
-                      {templates.map((t) => (
-                        <SelectItem key={t.id} value={t.id}>{t.title}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
 
               <div>
                 <Label>Nome do Pagador *</Label>
