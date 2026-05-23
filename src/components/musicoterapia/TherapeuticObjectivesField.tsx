@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Info, X } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Info, X, Search, Check, Target } from 'lucide-react';
 
 interface TherapeuticObjectivesFieldProps {
   value: string[];
@@ -12,9 +10,9 @@ interface TherapeuticObjectivesFieldProps {
 }
 
 const THERAPEUTIC_CATEGORIES = {
-  'expressao_musical': {
+  expressao_musical: {
     title: 'Expressão Musical',
-    count: 4,
+    icon: '🎼',
     options: [
       'Desenvolver expressão criativa através de improvisação musical espontânea e direcionada.',
       'Promover comunicação não-verbal através de experiências musicais expressivas e significativas.',
@@ -22,9 +20,9 @@ const THERAPEUTIC_CATEGORIES = {
       'Fortalecer capacidade de expressão emocional através da criação e interpretação musical.'
     ]
   },
-  'regulacao_musica': {
-    title: 'Regulação Através da Música',
-    count: 4,
+  regulacao_musica: {
+    title: 'Regulação Emocional',
+    icon: '🧘',
     options: [
       'Desenvolver autorregulação emocional através de experiências musicais estruturadas e terapêuticas.',
       'Promover estados de relaxamento e bem-estar utilizando música como mediador terapêutico.',
@@ -32,9 +30,9 @@ const THERAPEUTIC_CATEGORIES = {
       'Fortalecer estratégias de enfrentamento e organização interna através da experiência musical.'
     ]
   },
-  'desenvolvimento_musical': {
+  desenvolvimento_musical: {
     title: 'Desenvolvimento Musical',
-    count: 4,
+    icon: '🎵',
     options: [
       'Desenvolver percepção musical incluindo discriminação de ritmos, melodias e harmonias.',
       'Promover coordenação rítmica integrada ao movimento corporal e expressão gestual.',
@@ -42,9 +40,9 @@ const THERAPEUTIC_CATEGORIES = {
       'Fortalecer sensibilidade musical e apreciação estética de diferentes estilos musicais.'
     ]
   },
-  'integracao_social': {
-    title: 'Integração Social Musical',
-    count: 4,
+  integracao_social: {
+    title: 'Integração Social',
+    icon: '🤝',
     options: [
       'Desenvolver habilidades de cooperação através de atividades musicais grupais e ensemble.',
       'Promover comunicação interpessoal através de experiências musicais compartilhadas.',
@@ -52,318 +50,186 @@ const THERAPEUTIC_CATEGORIES = {
       'Fortalecer vínculos interpessoais através de experiências musicais significativas e colaborativas.'
     ]
   }
-};
+} as const;
+
+type CategoryKey = keyof typeof THERAPEUTIC_CATEGORIES;
 
 export function TherapeuticObjectivesField({ value = [], onChange }: TherapeuticObjectivesFieldProps) {
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [customObjective, setCustomObjective] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<'all' | CategoryKey>('all');
+  const [search, setSearch] = useState('');
 
-  const handleOptionToggle = (option: string) => {
-    const newValue = value.includes(option)
-      ? value.filter(v => v !== option)
-      : [...value, option];
-    onChange(newValue);
+  const toggle = (option: string) => {
+    onChange(value.includes(option) ? value.filter(v => v !== option) : [...value, option]);
   };
 
-  const getDisplayedOptions = () => {
-    if (selectedCategory === 'all') {
-      return Object.values(THERAPEUTIC_CATEGORIES).flatMap(cat => cat.options);
-    }
-    return THERAPEUTIC_CATEGORIES[selectedCategory as keyof typeof THERAPEUTIC_CATEGORIES]?.options || [];
-  };
-
-  const getCategoryOptions = (categoryKey: string) => {
-    return THERAPEUTIC_CATEGORIES[categoryKey as keyof typeof THERAPEUTIC_CATEGORIES]?.options || [];
-  };
-
-  const handleAddCustomObjective = () => {
-    const trimmedObjective = customObjective.trim();
-    
-    if (!trimmedObjective) {
-      return;
-    }
-    
-    if (value.includes(trimmedObjective)) {
-      return;
-    }
-    
-    onChange([...value, trimmedObjective]);
-    setCustomObjective('');
-  };
-
-  const handleRemoveObjective = (objective: string) => {
-    onChange(value.filter(v => v !== objective));
-  };
-
-  const isPreDefinedObjective = (objective: string) => {
-    return Object.values(THERAPEUTIC_CATEGORIES)
-      .flatMap(cat => cat.options)
-      .includes(objective);
-  };
+  const visibleCategories = useMemo(() => {
+    const entries = Object.entries(THERAPEUTIC_CATEGORIES) as [CategoryKey, typeof THERAPEUTIC_CATEGORIES[CategoryKey]][];
+    const filtered = selectedCategory === 'all' ? entries : entries.filter(([k]) => k === selectedCategory);
+    if (!search.trim()) return filtered;
+    const term = search.toLowerCase();
+    return filtered
+      .map(([k, c]) => [k, { ...c, options: c.options.filter(o => o.toLowerCase().includes(term)) }] as const)
+      .filter(([, c]) => c.options.length > 0);
+  }, [selectedCategory, search]);
 
   return (
-    <div className="space-y-6">
-      {/* Orientações para Preenchimento */}
-      <Card className="bg-blue-50 border-blue-200">
-        <CardContent className="pt-4">
-          <div className="flex items-start gap-3">
-            <Info className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
-            <div className="space-y-2">
-              <p className="text-blue-800 font-medium">Orientações para Preenchimento</p>
-              <p className="text-blue-700 text-sm">
-                <span className="font-medium">Descrição:</span> Objetivos específicos através da música
-              </p>
-              <p className="text-blue-700 text-sm">
-                <span className="font-medium">Orientação:</span> Objetivos que utilizam a música como ferramenta terapêutica principal
-              </p>
+    <div className="space-y-4 sm:space-y-6">
+      {/* Orientação compacta */}
+      <div className="rounded-2xl border border-[#c9a84c]/30 bg-[#0d0d0d]/40 p-4 sm:p-5">
+        <div className="flex items-start gap-3">
+          <div className="p-2 rounded-xl bg-[#c9a84c]/15 border border-[#c9a84c]/30 flex-shrink-0">
+            <Info className="h-4 w-4 sm:h-5 sm:w-5 text-[#c9a84c]" />
+          </div>
+          <div className="min-w-0">
+            <p className="font-medium text-sm sm:text-base text-[#c9a84c]">Defina objetivos terapêuticos</p>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1 leading-relaxed">
+              Selecione um ou mais objetivos que utilizam a música como ferramenta terapêutica principal.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Busca + filtros */}
+      <div className="space-y-3">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar objetivo..."
+            className="pl-9 bg-[#0d0d0d]/40 border-[#c9a84c]/20 focus-visible:ring-[#c9a84c]/40"
+          />
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          <FilterChip active={selectedCategory === 'all'} onClick={() => setSelectedCategory('all')}>
+            Todas
+          </FilterChip>
+          {Object.entries(THERAPEUTIC_CATEGORIES).map(([key, cat]) => (
+            <FilterChip
+              key={key}
+              active={selectedCategory === key}
+              onClick={() => setSelectedCategory(key as CategoryKey)}
+            >
+              <span className="mr-1">{cat.icon}</span>
+              {cat.title}
+            </FilterChip>
+          ))}
+        </div>
+      </div>
+
+      {/* Listagem por categoria */}
+      <div className="space-y-5 sm:space-y-6">
+        {visibleCategories.length === 0 && (
+          <div className="rounded-2xl border border-dashed border-[#c9a84c]/20 p-8 text-center text-sm text-muted-foreground">
+            Nenhum objetivo encontrado para "{search}".
+          </div>
+        )}
+
+        {visibleCategories.map(([key, cat]) => (
+          <div key={key} className="space-y-3">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <span className="text-base sm:text-lg">{cat.icon}</span>
+              <h3 className="text-sm sm:text-base font-semibold text-[#c9a84c]">{cat.title}</h3>
+              <Badge variant="secondary" className="bg-[#c9a84c]/10 text-[#c9a84c] border border-[#c9a84c]/20 text-[10px] sm:text-xs">
+                {cat.options.length}
+              </Badge>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+              {cat.options.map((option, idx) => {
+                const selected = value.includes(option);
+                return (
+                  <button
+                    type="button"
+                    key={idx}
+                    onClick={() => toggle(option)}
+                    className={`text-left p-3 sm:p-4 rounded-xl border transition-all duration-200 group ${
+                      selected
+                        ? 'bg-[#c9a84c]/15 border-[#c9a84c]/60 shadow-[0_0_0_1px_rgba(201,168,76,0.2)]'
+                        : 'bg-[#0d0d0d]/30 border-white/5 hover:border-[#c9a84c]/30 hover:bg-[#0d0d0d]/50'
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div
+                        className={`mt-0.5 h-5 w-5 rounded-md border flex items-center justify-center flex-shrink-0 transition-all ${
+                          selected
+                            ? 'bg-[#c9a84c] border-[#c9a84c]'
+                            : 'border-white/20 group-hover:border-[#c9a84c]/60'
+                        }`}
+                      >
+                        {selected && <Check className="h-3.5 w-3.5 text-black" />}
+                      </div>
+                      <p className={`text-xs sm:text-sm leading-relaxed ${selected ? 'text-foreground' : 'text-muted-foreground'}`}>
+                        {option}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
-        </CardContent>
-      </Card>
+        ))}
+      </div>
 
-      {/* Categorias de Preenchimento */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <span className="text-blue-600">🗂️</span>
-            Categorias de Preenchimento
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2 mb-6">
-            <Button
-              variant={selectedCategory === 'all' ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSelectedCategory('all')}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              📋 Todas as Categorias
-            </Button>
-            {Object.entries(THERAPEUTIC_CATEGORIES).map(([key, category]) => (
-              <Button
-                key={key}
-                variant={selectedCategory === key ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSelectedCategory(key)}
+      {/* Selecionados */}
+      {value.length > 0 && (
+        <div className="rounded-2xl border border-[#c9a84c]/40 bg-gradient-to-br from-[#c9a84c]/10 to-transparent p-4 sm:p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <Target className="h-4 w-4 text-[#c9a84c]" />
+            <h4 className="text-sm sm:text-base font-semibold text-[#c9a84c]">
+              Objetivos selecionados
+            </h4>
+            <Badge className="bg-[#c9a84c] text-black hover:bg-[#c9a84c] text-[10px] sm:text-xs">
+              {value.length}
+            </Badge>
+          </div>
+          <div className="space-y-2">
+            {value.map((obj, i) => (
+              <div
+                key={i}
+                className="flex items-start gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-lg bg-[#0d0d0d]/40 border border-[#c9a84c]/20"
               >
-                {category.title}
-              </Button>
+                <span className="text-[#c9a84c] text-xs mt-1 flex-shrink-0">●</span>
+                <p className="flex-1 text-xs sm:text-sm leading-relaxed text-foreground">{obj}</p>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onChange(value.filter(v => v !== obj))}
+                  className="h-7 w-7 p-0 flex-shrink-0 hover:bg-[#c9a84c]/20 text-[#c9a84c]"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </Button>
+              </div>
             ))}
           </div>
-
-          {selectedCategory === 'all' ? (
-            /* Visualização por categoria quando "Todas as Categorias" está selecionado */
-            <div className="space-y-6">
-              {Object.entries(THERAPEUTIC_CATEGORIES).map(([key, category]) => (
-                <div key={key}>
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-blue-600 font-bold text-sm">
-                        {Object.keys(THERAPEUTIC_CATEGORIES).indexOf(key) + 1}
-                      </span>
-                    </div>
-                    <h3 className="text-lg font-semibold text-blue-600">{category.title}</h3>
-                    <Badge variant="secondary">{category.count} opções</Badge>
-                  </div>
-                  <div className="space-y-3 ml-10">
-                    {category.options.map((option, index) => {
-                      const isSelected = value.includes(option);
-                      return (
-                        <div
-                          key={index}
-                          onClick={() => handleOptionToggle(option)}
-                          className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                            isSelected 
-                              ? 'bg-blue-50 border-blue-300 shadow-sm' 
-                              : 'bg-white border-gray-200 hover:bg-gray-50'
-                          }`}
-                        >
-                          <div className="flex items-start gap-3">
-                            <div className={`w-4 h-4 rounded-full border-2 mt-1 flex-shrink-0 ${
-                              isSelected ? 'bg-blue-500 border-blue-500' : 'border-gray-300'
-                            }`}>
-                              {isSelected && (
-                                <div className="w-full h-full rounded-full bg-white scale-50"></div>
-                              )}
-                            </div>
-                            <p className="text-sm text-gray-700 leading-relaxed">{option}</p>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            /* Visualização da categoria específica */
-            selectedCategory !== 'all' && (
-              <div>
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                    <span className="text-blue-600 font-bold text-sm">
-                      {Object.keys(THERAPEUTIC_CATEGORIES).indexOf(selectedCategory) + 1}
-                    </span>
-                  </div>
-                  <h3 className="text-lg font-semibold text-blue-600">
-                    {THERAPEUTIC_CATEGORIES[selectedCategory as keyof typeof THERAPEUTIC_CATEGORIES]?.title}
-                  </h3>
-                  <Badge variant="secondary">
-                    {THERAPEUTIC_CATEGORIES[selectedCategory as keyof typeof THERAPEUTIC_CATEGORIES]?.count} opções
-                  </Badge>
-                </div>
-                <div className="space-y-3 ml-10">
-                  {getCategoryOptions(selectedCategory).map((option, index) => {
-                    const isSelected = value.includes(option);
-                    return (
-                      <div
-                        key={index}
-                        onClick={() => handleOptionToggle(option)}
-                        className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                          isSelected 
-                            ? 'bg-blue-50 border-blue-300 shadow-sm' 
-                            : 'bg-white border-gray-200 hover:bg-gray-50'
-                        }`}
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className={`w-4 h-4 rounded-full border-2 mt-1 flex-shrink-0 ${
-                            isSelected ? 'bg-blue-500 border-blue-500' : 'border-gray-300'
-                          }`}>
-                            {isSelected && (
-                              <div className="w-full h-full rounded-full bg-white scale-50"></div>
-                            )}
-                          </div>
-                          <p className="text-sm text-gray-700 leading-relaxed">{option}</p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )
-          )}
-
-          {/* Seção de Objetivos Personalizados */}
-          <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200 dark:from-purple-950/30 dark:to-pink-950/30">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-purple-700 dark:text-purple-300">
-                <span className="text-xl">✏️</span>
-                Adicionar Objetivo Personalizado
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Card de orientações */}
-              <div className="bg-purple-100 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4">
-                <div className="flex items-start gap-3">
-                  <Info className="h-5 w-5 text-purple-600 dark:text-purple-400 mt-0.5 flex-shrink-0" />
-                  <div className="space-y-1">
-                    <p className="text-purple-800 dark:text-purple-200 font-medium text-sm">
-                      Como escrever objetivos terapêuticos eficazes:
-                    </p>
-                    <ul className="text-purple-700 dark:text-purple-300 text-sm space-y-1 ml-4 list-disc">
-                      <li>Seja específico e mensurável</li>
-                      <li>Use verbos de ação (desenvolver, promover, estimular, fortalecer)</li>
-                      <li>Foque em comportamentos observáveis</li>
-                      <li>Relacione com a música como ferramenta terapêutica</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              {/* Campo de entrada */}
-              <div className="space-y-2">
-                <Label htmlFor="custom-objective" className="text-purple-700 dark:text-purple-300 font-medium">
-                  Digite seu objetivo personalizado:
-                </Label>
-                <Textarea
-                  id="custom-objective"
-                  value={customObjective}
-                  onChange={(e) => setCustomObjective(e.target.value)}
-                  placeholder="Ex: Desenvolver controle respiratório através de exercícios de sopro em instrumentos de vento..."
-                  className="min-h-[100px] border-purple-300 dark:border-purple-700 focus:border-purple-500 focus:ring-purple-500 resize-vertical"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-                      e.preventDefault();
-                      handleAddCustomObjective();
-                    }
-                  }}
-                />
-                <div className="flex items-center justify-between">
-                  <p className="text-xs text-purple-600 dark:text-purple-400">
-                    {customObjective.length > 0 && `${customObjective.length} caracteres`}
-                    {customObjective.length === 0 && "Dica: Use Ctrl+Enter para adicionar rapidamente"}
-                  </p>
-                  <Button
-                    type="button"
-                    onClick={handleAddCustomObjective}
-                    disabled={!customObjective.trim()}
-                    size="sm"
-                    className="bg-purple-600 hover:bg-purple-700 text-white"
-                  >
-                    <span className="mr-2">➕</span>
-                    Adicionar Objetivo
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {value.length > 0 && (
-            <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200 dark:from-green-950/30 dark:to-emerald-950/30">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span className="text-green-700 dark:text-green-300 flex items-center gap-2">
-                    <span className="text-xl">✅</span>
-                    Objetivos Selecionados ({value.length})
-                  </span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {value.map((objective, index) => {
-                    const isPredefined = isPreDefinedObjective(objective);
-                    return (
-                      <div
-                        key={index}
-                        className={`flex items-start gap-3 p-3 rounded-lg border transition-all ${
-                          isPredefined
-                            ? 'bg-green-100 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-                            : 'bg-purple-100 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800'
-                        }`}
-                      >
-                        <div className="flex items-start gap-2 flex-1">
-                          <span className={`mt-1 ${isPredefined ? 'text-green-600 dark:text-green-400' : 'text-purple-600 dark:text-purple-400'}`}>
-                            {isPredefined ? '📋' : '✏️'}
-                          </span>
-                          <p className={`text-sm leading-relaxed ${
-                            isPredefined
-                              ? 'text-green-700 dark:text-green-300'
-                              : 'text-purple-700 dark:text-purple-300'
-                          }`}>
-                            {objective}
-                          </p>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleRemoveObjective(objective)}
-                          className={`flex-shrink-0 h-8 w-8 p-0 ${
-                            isPredefined
-                              ? 'hover:bg-green-200 dark:hover:bg-green-800 text-green-600 dark:text-green-400'
-                              : 'hover:bg-purple-200 dark:hover:bg-purple-800 text-purple-600 dark:text-purple-400'
-                          }`}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </CardContent>
-      </Card>
+        </div>
+      )}
     </div>
+  );
+}
+
+function FilterChip({
+  active,
+  onClick,
+  children
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`text-xs sm:text-sm px-3 py-1.5 rounded-full border transition-all whitespace-nowrap ${
+        active
+          ? 'bg-[#c9a84c] text-black border-[#c9a84c] shadow-[0_0_20px_-5px_rgba(201,168,76,0.6)]'
+          : 'bg-[#0d0d0d]/40 text-muted-foreground border-white/10 hover:border-[#c9a84c]/40 hover:text-[#c9a84c]'
+      }`}
+    >
+      {children}
+    </button>
   );
 }
