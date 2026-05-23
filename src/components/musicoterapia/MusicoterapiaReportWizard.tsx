@@ -160,6 +160,78 @@ const STEP_TEMPLATES: Record<string, TemplateOption[]> = {
         aac_use: 'Não utiliza CAA formal; a própria ecolalia musical funciona como recurso comunicativo.',
         pragmatic_skills: 'Pragmática mediada por ecolalia: o paciente utiliza trechos musicais para pedir, comentar e expressar afeto, com gradual ampliação do uso espontâneo e funcional.'
       }
+    },
+    {
+      id: 'minimally_verbal',
+      label: 'Minimamente verbal',
+      description: 'Paciente com vocabulário restrito e produção verbal limitada.',
+      values: {
+        vocalizations_observed: 'Vocalizações pontuais com predomínio de vogais abertas e consoantes plosivas, intensificadas em momentos de prazer musical, especialmente diante de instrumentos de percussão e canções com refrões repetitivos.',
+        verbal_output_during_music: 'Produção verbal limitada a palavras isoladas (5 a 15 palavras funcionais), com aumento notável de tentativas vocais durante atividades de canto compartilhado e preenchimento de lacunas melódicas (fill-in).',
+        echolalia_musical: 'Ecolalia musical imediata observada em refrões repetitivos, funcionando como ponte para ampliação do repertório verbal funcional.',
+        aac_use: 'Uso emergente de CAA de baixa tecnologia (pranchas temáticas) como suporte à comunicação durante a sessão, especialmente para escolha de canções e instrumentos.',
+        pragmatic_skills: 'Pragmática em construção: realiza pedidos simples por meio de gestos, vocalizações e apontar, com aumento da intenção comunicativa em contexto musical estruturado e previsível.'
+      }
+    },
+    {
+      id: 'verbal_fluent_pragmatic',
+      label: 'Verbal fluente com dificuldades pragmáticas',
+      description: 'Paciente com fala fluente, mas alterações pragmáticas e prosódicas.',
+      values: {
+        vocalizations_observed: 'Vocalizações ricas e variadas, com boa modulação tonal durante o canto, embora apresente prosódia atípica na fala espontânea (entonação monocórdica ou exagerada).',
+        verbal_output_during_music: 'Produção verbal fluente e gramaticalmente adequada, com vocabulário expandido. Canta canções completas com letra preservada e demonstra interesse por temas musicais específicos.',
+        echolalia_musical: 'Ecolalia musical diferida presente, com reprodução de trechos de canções e jingles em contextos não relacionados, frequentemente com função autorregulatória.',
+        aac_use: 'Não utiliza CAA; comunicação predominantemente oral.',
+        pragmatic_skills: 'Dificuldades pragmáticas evidentes: alterações em troca de turnos, manutenção de tópico e leitura de pistas sociais. O contexto musical favorece a regulação destes aspectos por meio de regras claras de turno (pergunta-resposta musical, diálogos instrumentais).'
+      }
+    },
+    {
+      id: 'gestural_preverbal',
+      label: 'Comunicação gestual e pré-verbal',
+      description: 'Paciente em fase pré-linguística com comunicação predominantemente gestual.',
+      values: {
+        vocalizations_observed: 'Balbucio canônico e vocalizações pré-linguísticas com variação de altura e duração, intensificadas em momentos de afinamento afetivo durante o canto da terapeuta.',
+        verbal_output_during_music: 'Ausência de produção verbal convencional. Comunicação ocorre por meio de vocalizações, gestos protodeclarativos e protoimperativos, expressões faciais e movimentos corporais sincrônicos à música.',
+        echolalia_musical: 'Sem ecolalia verbal. Observa-se imitação rítmica corporal e tentativas de imitação melódica vocal.',
+        aac_use: 'Não utiliza CAA formal. Início de exploração de objetos de referência sonoros como suporte à antecipação de atividades.',
+        pragmatic_skills: 'Pragmática emergente em nível pré-verbal: atenção compartilhada em construção, contato ocular sustentado durante o canto e iniciativa de aproximação física para solicitar continuidade da música.'
+      }
+    },
+    {
+      id: 'bilingual_context',
+      label: 'Contexto bilíngue / multicultural',
+      description: 'Paciente exposto a mais de um idioma no contexto familiar.',
+      values: {
+        vocalizations_observed: 'Vocalizações com variação fonológica influenciada pelos dois idiomas de exposição, com produção sonora ampla durante atividades musicais em ambas as línguas.',
+        verbal_output_during_music: 'Produção verbal mista, com alternância entre os idiomas (code-switching) durante o canto. Demonstra preferência por canções no idioma materno, com maior engajamento e produção.',
+        echolalia_musical: 'Ecolalia musical funcional em ambos os idiomas, com reprodução de fragmentos de canções familiares como recurso comunicativo e regulatório.',
+        aac_use: 'CAA não utilizada. Considera-se a possibilidade de prancha bilíngue caso seja indicada futuramente.',
+        pragmatic_skills: 'Pragmática adequada à idade desenvolvimental, com adaptações para o contexto bilíngue. O uso de canções nos dois idiomas favorece a integração identitária e comunicativa.'
+      }
+    },
+    {
+      id: 'selective_mutism_music',
+      label: 'Mutismo seletivo com expressão musical',
+      description: 'Paciente que se comunica preferencialmente por meio musical.',
+      values: {
+        vocalizations_observed: 'Vocalizações presentes exclusivamente em contexto musical seguro, com qualidade sonora preservada durante o canto e ausentes ou raras em contexto verbal direto.',
+        verbal_output_during_music: 'Produção verbal significativamente maior durante atividades musicais do que em contextos comunicativos convencionais. O canto funciona como ponte para a expressão verbal.',
+        echolalia_musical: 'Ecolalia musical observada como estratégia segura de expressão, frequentemente utilizando trechos de canções para comunicar estados internos.',
+        aac_use: 'Não utiliza CAA. O recurso musical funciona como mediador comunicativo principal.',
+        pragmatic_skills: 'Pragmática preservada em contexto musical estruturado, com trocas comunicativas via instrumento e canto. Em contexto verbal direto, observa-se inibição comunicativa significativa.'
+      }
+    },
+    {
+      id: 'regression_recovery',
+      label: 'Pós-regressão / em recuperação',
+      description: 'Paciente em processo de recuperação de habilidades comunicativas.',
+      values: {
+        vocalizations_observed: 'Vocalizações em processo de reorganização, com retomada gradual de variação prosódica e melódica observada inicialmente em contexto musical.',
+        verbal_output_during_music: 'Produção verbal em fase de reconstrução: o contexto musical favorece a retomada de palavras e expressões previamente adquiridas, com canções funcionando como âncoras mnemônicas.',
+        echolalia_musical: 'Ecolalia musical funcional intensa, atuando como mecanismo de reapropriação da linguagem e da expressão emocional.',
+        aac_use: 'Avaliação contínua sobre a necessidade de introdução de CAA como suporte temporário ou permanente, conforme evolução do quadro.',
+        pragmatic_skills: 'Habilidades pragmáticas em recuperação progressiva, com retomada gradual de iniciativa comunicativa, atenção compartilhada e troca de turnos, mediadas pela segurança do setting musical.'
+      }
     }
   ],
   future_plan: [
