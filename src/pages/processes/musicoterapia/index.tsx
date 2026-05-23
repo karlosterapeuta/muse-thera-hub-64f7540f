@@ -306,7 +306,48 @@ export default function MusicoterapiaPage() {
             ${renderSection('Plano Terapêutico Futuro', ['next_objectives_short','next_objectives_medium','next_objectives_long','proposed_interventions','expected_outcomes','revaluation_date'])}
             ${renderSection('Orientações Ampliadas', ['school_recommendations','interdisciplinary_team_notes','playlist_recommended','red_flags_to_monitor'])}
             ${scalesTable}
-            ${renderSection('Fundamentação Teórica e Referências', ['theoretical_framework','assessment_tools_used','references_cited'])}
+            ${(() => {
+              const tf = (fields.theoretical_framework || '').toString().trim();
+              const at = (fields.assessment_tools_used || '').toString().trim();
+              const rc = (fields.references_cited || '').toString().trim();
+              if (!tf && !at && !rc) return '';
+              const formatList = (txt: string) => {
+                const items = txt.split(/\n+/).map(s => s.replace(/^[-•\d.\)\s]+/, '').trim()).filter(Boolean);
+                if (items.length <= 1) return `<p style="margin: 0; white-space: pre-wrap; font-size: 11px; line-height: 1.6; color: #1f2937;">${txt}</p>`;
+                return `<ul style="margin: 0; padding-left: 18px; font-size: 11px; line-height: 1.7; color: #1f2937;">${items.map(i => `<li style="margin: 4px 0;">${i}</li>`).join('')}</ul>`;
+              };
+              return `
+                <div class="section-block" style="margin-bottom: 20px; page-break-inside: avoid; border: 2px solid #14b8a6; border-radius: 10px; overflow: hidden; background: #ffffff;">
+                  <div style="background: linear-gradient(135deg, #0d9488 0%, #14b8a6 60%, #06b6d4 100%); color: white; padding: 12px 16px;">
+                    <h3 style="margin: 0; font-size: 14px; font-weight: 700; letter-spacing: 0.3px;">Fundamentação Teórica e Referências Científicas</h3>
+                    <p style="margin: 4px 0 0 0; font-size: 10px; opacity: 0.92;">Base científica que sustenta a conduta clínica musicoterapêutica</p>
+                  </div>
+                  <div style="padding: 14px 16px;">
+                    ${tf ? `
+                      <div style="margin-bottom: 14px; padding: 10px 12px; background: #f0fdfa; border-left: 4px solid #0d9488; border-radius: 4px;">
+                        <div style="font-size: 11px; font-weight: 700; color: #0f766e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Abordagem Teórica</div>
+                        ${formatList(tf)}
+                      </div>
+                    ` : ''}
+                    ${at ? `
+                      <div style="margin-bottom: 14px; padding: 10px 12px; background: #ecfeff; border-left: 4px solid #06b6d4; border-radius: 4px;">
+                        <div style="font-size: 11px; font-weight: 700; color: #0e7490; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Instrumentos de Avaliação Utilizados</div>
+                        ${formatList(at)}
+                      </div>
+                    ` : ''}
+                    ${rc ? `
+                      <div style="padding: 10px 12px; background: #f8fafc; border-left: 4px solid #64748b; border-radius: 4px;">
+                        <div style="font-size: 11px; font-weight: 700; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Referências Bibliográficas</div>
+                        ${formatList(rc)}
+                      </div>
+                    ` : ''}
+                    <div style="margin-top: 12px; padding-top: 10px; border-top: 1px dashed #cbd5e1; font-size: 9px; color: #64748b; text-align: center; font-style: italic;">
+                      Documento elaborado segundo diretrizes da WFMT (World Federation of Music Therapy), DSM-5-TR e CID-11
+                    </div>
+                  </div>
+                </div>
+              `;
+            })()}
           `;
         })()}
 
