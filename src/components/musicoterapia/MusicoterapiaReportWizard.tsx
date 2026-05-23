@@ -2,7 +2,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { ChevronLeft, ChevronRight, Wand2, Music, Brain, Heart, Target, Home, Check } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Wand2, Music, Brain, Heart, Target, Home, Check, Sparkles, Info, BookOpen, MessageSquare, ClipboardList } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { musicoterapiaTemplate, type ReportData, type ReportField } from '@/data/musicoterapiaTemplate';
 import { MusicoterapiaFormField } from './MusicoterapiaFormField';
