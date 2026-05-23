@@ -821,13 +821,16 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
                               <span
                                 style={{
                                   display: 'inline-block',
-                                  padding: '2px 8px',
+                                  padding: '4px 10px',
                                   borderRadius: 10,
                                   background: r.freq.color,
                                   color: '#fff',
                                   fontSize: 8.5,
                                   fontWeight: 700,
                                   letterSpacing: '0.3px',
+                                  lineHeight: 1,
+                                  whiteSpace: 'nowrap',
+                                  verticalAlign: 'middle',
                                 }}
                               >
                                 {r.freq.label}
