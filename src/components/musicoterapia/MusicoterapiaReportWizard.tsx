@@ -522,21 +522,21 @@ export function MusicoterapiaReportWizard({
   const StepIcon = currentStepData.icon;
 
   return (
-    <div className="max-w-3xl mx-auto space-y-12 sm:space-y-16 px-2 sm:px-0" style={{ fontFamily: "'Work Sans', sans-serif" }}>
+    <div className="max-w-3xl mx-auto space-y-8 sm:space-y-12 lg:space-y-16 px-3 sm:px-4 lg:px-0" style={{ fontFamily: "'Work Sans', sans-serif" }}>
       {/* Editorial Hero — Monolithic noir & gold */}
-      <header className="flex flex-col items-center text-center space-y-6 sm:space-y-8 pt-2">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#c9a84c]/30 bg-[#c9a84c]/5 text-[#f0d78c] text-[10px] font-bold tracking-[0.2em] uppercase">
+      <header className="flex flex-col items-center text-center space-y-4 sm:space-y-6 lg:space-y-8 pt-2">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#c9a84c]/30 bg-[#c9a84c]/5 text-[#f0d78c] text-[9px] sm:text-[10px] font-bold tracking-[0.2em] uppercase">
           Protocolo Clínico · TEA
         </div>
 
-        <div className="space-y-3 sm:space-y-4">
+        <div className="space-y-2 sm:space-y-3 lg:space-y-4">
           <h1
-            className="text-5xl sm:text-6xl md:text-7xl text-[#f0d78c] leading-[1.05]"
+            className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl text-[#f0d78c] leading-[1.05] px-2"
             style={{ fontFamily: "'Instrument Serif', serif" }}
           >
             Relatório MuseTera TEA
           </h1>
-          <p className="text-gray-400 max-w-xl mx-auto text-base sm:text-lg font-light leading-relaxed">
+          <p className="text-gray-400 max-w-xl mx-auto text-sm sm:text-base lg:text-lg font-light leading-relaxed px-2">
             Estrutura premium para documentação de avaliação, objetivos, técnicas e evolução clínica em musicoterapia.
           </p>
         </div>
@@ -557,88 +557,141 @@ export function MusicoterapiaReportWizard({
       </header>
 
       {/* Stepper Indicator — horizontal numbered */}
-      <nav className="relative px-2 overflow-x-auto">
-        <div className="absolute top-5 left-0 w-full h-[1px] bg-white/5" />
-        <ul className="relative flex justify-between min-w-[640px] sm:min-w-0">
-          {STEPS.map((step, index) => {
-            const isCompleted = index < currentStep;
-            const isCurrent = index === currentStep;
-            return (
-              <li key={step.id} className="flex flex-col items-center gap-2 sm:gap-3 flex-1">
+      {/* Stepper Indicator — compact on mobile, full on desktop */}
+      <nav className="relative px-1 sm:px-2">
+        {/* Mobile: compact pill view */}
+        <div className="sm:hidden space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <button
+              type="button"
+              onClick={handlePrevStep}
+              disabled={currentStep === 0}
+              aria-label="Etapa anterior"
+              className="h-9 w-9 rounded-full bg-[#1a1a1a] border border-white/10 text-[#f0d78c] disabled:opacity-30 flex items-center justify-center shrink-0"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <div className="flex-1 min-w-0 text-center">
+              <div className="text-[9px] uppercase tracking-[0.2em] text-[#c9a84c] font-bold">
+                Etapa {currentStep + 1} de {STEPS.length}
+              </div>
+              <div className="text-sm text-[#f0d78c] font-semibold truncate" style={{ fontFamily: "'Instrument Serif', serif" }}>
+                {currentStepData.title.replace(/^\d+\.\s*/, '')}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={handleNextStep}
+              disabled={currentStep === STEPS.length - 1 || !canProceed()}
+              aria-label="Próxima etapa"
+              className="h-9 w-9 rounded-full bg-[#c9a84c] text-[#0d0d0d] disabled:opacity-30 flex items-center justify-center shrink-0"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+          <div className="flex items-center justify-center gap-1.5">
+            {STEPS.map((step, index) => {
+              const isCompleted = index < currentStep;
+              const isCurrent = index === currentStep;
+              return (
                 <button
+                  key={step.id}
                   type="button"
-                  onClick={() => setCurrentStep(index)}
-                  className={`h-10 w-10 rounded-full flex items-center justify-center text-xs font-black ring-8 ring-[#0d0d0d] transition-all
-                    ${isCurrent
-                      ? 'bg-[#c9a84c] text-[#0d0d0d] shadow-[0_0_24px_rgba(201,168,76,0.35)] scale-110'
-                      : isCompleted
-                        ? 'bg-[#1a1a1a] border border-[#c9a84c]/60 text-[#f0d78c]'
-                        : 'bg-[#1a1a1a] border border-white/15 text-white/60 hover:border-[#c9a84c]/40'
-                    }`}
-                >
-                  {isCompleted ? <Check className="h-4 w-4" /> : String(index + 1).padStart(2, '0')}
-                </button>
-                <span
-                  className={`text-[9px] uppercase tracking-widest font-bold text-center transition-colors
-                    ${isCurrent ? 'text-[#c9a84c]' : isCompleted ? 'text-[#f0d78c]/70' : 'text-gray-500'}`}
-                  style={{ fontFamily: "'Work Sans'" }}
-                >
-                  {step.title.replace(/^\d+\.\s*/, '').split(' ').slice(0, 2).join(' ')}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
+                  onClick={() => { setCurrentStep(index); scrollToStepContent(); }}
+                  aria-label={`Ir para ${step.title}`}
+                  className={`h-1.5 rounded-full transition-all ${
+                    isCurrent ? 'w-6 bg-[#c9a84c]' : isCompleted ? 'w-3 bg-[#c9a84c]/60' : 'w-3 bg-white/15'
+                  }`}
+                />
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Desktop: full stepper */}
+        <div className="hidden sm:block relative">
+          <div className="absolute top-5 left-0 w-full h-[1px] bg-white/5" />
+          <ul className="relative flex justify-between">
+            {STEPS.map((step, index) => {
+              const isCompleted = index < currentStep;
+              const isCurrent = index === currentStep;
+              return (
+                <li key={step.id} className="flex flex-col items-center gap-3 flex-1 min-w-0">
+                  <button
+                    type="button"
+                    onClick={() => setCurrentStep(index)}
+                    className={`h-10 w-10 rounded-full flex items-center justify-center text-xs font-black ring-8 ring-[#0d0d0d] transition-all
+                      ${isCurrent
+                        ? 'bg-[#c9a84c] text-[#0d0d0d] shadow-[0_0_24px_rgba(201,168,76,0.35)] scale-110'
+                        : isCompleted
+                          ? 'bg-[#1a1a1a] border border-[#c9a84c]/60 text-[#f0d78c]'
+                          : 'bg-[#1a1a1a] border border-white/15 text-white/60 hover:border-[#c9a84c]/40'
+                      }`}
+                  >
+                    {isCompleted ? <Check className="h-4 w-4" /> : String(index + 1).padStart(2, '0')}
+                  </button>
+                  <span
+                    className={`text-[9px] uppercase tracking-widest font-bold text-center transition-colors px-1 leading-tight
+                      ${isCurrent ? 'text-[#c9a84c]' : isCompleted ? 'text-[#f0d78c]/70' : 'text-gray-500'}`}
+                    style={{ fontFamily: "'Work Sans'" }}
+                  >
+                    {step.title.replace(/^\d+\.\s*/, '').split(' ').slice(0, 2).join(' ')}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </nav>
 
       {/* Main Wizard Card — Monolithic */}
       <div ref={stepContentRef} className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <section className="lg:col-span-3 bg-[#1a1a1a] rounded-[2rem] sm:rounded-[2.5rem] border border-white/5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden relative">
+        <section className="lg:col-span-3 bg-[#1a1a1a] rounded-2xl sm:rounded-[2rem] lg:rounded-[2.5rem] border border-white/5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden relative">
           {/* Premium accent light */}
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#c9a84c]/10 blur-[100px] rounded-full pointer-events-none" />
 
-          <div className="p-6 sm:p-10 lg:p-12 space-y-10 relative z-10">
+          <div className="p-4 sm:p-8 lg:p-12 space-y-6 sm:space-y-8 lg:space-y-10 relative z-10">
             <div className="space-y-2">
               <div className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-[#c9a84c] font-bold">
                 <StepIcon className="h-3.5 w-3.5" />
                 Etapa {String(currentStep + 1).padStart(2, '0')} de {String(STEPS.length).padStart(2, '0')}
               </div>
               <h2
-                className="text-3xl sm:text-4xl text-[#f0d78c]"
+                className="text-2xl sm:text-3xl lg:text-4xl text-[#f0d78c] leading-tight"
                 style={{ fontFamily: "'Instrument Serif', serif" }}
               >
                 {currentStepData.title.replace(/^\d+\.\s*/, '')}
               </h2>
-              <p className="text-sm text-gray-500 font-light">{currentStepData.description}</p>
+              <p className="text-xs sm:text-sm text-gray-500 font-light">{currentStepData.description}</p>
             </div>
 
             <div className="text-foreground">
               {renderStepFields()}
             </div>
 
-            <footer className="pt-8 flex flex-col sm:flex-row items-center justify-between border-t border-white/5 gap-6">
-              <div className="flex items-center gap-3">
+            <footer className="pt-6 sm:pt-8 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between border-t border-white/5 gap-4 sm:gap-6">
+              <div className="hidden sm:flex items-center gap-3">
                 <div className="w-2 h-2 rounded-full bg-[#c9a84c] animate-pulse" />
                 <span className="text-[10px] text-gray-500 uppercase tracking-widest font-medium">
                   Sincronizado com Nuvem
                 </span>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3 w-full sm:w-auto">
                 <Button
                   variant="ghost"
                   onClick={handlePrevStep}
                   disabled={currentStep === 0}
-                  className="text-gray-400 hover:text-[#f0d78c] hover:bg-white/5"
+                  className="text-gray-400 hover:text-[#f0d78c] hover:bg-white/5 px-3 sm:px-4"
                 >
-                  <ChevronLeft className="h-4 w-4 mr-2" />
-                  Anterior
+                  <ChevronLeft className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Anterior</span>
                 </Button>
                 <button
                   type="button"
                   onClick={handleNextStep}
                   disabled={currentStep === STEPS.length - 1 || !canProceed()}
-                  className="group flex items-center gap-3 bg-[#c9a84c] hover:bg-[#f0d78c] disabled:opacity-40 disabled:cursor-not-allowed text-[#0d0d0d] px-6 sm:px-10 py-3 sm:py-4 rounded-2xl font-bold transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+                  className="group flex items-center justify-center gap-2 sm:gap-3 bg-[#c9a84c] hover:bg-[#f0d78c] disabled:opacity-40 disabled:cursor-not-allowed text-[#0d0d0d] px-5 sm:px-10 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-sm sm:text-base flex-1 sm:flex-none"
                   style={{ fontFamily: "'Work Sans'" }}
                 >
                   Próxima Seção
@@ -656,15 +709,15 @@ export function MusicoterapiaReportWizard({
         </section>
 
         {/* Quick Fill Panel */}
-        <aside className="space-y-4">
-          {showQuickFill && (
+        {showQuickFill && (
+          <aside className="space-y-4">
             <MusicoterapiaQuickFill
               activeField={activeField}
               onInsert={handleQuickFillInsert}
               onClose={() => setShowQuickFill(false)}
             />
-          )}
-        </aside>
+          </aside>
+        )}
       </div>
     </div>
   );
