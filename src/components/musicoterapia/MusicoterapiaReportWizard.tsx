@@ -522,21 +522,21 @@ export function MusicoterapiaReportWizard({
   const StepIcon = currentStepData.icon;
 
   return (
-    <div className="max-w-3xl mx-auto space-y-12 sm:space-y-16 px-2 sm:px-0" style={{ fontFamily: "'Work Sans', sans-serif" }}>
+    <div className="max-w-3xl mx-auto space-y-8 sm:space-y-12 lg:space-y-16 px-3 sm:px-4 lg:px-0" style={{ fontFamily: "'Work Sans', sans-serif" }}>
       {/* Editorial Hero — Monolithic noir & gold */}
-      <header className="flex flex-col items-center text-center space-y-6 sm:space-y-8 pt-2">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#c9a84c]/30 bg-[#c9a84c]/5 text-[#f0d78c] text-[10px] font-bold tracking-[0.2em] uppercase">
+      <header className="flex flex-col items-center text-center space-y-4 sm:space-y-6 lg:space-y-8 pt-2">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#c9a84c]/30 bg-[#c9a84c]/5 text-[#f0d78c] text-[9px] sm:text-[10px] font-bold tracking-[0.2em] uppercase">
           Protocolo Clínico · TEA
         </div>
 
-        <div className="space-y-3 sm:space-y-4">
+        <div className="space-y-2 sm:space-y-3 lg:space-y-4">
           <h1
-            className="text-5xl sm:text-6xl md:text-7xl text-[#f0d78c] leading-[1.05]"
+            className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl text-[#f0d78c] leading-[1.05] px-2"
             style={{ fontFamily: "'Instrument Serif', serif" }}
           >
             Relatório MuseTera TEA
           </h1>
-          <p className="text-gray-400 max-w-xl mx-auto text-base sm:text-lg font-light leading-relaxed">
+          <p className="text-gray-400 max-w-xl mx-auto text-sm sm:text-base lg:text-lg font-light leading-relaxed px-2">
             Estrutura premium para documentação de avaliação, objetivos, técnicas e evolução clínica em musicoterapia.
           </p>
         </div>
