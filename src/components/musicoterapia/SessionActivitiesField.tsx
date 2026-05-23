@@ -1,13 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { Search, ChevronDown, ChevronUp, Info, X } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Info, X, Search, Check, Activity } from 'lucide-react';
 
 interface SessionActivitiesFieldProps {
   value: string[];
@@ -15,330 +10,207 @@ interface SessionActivitiesFieldProps {
 }
 
 const SESSION_ACTIVITIES_DATA = {
-  "Expressão Musical": [
-    "Foram realizadas atividades de improvisação musical livre utilizando diversos instrumentos de percussão, cordas e sopro para expressão criativa espontânea.",
-    "Implementaram-se exercícios de criação musical colaborativa através de composição de melodias simples e construção de arranjos grupais.",
-    "Desenvolveram-se técnicas de canto terapêutico com foco na expressão vocal, respiração e projeção da voz de forma saudável.",
-    "Aplicaram-se atividades de exploração instrumental direcionada, favorecendo descoberta sonora e desenvolvimento da sensibilidade musical."
-  ],
-  "Regulação Emocional Musical": [
-    "Realizaram-se técnicas de relaxamento musical através de audição direcionada, visualização guiada e respiração sincronizada com elementos musicais.",
-    "Implementaram-se exercícios de modulação emocional utilizando diferentes gêneros musicais, andamentos e dinâmicas para regulação do estado afetivo.",
-    "Desenvolveram-se atividades de catarse musical através da expressão livre de sentimentos e emoções por meio de improvisação direcionada.",
-    "Aplicaram-se técnicas de ancoragem emocional positiva associando experiências musicais prazerosas a estados de bem-estar e tranquilidade."
-  ],
-  "Comunicação Musical": [
-    "Foram implementadas atividades de diálogo musical através de conversas instrumentais, imitação sonora e complementaridade rítmica.",
-    "Desenvolveram-se exercícios de turnos musicais com alternância de liderança, escuta ativa e responsividade aos estímulos sonoros do parceiro.",
-    "Aplicaram-se técnicas de comunicação não-verbal musical utilizando gestos, movimentos corporais e expressões faciais sincronizadas com a música.",
-    "Realizaram-se atividades de expressão musical de necessidades e sentimentos através de códigos sonoros e simbolismo musical personalizado."
-  ],
-  "Integração Social Musical": [
-    "Implementaram-se atividades musicais em grupo com foco na cooperação, sincronização e construção coletiva de experiências sonoras.",
-    "Desenvolveram-se exercícios de ensemble musical promovendo escuta mútua, complementaridade e senso de pertencimento ao grupo.",
-    "Aplicaram-se técnicas de liderança musical alternada, favorecendo iniciativa, responsabilidade e reconhecimento das contribuições individuais.",
-    "Realizaram-se atividades de criação musical coletiva através de projetos colaborativos e apresentações musicais estruturadas."
-  ]
-};
+  expressao: {
+    title: 'Expressão Musical',
+    icon: '🎼',
+    options: [
+      'Foram realizadas atividades de improvisação musical livre utilizando diversos instrumentos de percussão, cordas e sopro para expressão criativa espontânea.',
+      'Implementaram-se exercícios de criação musical colaborativa através de composição de melodias simples e construção de arranjos grupais.',
+      'Desenvolveram-se técnicas de canto terapêutico com foco na expressão vocal, respiração e projeção da voz de forma saudável.',
+      'Aplicaram-se atividades de exploração instrumental direcionada, favorecendo descoberta sonora e desenvolvimento da sensibilidade musical.'
+    ]
+  },
+  regulacao: {
+    title: 'Regulação Emocional',
+    icon: '🧘',
+    options: [
+      'Realizaram-se técnicas de relaxamento musical através de audição direcionada, visualização guiada e respiração sincronizada com elementos musicais.',
+      'Implementaram-se exercícios de modulação emocional utilizando diferentes gêneros musicais, andamentos e dinâmicas para regulação do estado afetivo.',
+      'Desenvolveram-se atividades de catarse musical através da expressão livre de sentimentos e emoções por meio de improvisação direcionada.',
+      'Aplicaram-se técnicas de ancoragem emocional positiva associando experiências musicais prazerosas a estados de bem-estar e tranquilidade.'
+    ]
+  },
+  comunicacao: {
+    title: 'Comunicação Musical',
+    icon: '💬',
+    options: [
+      'Foram implementadas atividades de diálogo musical através de conversas instrumentais, imitação sonora e complementaridade rítmica.',
+      'Desenvolveram-se exercícios de turnos musicais com alternância de liderança, escuta ativa e responsividade aos estímulos sonoros do parceiro.',
+      'Aplicaram-se técnicas de comunicação não-verbal musical utilizando gestos, movimentos corporais e expressões faciais sincronizadas com a música.',
+      'Realizaram-se atividades de expressão musical de necessidades e sentimentos através de códigos sonoros e simbolismo musical personalizado.'
+    ]
+  },
+  social: {
+    title: 'Integração Social',
+    icon: '🤝',
+    options: [
+      'Implementaram-se atividades musicais em grupo com foco na cooperação, sincronização e construção coletiva de experiências sonoras.',
+      'Desenvolveram-se exercícios de ensemble musical promovendo escuta mútua, complementaridade e senso de pertencimento ao grupo.',
+      'Aplicaram-se técnicas de liderança musical alternada, favorecendo iniciativa, responsabilidade e reconhecimento das contribuições individuais.',
+      'Realizaram-se atividades de criação musical coletiva através de projetos colaborativos e apresentações musicais estruturadas.'
+    ]
+  }
+} as const;
 
-const CATEGORY_FILTERS = [
-  "Todas as Categorias",
-  "Expressão Musical", 
-  "Regulação Emocional Musical",
-  "Comunicação Musical",
-  "Integração Social Musical"
-];
+type CategoryKey = keyof typeof SESSION_ACTIVITIES_DATA;
 
-export function SessionActivitiesField({ value, onChange }: SessionActivitiesFieldProps) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('Todas as Categorias');
-  const [customActivity, setCustomActivity] = useState<string>('');
+export function SessionActivitiesField({ value = [], onChange }: SessionActivitiesFieldProps) {
+  const [selectedCategory, setSelectedCategory] = useState<'all' | CategoryKey>('all');
+  const [search, setSearch] = useState('');
 
-  const filteredData = useMemo(() => {
-    let data: Record<string, string[]> = SESSION_ACTIVITIES_DATA;
-    
-    // Filter by category
-    if (selectedCategory !== 'Todas as Categorias') {
-      const categoryData = SESSION_ACTIVITIES_DATA[selectedCategory as keyof typeof SESSION_ACTIVITIES_DATA];
-      data = categoryData ? { [selectedCategory]: categoryData } : {};
-    }
-    
-    // Filter by search term
-    if (!searchTerm) return data;
-    
-    const filtered: Record<string, string[]> = {};
-    Object.entries(data).forEach(([category, activities]) => {
-      const filteredActivities = activities.filter(activity =>
-        activity.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        category.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      if (filteredActivities.length > 0) {
-        filtered[category] = filteredActivities;
-      }
-    });
-    return filtered;
-  }, [searchTerm, selectedCategory]);
-
-  const handleActivityChange = (activity: string, checked: boolean) => {
-    if (checked) {
-      onChange([...value, activity]);
-    } else {
-      onChange(value.filter(v => v !== activity));
-    }
+  const toggle = (option: string) => {
+    onChange(value.includes(option) ? value.filter(v => v !== option) : [...value, option]);
   };
 
-  const removeActivity = (activity: string) => {
-    onChange(value.filter(v => v !== activity));
-  };
-
-  const handleAddCustomActivity = () => {
-    const trimmedActivity = customActivity.trim();
-    
-    // Validar que não está vazio
-    if (!trimmedActivity) {
-      return;
-    }
-    
-    // Validar que não é duplicado
-    if (value.includes(trimmedActivity)) {
-      return;
-    }
-    
-    // Adicionar à lista de atividades
-    onChange([...value, trimmedActivity]);
-    
-    // Limpar o campo
-    setCustomActivity('');
-  };
-
-  const isPreDefinedActivity = (activity: string) => {
-    return Object.values(SESSION_ACTIVITIES_DATA)
-      .flat()
-      .includes(activity);
-  };
-
-  const selectedCount = value.length;
+  const visibleCategories = useMemo(() => {
+    const entries = Object.entries(SESSION_ACTIVITIES_DATA) as [CategoryKey, typeof SESSION_ACTIVITIES_DATA[CategoryKey]][];
+    const filtered = selectedCategory === 'all' ? entries : entries.filter(([k]) => k === selectedCategory);
+    if (!search.trim()) return filtered;
+    const term = search.toLowerCase();
+    return filtered
+      .map(([k, c]) => [k, { ...c, options: c.options.filter(o => o.toLowerCase().includes(term)) }] as const)
+      .filter(([, c]) => c.options.length > 0);
+  }, [selectedCategory, search]);
 
   return (
-    <div className="space-y-6">
-      {/* Orientações para Preenchimento */}
-      <Card className="bg-blue-50 border-blue-200">
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-blue-700 text-sm">
-            <Info className="h-4 w-4" />
-            Orientações para Preenchimento
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-0 space-y-2">
-          <div>
-            <span className="font-medium text-sm text-blue-900">Descrição:</span>
-            <span className="text-sm text-blue-800 ml-2">Atividades musicoterapêuticas implementadas</span>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="rounded-2xl border border-[#c9a84c]/30 bg-[#0d0d0d]/40 p-4 sm:p-5">
+        <div className="flex items-start gap-3">
+          <div className="p-2 rounded-xl bg-[#c9a84c]/15 border border-[#c9a84c]/30 flex-shrink-0">
+            <Info className="h-4 w-4 sm:h-5 sm:w-5 text-[#c9a84c]" />
           </div>
-          <div>
-            <span className="font-medium text-sm text-blue-900">Orientação:</span>
-            <span className="text-sm text-blue-800 ml-2">Descreva técnicas e instrumentos musicais específicos utilizados</span>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Selected Activities */}
-      {selectedCount > 0 && (
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">
-            Atividades Selecionadas ({selectedCount})
-          </Label>
-          <div className="flex flex-wrap gap-2 p-3 bg-muted/50 rounded-lg">
-            {value.map((activity) => (
-              <Badge
-                key={activity}
-                variant="secondary"
-                className="text-xs py-1 px-2 leading-relaxed"
-              >
-                {activity.length > 100 ? `${activity.substring(0, 100)}...` : activity}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-4 w-4 p-0 ml-2 hover:bg-transparent"
-                  onClick={() => removeActivity(activity)}
-                >
-                  ×
-                </Button>
-              </Badge>
-            ))}
+          <div className="min-w-0">
+            <p className="font-medium text-sm sm:text-base text-[#c9a84c]">Atividades realizadas na sessão</p>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1 leading-relaxed">
+              Selecione as técnicas e atividades musicoterapêuticas implementadas.
+            </p>
           </div>
         </div>
-      )}
+      </div>
 
-      {/* Category Filters */}
       <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-            <span className="text-white text-xs font-bold">📂</span>
-          </div>
-          <Label className="text-sm font-medium">Categorias de Preenchimento</Label>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar atividade..."
+            className="pl-9 bg-[#0d0d0d]/40 border-[#c9a84c]/20 focus-visible:ring-[#c9a84c]/40"
+          />
         </div>
-        
+
         <div className="flex flex-wrap gap-2">
-          {CATEGORY_FILTERS.map((category) => (
-            <Button
-              key={category}
-              variant={selectedCategory === category ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSelectedCategory(category)}
-              className="text-xs"
+          <FilterChip active={selectedCategory === 'all'} onClick={() => setSelectedCategory('all')}>
+            Todas
+          </FilterChip>
+          {Object.entries(SESSION_ACTIVITIES_DATA).map(([key, cat]) => (
+            <FilterChip
+              key={key}
+              active={selectedCategory === key}
+              onClick={() => setSelectedCategory(key as CategoryKey)}
             >
-              {category === "Todas as Categorias" ? "📋 Todas as Categorias" : category}
-            </Button>
+              <span className="mr-1">{cat.icon}</span>
+              {cat.title}
+            </FilterChip>
           ))}
         </div>
       </div>
 
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Buscar atividades..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10"
-        />
-      </div>
+      <div className="space-y-5 sm:space-y-6">
+        {visibleCategories.length === 0 && (
+          <div className="rounded-2xl border border-dashed border-[#c9a84c]/20 p-8 text-center text-sm text-muted-foreground">
+            Nenhuma atividade encontrada para "{search}".
+          </div>
+        )}
 
-      {/* Activities by Category */}
-      <div className="space-y-4">
-        {Object.entries(filteredData).map(([category, activities]) => (
-          <Card key={category} className="border">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-blue-600 text-sm">
-                <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-xs">
-                  {Object.keys(SESSION_ACTIVITIES_DATA).indexOf(category) + 1}
-                </div>
-                {category}
-                <span className="text-xs text-muted-foreground font-normal">
-                  {activities.length} opções
-                </span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="space-y-3">
-                {activities.map((activity, index) => {
-                  const isSelected = value.includes(activity);
-                  return (
-                    <div key={activity} className="flex items-start space-x-3 p-3 bg-blue-50/50 rounded-lg border border-blue-100">
-                      <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-xs mt-0.5">
-                        •
+        {visibleCategories.map(([key, cat]) => (
+          <div key={key} className="space-y-3">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <span className="text-base sm:text-lg">{cat.icon}</span>
+              <h3 className="text-sm sm:text-base font-semibold text-[#c9a84c]">{cat.title}</h3>
+              <Badge variant="secondary" className="bg-[#c9a84c]/10 text-[#c9a84c] border border-[#c9a84c]/20 text-[10px] sm:text-xs">
+                {cat.options.length}
+              </Badge>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+              {cat.options.map((option, idx) => {
+                const selected = value.includes(option);
+                return (
+                  <button
+                    type="button"
+                    key={idx}
+                    onClick={() => toggle(option)}
+                    className={`text-left p-3 sm:p-4 rounded-xl border transition-all duration-200 group ${
+                      selected
+                        ? 'bg-[#c9a84c]/15 border-[#c9a84c]/60 shadow-[0_0_0_1px_rgba(201,168,76,0.2)]'
+                        : 'bg-[#0d0d0d]/30 border-white/5 hover:border-[#c9a84c]/30 hover:bg-[#0d0d0d]/50'
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div
+                        className={`mt-0.5 h-5 w-5 rounded-md border flex items-center justify-center flex-shrink-0 transition-all ${
+                          selected
+                            ? 'bg-[#c9a84c] border-[#c9a84c]'
+                            : 'border-white/20 group-hover:border-[#c9a84c]/60'
+                        }`}
+                      >
+                        {selected && <Check className="h-3.5 w-3.5 text-black" />}
                       </div>
-                      <div className="flex-1">
-                        <div className="flex items-start space-x-2">
-                          <Checkbox
-                            id={`activity-${category}-${index}`}
-                            checked={isSelected}
-                            onCheckedChange={(checked) => 
-                              handleActivityChange(activity, checked as boolean)
-                            }
-                            className="mt-1"
-                          />
-                          <Label
-                            htmlFor={`activity-${category}-${index}`}
-                            className="text-sm font-normal cursor-pointer flex-1 leading-relaxed"
-                          >
-                            {activity}
-                          </Label>
-                        </div>
-                      </div>
+                      <p className={`text-xs sm:text-sm leading-relaxed ${selected ? 'text-foreground' : 'text-muted-foreground'}`}>
+                        {option}
+                      </p>
                     </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         ))}
       </div>
 
-      {Object.keys(filteredData).length === 0 && (
-        <div className="text-center py-8 text-muted-foreground">
-          <p>Nenhuma atividade encontrada para "{searchTerm}"</p>
+      {value.length > 0 && (
+        <div className="rounded-2xl border border-[#c9a84c]/40 bg-gradient-to-br from-[#c9a84c]/10 to-transparent p-4 sm:p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <Activity className="h-4 w-4 text-[#c9a84c]" />
+            <h4 className="text-sm sm:text-base font-semibold text-[#c9a84c]">Atividades selecionadas</h4>
+            <Badge className="bg-[#c9a84c] text-black hover:bg-[#c9a84c] text-[10px] sm:text-xs">{value.length}</Badge>
+          </div>
+          <div className="space-y-2">
+            {value.map((item, i) => (
+              <div key={i} className="flex items-start gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-lg bg-[#0d0d0d]/40 border border-[#c9a84c]/20">
+                <span className="text-[#c9a84c] text-xs mt-1 flex-shrink-0">●</span>
+                <p className="flex-1 text-xs sm:text-sm leading-relaxed text-foreground">{item}</p>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onChange(value.filter(v => v !== item))}
+                  className="h-7 w-7 p-0 flex-shrink-0 hover:bg-[#c9a84c]/20 text-[#c9a84c]"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            ))}
+          </div>
         </div>
       )}
-
-      {/* Seção de Atividades Personalizadas */}
-      <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200 dark:from-purple-950/30 dark:to-pink-950/30">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-purple-700 dark:text-purple-300">
-            <span className="text-xl">✏️</span>
-            Adicionar Atividade Personalizada
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Card de orientações */}
-          <div className="bg-purple-100 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4">
-            <div className="flex items-start gap-3">
-              <Info className="h-5 w-5 text-purple-600 dark:text-purple-400 mt-0.5 flex-shrink-0" />
-              <div className="space-y-1">
-                <p className="text-purple-800 dark:text-purple-200 font-medium text-sm">
-                  Como descrever atividades musicoterapêuticas eficazes:
-                </p>
-                <ul className="text-purple-700 dark:text-purple-300 text-sm space-y-1 ml-4 list-disc">
-                  <li>Especifique as técnicas musicais utilizadas</li>
-                  <li>Mencione os instrumentos e recursos empregados</li>
-                  <li>Descreva o tipo de interação (individual, grupo, dirigida, livre)</li>
-                  <li>Relate os objetivos práticos da atividade</li>
-                  <li>Inclua informações sobre duração ou intensidade quando relevante</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          {/* Campo de entrada */}
-          <div className="space-y-2">
-            <Label htmlFor="custom-activity" className="text-purple-700 dark:text-purple-300 font-medium">
-              Digite a descrição da atividade:
-            </Label>
-            <Textarea
-              id="custom-activity"
-              value={customActivity}
-              onChange={(e) => setCustomActivity(e.target.value)}
-              placeholder="Ex: Realizou-se sessão de improvisação rítmica com instrumentos de percussão variados (djembê, bongôs, chocalhos) para promover expressão corporal e coordenação motora, com duração de 20 minutos..."
-              className="min-h-[120px] border-purple-300 dark:border-purple-700 focus:border-purple-500 focus:ring-purple-500 resize-vertical"
-              onKeyDown={(e) => {
-                // Adicionar com Ctrl+Enter ou Cmd+Enter
-                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-                  e.preventDefault();
-                  handleAddCustomActivity();
-                }
-              }}
-            />
-            <div className="flex items-center justify-between">
-              <p className="text-xs text-purple-600 dark:text-purple-400">
-                {customActivity.length > 0 && `${customActivity.length} caracteres`}
-                {customActivity.length === 0 && "Dica: Use Ctrl+Enter para adicionar rapidamente"}
-              </p>
-              <Button
-                type="button"
-                onClick={handleAddCustomActivity}
-                disabled={!customActivity.trim()}
-                size="sm"
-                className="bg-purple-600 hover:bg-purple-700 text-white disabled:opacity-50"
-              >
-                <span className="mr-2">➕</span>
-                Adicionar Atividade
-              </Button>
-            </div>
-          </div>
-
-          {/* Exemplos inspiradores */}
-          <div className="bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3">
-            <p className="text-xs text-purple-700 dark:text-purple-300 font-medium mb-2">
-              💡 Exemplos de descrições personalizadas:
-            </p>
-            <ul className="text-xs text-purple-600 dark:text-purple-400 space-y-1 ml-4 list-disc">
-              <li>"Aplicação de técnica de recriação musical com canções escolhidas pelo paciente, favorecendo reminiscência e expressão de memórias afetivas"</li>
-              <li>"Exercícios de movimento e dança livre ao som de diferentes ritmos brasileiros (samba, forró, maracatu) para estimulação sensório-motora"</li>
-              <li>"Uso de aplicativos de composição musical digital (GarageBand) para criação colaborativa e desenvolvimento de autonomia criativa"</li>
-            </ul>
-          </div>
-        </CardContent>
-      </Card>
     </div>
+  );
+}
+
+function FilterChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`text-xs sm:text-sm px-3 py-1.5 rounded-full border transition-all whitespace-nowrap ${
+        active
+          ? 'bg-[#c9a84c] text-black border-[#c9a84c] shadow-[0_0_20px_-5px_rgba(201,168,76,0.6)]'
+          : 'bg-[#0d0d0d]/40 text-muted-foreground border-white/10 hover:border-[#c9a84c]/40 hover:text-[#c9a84c]'
+      }`}
+    >
+      {children}
+    </button>
   );
 }
