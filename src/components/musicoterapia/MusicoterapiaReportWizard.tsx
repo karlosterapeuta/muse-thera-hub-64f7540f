@@ -102,6 +102,20 @@ const STEPS = [
   }
 ];
 
+const STEP_HINTS: Record<string, { icon: React.ElementType; title: string; description: string }> = {
+  basic_info: { icon: Info, title: 'Identificação clínica', description: 'Confirme dados do paciente e do profissional antes de prosseguir. Esses dados aparecem no cabeçalho do relatório final.' },
+  therapeutic_objectives: { icon: Target, title: 'Objetivos terapêuticos', description: 'Descreva metas claras, mensuráveis e individualizadas. Quanto mais específicas, mais sólido o relatório.' },
+  session_activities: { icon: Music, title: 'Sessão e técnicas', description: 'Detalhe setting, técnicas (receptivas, recriativas, improvisacionais, compositivas) e instrumentos utilizados.' },
+  communication_language: { icon: MessageSquare, title: 'Comunicação e linguagem', description: 'Registre vocalizações, ecolalia, CAA e habilidades pragmáticas observadas durante o fazer musical.' },
+  patient_evolution: { icon: Heart, title: 'Evolução clínica', description: 'Compare com a linha de base e descreva ganhos observáveis, indicadores quantitativos e metas atingidas.' },
+  future_plan: { icon: Target, title: 'Plano futuro', description: 'Estruture objetivos de curto, médio e longo prazo, com prognóstico e data de reavaliação.' },
+  recommendations: { icon: Home, title: 'Encaminhamentos', description: 'Oriente família, escola e equipe interdisciplinar com recomendações práticas e sinais de alerta.' },
+  theoretical_foundation: { icon: BookOpen, title: 'Fundamentação teórica', description: 'Cite o referencial (Benenzon, Bruscia, Nordoff-Robbins, IMTAP) e ferramentas de avaliação utilizadas.' },
+  conclusion: { icon: Sparkles, title: 'Conclusão', description: 'Sintetize achados, ganhos e direção do tratamento de forma clara e objetiva.' },
+  complementary_observations: { icon: ClipboardList, title: 'Observações complementares', description: 'Adicione contextos relevantes que não couberam nas seções anteriores.' },
+  final_review: { icon: Check, title: 'Revisão final', description: 'Revise todas as seções, organize com IA se desejar e finalize o relatório.' },
+};
+
 interface TemplateOption {
   id: string;
   label: string;
