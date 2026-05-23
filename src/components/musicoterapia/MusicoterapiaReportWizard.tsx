@@ -273,6 +273,97 @@ const STEP_TEMPLATES: Record<string, TemplateOption[]> = {
         expected_outcomes: 'Espera-se que o paciente utilize a música como recurso autorregulatório e comunicativo de forma autônoma e generalizada.',
         revaluation_date: 'Reavaliação prevista em 3 meses, com discussão de plano de alta junto à equipe interdisciplinar e família.'
       }
+    },
+    {
+      id: 'crisis_reorganization',
+      label: 'Fase de crise / reorganização',
+      description: 'Paciente em momento de desorganização clínica, com foco em contência e regulação.',
+      values: {
+        next_objectives_short: 'Curto prazo (1-3 meses): Restabelecer vínculo terapêutico após período de crise; favorecer estados de calma através de musicoterapia receptiva e ambientes sonoros previsíveis.',
+        next_objectives_medium: 'Médio prazo (3-6 meses): Reintroduzir gradualmente atividades musicais ativas conforme tolerância; consolidar rotina terapêutica estável.',
+        next_objectives_long: 'Longo prazo (6-12 meses): Retomar progressão terapêutica interrompida, com reavaliação de objetivos e adaptações de acordo com nova configuração clínica.',
+        proposed_interventions: 'Musicoterapia predominantemente receptiva (ambientação sonora, vibroacústica, musicoterapia de relaxamento), com estruturação altamente previsível e transições suaves. Abordagem de contência emocional conforme modelo de Bruscia.',
+        expected_outcomes: 'Espera-se redução da agitação e melhora na regulação emocional, com retomada gradual do engajamento terapêutico.',
+        revaluation_date: 'Reavaliação prevista em 1 a 2 meses, dada a instabilidade clínica atual, com registros detalhados de respostas emocionais.'
+      }
+    },
+    {
+      id: 'sensory_focus',
+      label: 'Foco sensorial intensivo',
+      description: 'Paciente com necessidade de trabalho sensorial-motor priorizado.',
+      values: {
+        next_objectives_short: 'Curto prazo (1-3 meses): Ampliar repertório de estímulos sonoro-musicais tolerados; reduzir respostas de defesa auditiva através de abordagem gradativa.',
+        next_objectives_medium: 'Médio prazo (3-6 meses): Consolidar integração sensorial em atividades musicais; favorecer coordenação motora e esquema corporal via ritmo e movimento.',
+        next_objectives_long: 'Longo prazo (6-12 meses): Promover uso funcional da experiência musical como estratégia de modulação sensorial e organização corporal em contextos variados.',
+        proposed_interventions: 'Intervenções com foco em integração sensorial musical (modelo de Dunn adaptado), musicoterapia de vibroacústica, instrumentos de texturas variadas e atividades de movimento-rítmo estruturadas.',
+        expected_outcomes: 'Espera-se aumento da tolerância a estímulos sonoros, melhora na coordenação motora e maior organização comportamental.',
+        revaluation_date: 'Reavaliação prevista em 3 meses, com acompanhamento do Perfil Sensorial e registro de respostas a estímulos sonoros.'
+      }
+    },
+    {
+      id: 'communication_focus',
+      label: 'Foco comunicativo intensivo',
+      description: 'Prioridade para desenvolvimento de habilidades comunicativas via música.',
+      values: {
+        next_objectives_short: 'Curto prazo (1-3 meses): Ampliar iniciativa comunicativa em contextos musicais; favorecer troca de turnos sonoros e preenchimento de lacunas melódicas.',
+        next_objectives_medium: 'Médio prazo (3-6 meses): Desenvolver ecolalia musical funcional para expressão de estados e pedidos; consolidar uso de CAA em atividades musicais.',
+        next_objectives_long: 'Longo prazo (6-12 meses): Promover generalização de habilidades comunicativas musicais para interações verbais e não-verbais em contextos extra-terapêuticos.',
+        proposed_interventions: 'Intervenções recriativas e improvisacionais com foco em diálogos instrumentais, técnicas de preenchimento de lacunas (fill-in), canções de scripts e integração com CAA musicalizada.',
+        expected_outcomes: 'Espera-se aumento da produção vocal e gestual intencional, maior troca de turnos e início de generalização comunicativa.',
+        revaluation_date: 'Reavaliação prevista em 3 meses, com registro audiovisual e análise de trocas comunicativas musicais.'
+      }
+    },
+    {
+      id: 'school_integration',
+      label: 'Integração escolar',
+      description: 'Preparação para transição e inclusão em ambiente escolar.',
+      values: {
+        next_objectives_short: 'Curto prazo (1-3 meses): Desenvolver repertório de canções e ritmos que possam ser utilizados no contexto escolar; iniciar contato com grupo musical reduzido.',
+        next_objectives_medium: 'Médio prazo (3-6 meses): Promover habilidades de turno, espera e compartilhamento em atividades musicais grupais; preparar adaptações sensoriais para ambiente escolar.',
+        next_objectives_long: 'Longo prazo (6-12 meses): Articular musicoterapia com planejamento escolar individualizado; transferir estratégias musicais para professores e equipe pedagógica.',
+        proposed_interventions: 'Atividades musicais grupais estruturadas, canções de rotina escolar, instrumentos de fácil acesso e orientação pedagógica para uso de música em transições e regulação em sala de aula.',
+        expected_outcomes: 'Espera-se maior adaptação ao ambiente escolar, redução de comportamentos desafiadores em transições e uso de recursos musicais pelo corpo docente.',
+        revaluation_date: 'Reavaliação prevista em 3 meses, com reunião interdisciplinar envolvendo escola e família.'
+      }
+    },
+    {
+      id: 'family_crisis',
+      label: 'Crise familiar / contexto de vulnerabilidade',
+      description: 'Suporte à família em situação de vulnerabilidade socioeconômica ou crises.',
+      values: {
+        next_objectives_short: 'Curto prazo (1-3 meses): Estabelecer ambiente terapêutico seguro e previsível; favorecer regulação emocional do paciente em contexto de instabilidade familiar.',
+        next_objectives_medium: 'Médio prazo (3-6 meses): Fortalecer vínculo familiar através de atividades musicais compartilhadas; orientar cuidadores sobre uso de música no cotidiano com recursos acessíveis.',
+        next_objectives_long: 'Longo prazo (6-12 meses): Promover resiliência familiar e autonomia do paciente, articulando com rede de apoio social e serviços de atenção básica.',
+        proposed_interventions: 'Musicoterapia receptiva e recriativa com materiais de baixo custo, orientação familiar sobre canções e ritmos do cotidiano, e articulação com assistência social.',
+        expected_outcomes: 'Espera-se redução do estresse familiar, fortalecimento do vínculo afetivo e continuidade do tratamento apesar das adversidades.',
+        revaluation_date: 'Reavaliação prevista em 2 meses, com acompanhamento do contexto familiar e articulação com serviços de apoio.'
+      }
+    },
+    {
+      id: 'transition_adolescence',
+      label: 'Transição para adolescência',
+      description: 'Paciente em processo de mudanças desenvolvimentais e identitárias.',
+      values: {
+        next_objectives_short: 'Curto prazo (1-3 meses): Explorar repertório musical alinhado à faixa etária; favorecer expressão de identidade e preferências pessoais do adolescente.',
+        next_objectives_medium: 'Médio prazo (3-6 meses): Desenvolver atividades musicais de composição e improvisação como ferramentas de expressão emocional e construção identitária.',
+        next_objectives_long: 'Longo prazo (6-12 meses): Promover autonomia musical e inserção em grupos ou atividades musicais comunitárias, favorecendo pertencimento social.',
+        proposed_interventions: 'Intervenções compositivas e improvisacionais centradas no adolescente, com respeito às escolhas musicais e uso de tecnologia (apps, gravação, playlists).',
+        expected_outcomes: 'Espera-se maior expressão de identidade, redução de isolamento social e desenvolvimento de interesses musicais autônomos.',
+        revaluation_date: 'Reavaliação prevista em 3 meses, com participação ativa do adolescente na definição de objetivos.'
+      }
+    },
+    {
+      id: 'post_regression',
+      label: 'Pós-regressão / recuperação de habilidades',
+      description: 'Paciente em processo de reorganização após perda de habilidades.',
+      values: {
+        next_objectives_short: 'Curto prazo (1-3 meses): Mapear repertório musical preservado; reestabelecer vínculo terapêutico e rotina de sessões com estruturação altamente previsível.',
+        next_objectives_medium: 'Médio prazo (3-6 meses): Reconstruir progressivamente habilidades musicais e comunicativas prévias, utilizando canções e atividades já consolidadas como âncoras.',
+        next_objectives_long: 'Longo prazo (6-12 meses): Consolidar ganhos recuperados e ampliar repertório, com monitoramento contínuo de sinais de alerta e articulação com equipe médica.',
+        proposed_interventions: 'Musicoterapia receptiva e recriativa com ênfase em repertório familiar, estruturação altamente previsível, musicoterapia de vibroacústica e atividades de contência emocional.',
+        expected_outcomes: 'Espera-se recuperação gradual de habilidades prévias, maior organização emocional e estabilidade clínica.',
+        revaluation_date: 'Reavaliação prevista em 2 meses, dada a necessidade de monitoramento frequente do quadro.'
+      }
     }
   ],
   theoretical_foundation: [
