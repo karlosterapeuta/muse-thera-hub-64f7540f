@@ -45,64 +45,57 @@ const STEPS = [
     fields: ['session_setting', 'session_structure', 'session_activities', 'instruments_used', 'musical_techniques', 'musical_genres', 'improvisation_use', 'receptive_techniques', 'recreative_techniques', 'compositional_techniques', 'tempo_dynamics_used', 'vocal_work']
   },
   {
-    id: 'behavioral_analysis',
-    title: '4. Análise Comportamental',
-    description: 'Comportamentos durante a sessão',
-    icon: Brain,
-    fields: ['eye_contact_quality', 'joint_attention', 'stereotypies_during_music', 'self_regulation_strategies', 'meltdown_shutdown_episodes', 'transitions_response', 'imitation_skills', 'turn_taking_musical']
-  },
-  {
     id: 'communication_language',
-    title: '5. Comunicação e Linguagem',
+    title: '4. Comunicação e Linguagem',
     description: 'Vocalizações, CAA e pragmática',
     icon: Music,
     fields: ['vocalizations_observed', 'verbal_output_during_music', 'echolalia_musical', 'aac_use', 'pragmatic_skills']
   },
   {
     id: 'patient_evolution',
-    title: '6. Evolução do Paciente',
+    title: '5. Evolução do Paciente',
     description: 'Comparativos, metas e indicadores',
     icon: Heart,
     fields: ['patient_evolution', 'behavioral_changes', 'skill_improvements', 'evolution_compared_baseline', 'goals_achieved', 'goals_in_progress', 'goals_not_achieved', 'quantitative_indicators']
   },
   {
     id: 'future_plan',
-    title: '7. Plano Terapêutico Futuro',
+    title: '6. Plano Terapêutico Futuro',
     description: 'Próximos passos e prognóstico',
     icon: Target,
     fields: ['next_objectives_short', 'next_objectives_medium', 'next_objectives_long', 'proposed_interventions', 'expected_outcomes', 'revaluation_date']
   },
   {
     id: 'recommendations',
-    title: '8. Encaminhamentos',
+    title: '7. Encaminhamentos',
     description: 'Família, escola e equipe',
     icon: Home,
     fields: ['recommendations', 'home_activities', 'family_guidance', 'school_recommendations', 'interdisciplinary_team_notes', 'playlist_recommended', 'red_flags_to_monitor']
   },
   {
     id: 'theoretical_foundation',
-    title: '9. Fundamentação Teórica',
+    title: '8. Fundamentação Teórica',
     description: 'Abordagens e referências',
     icon: Brain,
     fields: ['theoretical_framework', 'assessment_tools_used', 'references_cited']
   },
   {
     id: 'conclusion',
-    title: '10. Conclusão',
+    title: '9. Conclusão',
     description: 'Síntese e resumo',
     icon: Brain,
     fields: ['conclusion', 'treatment_summary']
   },
   {
     id: 'complementary_observations',
-    title: '11. Observações Complementares',
+    title: '10. Observações Complementares',
     description: 'Notas adicionais',
     icon: Heart,
     fields: ['complementary_observations', 'additional_notes']
   },
   {
     id: 'final_review',
-    title: '12. Revisão Final',
+    title: '11. Revisão Final',
     description: 'Verificação e finalização',
     icon: Target,
     fields: ['signature', 'review_notes']
