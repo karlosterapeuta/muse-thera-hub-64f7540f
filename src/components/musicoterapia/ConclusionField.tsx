@@ -70,7 +70,97 @@ const CONCLUSION_DATA = {
     icon: '⚠️',
     options: [
       'Concluindo, os desafios relacionados à resistência ao processo terapêutico permanecem como fator limitante, demandando estratégias de vínculo e engajamento.',
-      'Em síntese, as dificuldades de tolerância e flexibilidade nas atividades musicais constituem-se como principais obstáculos ao desenvolvimento terapêutico no momento atual.'
+      'Em síntese, as dificuldades de tolerância e flexibilidade nas atividades musicais constituem-se como principais obstáculos ao desenvolvimento terapêutico no momento atual.',
+      'A inconsistência na frequência de comparecimento compromete a continuidade do processo terapêutico, dificultando a consolidação dos avanços alcançados.',
+      'Observa-se resistência significativa ao contato com instrumentos musicais específicos, sugerindo necessidade de abordagem gradativa e respeitosa.',
+      'As dificuldades de despedida ao final das sessões configuram-se como ponto crítico, indicando processos de vinculação e separação em elaboração.',
+      'A hiperexcitabilidade em resposta a estímulos sonoros permanece como desafio, demandando estratégias de modulação sensorial previas às atividades musicais.',
+      'A dificuldade de manutenção da atenção durante as propostas musicais constitui-se como obstáculo ao engajamento pleno nas sessões.',
+      'Em síntese, os limites impostos pela condição clínica do paciente demandam adaptações contínuas nas estratégias de intervenção musicoterapêutica.'
+    ]
+  },
+  comunicacao: {
+    title: 'Comunicação e Interação Social',
+    icon: '💬',
+    options: [
+      'A comunicação não-verbal através da música consolidou-se como canal privilegiado de expressão, favorecendo a interação e o estabelecimento de turnos alternados.',
+      'Observa-se desenvolvimento significativo na capacidade de iniciar e responder interações musicais, constituindo-se como marco importante no processo terapêutico.',
+      'O vínculo terapêutico fortaleceu-se de forma consistente, refletindo-se na maior confiança e espontaneidade nas manifestações musicais do paciente.',
+      'A interação grupal em contextos musicais apresenta evolução notável, com o paciente demonstrando maior participação ativa e colaborativa.',
+      'A comunicação musical ainda encontra-se em estágios iniciais, com respostas predominantemente reativas e pouca iniciativa expressiva independente.',
+      'O processo de vinculação com o terapeuta musicoterapeuta apresenta flutuações, alternando momentos de aproximação e distanciamento típicos do quadro clínico.',
+      'A interação social mediada pela música mostra-se limitada, com o paciente mantendo preferência por experiências musicais individuais e paralelas.',
+      'Não se observa progresso significativo na comunicação não-verbal através da música, indicando necessidade de reavaliação das estratégias de mediação terapêutica.'
+    ]
+  },
+  cognitivo: {
+    title: 'Aspectos Cognitivos',
+    icon: '🧠',
+    options: [
+      'Os processos de atenção e concentração beneficiaram-se das estruturas musicais, com observável aumento do tempo de foco em atividades propostas.',
+      'A memória musical, especialmente no reconhecimento de melodias e canções, apresenta evolução significativa, funcionando como âncora para outros processos cognitivos.',
+      'A organização temporal e sequencial desenvolvida através das atividades rítmicas transferiu-se de forma positiva para outras demandas do cotidiano.',
+      'A resolução de problemas em contextos de improvisação musical demonstra evolução, evidenciando maior flexibilidade cognitiva e criatividade.',
+      'Os processos atencionais mantêm-se desafiados durante as sessões, com necessidade de estruturação altamente previsível das atividades musicais.',
+      'A memória de curto prazo em relação a padrões musicais mostra-se incipiente, limitando a progressão para atividades de maior complexidade.',
+      'A dificuldade de generalização dos aprendizados musicais para outros contextos permanece como desafio, indicando necessidade de trabalho intencional de transferência.',
+      'O processamento auditivo apresenta lentificação que impacta a resposta musical em tempo real, demandando maior tempo de processamento e adaptações no ritmo das sessões.'
+    ]
+  },
+  motor: {
+    title: 'Desenvolvimento Motor',
+    icon: '🏃',
+    options: [
+      'A coordenação motora grossa beneficiou-se das atividades de movimento corporal e dança, com evidente ganho na sincronização e equilíbrio.',
+      'O controle motor fino desenvolveu-se progressivamente através do manuseio de instrumentos de pequeno porte, favorecendo a independência instrumental.',
+      'A organização motora em resposta a padrões rítmicos consolidou-se como estratégia efetiva, promovendo maior fluidez e intencionalidade nos movimentos.',
+      'O relaxamento muscular promovido pela música resultou em diminuição da tensão motora habitual, favorecendo estados de disponibilidade para o aprendizado.',
+      'A praxis motora em instrumentos musicais mantém-se desafiadora, com necessidade de adaptações significativas de tamanho e acessibilidade instrumental.',
+      'Observa-se persistência de movimentos estereotipados durante as atividades musicais, que em alguns momentos funcionam como autorregulação e em outros limitam a exploração.',
+      'O planejamento motor para execução de padrões rítmicos complexos apresenta-se como meta em desenvolvimento, ainda não consolidado no período avaliado.',
+      'A flacidez muscular e o baixo tônus impactam a execução instrumental, demandando instrumentos de ativação e estratégias de mobilização motora.'
+    ]
+  },
+  recomendacoes: {
+    title: 'Recomendações e Encaminhamentos',
+    icon: '📋',
+    options: [
+      'Recomenda-se a continuidade do processo musicoterapêutico com frequência semanal regular, mantendo a consistência necessária para consolidação dos avanços.',
+      'Sugere-se integração com equipe multidisciplinar, promovendo articulação entre os objetivos musicoterapêuticos e os demais planos terapêuticos.',
+      'Indica-se inclusão da família nas sessões de forma gradual, favorecendo a generalização dos recursos musicais para o contexto domiciliar.',
+      'Recomenda-se avaliação complementar por fonoaudiologia, considerando a interface entre desenvolvimento musical e comunicação verbal.',
+      'Propõe-se aumento gradual da complexidade das atividades musicais, respeitando o ritmo de processamento e de tolerância do paciente.',
+      'Sugere-se registro audiovisual das sessões para análise retrospectiva e documentação objetiva da evolução terapêutica.',
+      'Indica-se ampliação do repertório instrumental, introduzindo novos timbres e texturas sonoras para enriquecimento das experiências musicais.',
+      'Recomenda-se supervisão clínica periódica para discussão de caso e refinamento das estratégias de intervenção musicoterapêutica.'
+    ]
+  },
+  prognostico: {
+    title: 'Prognóstico e Perspectivas',
+    icon: '🔭',
+    options: [
+      'O prognóstico é favorável, considerando a resposta positiva e consistente às intervenções musicoterapêuticas no período avaliado.',
+      'As perspectivas de evolução são promissoras, com a música constituindo-se como recurso terapêutico de elevado potencial para este paciente.',
+      'Observa-se sinais claros de progressão, indicando que os objetivos terapêuticos de médio prazo são alcançáveis com a continuidade do processo.',
+      'O prognóstico é reservado, considerando as particularidades do quadro clínico e a necessidade de monitoramento contínuo da resposta terapêutica.',
+      'As perspectivas de evolução dependem da regularidade do tratamento e da adesão familiar às orientações musicoterapêuticas.',
+      'O prognóstico a longo prazo demanda avaliação periódica, considerando a natureza evolutiva do quadro e as necessidades em transformação.',
+      'Observa-se potencial significativo de desenvolvimento, contudo o ritmo de progressão será gradual e demandará paciência terapêutica.',
+      'As perspectivas incluem a possibilidade de transferência dos ganhos musicoterapêuticos para contextos escolares e comunitários no futuro.'
+    ]
+  },
+  familiar: {
+    title: 'Considerações Familiares',
+    icon: '👨‍👩‍👧',
+    options: [
+      'A família demonstra engajamento e comprometimento com o processo terapêutico, constituindo-se como aliada fundamental na continuidade do tratamento.',
+      'O suporte familiar evidencia-se na consistência do comparecimento e no interesse pelas orientações e estratégias musicoterapêuticas.',
+      'A participação ativa dos cuidadores nas orientações propostas enriquece o processo, favorecendo a continuidade dos recursos musicais no ambiente doméstico.',
+      'Observa-se necessidade de fortalecimento do suporte familiar, considerando as demandas adicionais impostas pela condição do paciente.',
+      'A família apresenta dificuldades de compreensão sobre os objetivos da musicoterapia, indicando necessidade de orientação e esclarecimentos.',
+      'O contexto familiar de vulnerabilidade social impacta a regularidade do tratamento, demandando articulação com serviços de apoio.',
+      'As dinâmicas familiares influenciam a resposta do paciente às sessões, reforçando a importância da abordagem sistêmica no processo terapêutico.',
+      'A rede de apoio familiar mostra-se fragmentada, sugerindo necessidade de encaminhamento para serviços de atenção à família e orientação social.'
     ]
   }
 } as const;
