@@ -646,52 +646,52 @@ export function MusicoterapiaReportWizard({
 
       {/* Main Wizard Card — Monolithic */}
       <div ref={stepContentRef} className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <section className="lg:col-span-3 bg-[#1a1a1a] rounded-[2rem] sm:rounded-[2.5rem] border border-white/5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden relative">
+        <section className="lg:col-span-3 bg-[#1a1a1a] rounded-2xl sm:rounded-[2rem] lg:rounded-[2.5rem] border border-white/5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden relative">
           {/* Premium accent light */}
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#c9a84c]/10 blur-[100px] rounded-full pointer-events-none" />
 
-          <div className="p-6 sm:p-10 lg:p-12 space-y-10 relative z-10">
+          <div className="p-4 sm:p-8 lg:p-12 space-y-6 sm:space-y-8 lg:space-y-10 relative z-10">
             <div className="space-y-2">
               <div className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-[#c9a84c] font-bold">
                 <StepIcon className="h-3.5 w-3.5" />
                 Etapa {String(currentStep + 1).padStart(2, '0')} de {String(STEPS.length).padStart(2, '0')}
               </div>
               <h2
-                className="text-3xl sm:text-4xl text-[#f0d78c]"
+                className="text-2xl sm:text-3xl lg:text-4xl text-[#f0d78c] leading-tight"
                 style={{ fontFamily: "'Instrument Serif', serif" }}
               >
                 {currentStepData.title.replace(/^\d+\.\s*/, '')}
               </h2>
-              <p className="text-sm text-gray-500 font-light">{currentStepData.description}</p>
+              <p className="text-xs sm:text-sm text-gray-500 font-light">{currentStepData.description}</p>
             </div>
 
             <div className="text-foreground">
               {renderStepFields()}
             </div>
 
-            <footer className="pt-8 flex flex-col sm:flex-row items-center justify-between border-t border-white/5 gap-6">
-              <div className="flex items-center gap-3">
+            <footer className="pt-6 sm:pt-8 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between border-t border-white/5 gap-4 sm:gap-6">
+              <div className="hidden sm:flex items-center gap-3">
                 <div className="w-2 h-2 rounded-full bg-[#c9a84c] animate-pulse" />
                 <span className="text-[10px] text-gray-500 uppercase tracking-widest font-medium">
                   Sincronizado com Nuvem
                 </span>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3 w-full sm:w-auto">
                 <Button
                   variant="ghost"
                   onClick={handlePrevStep}
                   disabled={currentStep === 0}
-                  className="text-gray-400 hover:text-[#f0d78c] hover:bg-white/5"
+                  className="text-gray-400 hover:text-[#f0d78c] hover:bg-white/5 px-3 sm:px-4"
                 >
-                  <ChevronLeft className="h-4 w-4 mr-2" />
-                  Anterior
+                  <ChevronLeft className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Anterior</span>
                 </Button>
                 <button
                   type="button"
                   onClick={handleNextStep}
                   disabled={currentStep === STEPS.length - 1 || !canProceed()}
-                  className="group flex items-center gap-3 bg-[#c9a84c] hover:bg-[#f0d78c] disabled:opacity-40 disabled:cursor-not-allowed text-[#0d0d0d] px-6 sm:px-10 py-3 sm:py-4 rounded-2xl font-bold transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+                  className="group flex items-center justify-center gap-2 sm:gap-3 bg-[#c9a84c] hover:bg-[#f0d78c] disabled:opacity-40 disabled:cursor-not-allowed text-[#0d0d0d] px-5 sm:px-10 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-sm sm:text-base flex-1 sm:flex-none"
                   style={{ fontFamily: "'Work Sans'" }}
                 >
                   Próxima Seção
@@ -709,15 +709,15 @@ export function MusicoterapiaReportWizard({
         </section>
 
         {/* Quick Fill Panel */}
-        <aside className="space-y-4">
-          {showQuickFill && (
+        {showQuickFill && (
+          <aside className="space-y-4">
             <MusicoterapiaQuickFill
               activeField={activeField}
               onInsert={handleQuickFillInsert}
               onClose={() => setShowQuickFill(false)}
             />
-          )}
-        </aside>
+          </aside>
+        )}
       </div>
     </div>
   );
