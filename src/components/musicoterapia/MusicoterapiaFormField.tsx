@@ -238,36 +238,21 @@ export function MusicoterapiaFormField({
     }
   };
 
-  const isFilled = Array.isArray(value)
-    ? value.length > 0
-    : typeof value === 'number'
-      ? true
-      : typeof value === 'string'
-        ? value.trim().length > 0
-        : !!value;
-
   return (
-    <div
-      className={`space-y-2 pl-3 -ml-3 border-l-2 transition-colors ${
-        isFilled ? 'border-[#c9a84c]/60' : 'border-transparent'
-      }`}
-    >
+    <div className="space-y-2">
       <div className="flex items-center space-x-2">
         <Label
           htmlFor={field.id}
-          className="text-sm font-medium flex items-center gap-1"
+          className={`text-sm font-medium ${field.required ? 'after:content-["*"] after:text-destructive after:ml-1' : ''}`}
         >
-          <span>{field.label}</span>
-          {field.required && (
-            <span className="text-[#c9a84c] font-bold" aria-label="obrigatório">*</span>
-          )}
+          {field.label}
         </Label>
-
+        
         {field.description && (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <HelpCircle className="h-3.5 w-3.5 text-muted-foreground/60 cursor-help" />
+                <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
               </TooltipTrigger>
               <TooltipContent side="top" className="max-w-80">
                 <p className="text-sm">{field.description}</p>
@@ -278,6 +263,12 @@ export function MusicoterapiaFormField({
       </div>
 
       {renderField()}
+
+      {field.description && field.type === 'textarea' && (
+        <p className="text-xs text-muted-foreground">
+          {field.description}
+        </p>
+      )}
     </div>
   );
 }
