@@ -1,15 +1,12 @@
-import React, { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Lightbulb, ChevronDown, ChevronUp, Music, Brain, Heart } from 'lucide-react';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import React from 'react';
+import { Lightbulb, Music, Brain, Heart, Info } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 interface MusicoterapiaGuidanceProps {
   text: string;
   fieldId: string;
 }
 
-// Guidance content for specific fields
 const FIELD_GUIDANCE: Record<string, {
   icon: React.ElementType;
   tips: string[];
@@ -74,80 +71,75 @@ const FIELD_GUIDANCE: Record<string, {
 };
 
 export function MusicoterapiaGuidance({ text, fieldId }: MusicoterapiaGuidanceProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
-  
   const guidance = FIELD_GUIDANCE[fieldId];
   const GuidanceIcon = guidance?.icon || Lightbulb;
 
   return (
-    <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
-      <CollapsibleTrigger asChild>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="w-full justify-start text-muted-foreground hover:text-foreground"
+    <Popover>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-bold text-gray-500 hover:text-[#c9a84c] transition-colors"
         >
-          <GuidanceIcon className="h-4 w-4 mr-2" />
-          <span className="text-sm">Orientações para este campo</span>
-          {isExpanded ? (
-            <ChevronUp className="h-4 w-4 ml-auto" />
-          ) : (
-            <ChevronDown className="h-4 w-4 ml-auto" />
+          <Info className="h-3 w-3" />
+          Orientações
+        </button>
+      </PopoverTrigger>
+      <PopoverContent
+        align="start"
+        className="w-[340px] bg-[#1a1a1a] border-[#c9a84c]/20 text-gray-200 p-0 overflow-hidden"
+      >
+        <div className="px-4 py-3 border-b border-white/5 flex items-center gap-2">
+          <GuidanceIcon className="h-3.5 w-3.5 text-[#c9a84c]" />
+          <span className="text-[10px] uppercase tracking-[0.2em] text-[#c9a84c] font-bold">
+            Orientações do campo
+          </span>
+        </div>
+
+        <div className="p-4 space-y-4 max-h-[60vh] overflow-y-auto">
+          <p className="text-xs text-gray-300 leading-relaxed">{text}</p>
+
+          {guidance && (
+            <>
+              {guidance.tips.length > 0 && (
+                <div className="space-y-2">
+                  <h5 className="text-[10px] uppercase tracking-widest font-bold text-[#f0d78c]">
+                    Dicas
+                  </h5>
+                  <ul className="space-y-1.5">
+                    {guidance.tips.map((tip, index) => (
+                      <li key={index} className="text-xs text-gray-400 flex items-start gap-2">
+                        <span className="w-1 h-1 rounded-full bg-[#c9a84c] mt-1.5 flex-shrink-0" />
+                        <span className="leading-relaxed">{tip}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {guidance.examples.length > 0 && (
+                <div className="space-y-2">
+                  <h5 className="text-[10px] uppercase tracking-widest font-bold text-[#f0d78c]">
+                    Exemplos
+                  </h5>
+                  <div className="space-y-2">
+                    {guidance.examples.map((example, index) => (
+                      <div
+                        key={index}
+                        className="p-2.5 bg-black/40 rounded border-l-2 border-[#c9a84c]/50"
+                      >
+                        <p className="text-xs italic text-gray-400 leading-relaxed">
+                          "{example}"
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
           )}
-        </Button>
-      </CollapsibleTrigger>
-      
-      <CollapsibleContent>
-        <Card className="mt-2 bg-muted/30 border-primary/20">
-          <CardContent className="pt-4 space-y-4">
-            {/* Basic guidance text */}
-            <div className="flex items-start space-x-2">
-              <Lightbulb className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-              <p className="text-sm text-muted-foreground">
-                {text}
-              </p>
-            </div>
-
-            {/* Enhanced guidance if available */}
-            {guidance && (
-              <>
-                {guidance.tips.length > 0 && (
-                  <div className="space-y-2">
-                    <h5 className="text-sm font-medium text-primary">
-                      Dicas para preenchimento:
-                    </h5>
-                    <ul className="space-y-1">
-                      {guidance.tips.map((tip, index) => (
-                        <li key={index} className="text-sm text-muted-foreground flex items-start">
-                          <span className="w-1 h-1 rounded-full bg-primary mt-2 mr-2 flex-shrink-0" />
-                          {tip}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {guidance.examples.length > 0 && (
-                  <div className="space-y-2">
-                    <h5 className="text-sm font-medium text-primary">
-                      Exemplos práticos:
-                    </h5>
-                    <div className="space-y-2">
-                      {guidance.examples.map((example, index) => (
-                        <div key={index} className="p-2 bg-background rounded border-l-2 border-primary/50">
-                          <p className="text-sm italic text-muted-foreground">
-                            "{example}"
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
-          </CardContent>
-        </Card>
-      </CollapsibleContent>
-    </Collapsible>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }

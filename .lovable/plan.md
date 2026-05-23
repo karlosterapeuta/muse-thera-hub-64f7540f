@@ -1,82 +1,89 @@
 
-## Objetivo
+# Redesign do Wizard Relatório MuseTera TEA
 
-Refazer do zero o PDF do botão **"Baixar Gráfico"** para que:
-1. Mostre **todos os dados avaliados** sem cortes nem páginas em branco.
-2. Tenha visual **profissional, limpo e bonito** (alinhado à identidade MuseTera).
-3. Reflita fielmente a estrutura da página Avaliação (5 domínios, 16 subdomínios, 128 parâmetros).
+Refinamento completo de UI/UX em todas as 11 etapas do wizard, mantendo a identidade noir & gold já estabelecida, mas tornando a navegação mais limpa, organizada e moderna.
 
-## Diagnóstico do problema atual
+## Problemas atuais identificados
 
-O fluxo atual (`html2pdf.js` renderizando um único DOM gigante) sofre de:
-- Quebra de página por fatiamento de pixel → corta tabelas no meio.
-- Mistura de `pagebreak: ['css']` com `height: 297mm + overflow:hidden` → páginas brancas quando o conteúdo não bate exato.
-- Conteúdo longo (16 subdomínios × 8 parâmetros) excede a página e é "engolido" pelo `overflow:hidden`.
+1. **Stepper horizontal** ocupa muito espaço, fica apertado com 11 etapas e exige scroll horizontal no mobile.
+2. **Hero editorial** é grande demais — empurra o conteúdo da etapa para baixo a cada navegação.
+3. **Templates profissionais** usam cor roxa (`purple-200/600`) que destoa da paleta dourada do resto do wizard.
+4. **Campos de formulário** ficam soltos, sem agrupamento visual ou hierarquia clara entre grupos de campos.
+5. **Footer de navegação** mistura "Sincronizado com Nuvem" + botões, fica visualmente carregado.
+6. **Sem indicador de campos obrigatórios** no topo da etapa — usuário só descobre ao tentar avançar.
+7. **Etapa Revisão Final** (`FinalReviewSection`) e **Informações Básicas** (`BasicInformationSection`) precisam alinhar visualmente com o novo padrão.
+8. **Mobile**: stepper, hero e padding dos cards consomem viewport demais.
 
-→ Conclusão: precisamos abandonar a estratégia "um DOM gigante → fatiar" e adotar **captura por seções** com `html2canvas` + `jsPDF` manual, que é o padrão recomendado para relatórios longos.
+## Nova arquitetura visual
 
-## Novo PDF — Estrutura (4–6 páginas A4 retrato)
+### Layout geral
+- Hero **compacto** (1 linha de título + chip + barra de progresso fina) — reduz ~60% da altura atual.
+- Stepper **vertical-collapsável no desktop** (sidebar esquerda fixa, 240px, com numeração e títulos completos) e **horizontal-scroll minimalista no mobile** (apenas bolinhas numeradas + título da etapa atual destacado abaixo).
+- Card central com **respiração maior** (padding interno reduzido nas bordas externas, aumentado no conteúdo).
+- Painel lateral direito (Quick Fill) reformulado para flutuar e abrir sob demanda, em vez de ocupar grid permanente.
 
-**Página 1 — Capa / Identificação**
-- Cabeçalho dourado com logo MuseTera 3D
-- Bloco de identificação: Paciente · Idade · Data · Musicoterapeuta · CRM/Registro
-- Cartão "Síntese Executiva": 4 KPIs (Pontuação, Desempenho %, Domínios avaliados, Parâmetros avaliados)
-- Barra de progresso geral colorida por faixa de desempenho
+### Cabeçalho de cada etapa (dentro do card)
+- Chip dourado "Etapa 03 / 11" + ícone.
+- Título serifado grande.
+- Subtítulo em uma linha.
+- **Linha de meta-informação** nova: "X campos · Y obrigatórios · Z preenchidos" com mini-barra de completude da etapa.
 
-**Página 2 — Visão Gráfica Consolidada**
-- Radar por Domínio (StaticChart SVG, 5 eixos)
-- Pizza Desenvolvido vs. A desenvolver
-- Legenda de domínios com cores oficiais
+### Templates profissionais
+- Migrar do roxo para a paleta **noir & gold** (borda `#c9a84c/30`, fundo `#1a1a1a`, accent dourado).
+- Cards de template viram **chips horizontais** com ícone, título, descrição curta e check quando ativos.
+- Adicionar botão "Limpar template" quando um template está aplicado.
 
-**Página 3 — Desempenho por Subdomínio**
-- Gráfico de barras horizontais (16 subdomínios), cor por domínio
-- Legenda de classificação (Excelente/Satisfatório/Em Desenvolvimento/Necessita Atenção)
+### Campos de formulário
+- Agrupar campos relacionados em **fieldsets visuais** (ex: na etapa "Comunicação", separar "Vocalizações", "CAA", "Pragmática").
+- Indicador visual sutil (asterisco dourado) em obrigatórios.
+- Estado de "campo preenchido" com borda dourada fina à esquerda do campo.
+- Guidance (`MusicoterapiaGuidance`) vira um popover discreto acionado por ícone de info, em vez de bloco persistente embaixo do campo — reduz ruído visual.
 
-**Páginas 4+ — Detalhamento por Domínio (uma seção por domínio, paginada automaticamente)**
-Para cada um dos 5 domínios:
-- Faixa colorida com nome do domínio + média % + classificação
-- Tabela de subdomínios: nome · % · barra de progresso · classificação
-- Lista expandida dos parâmetros avaliados (nome + frequência marcada), exibindo **todos** os 128 itens — paginado seção-a-seção para nunca cortar uma tabela ao meio.
+### Navegação (footer)
+- Remover indicador "Sincronizado com Nuvem" do footer (vai para o topo, ao lado da barra de progresso, como ícone discreto).
+- Footer fica apenas: `Voltar` | contador "03 / 11" centralizado | `Próxima Seção`.
+- Mensagem de campos faltantes vira um **toast inline** acima do botão Próxima, listando quais campos faltam (clicáveis para scrollar até eles).
 
-**Última página — Rodapé profissional**
-- Carimbo digital + foto do profissional (se houver)
-- Dados de contato
-- Aviso de confidencialidade
-- Data/hora de emissão
+### Etapas específicas
+
+| Etapa | Ajuste principal |
+|---|---|
+| 1. Informações Básicas | Reformatar `BasicInformationSection` em 2 colunas (paciente / profissional) com avatar e selo dourado. |
+| 2. Objetivos Terapêuticos | Agrupar campos em duas seções: "Objetivos gerais" e "Metas específicas" com divisor sutil. |
+| 3. Sessão e Atividades | Subdividir em 3 grupos colapsáveis: "Setting & Estrutura", "Técnicas musicais", "Recursos sonoros" (campo a campo fica longo demais sem agrupamento). |
+| 4. Comunicação e Linguagem | Grupos: "Vocalizações", "CAA", "Pragmática" + templates noir/gold. |
+| 5. Evolução do Paciente | Grupo "Comparativo baseline" separado de "Metas (atingidas / em progresso / não atingidas)" com cards coloridos discretos (verde/âmbar/cinza). |
+| 6. Plano Futuro | Timeline visual vertical para curto / médio / longo prazo. |
+| 7. Encaminhamentos | Grupos por destinatário: Família, Escola, Equipe interdisciplinar. |
+| 8. Fundamentação Teórica | Templates em destaque (escolher abordagem primeiro), campos abaixo. |
+| 9. Conclusão | Layout simples e arejado, foco no textarea grande. |
+| 10. Observações Complementares | Layout minimalista, sem subdivisões. |
+| 11. Revisão Final | Reformatar `FinalReviewSection` com resumo em cards por etapa (todas marcadas como completas/incompletas) + botão único dourado "Gerar relatório com IA e salvar". |
+
+### Tokens reutilizados
+- Cores: `#0d0d0d` (fundo), `#1a1a1a` (cards), `#c9a84c` / `#f0d78c` (dourado), `text-gray-400/500` (texto secundário).
+- Fontes: `Instrument Serif` (títulos), `Work Sans` (corpo) — mantidas.
+- Sem novas dependências.
 
 ## Implementação técnica
 
+### Arquivos a editar
+- `src/components/musicoterapia/MusicoterapiaReportWizard.tsx` — reescrever layout (hero compacto, stepper vertical desktop / horizontal mobile, footer simplificado, templates noir/gold, grupos de campos via novo helper).
+- `src/components/musicoterapia/BasicInformationSection.tsx` — layout 2 colunas + cards dourados.
+- `src/components/musicoterapia/FinalReviewSection.tsx` — sumário por etapa + CTA único.
+- `src/components/musicoterapia/MusicoterapiaFormField.tsx` — estado "preenchido" com borda dourada à esquerda, asterisco dourado em obrigatórios.
+- `src/components/musicoterapia/MusicoterapiaGuidance.tsx` — converter para popover acionado por ícone de info (manter API).
+
 ### Arquivos novos
-- `src/components/pdf/GraphReportPDF.tsx` — novo componente renderizado off-screen, dividido em blocos `<section data-pdf-section>` (cabeçalho, gráficos, tabela barras, e **um bloco por domínio**, com sub-blocos `data-pdf-section` por subdomínio quando o domínio for muito longo).
-- `src/utils/sectionPdfGenerator.ts` — utilitário que:
-  1. Renderiza o componente em container off-screen (`renderForPdf`).
-  2. Itera por `[data-pdf-section]`.
-  3. Para cada seção: `html2canvas(scale: 2, backgroundColor: '#fff')` → mm.
-  4. Se `heightMM > espaçoRestante && currentY > margem` → `pdf.addPage()`.
-  5. `pdf.addImage(..., 'JPEG', 0.92)` e atualiza `currentY += heightMM + 4`.
-  6. Retorna `Blob` (para pré-visualização) e dispara `save()`.
-  - Constantes: A4 210×297, margem 10 mm, gap 4 mm.
+- `src/components/musicoterapia/WizardStepper.tsx` — stepper vertical desktop / horizontal mobile (extrair para limpar o wizard principal).
+- `src/components/musicoterapia/WizardFieldGroup.tsx` — wrapper de agrupamento de campos com título dourado pequeno e divisor.
+- `src/components/musicoterapia/WizardStepHeader.tsx` — cabeçalho com chip, título, meta-info de progresso da etapa.
 
-### Arquivos editados
-- `src/pages/evaluation/index.tsx`:
-  - Substituir corpo de `handleGenerateParametersPDF` e `handleGenerateParametersPDFFromSaved` para usar `generateSectionPdf(<GraphReportPDF .../>)`.
-  - Manter o `PDFPreviewDialog` existente exibindo o Blob retornado.
-- Manter `ParametersGraphsPDF.tsx` antigo intocado (não é mais usado por este botão; pode ser removido em passo futuro).
+### Sem mudança de lógica
+- Estrutura de `STEPS`, validação, salvamento, integração com IA e templates permanecem idênticas.
+- Apenas reorganização visual + extração de subcomponentes de apresentação.
 
-### Garantias de completude
-- Cada subdomínio com seus 8 parâmetros vira `<section data-pdf-section>` independente → impossível cortar no meio.
-- Sem `height: 297mm` nem `overflow: hidden` → conteúdo nunca é "escondido".
-- Sem `pagebreak` do html2pdf → sem páginas brancas por dupla quebra.
-- StaticChart (SVG) usado para todos os gráficos → renderização determinística no canvas.
-
-### QA antes de entregar
-- Após implementar, abrir o `PDFPreviewDialog` e validar que:
-  - Não há páginas em branco.
-  - Todos os 5 domínios e 16 subdomínios aparecem.
-  - Tabelas não cortam linhas entre páginas.
-  - Cabeçalho e rodapé presentes.
-
-## O que NÃO muda
-- Lógica de cálculo de scores, `selections`, `evaluationDomains` — usados como-está.
-- Botão "Baixar Gráfico" e fluxo de pré-visualização permanecem.
-- `ParametersGraphsPDFStatic` (usado por outros lugares via `useEvaluationPDF`) fica intocado.
+## Fora de escopo
+- Mudanças em PDFs gerados.
+- Mudanças no template de dados (`musicoterapiaTemplate.ts`).
+- Alterações em outras páginas (Processes, Evaluation, etc).
