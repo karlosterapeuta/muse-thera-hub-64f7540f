@@ -60,14 +60,6 @@ export default function Processes() {
       step: 5,
     },
     {
-      title: "Relatório MuseTera TEA",
-      description: "Relatórios especializados em Musicoterapia para TEA",
-      icon: Music,
-      path: "/processes/musicoterapia",
-      accentColor: "violet",
-      step: 6,
-    },
-    {
       title: "Relatório de Evolução",
       description: "Relatório detalhado de evolução do paciente",
       icon: TrendingUp,
