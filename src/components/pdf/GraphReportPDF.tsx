@@ -775,7 +775,7 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
                             padding: '5px 10px',
                             color: '#475569',
                             fontWeight: 700,
-                            width: 90,
+                            width: 120,
                           }}
                         >
                           Frequência
