@@ -253,20 +253,6 @@ export const musicoterapiaPhrases: PhraseBank[] = [
     fieldContext: ['domain_evidences']
   },
   {
-    id: 'behavioral_phrases',
-    name: 'Análise Comportamental',
-    phrases: [
-      'estereotipias motoras observadas durante a música apresentam função autorregulatória, organizando o engajamento',
-      'utiliza espontaneamente instrumento preferido como recurso de autorregulação em momentos de desorganização',
-      'transições mediadas por canção-ponte mostram-se efetivas, reduzindo significativamente comportamentos de resistência',
-      'episódios de meltdown não foram observados na sessão; música regulatória preveniu desorganizações',
-      'imitação musical demonstra evolução progressiva, com ampliação do repertório imitativo a cada sessão',
-      'alternância de turnos musicais mostra-se consistente em diálogos rítmicos curtos de 2-3 trocas',
-      'contato visual é facilitado pelo contexto musical, especialmente durante canções de saudação e fechamento'
-    ],
-    fieldContext: ['stereotypies_during_music','self_regulation_strategies','transitions_response','meltdown_shutdown_episodes']
-  },
-  {
     id: 'communication_phrases',
     name: 'Comunicação e Linguagem',
     phrases: [

@@ -373,8 +373,7 @@ export const scaleFieldIds = [
   'social_interaction','attention_focus',
   'auditory_processing','sound_tolerance','vestibular_response_music','tactile_instrument_response','proprioceptive_response',
   'domain_musicality','domain_communication_verbal','domain_communication_nonverbal','domain_social_interaction',
-  'domain_emotional','domain_cognitive','domain_motor_gross','domain_motor_fine','domain_sensory_integration','domain_autonomy',
-  'eye_contact_quality','joint_attention','imitation_skills','turn_taking_musical'
+  'domain_emotional','domain_cognitive','domain_motor_gross','domain_motor_fine','domain_sensory_integration','domain_autonomy'
 ];
 
 export const reportSections: ReportSection[] = [
@@ -383,7 +382,6 @@ export const reportSections: ReportSection[] = [
   { id: 'sensory_profile', title: 'Avaliação Sensório-Musical', fieldIds: ['auditory_processing','sound_tolerance','vestibular_response_music','tactile_instrument_response','proprioceptive_response','sensory_seeking_vs_avoiding','sensory_profile_notes'] },
   { id: 'imtap_domains', title: 'Avaliação Clínica - Domínios IMTAP', fieldIds: ['domain_musicality','domain_communication_verbal','domain_communication_nonverbal','domain_social_interaction','domain_emotional','domain_cognitive','domain_motor_gross','domain_motor_fine','domain_sensory_integration','domain_autonomy','domain_evidences'] },
   { id: 'session_details', title: 'Detalhamento Clínico da Sessão', fieldIds: ['session_setting','session_structure','improvisation_use','receptive_techniques','recreative_techniques','compositional_techniques','tempo_dynamics_used','vocal_work'] },
-  { id: 'behavioral_analysis', title: 'Análise Comportamental', fieldIds: ['eye_contact_quality','joint_attention','stereotypies_during_music','self_regulation_strategies','meltdown_shutdown_episodes','transitions_response','imitation_skills','turn_taking_musical'] },
   { id: 'communication_language', title: 'Comunicação e Linguagem', fieldIds: ['vocalizations_observed','verbal_output_during_music','echolalia_musical','aac_use','pragmatic_skills'] },
   { id: 'evolution_detailed', title: 'Evolução Clínica Detalhada', fieldIds: ['evolution_compared_baseline','goals_achieved','goals_in_progress','goals_not_achieved','quantitative_indicators'] },
   { id: 'future_plan', title: 'Plano Terapêutico Futuro', fieldIds: ['next_objectives_short','next_objectives_medium','next_objectives_long','proposed_interventions','expected_outcomes','revaluation_date'] },
