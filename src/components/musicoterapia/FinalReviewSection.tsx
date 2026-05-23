@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Eye, Zap, Download, FileText, Loader2, Upload, Image, X, Save } from 'lucide-react';
+import { Eye, Zap, Download, FileText, Loader2, Upload, Image, X, Save, CheckCircle, Info, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
@@ -20,9 +20,9 @@ interface FinalReviewSectionProps {
   professionalData?: any;
 }
 
-export function FinalReviewSection({ 
-  reportData, 
-  onOrganizeWithAI, 
+export function FinalReviewSection({
+  reportData,
+  onOrganizeWithAI,
   isGeneratingWithAI,
   onSaveReport,
   isSaving,
@@ -37,9 +37,8 @@ export function FinalReviewSection({
 
   const handleExportPDF = async () => {
     setIsExporting(true);
-    
+
     try {
-      // Converter imagens para Base64
       let photoBase64: string | null = null;
       let stampBase64: string | null = null;
 
@@ -50,17 +49,15 @@ export function FinalReviewSection({
         stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
       }
 
-      // Criar um elemento HTML temporário com o conteúdo do relatório
       const tempDiv = document.createElement('div');
       tempDiv.style.padding = '40px';
       tempDiv.style.fontFamily = 'Arial, sans-serif';
       tempDiv.style.color = '#000';
       tempDiv.style.backgroundColor = '#fff';
       tempDiv.innerHTML = generatePDFContent(photoBase64, stampBase64);
-      
+
       document.body.appendChild(tempDiv);
-      
-      // Configurações do PDF
+
       const opt = {
         margin: [20, 20, 20, 20],
         filename: `relatorio-musicoterapia-${reportData.patientName?.replace(/\s+/g, '-').toLowerCase() || 'paciente'}-${new Date().toISOString().split('T')[0]}.pdf`,
@@ -69,30 +66,28 @@ export function FinalReviewSection({
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
 
-      // Gerar e baixar o PDF
       const pdfInstance = html2pdf().set(opt).from(tempDiv);
       await pdfInstance.save();
 
-      // Auto-save to storage
       try {
         const pdfBlob = await pdfInstance.outputPdf('blob');
         await savePDFToStorage(pdfBlob, opt.filename, "report");
       } catch (storageErr) {
-        console.warn("⚠️ PDF baixado mas não foi salvo no sistema:", storageErr);
+        console.warn("PDF baixado mas nao foi salvo no sistema:", storageErr);
       }
-      
+
       document.body.removeChild(tempDiv);
-      
+
       toast({
         title: "PDF Exportado com Sucesso!",
-        description: "O relatório de musicoterapia foi baixado em formato PDF.",
+        description: "O relatorio de musicoterapia foi baixado em formato PDF.",
       });
     } catch (error) {
-      console.error('Erro na exportação PDF:', error);
+      console.error('Erro na exportacao PDF:', error);
       toast({
         variant: "destructive",
-        title: "Erro na Exportação",
-        description: "Não foi possível gerar o PDF. Tente novamente.",
+        title: "Erro na Exportacao",
+        description: "Nao foi possivel gerar o PDF. Tente novamente.",
       });
     } finally {
       setIsExporting(false);
@@ -103,22 +98,20 @@ export function FinalReviewSection({
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Validar tipo de arquivo
     if (!file.type.startsWith('image/')) {
       toast({
         variant: "destructive",
-        title: "Tipo de arquivo inválido",
+        title: "Tipo de arquivo invalido",
         description: "Por favor, selecione apenas arquivos de imagem (PNG, JPG, etc.)",
       });
       return;
     }
 
-    // Validar tamanho do arquivo (máximo 5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast({
         variant: "destructive",
         title: "Arquivo muito grande",
-        description: "A imagem deve ter no máximo 5MB",
+        description: "A imagem deve ter no maximo 5MB",
       });
       return;
     }
@@ -126,35 +119,34 @@ export function FinalReviewSection({
     setIsUploadingLogo(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Usuário não autenticado");
+      if (!user) throw new Error("Usuario nao autenticado");
 
       const fileExt = file.name.split('.').pop();
       const fileName = `${user.id}/logo-${Date.now()}.${fileExt}`;
-      
+
       const { data, error } = await supabase.storage
         .from('report-logos')
         .upload(fileName, file, { upsert: true });
 
       if (error) throw error;
 
-      // Obter URL pública da imagem
       const { data: { publicUrl } } = supabase.storage
         .from('report-logos')
         .getPublicUrl(fileName);
 
       setLogoUrl(publicUrl);
-      
+
       toast({
         title: "Logo enviada com sucesso!",
-        description: "A logo será incluída no PDF gerado.",
+        description: "A logo sera incluida no PDF gerado.",
       });
-      
+
     } catch (error) {
       console.error('Erro no upload:', error);
       toast({
         variant: "destructive",
         title: "Erro no upload",
-        description: "Não foi possível enviar a logo. Tente novamente.",
+        description: "Nao foi possivel enviar a logo. Tente novamente.",
       });
     } finally {
       setIsUploadingLogo(false);
@@ -168,32 +160,30 @@ export function FinalReviewSection({
     }
     toast({
       title: "Logo removida",
-      description: "A logo foi removida do relatório.",
+      description: "A logo foi removida do relatorio.",
     });
   };
 
-
   const generatePDFContent = (photoBase64?: string | null, stampBase64?: string | null) => {
     const fields = reportData.fieldValues || {};
-    const currentDate = new Date().toLocaleDateString('pt-BR');
-    
+
     return `
-      <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #007bff; padding-bottom: 20px;">
+      <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #c9a84c; padding-bottom: 20px;">
         ${logoUrl ? `<img src="${logoUrl}" style="max-width: 150px; max-height: 80px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;" alt="Logo" />` : ''}
-        <h1 style="margin: 0; color: #007bff; font-size: 28px;">Relatorio MuseTera TEA</h1>
+        <h1 style="margin:  0; color: #c9a84c; font-size: 28px;">Relatorio MuseTera TEA</h1>
         <p style="margin: 5px 0 0 0; color: #666; font-size: 16px;">Musicoterapia para Transtorno do Espectro Autista</p>
       </div>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
         <div>
-          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Dados do Paciente</h3>
+          <h3 style="color: #c9a84c; margin-bottom: 15px; font-size: 18px;">Dados do Paciente</h3>
           <p style="margin: 8px 0;"><strong>Nome:</strong> ${reportData.patientName || 'Nao informado'}</p>
           <p style="margin: 8px 0;"><strong>Idade:</strong> ${reportData.patientAge || 'Nao informado'}</p>
           <p style="margin: 8px 0;"><strong>Diagnostico:</strong> ${reportData.patientDiagnosis || 'Nao informado'}</p>
         </div>
-        
+
         <div>
-          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Dados do Profissional</h3>
+          <h3 style="color: #c9a84c; margin-bottom: 15px; font-size: 18px;">Dados do Profissional</h3>
           <p style="margin: 8px 0;"><strong>Nome:</strong> ${reportData.professionalName || 'Nao informado'}</p>
           <p style="margin: 8px 0;"><strong>Registro:</strong> ${reportData.professionalRegistry || 'Nao informado'}</p>
           <p style="margin: 8px 0;"><strong>Data da Sessao:</strong> ${reportData.sessionDate ? new Date(reportData.sessionDate).toLocaleDateString('pt-BR') : 'Nao informado'}</p>
@@ -202,7 +192,7 @@ export function FinalReviewSection({
 
       ${fields.therapeutic_objectives && Array.isArray(fields.therapeutic_objectives) && fields.therapeutic_objectives.length > 0 ? `
         <div style="margin-bottom: 25px;">
-          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Objetivos Terapeuticos</h3>
+          <h3 style="color: #c9a84c; margin-bottom: 15px; font-size: 18px;">Objetivos Terapeuticos</h3>
           <div style="text-align: justify; line-height: 1.6;">
             ${fields.therapeutic_objectives.map(obj => `<p style="margin: 12px 0;">- ${obj}</p>`).join('')}
           </div>
@@ -211,7 +201,7 @@ export function FinalReviewSection({
 
       ${fields.session_activities && Array.isArray(fields.session_activities) && fields.session_activities.length > 0 ? `
         <div style="margin-bottom: 25px;">
-          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Atividades Realizadas</h3>
+          <h3 style="color: #c9a84c; margin-bottom: 15px; font-size: 18px;">Atividades Realizadas</h3>
           <div style="text-align: justify; line-height: 1.6;">
             ${fields.session_activities.map(act => `<p style="margin: 12px 0;">- ${act}</p>`).join('')}
           </div>
@@ -220,7 +210,7 @@ export function FinalReviewSection({
 
       ${fields.patient_evolution && Array.isArray(fields.patient_evolution) && fields.patient_evolution.length > 0 ? `
         <div style="margin-bottom: 25px;">
-          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Evolucao do Paciente</h3>
+          <h3 style="color: #c9a84c; margin-bottom: 15px; font-size: 18px;">Evolucao do Paciente</h3>
           <div style="text-align: justify; line-height: 1.6;">
             ${fields.patient_evolution.map(evo => `<p style="margin: 12px 0;">- ${evo}</p>`).join('')}
           </div>
@@ -229,7 +219,7 @@ export function FinalReviewSection({
 
       ${fields.recommendations && Array.isArray(fields.recommendations) && fields.recommendations.length > 0 ? `
         <div style="margin-bottom: 25px;">
-          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Recomendacoes</h3>
+          <h3 style="color: #c9a84c; margin-bottom: 15px; font-size: 18px;">Recomendacoes</h3>
           <div style="text-align: justify; line-height: 1.6;">
             ${fields.recommendations.map(rec => `<p style="margin: 12px 0;">- ${rec}</p>`).join('')}
           </div>
@@ -238,30 +228,25 @@ export function FinalReviewSection({
 
       ${fields.conclusion && Array.isArray(fields.conclusion) && fields.conclusion.length > 0 ? `
         <div style="margin-bottom: 25px;">
-          <h3 style="color: #007bff; margin-bottom: 15px; font-size: 18px;">Conclusao</h3>
+          <h3 style="color: #c9a84c; margin-bottom: 15px; font-size: 18px;">Conclusao</h3>
           <div style="text-align: justify; line-height: 1.6;">
             ${fields.conclusion.map(con => `<p style="margin: 12px 0;">- ${con}</p>`).join('')}
           </div>
         </div>
       ` : ''}
 
-      <!-- FOOTER TEAL - Design 50% menor -->
-      <div style="margin-top: 25px; border: 2px solid transparent; border-radius: 10px; overflow: hidden; background: #ffffff; background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, #0d9488, #14b8a6, #06b6d4); background-origin: border-box; background-clip: padding-box, border-box;">
-        <div style="height: 4px; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%);"></div>
-        
+      <div style="margin-top: 25px; border: 2px solid transparent; border-radius: 10px; overflow: hidden; background: #ffffff; background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, #0d0d0d, #1a1a1a, #c9a84c); background-origin: border-box; background-clip: padding-box, border-box;">
+        <div style="height: 4px; background: linear-gradient(90deg, #c9a84c 0%, #f0d78c 50%, #c9a84c 100%);"></div>
         <div style="padding: 16px;">
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start;">
-          
-            <!-- Card de Assinatura (Esquerda) - 50% menor -->
-            <div style="background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 1px solid #14b8a6; border-radius: 8px; overflow: hidden;">
-              <div style="height: 4px; background: linear-gradient(to right, #0d9488, #14b8a6, #06b6d4);"></div>
-              
+            <div style="background: linear-gradient(135deg, #faf8f5, #f0ebe3); border: 1px solid #c9a84c; border-radius: 8px; overflow: hidden;">
+              <div style="height: 4px; background: linear-gradient(to right, #c9a84c, #f0d78c, #c9a84c);"></div>
               <div style="padding: 12px;">
                 <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
                   ${photoBase64 ? `
                     <div style="position: relative;">
-                      <div style="position: absolute; width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, rgba(20,184,166,0.4), rgba(6,182,212,0.3)); filter: blur(5px); top: -2px; left: -2px;"></div>
-                      <div style="width: 48px; height: 48px; border-radius: 50%; overflow: hidden; border: 2px solid #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.1); position: relative; background: linear-gradient(135deg, #0d9488, #14b8a6); padding: 2px;">
+                      <div style="position: absolute; width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, rgba(201,168,76,0.4), rgba(240,215,140,0.3)); filter: blur(5px); top: -2px; left: -2px;"></div>
+                      <div style="width: 48px; height: 48px; border-radius: 50%; overflow: hidden; border: 2px solid #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.1); position: relative; background: linear-gradient(135deg, #c9a84c, #f0d78c); padding: 2px;">
                         <div style="width: 100%; height: 100%; border-radius: 50%; overflow: hidden;">
                           <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
                         </div>
@@ -269,61 +254,59 @@ export function FinalReviewSection({
                     </div>
                   ` : ''}
                   <div style="text-align: center;">
-                    <div style="font-size: 9px; font-weight: bold; color: #0f766e; margin-bottom: 6px; line-height: 1.3; word-wrap: break-word;">${professionalData?.name || reportData.professionalName || 'Profissional'}</div>
-                    <div style="display: inline-flex; align-items: center; gap: 3px; background: #ccfbf1; border: 1px solid #5eead4; border-radius: 10px; padding: 3px 7px; margin-bottom: 8px;">
-                      <span style="color: #0f766e; font-size: 7px;">&#9835;</span>
-                      <span style="font-size: 7px; font-weight: 600; color: #0f766e;">${professionalData?.specialty || reportData.professionalSpecialty || 'Musicoterapeuta'}</span>
+                    <div style="font-size: 9px; font-weight: bold; color: #0d0d0d; margin-bottom: 6px; line-height: 1.3; word-wrap: break-word;">${professionalData?.name || reportData.professionalName || 'Profissional'}</div>
+                    <div style="display: inline-flex; align-items: center; gap: 3px; background: #f0ebe3; border: 1px solid #c9a84c; border-radius: 10px; padding: 3px 7px; margin-bottom: 8px;">
+                      <span style="color: #0d0d0d; font-size: 7px;">&#9835;</span>
+                      <span style="font-size: 7px; font-weight: 600; color: #0d0d0d;">${professionalData?.specialty || reportData.professionalSpecialty || 'Musicoterapeuta'}</span>
                     </div>
                     <div style="font-size: 7px; color: #374151; line-height: 1.8;">
-                      ${professionalData?.register ? `<div><strong style="color: #0f766e;">Registro:</strong> ${professionalData.register}</div>` : ''}
-                      ${professionalData?.email ? `<div style="word-wrap: break-word;"><strong style="color: #0f766e;">Email:</strong> ${professionalData.email}</div>` : ''}
-                      ${professionalData?.phone ? `<div><strong style="color: #0f766e;">Telefone:</strong> ${professionalData.phone}</div>` : ''}
+                      ${professionalData?.register ? `<div><strong style="color: #c9a84c;">Registro:</strong> ${professionalData.register}</div>` : ''}
+                      ${professionalData?.email ? `<div style="word-wrap: break-word;"><strong style="color: #c9a84c;">Email:</strong> ${professionalData.email}</div>` : ''}
+                      ${professionalData?.phone ? `<div><strong style="color: #c9a84c;">Telefone:</strong> ${professionalData.phone}</div>` : ''}
                     </div>
                   </div>
                 </div>
               </div>
-              
-              <div style="border-top: 1px solid #5eead4; background: linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa); padding: 7px;">
+              <div style="border-top: 1px solid #c9a84c; background: linear-gradient(to right, #faf8f5, #f0ebe3, #faf8f5); padding: 7px;">
                 <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
-                  <span style="color: #0d9488; font-size: 8px;">&#10004;</span>
-                  <span style="font-size: 6px; font-weight: 600; color: #0f766e;">Assinatura Digital Verificada</span>
-                  <span style="color: #0d9488; font-size: 7px;">&#9835;</span>
+                  <span style="color: #c9a84c; font-size: 8px;">&#10004;</span>
+                  <span style="font-size: 6px; font-weight: 600; color: #0d0d0d;">Assinatura Digital Verificada</span>
+                  <span style="color: #c9a84c; font-size: 7px;">&#9835;</span>
                   <span style="font-size: 6px; color: #6b7280;">Sistema MuseTera</span>
                 </div>
               </div>
             </div>
 
-            <!-- Carimbo Circular (Direita) - 50% menor -->
             <div style="display: flex; flex-direction: column; align-items: center;">
               ${stampBase64 || photoBase64 ? `
                 <div style="width: 140px; height: 140px; position: relative; display: flex; align-items: center; justify-content: center;">
-                  <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 2px dashed #14b8a6; opacity: 0.3;"></div>
-                  <div style="position: absolute; width: 92%; height: 92%; border-radius: 50%; border: 1px solid #14b8a6; opacity: 0.5;"></div>
-                  <div style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 3px solid #0d9488; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px; box-shadow: 0 4px 12px rgba(20,184,166,0.25);">
+                  <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 2px dashed #c9a84c; opacity: 0.3;"></div>
+                  <div style="position: absolute; width: 92%; height: 92%; border-radius: 50%; border: 1px solid #c9a84c; opacity: 0.5;"></div>
+                  <div style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #faf8f5, #f0ebe3); border: 3px solid #c9a84c; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px; box-shadow: 0 4px 12px rgba(201,168,76,0.25);">
                     ${photoBase64 ? `
                       <div style="position: relative; margin-bottom: 5px;">
-                        <div style="position: absolute; width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, rgba(20,184,166,0.4), rgba(6,182,212,0.3)); filter: blur(4px); top: -2px; left: -2px;"></div>
+                        <div style="position: absolute; width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, rgba(201,168,76,0.4), rgba(240,215,140,0.3)); filter: blur(4px); top: -2px; left: -2px;"></div>
                         <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; border: 2px solid #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.1); position: relative;">
                           <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
                         </div>
                       </div>
                     ` : ''}
-                    <div style="font-size: 7px; font-weight: bold; color: #0f766e; text-align: center; margin-bottom: 3px; max-width: 90px; line-height: 1.3; word-wrap: break-word;">${professionalData?.name || reportData.professionalName || 'Profissional'}</div>
-                    <div style="width: 30px; height: 1px; background: linear-gradient(to right, transparent, #14b8a6, transparent); margin-bottom: 3px;"></div>
-                    <div style="display: inline-flex; align-items: center; gap: 2px; background: #ccfbf1; border: 1px solid #5eead4; border-radius: 8px; padding: 2px 5px; margin-bottom: 2px;">
-                      <span style="font-size: 5px; color: #0f766e;">&#9835;</span>
-                      <span style="font-size: 5px; font-weight: 600; color: #0f766e; text-transform: uppercase; letter-spacing: 0.3px;">${professionalData?.specialty || reportData.professionalSpecialty || 'Musicoterapeuta'}</span>
+                    <div style="font-size: 7px; font-weight: bold; color: #0d0d0d; text-align: center; margin-bottom: 3px; max-width: 90px; line-height: 1.3; word-wrap: break-word;">${professionalData?.name || reportData.professionalName || 'Profissional'}</div>
+                    <div style="width: 30px; height: 1px; background: linear-gradient(to right, transparent, #c9a84c, transparent); margin-bottom: 3px;"></div>
+                    <div style="display: inline-flex; align-items: center; gap: 2px; background: #f0ebe3; border: 1px solid #c9a84c; border-radius: 8px; padding: 2px 5px; margin-bottom: 2px;">
+                      <span style="font-size: 5px; color: #0d0d0d;">&#9835;</span>
+                      <span style="font-size: 5px; font-weight: 600; color: #0d0d0d; text-transform: uppercase; letter-spacing: 0.3px;">${professionalData?.specialty || reportData.professionalSpecialty || 'Musicoterapeuta'}</span>
                     </div>
                     ${professionalData?.register ? `<div style="font-size: 6px; color: #374151; font-weight: 600;">${professionalData.register}</div>` : ''}
                   </div>
                 </div>
-                <div style="margin-top: 6px; background: linear-gradient(135deg, #0d9488, #0891b2); color: white; padding: 4px 9px; border-radius: 10px; display: inline-flex; align-items: center; gap: 3px; box-shadow: 0 2px 6px rgba(13,148,136,0.3);">
+                <div style="margin-top: 6px; background: linear-gradient(135deg, #c9a84c, #f0d78c); color: #0d0d0d; padding: 4px 9px; border-radius: 10px; display: inline-flex; align-items: center; gap: 3px; box-shadow: 0 2px 6px rgba(201,168,76,0.3);">
                   <span style="font-size: 6px;">&#10004;</span>
                   <span style="font-size: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;">MuseTera Verified</span>
                   <span style="font-size: 6px;">&#9835;</span>
                 </div>
               ` : `
-                <div style="width: 120px; height: 120px; border: 2px dashed #14b8a6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 7px; color: #6b7280; background: #f0fdfa;">
+                <div style="width: 120px; height: 120px; border: 2px dashed #c9a84c; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 7px; color: #6b7280; background: #faf8f5;">
                   Carimbo Digital
                 </div>
               `}
@@ -336,96 +319,89 @@ export function FinalReviewSection({
 
   const renderPreviewContent = () => {
     const fields = reportData.fieldValues || {};
-    
+
     return (
       <div className="max-w-4xl mx-auto bg-white">
-        {/* Header Elegante */}
-        <div className="relative bg-gradient-to-r from-blue-600 to-purple-600 text-white p-8 rounded-t-lg">
+        <div className="relative bg-gradient-to-r from-[#0d0d0d] to-[#1a1a1a] text-white p-4 sm:p-8 rounded-t-lg">
           <div className="absolute top-4 right-4 opacity-20">
-            <FileText className="h-16 w-16" />
+            <FileText className="h-12 w-12 sm:h-16 sm:w-16" />
           </div>
           <div className="relative z-10">
-            <h1 className="text-3xl font-bold mb-2">Relatório MuseTera TEA</h1>
-            <p className="text-blue-100 text-lg">Musicoterapia para Transtorno do Espectro Autista</p>
-            <div className="mt-4 text-sm text-blue-100">
-              Gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
+            <h1 className="text-2xl sm:text-3xl font-bold mb-2">Relatorio MuseTera TEA</h1>
+            <p className="text-[#c9a84c] text-base sm:text-lg">Musicoterapia para Transtorno do Espectro Autista</p>
+            <div className="mt-4 text-xs sm:text-sm text-[#c9a84c]/80">
+              Gerado em {new Date().toLocaleDateString('pt-BR')} as {new Date().toLocaleTimeString('pt-BR')}
             </div>
           </div>
         </div>
 
-        <div className="p-8 space-y-8">
-          {/* Informações Principais em Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="border-l-4 border-l-blue-500 shadow-sm">
+        <div className="p-4 sm:p-8 space-y-6 sm:space-y-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            <Card className="border-l-4 border-l-[#c9a84c] shadow-sm">
               <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-blue-700 text-lg">
-                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                    👤
+                <CardTitle className="flex items-center gap-2 text-[#c9a84c] text-base sm:text-lg">
+                  <div className="w-8 h-8 bg-[#c9a84c]/20 rounded-full flex items-center justify-center text-sm">
+                    P
                   </div>
                   Dados do Paciente
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-2">
+              <CardContent className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="font-medium text-gray-600">Nome:</span>
-                  <span className="text-gray-900">{reportData.patientName || 'Não informado'}</span>
+                  <span className="font-medium text-muted-foreground">Nome:</span>
+                  <span className="text-foreground">{reportData.patientName || 'Nao informado'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-medium text-gray-600">Idade:</span>
-                  <span className="text-gray-900">{reportData.patientAge || 'Não informado'}</span>
+                  <span className="font-medium text-muted-foreground">Idade:</span>
+                  <span className="text-foreground">{reportData.patientAge || 'Nao informado'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-medium text-gray-600">Diagnóstico:</span>
-                  <span className="text-gray-900">{reportData.patientDiagnosis || 'Não informado'}</span>
+                  <span className="font-medium text-muted-foreground">Diagnostico:</span>
+                  <span className="text-foreground">{reportData.patientDiagnosis || 'Nao informado'}</span>
                 </div>
               </CardContent>
             </Card>
-            
-            <Card className="border-l-4 border-l-green-500 shadow-sm">
+
+            <Card className="border-l-4 border-l-[#c9a84c] shadow-sm">
               <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-green-700 text-lg">
-                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                    👨‍⚕️
+                <CardTitle className="flex items-center gap-2 text-[#c9a84c] text-base sm:text-lg">
+                  <div className="w-8 h-8 bg-[#c9a84c]/20 rounded-full flex items-center justify-center text-sm">
+                    M
                   </div>
                   Dados do Profissional
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-2">
+              <CardContent className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="font-medium text-gray-600">Nome:</span>
-                  <span className="text-gray-900">{reportData.professionalName || 'Não informado'}</span>
+                  <span className="font-medium text-muted-foreground">Nome:</span>
+                  <span className="text-foreground">{reportData.professionalName || 'Nao informado'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-medium text-gray-600">Registro:</span>
-                  <span className="text-gray-900">{reportData.professionalRegistry || 'Não informado'}</span>
+                  <span className="font-medium text-muted-foreground">Registro:</span>
+                  <span className="text-foreground">{reportData.professionalRegistry || 'Nao informado'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-medium text-gray-600">Data da Sessão:</span>
-                  <span className="text-gray-900">{reportData.sessionDate ? new Date(reportData.sessionDate).toLocaleDateString('pt-BR') : 'Não informado'}</span>
+                  <span className="font-medium text-muted-foreground">Data da Sessao:</span>
+                  <span className="text-foreground">{reportData.sessionDate ? new Date(reportData.sessionDate).toLocaleDateString('pt-BR') : 'Nao informado'}</span>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Seções do Relatório */}
           {fields.therapeutic_objectives && Array.isArray(fields.therapeutic_objectives) && fields.therapeutic_objectives.length > 0 && (
             <Card className="shadow-sm">
-              <CardHeader className="bg-gradient-to-r from-purple-50 to-purple-100 rounded-t-lg">
-                <CardTitle className="flex items-center gap-2 text-purple-700">
-                  <div className="w-8 h-8 bg-purple-200 rounded-full flex items-center justify-center">
-                    🎯
-                  </div>
-                  Objetivos Terapêuticos
+              <CardHeader className="bg-gradient-to-r from-[#c9a84c]/20 to-[#c9a84c]/10 rounded-t-lg">
+                <CardTitle className="flex items-center gap-2 text-[#c9a84c] text-sm sm:text-base">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-xs">O</div>
+                  Objetivos Terapeuticos
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-4">
-                <div className="space-y-3">
+              <CardContent className="pt-4 text-sm">
+                <div className="space-y-2 sm:space-y-3">
                   {fields.therapeutic_objectives.map((objective: string, index: number) => (
-                    <div key={index} className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-100">
-                      <div className="w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-purple-700 font-bold text-xs mt-0.5">
-                        {index + 1}
-                      </div>
-                      <p className="text-gray-700 leading-relaxed flex-1">{objective}</p>
+                    <div key={index} className="flex items-start gap-3 p-2 sm:p-3 bg-[#c9a84c]/10 rounded-lg border border-[#c9a84c]/20">
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-[#c9a84c] font-bold text-[10px] sm:text-xs mt-0.5 flex-shrink-0">{index + 1}</div>
+                      <p className="text-foreground leading-relaxed flex-1">{objective}</p>
                     </div>
                   ))}
                 </div>
@@ -435,22 +411,18 @@ export function FinalReviewSection({
 
           {fields.session_activities && Array.isArray(fields.session_activities) && fields.session_activities.length > 0 && (
             <Card className="shadow-sm">
-              <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-lg">
-                <CardTitle className="flex items-center gap-2 text-blue-700">
-                  <div className="w-8 h-8 bg-blue-200 rounded-full flex items-center justify-center">
-                    🎵
-                  </div>
+              <CardHeader className="bg-gradient-to-r from-[#c9a84c]/20 to-[#c9a84c]/10 rounded-t-lg">
+                <CardTitle className="flex items-center gap-2 text-[#c9a84c] text-sm sm:text-base">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-xs">A</div>
                   Atividades Realizadas
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-4">
-                <div className="space-y-3">
+              <CardContent className="pt-4 text-sm">
+                <div className="space-y-2 sm:space-y-3">
                   {fields.session_activities.map((activity: string, index: number) => (
-                    <div key={index} className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
-                      <div className="w-6 h-6 bg-blue-200 rounded-full flex items-center justify-center text-blue-700 font-bold text-xs mt-0.5">
-                        •
-                      </div>
-                      <p className="text-gray-700 leading-relaxed flex-1">{activity}</p>
+                    <div key={index} className="flex items-start gap-3 p-2 sm:p-3 bg-[#c9a84c]/10 rounded-lg border border-[#c9a84c]/20">
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-[#c9a84c] font-bold text-[10px] sm:text-xs mt-1 flex-shrink-1">-</div>
+                      <p className="text-foreground leading-relaxed flex-1">{activity}</p>
                     </div>
                   ))}
                 </div>
@@ -460,22 +432,18 @@ export function FinalReviewSection({
 
           {fields.patient_evolution && Array.isArray(fields.patient_evolution) && fields.patient_evolution.length > 0 && (
             <Card className="shadow-sm">
-              <CardHeader className="bg-gradient-to-r from-green-50 to-green-100 rounded-t-lg">
-                <CardTitle className="flex items-center gap-2 text-green-700">
-                  <div className="w-8 h-8 bg-green-200 rounded-full flex items-center justify-center">
-                    📈
-                  </div>
-                  Evolução do Paciente
+              <CardHeader className="bg-gradient-to-r from-[#c9a84c]/20 to-[#c9a84c]/10 rounded-t-lg">
+                <CardTitle className="flex items-center gap-2 text-[#c9a84c] text-sm sm:text-base">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-xs">E</div>
+                  Evolucao do Paciente
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-4">
-                <div className="space-y-3">
+              <CardContent className="pt-4 text-sm">
+                <div className="space-y-2 sm:space-y-3">
                   {fields.patient_evolution.map((evolution: string, index: number) => (
-                    <div key={index} className="flex items-start gap-3 p-3 bg-green-50 rounded-lg border border-green-100">
-                      <div className="w-6 h-6 bg-green-200 rounded-full flex items-center justify-center text-green-700 font-bold text-xs mt-0.5">
-                        ✓
-                      </div>
-                      <p className="text-gray-700 leading-relaxed flex-1">{evolution}</p>
+                    <div key={index} className="flex items-start gap-3 p-2 sm:p-3 bg-[#c9a84c]/10 rounded-lg border border-[#c9a84c]/20">
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-[#c9a84c] font-bold text-[10px] sm:text-xs mt-1 flex-shrink-0">ok</div>
+                      <p className="text-foreground leading-relaxed flex-1">{evolution}</p>
                     </div>
                   ))}
                 </div>
@@ -485,22 +453,18 @@ export function FinalReviewSection({
 
           {fields.recommendations && Array.isArray(fields.recommendations) && fields.recommendations.length > 0 && (
             <Card className="shadow-sm">
-              <CardHeader className="bg-gradient-to-r from-orange-50 to-orange-100 rounded-t-lg">
-                <CardTitle className="flex items-center gap-2 text-orange-700">
-                  <div className="w-8 h-8 bg-orange-200 rounded-full flex items-center justify-center">
-                    💡
-                  </div>
-                  Recomendações
+              <CardHeader className="bg-gradient-to-r from-[#c9a84c]/20 to-[#c9a84c]/10 rounded-t-lg">
+                <CardTitle className="flex items-center gap-2 text-[#c9a84c] text-sm sm:text-base">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-xs">R</div>
+                  Recomendacoes
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-4">
-                <div className="space-y-3">
+              <CardContent className="pt-4 text-sm">
+                <div className="space-y-2 sm:space-y-3">
                   {fields.recommendations.map((recommendation: string, index: number) => (
-                    <div key={index} className="flex items-start gap-3 p-3 bg-orange-50 rounded-lg border border-orange-100">
-                      <div className="w-6 h-6 bg-orange-200 rounded-full flex items-center justify-center text-orange-700 font-bold text-xs mt-0.5">
-                        →
-                      </div>
-                      <p className="text-gray-700 leading-relaxed flex-1">{recommendation}</p>
+                    <div key={index} className="flex items-start gap-3 p-2 sm:p-3 bg-[#c9a84c]/10 rounded-lg border border-[#c9a84c]/20">
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-[#c9a84c] font-bold text-[10px] sm:text-xs mt-1 flex-shrink-1">&gt;</div>
+                      <p className="text-foreground leading-relaxed flex-1">{recommendation}</p>
                     </div>
                   ))}
                 </div>
@@ -510,22 +474,18 @@ export function FinalReviewSection({
 
           {fields.conclusion && Array.isArray(fields.conclusion) && fields.conclusion.length > 0 && (
             <Card className="shadow-sm">
-              <CardHeader className="bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-t-lg">
-                <CardTitle className="flex items-center gap-2 text-indigo-700">
-                  <div className="w-8 h-8 bg-indigo-200 rounded-full flex items-center justify-center">
-                    🎼
-                  </div>
-                  Conclusão
+              <CardHeader className="bg-gradient-to-r from-[#c9a84c]/20 to-[#c9a84c]/10 rounded-t-lg">
+                <CardTitle className="flex items-center gap-2 text-[#c9a84c] text-sm sm:text-base">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-xs">C</div>
+                  Conclusao
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-4">
-                <div className="space-y-3">
+              <CardContent className="pt-4 text-sm">
+                <div className="space-y-2 sm:space-y-3">
                   {fields.conclusion.map((conclusion: string, index: number) => (
-                    <div key={index} className="flex items-start gap-3 p-3 bg-indigo-50 rounded-lg border border-indigo-100">
-                      <div className="w-6 h-6 bg-indigo-200 rounded-full flex items-center justify-center text-indigo-700 font-bold text-xs mt-0.5">
-                        ★
-                      </div>
-                      <p className="text-gray-700 leading-relaxed flex-1">{conclusion}</p>
+                    <div key={index} className="flex items-start gap-3 p-2 sm:p-3 bg-[#c9a84c]/10 rounded-lg border border-[#c9a84c]/20">
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-[#c9a84c] font-bold text-[10px] sm:text-xs mt-1 flex-shrink-0">*</div>
+                      <p className="text-foreground leading-relaxed flex-1">{conclusion}</p>
                     </div>
                   ))}
                 </div>
@@ -533,15 +493,14 @@ export function FinalReviewSection({
             </Card>
           )}
 
-          {/* Footer Elegante */}
-          <div className="border-t-2 border-gray-200 pt-6 mt-8">
-            <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 rounded-lg">
+          <div className="border-t-2 border-[#c9a84c]/30 pt-4 sm:pt-6 mt-6 sm:mt-8">
+            <div className="bg-gradient-to-r from-[#0d0d0d]/5 to-[#0d0d0d]/10 p-4 sm:p-6 rounded-lg">
               <div className="text-center">
-                <p className="text-lg font-semibold text-gray-800 mb-2">
-                  <strong>Assinatura Digital:</strong> {reportData.signature || reportData.professionalName || 'Não informado'}
+                <p className="text-base sm:text-lg font-semibold text-foreground mb-2">
+                  <strong>Assinatura Digital:</strong> {reportData.signature || reportData.professionalName || 'Nao informado'}
                 </p>
-                <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                  <div className="w-2 h-2 bg-[#c9a84c] rounded-full"></div>
                   <span>Documento verificado e assinado digitalmente</span>
                 </div>
               </div>
@@ -552,106 +511,71 @@ export function FinalReviewSection({
     );
   };
 
+  const filledFieldsCount = Object.keys(reportData.fieldValues || {}).length;
+  const totalSteps = 10;
+
   return (
-    <div className="space-y-6">
-      {/* Hero Header - Responsivo */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-green-600 via-emerald-600 to-teal-600 rounded-xl md:rounded-2xl shadow-xl">
-        <div className="absolute inset-0 bg-white/10">
-          <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-transparent"></div>
-        </div>
-        
-        <div className="relative p-4 md:p-6 lg:p-8">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 mb-4 md:mb-6">
-            <div className="flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-white/20 backdrop-blur-sm rounded-xl shadow-lg">
-              <FileText className="h-6 w-6 md:h-8 md:w-8 text-white" />
-            </div>
-            <div className="flex-1">
-              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-1 md:mb-2">
-                Revisão Final
-              </h1>
-              <p className="text-sm md:text-base lg:text-lg text-white/90">
-                Personalize, visualize e exporte seu relatório profissional
-              </p>
-            </div>
+    <div className="space-y-4 sm:space-y-6">
+      {/* Info Banner */}
+      <div className="rounded-2xl border border-[#c9a84c]/30 bg-[#0d0d0d]/40 p-4 sm:p-5">
+        <div className="flex items-start gap-3">
+          <div className="p-2 rounded-xl bg-[#c9a84c]/15 border border-[#c9a84c]/30 flex-shrink-1">
+            <Info className="h-4 w-4 sm:h-5 sm:w-5 text-[#c9a84c]" />
           </div>
-          
-          {/* Progress Indicator */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg md:rounded-xl p-3 md:p-4 border border-white/20">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0">
-              <span className="text-white font-medium text-sm md:text-base">Relatório Concluído</span>
-              <div className="flex items-center space-x-2">
-                <div className="w-5 h-5 md:w-6 md:h-6 bg-green-400 rounded-full flex items-center justify-center">
-                  <Download className="h-2.5 w-2.5 md:h-3 md:w-3 text-white" />
-                </div>
-                <span className="text-white text-sm md:text-base lg:text-lg font-bold">Pronto para exportar!</span>
-              </div>
-            </div>
+          <div className="min-w-1">
+            <p className="font-medium text-sm sm:text-base text-[#c9a84c]">Revisao Final</p>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1 leading-relaxed">
+              Personalize, visualize e exporte seu relatorio profissional. Verifique todos os dados antes de finalizar.
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Estatísticas do Relatório - Card Hero */}
-      <Card className="relative overflow-hidden border-0 shadow-xl">
-        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
-        <CardHeader className="bg-gradient-to-br from-gray-50 to-white">
-          <CardTitle className="flex items-center gap-3 text-xl">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-              <FileText className="h-5 w-5 text-white" />
-            </div>
-            Resumo do Relatório
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200">
-              <div className="text-3xl font-bold text-blue-600 mb-1">
-                {Object.keys(reportData.fieldValues || {}).length}
-              </div>
-              <div className="text-sm font-medium text-blue-700">Campos Preenchidos</div>
-            </div>
-            <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border border-green-200">
-              <div className="text-3xl font-bold text-green-600 mb-1">
-                {reportData.patientName ? '✓' : '✗'}
-              </div>
-              <div className="text-sm font-medium text-green-700">Dados do Paciente</div>
-            </div>
-            <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl border border-purple-200">
-              <div className="text-3xl font-bold text-purple-600 mb-1">
-                {reportData.professionalName ? '✓' : '✗'}
-              </div>
-              <div className="text-sm font-medium text-purple-700">Dados do Profissional</div>
-            </div>
-            <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl border border-orange-200">
-              <div className="text-3xl font-bold text-orange-600 mb-1">
-                {reportData.sessionDate ? new Date(reportData.sessionDate).toLocaleDateString('pt-BR') : '--'}
-              </div>
-              <div className="text-sm font-medium text-orange-700">Data da Sessão</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Stats Summary */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
+        <StatCard
+          label="Campos Preenchidos"
+          value={filledFieldsCount.toString()}
+          icon={<FileText className="h-4 w-4 text-[#c9a84c]" />}
+        />
+        <StatCard
+          label="Dados do Paciente"
+          value={reportData.patientName ? 'OK' : '---'}
+          icon={<CheckCircle className="h-4 w-4 text-[#c9a84c]" />}
+        />
+        <StatCard
+          label="Dados do Profissional"
+          value={reportData.professionalName ? 'OK' : '---'}
+          icon={<CheckCircle className="h-4 w-4 text-[#c9a84c]" />}
+        />
+        <StatCard
+          label="Data da Sessao"
+          value={reportData.sessionDate ? new Date(reportData.sessionDate).toLocaleDateString('pt-BR') : '---'}
+          icon={<FileText className="h-4 w-4 text-[#c9a84c]" />}
+        />
+      </div>
 
       {/* Action Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        {/* Upload de Logo */}
-        <Card className="text-center h-[280px] flex flex-col">
-          <CardHeader className="pb-4 flex-shrink-0">
-            <div className="mx-auto w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-3">
-              <Image className="h-6 w-6 text-yellow-600" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
+        {/* Upload Logo */}
+        <div className="rounded-2xl border border-white/5 bg-[#0d0d0d]/30 hover:border-[#c9a84c]/30 hover:bg-[#0d0d0d]/50 transition-all p-4 sm:p-5 flex flex-col">
+          <div className="flex items-start gap-3 mb-4">
+            <div className="p-2.5 rounded-xl bg-[#c9a84c]/15 border border-[#c9a84c]/30 flex-shrink-0">
+              <Image className="h-5 w-5 text-[#c9a84c]" />
             </div>
-            <CardTitle className="text-lg">Upload de Logo</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Adicione sua logo ao PDF
-            </p>
-          </CardHeader>
-          <CardContent className="flex-1 flex flex-col justify-center space-y-3">
+            <div>
+              <h3 className="text-sm sm:text-base font-semibold text-foreground">Upload de Logo</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Adicione sua logo ao PDF</p>
+            </div>
+          </div>
+          <div className="flex-1 flex flex-col justify-end">
             {logoUrl ? (
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <div className="relative">
-                  <img 
-                    src={logoUrl} 
-                    alt="Logo" 
-                    className="w-full h-20 object-contain border rounded-lg bg-gray-50"
+                  <img
+                    src={logoUrl}
+                    alt="Logo"
+                    className="w-full h-20 object-contain border border-[#c9a84c]/30 rounded-xl bg-[#0d0d0d]/40"
                   />
                   <Button
                     variant="destructive"
@@ -662,7 +586,7 @@ export function FinalReviewSection({
                     <X className="h-3 w-3" />
                   </Button>
                 </div>
-                <p className="text-xs text-green-600 font-medium">Logo carregada!</p>
+                <p className="text-xs text-[#c9a84c] font-medium">Logo carregada!</p>
               </div>
             ) : (
               <>
@@ -675,7 +599,7 @@ export function FinalReviewSection({
                 />
                 <Button
                   variant="outline"
-                  className="w-full"
+                  className="w-full border-[#c9a84c]/30 hover:bg-[#c9a84c]/10 hover:text-[#c9a84c] text-xs sm:text-sm"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploadingLogo}
                 >
@@ -693,59 +617,59 @@ export function FinalReviewSection({
                 </Button>
               </>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        {/* Visualizar Relatório */}
-        <Card className="text-center h-[280px] flex flex-col">
-          <CardHeader className="pb-4 flex-shrink-0">
-            <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-3">
-              <Eye className="h-6 w-6 text-blue-600" />
+        {/* Visualizar */}
+        <div className="rounded-2xl border border-white/5 bg-[#0d0d0d]/30 hover:border-[#c9a84c]/30 hover:bg-[#0d0d0d]/50 transition-all p-4 sm:p-5 flex flex-col">
+          <div className="flex items-start gap-3 mb-4">
+            <div className="p-2.5 rounded-xl bg-[#c9a84c]/15 border border-[#c9a84c]/30 flex-shrink-0">
+              <Eye className="h-5 w-5 text-[#c9a84c]" />
             </div>
-            <CardTitle className="text-lg">Visualizar Relatório</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Veja como ficará o relatório final
-            </p>
-          </CardHeader>
-          <CardContent className="flex-1 flex items-end">
+            <div>
+              <h3 className="text-sm sm:text-base font-semibold text-foreground">Visualizar Relatorio</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Veja como ficara o relatorio final</p>
+            </div>
+          </div>
+          <div className="flex-1 flex flex-col justify-end">
             <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
               <DialogTrigger asChild>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full border-[#c9a84c]/30 hover:bg-[#c9a84c]/10 hover:text-[#c9a84c] text-xs sm:text-sm">
                   <Eye className="h-4 w-4 mr-2" />
-                  Prévia
+                  Previa
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-4xl max-h-[80vh]">
-                <DialogHeader>
-                  <DialogTitle>Prévia do Relatório de Musicoterapia</DialogTitle>
-                  <DialogDescription>
-                    Visualização completa do relatório antes da exportação
+              <DialogContent className="max-w-4xl max-h-[85vh] p-0 overflow-hidden">
+                <DialogHeader className="p-4 sm:p-6 pb-0">
+                  <DialogTitle className="text-sm sm:text-base">Previa do Relatorio de Musicoterapia</DialogTitle>
+                  <DialogDescription className="text-xs sm:text-sm">
+                    Visualizacao completa do relatorio antes da exportacao
                   </DialogDescription>
                 </DialogHeader>
-                <ScrollArea className="max-h-[70vh]">
+                <ScrollArea className="max-h-[70vh] p-4 sm:p-6 pt-2">
                   {renderPreviewContent()}
                 </ScrollArea>
               </DialogContent>
             </Dialog>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Organizar com IA */}
-        <Card className="text-center h-[280px] flex flex-col">
-          <CardHeader className="pb-4 flex-shrink-0">
-            <div className="mx-auto w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-3">
-              <Zap className="h-6 w-6 text-purple-600" />
+        <div className="rounded-2xl border border-white/5 bg-[#0d0d0d]/30 hover:border-[#c9a84c]/30 hover:bg-[#0d0d0d]/50 transition-all p-4 sm:p-5 flex flex-col">
+          <div className="flex items-start gap-3 mb-4">
+            <div className="p-2.5 rounded-xl bg-[#c9a84c]/15 border border-[#c9a84c]/30 flex-shrink-0">
+              <Zap className="h-5 w-5 text-[#c9a84c]" />
             </div>
-            <CardTitle className="text-lg">Organizar com IA</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Estruture o relatório automaticamente
-            </p>
-          </CardHeader>
-          <CardContent className="flex-1 flex items-end">
-            <Button 
+            <div>
+              <h3 className="text-sm sm:text-base font-semibold text-foreground">Organizar com IA</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Estruture o relatorio automaticamente</p>
+            </div>
+          </div>
+          <div className="flex-1 flex flex-col justify-end">
+            <Button
               onClick={onOrganizeWithAI}
               disabled={isGeneratingWithAI}
-              className="w-full"
+              className="w-full bg-[#c9a84c] hover:bg-[#f0d78c] text-black text-xs sm:text-sm"
             >
               {isGeneratingWithAI ? (
                 <>
@@ -759,25 +683,25 @@ export function FinalReviewSection({
                 </>
               )}
             </Button>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        {/* Salvar Relatório */}
-        <Card className="text-center h-[280px] flex flex-col">
-          <CardHeader className="pb-4 flex-shrink-0">
-            <div className="mx-auto w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mb-3">
-              <Save className="h-6 w-6 text-emerald-600" />
+        {/* Salvar */}
+        <div className="rounded-2xl border border-white/5 bg-[#0d0d0d]/30 hover:border-[#c9a84c]/30 hover:bg-[#0d0d0d]/50 transition-all p-4 sm:p-5 flex flex-col">
+          <div className="flex items-start gap-3 mb-4">
+            <div className="p-2.5 rounded-xl bg-[#c9a84c]/15 border border-[#c9a84c]/30 flex-shrink-0">
+              <Save className="h-5 w-5 text-[#c9a84c]" />
             </div>
-            <CardTitle className="text-lg">Salvar Relatório</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Salve o relatório no sistema
-            </p>
-          </CardHeader>
-          <CardContent className="flex-1 flex items-end">
-            <Button 
+            <div>
+              <h3 className="text-sm sm:text-base font-semibold text-foreground">Salvar Relatorio</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Salve o relatorio no sistema</p>
+            </div>
+          </div>
+          <div className="flex-1 flex flex-col justify-end">
+            <Button
               onClick={onSaveReport}
               disabled={isSaving}
-              className="w-full bg-emerald-600 hover:bg-emerald-700"
+              className="w-full bg-[#0d0d0d] border border-[#c9a84c]/40 hover:bg-[#c9a84c]/10 text-[#c9a84c] text-xs sm:text-sm"
             >
               {isSaving ? (
                 <>
@@ -791,25 +715,25 @@ export function FinalReviewSection({
                 </>
               )}
             </Button>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Exportar PDF */}
-        <Card className="text-center h-[280px] flex flex-col">
-          <CardHeader className="pb-4 flex-shrink-0">
-            <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-3">
-              <Download className="h-6 w-6 text-green-600" />
+        <div className="rounded-2xl border border-white/5 bg-[#0d0d0d]/30 hover:border-[#c9a84c]/30 hover:bg-[#0d0d0d]/50 transition-all p-4 sm:p-5 flex flex-col sm:col-span-2 xl:col-span-1">
+          <div className="flex items-start gap-3 mb-4">
+            <div className="p-2.5 rounded-xl bg-[#c9a84c]/15 border border-[#c9a84c]/30 flex-shrink-0">
+              <Download className="h-5 w-5 text-[#c9a84c]" />
             </div>
-            <CardTitle className="text-lg">Exportar PDF</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Gere o relatório em formato PDF
-            </p>
-          </CardHeader>
-          <CardContent className="flex-1 flex items-end">
-            <Button 
+            <div>
+              <h3 className="text-sm sm:text-base font-semibold text-foreground">Exportar PDF</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Gere o relatorio em formato PDF</p>
+            </div>
+          </div>
+          <div className="flex-1 flex flex-col justify-end">
+            <Button
               onClick={handleExportPDF}
               disabled={isExporting}
-              className="w-full bg-blue-600 hover:bg-blue-700"
+              className="w-full bg-gradient-to-r from-[#c9a84c] to-[#f0d78c] hover:from-[#f0d78c] hover:to-[#c9a84c] text-black font-semibold text-xs sm:text-sm"
             >
               {isExporting ? (
                 <>
@@ -819,38 +743,41 @@ export function FinalReviewSection({
               ) : (
                 <>
                   <Download className="h-4 w-4 mr-2" />
-                  Exportar
+                  Exportar PDF
                 </>
               )}
             </Button>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
-      {/* Summary Stats */}
-      <Card className="bg-muted/50">
-        <CardContent className="pt-6">
-          <div className="flex items-center justify-center space-x-8">
-            <div className="text-center">
-              <div className="flex items-center justify-center space-x-2">
-                <FileText className="h-5 w-5 text-primary" />
-                <span className="text-2xl font-bold text-primary">
-                  {Object.keys(reportData.fieldValues || {}).length}
-                </span>
-              </div>
-              <p className="text-sm text-muted-foreground">Campos Preenchidos</p>
+      {/* Progress Summary */}
+      <div className="rounded-2xl border border-[#c9a84c]/30 bg-gradient-to-br from-[#c9a84c]/10 to-transparent p-4 sm:p-5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-[#c9a84c]/15 border border-[#c9a84c]/30">
+              <CheckCircle className="h-5 w-5 text-[#c9a84c]" />
             </div>
-            
-            <div className="text-center">
-              <div className="flex items-center justify-center space-x-2">
-                <Eye className="h-5 w-5 text-primary" />
-                <span className="text-2xl font-bold text-primary">100%</span>
-              </div>
-              <p className="text-sm text-muted-foreground">Completude</p>
+            <div>
+              <p className="text-sm sm:text-base font-semibold text-[#c9a84c]">Relatorio Concluido</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Pronto para exportar!</p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+          <ChevronRight className="h-5 w-5 text-[#c9a84c] hidden sm:block" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StatCard({ label, value, icon }: { label: string; value: string; icon: React.ReactNode }) {
+  return (
+    <div className="rounded-2xl border border-white/5 bg-[#0d0d0d]/30 p-3 sm:p-4 text-center hover:border-[#c9a84c]/30 transition-all">
+      <div className="flex items-center justify-center mb-2">
+        {icon}
+      </div>
+      <div className="text-lg sm:text-2xl font-bold text-[#c9a84c] mb-1">{value}</div>
+      <div className="text-[10px] sm:text-xs font-medium text-muted-foreground">{label}</div>
     </div>
   );
 }
