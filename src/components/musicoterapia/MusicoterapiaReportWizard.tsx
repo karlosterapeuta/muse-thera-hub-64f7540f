@@ -557,38 +557,91 @@ export function MusicoterapiaReportWizard({
       </header>
 
       {/* Stepper Indicator — horizontal numbered */}
-      <nav className="relative px-2 overflow-x-auto">
-        <div className="absolute top-5 left-0 w-full h-[1px] bg-white/5" />
-        <ul className="relative flex justify-between min-w-[640px] sm:min-w-0">
-          {STEPS.map((step, index) => {
-            const isCompleted = index < currentStep;
-            const isCurrent = index === currentStep;
-            return (
-              <li key={step.id} className="flex flex-col items-center gap-2 sm:gap-3 flex-1">
+      {/* Stepper Indicator — compact on mobile, full on desktop */}
+      <nav className="relative px-1 sm:px-2">
+        {/* Mobile: compact pill view */}
+        <div className="sm:hidden space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <button
+              type="button"
+              onClick={handlePrevStep}
+              disabled={currentStep === 0}
+              aria-label="Etapa anterior"
+              className="h-9 w-9 rounded-full bg-[#1a1a1a] border border-white/10 text-[#f0d78c] disabled:opacity-30 flex items-center justify-center shrink-0"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <div className="flex-1 min-w-0 text-center">
+              <div className="text-[9px] uppercase tracking-[0.2em] text-[#c9a84c] font-bold">
+                Etapa {currentStep + 1} de {STEPS.length}
+              </div>
+              <div className="text-sm text-[#f0d78c] font-semibold truncate" style={{ fontFamily: "'Instrument Serif', serif" }}>
+                {currentStepData.title.replace(/^\d+\.\s*/, '')}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={handleNextStep}
+              disabled={currentStep === STEPS.length - 1 || !canProceed()}
+              aria-label="Próxima etapa"
+              className="h-9 w-9 rounded-full bg-[#c9a84c] text-[#0d0d0d] disabled:opacity-30 flex items-center justify-center shrink-0"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+          <div className="flex items-center justify-center gap-1.5">
+            {STEPS.map((step, index) => {
+              const isCompleted = index < currentStep;
+              const isCurrent = index === currentStep;
+              return (
                 <button
+                  key={step.id}
                   type="button"
-                  onClick={() => setCurrentStep(index)}
-                  className={`h-10 w-10 rounded-full flex items-center justify-center text-xs font-black ring-8 ring-[#0d0d0d] transition-all
-                    ${isCurrent
-                      ? 'bg-[#c9a84c] text-[#0d0d0d] shadow-[0_0_24px_rgba(201,168,76,0.35)] scale-110'
-                      : isCompleted
-                        ? 'bg-[#1a1a1a] border border-[#c9a84c]/60 text-[#f0d78c]'
-                        : 'bg-[#1a1a1a] border border-white/15 text-white/60 hover:border-[#c9a84c]/40'
-                    }`}
-                >
-                  {isCompleted ? <Check className="h-4 w-4" /> : String(index + 1).padStart(2, '0')}
-                </button>
-                <span
-                  className={`text-[9px] uppercase tracking-widest font-bold text-center transition-colors
-                    ${isCurrent ? 'text-[#c9a84c]' : isCompleted ? 'text-[#f0d78c]/70' : 'text-gray-500'}`}
-                  style={{ fontFamily: "'Work Sans'" }}
-                >
-                  {step.title.replace(/^\d+\.\s*/, '').split(' ').slice(0, 2).join(' ')}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
+                  onClick={() => { setCurrentStep(index); scrollToStepContent(); }}
+                  aria-label={`Ir para ${step.title}`}
+                  className={`h-1.5 rounded-full transition-all ${
+                    isCurrent ? 'w-6 bg-[#c9a84c]' : isCompleted ? 'w-3 bg-[#c9a84c]/60' : 'w-3 bg-white/15'
+                  }`}
+                />
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Desktop: full stepper */}
+        <div className="hidden sm:block relative">
+          <div className="absolute top-5 left-0 w-full h-[1px] bg-white/5" />
+          <ul className="relative flex justify-between">
+            {STEPS.map((step, index) => {
+              const isCompleted = index < currentStep;
+              const isCurrent = index === currentStep;
+              return (
+                <li key={step.id} className="flex flex-col items-center gap-3 flex-1 min-w-0">
+                  <button
+                    type="button"
+                    onClick={() => setCurrentStep(index)}
+                    className={`h-10 w-10 rounded-full flex items-center justify-center text-xs font-black ring-8 ring-[#0d0d0d] transition-all
+                      ${isCurrent
+                        ? 'bg-[#c9a84c] text-[#0d0d0d] shadow-[0_0_24px_rgba(201,168,76,0.35)] scale-110'
+                        : isCompleted
+                          ? 'bg-[#1a1a1a] border border-[#c9a84c]/60 text-[#f0d78c]'
+                          : 'bg-[#1a1a1a] border border-white/15 text-white/60 hover:border-[#c9a84c]/40'
+                      }`}
+                  >
+                    {isCompleted ? <Check className="h-4 w-4" /> : String(index + 1).padStart(2, '0')}
+                  </button>
+                  <span
+                    className={`text-[9px] uppercase tracking-widest font-bold text-center transition-colors px-1 leading-tight
+                      ${isCurrent ? 'text-[#c9a84c]' : isCompleted ? 'text-[#f0d78c]/70' : 'text-gray-500'}`}
+                    style={{ fontFamily: "'Work Sans'" }}
+                  >
+                    {step.title.replace(/^\d+\.\s*/, '').split(' ').slice(0, 2).join(' ')}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </nav>
 
       {/* Main Wizard Card — Monolithic */}
