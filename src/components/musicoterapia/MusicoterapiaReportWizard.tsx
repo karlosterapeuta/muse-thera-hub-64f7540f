@@ -406,6 +406,66 @@ const STEP_TEMPLATES: Record<string, TemplateOption[]> = {
         assessment_tools_used: 'Instrumentos: IMTAP (Baxter et al., 2007), Escala MuseTera de avaliação musicoterapêutica, mapeamento do ISO, escalas Nordoff-Robbins, observação clínica sistematizada e Perfil Sensorial de Dunn.',
         references_cited: 'Benenzon, R. (1985). Manual de Musicoterapia. Bruscia, K. (2000). Definindo Musicoterapia. Nordoff, P.; Robbins, C. (2007). Creative Music Therapy. Baxter et al. (2007). The Individualized Music Therapy Assessment Profile. APA (2022). DSM-5-TR. OMS (2022). CID-11.'
       }
+    },
+    {
+      id: 'cognitivo_comportamental_musical',
+      label: 'Musicoterapia Cognitivo-Comportamental',
+      description: 'Fundamentação em TCC aplicada à musicoterapia para TEA.',
+      values: {
+        theoretical_framework: 'A intervenção fundamenta-se na Musicoterapia Cognitivo-Comportamental (CBMT), que integra princípios da Terapia Cognitivo-Comportamental ao uso estruturado da música como reforçador, mediador de aprendizagem e regulador comportamental. A abordagem dialoga com as diretrizes do DSM-5-TR e CID-11 para TEA, priorizando análise funcional do comportamento, modelagem por reforço positivo musical, dessensibilização sistemática a estímulos sonoros e treino de habilidades sociais por meio de canções estruturadas.',
+        assessment_tools_used: 'Instrumentos: análise funcional do comportamento (ABC), registro de frequência e duração de respostas-alvo, escalas de ansiedade adaptadas, observação clínica estruturada e protocolos de generalização de comportamentos musicais para contextos não-musicais.',
+        references_cited: 'Hilliard, R. E. (2001). The effects of music therapy-based bereavement groups. Journal of Music Therapy. Madsen, C. K.; Cotter, V.; Madsen, C. H. (1968). A behavioral approach to music therapy. APA (2022). DSM-5-TR. OMS (2022). CID-11.'
+      }
+    },
+    {
+      id: 'neurologica_nmt',
+      label: 'Musicoterapia Neurológica (NMT)',
+      description: 'Modelo NMT de Thaut com base em neurociência.',
+      values: {
+        theoretical_framework: 'O presente relatório fundamenta-se no modelo de Musicoterapia Neurológica (NMT) de Michael Thaut, baseado nos princípios da neurociência da música e da plasticidade cerebral. A abordagem utiliza técnicas padronizadas (RAS, PSE, TIMP, MIT, MACT, AMMT) para reabilitação sensório-motora, cognitiva e de linguagem em TEA, em consonância com o DSM-5-TR, CID-11 e evidências de neuroimagem sobre processamento musical no espectro autista.',
+        assessment_tools_used: 'Instrumentos: protocolos NMT padronizados, avaliação de sincronização rítmica, testes de atenção sustentada e dividida, escalas de função executiva e registro neurocomportamental sistematizado.',
+        references_cited: 'Thaut, M. H.; Hoemberg, V. (2014). Handbook of Neurologic Music Therapy. Oxford University Press. Thaut, M. H. (2008). Rhythm, Music, and the Brain. Routledge. APA (2022). DSM-5-TR. OMS (2022). CID-11.'
+      }
+    },
+    {
+      id: 'humanista_orff',
+      label: 'Abordagem Humanística Orff',
+      description: 'Musicoterapia Orff de Gertrud Orff, humanística e desenvolvimentista.',
+      values: {
+        theoretical_framework: 'A intervenção fundamenta-se na Musicoterapia Orff (Orff-Musiktherapie) de Gertrud Orff, abordagem humanístico-desenvolvimentista que integra música, movimento, fala e expressão corporal por meio do princípio do Elementare Musik. A prática articula-se às diretrizes do DSM-5-TR e CID-11 para TEA, priorizando a multissensorialidade, a comunicação não-verbal e o desenvolvimento global do paciente através do fazer musical ativo.',
+        assessment_tools_used: 'Instrumentos: observação clínica desenvolvimentista, registro multimodal (sonoro, gestual, corporal), instrumental Orff (xilofones, metalofones, percussão), avaliação de respostas multissensoriais e diário clínico narrativo.',
+        references_cited: 'Orff, G. (1980). The Orff Music Therapy: Active Furthering of the Development of the Child. Schott. Voigt, M. (2003). Orff Music Therapy with Multi-Handicapped Children. APA (2022). DSM-5-TR. OMS (2022). CID-11.'
+      }
+    },
+    {
+      id: 'psicodinamica_priestley',
+      label: 'Musicoterapia Analítica (Priestley)',
+      description: 'Modelo Analítico de Mary Priestley com base psicodinâmica.',
+      values: {
+        theoretical_framework: 'O presente trabalho fundamenta-se na Musicoterapia Analítica de Mary Priestley, abordagem psicodinâmica que utiliza a improvisação musical como meio de exploração simbólica e elaboração emocional. Em contexto de TEA, a abordagem é adaptada para favorecer a expressão de conteúdos internos não-verbalizáveis, o vínculo terapêutico e a integração do self, em diálogo com as diretrizes do DSM-5-TR e CID-11.',
+        assessment_tools_used: 'Instrumentos: análise qualitativa de improvisações musicais, registro de transferência e contratransferência sonora, observação clínica psicodinâmica e diário reflexivo de sessões.',
+        references_cited: 'Priestley, M. (1994). Essays on Analytical Music Therapy. Barcelona Publishers. Eschen, J. T. (2002). Analytical Music Therapy. Jessica Kingsley. APA (2022). DSM-5-TR. OMS (2022). CID-11.'
+      }
+    },
+    {
+      id: 'desenvolvimentista_floortime',
+      label: 'Musicoterapia Desenvolvimentista (DIR/Floortime)',
+      description: 'Abordagem DIR/Floortime de Greenspan aplicada à musicoterapia.',
+      values: {
+        theoretical_framework: 'A intervenção fundamenta-se no modelo DIR/Floortime (Developmental, Individual-differences, Relationship-based) de Stanley Greenspan, integrado à prática musicoterapêutica. A música é utilizada como ferramenta para abrir e fechar círculos de comunicação, expandir capacidades funcionais emocionais e respeitar as diferenças individuais de processamento sensorial. A abordagem articula-se às diretrizes do DSM-5-TR e CID-11 para TEA.',
+        assessment_tools_used: 'Instrumentos: Functional Emotional Assessment Scale (FEAS), perfil sensorial individualizado, registro de círculos de comunicação musical, observação dos seis marcos funcionais emocionais e videoanálise de interações.',
+        references_cited: 'Greenspan, S. I.; Wieder, S. (2006). Engaging Autism: The Floortime Approach. Da Capo. Carpente, J. A. (2012). DIR-based music therapy. APA (2022). DSM-5-TR. OMS (2022). CID-11.'
+      }
+    },
+    {
+      id: 'comunitaria_cultural',
+      label: 'Musicoterapia Comunitária e Cultural',
+      description: 'Community Music Therapy de Stige e Pavlicevic.',
+      values: {
+        theoretical_framework: 'O presente relatório fundamenta-se na Musicoterapia Comunitária (Community Music Therapy) de Brynjulf Stige e Mercédès Pavlicevic, abordagem ecológica e cultural que considera o paciente em seu contexto sociocomunitário. Em TEA, a prática promove inclusão social, participação cultural e construção de redes de apoio através da música, em consonância com o modelo biopsicossocial da CID-11 e as diretrizes do DSM-5-TR.',
+        assessment_tools_used: 'Instrumentos: mapeamento ecológico de redes sociais e culturais, registro de participação comunitária, observação em ambientes naturais, escalas de qualidade de vida e entrevistas com cuidadores e contextos significativos.',
+        references_cited: 'Stige, B. (2002). Culture-Centered Music Therapy. Barcelona Publishers. Stige, B.; Aaro, L. E. (2012). Invitation to Community Music Therapy. Routledge. Pavlicevic, M.; Ansdell, G. (2004). Community Music Therapy. Jessica Kingsley. APA (2022). DSM-5-TR.'
+      }
     }
   ]
 };
