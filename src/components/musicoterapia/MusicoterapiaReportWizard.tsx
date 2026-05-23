@@ -369,26 +369,30 @@ export function MusicoterapiaReportWizard({
     // Se for a primeira etapa (Informações Básicas), renderizar o componente especializado
     if (currentStep === 0) {
       return (
-        <BasicInformationSection
-          reportData={reportData}
-          onUpdateData={onUpdateData}
-          professionalData={professionalData}
-          patients={patients}
-        />
+        <div className="dark">
+          <BasicInformationSection
+            reportData={reportData}
+            onUpdateData={onUpdateData}
+            professionalData={professionalData}
+            patients={patients}
+          />
+        </div>
       );
     }
 
     // Se for a última etapa (Revisão Final), renderizar o componente especial
     if (currentStep === STEPS.length - 1) {
       return (
-      <FinalReviewSection
-        reportData={reportData}
-        onOrganizeWithAI={handleAIGeneration}
-        isGeneratingWithAI={isGeneratingWithAI}
-        onSaveReport={onSaveReport}
-        isSaving={isSaving}
-        professionalData={professionalData}
-      />
+        <div className="dark">
+          <FinalReviewSection
+            reportData={reportData}
+            onOrganizeWithAI={handleAIGeneration}
+            isGeneratingWithAI={isGeneratingWithAI}
+            onSaveReport={onSaveReport}
+            isSaving={isSaving}
+            professionalData={professionalData}
+          />
+        </div>
       );
     }
 
