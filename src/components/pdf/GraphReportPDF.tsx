@@ -775,7 +775,7 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
                             padding: '5px 10px',
                             color: '#475569',
                             fontWeight: 700,
-                            width: 120,
+                            width: 150,
                           }}
                         >
                           Frequência
@@ -814,27 +814,33 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
                             </td>
                             <td
                               style={{
-                                padding: '5px 10px',
+                                padding: '6px 8px',
                                 textAlign: 'center',
+                                verticalAlign: 'middle',
                               }}
                             >
-                              <span
+                              <div
                                 style={{
-                                  display: 'inline-block',
-                                  padding: '4px 10px',
-                                  borderRadius: 10,
+                                  display: 'block',
+                                  width: '134px',
+                                  margin: '0 auto',
+                                  padding: '5px 8px',
+                                  borderRadius: 999,
                                   background: r.freq.color,
-                                  color: '#fff',
+                                  color: '#ffffff',
                                   fontSize: 8.5,
                                   fontWeight: 700,
-                                  letterSpacing: '0.3px',
-                                  lineHeight: 1,
+                                  letterSpacing: '0.2px',
+                                  lineHeight: 1.4,
+                                  textAlign: 'center',
+                                  boxSizing: 'border-box',
                                   whiteSpace: 'nowrap',
-                                  verticalAlign: 'middle',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
                                 }}
                               >
                                 {r.freq.label}
-                              </span>
+                              </div>
                             </td>
                             <td
                               style={{
