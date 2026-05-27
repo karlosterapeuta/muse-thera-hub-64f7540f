@@ -51,7 +51,7 @@ export default function FinanceDashboard() {
   const loading = isDashboardLoading || isRecordsLoading;
 
   const shortcuts = [
-    { label: "Atendimentos", icon: ClipboardListIcon, to: "/finance/records" },
+    { label: "Agendamentos", icon: ClipboardListIcon, to: "/finance/records" },
     { label: "Recibos", icon: ReceiptIcon, to: "/finance/receipts" },
     { label: "Clínicas", icon: Building2Icon, to: "/finance/clinics" },
     { label: "Relatórios", icon: FileBarChart2Icon, to: "/finance/reports" },
@@ -81,7 +81,7 @@ export default function FinanceDashboard() {
                 Gestão Financeira
               </h1>
               <p className="text-sm text-muted-foreground">
-                Controle de receitas, atendimentos e recibos
+                Controle de receitas, agendamentos e recibos
               </p>
             </div>
           </div>
@@ -161,7 +161,7 @@ export default function FinanceDashboard() {
                 <div className="py-16 text-center border border-dashed border-border/60 rounded-lg">
                   <ClipboardListIcon className="w-10 h-10 text-muted-foreground/40 mx-auto" />
                   <p className="mt-3 text-sm text-muted-foreground">
-                    Nenhum atendimento registrado no período selecionado.
+                    Nenhum agendamento registrado no período selecionado.
                   </p>
                   <Button
                     variant="outline"
@@ -170,7 +170,7 @@ export default function FinanceDashboard() {
                     onClick={() => navigate("/finance/records")}
                   >
                     <PlusIcon className="h-4 w-4 mr-2" />
-                    Cadastrar atendimento
+                    Cadastrar agendamento
                   </Button>
                 </div>
               )}
@@ -199,7 +199,7 @@ export default function FinanceDashboard() {
                 </p>
               </div>
               <div className="border rounded p-4 text-center">
-                <h3 className="font-medium">Atendimentos</h3>
+                <h3 className="font-medium">Agendamentos</h3>
                 <p className="text-xl font-bold">{dashboardData?.totalSessions || 0}</p>
               </div>
               <div className="border rounded p-4 text-center">

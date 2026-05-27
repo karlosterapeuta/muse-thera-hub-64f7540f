@@ -636,7 +636,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record, seriesMode = 
                   <FormLabel>Descrição (opcional)</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Detalhes sobre o atendimento"
+                      placeholder="Detalhes sobre o agendamento"
                       {...field}
                       className={isMobile ? 'min-h-[80px]' : 'min-h-[100px]'}
                     />

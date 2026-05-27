@@ -167,7 +167,7 @@ export default function FinancialReports() {
                       <TableHeader>
                         <TableRow>
                           <TableHead>Clínica</TableHead>
-                          <TableHead>Qtd. Atendimentos</TableHead>
+                          <TableHead>Qtd. Agendamentos</TableHead>
                           <TableHead>Total</TableHead>
                           <TableHead>Valor Médio</TableHead>
                         </TableRow>
@@ -263,11 +263,11 @@ export default function FinancialReports() {
                 <p className="text-xl font-bold">{formatCurrency(dashboardData?.totalEarnings || 0)}</p>
               </div>
               <div className="border rounded p-4 text-center">
-                <h3 className="font-medium">Total de Atendimentos</h3>
+                <h3 className="font-medium">Total de Agendamentos</h3>
                 <p className="text-xl font-bold">{dashboardData?.totalSessions || 0}</p>
               </div>
               <div className="border rounded p-4 text-center">
-                <h3 className="font-medium">Média por Atendimento</h3>
+                <h3 className="font-medium">Média por Agendamento</h3>
                 <p className="text-xl font-bold">{formatCurrency(dashboardData?.averagePerSession || 0)}</p>
               </div>
             </div>
@@ -278,7 +278,7 @@ export default function FinancialReports() {
                 <thead>
                   <tr className="border-b">
                     <th className="text-left p-2">Clínica</th>
-                    <th className="text-left p-2">Qtd. Atendimentos</th>
+                    <th className="text-left p-2">Qtd. Agendamentos</th>
                     <th className="text-left p-2">Total</th>
                     <th className="text-left p-2">Valor Médio</th>
                   </tr>

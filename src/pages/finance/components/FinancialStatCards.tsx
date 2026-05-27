@@ -48,16 +48,16 @@ export function FinancialStatCards({
         ]
       : []),
     {
-      title: "Atendimentos",
+      title: "Agendamentos",
       value: String(totalSessions),
-      hint: "Sessões registradas",
+      hint: "Agendamentos registrados",
       icon: ClipboardListIcon,
       accent: "text-primary bg-primary/10",
     },
     {
       title: "Ticket médio",
       value: fmtBRL(averagePerSession),
-      hint: "Valor médio por atendimento",
+      hint: "Valor médio por agendamento",
       icon: TrendingUpIcon,
       accent: "text-primary bg-primary/10",
     },
