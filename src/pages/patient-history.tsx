@@ -1068,6 +1068,19 @@ export default function PatientHistoryPage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto py-4 md:py-8 space-y-6 animate-fadeIn">
+        {/* Back button */}
+        <div className="flex justify-start">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/patients")}
+            className="gap-1.5 text-muted-foreground hover:text-foreground -ml-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Voltar
+          </Button>
+        </div>
+
         {/* Hero */}
         <div className="text-center space-y-3 mb-6">
           <div className="relative inline-flex items-center justify-center w-14 h-14 bg-gradient-to-r from-primary to-purple-600 rounded-2xl shadow-2xl">
