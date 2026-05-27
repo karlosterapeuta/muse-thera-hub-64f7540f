@@ -135,7 +135,7 @@ export function ConfirmPaymentDialog({ open, onClose, record, onConfirmed }: Pro
               <span className="font-medium">{record.patient_name || "—"}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Atendimento:</span>
+              <span className="text-muted-foreground">Agendamento:</span>
               <span>{new Date(record.session_date + "T00:00:00").toLocaleDateString("pt-BR")}</span>
             </div>
           </div>
