@@ -19,6 +19,7 @@ export function ReceiptsHistory() {
   const { data: receipts = [], isLoading } = usePaymentReceipts();
   const { data: issuer } = useReceiptIssuerProfile();
   const cancel = useCancelReceipt();
+  const del = useDeleteReceipt();
   const create = useCreatePaymentReceipt();
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<string>("all");
