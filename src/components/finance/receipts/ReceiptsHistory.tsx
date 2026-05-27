@@ -3,8 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { SearchIcon, DownloadIcon, ReceiptIcon, XCircleIcon, Loader2Icon, ShieldCheckIcon, PrinterIcon, CopyIcon } from "lucide-react";
-import { usePaymentReceipts, useCancelReceipt, useCreatePaymentReceipt, type PaymentReceipt } from "@/hooks/usePaymentReceipts";
+import { SearchIcon, DownloadIcon, ReceiptIcon, XCircleIcon, Loader2Icon, ShieldCheckIcon, PrinterIcon, CopyIcon, Trash2Icon } from "lucide-react";
+import { usePaymentReceipts, useCancelReceipt, useCreatePaymentReceipt, useDeleteReceipt, type PaymentReceipt } from "@/hooks/usePaymentReceipts";
 import { useReceiptIssuerProfile } from "@/hooks/useReceiptIssuerProfile";
 import { supabase } from "@/integrations/supabase/client";
 import { onlyDigits } from "@/utils/cpfCnpjUtils";
@@ -19,6 +19,7 @@ export function ReceiptsHistory() {
   const { data: receipts = [], isLoading } = usePaymentReceipts();
   const { data: issuer } = useReceiptIssuerProfile();
   const cancel = useCancelReceipt();
+  const del = useDeleteReceipt();
   const create = useCreatePaymentReceipt();
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<string>("all");
@@ -233,10 +234,13 @@ export function ReceiptsHistory() {
                     <CopyIcon className="h-4 w-4" />
                   </Button>
                   {r.status !== "cancelled" && (
-                    <Button size="sm" variant="ghost" onClick={() => { if (confirm("Cancelar este recibo?")) cancel.mutate(r.id); }} title="Cancelar">
+                    <Button size="sm" variant="ghost" onClick={() => { if (confirm("Cancelar este recibo? Ele será marcado como cancelado mas permanecerá no histórico.")) cancel.mutate(r.id); }} title="Cancelar">
                       <XCircleIcon className="h-4 w-4 text-destructive" />
                     </Button>
                   )}
+                  <Button size="sm" variant="ghost" onClick={() => { if (confirm(`Excluir definitivamente o recibo #${String(r.receipt_number).padStart(4, "0")} de ${r.patient_name}?\n\nEsta ação não pode ser desfeita.`)) del.mutate(r.id, { onSuccess: () => toast.success("Recibo excluído"), onError: (e: any) => toast.error(e.message || "Erro ao excluir") }); }} title="Excluir">
+                    <Trash2Icon className="h-4 w-4 text-destructive" />
+                  </Button>
                 </div>
               </CardContent>
             </Card>
