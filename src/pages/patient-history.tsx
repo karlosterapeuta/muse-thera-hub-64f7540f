@@ -621,8 +621,8 @@ function SavedPDFsTab({ patientName }: { patientName?: string }) {
 
       {/* Preview Dialog */}
       <Dialog open={!!previewUrl} onOpenChange={() => { setPreviewUrl(null); setPreviewName(""); }}>
-        <DialogContent className="max-w-4xl h-[85vh] p-0 overflow-hidden">
-          <DialogHeader className="p-4 pb-2 border-b border-border">
+        <DialogContent className="w-[95vw] h-[95vh] max-w-none p-0 overflow-hidden flex flex-col">
+          <DialogHeader className="p-4 pb-2 border-b border-border shrink-0">
             <div className="flex items-center justify-between">
               <DialogTitle className="text-sm font-semibold truncate pr-4">
                 {previewName.replace(".pdf", "").replace(/_/g, " ")}
@@ -648,7 +648,7 @@ function SavedPDFsTab({ patientName }: { patientName?: string }) {
           {previewUrl && (
             <iframe
               src={previewUrl}
-              className="w-full flex-1 h-full"
+              className="w-full flex-1 min-h-0"
               title="PDF Preview"
             />
           )}
