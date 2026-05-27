@@ -73,3 +73,17 @@ export function useCancelReceipt() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["payment-receipts"] }),
   });
 }
+
+export function useDeleteReceipt() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from("payment_receipts" as any)
+        .delete()
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["payment-receipts"] }),
+  });
+}
