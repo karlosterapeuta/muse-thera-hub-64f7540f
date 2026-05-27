@@ -621,16 +621,25 @@ function SavedPDFsTab({ patientName }: { patientName?: string }) {
 
       {/* Preview Dialog */}
       <Dialog open={!!previewUrl} onOpenChange={() => { setPreviewUrl(null); setPreviewName(""); }}>
-        <DialogContent className="w-[95vw] h-[95vh] max-w-none p-0 overflow-hidden flex flex-col">
-          <DialogHeader className="p-4 pb-2 border-b border-border shrink-0">
-            <div className="flex items-center justify-between">
-              <DialogTitle className="text-sm font-semibold truncate pr-4">
+        <DialogContent className="w-[95vw] h-[95vh] max-w-none p-0 overflow-hidden flex flex-col [&>button]:hidden">
+          <DialogHeader className="p-3 sm:p-4 border-b border-border shrink-0 space-y-0">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-1.5 text-xs shrink-0 h-9"
+                onClick={() => { setPreviewUrl(null); setPreviewName(""); }}
+              >
+                <ArrowLeft className="h-4 w-4" />
+                <span className="hidden sm:inline">Voltar</span>
+              </Button>
+              <DialogTitle className="text-sm font-semibold truncate flex-1 text-left">
                 {previewName.replace(".pdf", "").replace(/_/g, " ")}
               </DialogTitle>
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-1.5 text-xs shrink-0"
+                className="gap-1.5 text-xs shrink-0 h-9"
                 onClick={async () => {
                   if (previewUrl) {
                     const link = document.createElement("a");
@@ -641,7 +650,16 @@ function SavedPDFsTab({ patientName }: { patientName?: string }) {
                 }}
               >
                 <Download className="h-3.5 w-3.5" />
-                Baixar
+                <span className="hidden sm:inline">Baixar</span>
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 shrink-0 rounded-full hover:bg-destructive/10 hover:text-destructive"
+                onClick={() => { setPreviewUrl(null); setPreviewName(""); }}
+                aria-label="Fechar"
+              >
+                <X className="h-5 w-5" />
               </Button>
             </div>
           </DialogHeader>
