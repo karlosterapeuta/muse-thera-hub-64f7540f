@@ -26,23 +26,25 @@ export default function ReceiptsListPage() {
 
       <Card className="relative overflow-hidden bg-card/60 backdrop-blur-xl border-border/60 shadow-2xl">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-amber-400/5 pointer-events-none" />
-        <CardContent className="p-5 relative flex items-center gap-4">
+        <CardContent className="p-5 relative flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <div className="bg-gradient-to-br from-primary to-amber-500 p-3 rounded-xl">
             <ReceiptIcon className="h-7 w-7 text-white" />
           </div>
           <div className="flex-1 min-w-0">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-amber-500 bg-clip-text text-transparent">
+            <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary to-amber-500 bg-clip-text text-transparent">
               Recibos de Pagamento
             </h1>
-            <p className="text-sm text-muted-foreground">Dashboard, histórico e perfil de emissor</p>
+            <p className="text-xs sm:text-sm text-muted-foreground">Dashboard, histórico e perfil de emissor</p>
           </div>
           <Button
             onClick={() => setImportOpen(true)}
-            className="shrink-0 bg-gradient-to-r from-primary to-amber-500 text-white gap-2 shadow-lg"
+            className="shrink-0 bg-gradient-to-r from-primary to-amber-500 text-white gap-2 shadow-lg w-full sm:w-auto h-auto py-2.5 whitespace-normal"
           >
-            <SparklesIcon className="h-4 w-4" />
-            <span className="hidden sm:inline">Importar Comprovante</span>
-            <span className="sm:hidden">Importar</span>
+            <SparklesIcon className="h-4 w-4 shrink-0" />
+            <span className="text-xs sm:text-sm text-center leading-tight">
+              <span className="block sm:inline">Importar Comprovante</span>
+              <span className="block sm:inline text-white/80"> e Gerar Recibo</span>
+            </span>
           </Button>
         </CardContent>
       </Card>
