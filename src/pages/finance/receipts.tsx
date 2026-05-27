@@ -52,10 +52,28 @@ export default function ReceiptsListPage() {
       <ImportProofDialog open={importOpen} onClose={() => setImportOpen(false)} />
 
       <Tabs value={tab} onValueChange={(v) => setParams({ tab: v })}>
-        <TabsList className="w-full overflow-x-auto flex justify-start sm:grid sm:grid-cols-3">
-          <TabsTrigger value="dashboard" className="gap-1"><LayoutDashboardIcon className="h-4 w-4" /><span className="hidden sm:inline">Dashboard</span></TabsTrigger>
-          <TabsTrigger value="recibos" className="gap-1"><ReceiptIcon className="h-4 w-4" /><span className="hidden sm:inline">Recibos</span></TabsTrigger>
-          <TabsTrigger value="emissor" className="gap-1"><ShieldCheckIcon className="h-4 w-4" /><span className="hidden sm:inline">Emissor</span></TabsTrigger>
+        <TabsList className="w-full grid grid-cols-3 gap-2 bg-transparent p-0 h-auto">
+          <TabsTrigger
+            value="dashboard"
+            className="gap-2 py-3 rounded-xl border border-border/60 bg-card/60 backdrop-blur-sm shadow-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-amber-500 data-[state=active]:text-white data-[state=active]:border-primary data-[state=active]:shadow-lg data-[state=active]:shadow-primary/30 transition-all duration-300 hover:scale-[1.02] hover:shadow-md"
+          >
+            <LayoutDashboardIcon className="h-5 w-5" />
+            <span className="text-xs sm:text-sm font-semibold">Dashboard</span>
+          </TabsTrigger>
+          <TabsTrigger
+            value="recibos"
+            className="gap-2 py-3 rounded-xl border border-border/60 bg-card/60 backdrop-blur-sm shadow-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-amber-500 data-[state=active]:text-white data-[state=active]:border-primary data-[state=active]:shadow-lg data-[state=active]:shadow-primary/30 transition-all duration-300 hover:scale-[1.02] hover:shadow-md"
+          >
+            <ReceiptIcon className="h-5 w-5" />
+            <span className="text-xs sm:text-sm font-semibold">Recibos</span>
+          </TabsTrigger>
+          <TabsTrigger
+            value="emissor"
+            className="gap-2 py-3 rounded-xl border border-border/60 bg-card/60 backdrop-blur-sm shadow-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-amber-500 data-[state=active]:text-white data-[state=active]:border-primary data-[state=active]:shadow-lg data-[state=active]:shadow-primary/30 transition-all duration-300 hover:scale-[1.02] hover:shadow-md"
+          >
+            <ShieldCheckIcon className="h-5 w-5" />
+            <span className="text-xs sm:text-sm font-semibold">Emissor</span>
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="dashboard" className="mt-4"><ReceiptsDashboard /></TabsContent>
         <TabsContent value="recibos" className="mt-4"><ReceiptsHistory /></TabsContent>
