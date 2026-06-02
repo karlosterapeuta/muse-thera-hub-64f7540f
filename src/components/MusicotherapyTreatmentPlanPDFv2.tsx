@@ -30,6 +30,19 @@ const A4_WIDTH = 794; // ~210mm at 96dpi
 const baseFont = "'Inter', 'Helvetica Neue', Arial, sans-serif";
 const serifFont = "'Lora', 'Georgia', serif";
 
+const wrapText: React.CSSProperties = {
+  minWidth: 0,
+  maxWidth: '100%',
+  whiteSpace: 'normal',
+  overflowWrap: 'anywhere',
+  wordBreak: 'break-word',
+};
+
+const strictNameWrap: React.CSSProperties = {
+  ...wrapText,
+  wordBreak: 'break-all',
+};
+
 const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; footer?: React.ReactNode }> = ({ children, bg = '#ffffff', pad = 56, footer }) => (
   <div style={{
     width: `${A4_WIDTH}px`,
@@ -54,8 +67,8 @@ const PageFooter: React.FC<{ page: number; total: number; patient?: string }> = 
     fontSize: 9.5, color: MUTED, letterSpacing: 0.5,
     borderTop: `1px solid ${LINE}`, paddingTop: 8,
   }}>
-    <span>Plano Musicoterapêutico{patient ? ` · ${patient}` : ''}</span>
-    <span style={{ color: GOLD_DARK, fontWeight: 600 }}>Página {page} de {total}</span>
+    <span style={{ ...strictNameWrap, flex: '1 1 auto', paddingRight: 16 }}>Plano Musicoterapêutico{patient ? ` · ${patient}` : ''}</span>
+    <span style={{ color: GOLD_DARK, fontWeight: 600, flex: '0 0 auto' }}>Página {page} de {total}</span>
   </div>
 );
 
@@ -83,9 +96,9 @@ const SectionHeader: React.FC<{ n: number; title: string }> = ({ n, title }) => 
 );
 
 const Field: React.FC<{ label: string; value?: React.ReactNode }> = ({ label, value }) => (
-  <div style={{ marginBottom: 10 }}>
+  <div style={{ marginBottom: 10, ...wrapText }}>
     <div style={{ fontSize: 10.5, fontWeight: 600, color: GOLD_DARK, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 3 }}>{label}</div>
-    <div style={{ fontSize: 13, color: INK, lineHeight: 1.55 }}>{value || <span style={{ color: MUTED, fontStyle: 'italic' }}>Não informado</span>}</div>
+    <div style={{ fontSize: 13, color: INK, lineHeight: 1.55, ...strictNameWrap }}>{value || <span style={{ color: MUTED, fontStyle: 'italic' }}>Não informado</span>}</div>
   </div>
 );
 
@@ -96,7 +109,7 @@ const BulletList: React.FC<{ items?: string[]; empty?: string }> = ({ items, emp
       {items.map((item, i) => (
         <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', fontSize: 13, lineHeight: 1.5 }}>
           <span style={{ color: GOLD, fontWeight: 700, marginTop: 1 }}>◆</span>
-          <span style={{ color: INK }}>{item}</span>
+              <span style={{ color: INK, ...wrapText }}>{item}</span>
         </div>
       ))}
     </div>
