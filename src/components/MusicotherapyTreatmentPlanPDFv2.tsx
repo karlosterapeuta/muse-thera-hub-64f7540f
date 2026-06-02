@@ -30,6 +30,19 @@ const A4_WIDTH = 794; // ~210mm at 96dpi
 const baseFont = "'Inter', 'Helvetica Neue', Arial, sans-serif";
 const serifFont = "'Lora', 'Georgia', serif";
 
+const wrapText: React.CSSProperties = {
+  minWidth: 0,
+  maxWidth: '100%',
+  whiteSpace: 'normal',
+  overflowWrap: 'anywhere',
+  wordBreak: 'break-word',
+};
+
+const strictNameWrap: React.CSSProperties = {
+  ...wrapText,
+  wordBreak: 'break-all',
+};
+
 const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; footer?: React.ReactNode }> = ({ children, bg = '#ffffff', pad = 56, footer }) => (
   <div style={{
     width: `${A4_WIDTH}px`,
@@ -54,8 +67,8 @@ const PageFooter: React.FC<{ page: number; total: number; patient?: string }> = 
     fontSize: 9.5, color: MUTED, letterSpacing: 0.5,
     borderTop: `1px solid ${LINE}`, paddingTop: 8,
   }}>
-    <span>Plano Musicoterapêutico{patient ? ` · ${patient}` : ''}</span>
-    <span style={{ color: GOLD_DARK, fontWeight: 600 }}>Página {page} de {total}</span>
+    <span style={{ ...strictNameWrap, flex: '1 1 auto', paddingRight: 16 }}>Plano Musicoterapêutico{patient ? ` · ${patient}` : ''}</span>
+    <span style={{ color: GOLD_DARK, fontWeight: 600, flex: '0 0 auto' }}>Página {page} de {total}</span>
   </div>
 );
 
@@ -83,9 +96,9 @@ const SectionHeader: React.FC<{ n: number; title: string }> = ({ n, title }) => 
 );
 
 const Field: React.FC<{ label: string; value?: React.ReactNode }> = ({ label, value }) => (
-  <div style={{ marginBottom: 10 }}>
+  <div style={{ marginBottom: 10, ...wrapText }}>
     <div style={{ fontSize: 10.5, fontWeight: 600, color: GOLD_DARK, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 3 }}>{label}</div>
-    <div style={{ fontSize: 13, color: INK, lineHeight: 1.55 }}>{value || <span style={{ color: MUTED, fontStyle: 'italic' }}>Não informado</span>}</div>
+    <div style={{ fontSize: 13, color: INK, lineHeight: 1.55, ...strictNameWrap }}>{value || <span style={{ color: MUTED, fontStyle: 'italic' }}>Não informado</span>}</div>
   </div>
 );
 
@@ -96,7 +109,7 @@ const BulletList: React.FC<{ items?: string[]; empty?: string }> = ({ items, emp
       {items.map((item, i) => (
         <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', fontSize: 13, lineHeight: 1.5 }}>
           <span style={{ color: GOLD, fontWeight: 700, marginTop: 1 }}>◆</span>
-          <span style={{ color: INK }}>{item}</span>
+              <span style={{ color: INK, ...wrapText }}>{item}</span>
         </div>
       ))}
     </div>
@@ -179,20 +192,20 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
             </div>
 
             {/* Bottom info */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, paddingTop: 24, borderTop: `1px solid ${GOLD}` }}>
-              <div style={{ minWidth: 0 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 24, paddingTop: 24, borderTop: `1px solid ${GOLD}`, ...wrapText }}>
+              <div style={wrapText}>
                 <div style={{ fontSize: 10, color: GOLD, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 }}>Paciente</div>
-                <div style={{ fontFamily: serifFont, fontSize: 20, fontWeight: 500, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{planData.patient_full_name || '—'}</div>
-                <div style={{ fontSize: 12, color: '#B0B0BE', marginTop: 4, overflowWrap: 'break-word', wordBreak: 'break-word' }}>
+                <div style={{ fontFamily: serifFont, fontSize: 19, fontWeight: 500, lineHeight: 1.2, ...strictNameWrap }}>{planData.patient_full_name || '—'}</div>
+                <div style={{ fontSize: 12, color: '#B0B0BE', marginTop: 4, ...strictNameWrap }}>
                   {planData.clinical_diagnosis ? `Diagnóstico: ${planData.clinical_diagnosis}` : ''}
                 </div>
               </div>
-              <div style={{ textAlign: 'right', minWidth: 0 }}>
+              <div style={{ textAlign: 'right', ...wrapText }}>
                 <div style={{ fontSize: 10, color: GOLD, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 }}>Profissional</div>
-                <div style={{ fontFamily: serifFont, fontSize: 16, fontWeight: 500, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{therapistName || 'Musicoterapeuta'}</div>
-                <div style={{ fontSize: 11, color: '#B0B0BE', marginTop: 4, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{professionalRegistry || ''}</div>
+                <div style={{ fontFamily: serifFont, fontSize: 15, fontWeight: 500, lineHeight: 1.25, ...strictNameWrap }}>{therapistName || 'Musicoterapeuta'}</div>
+                <div style={{ fontSize: 11, color: '#B0B0BE', marginTop: 4, ...strictNameWrap }}>{professionalRegistry || ''}</div>
                 <div style={{ fontSize: 11, color: '#B0B0BE', marginTop: 12 }}>Emitido em {today}</div>
-                {planNumber && <div style={{ fontSize: 11, color: GOLD_LIGHT, marginTop: 2 }}>Plano nº {planNumber}</div>}
+                {planNumber && <div style={{ fontSize: 11, color: GOLD_LIGHT, marginTop: 2, ...strictNameWrap }}>Plano nº {planNumber}</div>}
               </div>
             </div>
           </div>
@@ -240,7 +253,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
       <Page footer={<PageFooter page={3} total={5} patient={planData.patient_full_name} />}>
         <SectionHeader n={1} title="Identificação do Paciente" />
         <Card>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '0 24px' }}>
             <Field label="Nome completo" value={planData.patient_full_name} />
             <Field label="Data de nascimento" value={formatBirthDateForDisplay(planData.patient_birth_date)} />
             <Field label="Idade" value={planData.patient_age} />
@@ -268,7 +281,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
 
       <Page footer={<PageFooter page={4} total={5} patient={planData.patient_full_name} />}>
         <SectionHeader n={5} title="Recursos Musicoterapêuticos" />
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 16 }}>
           <Card>
             <div style={{ fontFamily: serifFont, fontSize: 14, fontWeight: 600, color: GOLD_DARK, marginBottom: 10 }}>Instrumentos musicais</div>
             <BulletList items={planData.musical_instruments} />
@@ -343,8 +356,8 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
           overflow: 'hidden',
         }}>
           <div style={{ height: 6, background: `linear-gradient(90deg, ${GOLD_DARK}, ${GOLD}, ${GOLD_LIGHT}, ${GOLD}, ${GOLD_DARK})` }} />
-          <div style={{ padding: 24, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, alignItems: 'center' }}>
-            <div>
+          <div style={{ padding: 24, display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 24, alignItems: 'center' }}>
+            <div style={wrapText}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 14 }}>
                 {professionalPhotoUrl && (
                   <img src={professionalPhotoUrl} alt="" crossOrigin="anonymous" style={{
@@ -352,15 +365,15 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
                     border: `3px solid ${GOLD}`,
                   }} />
                 )}
-                <div>
-                  <div style={{ fontFamily: serifFont, fontSize: 16, fontWeight: 600, color: INK }}>{therapistName || 'Musicoterapeuta'}</div>
-                  <div style={{ fontSize: 11, color: GOLD_DARK, marginTop: 2 }}>{professionalSpecialty || 'Musicoterapeuta'}</div>
+                <div style={wrapText}>
+                  <div style={{ fontFamily: serifFont, fontSize: 15, fontWeight: 600, color: INK, lineHeight: 1.25, ...strictNameWrap }}>{therapistName || 'Musicoterapeuta'}</div>
+                  <div style={{ fontSize: 11, color: GOLD_DARK, marginTop: 2, ...strictNameWrap }}>{professionalSpecialty || 'Musicoterapeuta'}</div>
                 </div>
               </div>
-              <div style={{ fontSize: 11.5, color: INK_SOFT, lineHeight: 1.7 }}>
-                {professionalRegistry && <div><strong style={{ color: GOLD_DARK }}>Registro:</strong> {professionalRegistry}</div>}
-                {professionalEmail && <div><strong style={{ color: GOLD_DARK }}>E-mail:</strong> {professionalEmail}</div>}
-                {professionalPhone && <div><strong style={{ color: GOLD_DARK }}>Telefone:</strong> {professionalPhone}</div>}
+              <div style={{ fontSize: 11.5, color: INK_SOFT, lineHeight: 1.7, ...strictNameWrap }}>
+                {professionalRegistry && <div style={strictNameWrap}><strong style={{ color: GOLD_DARK }}>Registro:</strong> {professionalRegistry}</div>}
+                {professionalEmail && <div style={strictNameWrap}><strong style={{ color: GOLD_DARK }}>E-mail:</strong> {professionalEmail}</div>}
+                {professionalPhone && <div style={strictNameWrap}><strong style={{ color: GOLD_DARK }}>Telefone:</strong> {professionalPhone}</div>}
               </div>
               <div style={{ marginTop: 16, paddingTop: 12, borderTop: `1px dashed ${LINE}`, fontSize: 10.5, color: MUTED, letterSpacing: 1, display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span style={{ width: 7, height: 7, borderRadius: '50%', background: GOLD, display: 'inline-block' }} />
