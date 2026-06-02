@@ -71,10 +71,10 @@ export const generateStaticPDF = async (
       margin: fullBleedPages ? [0, 0, 0, 0] : [15, 15, 15, 15], // margem em mm
       filename,
       pagebreak: { 
-        mode: ['css', 'legacy', 'avoid-all'],
+        mode: ['css', 'legacy'],
         before: '.page-break-before',
         after: '.page-break-after',
-        avoid: ['.page-break-avoid', 'table', 'tr', 'thead', 'tbody', 'svg']
+        avoid: ['.page-break-avoid', '.musetera-pdf-page', 'table', 'tr', 'thead', 'tbody', 'svg']
       },
       image: { 
         type: 'jpeg', 
