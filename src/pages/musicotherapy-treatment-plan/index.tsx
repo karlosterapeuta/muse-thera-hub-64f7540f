@@ -442,7 +442,16 @@ export default function MusicotherapyTreatmentPlanPage() {
             <PlanSectionHeader section={activeSection} index={activeIndex} total={tabSections.length} />
 
           {/* Tab Contents */}
-          <div className="mt-6">
+          <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="mt-6"
+          >
+
 
             {/* 1. Patient Identification */}
             <TabsContent value="identification" className="mt-6">
