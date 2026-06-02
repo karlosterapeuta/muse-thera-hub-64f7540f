@@ -192,20 +192,20 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
             </div>
 
             {/* Bottom info */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, paddingTop: 24, borderTop: `1px solid ${GOLD}` }}>
-              <div style={{ minWidth: 0 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 24, paddingTop: 24, borderTop: `1px solid ${GOLD}`, ...wrapText }}>
+              <div style={wrapText}>
                 <div style={{ fontSize: 10, color: GOLD, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 }}>Paciente</div>
-                <div style={{ fontFamily: serifFont, fontSize: 20, fontWeight: 500, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{planData.patient_full_name || '—'}</div>
-                <div style={{ fontSize: 12, color: '#B0B0BE', marginTop: 4, overflowWrap: 'break-word', wordBreak: 'break-word' }}>
+                <div style={{ fontFamily: serifFont, fontSize: 19, fontWeight: 500, lineHeight: 1.2, ...strictNameWrap }}>{planData.patient_full_name || '—'}</div>
+                <div style={{ fontSize: 12, color: '#B0B0BE', marginTop: 4, ...strictNameWrap }}>
                   {planData.clinical_diagnosis ? `Diagnóstico: ${planData.clinical_diagnosis}` : ''}
                 </div>
               </div>
-              <div style={{ textAlign: 'right', minWidth: 0 }}>
+              <div style={{ textAlign: 'right', ...wrapText }}>
                 <div style={{ fontSize: 10, color: GOLD, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 }}>Profissional</div>
-                <div style={{ fontFamily: serifFont, fontSize: 16, fontWeight: 500, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{therapistName || 'Musicoterapeuta'}</div>
-                <div style={{ fontSize: 11, color: '#B0B0BE', marginTop: 4, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{professionalRegistry || ''}</div>
+                <div style={{ fontFamily: serifFont, fontSize: 15, fontWeight: 500, lineHeight: 1.25, ...strictNameWrap }}>{therapistName || 'Musicoterapeuta'}</div>
+                <div style={{ fontSize: 11, color: '#B0B0BE', marginTop: 4, ...strictNameWrap }}>{professionalRegistry || ''}</div>
                 <div style={{ fontSize: 11, color: '#B0B0BE', marginTop: 12 }}>Emitido em {today}</div>
-                {planNumber && <div style={{ fontSize: 11, color: GOLD_LIGHT, marginTop: 2 }}>Plano nº {planNumber}</div>}
+                {planNumber && <div style={{ fontSize: 11, color: GOLD_LIGHT, marginTop: 2, ...strictNameWrap }}>Plano nº {planNumber}</div>}
               </div>
             </div>
           </div>
@@ -253,7 +253,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
       <Page footer={<PageFooter page={3} total={5} patient={planData.patient_full_name} />}>
         <SectionHeader n={1} title="Identificação do Paciente" />
         <Card>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '0 24px' }}>
             <Field label="Nome completo" value={planData.patient_full_name} />
             <Field label="Data de nascimento" value={formatBirthDateForDisplay(planData.patient_birth_date)} />
             <Field label="Idade" value={planData.patient_age} />
