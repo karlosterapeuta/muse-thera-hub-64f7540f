@@ -314,48 +314,19 @@ export default function MusicotherapyTreatmentPlanPage() {
     }
   };
 
-  const tabSections = [
-    { id: "identification", label: "1. Identificação", icon: User },
-    { id: "assessment", label: "2. Avaliação", icon: FileText },
-    { id: "general-objectives", label: "3. Obj. Gerais", icon: Target },
-    { id: "specific-objectives", label: "4. Obj. Específicos", icon: CheckCircle },
-    { id: "resources", label: "5. Recursos", icon: Music },
-    { id: "strategies", label: "6. Estratégias", icon: Activity },
-    { id: "frequency", label: "7. Frequência", icon: Clock },
-    { id: "evaluation", label: "8. Avaliação", icon: BarChart },
-    { id: "action-plan", label: "9. Plano Ação", icon: Users },
-    { id: "re-evaluation", label: "10. Reavaliação", icon: RefreshCw },
-  ];
+  const tabSections = planSections;
+  const activeIndex = tabSections.findIndex((s) => s.id === activeTab);
+  const activeSection = tabSections[activeIndex] ?? tabSections[0];
 
-  // Completion percentage across key fields
-  const completion = (() => {
-    const checks: boolean[] = [
-      !!planData.patient_full_name,
-      !!planData.patient_age,
-      !!planData.clinical_diagnosis,
-      !!planData.responsible_person,
-      !!planData.clinical_family_history,
-      !!planData.physical_cognitive_conditions,
-      !!planData.interaction_communication_level,
-      !!planData.musical_interests,
-      !!planData.observed_behaviors,
-      (planData.general_objectives?.length || 0) > 0,
-      (planData.specific_objectives?.length || 0) > 0,
-      (planData.musical_instruments?.length || 0) > 0,
-      (planData.technological_resources?.length || 0) > 0 ||
-        (planData.voice_body_resources?.length || 0) > 0 ||
-        (planData.complementary_materials?.length || 0) > 0,
-      !!planData.musical_improvisation || !!planData.musical_recreation || !!planData.musical_composition,
-      !!planData.receptive_listening || !!planData.rhythmic_dynamics,
-      !!planData.weekly_sessions && !!planData.session_duration_minutes,
-      (planData.evaluation_criteria_list?.length || 0) > 0,
-      !!planData.session_structure,
-      !!planData.activity_sequence || !!planData.flexibility_adjustments,
-      !!planData.reevaluation_frequency || !!planData.evolution_recording,
-    ];
-    const filled = checks.filter(Boolean).length;
-    return Math.round((filled / checks.length) * 100);
-  })();
+  const goToSection = (id: string) => {
+    setActiveTab(id);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Completion percentage based on per-section rules
+  const completion = getCompletion(planData);
+
+
 
 
   if (isLoading && id) {
