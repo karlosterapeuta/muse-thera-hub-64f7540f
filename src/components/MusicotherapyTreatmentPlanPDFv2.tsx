@@ -281,7 +281,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
 
       <Page footer={<PageFooter page={4} total={5} patient={planData.patient_full_name} />}>
         <SectionHeader n={5} title="Recursos Musicoterapêuticos" />
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 16 }}>
           <Card>
             <div style={{ fontFamily: serifFont, fontSize: 14, fontWeight: 600, color: GOLD_DARK, marginBottom: 10 }}>Instrumentos musicais</div>
             <BulletList items={planData.musical_instruments} />
@@ -356,8 +356,8 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
           overflow: 'hidden',
         }}>
           <div style={{ height: 6, background: `linear-gradient(90deg, ${GOLD_DARK}, ${GOLD}, ${GOLD_LIGHT}, ${GOLD}, ${GOLD_DARK})` }} />
-          <div style={{ padding: 24, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, alignItems: 'center' }}>
-            <div>
+          <div style={{ padding: 24, display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 24, alignItems: 'center' }}>
+            <div style={wrapText}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 14 }}>
                 {professionalPhotoUrl && (
                   <img src={professionalPhotoUrl} alt="" crossOrigin="anonymous" style={{
@@ -365,15 +365,15 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
                     border: `3px solid ${GOLD}`,
                   }} />
                 )}
-                <div>
-                  <div style={{ fontFamily: serifFont, fontSize: 16, fontWeight: 600, color: INK }}>{therapistName || 'Musicoterapeuta'}</div>
-                  <div style={{ fontSize: 11, color: GOLD_DARK, marginTop: 2 }}>{professionalSpecialty || 'Musicoterapeuta'}</div>
+                <div style={wrapText}>
+                  <div style={{ fontFamily: serifFont, fontSize: 15, fontWeight: 600, color: INK, lineHeight: 1.25, ...strictNameWrap }}>{therapistName || 'Musicoterapeuta'}</div>
+                  <div style={{ fontSize: 11, color: GOLD_DARK, marginTop: 2, ...strictNameWrap }}>{professionalSpecialty || 'Musicoterapeuta'}</div>
                 </div>
               </div>
-              <div style={{ fontSize: 11.5, color: INK_SOFT, lineHeight: 1.7 }}>
-                {professionalRegistry && <div><strong style={{ color: GOLD_DARK }}>Registro:</strong> {professionalRegistry}</div>}
-                {professionalEmail && <div><strong style={{ color: GOLD_DARK }}>E-mail:</strong> {professionalEmail}</div>}
-                {professionalPhone && <div><strong style={{ color: GOLD_DARK }}>Telefone:</strong> {professionalPhone}</div>}
+              <div style={{ fontSize: 11.5, color: INK_SOFT, lineHeight: 1.7, ...strictNameWrap }}>
+                {professionalRegistry && <div style={strictNameWrap}><strong style={{ color: GOLD_DARK }}>Registro:</strong> {professionalRegistry}</div>}
+                {professionalEmail && <div style={strictNameWrap}><strong style={{ color: GOLD_DARK }}>E-mail:</strong> {professionalEmail}</div>}
+                {professionalPhone && <div style={strictNameWrap}><strong style={{ color: GOLD_DARK }}>Telefone:</strong> {professionalPhone}</div>}
               </div>
               <div style={{ marginTop: 16, paddingTop: 12, borderTop: `1px dashed ${LINE}`, fontSize: 10.5, color: MUTED, letterSpacing: 1, display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span style={{ width: 7, height: 7, borderRadius: '50%', background: GOLD, display: 'inline-block' }} />
