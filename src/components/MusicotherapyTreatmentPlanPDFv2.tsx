@@ -316,7 +316,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
         </Card>
       </Page>
 
-      <Page>
+      <Page footer={<PageFooter page={5} total={5} patient={planData.patient_full_name} />}>
         <SectionHeader n={8} title="Critérios de Avaliação" />
         <Card><BulletList items={planData.evaluation_criteria_list} empty="Nenhum critério definido" /></Card>
 
