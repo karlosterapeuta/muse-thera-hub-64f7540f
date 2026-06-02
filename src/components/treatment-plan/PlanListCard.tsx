@@ -103,25 +103,34 @@ export function PlanListCard({ plan, index, isDownloading, isDuplicating, onView
           </div>
 
           {/* Actions */}
-          <div className="mt-auto flex flex-wrap gap-1.5 pt-3 border-t border-border/50">
-            <Button size="sm" variant="ghost" onClick={onView} className="flex-1 min-w-[68px] gap-1.5 hover:bg-primary/10 hover:text-primary">
+          <div className="mt-auto flex items-center gap-1.5 pt-3 border-t border-border/50">
+            <Button size="sm" variant="ghost" onClick={onView} className="flex-1 gap-1.5 hover:bg-primary/10 hover:text-primary">
               <Eye className="h-3.5 w-3.5" /> Ver
             </Button>
-            <Button size="sm" variant="ghost" onClick={onEdit} className="flex-1 min-w-[68px] gap-1.5 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400">
+            <Button size="sm" variant="ghost" onClick={onEdit} className="flex-1 gap-1.5 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400">
               <Edit className="h-3.5 w-3.5" /> Editar
             </Button>
-            <Button size="sm" variant="ghost" onClick={onDownload} disabled={isDownloading} className="flex-1 min-w-[68px] gap-1.5 hover:bg-emerald-500/10 hover:text-emerald-600 dark:hover:text-emerald-400">
+            <Button size="sm" variant="ghost" onClick={onDownload} disabled={isDownloading} className="flex-1 gap-1.5 hover:bg-emerald-500/10 hover:text-emerald-600 dark:hover:text-emerald-400">
               {isDownloading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />} PDF
             </Button>
-            <Button size="sm" variant="ghost" onClick={onDuplicate} disabled={isDuplicating} className="flex-1 min-w-[68px] gap-1.5 hover:bg-violet-500/10 hover:text-violet-600 dark:hover:text-violet-400">
-              {isDuplicating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Copy className="h-3.5 w-3.5" />} Duplicar
-            </Button>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button size="sm" variant="ghost" className="flex-1 min-w-[68px] gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10">
-                  <Trash2 className="h-3.5 w-3.5" /> Excluir
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="icon" variant="ghost" className="h-8 w-8 shrink-0">
+                  <MoreVertical className="h-4 w-4" />
                 </Button>
-              </AlertDialogTrigger>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={onDuplicate} disabled={isDuplicating}>
+                  {isDuplicating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Copy className="h-4 w-4 mr-2" />} Duplicar
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => setConfirmOpen(true)} className="text-destructive focus:text-destructive">
+                  <Trash2 className="h-4 w-4 mr-2" /> Excluir
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>Excluir plano musicoterapêutico</AlertDialogTitle>
@@ -138,6 +147,7 @@ export function PlanListCard({ plan, index, isDownloading, isDuplicating, onView
               </AlertDialogContent>
             </AlertDialog>
           </div>
+
         </div>
       </Card>
     </motion.div>
