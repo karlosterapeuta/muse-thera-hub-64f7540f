@@ -192,8 +192,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
         [data-musetera-pdf], [data-musetera-pdf] * {
           box-sizing: border-box !important;
           max-width: 100% !important;
-          overflow-wrap: anywhere !important;
-          word-break: break-word !important;
+          overflow-wrap: break-word !important;
         }
         [data-musetera-pdf] img { max-width: 100% !important; }
       `}</style>
