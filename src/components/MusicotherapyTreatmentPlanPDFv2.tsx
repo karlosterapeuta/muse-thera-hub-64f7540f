@@ -179,7 +179,16 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
   const today = new Date().toLocaleDateString('pt-BR');
 
   return (
-    <div style={{ background: '#fff', fontFamily: baseFont, color: INK }}>
+    <div data-musetera-pdf="true" style={{ width: `${A4_WIDTH}px`, maxWidth: `${A4_WIDTH}px`, overflow: 'hidden', background: '#fff', fontFamily: baseFont, color: INK, boxSizing: 'border-box' }}>
+      <style>{`
+        [data-musetera-pdf], [data-musetera-pdf] * {
+          box-sizing: border-box !important;
+          max-width: 100% !important;
+          overflow-wrap: anywhere !important;
+          word-break: break-word !important;
+        }
+        [data-musetera-pdf] img { max-width: 100% !important; }
+      `}</style>
       {/* ============ COVER ============ */}
       <Page bg={INK} pad={0}>
         <div style={{ position: 'relative', width: '100%', maxWidth: `${A4_WIDTH}px`, height: '1123px', overflow: 'hidden', boxSizing: 'border-box' }}>
