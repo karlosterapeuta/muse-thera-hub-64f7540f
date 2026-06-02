@@ -982,36 +982,34 @@ export default function MusicotherapyTreatmentPlanPage() {
         </Tabs>
 
         {/* Navigation Footer */}
-        <div className="flex justify-between items-center mt-8 p-4 bg-muted/50 rounded-lg">
+        <div className="flex items-center justify-between gap-3 mt-8 p-4 bg-muted/40 border border-border/60 rounded-xl">
           <Button
             variant="outline"
-            onClick={() => {
-              const currentIndex = tabSections.findIndex(section => section.id === activeTab);
-              if (currentIndex > 0) {
-                setActiveTab(tabSections[currentIndex - 1].id);
-              }
-            }}
-            disabled={tabSections.findIndex(section => section.id === activeTab) === 0}
+            className="gap-2"
+            onClick={() => { if (activeIndex > 0) goToSection(tabSections[activeIndex - 1].id); }}
+            disabled={activeIndex === 0}
           >
-            Anterior
+            <ArrowLeft className="h-4 w-4" />
+            <span className="hidden sm:inline">{activeIndex > 0 ? tabSections[activeIndex - 1].navLabel : 'Anterior'}</span>
+            <span className="sm:hidden">Anterior</span>
           </Button>
-          
-          <div className="text-sm text-muted-foreground">
-            Seção {tabSections.findIndex(section => section.id === activeTab) + 1} de {tabSections.length}
+
+          <div className="text-xs sm:text-sm text-muted-foreground text-center">
+            Seção {activeIndex + 1} de {tabSections.length}
           </div>
-          
+
           <Button
-            onClick={() => {
-              const currentIndex = tabSections.findIndex(section => section.id === activeTab);
-              if (currentIndex < tabSections.length - 1) {
-                setActiveTab(tabSections[currentIndex + 1].id);
-              }
-            }}
-            disabled={tabSections.findIndex(section => section.id === activeTab) === tabSections.length - 1}
+            className="gap-2 bg-gradient-to-r from-primary to-purple-600 hover:opacity-90"
+            onClick={() => { if (activeIndex < tabSections.length - 1) goToSection(tabSections[activeIndex + 1].id); }}
+            disabled={activeIndex === tabSections.length - 1}
           >
-            Próxima
+            <span className="hidden sm:inline">{activeIndex < tabSections.length - 1 ? tabSections[activeIndex + 1].navLabel : 'Próxima'}</span>
+            <span className="sm:hidden">Próxima</span>
+            <ArrowLeft className="h-4 w-4 rotate-180" />
           </Button>
         </div>
+        </div>
+
       </div>
     </div>
   );
