@@ -287,7 +287,8 @@ export default function MusicotherapyTreatmentPlanPage() {
         waitTime: 2000,
         quality: 1.2,
         format: 'a4',
-        orientation: 'portrait'
+        orientation: 'portrait',
+        fullBleedPages: true
       });
 
       if (success) {

@@ -32,7 +32,6 @@ const serifFont = "'Lora', 'Georgia', serif";
 
 const wrapText: React.CSSProperties = {
   display: 'block',
-  width: '100%',
   minWidth: 0,
   maxWidth: '100%',
   boxSizing: 'border-box',
@@ -45,12 +44,13 @@ const wrapText: React.CSSProperties = {
 
 const strictNameWrap: React.CSSProperties = {
   ...wrapText,
+  display: 'block',
   wordBreak: 'break-all',
   lineBreak: 'anywhere',
 };
 
 const makeTextBreakable = (value?: React.ReactNode): React.ReactNode => {
-  if (typeof value === 'string') return value.replace(/(\S{16})(?=\S)/g, '$1\u200B');
+  if (typeof value === 'string') return value.replace(/(\S{6})(?=\S)/g, '$1\u200B');
   if (typeof value === 'number') return value;
   return value;
 };
@@ -63,6 +63,12 @@ const safeGrid: React.CSSProperties = {
   minWidth: 0,
   boxSizing: 'border-box',
   overflow: 'hidden',
+};
+
+const flexText: React.CSSProperties = {
+  ...strictNameWrap,
+  flex: '1 1 0%',
+  width: 'auto',
 };
 
 const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; footer?: React.ReactNode }> = ({ children, bg = '#ffffff', pad = 56, footer }) => (
@@ -87,12 +93,12 @@ const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; foo
 const PageFooter: React.FC<{ page: number; total: number; patient?: string }> = ({ page, total, patient }) => (
   <div style={{
     position: 'absolute', left: 56, right: 56, bottom: 24,
-    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-    fontSize: 9.5, color: MUTED, letterSpacing: 0.5,
-    borderTop: `1px solid ${LINE}`, paddingTop: 8,
+    display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) max-content', columnGap: 12,
+    alignItems: 'start', fontSize: 9.5, color: MUTED, letterSpacing: 0.5,
+    borderTop: `1px solid ${LINE}`, paddingTop: 8, overflow: 'hidden', boxSizing: 'border-box',
   }}>
-    <span style={{ ...strictNameWrap, flex: '1 1 auto', paddingRight: 16 }}>Plano Musicoterapêutico{makeTextBreakable(patient ? ` · ${patient}` : '')}</span>
-    <span style={{ color: GOLD_DARK, fontWeight: 600, flex: '0 0 auto' }}>Página {page} de {total}</span>
+    <span style={{ ...strictNameWrap }}>Plano Musicoterapêutico{makeTextBreakable(patient ? ` · ${patient}` : '')}</span>
+    <span style={{ color: GOLD_DARK, fontWeight: 600, whiteSpace: 'nowrap' }}>Página {page} de {total}</span>
   </div>
 );
 
@@ -109,13 +115,13 @@ const SectionHeader: React.FC<{ n: number; title: string }> = ({ n, title }) => 
     marginBottom: 16,
   }}>
     <div style={{
-      width: 36, height: 36, borderRadius: '50%',
+      width: 36, height: 36, borderRadius: '50%', flex: '0 0 auto',
       background: `linear-gradient(135deg, ${GOLD_LIGHT}, ${GOLD}, ${GOLD_DARK})`,
       color: INK, fontFamily: serifFont, fontWeight: 700, fontSize: 16,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       boxShadow: 'inset 0 -2px 4px rgba(0,0,0,0.15)',
     }}>{n}</div>
-    <div style={{ fontFamily: serifFont, fontSize: 18, fontWeight: 600, letterSpacing: 0.3 }}>{title}</div>
+    <div style={{ fontFamily: serifFont, fontSize: 18, fontWeight: 600, letterSpacing: 0.3, ...flexText }}>{makeTextBreakable(title)}</div>
   </div>
 );
 
@@ -173,7 +179,16 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
   const today = new Date().toLocaleDateString('pt-BR');
 
   return (
-    <div style={{ background: '#fff', fontFamily: baseFont, color: INK }}>
+    <div data-musetera-pdf="true" style={{ width: `${A4_WIDTH}px`, maxWidth: `${A4_WIDTH}px`, overflow: 'hidden', background: '#fff', fontFamily: baseFont, color: INK, boxSizing: 'border-box' }}>
+      <style>{`
+        [data-musetera-pdf], [data-musetera-pdf] * {
+          box-sizing: border-box !important;
+          max-width: 100% !important;
+          overflow-wrap: anywhere !important;
+          word-break: break-word !important;
+        }
+        [data-musetera-pdf] img { max-width: 100% !important; }
+      `}</style>
       {/* ============ COVER ============ */}
       <Page bg={INK} pad={0}>
         <div style={{ position: 'relative', width: '100%', maxWidth: `${A4_WIDTH}px`, height: '1123px', overflow: 'hidden', boxSizing: 'border-box' }}>
