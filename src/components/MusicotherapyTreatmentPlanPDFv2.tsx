@@ -266,7 +266,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
         <Card><BulletList items={planData.specific_objectives} empty="Nenhum objetivo específico definido" /></Card>
       </Page>
 
-      <Page>
+      <Page footer={<PageFooter page={4} total={5} patient={planData.patient_full_name} />}>
         <SectionHeader n={5} title="Recursos Musicoterapêuticos" />
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           <Card>
