@@ -46,6 +46,9 @@ import { PlanAIGeneratorDialog } from '@/components/treatment-plan/PlanAIGenerat
 import { PlanImportClinicalDialog } from '@/components/treatment-plan/PlanImportClinicalDialog';
 import { PlanVersionsDialog } from '@/components/treatment-plan/PlanVersionsDialog';
 import { Sparkles, Wand2, FileSearch, History } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { planSections, getCompletion } from './sections';
+import { PlanSectionNav, PlanSectionHeader } from '@/components/treatment-plan/PlanSectionNav';
 
 type Patient = {
   id: string;
