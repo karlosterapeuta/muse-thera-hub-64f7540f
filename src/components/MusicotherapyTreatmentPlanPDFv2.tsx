@@ -32,7 +32,6 @@ const serifFont = "'Lora', 'Georgia', serif";
 
 const wrapText: React.CSSProperties = {
   display: 'block',
-  width: '100%',
   minWidth: 0,
   maxWidth: '100%',
   boxSizing: 'border-box',
@@ -45,12 +44,13 @@ const wrapText: React.CSSProperties = {
 
 const strictNameWrap: React.CSSProperties = {
   ...wrapText,
+  display: 'block',
   wordBreak: 'break-all',
   lineBreak: 'anywhere',
 };
 
 const makeTextBreakable = (value?: React.ReactNode): React.ReactNode => {
-  if (typeof value === 'string') return value.replace(/(\S{16})(?=\S)/g, '$1\u200B');
+  if (typeof value === 'string') return value.replace(/(\S{6})(?=\S)/g, '$1\u200B');
   if (typeof value === 'number') return value;
   return value;
 };
@@ -63,6 +63,12 @@ const safeGrid: React.CSSProperties = {
   minWidth: 0,
   boxSizing: 'border-box',
   overflow: 'hidden',
+};
+
+const flexText: React.CSSProperties = {
+  ...strictNameWrap,
+  flex: '1 1 0%',
+  width: 'auto',
 };
 
 const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; footer?: React.ReactNode }> = ({ children, bg = '#ffffff', pad = 56, footer }) => (
