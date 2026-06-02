@@ -447,12 +447,6 @@ export default function MusicotherapyTreatmentPlanPage() {
             {/* 1. Patient Identification */}
             <TabsContent value="identification" className="mt-6">
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <User className="h-5 w-5" />
-                    1. Identificação do Paciente
-                  </CardTitle>
-                </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
@@ -532,12 +526,6 @@ export default function MusicotherapyTreatmentPlanPage() {
             {/* 2. Initial Assessment */}
             <TabsContent value="assessment" className="mt-6">
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <FileText className="h-5 w-5" />
-                    2. Avaliação Inicial
-                  </CardTitle>
-                </CardHeader>
                 <CardContent className="space-y-6">
                   <PromptSelector
                     label="Histórico clínico e familiar relevante"
@@ -607,12 +595,6 @@ export default function MusicotherapyTreatmentPlanPage() {
             {/* 3. General Objectives */}
             <TabsContent value="general-objectives" className="mt-6">
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Target className="h-5 w-5" />
-                    3. Objetivos Gerais
-                  </CardTitle>
-                </CardHeader>
                 <CardContent>
                   <ObjectivesSelector
                     label="Propósitos amplos da musicoterapia"
@@ -629,12 +611,6 @@ export default function MusicotherapyTreatmentPlanPage() {
             {/* 4. Specific Objectives */}
             <TabsContent value="specific-objectives" className="mt-6">
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <CheckCircle className="h-5 w-5" />
-                    4. Objetivos Específicos
-                  </CardTitle>
-                </CardHeader>
                 <CardContent>
                   <ObjectivesSelector
                     label="Objetivos mensuráveis e específicos"
@@ -651,12 +627,6 @@ export default function MusicotherapyTreatmentPlanPage() {
             {/* 5. Musicotherapy Resources */}
             <TabsContent value="resources" className="mt-6">
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Music className="h-5 w-5" />
-                    5. Recursos Musicoterapêuticos
-                  </CardTitle>
-                </CardHeader>
                 <CardContent className="space-y-6">
                   <ResourcesSelector
                     resources={[
@@ -705,12 +675,6 @@ export default function MusicotherapyTreatmentPlanPage() {
             {/* 6. Strategies and Techniques */}
             <TabsContent value="strategies" className="mt-6">
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Activity className="h-5 w-5" />
-                    6. Estratégias e Técnicas
-                  </CardTitle>
-                </CardHeader>
                 <CardContent className="space-y-6">
                   <PromptSelector
                     label="Improvisação musical"
@@ -784,12 +748,6 @@ export default function MusicotherapyTreatmentPlanPage() {
             {/* 7. Frequency and Duration */}
             <TabsContent value="frequency" className="mt-6">
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Clock className="h-5 w-5" />
-                    7. Frequência e Duração
-                  </CardTitle>
-                </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="space-y-2">
@@ -856,12 +814,6 @@ export default function MusicotherapyTreatmentPlanPage() {
             {/* 8. Evaluation Criteria */}
             <TabsContent value="evaluation" className="mt-6">
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <BarChart className="h-5 w-5" />
-                    8. Critérios de Avaliação
-                  </CardTitle>
-                </CardHeader>
                 <CardContent>
                   <EvaluationCriteriaSelector
                     criteria={planData.evaluation_criteria_list || []}
@@ -875,12 +827,6 @@ export default function MusicotherapyTreatmentPlanPage() {
             {/* 9. Therapeutic Plan in Action */}
             <TabsContent value="action-plan" className="mt-6">
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Users className="h-5 w-5" />
-                    9. Plano Terapêutico em Ação
-                  </CardTitle>
-                </CardHeader>
                 <CardContent className="space-y-6">
                   <PromptSelector
                     label="Estrutura das sessões"
@@ -930,12 +876,6 @@ export default function MusicotherapyTreatmentPlanPage() {
             {/* 10. Re-evaluation and Evolution */}
             <TabsContent value="re-evaluation" className="mt-6">
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <RefreshCw className="h-5 w-5" />
-                    10. Reavaliação e Evolução
-                  </CardTitle>
-                </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-2">
                     <Label>Frequência da reavaliação</Label>
