@@ -46,6 +46,9 @@ import { PlanAIGeneratorDialog } from '@/components/treatment-plan/PlanAIGenerat
 import { PlanImportClinicalDialog } from '@/components/treatment-plan/PlanImportClinicalDialog';
 import { PlanVersionsDialog } from '@/components/treatment-plan/PlanVersionsDialog';
 import { Sparkles, Wand2, FileSearch, History } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { planSections, getCompletion } from './sections';
+import { PlanSectionNav, PlanSectionHeader } from '@/components/treatment-plan/PlanSectionNav';
 
 type Patient = {
   id: string;
@@ -311,48 +314,19 @@ export default function MusicotherapyTreatmentPlanPage() {
     }
   };
 
-  const tabSections = [
-    { id: "identification", label: "1. Identificação", icon: User },
-    { id: "assessment", label: "2. Avaliação", icon: FileText },
-    { id: "general-objectives", label: "3. Obj. Gerais", icon: Target },
-    { id: "specific-objectives", label: "4. Obj. Específicos", icon: CheckCircle },
-    { id: "resources", label: "5. Recursos", icon: Music },
-    { id: "strategies", label: "6. Estratégias", icon: Activity },
-    { id: "frequency", label: "7. Frequência", icon: Clock },
-    { id: "evaluation", label: "8. Avaliação", icon: BarChart },
-    { id: "action-plan", label: "9. Plano Ação", icon: Users },
-    { id: "re-evaluation", label: "10. Reavaliação", icon: RefreshCw },
-  ];
+  const tabSections = planSections;
+  const activeIndex = tabSections.findIndex((s) => s.id === activeTab);
+  const activeSection = tabSections[activeIndex] ?? tabSections[0];
 
-  // Completion percentage across key fields
-  const completion = (() => {
-    const checks: boolean[] = [
-      !!planData.patient_full_name,
-      !!planData.patient_age,
-      !!planData.clinical_diagnosis,
-      !!planData.responsible_person,
-      !!planData.clinical_family_history,
-      !!planData.physical_cognitive_conditions,
-      !!planData.interaction_communication_level,
-      !!planData.musical_interests,
-      !!planData.observed_behaviors,
-      (planData.general_objectives?.length || 0) > 0,
-      (planData.specific_objectives?.length || 0) > 0,
-      (planData.musical_instruments?.length || 0) > 0,
-      (planData.technological_resources?.length || 0) > 0 ||
-        (planData.voice_body_resources?.length || 0) > 0 ||
-        (planData.complementary_materials?.length || 0) > 0,
-      !!planData.musical_improvisation || !!planData.musical_recreation || !!planData.musical_composition,
-      !!planData.receptive_listening || !!planData.rhythmic_dynamics,
-      !!planData.weekly_sessions && !!planData.session_duration_minutes,
-      (planData.evaluation_criteria_list?.length || 0) > 0,
-      !!planData.session_structure,
-      !!planData.activity_sequence || !!planData.flexibility_adjustments,
-      !!planData.reevaluation_frequency || !!planData.evolution_recording,
-    ];
-    const filled = checks.filter(Boolean).length;
-    return Math.round((filled / checks.length) * 100);
-  })();
+  const goToSection = (id: string) => {
+    setActiveTab(id);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Completion percentage based on per-section rules
+  const completion = getCompletion(planData);
+
+
 
 
   if (isLoading && id) {
@@ -453,36 +427,35 @@ export default function MusicotherapyTreatmentPlanPage() {
           className="mb-6"
         />
 
-        {/* Tabs Navigation */}
-        <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="w-full">
-          <TabsList className="grid grid-cols-5 lg:grid-cols-10 gap-1 h-auto p-1 bg-muted/50">
-            {tabSections.map((section) => {
-              const IconComponent = section.icon;
-              return (
-                <TabsTrigger
-                  key={section.id}
-                  value={section.id}
+        {/* Two-column layout: section nav + content */}
+        <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
+          <aside className="lg:pt-2">
+            <PlanSectionNav
+              sections={tabSections}
+              activeId={activeTab}
+              planData={planData}
+              onSelect={goToSection}
+            />
+          </aside>
 
-                  className="flex flex-col items-center gap-1 p-3 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                >
-                  <IconComponent className="h-4 w-4" />
-                  <span className="hidden sm:block">{section.label}</span>
-                </TabsTrigger>
-              );
-            })}
-          </TabsList>
+          <Tabs value={activeTab} onValueChange={goToSection} className="w-full min-w-0">
+            <PlanSectionHeader section={activeSection} index={activeIndex} total={tabSections.length} />
 
           {/* Tab Contents */}
-          <div className="mt-6">
+          <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="mt-6"
+          >
+
+
             {/* 1. Patient Identification */}
             <TabsContent value="identification" className="mt-6">
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <User className="h-5 w-5" />
-                    1. Identificação do Paciente
-                  </CardTitle>
-                </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
@@ -562,12 +535,6 @@ export default function MusicotherapyTreatmentPlanPage() {
             {/* 2. Initial Assessment */}
             <TabsContent value="assessment" className="mt-6">
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <FileText className="h-5 w-5" />
-                    2. Avaliação Inicial
-                  </CardTitle>
-                </CardHeader>
                 <CardContent className="space-y-6">
                   <PromptSelector
                     label="Histórico clínico e familiar relevante"
@@ -637,12 +604,6 @@ export default function MusicotherapyTreatmentPlanPage() {
             {/* 3. General Objectives */}
             <TabsContent value="general-objectives" className="mt-6">
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Target className="h-5 w-5" />
-                    3. Objetivos Gerais
-                  </CardTitle>
-                </CardHeader>
                 <CardContent>
                   <ObjectivesSelector
                     label="Propósitos amplos da musicoterapia"
@@ -659,12 +620,6 @@ export default function MusicotherapyTreatmentPlanPage() {
             {/* 4. Specific Objectives */}
             <TabsContent value="specific-objectives" className="mt-6">
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <CheckCircle className="h-5 w-5" />
-                    4. Objetivos Específicos
-                  </CardTitle>
-                </CardHeader>
                 <CardContent>
                   <ObjectivesSelector
                     label="Objetivos mensuráveis e específicos"
@@ -681,66 +636,32 @@ export default function MusicotherapyTreatmentPlanPage() {
             {/* 5. Musicotherapy Resources */}
             <TabsContent value="resources" className="mt-6">
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Music className="h-5 w-5" />
-                    5. Recursos Musicoterapêuticos
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <ResourcesSelector
-                    resources={[
-                      ...(planData.musical_instruments || []),
-                      ...(planData.technological_resources || []),
-                      ...(planData.voice_body_resources || []),
-                      ...(planData.complementary_materials || [])
-                    ]}
-                    onAdd={(resource) => {
-                      // Add to the first empty array or musical_instruments by default
-                      if (!planData.musical_instruments?.length) {
-                        addArrayItem('musical_instruments', resource);
-                      } else {
-                        addArrayItem('complementary_materials', resource);
-                      }
-                    }}
-                    onRemove={(index) => {
-                      // Find which array the item belongs to and remove it
-                      const allResources = [
-                        ...(planData.musical_instruments || []),
-                        ...(planData.technological_resources || []),
-                        ...(planData.voice_body_resources || []),
-                        ...(planData.complementary_materials || [])
-                      ];
-                      
-                      let currentIndex = 0;
-                      const fields: (keyof MusicotherapyTreatmentPlan)[] = [
-                        'musical_instruments', 'technological_resources', 
-                        'voice_body_resources', 'complementary_materials'
-                      ];
-                      
-                      for (const field of fields) {
-                        const fieldArray = planData[field] as string[] || [];
-                        if (index < currentIndex + fieldArray.length) {
-                          removeArrayItem(field, index - currentIndex);
-                          break;
-                        }
-                        currentIndex += fieldArray.length;
-                      }
-                    }}
-                  />
+                <CardContent className="space-y-5 pt-6">
+                  <p className="text-sm text-muted-foreground">
+                    Organize os recursos por categoria. Cada grupo é registrado separadamente no plano e no documento final.
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="rounded-xl border border-border/60 bg-muted/20 p-4">
+                      <ArrayInput label="Instrumentos musicais" field="musical_instruments" placeholder="Ex: Violão, teclado, pandeiro..." />
+                    </div>
+                    <div className="rounded-xl border border-border/60 bg-muted/20 p-4">
+                      <ArrayInput label="Recursos tecnológicos" field="technological_resources" placeholder="Ex: Aplicativos, sistema de som..." />
+                    </div>
+                    <div className="rounded-xl border border-border/60 bg-muted/20 p-4">
+                      <ArrayInput label="Voz e corpo" field="voice_body_resources" placeholder="Ex: Canto, percussão corporal..." />
+                    </div>
+                    <div className="rounded-xl border border-border/60 bg-muted/20 p-4">
+                      <ArrayInput label="Materiais complementares" field="complementary_materials" placeholder="Ex: Lenços, cartões, objetos sonoros..." />
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
+
             </TabsContent>
 
             {/* 6. Strategies and Techniques */}
             <TabsContent value="strategies" className="mt-6">
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Activity className="h-5 w-5" />
-                    6. Estratégias e Técnicas
-                  </CardTitle>
-                </CardHeader>
                 <CardContent className="space-y-6">
                   <PromptSelector
                     label="Improvisação musical"
@@ -814,12 +735,6 @@ export default function MusicotherapyTreatmentPlanPage() {
             {/* 7. Frequency and Duration */}
             <TabsContent value="frequency" className="mt-6">
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Clock className="h-5 w-5" />
-                    7. Frequência e Duração
-                  </CardTitle>
-                </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="space-y-2">
@@ -886,12 +801,6 @@ export default function MusicotherapyTreatmentPlanPage() {
             {/* 8. Evaluation Criteria */}
             <TabsContent value="evaluation" className="mt-6">
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <BarChart className="h-5 w-5" />
-                    8. Critérios de Avaliação
-                  </CardTitle>
-                </CardHeader>
                 <CardContent>
                   <EvaluationCriteriaSelector
                     criteria={planData.evaluation_criteria_list || []}
@@ -905,12 +814,6 @@ export default function MusicotherapyTreatmentPlanPage() {
             {/* 9. Therapeutic Plan in Action */}
             <TabsContent value="action-plan" className="mt-6">
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Users className="h-5 w-5" />
-                    9. Plano Terapêutico em Ação
-                  </CardTitle>
-                </CardHeader>
                 <CardContent className="space-y-6">
                   <PromptSelector
                     label="Estrutura das sessões"
@@ -960,12 +863,6 @@ export default function MusicotherapyTreatmentPlanPage() {
             {/* 10. Re-evaluation and Evolution */}
             <TabsContent value="re-evaluation" className="mt-6">
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <RefreshCw className="h-5 w-5" />
-                    10. Reavaliação e Evolução
-                  </CardTitle>
-                </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-2">
                     <Label>Frequência da reavaliação</Label>
@@ -1008,40 +905,40 @@ export default function MusicotherapyTreatmentPlanPage() {
                 </CardContent>
               </Card>
             </TabsContent>
-          </div>
+          </motion.div>
+          </AnimatePresence>
+
         </Tabs>
 
         {/* Navigation Footer */}
-        <div className="flex justify-between items-center mt-8 p-4 bg-muted/50 rounded-lg">
+        <div className="flex items-center justify-between gap-3 mt-8 p-4 bg-muted/40 border border-border/60 rounded-xl">
           <Button
             variant="outline"
-            onClick={() => {
-              const currentIndex = tabSections.findIndex(section => section.id === activeTab);
-              if (currentIndex > 0) {
-                setActiveTab(tabSections[currentIndex - 1].id);
-              }
-            }}
-            disabled={tabSections.findIndex(section => section.id === activeTab) === 0}
+            className="gap-2"
+            onClick={() => { if (activeIndex > 0) goToSection(tabSections[activeIndex - 1].id); }}
+            disabled={activeIndex === 0}
           >
-            Anterior
+            <ArrowLeft className="h-4 w-4" />
+            <span className="hidden sm:inline">{activeIndex > 0 ? tabSections[activeIndex - 1].navLabel : 'Anterior'}</span>
+            <span className="sm:hidden">Anterior</span>
           </Button>
-          
-          <div className="text-sm text-muted-foreground">
-            Seção {tabSections.findIndex(section => section.id === activeTab) + 1} de {tabSections.length}
+
+          <div className="text-xs sm:text-sm text-muted-foreground text-center">
+            Seção {activeIndex + 1} de {tabSections.length}
           </div>
-          
+
           <Button
-            onClick={() => {
-              const currentIndex = tabSections.findIndex(section => section.id === activeTab);
-              if (currentIndex < tabSections.length - 1) {
-                setActiveTab(tabSections[currentIndex + 1].id);
-              }
-            }}
-            disabled={tabSections.findIndex(section => section.id === activeTab) === tabSections.length - 1}
+            className="gap-2 bg-gradient-to-r from-primary to-purple-600 hover:opacity-90"
+            onClick={() => { if (activeIndex < tabSections.length - 1) goToSection(tabSections[activeIndex + 1].id); }}
+            disabled={activeIndex === tabSections.length - 1}
           >
-            Próxima
+            <span className="hidden sm:inline">{activeIndex < tabSections.length - 1 ? tabSections[activeIndex + 1].navLabel : 'Próxima'}</span>
+            <span className="sm:hidden">Próxima</span>
+            <ArrowLeft className="h-4 w-4 rotate-180" />
           </Button>
         </div>
+        </div>
+
       </div>
     </div>
   );

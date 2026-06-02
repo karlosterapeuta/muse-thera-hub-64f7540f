@@ -30,7 +30,7 @@ const A4_WIDTH = 794; // ~210mm at 96dpi
 const baseFont = "'Inter', 'Helvetica Neue', Arial, sans-serif";
 const serifFont = "'Lora', 'Georgia', serif";
 
-const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number }> = ({ children, bg = '#ffffff', pad = 56 }) => (
+const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; footer?: React.ReactNode }> = ({ children, bg = '#ffffff', pad = 56, footer }) => (
   <div style={{
     width: `${A4_WIDTH}px`,
     minHeight: '1123px',
@@ -41,7 +41,22 @@ const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number }> =
     color: INK,
     pageBreakAfter: 'always',
     position: 'relative',
-  }}>{children}</div>
+  }}>
+    {children}
+    {footer}
+  </div>
+);
+
+const PageFooter: React.FC<{ page: number; total: number; patient?: string }> = ({ page, total, patient }) => (
+  <div style={{
+    position: 'absolute', left: 56, right: 56, bottom: 24,
+    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+    fontSize: 9.5, color: MUTED, letterSpacing: 0.5,
+    borderTop: `1px solid ${LINE}`, paddingTop: 8,
+  }}>
+    <span>Plano Musicoterapêutico{patient ? ` · ${patient}` : ''}</span>
+    <span style={{ color: GOLD_DARK, fontWeight: 600 }}>Página {page} de {total}</span>
+  </div>
 );
 
 const SectionHeader: React.FC<{ n: number; title: string }> = ({ n, title }) => (
@@ -185,7 +200,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
       </Page>
 
       {/* ============ SUMMARY / INDEX ============ */}
-      <Page bg={PAPER}>
+      <Page bg={PAPER} footer={<PageFooter page={2} total={5} patient={planData.patient_full_name} />}>
         <div style={{ marginBottom: 30 }}>
           <div style={{ fontSize: 11, color: GOLD_DARK, letterSpacing: 4, textTransform: 'uppercase', marginBottom: 8 }}>Sumário</div>
           <div style={{ fontFamily: serifFont, fontSize: 32, fontWeight: 600, color: INK }}>Conteúdo do Documento</div>
@@ -222,7 +237,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
       </Page>
 
       {/* ============ CONTENT ============ */}
-      <Page>
+      <Page footer={<PageFooter page={3} total={5} patient={planData.patient_full_name} />}>
         <SectionHeader n={1} title="Identificação do Paciente" />
         <Card>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px' }}>
@@ -251,7 +266,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
         <Card><BulletList items={planData.specific_objectives} empty="Nenhum objetivo específico definido" /></Card>
       </Page>
 
-      <Page>
+      <Page footer={<PageFooter page={4} total={5} patient={planData.patient_full_name} />}>
         <SectionHeader n={5} title="Recursos Musicoterapêuticos" />
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           <Card>
@@ -301,7 +316,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
         </Card>
       </Page>
 
-      <Page>
+      <Page footer={<PageFooter page={5} total={5} patient={planData.patient_full_name} />}>
         <SectionHeader n={8} title="Critérios de Avaliação" />
         <Card><BulletList items={planData.evaluation_criteria_list} empty="Nenhum critério definido" /></Card>
 
@@ -347,9 +362,11 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
                 {professionalEmail && <div><strong style={{ color: GOLD_DARK }}>E-mail:</strong> {professionalEmail}</div>}
                 {professionalPhone && <div><strong style={{ color: GOLD_DARK }}>Telefone:</strong> {professionalPhone}</div>}
               </div>
-              <div style={{ marginTop: 16, paddingTop: 12, borderTop: `1px dashed ${LINE}`, fontSize: 10.5, color: MUTED, letterSpacing: 1 }}>
-                ✓ ASSINATURA DIGITAL VERIFICADA · MUSETERA
+              <div style={{ marginTop: 16, paddingTop: 12, borderTop: `1px dashed ${LINE}`, fontSize: 10.5, color: MUTED, letterSpacing: 1, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ width: 7, height: 7, borderRadius: '50%', background: GOLD, display: 'inline-block' }} />
+                ASSINATURA DIGITAL VERIFICADA · MUSETERA
               </div>
+
             </div>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               {digitalStampUrl ? (
