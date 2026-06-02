@@ -31,21 +31,44 @@ const baseFont = "'Inter', 'Helvetica Neue', Arial, sans-serif";
 const serifFont = "'Lora', 'Georgia', serif";
 
 const wrapText: React.CSSProperties = {
+  display: 'block',
+  width: '100%',
   minWidth: 0,
   maxWidth: '100%',
+  boxSizing: 'border-box',
   whiteSpace: 'normal',
   overflowWrap: 'anywhere',
   wordBreak: 'break-word',
+  hyphens: 'auto',
+  overflow: 'hidden',
 };
 
 const strictNameWrap: React.CSSProperties = {
   ...wrapText,
   wordBreak: 'break-all',
+  lineBreak: 'anywhere',
+};
+
+const makeTextBreakable = (value?: React.ReactNode): React.ReactNode => {
+  if (typeof value === 'string') return value.replace(/(\S{16})(?=\S)/g, '$1\u200B');
+  if (typeof value === 'number') return value;
+  return value;
+};
+
+const safeGrid: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
+  width: '100%',
+  maxWidth: '100%',
+  minWidth: 0,
+  boxSizing: 'border-box',
+  overflow: 'hidden',
 };
 
 const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; footer?: React.ReactNode }> = ({ children, bg = '#ffffff', pad = 56, footer }) => (
   <div style={{
     width: `${A4_WIDTH}px`,
+    maxWidth: `${A4_WIDTH}px`,
     minHeight: '1123px',
     background: bg,
     padding: `${pad}px`,
@@ -54,6 +77,7 @@ const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; foo
     color: INK,
     pageBreakAfter: 'always',
     position: 'relative',
+    overflow: 'hidden',
   }}>
     {children}
     {footer}
@@ -67,7 +91,7 @@ const PageFooter: React.FC<{ page: number; total: number; patient?: string }> = 
     fontSize: 9.5, color: MUTED, letterSpacing: 0.5,
     borderTop: `1px solid ${LINE}`, paddingTop: 8,
   }}>
-    <span style={{ ...strictNameWrap, flex: '1 1 auto', paddingRight: 16 }}>Plano Musicoterapêutico{patient ? ` · ${patient}` : ''}</span>
+    <span style={{ ...strictNameWrap, flex: '1 1 auto', paddingRight: 16 }}>Plano Musicoterapêutico{makeTextBreakable(patient ? ` · ${patient}` : '')}</span>
     <span style={{ color: GOLD_DARK, fontWeight: 600, flex: '0 0 auto' }}>Página {page} de {total}</span>
   </div>
 );
@@ -97,8 +121,8 @@ const SectionHeader: React.FC<{ n: number; title: string }> = ({ n, title }) => 
 
 const Field: React.FC<{ label: string; value?: React.ReactNode }> = ({ label, value }) => (
   <div style={{ marginBottom: 10, ...wrapText }}>
-    <div style={{ fontSize: 10.5, fontWeight: 600, color: GOLD_DARK, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 3 }}>{label}</div>
-    <div style={{ fontSize: 13, color: INK, lineHeight: 1.55, ...strictNameWrap }}>{value || <span style={{ color: MUTED, fontStyle: 'italic' }}>Não informado</span>}</div>
+    <div style={{ fontSize: 10.5, fontWeight: 600, color: GOLD_DARK, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 3, ...wrapText }}>{label}</div>
+    <div style={{ fontSize: 13, color: INK, lineHeight: 1.55, ...strictNameWrap }}>{makeTextBreakable(value) || <span style={{ color: MUTED, fontStyle: 'italic' }}>Não informado</span>}</div>
   </div>
 );
 
@@ -109,7 +133,7 @@ const BulletList: React.FC<{ items?: string[]; empty?: string }> = ({ items, emp
       {items.map((item, i) => (
         <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', fontSize: 13, lineHeight: 1.5 }}>
           <span style={{ color: GOLD, fontWeight: 700, marginTop: 1 }}>◆</span>
-              <span style={{ color: INK, ...wrapText }}>{item}</span>
+              <span style={{ color: INK, ...wrapText }}>{makeTextBreakable(item)}</span>
         </div>
       ))}
     </div>
@@ -118,6 +142,7 @@ const BulletList: React.FC<{ items?: string[]; empty?: string }> = ({ items, emp
 
 const Card: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div style={{
+    ...wrapText,
     background: '#fff',
     border: `1px solid ${LINE}`,
     borderRadius: 10,
@@ -151,7 +176,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
     <div style={{ background: '#fff', fontFamily: baseFont, color: INK }}>
       {/* ============ COVER ============ */}
       <Page bg={INK} pad={0}>
-        <div style={{ position: 'relative', width: '100%', height: '1123px', overflow: 'hidden' }}>
+        <div style={{ position: 'relative', width: '100%', maxWidth: `${A4_WIDTH}px`, height: '1123px', overflow: 'hidden', boxSizing: 'border-box' }}>
           {/* Gold corner accents */}
           <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: 8, background: `linear-gradient(90deg, ${GOLD_DARK}, ${GOLD}, ${GOLD_LIGHT}, ${GOLD}, ${GOLD_DARK})` }} />
           <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: 8, background: `linear-gradient(90deg, ${GOLD_DARK}, ${GOLD}, ${GOLD_LIGHT}, ${GOLD}, ${GOLD_DARK})` }} />
@@ -161,7 +186,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
           <div style={{ position: 'absolute', top: -150, right: -150, width: 500, height: 500, borderRadius: '50%', border: `1px solid ${GOLD}`, opacity: 0.1 }} />
           <div style={{ position: 'absolute', bottom: -180, left: -180, width: 500, height: 500, borderRadius: '50%', border: `1px solid ${GOLD}`, opacity: 0.12 }} />
 
-          <div style={{ position: 'absolute', inset: 0, padding: 70, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', color: '#fff' }}>
+          <div style={{ position: 'absolute', inset: 0, padding: 70, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', color: '#fff', boxSizing: 'border-box', overflow: 'hidden' }}>
             {/* Top brand */}
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -192,20 +217,20 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
             </div>
 
             {/* Bottom info */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 24, paddingTop: 24, borderTop: `1px solid ${GOLD}`, ...wrapText }}>
+            <div style={{ ...safeGrid, gap: 24, paddingTop: 24, borderTop: `1px solid ${GOLD}` }}>
               <div style={wrapText}>
                 <div style={{ fontSize: 10, color: GOLD, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 }}>Paciente</div>
-                <div style={{ fontFamily: serifFont, fontSize: 19, fontWeight: 500, lineHeight: 1.2, ...strictNameWrap }}>{planData.patient_full_name || '—'}</div>
+                <div style={{ fontFamily: serifFont, fontSize: 19, fontWeight: 500, lineHeight: 1.2, ...strictNameWrap }}>{makeTextBreakable(planData.patient_full_name) || '—'}</div>
                 <div style={{ fontSize: 12, color: '#B0B0BE', marginTop: 4, ...strictNameWrap }}>
-                  {planData.clinical_diagnosis ? `Diagnóstico: ${planData.clinical_diagnosis}` : ''}
+                  {makeTextBreakable(planData.clinical_diagnosis ? `Diagnóstico: ${planData.clinical_diagnosis}` : '')}
                 </div>
               </div>
               <div style={{ textAlign: 'right', ...wrapText }}>
                 <div style={{ fontSize: 10, color: GOLD, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 }}>Profissional</div>
-                <div style={{ fontFamily: serifFont, fontSize: 15, fontWeight: 500, lineHeight: 1.25, ...strictNameWrap }}>{therapistName || 'Musicoterapeuta'}</div>
-                <div style={{ fontSize: 11, color: '#B0B0BE', marginTop: 4, ...strictNameWrap }}>{professionalRegistry || ''}</div>
+                <div style={{ fontFamily: serifFont, fontSize: 15, fontWeight: 500, lineHeight: 1.25, ...strictNameWrap }}>{makeTextBreakable(therapistName) || 'Musicoterapeuta'}</div>
+                <div style={{ fontSize: 11, color: '#B0B0BE', marginTop: 4, ...strictNameWrap }}>{makeTextBreakable(professionalRegistry) || ''}</div>
                 <div style={{ fontSize: 11, color: '#B0B0BE', marginTop: 12 }}>Emitido em {today}</div>
-                {planNumber && <div style={{ fontSize: 11, color: GOLD_LIGHT, marginTop: 2, ...strictNameWrap }}>Plano nº {planNumber}</div>}
+                {planNumber && <div style={{ fontSize: 11, color: GOLD_LIGHT, marginTop: 2, ...strictNameWrap }}>Plano nº {makeTextBreakable(planNumber)}</div>}
               </div>
             </div>
           </div>
@@ -253,7 +278,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
       <Page footer={<PageFooter page={3} total={5} patient={planData.patient_full_name} />}>
         <SectionHeader n={1} title="Identificação do Paciente" />
         <Card>
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '0 24px' }}>
+          <div style={{ ...safeGrid, gap: '0 24px' }}>
             <Field label="Nome completo" value={planData.patient_full_name} />
             <Field label="Data de nascimento" value={formatBirthDateForDisplay(planData.patient_birth_date)} />
             <Field label="Idade" value={planData.patient_age} />
@@ -281,7 +306,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
 
       <Page footer={<PageFooter page={4} total={5} patient={planData.patient_full_name} />}>
         <SectionHeader n={5} title="Recursos Musicoterapêuticos" />
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 16 }}>
+        <div style={{ ...safeGrid, gap: 16 }}>
           <Card>
             <div style={{ fontFamily: serifFont, fontSize: 14, fontWeight: 600, color: GOLD_DARK, marginBottom: 10 }}>Instrumentos musicais</div>
             <BulletList items={planData.musical_instruments} />
@@ -356,7 +381,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
           overflow: 'hidden',
         }}>
           <div style={{ height: 6, background: `linear-gradient(90deg, ${GOLD_DARK}, ${GOLD}, ${GOLD_LIGHT}, ${GOLD}, ${GOLD_DARK})` }} />
-          <div style={{ padding: 24, display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 24, alignItems: 'center' }}>
+          <div style={{ padding: 24, ...safeGrid, gap: 24, alignItems: 'center' }}>
             <div style={wrapText}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 14 }}>
                 {professionalPhotoUrl && (
@@ -366,14 +391,14 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
                   }} />
                 )}
                 <div style={wrapText}>
-                  <div style={{ fontFamily: serifFont, fontSize: 15, fontWeight: 600, color: INK, lineHeight: 1.25, ...strictNameWrap }}>{therapistName || 'Musicoterapeuta'}</div>
-                  <div style={{ fontSize: 11, color: GOLD_DARK, marginTop: 2, ...strictNameWrap }}>{professionalSpecialty || 'Musicoterapeuta'}</div>
+                  <div style={{ fontFamily: serifFont, fontSize: 15, fontWeight: 600, color: INK, lineHeight: 1.25, ...strictNameWrap }}>{makeTextBreakable(therapistName) || 'Musicoterapeuta'}</div>
+                  <div style={{ fontSize: 11, color: GOLD_DARK, marginTop: 2, ...strictNameWrap }}>{makeTextBreakable(professionalSpecialty) || 'Musicoterapeuta'}</div>
                 </div>
               </div>
               <div style={{ fontSize: 11.5, color: INK_SOFT, lineHeight: 1.7, ...strictNameWrap }}>
-                {professionalRegistry && <div style={strictNameWrap}><strong style={{ color: GOLD_DARK }}>Registro:</strong> {professionalRegistry}</div>}
-                {professionalEmail && <div style={strictNameWrap}><strong style={{ color: GOLD_DARK }}>E-mail:</strong> {professionalEmail}</div>}
-                {professionalPhone && <div style={strictNameWrap}><strong style={{ color: GOLD_DARK }}>Telefone:</strong> {professionalPhone}</div>}
+                {professionalRegistry && <div style={strictNameWrap}><strong style={{ color: GOLD_DARK }}>Registro:</strong> {makeTextBreakable(professionalRegistry)}</div>}
+                {professionalEmail && <div style={strictNameWrap}><strong style={{ color: GOLD_DARK }}>E-mail:</strong> {makeTextBreakable(professionalEmail)}</div>}
+                {professionalPhone && <div style={strictNameWrap}><strong style={{ color: GOLD_DARK }}>Telefone:</strong> {makeTextBreakable(professionalPhone)}</div>}
               </div>
               <div style={{ marginTop: 16, paddingTop: 12, borderTop: `1px dashed ${LINE}`, fontSize: 10.5, color: MUTED, letterSpacing: 1, display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span style={{ width: 7, height: 7, borderRadius: '50%', background: GOLD, display: 'inline-block' }} />
