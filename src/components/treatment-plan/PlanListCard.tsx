@@ -51,6 +51,7 @@ const formatDate = (s: string) => {
 
 export function PlanListCard({ plan, index, isDownloading, isDuplicating, onView, onEdit, onDownload, onDuplicate, onDelete }: PlanListCardProps) {
   const st = statusStyle(plan.status || "draft");
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   return (
     <motion.div
