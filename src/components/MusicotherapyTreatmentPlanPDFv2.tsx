@@ -362,9 +362,11 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
                 {professionalEmail && <div><strong style={{ color: GOLD_DARK }}>E-mail:</strong> {professionalEmail}</div>}
                 {professionalPhone && <div><strong style={{ color: GOLD_DARK }}>Telefone:</strong> {professionalPhone}</div>}
               </div>
-              <div style={{ marginTop: 16, paddingTop: 12, borderTop: `1px dashed ${LINE}`, fontSize: 10.5, color: MUTED, letterSpacing: 1 }}>
-                ✓ ASSINATURA DIGITAL VERIFICADA · MUSETERA
+              <div style={{ marginTop: 16, paddingTop: 12, borderTop: `1px dashed ${LINE}`, fontSize: 10.5, color: MUTED, letterSpacing: 1, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ width: 7, height: 7, borderRadius: '50%', background: GOLD, display: 'inline-block' }} />
+                ASSINATURA DIGITAL VERIFICADA · MUSETERA
               </div>
+
             </div>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               {digitalStampUrl ? (
