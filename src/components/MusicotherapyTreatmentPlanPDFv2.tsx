@@ -31,16 +31,32 @@ const baseFont = "'Inter', 'Helvetica Neue', Arial, sans-serif";
 const serifFont = "'Lora', 'Georgia', serif";
 
 const wrapText: React.CSSProperties = {
+  display: 'block',
+  width: '100%',
   minWidth: 0,
   maxWidth: '100%',
+  boxSizing: 'border-box',
   whiteSpace: 'normal',
   overflowWrap: 'anywhere',
   wordBreak: 'break-word',
+  hyphens: 'auto',
+  overflow: 'hidden',
 };
 
 const strictNameWrap: React.CSSProperties = {
   ...wrapText,
   wordBreak: 'break-all',
+  lineBreak: 'anywhere',
+};
+
+const safeGrid: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
+  width: '100%',
+  maxWidth: '100%',
+  minWidth: 0,
+  boxSizing: 'border-box',
+  overflow: 'hidden',
 };
 
 const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; footer?: React.ReactNode }> = ({ children, bg = '#ffffff', pad = 56, footer }) => (
