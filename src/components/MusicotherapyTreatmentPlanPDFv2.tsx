@@ -170,7 +170,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
     <div style={{ background: '#fff', fontFamily: baseFont, color: INK }}>
       {/* ============ COVER ============ */}
       <Page bg={INK} pad={0}>
-        <div style={{ position: 'relative', width: '100%', height: '1123px', overflow: 'hidden' }}>
+        <div style={{ position: 'relative', width: '100%', maxWidth: `${A4_WIDTH}px`, height: '1123px', overflow: 'hidden', boxSizing: 'border-box' }}>
           {/* Gold corner accents */}
           <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: 8, background: `linear-gradient(90deg, ${GOLD_DARK}, ${GOLD}, ${GOLD_LIGHT}, ${GOLD}, ${GOLD_DARK})` }} />
           <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: 8, background: `linear-gradient(90deg, ${GOLD_DARK}, ${GOLD}, ${GOLD_LIGHT}, ${GOLD}, ${GOLD_DARK})` }} />
@@ -180,7 +180,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
           <div style={{ position: 'absolute', top: -150, right: -150, width: 500, height: 500, borderRadius: '50%', border: `1px solid ${GOLD}`, opacity: 0.1 }} />
           <div style={{ position: 'absolute', bottom: -180, left: -180, width: 500, height: 500, borderRadius: '50%', border: `1px solid ${GOLD}`, opacity: 0.12 }} />
 
-          <div style={{ position: 'absolute', inset: 0, padding: 70, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', color: '#fff' }}>
+          <div style={{ position: 'absolute', inset: 0, padding: 70, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', color: '#fff', boxSizing: 'border-box', overflow: 'hidden' }}>
             {/* Top brand */}
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -211,7 +211,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
             </div>
 
             {/* Bottom info */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 24, paddingTop: 24, borderTop: `1px solid ${GOLD}`, ...wrapText }}>
+            <div style={{ ...safeGrid, gap: 24, paddingTop: 24, borderTop: `1px solid ${GOLD}`, ...wrapText }}>
               <div style={wrapText}>
                 <div style={{ fontSize: 10, color: GOLD, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 }}>Paciente</div>
                 <div style={{ fontFamily: serifFont, fontSize: 19, fontWeight: 500, lineHeight: 1.2, ...strictNameWrap }}>{planData.patient_full_name || '—'}</div>
