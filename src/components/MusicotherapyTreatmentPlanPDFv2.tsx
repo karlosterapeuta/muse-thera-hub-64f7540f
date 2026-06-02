@@ -237,7 +237,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
       </Page>
 
       {/* ============ CONTENT ============ */}
-      <Page>
+      <Page footer={<PageFooter page={3} total={5} patient={planData.patient_full_name} />}>
         <SectionHeader n={1} title="Identificação do Paciente" />
         <Card>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px' }}>
