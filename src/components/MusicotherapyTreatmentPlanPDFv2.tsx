@@ -49,6 +49,12 @@ const strictNameWrap: React.CSSProperties = {
   lineBreak: 'anywhere',
 };
 
+const makeTextBreakable = (value?: React.ReactNode): React.ReactNode => {
+  if (typeof value === 'string') return value.replace(/(\S{16})(?=\S)/g, '$1\u200B');
+  if (typeof value === 'number') return value;
+  return value;
+};
+
 const safeGrid: React.CSSProperties = {
   display: 'grid',
   gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
@@ -85,7 +91,7 @@ const PageFooter: React.FC<{ page: number; total: number; patient?: string }> = 
     fontSize: 9.5, color: MUTED, letterSpacing: 0.5,
     borderTop: `1px solid ${LINE}`, paddingTop: 8,
   }}>
-    <span style={{ ...strictNameWrap, flex: '1 1 auto', paddingRight: 16 }}>Plano Musicoterapêutico{patient ? ` · ${patient}` : ''}</span>
+    <span style={{ ...strictNameWrap, flex: '1 1 auto', paddingRight: 16 }}>Plano Musicoterapêutico{makeTextBreakable(patient ? ` · ${patient}` : '')}</span>
     <span style={{ color: GOLD_DARK, fontWeight: 600, flex: '0 0 auto' }}>Página {page} de {total}</span>
   </div>
 );
@@ -116,7 +122,7 @@ const SectionHeader: React.FC<{ n: number; title: string }> = ({ n, title }) => 
 const Field: React.FC<{ label: string; value?: React.ReactNode }> = ({ label, value }) => (
   <div style={{ marginBottom: 10, ...wrapText }}>
     <div style={{ fontSize: 10.5, fontWeight: 600, color: GOLD_DARK, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 3, ...wrapText }}>{label}</div>
-    <div style={{ fontSize: 13, color: INK, lineHeight: 1.55, ...strictNameWrap }}>{value || <span style={{ color: MUTED, fontStyle: 'italic' }}>Não informado</span>}</div>
+    <div style={{ fontSize: 13, color: INK, lineHeight: 1.55, ...strictNameWrap }}>{makeTextBreakable(value) || <span style={{ color: MUTED, fontStyle: 'italic' }}>Não informado</span>}</div>
   </div>
 );
 
@@ -127,7 +133,7 @@ const BulletList: React.FC<{ items?: string[]; empty?: string }> = ({ items, emp
       {items.map((item, i) => (
         <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', fontSize: 13, lineHeight: 1.5 }}>
           <span style={{ color: GOLD, fontWeight: 700, marginTop: 1 }}>◆</span>
-              <span style={{ color: INK, ...wrapText }}>{item}</span>
+              <span style={{ color: INK, ...wrapText }}>{makeTextBreakable(item)}</span>
         </div>
       ))}
     </div>
