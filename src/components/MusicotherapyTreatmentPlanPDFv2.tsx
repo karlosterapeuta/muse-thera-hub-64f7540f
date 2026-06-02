@@ -200,7 +200,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
       </Page>
 
       {/* ============ SUMMARY / INDEX ============ */}
-      <Page bg={PAPER}>
+      <Page bg={PAPER} footer={<PageFooter page={2} total={5} patient={planData.patient_full_name} />}>
         <div style={{ marginBottom: 30 }}>
           <div style={{ fontSize: 11, color: GOLD_DARK, letterSpacing: 4, textTransform: 'uppercase', marginBottom: 8 }}>Sumário</div>
           <div style={{ fontFamily: serifFont, fontSize: 32, fontWeight: 600, color: INK }}>Conteúdo do Documento</div>
