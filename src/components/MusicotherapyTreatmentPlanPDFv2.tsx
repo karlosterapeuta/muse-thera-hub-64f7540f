@@ -62,6 +62,7 @@ const safeGrid: React.CSSProperties = {
 const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; footer?: React.ReactNode }> = ({ children, bg = '#ffffff', pad = 56, footer }) => (
   <div style={{
     width: `${A4_WIDTH}px`,
+    maxWidth: `${A4_WIDTH}px`,
     minHeight: '1123px',
     background: bg,
     padding: `${pad}px`,
@@ -70,6 +71,7 @@ const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; foo
     color: INK,
     pageBreakAfter: 'always',
     position: 'relative',
+    overflow: 'hidden',
   }}>
     {children}
     {footer}
@@ -113,7 +115,7 @@ const SectionHeader: React.FC<{ n: number; title: string }> = ({ n, title }) => 
 
 const Field: React.FC<{ label: string; value?: React.ReactNode }> = ({ label, value }) => (
   <div style={{ marginBottom: 10, ...wrapText }}>
-    <div style={{ fontSize: 10.5, fontWeight: 600, color: GOLD_DARK, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 3 }}>{label}</div>
+    <div style={{ fontSize: 10.5, fontWeight: 600, color: GOLD_DARK, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 3, ...wrapText }}>{label}</div>
     <div style={{ fontSize: 13, color: INK, lineHeight: 1.55, ...strictNameWrap }}>{value || <span style={{ color: MUTED, fontStyle: 'italic' }}>Não informado</span>}</div>
   </div>
 );
@@ -134,6 +136,7 @@ const BulletList: React.FC<{ items?: string[]; empty?: string }> = ({ items, emp
 
 const Card: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div style={{
+    ...wrapText,
     background: '#fff',
     border: `1px solid ${LINE}`,
     borderRadius: 10,
