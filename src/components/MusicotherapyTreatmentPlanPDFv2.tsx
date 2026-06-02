@@ -26,6 +26,7 @@ const MUTED = '#6B6B7A';
 const LINE = '#E6DFC9';
 
 const A4_WIDTH = 794; // ~210mm at 96dpi
+const A4_HEIGHT = 1120; // slightly under A4 ratio to avoid html2pdf page spill/cropping
 
 const baseFont = "'Inter', 'Helvetica Neue', Arial, sans-serif";
 const serifFont = "'Lora', 'Georgia', serif";
@@ -71,17 +72,22 @@ const flexText: React.CSSProperties = {
   width: 'auto',
 };
 
-const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; footer?: React.ReactNode }> = ({ children, bg = '#ffffff', pad = 56, footer }) => (
-  <div style={{
+const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; footer?: React.ReactNode; className?: string }> = ({ children, bg = '#ffffff', pad = 56, footer, className }) => (
+  <div className={`musetera-pdf-page${className ? ` ${className}` : ''}`} style={{
     width: `${A4_WIDTH}px`,
     maxWidth: `${A4_WIDTH}px`,
-    minHeight: '1123px',
+    height: `${A4_HEIGHT}px`,
+    minHeight: `${A4_HEIGHT}px`,
+    maxHeight: `${A4_HEIGHT}px`,
     background: bg,
     padding: `${pad}px`,
     boxSizing: 'border-box',
     fontFamily: baseFont,
     color: INK,
     pageBreakAfter: 'always',
+    breakAfter: 'page',
+    pageBreakInside: 'avoid',
+    breakInside: 'avoid',
     position: 'relative',
     overflow: 'hidden',
   }}>
@@ -190,8 +196,8 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
         [data-musetera-pdf] img { max-width: 100% !important; }
       `}</style>
       {/* ============ COVER ============ */}
-      <Page bg={INK} pad={0}>
-        <div style={{ position: 'relative', width: '100%', maxWidth: `${A4_WIDTH}px`, height: '1123px', overflow: 'hidden', boxSizing: 'border-box' }}>
+      <Page bg={INK} pad={0} className="musetera-cover-page">
+        <div style={{ position: 'relative', width: '100%', maxWidth: `${A4_WIDTH}px`, height: '100%', overflow: 'hidden', boxSizing: 'border-box' }}>
           {/* Gold corner accents */}
           <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: 8, background: `linear-gradient(90deg, ${GOLD_DARK}, ${GOLD}, ${GOLD_LIGHT}, ${GOLD}, ${GOLD_DARK})` }} />
           <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: 8, background: `linear-gradient(90deg, ${GOLD_DARK}, ${GOLD}, ${GOLD_LIGHT}, ${GOLD}, ${GOLD_DARK})` }} />
@@ -201,9 +207,9 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
           <div style={{ position: 'absolute', top: -150, right: -150, width: 500, height: 500, borderRadius: '50%', border: `1px solid ${GOLD}`, opacity: 0.1 }} />
           <div style={{ position: 'absolute', bottom: -180, left: -180, width: 500, height: 500, borderRadius: '50%', border: `1px solid ${GOLD}`, opacity: 0.12 }} />
 
-          <div style={{ position: 'absolute', inset: 0, padding: 70, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', color: '#fff', boxSizing: 'border-box', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', inset: 0, padding: '54px 70px 86px', display: 'grid', gridTemplateRows: 'auto minmax(0, 1fr) 220px', rowGap: 22, color: '#fff', boxSizing: 'border-box', overflow: 'hidden' }}>
             {/* Top brand */}
-            <div>
+            <div style={{ minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingBottom: 6, overflow: 'hidden' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div style={{
                   width: 56, height: 56, borderRadius: 14,
@@ -222,30 +228,30 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
             {/* Center title */}
             <div>
               <div style={{ fontSize: 12, color: GOLD, letterSpacing: 6, textTransform: 'uppercase', marginBottom: 14 }}>Documento Clínico</div>
-              <div style={{ fontFamily: serifFont, fontSize: 52, fontWeight: 600, lineHeight: 1.1, marginBottom: 18 }}>
+              <div style={{ fontFamily: serifFont, fontSize: 46, fontWeight: 600, lineHeight: 1.06, marginBottom: 14 }}>
                 Plano de<br />Tratamento<br /><span style={{ color: GOLD_LIGHT, fontStyle: 'italic' }}>Musicoterapêutico</span>
               </div>
               <div style={{ width: 80, height: 3, background: `linear-gradient(90deg, ${GOLD}, transparent)`, marginBottom: 26 }} />
-              <div style={{ fontSize: 14, color: '#D8D8E0', lineHeight: 1.8, maxWidth: 480 }}>
+              <div style={{ fontSize: 13, color: '#D8D8E0', lineHeight: 1.65, maxWidth: 480 }}>
                 Documento profissional estruturado para acompanhamento clínico, contendo avaliação, objetivos, recursos musicais e critérios de evolução do paciente.
               </div>
             </div>
 
             {/* Bottom info */}
-            <div style={{ ...safeGrid, gap: 24, paddingTop: 24, borderTop: `1px solid ${GOLD}` }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 12, width: '100%', maxWidth: '100%', height: 220, minHeight: 0, paddingTop: 16, borderTop: `1px solid ${GOLD}`, alignContent: 'start', overflow: 'hidden', boxSizing: 'border-box' }}>
               <div style={wrapText}>
                 <div style={{ fontSize: 10, color: GOLD, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 }}>Paciente</div>
-                <div style={{ fontFamily: serifFont, fontSize: 19, fontWeight: 500, lineHeight: 1.2, ...strictNameWrap }}>{makeTextBreakable(planData.patient_full_name) || '—'}</div>
-                <div style={{ fontSize: 12, color: '#B0B0BE', marginTop: 4, ...strictNameWrap }}>
+                <div style={{ fontFamily: serifFont, fontSize: 15, fontWeight: 500, lineHeight: 1.16, ...strictNameWrap }}>{makeTextBreakable(planData.patient_full_name) || '—'}</div>
+                <div style={{ fontSize: 10.5, color: '#B0B0BE', marginTop: 4, lineHeight: 1.25, ...strictNameWrap }}>
                   {makeTextBreakable(planData.clinical_diagnosis ? `Diagnóstico: ${planData.clinical_diagnosis}` : '')}
                 </div>
               </div>
               <div style={{ textAlign: 'right', ...wrapText }}>
                 <div style={{ fontSize: 10, color: GOLD, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 }}>Profissional</div>
-                <div style={{ fontFamily: serifFont, fontSize: 15, fontWeight: 500, lineHeight: 1.25, ...strictNameWrap }}>{makeTextBreakable(therapistName) || 'Musicoterapeuta'}</div>
-                <div style={{ fontSize: 11, color: '#B0B0BE', marginTop: 4, ...strictNameWrap }}>{makeTextBreakable(professionalRegistry) || ''}</div>
-                <div style={{ fontSize: 11, color: '#B0B0BE', marginTop: 12 }}>Emitido em {today}</div>
-                {planNumber && <div style={{ fontSize: 11, color: GOLD_LIGHT, marginTop: 2, ...strictNameWrap }}>Plano nº {makeTextBreakable(planNumber)}</div>}
+                <div style={{ fontFamily: serifFont, fontSize: 13.5, fontWeight: 500, lineHeight: 1.16, ...strictNameWrap }}>{makeTextBreakable(therapistName) || 'Musicoterapeuta'}</div>
+                <div style={{ fontSize: 10.5, color: '#B0B0BE', marginTop: 4, lineHeight: 1.25, ...strictNameWrap }}>{makeTextBreakable(professionalRegistry) || ''}</div>
+                <div style={{ fontSize: 10.5, color: '#B0B0BE', marginTop: 8 }}>Emitido em {today}</div>
+                {planNumber && <div style={{ fontSize: 10.5, color: GOLD_LIGHT, marginTop: 2, ...strictNameWrap }}>Plano nº {makeTextBreakable(planNumber)}</div>}
               </div>
             </div>
           </div>
