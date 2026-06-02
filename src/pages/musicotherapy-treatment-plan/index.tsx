@@ -627,49 +627,27 @@ export default function MusicotherapyTreatmentPlanPage() {
             {/* 5. Musicotherapy Resources */}
             <TabsContent value="resources" className="mt-6">
               <Card>
-                <CardContent className="space-y-6">
-                  <ResourcesSelector
-                    resources={[
-                      ...(planData.musical_instruments || []),
-                      ...(planData.technological_resources || []),
-                      ...(planData.voice_body_resources || []),
-                      ...(planData.complementary_materials || [])
-                    ]}
-                    onAdd={(resource) => {
-                      // Add to the first empty array or musical_instruments by default
-                      if (!planData.musical_instruments?.length) {
-                        addArrayItem('musical_instruments', resource);
-                      } else {
-                        addArrayItem('complementary_materials', resource);
-                      }
-                    }}
-                    onRemove={(index) => {
-                      // Find which array the item belongs to and remove it
-                      const allResources = [
-                        ...(planData.musical_instruments || []),
-                        ...(planData.technological_resources || []),
-                        ...(planData.voice_body_resources || []),
-                        ...(planData.complementary_materials || [])
-                      ];
-                      
-                      let currentIndex = 0;
-                      const fields: (keyof MusicotherapyTreatmentPlan)[] = [
-                        'musical_instruments', 'technological_resources', 
-                        'voice_body_resources', 'complementary_materials'
-                      ];
-                      
-                      for (const field of fields) {
-                        const fieldArray = planData[field] as string[] || [];
-                        if (index < currentIndex + fieldArray.length) {
-                          removeArrayItem(field, index - currentIndex);
-                          break;
-                        }
-                        currentIndex += fieldArray.length;
-                      }
-                    }}
-                  />
+                <CardContent className="space-y-5 pt-6">
+                  <p className="text-sm text-muted-foreground">
+                    Organize os recursos por categoria. Cada grupo é registrado separadamente no plano e no documento final.
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="rounded-xl border border-border/60 bg-muted/20 p-4">
+                      <ArrayInput label="Instrumentos musicais" field="musical_instruments" placeholder="Ex: Violão, teclado, pandeiro..." />
+                    </div>
+                    <div className="rounded-xl border border-border/60 bg-muted/20 p-4">
+                      <ArrayInput label="Recursos tecnológicos" field="technological_resources" placeholder="Ex: Aplicativos, sistema de som..." />
+                    </div>
+                    <div className="rounded-xl border border-border/60 bg-muted/20 p-4">
+                      <ArrayInput label="Voz e corpo" field="voice_body_resources" placeholder="Ex: Canto, percussão corporal..." />
+                    </div>
+                    <div className="rounded-xl border border-border/60 bg-muted/20 p-4">
+                      <ArrayInput label="Materiais complementares" field="complementary_materials" placeholder="Ex: Lenços, cartões, objetos sonoros..." />
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
+
             </TabsContent>
 
             {/* 6. Strategies and Techniques */}
