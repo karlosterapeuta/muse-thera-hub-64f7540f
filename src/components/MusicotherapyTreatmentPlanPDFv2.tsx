@@ -37,21 +37,23 @@ const wrapText: React.CSSProperties = {
   maxWidth: '100%',
   boxSizing: 'border-box',
   whiteSpace: 'normal',
-  overflowWrap: 'anywhere',
-  wordBreak: 'break-word',
-  hyphens: 'auto',
+  overflowWrap: 'break-word',
+  wordBreak: 'normal',
   overflow: 'hidden',
 };
 
 const strictNameWrap: React.CSSProperties = {
   ...wrapText,
   display: 'block',
-  wordBreak: 'break-all',
-  lineBreak: 'anywhere',
 };
 
+// Insere pontos de quebra invisíveis APENAS dentro de palavras muito longas
+// (nomes, e-mails, registros) sem afetar espaços de frases normais.
+// Evita o bug do html2canvas que "engole" espaços ao quebrar a linha.
 const makeTextBreakable = (value?: React.ReactNode): React.ReactNode => {
-  if (typeof value === 'string') return value.replace(/(\S{6})(?=\S)/g, '$1\u200B');
+  if (typeof value === 'string') {
+    return value.replace(/\S{18,}/g, (m) => m.replace(/(.{12})/g, '$1\u200B'));
+  }
   if (typeof value === 'number') return value;
   return value;
 };
