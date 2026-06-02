@@ -211,7 +211,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
             </div>
 
             {/* Bottom info */}
-            <div style={{ ...safeGrid, gap: 24, paddingTop: 24, borderTop: `1px solid ${GOLD}`, ...wrapText }}>
+            <div style={{ ...safeGrid, gap: 24, paddingTop: 24, borderTop: `1px solid ${GOLD}` }}>
               <div style={wrapText}>
                 <div style={{ fontSize: 10, color: GOLD, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 }}>Paciente</div>
                 <div style={{ fontFamily: serifFont, fontSize: 19, fontWeight: 500, lineHeight: 1.2, ...strictNameWrap }}>{planData.patient_full_name || '—'}</div>
@@ -272,7 +272,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
       <Page footer={<PageFooter page={3} total={5} patient={planData.patient_full_name} />}>
         <SectionHeader n={1} title="Identificação do Paciente" />
         <Card>
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '0 24px' }}>
+          <div style={{ ...safeGrid, gap: '0 24px' }}>
             <Field label="Nome completo" value={planData.patient_full_name} />
             <Field label="Data de nascimento" value={formatBirthDateForDisplay(planData.patient_birth_date)} />
             <Field label="Idade" value={planData.patient_age} />
@@ -300,7 +300,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
 
       <Page footer={<PageFooter page={4} total={5} patient={planData.patient_full_name} />}>
         <SectionHeader n={5} title="Recursos Musicoterapêuticos" />
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 16 }}>
+        <div style={{ ...safeGrid, gap: 16 }}>
           <Card>
             <div style={{ fontFamily: serifFont, fontSize: 14, fontWeight: 600, color: GOLD_DARK, marginBottom: 10 }}>Instrumentos musicais</div>
             <BulletList items={planData.musical_instruments} />
@@ -375,7 +375,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
           overflow: 'hidden',
         }}>
           <div style={{ height: 6, background: `linear-gradient(90deg, ${GOLD_DARK}, ${GOLD}, ${GOLD_LIGHT}, ${GOLD}, ${GOLD_DARK})` }} />
-          <div style={{ padding: 24, display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 24, alignItems: 'center' }}>
+          <div style={{ padding: 24, ...safeGrid, gap: 24, alignItems: 'center' }}>
             <div style={wrapText}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 14 }}>
                 {professionalPhotoUrl && (
