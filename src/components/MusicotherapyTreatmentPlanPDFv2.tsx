@@ -93,12 +93,12 @@ const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; foo
 const PageFooter: React.FC<{ page: number; total: number; patient?: string }> = ({ page, total, patient }) => (
   <div style={{
     position: 'absolute', left: 56, right: 56, bottom: 24,
-    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-    fontSize: 9.5, color: MUTED, letterSpacing: 0.5,
-    borderTop: `1px solid ${LINE}`, paddingTop: 8,
+    display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) max-content', columnGap: 12,
+    alignItems: 'start', fontSize: 9.5, color: MUTED, letterSpacing: 0.5,
+    borderTop: `1px solid ${LINE}`, paddingTop: 8, overflow: 'hidden', boxSizing: 'border-box',
   }}>
-    <span style={{ ...strictNameWrap, flex: '1 1 auto', paddingRight: 16 }}>Plano Musicoterapêutico{makeTextBreakable(patient ? ` · ${patient}` : '')}</span>
-    <span style={{ color: GOLD_DARK, fontWeight: 600, flex: '0 0 auto' }}>Página {page} de {total}</span>
+    <span style={{ ...strictNameWrap }}>Plano Musicoterapêutico{makeTextBreakable(patient ? ` · ${patient}` : '')}</span>
+    <span style={{ color: GOLD_DARK, fontWeight: 600, whiteSpace: 'nowrap' }}>Página {page} de {total}</span>
   </div>
 );
 
@@ -115,13 +115,13 @@ const SectionHeader: React.FC<{ n: number; title: string }> = ({ n, title }) => 
     marginBottom: 16,
   }}>
     <div style={{
-      width: 36, height: 36, borderRadius: '50%',
+      width: 36, height: 36, borderRadius: '50%', flex: '0 0 auto',
       background: `linear-gradient(135deg, ${GOLD_LIGHT}, ${GOLD}, ${GOLD_DARK})`,
       color: INK, fontFamily: serifFont, fontWeight: 700, fontSize: 16,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       boxShadow: 'inset 0 -2px 4px rgba(0,0,0,0.15)',
     }}>{n}</div>
-    <div style={{ fontFamily: serifFont, fontSize: 18, fontWeight: 600, letterSpacing: 0.3 }}>{title}</div>
+    <div style={{ fontFamily: serifFont, fontSize: 18, fontWeight: 600, letterSpacing: 0.3, ...flexText }}>{makeTextBreakable(title)}</div>
   </div>
 );
 
