@@ -10,6 +10,7 @@ interface PDFOptions {
   quality?: number;
   format?: 'a4' | 'letter';
   orientation?: 'portrait' | 'landscape';
+  fullBleedPages?: boolean;
 }
 
 export const generateStaticPDF = async (
@@ -21,7 +22,8 @@ export const generateStaticPDF = async (
     waitTime = 3000,
     quality = 1.2,
     format = 'a4',
-    orientation = 'portrait'
+    orientation = 'portrait',
+    fullBleedPages = false
   } = options;
 
   try {
@@ -32,14 +34,14 @@ export const generateStaticPDF = async (
     container.style.position = 'absolute';
     container.style.left = '-9999px';
     container.style.top = '0';
-    container.style.width = '210mm'; // A4 width
+    container.style.width = fullBleedPages ? '794px' : '210mm'; // A4 width
     container.style.minHeight = '297mm'; // A4 height
     container.style.backgroundColor = '#ffffff';
     container.style.fontFamily = 'Times New Roman, serif';
     container.style.fontSize = '12px';
     container.style.lineHeight = '1.6';
     container.style.color = '#000000';
-    container.style.padding = '20mm';
+    container.style.padding = fullBleedPages ? '0' : '20mm';
     container.style.boxSizing = 'border-box';
     document.body.appendChild(container);
 
@@ -66,7 +68,7 @@ export const generateStaticPDF = async (
 
     // Configurações otimizadas do PDF para artigos acadêmicos
     const opt = {
-      margin: [15, 15, 15, 15], // margem em mm
+      margin: fullBleedPages ? [0, 0, 0, 0] : [15, 15, 15, 15], // margem em mm
       filename,
       pagebreak: { 
         mode: ['css', 'legacy', 'avoid-all'],
