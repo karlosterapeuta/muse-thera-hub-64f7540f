@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Calendar, User as UserIcon, Stethoscope, Eye, Edit, Download, Copy, Trash2, Loader2 } from "lucide-react";
+import { Calendar, User as UserIcon, Stethoscope, Eye, Edit, Download, Copy, Trash2, Loader2, MoreVertical } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import type { MusicotherapyTreatmentPlanSummary } from "@/hooks/useMusicotherapyTreatmentPlans";
