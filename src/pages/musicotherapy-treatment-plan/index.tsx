@@ -427,27 +427,23 @@ export default function MusicotherapyTreatmentPlanPage() {
           className="mb-6"
         />
 
-        {/* Tabs Navigation */}
-        <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="w-full">
-          <TabsList className="grid grid-cols-5 lg:grid-cols-10 gap-1 h-auto p-1 bg-muted/50">
-            {tabSections.map((section) => {
-              const IconComponent = section.icon;
-              return (
-                <TabsTrigger
-                  key={section.id}
-                  value={section.id}
+        {/* Two-column layout: section nav + content */}
+        <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
+          <aside className="lg:pt-2">
+            <PlanSectionNav
+              sections={tabSections}
+              activeId={activeTab}
+              planData={planData}
+              onSelect={goToSection}
+            />
+          </aside>
 
-                  className="flex flex-col items-center gap-1 p-3 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                >
-                  <IconComponent className="h-4 w-4" />
-                  <span className="hidden sm:block">{section.label}</span>
-                </TabsTrigger>
-              );
-            })}
-          </TabsList>
+          <Tabs value={activeTab} onValueChange={goToSection} className="w-full min-w-0">
+            <PlanSectionHeader section={activeSection} index={activeIndex} total={tabSections.length} />
 
           {/* Tab Contents */}
           <div className="mt-6">
+
             {/* 1. Patient Identification */}
             <TabsContent value="identification" className="mt-6">
               <Card>
