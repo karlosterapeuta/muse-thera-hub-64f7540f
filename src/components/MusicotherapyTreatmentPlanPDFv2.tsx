@@ -220,17 +220,17 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
             <div style={{ ...safeGrid, gap: 24, paddingTop: 24, borderTop: `1px solid ${GOLD}` }}>
               <div style={wrapText}>
                 <div style={{ fontSize: 10, color: GOLD, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 }}>Paciente</div>
-                <div style={{ fontFamily: serifFont, fontSize: 19, fontWeight: 500, lineHeight: 1.2, ...strictNameWrap }}>{planData.patient_full_name || '—'}</div>
+                <div style={{ fontFamily: serifFont, fontSize: 19, fontWeight: 500, lineHeight: 1.2, ...strictNameWrap }}>{makeTextBreakable(planData.patient_full_name) || '—'}</div>
                 <div style={{ fontSize: 12, color: '#B0B0BE', marginTop: 4, ...strictNameWrap }}>
-                  {planData.clinical_diagnosis ? `Diagnóstico: ${planData.clinical_diagnosis}` : ''}
+                  {makeTextBreakable(planData.clinical_diagnosis ? `Diagnóstico: ${planData.clinical_diagnosis}` : '')}
                 </div>
               </div>
               <div style={{ textAlign: 'right', ...wrapText }}>
                 <div style={{ fontSize: 10, color: GOLD, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 }}>Profissional</div>
-                <div style={{ fontFamily: serifFont, fontSize: 15, fontWeight: 500, lineHeight: 1.25, ...strictNameWrap }}>{therapistName || 'Musicoterapeuta'}</div>
-                <div style={{ fontSize: 11, color: '#B0B0BE', marginTop: 4, ...strictNameWrap }}>{professionalRegistry || ''}</div>
+                <div style={{ fontFamily: serifFont, fontSize: 15, fontWeight: 500, lineHeight: 1.25, ...strictNameWrap }}>{makeTextBreakable(therapistName) || 'Musicoterapeuta'}</div>
+                <div style={{ fontSize: 11, color: '#B0B0BE', marginTop: 4, ...strictNameWrap }}>{makeTextBreakable(professionalRegistry) || ''}</div>
                 <div style={{ fontSize: 11, color: '#B0B0BE', marginTop: 12 }}>Emitido em {today}</div>
-                {planNumber && <div style={{ fontSize: 11, color: GOLD_LIGHT, marginTop: 2, ...strictNameWrap }}>Plano nº {planNumber}</div>}
+                {planNumber && <div style={{ fontSize: 11, color: GOLD_LIGHT, marginTop: 2, ...strictNameWrap }}>Plano nº {makeTextBreakable(planNumber)}</div>}
               </div>
             </div>
           </div>
