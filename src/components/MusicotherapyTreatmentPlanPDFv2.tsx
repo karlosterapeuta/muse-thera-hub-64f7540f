@@ -180,17 +180,17 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
 
             {/* Bottom info */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, paddingTop: 24, borderTop: `1px solid ${GOLD}` }}>
-              <div>
+              <div style={{ minWidth: 0 }}>
                 <div style={{ fontSize: 10, color: GOLD, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 }}>Paciente</div>
-                <div style={{ fontFamily: serifFont, fontSize: 20, fontWeight: 500 }}>{planData.patient_full_name || '—'}</div>
-                <div style={{ fontSize: 12, color: '#B0B0BE', marginTop: 4 }}>
+                <div style={{ fontFamily: serifFont, fontSize: 20, fontWeight: 500, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{planData.patient_full_name || '—'}</div>
+                <div style={{ fontSize: 12, color: '#B0B0BE', marginTop: 4, overflowWrap: 'break-word', wordBreak: 'break-word' }}>
                   {planData.clinical_diagnosis ? `Diagnóstico: ${planData.clinical_diagnosis}` : ''}
                 </div>
               </div>
-              <div style={{ textAlign: 'right' }}>
+              <div style={{ textAlign: 'right', minWidth: 0 }}>
                 <div style={{ fontSize: 10, color: GOLD, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 }}>Profissional</div>
-                <div style={{ fontFamily: serifFont, fontSize: 16, fontWeight: 500 }}>{therapistName || 'Musicoterapeuta'}</div>
-                <div style={{ fontSize: 11, color: '#B0B0BE', marginTop: 4 }}>{professionalRegistry || ''}</div>
+                <div style={{ fontFamily: serifFont, fontSize: 16, fontWeight: 500, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{therapistName || 'Musicoterapeuta'}</div>
+                <div style={{ fontSize: 11, color: '#B0B0BE', marginTop: 4, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{professionalRegistry || ''}</div>
                 <div style={{ fontSize: 11, color: '#B0B0BE', marginTop: 12 }}>Emitido em {today}</div>
                 {planNumber && <div style={{ fontSize: 11, color: GOLD_LIGHT, marginTop: 2 }}>Plano nº {planNumber}</div>}
               </div>
