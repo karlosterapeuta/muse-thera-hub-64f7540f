@@ -30,7 +30,7 @@ const A4_WIDTH = 794; // ~210mm at 96dpi
 const baseFont = "'Inter', 'Helvetica Neue', Arial, sans-serif";
 const serifFont = "'Lora', 'Georgia', serif";
 
-const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number }> = ({ children, bg = '#ffffff', pad = 56 }) => (
+const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; footer?: React.ReactNode }> = ({ children, bg = '#ffffff', pad = 56, footer }) => (
   <div style={{
     width: `${A4_WIDTH}px`,
     minHeight: '1123px',
@@ -41,7 +41,22 @@ const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number }> =
     color: INK,
     pageBreakAfter: 'always',
     position: 'relative',
-  }}>{children}</div>
+  }}>
+    {children}
+    {footer}
+  </div>
+);
+
+const PageFooter: React.FC<{ page: number; total: number; patient?: string }> = ({ page, total, patient }) => (
+  <div style={{
+    position: 'absolute', left: 56, right: 56, bottom: 24,
+    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+    fontSize: 9.5, color: MUTED, letterSpacing: 0.5,
+    borderTop: `1px solid ${LINE}`, paddingTop: 8,
+  }}>
+    <span>Plano Musicoterapêutico{patient ? ` · ${patient}` : ''}</span>
+    <span style={{ color: GOLD_DARK, fontWeight: 600 }}>Página {page} de {total}</span>
+  </div>
 );
 
 const SectionHeader: React.FC<{ n: number; title: string }> = ({ n, title }) => (
