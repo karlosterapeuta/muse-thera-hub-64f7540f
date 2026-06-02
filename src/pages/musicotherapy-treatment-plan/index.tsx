@@ -905,7 +905,9 @@ export default function MusicotherapyTreatmentPlanPage() {
                 </CardContent>
               </Card>
             </TabsContent>
-          </div>
+          </motion.div>
+          </AnimatePresence>
+
         </Tabs>
 
         {/* Navigation Footer */}
