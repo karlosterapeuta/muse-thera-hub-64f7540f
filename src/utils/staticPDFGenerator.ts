@@ -118,9 +118,8 @@ export const generateStaticPDF = async (
         precision: 2
       },
       pagebreak: { 
-        mode: ['css', 'legacy'],
-        before: '.musetera-pdf-page',
-        avoid: ['.page-break-avoid', 'table', 'tr', 'thead', 'tbody', '.musetera-card']
+        mode: ['css'],
+        avoid: ['.musetera-card', 'table', 'tr', 'thead', 'tbody']
       }
     };
 

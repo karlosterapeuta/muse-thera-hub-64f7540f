@@ -86,11 +86,12 @@ const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; foo
     boxSizing: 'border-box',
     fontFamily: baseFont,
     color: INK,
-    pageBreakAfter: 'always',
-    breakAfter: 'page',
+    pageBreakAfter: 'auto',
+    breakAfter: 'auto',
     pageBreakInside: 'avoid',
     breakInside: 'avoid',
-    marginBottom: 0, // Evita margens extras entre páginas
+    marginBottom: 0, 
+    marginTop: 0,
     display: 'flex',
     flexDirection: 'column',
     position: 'relative',
@@ -228,8 +229,8 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
         }
         #musetera-pdf-content img { max-width: 100% !important; display: block; }
         .musetera-pdf-page {
-          page-break-after: always !important;
-          break-after: page !important;
+          page-break-after: avoid !important;
+          break-after: avoid !important;
           background: #ffffff !important;
           -webkit-print-color-adjust: exact;
         }
