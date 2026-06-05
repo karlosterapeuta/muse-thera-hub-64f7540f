@@ -41,16 +41,15 @@ export const generateStaticPDF = async (
     container.id = 'musetera-pdf-render-container';
     // Estilos para tornar o container "invisível" mas capturável pelo html2canvas
     Object.assign(container.style, {
-      position: 'fixed',
+      position: 'absolute',
       top: '0',
       left: '0',
-      width: '210mm',
+      width: '800px',
       height: 'auto',
       zIndex: '-10000',
       backgroundColor: '#ffffff',
       opacity: '1',
       visibility: 'visible',
-      pointerEvents: 'none',
       overflow: 'visible'
     });
     
@@ -119,8 +118,7 @@ export const generateStaticPDF = async (
       },
       pagebreak: { 
         mode: ['css'],
-        before: '.musetera-pdf-page',
-        avoid: ['.musetera-card', 'table', 'tr', 'thead', 'tbody']
+        before: '.musetera-pdf-page'
       }
     };
 
