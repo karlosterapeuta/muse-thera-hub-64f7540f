@@ -99,12 +99,12 @@ const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; foo
 const PageFooter: React.FC<{ page: number; total: number; patient?: string }> = ({ page, total, patient }) => (
   <div style={{
     position: 'absolute', left: 56, right: 56, bottom: 24,
-    display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) max-content', columnGap: 12,
-    alignItems: 'start', fontSize: 9.5, color: MUTED, letterSpacing: 0.5,
-    borderTop: `1px solid ${LINE}`, paddingTop: 8, overflow: 'hidden', boxSizing: 'border-box',
+    display: 'flex', justifyContent: 'space-between', gap: 12,
+    alignItems: 'flex-start', fontSize: 9.5, color: MUTED, letterSpacing: 0.5,
+    borderTop: `1px solid ${LINE}`, paddingTop: 8, boxSizing: 'border-box',
   }}>
-    <span style={{ ...strictNameWrap }}>Plano Musicoterapêutico{makeTextBreakable(patient ? ` · ${patient}` : '')}</span>
-    <span style={{ color: GOLD_DARK, fontWeight: 600, whiteSpace: 'nowrap' }}>Página {page} de {total}</span>
+    <span style={{ ...strictNameWrap, flex: 1 }}>Plano Musicoterapêutico{makeTextBreakable(patient ? ` · ${patient}` : '')}</span>
+    <span style={{ color: GOLD_DARK, fontWeight: 600, whiteSpace: 'nowrap', flex: '0 0 auto' }}>Página {page} de {total}</span>
   </div>
 );
 
