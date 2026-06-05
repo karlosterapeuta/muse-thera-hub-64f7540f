@@ -1029,8 +1029,10 @@ export default function Evaluation() {
 
   const handleGenerateMuseteraPDF = async (overrideData?: any) => {
     // Verificar se há dados para gerar o PDF
-    if (!overrideData && Object.keys(selections).length === 0) {
-      toast.error("Nenhum parâmetro avaliado. Preencha a avaliação ou carregue uma avaliação salva.");
+    const hasData = Object.keys(selections).length > 0;
+    
+    if (!overrideData && !hasData) {
+      toast.error("Nenhum parâmetro avaliado. Preencha a avaliação (Escala MuseTera) antes de baixar.");
       return;
     }
     
@@ -1104,11 +1106,11 @@ export default function Evaluation() {
       loadingToast = toast.loading("Gerando Relatório MuseTera Aprimorado...");
 
       const opt = {
-        margin: [8, 8],
-        filename: `relatorio-musetera-completo-${dataToUse.patientName || 'paciente'}.pdf`,
+        margin: [10, 10],
+        filename: `relatorio-musetera-completo-${(dataToUse.patientName || 'paciente').replace(/\s+/g, '_')}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
-          scale: 1.8,
+          scale: 2,
           useCORS: true,
           allowTaint: true,
           backgroundColor: '#ffffff',
@@ -1119,8 +1121,10 @@ export default function Evaluation() {
           unit: 'mm', 
           format: 'a4', 
           orientation: 'portrait',
-          compress: true
-        }
+          compress: true,
+          precision: 2
+        },
+        pagebreak: { mode: ['css', 'legacy'] }
       };
 
       const pdfInst4 = html2pdf().set(opt).from(root);
@@ -1135,7 +1139,7 @@ export default function Evaluation() {
       document.body.removeChild(link);
       URL.revokeObjectURL(pdfUrl);
       
-      try { await savePDFToStorage(pdfBlob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
+      try { await savePDFToStorage(pdfBlob, opt.filename, "evaluation"); } catch(e) { console.warn("Erro ao salvar no storage:", e); }
 
       
       } finally {
@@ -1144,9 +1148,9 @@ export default function Evaluation() {
       
       toast.success("Relatório MuseTera Aprimorado gerado com sucesso!", { id: loadingToast });
 
-    } catch (error) {
-      console.error("Erro ao gerar PDF:", error);
-      toast.error("Erro ao gerar PDF. Por favor, tente novamente.", { id: loadingToast });
+    } catch (error: any) {
+      console.error("Erro detalhado ao gerar PDF:", error);
+      toast.error(`Erro ao gerar PDF: ${error.message || 'Erro desconhecido'}. Verifique se o paciente possui dados preenchidos.`, { id: loadingToast });
     }
   };
 
