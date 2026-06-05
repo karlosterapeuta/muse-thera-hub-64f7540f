@@ -323,7 +323,7 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
       )}
 
       {/* Rodapé Profissional */}
-      <div style={{
+      <div data-pdf-section style={{
         marginTop: '50px',
         border: '3px solid transparent',
         borderImage: 'linear-gradient(135deg, #0d9488, #14b8a6, #06b6d4) 1',
