@@ -102,7 +102,7 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
       </div>
 
       {/* Dados do Paciente */}
-      <div style={{
+      <div data-pdf-section style={{
         backgroundColor: '#f1f5f9',
         padding: '15px',
         borderRadius: '8px',
