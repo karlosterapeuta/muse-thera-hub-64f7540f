@@ -562,7 +562,7 @@ export default function FinancialRecords() {
         Voltar
       </Button>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-2xl md:text-3xl font-bold text-primary">Registros Financeiros</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-primary">Agenda</h1>
         <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end">
           <Button
             onClick={() => {
