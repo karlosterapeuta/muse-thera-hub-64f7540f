@@ -26,7 +26,7 @@ const MUTED = '#6B6B7A';
 const LINE = '#E6DFC9';
 
 const A4_WIDTH = 794; // ~210mm at 96dpi
-const A4_HEIGHT = 1120; // slightly under A4 ratio to avoid html2pdf page spill/cropping
+const A4_HEIGHT = 1122; // ~297mm at 96dpi
 
 const baseFont = "'Inter', 'Helvetica Neue', Arial, sans-serif";
 const serifFont = "'Lora', 'Georgia', serif";
@@ -39,12 +39,11 @@ const wrapText: React.CSSProperties = {
   whiteSpace: 'normal',
   overflowWrap: 'break-word',
   wordBreak: 'normal',
-  overflow: 'hidden',
+  lineHeight: 1.5,
 };
 
 const strictNameWrap: React.CSSProperties = {
   ...wrapText,
-  display: 'block',
 };
 
 // Insere pontos de quebra invisíveis APENAS dentro de palavras muito longas
@@ -59,28 +58,27 @@ const makeTextBreakable = (value?: React.ReactNode): React.ReactNode => {
 };
 
 const safeGrid: React.CSSProperties = {
-  display: 'grid',
-  gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
+  display: 'flex',
+  flexWrap: 'wrap',
+  justifyContent: 'space-between',
   width: '100%',
   maxWidth: '100%',
   minWidth: 0,
   boxSizing: 'border-box',
-  overflow: 'hidden',
 };
 
 const flexText: React.CSSProperties = {
   ...strictNameWrap,
-  flex: '1 1 0%',
-  width: 'auto',
+  flex: 1,
+  minWidth: 0,
 };
 
-const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; footer?: React.ReactNode; className?: string }> = ({ children, bg = '#ffffff', pad = 56, footer, className }) => (
+const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; footer?: React.ReactNode; className?: string }> = ({ children, bg = '#ffffff', pad = 48, footer, className }) => (
   <div className={`musetera-pdf-page${className ? ` ${className}` : ''}`} style={{
     width: `${A4_WIDTH}px`,
     maxWidth: `${A4_WIDTH}px`,
-    height: `${A4_HEIGHT}px`,
     minHeight: `${A4_HEIGHT}px`,
-    maxHeight: `${A4_HEIGHT}px`,
+    maxHeight: 'none',
     background: bg,
     padding: `${pad}px`,
     boxSizing: 'border-box',
@@ -91,7 +89,7 @@ const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; foo
     pageBreakInside: 'avoid',
     breakInside: 'avoid',
     position: 'relative',
-    overflow: 'hidden',
+    overflow: 'visible',
   }}>
     {children}
     {footer}
@@ -101,12 +99,12 @@ const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; foo
 const PageFooter: React.FC<{ page: number; total: number; patient?: string }> = ({ page, total, patient }) => (
   <div style={{
     position: 'absolute', left: 56, right: 56, bottom: 24,
-    display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) max-content', columnGap: 12,
-    alignItems: 'start', fontSize: 9.5, color: MUTED, letterSpacing: 0.5,
-    borderTop: `1px solid ${LINE}`, paddingTop: 8, overflow: 'hidden', boxSizing: 'border-box',
+    display: 'flex', justifyContent: 'space-between', gap: 12,
+    alignItems: 'flex-start', fontSize: 9.5, color: MUTED, letterSpacing: 0.5,
+    borderTop: `1px solid ${LINE}`, paddingTop: 8, boxSizing: 'border-box',
   }}>
-    <span style={{ ...strictNameWrap }}>Plano Musicoterapêutico{makeTextBreakable(patient ? ` · ${patient}` : '')}</span>
-    <span style={{ color: GOLD_DARK, fontWeight: 600, whiteSpace: 'nowrap' }}>Página {page} de {total}</span>
+    <span style={{ ...strictNameWrap, flex: 1 }}>Plano Musicoterapêutico{makeTextBreakable(patient ? ` · ${patient}` : '')}</span>
+    <span style={{ color: GOLD_DARK, fontWeight: 600, whiteSpace: 'nowrap', flex: '0 0 auto' }}>Página {page} de {total}</span>
   </div>
 );
 
@@ -133,10 +131,10 @@ const SectionHeader: React.FC<{ n: number; title: string }> = ({ n, title }) => 
   </div>
 );
 
-const Field: React.FC<{ label: string; value?: React.ReactNode }> = ({ label, value }) => (
-  <div style={{ marginBottom: 10, ...wrapText }}>
-    <div style={{ fontSize: 10.5, fontWeight: 600, color: GOLD_DARK, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 3, ...wrapText }}>{label}</div>
-    <div style={{ fontSize: 13, color: INK, lineHeight: 1.55, ...strictNameWrap }}>{makeTextBreakable(value) || <span style={{ color: MUTED, fontStyle: 'italic' }}>Não informado</span>}</div>
+const Field: React.FC<{ label: string; value?: React.ReactNode; fullWidth?: boolean }> = ({ label, value, fullWidth }) => (
+  <div style={{ marginBottom: 14, ...wrapText, width: fullWidth ? '100%' : 'calc(50% - 12px)', flex: fullWidth ? '0 0 100%' : '0 0 calc(50% - 12px)' }}>
+    <div style={{ fontSize: 10, fontWeight: 700, color: GOLD_DARK, textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 4, ...wrapText }}>{label}</div>
+    <div style={{ fontSize: 13, color: INK, lineHeight: 1.5, ...strictNameWrap, paddingBottom: 2 }}>{makeTextBreakable(value) || <span style={{ color: MUTED, fontStyle: 'italic' }}>Não informado</span>}</div>
   </div>
 );
 
@@ -193,8 +191,10 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
           box-sizing: border-box !important;
           max-width: 100% !important;
           overflow-wrap: break-word !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
         }
-        [data-musetera-pdf] img { max-width: 100% !important; }
+        [data-musetera-pdf] img { max-width: 100% !important; display: block; }
       `}</style>
       {/* ============ COVER ============ */}
       <Page bg={INK} pad={0} className="musetera-cover-page">
@@ -208,7 +208,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
           <div style={{ position: 'absolute', top: -150, right: -150, width: 500, height: 500, borderRadius: '50%', border: `1px solid ${GOLD}`, opacity: 0.1 }} />
           <div style={{ position: 'absolute', bottom: -180, left: -180, width: 500, height: 500, borderRadius: '50%', border: `1px solid ${GOLD}`, opacity: 0.12 }} />
 
-          <div style={{ position: 'absolute', inset: 0, padding: '54px 70px 86px', display: 'grid', gridTemplateRows: 'auto minmax(0, 1fr) 220px', rowGap: 22, color: '#fff', boxSizing: 'border-box', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', inset: 0, padding: '54px 70px 86px', display: 'flex', flexDirection: 'column', gap: 22, color: '#fff', boxSizing: 'border-box', overflow: 'hidden' }}>
             {/* Top brand */}
             <div style={{ minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingBottom: 6, overflow: 'hidden' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -227,9 +227,9 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
             </div>
 
             {/* Center title */}
-            <div>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
               <div style={{ fontSize: 12, color: GOLD, letterSpacing: 6, textTransform: 'uppercase', marginBottom: 14 }}>Documento Clínico</div>
-              <div style={{ fontFamily: serifFont, fontSize: 46, fontWeight: 600, lineHeight: 1.06, marginBottom: 14 }}>
+              <div style={{ fontFamily: serifFont, fontSize: 42, fontWeight: 600, lineHeight: 1.1, marginBottom: 14 }}>
                 Plano de<br />Tratamento<br /><span style={{ color: GOLD_LIGHT, fontStyle: 'italic' }}>Musicoterapêutico</span>
               </div>
               <div style={{ width: 80, height: 3, background: `linear-gradient(90deg, ${GOLD}, transparent)`, marginBottom: 26 }} />
@@ -239,20 +239,22 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
             </div>
 
             {/* Bottom info */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 12, width: '100%', maxWidth: '100%', height: 220, minHeight: 0, paddingTop: 16, borderTop: `1px solid ${GOLD}`, alignContent: 'start', overflow: 'hidden', boxSizing: 'border-box' }}>
-              <div style={wrapText}>
-                <div style={{ fontSize: 10, color: GOLD, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 }}>Paciente</div>
-                <div style={{ fontFamily: serifFont, fontSize: 15, fontWeight: 500, lineHeight: 1.16, ...strictNameWrap }}>{makeTextBreakable(planData.patient_full_name) || '—'}</div>
-                <div style={{ fontSize: 10.5, color: '#B0B0BE', marginTop: 4, lineHeight: 1.25, ...strictNameWrap }}>
-                  {makeTextBreakable(planData.clinical_diagnosis ? `Diagnóstico: ${planData.clinical_diagnosis}` : '')}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: '100%', maxWidth: '100%', minHeight: 0, paddingTop: 20, borderTop: `1px solid ${GOLD}`, boxSizing: 'border-box' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 20, width: '100%' }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 10, color: GOLD, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 }}>Paciente</div>
+                  <div style={{ fontFamily: serifFont, fontSize: 15, fontWeight: 500, lineHeight: 1.16, ...strictNameWrap }}>{makeTextBreakable(planData.patient_full_name) || '—'}</div>
+                  <div style={{ fontSize: 10.5, color: '#B0B0BE', marginTop: 4, lineHeight: 1.25, ...strictNameWrap }}>
+                    {makeTextBreakable(planData.clinical_diagnosis ? `Diagnóstico: ${planData.clinical_diagnosis}` : '')}
+                  </div>
                 </div>
-              </div>
-              <div style={{ textAlign: 'right', ...wrapText }}>
-                <div style={{ fontSize: 10, color: GOLD, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 }}>Profissional</div>
-                <div style={{ fontFamily: serifFont, fontSize: 13.5, fontWeight: 500, lineHeight: 1.16, ...strictNameWrap }}>{makeTextBreakable(therapistName) || 'Musicoterapeuta'}</div>
-                <div style={{ fontSize: 10.5, color: '#B0B0BE', marginTop: 4, lineHeight: 1.25, ...strictNameWrap }}>{makeTextBreakable(professionalRegistry) || ''}</div>
-                <div style={{ fontSize: 10.5, color: '#B0B0BE', marginTop: 8 }}>Emitido em {today}</div>
-                {planNumber && <div style={{ fontSize: 10.5, color: GOLD_LIGHT, marginTop: 2, ...strictNameWrap }}>Plano nº {makeTextBreakable(planNumber)}</div>}
+                <div style={{ flex: '0 0 auto', textAlign: 'right', minWidth: 0, maxWidth: '40%' }}>
+                  <div style={{ fontSize: 10, color: GOLD, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 }}>Profissional</div>
+                  <div style={{ fontFamily: serifFont, fontSize: 13.5, fontWeight: 500, lineHeight: 1.16, ...strictNameWrap }}>{makeTextBreakable(therapistName) || 'Musicoterapeuta'}</div>
+                  <div style={{ fontSize: 10.5, color: '#B0B0BE', marginTop: 4, lineHeight: 1.25, ...strictNameWrap }}>{makeTextBreakable(professionalRegistry) || ''}</div>
+                  <div style={{ fontSize: 10.5, color: '#B0B0BE', marginTop: 8 }}>Emitido em {today}</div>
+                  {planNumber && <div style={{ fontSize: 10.5, color: GOLD_LIGHT, marginTop: 2, ...strictNameWrap }}>Plano nº {makeTextBreakable(planNumber)}</div>}
+                </div>
               </div>
             </div>
           </div>
@@ -312,11 +314,11 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
 
         <SectionHeader n={2} title="Avaliação Inicial" />
         <Card>
-          <Field label="Histórico clínico e familiar" value={planData.clinical_family_history} />
-          <Field label="Condições físicas, cognitivas, emocionais e sociais" value={planData.physical_cognitive_conditions} />
-          <Field label="Nível de interação e comunicação" value={planData.interaction_communication_level} />
-          <Field label="Interesses musicais" value={planData.musical_interests} />
-          <Field label="Comportamentos observados" value={planData.observed_behaviors} />
+          <Field label="Histórico clínico e familiar" value={planData.clinical_family_history} fullWidth />
+          <Field label="Condições físicas, cognitivas, emocionais e sociais" value={planData.physical_cognitive_conditions} fullWidth />
+          <Field label="Nível de interação e comunicação" value={planData.interaction_communication_level} fullWidth />
+          <Field label="Interesses musicais" value={planData.musical_interests} fullWidth />
+          <Field label="Comportamentos observados" value={planData.observed_behaviors} fullWidth />
         </Card>
 
         <SectionHeader n={3} title="Objetivos Gerais" />
@@ -349,11 +351,11 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
 
         <SectionHeader n={6} title="Estratégias e Técnicas" />
         <Card>
-          <Field label="Improvisação musical" value={planData.musical_improvisation} />
-          <Field label="Recriação musical" value={planData.musical_recreation} />
-          <Field label="Composição" value={planData.musical_composition} />
-          <Field label="Escuta receptiva" value={planData.receptive_listening} />
-          <Field label="Dinâmicas rítmicas" value={planData.rhythmic_dynamics} />
+          <Field label="Improvisação musical" value={planData.musical_improvisation} fullWidth />
+          <Field label="Recriação musical" value={planData.musical_recreation} fullWidth />
+          <Field label="Composição" value={planData.musical_composition} fullWidth />
+          <Field label="Escuta receptiva" value={planData.receptive_listening} fullWidth />
+          <Field label="Dinâmicas rítmicas" value={planData.rhythmic_dynamics} fullWidth />
         </Card>
 
         <SectionHeader n={7} title="Frequência e Duração" />
@@ -382,35 +384,36 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
 
         <SectionHeader n={9} title="Plano Terapêutico em Ação" />
         <Card>
-          <Field label="Estrutura das sessões" value={planData.session_structure} />
-          <Field label="Sequência das atividades" value={planData.activity_sequence} />
-          <Field label="Flexibilidade para ajustes" value={planData.flexibility_adjustments} />
+          <Field label="Estrutura das sessões" value={planData.session_structure} fullWidth />
+          <Field label="Sequência das atividades" value={planData.activity_sequence} fullWidth />
+          <Field label="Flexibilidade para ajustes" value={planData.flexibility_adjustments} fullWidth />
         </Card>
 
         <SectionHeader n={10} title="Reavaliação e Evolução" />
         <Card>
-          <Field label="Frequência da reavaliação" value={planData.reevaluation_frequency} />
-          <Field label="Registro da evolução" value={planData.evolution_recording} />
-          <Field label="Ajustes necessários" value={planData.necessary_adjustments} />
+          <Field label="Frequência da reavaliação" value={planData.reevaluation_frequency} fullWidth />
+          <Field label="Registro da evolução" value={planData.evolution_recording} fullWidth />
+          <Field label="Ajustes necessários" value={planData.necessary_adjustments} fullWidth />
         </Card>
 
         {/* ===== Signature / Stamp ===== */}
         <div style={{
-          marginTop: 22,
-          marginBottom: 34,
+          marginTop: 16,
+          marginBottom: 24,
           border: `2px solid ${GOLD}`,
           borderRadius: 14,
           background: '#fff',
           overflow: 'hidden',
+          pageBreakInside: 'avoid',
         }}>
           <div style={{ height: 6, background: `linear-gradient(90deg, ${GOLD_DARK}, ${GOLD}, ${GOLD_LIGHT}, ${GOLD}, ${GOLD_DARK})` }} />
-          <div style={{ padding: 18, ...safeGrid, gap: 20, alignItems: 'center' }}>
-            <div style={wrapText}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+          <div style={{ padding: 14, ...safeGrid, gap: 16, alignItems: 'center', flexWrap: 'nowrap' }}>
+            <div style={{ ...wrapText, flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
                 {professionalPhotoUrl && (
                   <img src={professionalPhotoUrl} alt="" crossOrigin="anonymous" style={{
-                    width: 56, height: 56, borderRadius: '50%', objectFit: 'cover', flex: '0 0 auto',
-                    border: `3px solid ${GOLD}`,
+                    width: 48, height: 48, borderRadius: '50%', objectFit: 'cover', flex: '0 0 auto',
+                    border: `2px solid ${GOLD}`,
                   }} />
                 )}
                 <div style={wrapText}>
@@ -428,12 +431,12 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
                 <span style={wrapText}>ASSINATURA DIGITAL VERIFICADA · MUSETERA</span>
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: '0 0 auto' }}>
               {digitalStampUrl ? (
-                <img src={digitalStampUrl} alt="" crossOrigin="anonymous" style={{ width: 130, height: 130, objectFit: 'contain' }} />
+                <img src={digitalStampUrl} alt="" crossOrigin="anonymous" style={{ width: 110, height: 110, objectFit: 'contain' }} />
               ) : (
                 <div style={{
-                  width: 130, height: 130, borderRadius: '50%',
+                  width: 110, height: 110, borderRadius: '50%',
                   border: `3px dashed ${GOLD}`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   color: GOLD_DARK, fontFamily: serifFont, fontSize: 12, textAlign: 'center', padding: 10,
