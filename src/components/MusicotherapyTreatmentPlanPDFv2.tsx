@@ -350,11 +350,11 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
 
         <SectionHeader n={6} title="Estratégias e Técnicas" />
         <Card>
-          <Field label="Improvisação musical" value={planData.musical_improvisation} />
-          <Field label="Recriação musical" value={planData.musical_recreation} />
-          <Field label="Composição" value={planData.musical_composition} />
-          <Field label="Escuta receptiva" value={planData.receptive_listening} />
-          <Field label="Dinâmicas rítmicas" value={planData.rhythmic_dynamics} />
+          <Field label="Improvisação musical" value={planData.musical_improvisation} fullWidth />
+          <Field label="Recriação musical" value={planData.musical_recreation} fullWidth />
+          <Field label="Composição" value={planData.musical_composition} fullWidth />
+          <Field label="Escuta receptiva" value={planData.receptive_listening} fullWidth />
+          <Field label="Dinâmicas rítmicas" value={planData.rhythmic_dynamics} fullWidth />
         </Card>
 
         <SectionHeader n={7} title="Frequência e Duração" />
