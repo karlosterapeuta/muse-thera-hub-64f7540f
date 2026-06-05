@@ -36,6 +36,7 @@ export function renderForPdf(element: ReactElement): {
   container.style.zIndex = '-1';
   container.style.pointerEvents = 'none';
   container.style.visibility = 'visible';
+  container.style.display = 'block';
   container.style.opacity = '1';
   document.body.appendChild(container);
 

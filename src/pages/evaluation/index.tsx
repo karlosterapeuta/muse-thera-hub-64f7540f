@@ -1087,24 +1087,26 @@ export default function Evaluation() {
         const filename = `relatorio-musetera-completo-${(dataToUse.patientName || 'paciente').replace(/\s+/g, '_')}.pdf`;
         
         const blob = await generateSectionPdf(
-          <EnhancedMuseteraReportPDF
-            categoryData={dataToUse.categoryData}
-            pieData={dataToUse.pieData}
-            patientName={dataToUse.patientName}
-            professionalData={prof}
-            radarData={dataToUse.radarData}
-            selectedParameters={dataToUse.selectedParameters}
-            overallScore={dataToUse.overallScore}
-            evaluationDomains={dataToUse.evaluationDomains}
-            evaluationDate={dataToUse.evaluationDate}
-            digitalSignatureUrl={signatureBase64 || undefined}
-            digitalStampUrl={stampBase64 || undefined}
-            professionalEmail={prof?.email || undefined}
-            professionalPhone={prof?.phone || undefined}
-            professionalSpecialty={prof?.specialty || undefined}
-            professionalPhotoUrl={photoBase64 || undefined}
-            patientData={dataToUse.patientData}
-          />,
+          <div style={{ display: 'block', width: '210mm', background: '#fff' }}>
+            <EnhancedMuseteraReportPDF
+              categoryData={dataToUse.categoryData}
+              pieData={dataToUse.pieData}
+              patientName={dataToUse.patientName}
+              professionalData={prof}
+              radarData={dataToUse.radarData}
+              selectedParameters={dataToUse.selectedParameters}
+              overallScore={dataToUse.overallScore}
+              evaluationDomains={dataToUse.evaluationDomains}
+              evaluationDate={dataToUse.evaluationDate}
+              digitalSignatureUrl={signatureBase64 || undefined}
+              digitalStampUrl={stampBase64 || undefined}
+              professionalEmail={prof?.email || undefined}
+              professionalPhone={prof?.phone || undefined}
+              professionalSpecialty={prof?.specialty || undefined}
+              professionalPhotoUrl={photoBase64 || undefined}
+              patientData={dataToUse.patientData}
+            />
+          </div>,
           { filename }
         );
 
