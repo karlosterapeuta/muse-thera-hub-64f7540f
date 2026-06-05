@@ -80,7 +80,7 @@ const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; foo
     maxWidth: `${A4_WIDTH}px`,
     minHeight: `${A4_HEIGHT}px`,
     maxHeight: 'none',
-    background: bg,
+    backgroundColor: bg,
     padding: `${pad}px ${pad}px ${pad + 20}px`,
     boxSizing: 'border-box',
     fontFamily: baseFont,
@@ -91,6 +91,8 @@ const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; foo
     breakInside: 'avoid',
     position: 'relative',
     overflow: 'visible',
+    display: 'block',
+    zIndex: 1,
   }}>
     {children}
     {footer}
@@ -185,10 +187,32 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
 }) => {
   const today = new Date().toLocaleDateString('pt-BR');
 
+  // Fallback para evitar PDF em branco se os dados estiverem corrompidos
+  if (!planData) {
+    return (
+      <div style={{ padding: 40, fontFamily: 'sans-serif', textAlign: 'center' }}>
+        <h1>Erro: Dados do plano não encontrados</h1>
+        <p>Por favor, tente novamente ou entre em contato com o suporte.</p>
+      </div>
+    );
+  }
+
   return (
-    <div data-musetera-pdf="true" style={{ width: `${A4_WIDTH}px`, maxWidth: `${A4_WIDTH}px`, overflow: 'hidden', background: '#fff', fontFamily: baseFont, color: INK, boxSizing: 'border-box' }}>
+    <div 
+      data-musetera-pdf="true" 
+      id="musetera-pdf-content"
+      style={{ 
+        width: `${A4_WIDTH}px`, 
+        maxWidth: `${A4_WIDTH}px`, 
+        overflow: 'hidden', 
+        background: '#ffffff', 
+        fontFamily: baseFont, 
+        color: INK, 
+        boxSizing: 'border-box' 
+      }}
+    >
       <style>{`
-        [data-musetera-pdf], [data-musetera-pdf] * {
+        #musetera-pdf-content, #musetera-pdf-content * {
           box-sizing: border-box !important;
           max-width: 100% !important;
           overflow-wrap: break-word !important;
@@ -197,15 +221,17 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
           text-rendering: optimizeLegibility !important;
           -webkit-font-smoothing: antialiased !important;
         }
-        [data-musetera-pdf] img { max-width: 100% !important; display: block; }
+        #musetera-pdf-content img { max-width: 100% !important; display: block; }
         .musetera-pdf-page {
           page-break-after: always !important;
           break-after: page !important;
+          background: #ffffff !important;
+          -webkit-print-color-adjust: exact;
         }
       `}</style>
       {/* ============ COVER ============ */}
       <Page bg={INK} pad={0} className="musetera-cover-page">
-        <div style={{ position: 'relative', width: '100%', maxWidth: `${A4_WIDTH}px`, height: '100%', overflow: 'hidden', boxSizing: 'border-box' }}>
+        <div style={{ position: 'relative', width: '100%', maxWidth: `${A4_WIDTH}px`, minHeight: `${A4_HEIGHT}px`, height: '100%', overflow: 'hidden', boxSizing: 'border-box', backgroundColor: INK }}>
           {/* Gold corner accents */}
           <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: 8, background: `linear-gradient(90deg, ${GOLD_DARK}, ${GOLD}, ${GOLD_LIGHT}, ${GOLD}, ${GOLD_DARK})` }} />
           <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: 8, background: `linear-gradient(90deg, ${GOLD_DARK}, ${GOLD}, ${GOLD_LIGHT}, ${GOLD}, ${GOLD_DARK})` }} />

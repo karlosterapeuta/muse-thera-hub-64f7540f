@@ -254,6 +254,7 @@ export default function MusicotherapyTreatmentPlanPage() {
     }
 
     setIsGeneratingPDF(true);
+    console.log('📄 [Page] Iniciando geração de PDF para o paciente:', planData.patient_full_name);
     try {
       // Convert professional images to Base64
       let signatureBase64: string | null = null;
