@@ -26,7 +26,7 @@ const MUTED = '#6B6B7A';
 const LINE = '#E6DFC9';
 
 const A4_WIDTH = 794; // ~210mm at 96dpi
-const A4_HEIGHT = 1120; // slightly under A4 ratio to avoid html2pdf page spill/cropping
+const A4_HEIGHT = 1122; // ~297mm at 96dpi
 
 const baseFont = "'Inter', 'Helvetica Neue', Arial, sans-serif";
 const serifFont = "'Lora', 'Georgia', serif";
