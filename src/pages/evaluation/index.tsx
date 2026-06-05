@@ -1074,28 +1074,38 @@ export default function Evaluation() {
         photoBase64 = await imageUrlToBase64(photoUrl);
       }
 
+      const pdfContainer = document.createElement('div');
+      pdfContainer.id = 'pdf-render-container';
+      pdfContainer.style.position = 'absolute';
+      pdfContainer.style.left = '-9999px';
+      pdfContainer.style.top = '0';
+      pdfContainer.style.width = '210mm';
+      document.body.appendChild(pdfContainer);
+
       const pdfContent = (
-        <div id="pdf-content" style={{ display: 'block' }}>
-          <EnhancedMuseteraReportPDF
-            categoryData={dataToUse.categoryData}
-            pieData={dataToUse.pieData}
-            patientName={dataToUse.patientName}
-            professionalData={prof}
-            radarData={dataToUse.radarData}
-            selectedParameters={dataToUse.selectedParameters}
-            overallScore={dataToUse.overallScore}
-            evaluationDomains={dataToUse.evaluationDomains}
-            evaluationDate={dataToUse.evaluationDate}
-            digitalSignatureUrl={signatureBase64 || undefined}
-            digitalStampUrl={stampBase64 || undefined}
-            professionalEmail={prof?.email || undefined}
-            professionalPhone={prof?.phone || undefined}
-            professionalSpecialty={prof?.specialty || undefined}
-            professionalPhotoUrl={photoBase64 || undefined}
-            patientData={dataToUse.patientData}
-          />
-        </div>
+        <EnhancedMuseteraReportPDF
+          categoryData={dataToUse.categoryData}
+          pieData={dataToUse.pieData}
+          patientName={dataToUse.patientName}
+          professionalData={prof}
+          radarData={dataToUse.radarData}
+          selectedParameters={dataToUse.selectedParameters}
+          overallScore={dataToUse.overallScore}
+          evaluationDomains={dataToUse.evaluationDomains}
+          evaluationDate={dataToUse.evaluationDate}
+          digitalSignatureUrl={signatureBase64 || undefined}
+          digitalStampUrl={stampBase64 || undefined}
+          professionalEmail={prof?.email || undefined}
+          professionalPhone={prof?.phone || undefined}
+          professionalSpecialty={prof?.specialty || undefined}
+          professionalPhotoUrl={photoBase64 || undefined}
+          patientData={dataToUse.patientData}
+        />
       );
+
+      const root = createRoot(pdfContainer);
+      root.render(pdfContent);
+
 
       try {
         loadingToast = toast.loading("Gerando Relatório MuseTera Aprimorado...");
