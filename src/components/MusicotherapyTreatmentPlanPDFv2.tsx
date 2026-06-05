@@ -77,9 +77,8 @@ const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; foo
   <div className={`musetera-pdf-page${className ? ` ${className}` : ''}`} style={{
     width: `${A4_WIDTH}px`,
     maxWidth: `${A4_WIDTH}px`,
-    height: `${A4_HEIGHT}px`,
     minHeight: `${A4_HEIGHT}px`,
-    maxHeight: `${A4_HEIGHT}px`,
+    maxHeight: 'none',
     background: bg,
     padding: `${pad}px`,
     boxSizing: 'border-box',
