@@ -27,7 +27,8 @@ const allTrackableFields = [
   "night_body_sounds", "family_musical_history", "musical_behavior_description",
   "discomfort_sounds", "calming_sounds", "regulation_strategies", "family_support_network",
   "school_enrollment", "school_adaptation", "extracurricular_activities",
-  "therapeutic_goals", "treatment_approach"
+  "therapeutic_goals", "treatment_approach",
+  "mother_name", "father_name", "diagnosis_date", "support_level", "calming_strategies"
 ];
 
 export function useAnamnesisValidation(formData: Record<string, any>) {

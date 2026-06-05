@@ -121,6 +121,24 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
         errorCount={getSectionErrors ? getSectionErrors(1).length : 0}
       >
         <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <ModernTextInput
+              id="mother_name"
+              label="Nome da Mãe"
+              value={getStringValue("mother_name")}
+              onChange={(value) => updateField("mother_name", value)}
+              placeholder="Nome completo da mãe"
+              icon={Users}
+            />
+            <ModernTextInput
+              id="father_name"
+              label="Nome do Pai"
+              value={getStringValue("father_name")}
+              onChange={(value) => updateField("father_name", value)}
+              placeholder="Nome completo do pai"
+              icon={Users}
+            />
+          </div>
           <ModernTextInput
             id="referral_professional"
             label="Profissional que Encaminhou"
@@ -156,6 +174,24 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
               value={getStringValue("cid_code")}
               onChange={(value) => updateField("cid_code", value)}
               placeholder="Ex: F84.0, F90.0"
+            />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <ModernTextInput
+              id="diagnosis_date"
+              label="Data do Diagnóstico"
+              value={getStringValue("diagnosis_date")}
+              onChange={(value) => updateField("diagnosis_date", value)}
+              placeholder="Ex: 15/05/2023"
+              icon={FileText}
+            />
+            <ModernTextInput
+              id="support_level"
+              label="Nível de Suporte (TEA)"
+              value={getStringValue("support_level")}
+              onChange={(value) => updateField("support_level", value)}
+              placeholder="Ex: Nível 1 de suporte"
+              icon={Activity}
             />
           </div>
         </div>
@@ -571,6 +607,14 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
             value={getStringValue("regulation_strategies")}
             onChange={(value) => updateField("regulation_strategies", value)}
             placeholder="Descreva estratégias que ajudam a acalmar ou regular o paciente..."
+            icon={Heart}
+          />
+          <AutoExpandTextarea
+            id="calming_strategies"
+            label="Estratégias Utilizadas para Acalmar"
+            value={getStringValue("calming_strategies")}
+            onChange={(value) => updateField("calming_strategies", value)}
+            placeholder="Quais estratégias vocês utilizam para acalmar o paciente em momentos de crise ou agitação?..."
             icon={Heart}
           />
         </div>

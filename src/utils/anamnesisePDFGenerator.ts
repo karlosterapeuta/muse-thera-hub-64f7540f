@@ -10,6 +10,10 @@ interface AnamnesisData {
   main_clinical_demand?: string;
   diagnosis_details?: string;
   cid_code?: string;
+  mother_name?: string;
+  father_name?: string;
+  diagnosis_date?: string;
+  support_level?: string;
   // Seção 2: Histórico Clínico
   clinical_details?: string;
   // Seção 3: Medicação
@@ -38,6 +42,7 @@ interface AnamnesisData {
   calming_sounds?: string;
   // Seção 10: Aspectos Comportamentais
   regulation_strategies?: string;
+  calming_strategies?: string;
   // Seção 11: Contexto Social
   school_enrollment?: string;
   school_adaptation?: string;
@@ -349,10 +354,17 @@ export const generateProfessionalAnamnesePDF = async (
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
                 ${sectionHeader(1, 'IDENTIFICAÇÃO E ENCAMINHAMENTO')}
                 ${sectionContainer(1, `
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    ${renderTextField('Nome da Mãe', 'mother_name')}
+                    ${renderTextField('Nome do Pai', 'father_name')}
+                  </div>
                   ${renderTextField('Profissional Encaminhador', 'referral_professional')}
                   ${renderTextField('Demanda Clínica Principal', 'main_clinical_demand')}
                   ${renderTextField('Detalhes do Diagnóstico', 'diagnosis_details')}
-                  ${renderTextField('Código CID-10/11', 'cid_code')}
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    ${renderTextField('Código CID-10/11', 'cid_code')}
+                    ${renderTextField('Data do Diagnóstico', 'diagnosis_date')}
+                  </div>
                 `)}
               </div>
 
@@ -377,6 +389,7 @@ export const generateProfessionalAnamnesePDF = async (
                       { id: 'other_diagnoses', label: 'Outros Diagnósticos' }
                     ])}
                   </div>
+                  ${renderTextField('Nível de Suporte (TEA)', 'support_level')}
                   ${renderTextField('Detalhes Adicionais das Condições', 'clinical_details')}
                 `)}
               </div>
@@ -565,6 +578,7 @@ export const generateProfessionalAnamnesePDF = async (
                     ])}
                   </div>
                   ${renderTextField('Estratégias de Regulação', 'regulation_strategies')}
+                  ${renderTextField('Estratégias para Acalmar', 'calming_strategies')}
                 `)}
               </div>
 
