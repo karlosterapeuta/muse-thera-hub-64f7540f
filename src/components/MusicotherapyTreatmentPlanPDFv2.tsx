@@ -39,12 +39,11 @@ const wrapText: React.CSSProperties = {
   whiteSpace: 'normal',
   overflowWrap: 'break-word',
   wordBreak: 'normal',
-  overflow: 'hidden',
+  lineHeight: 1.5,
 };
 
 const strictNameWrap: React.CSSProperties = {
   ...wrapText,
-  display: 'block',
 };
 
 // Insere pontos de quebra invisíveis APENAS dentro de palavras muito longas
