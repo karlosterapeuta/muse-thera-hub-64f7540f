@@ -1052,7 +1052,13 @@ export default function Evaluation() {
         evaluationDate: evaluationDate,
         patientData: {
           age: calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age ?? undefined,
-          birthDate: selectedPatientData?.birth_date || undefined
+          birthDate: selectedPatientData?.birth_date || undefined,
+          diagnosis: (selectedPatientData as any)?.diagnosis || '',
+          medications: (selectedPatientData as any)?.medications || '',
+          musicalPreferences: (selectedPatientData as any)?.musical_preferences || '',
+          previousTherapies: (selectedPatientData as any)?.previous_therapies || '',
+          familyHistory: (selectedPatientData as any)?.family_history || '',
+          developmentConcerns: (selectedPatientData as any)?.development_concerns || ''
         }
       };
 
