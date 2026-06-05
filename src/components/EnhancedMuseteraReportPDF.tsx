@@ -544,7 +544,8 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
         {/* Metodologia */}
         <SectionHeader title="Metodologia e Validação" icon="🔬" />
         
-        <div style={{ 
+        <div data-pdf-section style={{ 
+
           backgroundColor: '#F0F9FF',
           border: '1px solid #0EA5E9',
           borderRadius: '12px',
