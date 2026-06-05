@@ -86,11 +86,12 @@ const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; foo
     boxSizing: 'border-box',
     fontFamily: baseFont,
     color: INK,
-    pageBreakAfter: 'always',
-    breakAfter: 'page',
+    pageBreakAfter: 'auto',
+    breakAfter: 'auto',
     pageBreakInside: 'avoid',
     breakInside: 'avoid',
-    marginBottom: 0, // Evita margens extras entre páginas
+    marginBottom: 0, 
+    marginTop: 0,
     display: 'flex',
     flexDirection: 'column',
     position: 'relative',
@@ -228,8 +229,8 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
         }
         #musetera-pdf-content img { max-width: 100% !important; display: block; }
         .musetera-pdf-page {
-          page-break-after: always !important;
-          break-after: page !important;
+          page-break-after: avoid !important;
+          break-after: avoid !important;
           background: #ffffff !important;
           -webkit-print-color-adjust: exact;
         }
@@ -300,7 +301,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
       </Page>
 
       {/* ============ SUMMARY / INDEX ============ */}
-      <Page bg={PAPER} footer={<PageFooter page={2} total={5} patient={planData.patient_full_name} />}>
+      <Page className="musetera-page-2" bg={PAPER} footer={<PageFooter page={2} total={5} patient={planData.patient_full_name} />}>
         <div style={{ marginBottom: 30 }}>
           <div style={{ fontSize: 11, color: GOLD_DARK, letterSpacing: 4, textTransform: 'uppercase', marginBottom: 8 }}>Sumário</div>
           <div style={{ fontFamily: serifFont, fontSize: 32, fontWeight: 600, color: INK }}>Conteúdo do Documento</div>
@@ -337,7 +338,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
       </Page>
 
       {/* ============ CONTENT ============ */}
-      <Page footer={<PageFooter page={3} total={5} patient={planData.patient_full_name} />}>
+      <Page className="musetera-page-3" footer={<PageFooter page={3} total={5} patient={planData.patient_full_name} />}>
         <SectionHeader n={1} title="Identificação do Paciente" />
         <Card>
           <div style={{ ...safeGrid, gap: '0 24px' }}>
@@ -366,7 +367,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
         <Card><BulletList items={planData.specific_objectives} empty="Nenhum objetivo específico definido" /></Card>
       </Page>
 
-      <Page footer={<PageFooter page={4} total={5} patient={planData.patient_full_name} />}>
+      <Page className="musetera-page-4" footer={<PageFooter page={4} total={5} patient={planData.patient_full_name} />}>
         <SectionHeader n={5} title="Recursos Musicoterapêuticos" />
         <div style={{ ...safeGrid, gap: 16 }}>
           <Card>
@@ -416,7 +417,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
         </Card>
       </Page>
 
-      <Page footer={<PageFooter page={5} total={5} patient={planData.patient_full_name} />}>
+      <Page className="musetera-page-5" footer={<PageFooter page={5} total={5} patient={planData.patient_full_name} />}>
         <SectionHeader n={8} title="Critérios de Avaliação" />
         <Card><BulletList items={planData.evaluation_criteria_list} empty="Nenhum critério definido" /></Card>
 
