@@ -1366,8 +1366,18 @@ export default function Evaluation() {
       };
 
       const pdfInst5 = html2pdf().set(opt).from(root);
-      await pdfInst5.save();
-      try { const blob = await pdfInst5.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
+      const pdfBlob = await pdfInst5.output('blob');
+      
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = pdfUrl;
+      link.download = opt.filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(pdfUrl);
+
+      try { await savePDFToStorage(pdfBlob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
       
       } finally {
         cleanup();
