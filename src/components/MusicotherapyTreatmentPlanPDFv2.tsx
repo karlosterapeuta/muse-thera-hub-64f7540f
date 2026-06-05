@@ -78,27 +78,23 @@ const flexText: React.CSSProperties = {
 const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; footer?: React.ReactNode; className?: string }> = ({ children, bg = '#ffffff', pad = 48, footer, className }) => (
   <div className={`musetera-pdf-page${className ? ` ${className}` : ''}`} style={{
     width: `${A4_WIDTH}px`,
-    maxWidth: `${A4_WIDTH}px`,
     minHeight: `${A4_HEIGHT}px`,
-    maxHeight: 'none',
     backgroundColor: bg,
     padding: `${pad}px ${pad}px ${pad + 20}px`,
     boxSizing: 'border-box',
     fontFamily: baseFont,
     color: INK,
-    pageBreakAfter: 'auto',
-    breakAfter: 'auto',
-    pageBreakInside: 'avoid',
-    breakInside: 'avoid',
-    marginBottom: 0, 
-    marginTop: 0,
     display: 'flex',
     flexDirection: 'column',
     position: 'relative',
-    overflow: 'visible',
-    zIndex: 1,
+    overflow: 'hidden',
+    pageBreakAfter: 'always',
+    breakAfter: 'page',
+    margin: '0 auto',
   }}>
-    {children}
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100%', minWidth: 0 }}>
+      {children}
+    </div>
     {footer}
   </div>
 );
@@ -230,9 +226,14 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
         #musetera-pdf-content img { max-width: 100% !important; display: block; }
         .musetera-pdf-page {
           page-break-after: always !important;
-          break-after: always !important;
+          break-after: page !important;
           background: #ffffff !important;
           -webkit-print-color-adjust: exact;
+          display: block !important;
+        }
+        .musetera-pdf-page:last-child {
+          page-break-after: avoid !important;
+          break-after: avoid !important;
         }
       `}</style>
       {/* ============ COVER ============ */}
