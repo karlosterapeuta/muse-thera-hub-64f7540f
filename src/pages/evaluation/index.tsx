@@ -1135,7 +1135,7 @@ export default function Evaluation() {
       document.body.removeChild(link);
       URL.revokeObjectURL(pdfUrl);
       
-      try { await savePDFToStorage(pdfBlob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
+      try { await savePDFToStorage(pdfBlob, opt.filename, "evaluation"); } catch(e) { console.warn("Erro ao salvar no storage:", e); }
 
       
       } finally {
