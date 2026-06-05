@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { PieChart, Pie, Cell, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
 import { ProfessionalData } from "@/hooks/useProfessionalData";
+
 
 interface EnhancedMuseteraReportPDFProps {
   categoryData: any[];
