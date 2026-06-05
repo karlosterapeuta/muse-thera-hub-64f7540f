@@ -313,11 +313,11 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
 
         <SectionHeader n={2} title="Avaliação Inicial" />
         <Card>
-          <Field label="Histórico clínico e familiar" value={planData.clinical_family_history} />
-          <Field label="Condições físicas, cognitivas, emocionais e sociais" value={planData.physical_cognitive_conditions} />
-          <Field label="Nível de interação e comunicação" value={planData.interaction_communication_level} />
-          <Field label="Interesses musicais" value={planData.musical_interests} />
-          <Field label="Comportamentos observados" value={planData.observed_behaviors} />
+          <Field label="Histórico clínico e familiar" value={planData.clinical_family_history} fullWidth />
+          <Field label="Condições físicas, cognitivas, emocionais e sociais" value={planData.physical_cognitive_conditions} fullWidth />
+          <Field label="Nível de interação e comunicação" value={planData.interaction_communication_level} fullWidth />
+          <Field label="Interesses musicais" value={planData.musical_interests} fullWidth />
+          <Field label="Comportamentos observados" value={planData.observed_behaviors} fullWidth />
         </Card>
 
         <SectionHeader n={3} title="Objetivos Gerais" />
