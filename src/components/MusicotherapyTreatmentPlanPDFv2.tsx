@@ -231,7 +231,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
       `}</style>
       {/* ============ COVER ============ */}
       <Page bg={INK} pad={0} className="musetera-cover-page">
-        <div style={{ position: 'relative', width: '100%', maxWidth: `${A4_WIDTH}px`, height: '100%', overflow: 'hidden', boxSizing: 'border-box' }}>
+        <div style={{ position: 'relative', width: '100%', maxWidth: `${A4_WIDTH}px`, minHeight: `${A4_HEIGHT}px`, height: '100%', overflow: 'hidden', boxSizing: 'border-box', backgroundColor: INK }}>
           {/* Gold corner accents */}
           <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: 8, background: `linear-gradient(90deg, ${GOLD_DARK}, ${GOLD}, ${GOLD_LIGHT}, ${GOLD}, ${GOLD_DARK})` }} />
           <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: 8, background: `linear-gradient(90deg, ${GOLD_DARK}, ${GOLD}, ${GOLD_LIGHT}, ${GOLD}, ${GOLD_DARK})` }} />
