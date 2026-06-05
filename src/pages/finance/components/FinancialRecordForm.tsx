@@ -392,7 +392,7 @@ export function FinancialRecordForm({ onSuccess, onCancel, record, seriesMode = 
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <CardTitle>{seriesMode ? "Editar Série Recorrente" : isUpdating ? "Editar Registro" : "Novo Registro Financeiro"}</CardTitle>
+          <CardTitle>{seriesMode ? "Editar Série Recorrente" : isUpdating ? "Editar Registro" : "Agendar Paciente"}</CardTitle>
         </div>
         {seriesMode && (
           <p className="text-xs text-muted-foreground mt-1">
