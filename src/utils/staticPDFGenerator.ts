@@ -20,7 +20,7 @@ export const generateStaticPDF = async (
   const {
     filename = 'documento.pdf',
     waitTime = 3000,
-    quality = 2.0,
+    quality = 2.5,
     format = 'a4',
     orientation = 'portrait',
     fullBleedPages = false
