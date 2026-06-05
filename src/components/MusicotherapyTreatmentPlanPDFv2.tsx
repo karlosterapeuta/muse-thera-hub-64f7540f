@@ -80,7 +80,7 @@ const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; foo
     maxWidth: `${A4_WIDTH}px`,
     minHeight: `${A4_HEIGHT}px`,
     maxHeight: 'none',
-    background: bg,
+    backgroundColor: bg,
     padding: `${pad}px ${pad}px ${pad + 20}px`,
     boxSizing: 'border-box',
     fontFamily: baseFont,
@@ -91,6 +91,8 @@ const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; foo
     breakInside: 'avoid',
     position: 'relative',
     overflow: 'visible',
+    display: 'block',
+    zIndex: 1,
   }}>
     {children}
     {footer}
