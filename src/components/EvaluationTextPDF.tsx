@@ -129,7 +129,8 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
       </div>
 
       {/* Síntese Geral */}
-      <section style={{ marginBottom: '30px' }}>
+      <section data-pdf-section style={{ marginBottom: '30px' }}>
+
         <h3 style={{
           fontSize: '14pt',
           fontWeight: 'bold',
