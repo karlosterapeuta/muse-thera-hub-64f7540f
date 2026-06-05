@@ -229,8 +229,8 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
         }
         #musetera-pdf-content img { max-width: 100% !important; display: block; }
         .musetera-pdf-page {
-          page-break-after: avoid !important;
-          break-after: avoid !important;
+          page-break-after: always !important;
+          break-after: always !important;
           background: #ffffff !important;
           -webkit-print-color-adjust: exact;
         }
