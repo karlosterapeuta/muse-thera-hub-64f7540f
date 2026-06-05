@@ -37,8 +37,8 @@ const wrapText: React.CSSProperties = {
   maxWidth: '100%',
   boxSizing: 'border-box',
   whiteSpace: 'pre-wrap', 
-  overflowWrap: 'anywhere',
-  wordBreak: 'normal',
+  overflowWrap: 'break-word',
+  wordBreak: 'break-word',
   lineHeight: 1.6,
 };
 
@@ -160,7 +160,7 @@ const BulletList: React.FC<{ items?: string[]; empty?: string }> = ({ items, emp
 };
 
 const Card: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div style={{
+  <div className="musetera-card" style={{
     ...wrapText,
     background: '#fff',
     border: `1px solid ${LINE}`,
