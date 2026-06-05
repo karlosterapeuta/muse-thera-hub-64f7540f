@@ -19,104 +19,133 @@ export const generateStaticPDF = async (
 ): Promise<boolean> => {
   const {
     filename = 'documento.pdf',
-    waitTime = 3000,
-    quality = 2.5,
+    waitTime = 3500, // Aumentado para garantir carregamento de fontes/imagens
+    quality = 2.0, // Reduzido levemente para evitar estouro de memória
     format = 'a4',
     orientation = 'portrait',
     fullBleedPages = false
   } = options;
 
+  let container: HTMLDivElement | null = null;
+  let reactRoot: any = null;
+
   try {
     console.log('🔄 Iniciando geração de PDF...', { filename, waitTime, quality });
     
-    // Criar container temporário com estilos específicos para PDF
-    const container = document.createElement('div');
-    container.style.position = 'absolute';
-    container.style.left = '-9999px';
+    // Criar container temporário visível mas fora da tela principal para html2canvas
+    container = document.createElement('div');
+    container.id = 'pdf-generation-container';
+    container.style.position = 'fixed';
+    container.style.left = '0';
     container.style.top = '0';
-    container.style.width = fullBleedPages ? '794px' : '210mm'; // A4 width
-    container.style.minHeight = '297mm'; // A4 height
+    container.style.width = '210mm'; // Largura fixa de A4
+    container.style.height = 'auto';
+    container.style.zIndex = '-9999';
     container.style.backgroundColor = '#ffffff';
-    container.style.fontFamily = 'Times New Roman, serif';
-    container.style.fontSize = '12px';
-    container.style.lineHeight = '1.6';
-    container.style.color = '#000000';
-    container.style.padding = fullBleedPages ? '0' : '20mm';
-    container.style.boxSizing = 'border-box';
+    container.style.opacity = '1'; // Mantemos opacidade 1 para o canvas não sair transparente
+    container.style.pointerEvents = 'none';
+    container.style.visibility = 'visible'; // Deve estar visível para o html2canvas
+    
     document.body.appendChild(container);
 
-    const root = document.createElement('div');
-    root.style.width = '100%';
-    root.style.minHeight = '100%';
-    container.appendChild(root);
+    const rootElement = document.createElement('div');
+    rootElement.style.width = '100%';
+    container.appendChild(rootElement);
 
     // Renderizar componente com React 18
-    const reactRoot = createRoot(root);
+    reactRoot = createRoot(rootElement);
     reactRoot.render(component);
 
-    // Aguardar renderização completa
+    // Aguardar renderização e carregamento de recursos
     await new Promise(resolve => setTimeout(resolve, waitTime));
     
-    // Aguardar um frame adicional para garantir renderização
-    await new Promise(resolve => requestAnimationFrame(() => resolve(undefined)));
-    
+    // Garantir que todas as imagens foram carregadas
+    const images = Array.from(container.querySelectorAll('img'));
+    await Promise.all(images.map(img => {
+      if (img.complete) return Promise.resolve();
+      return new Promise(resolve => {
+        img.onload = resolve;
+        img.onerror = resolve;
+      });
+    }));
+
     // Verificar se o conteúdo foi renderizado
-    console.log('📄 Conteúdo renderizado:', root.innerHTML.length, 'caracteres');
-    if (root.innerHTML.length < 100) {
-      throw new Error('Conteúdo insuficiente para gerar PDF');
+    const content = rootElement.innerHTML;
+    console.log('📄 Conteúdo renderizado:', content.length, 'caracteres');
+    
+    if (content.length < 200) {
+      console.warn('⚠️ Conteúdo possivelmente vazio detectado');
     }
 
-    // Configurações otimizadas do PDF para artigos acadêmicos
+    // Configurações otimizadas do PDF
     const opt = {
-      margin: fullBleedPages ? [0, 0, 0, 0] : [15, 15, 15, 15], // margem em mm
+      margin: fullBleedPages ? 0 : [10, 10, 10, 10],
       filename,
-      pagebreak: { 
-        mode: ['css', 'legacy'],
-        before: '.page-break-before',
-        after: '.page-break-after',
-        avoid: ['.page-break-avoid', '.musetera-pdf-page', 'table', 'tr', 'thead', 'tbody', 'svg']
-      },
-      image: { 
-        type: 'jpeg', 
-        quality: 0.98 
-      },
+      image: { type: 'jpeg', quality: 0.95 },
       html2canvas: { 
         scale: quality,
         useCORS: true,
         allowTaint: true,
+        letterRendering: true,
         backgroundColor: '#ffffff',
-        logging: false,
-        letterRendering: false,
-        removeContainer: true,
-        imageTimeout: 20000
+        logging: true, // Habilitar logs para depuração interna se necessário
+        onclone: (clonedDoc: Document) => {
+          // Ajustes extras no clone se necessário
+          const el = clonedDoc.getElementById('pdf-generation-container');
+          if (el) {
+            el.style.opacity = '1';
+            el.style.visibility = 'visible';
+          }
+        }
       },
       jsPDF: { 
         unit: 'mm', 
-        format,
-        orientation,
-        compress: true,
-        putOnlyUsedFonts: true,
-        floatPrecision: 16
+        format: format, 
+        orientation: orientation,
+        compress: true
+      },
+      pagebreak: { 
+        mode: ['css', 'legacy'],
+        before: '.page-break-before',
+        after: '.page-break-after',
+        avoid: ['.page-break-avoid', '.musetera-pdf-page', 'table', 'tr', 'thead', 'tbody']
       }
     };
 
-    // Gerar PDF
-    console.log('🖨️ Gerando arquivo PDF...');
-    const pdfInstance = html2pdf().set(opt).from(root);
-    await pdfInstance.save();
-    try { const blob = await pdfInstance.outputPdf('blob'); await savePDFToStorage(blob, opt.filename || 'document.pdf', "report"); } catch(e) { console.warn(e); }
+    // Gerar PDF usando html2pdf
+    console.log('🖨️ Capturando canvas e gerando arquivo...');
+    const worker = html2pdf().set(opt).from(rootElement);
     
-    // Limpar container e root do React
-    reactRoot.unmount();
-    document.body.removeChild(container);
+    // Salvar e aguardar conclusão
+    await worker.save();
     
-    console.log('✅ PDF gerado com sucesso!');
+    // Backup para storage
+    try {
+      const blob = await worker.outputPdf('blob');
+      if (blob && blob.size > 1000) {
+        await savePDFToStorage(blob, filename, "report");
+        console.log('💾 PDF salvo no storage com sucesso');
+      }
+    } catch (storageError) {
+      console.warn('⚠️ Erro ao salvar cópia no storage:', storageError);
+    }
+    
+    console.log('✅ PDF gerado e baixado com sucesso!');
     return true;
     
   } catch (error) {
-    console.error('❌ Erro ao gerar PDF:', error);
-    console.error('Stack trace:', (error as Error).stack);
-    toast.error('Erro ao gerar PDF. Por favor, tente novamente.');
+    console.error('❌ Erro crítico ao gerar PDF:', error);
+    toast.error('Ocorreu um erro ao gerar o PDF. Tente salvar as alterações e atualizar a página.');
     return false;
+  } finally {
+    // Limpeza segura
+    setTimeout(() => {
+      if (reactRoot) {
+        try { reactRoot.unmount(); } catch (e) { console.error('Erro ao desmontar root do PDF:', e); }
+      }
+      if (container && container.parentNode) {
+        document.body.removeChild(container);
+      }
+    }, 1000);
   }
 };
