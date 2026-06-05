@@ -131,10 +131,10 @@ const SectionHeader: React.FC<{ n: number; title: string }> = ({ n, title }) => 
   </div>
 );
 
-const Field: React.FC<{ label: string; value?: React.ReactNode }> = ({ label, value }) => (
-  <div style={{ marginBottom: 10, ...wrapText }}>
-    <div style={{ fontSize: 10.5, fontWeight: 600, color: GOLD_DARK, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 3, ...wrapText }}>{label}</div>
-    <div style={{ fontSize: 13, color: INK, lineHeight: 1.55, ...strictNameWrap }}>{makeTextBreakable(value) || <span style={{ color: MUTED, fontStyle: 'italic' }}>Não informado</span>}</div>
+const Field: React.FC<{ label: string; value?: React.ReactNode; fullWidth?: boolean }> = ({ label, value, fullWidth }) => (
+  <div style={{ marginBottom: 14, ...wrapText, width: fullWidth ? '100%' : 'calc(50% - 12px)', flex: fullWidth ? '0 0 100%' : '0 0 calc(50% - 12px)' }}>
+    <div style={{ fontSize: 10, fontWeight: 700, color: GOLD_DARK, textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 4, ...wrapText }}>{label}</div>
+    <div style={{ fontSize: 13, color: INK, lineHeight: 1.5, ...strictNameWrap, paddingBottom: 2 }}>{makeTextBreakable(value) || <span style={{ color: MUTED, fontStyle: 'italic' }}>Não informado</span>}</div>
   </div>
 );
 
