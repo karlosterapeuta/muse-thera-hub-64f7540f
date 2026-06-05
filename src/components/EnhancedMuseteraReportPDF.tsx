@@ -489,7 +489,8 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
         {/* Recomendações Terapêuticas */}
         <SectionHeader title="Recomendações Terapêuticas" icon="💡" />
         
-        <div style={{ 
+        <div data-pdf-section style={{ 
+
           backgroundColor: '#FEF7CD',
           border: '2px solid #FDE047',
           borderRadius: '12px',
