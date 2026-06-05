@@ -285,7 +285,7 @@ export default function MusicotherapyTreatmentPlanPage() {
       const success = await generateStaticPDF(component, {
         filename: `Plano_Musicoterapeutico_${planData.patient_full_name?.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`,
         waitTime: 2000,
-        quality: 1.2,
+        quality: 2.0,
         format: 'a4',
         orientation: 'portrait',
         fullBleedPages: true
