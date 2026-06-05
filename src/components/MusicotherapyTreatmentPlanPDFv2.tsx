@@ -81,7 +81,7 @@ const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; foo
     minHeight: `${A4_HEIGHT}px`,
     maxHeight: 'none',
     background: bg,
-    padding: `${pad}px`,
+    padding: `${pad}px ${pad}px ${pad + 20}px`,
     boxSizing: 'border-box',
     fontFamily: baseFont,
     color: INK,
