@@ -1084,23 +1084,29 @@ export default function Evaluation() {
       const pdfContainer = document.createElement('div');
       pdfContainer.id = 'pdf-render-container';
       
-      // Estilos críticos para o container não ser ignorado pelo html2pdf/html2canvas
-      pdfContainer.style.position = 'absolute';
-      pdfContainer.style.left = '-9999px';
+      // Estilos críticos: o elemento deve estar no DOM e ser "visível" para o browser processar o layout,
+      // mas escondido do usuário.
+      pdfContainer.style.position = 'fixed';
+      pdfContainer.style.left = '0';
       pdfContainer.style.top = '0';
       pdfContainer.style.width = '210mm';
+      pdfContainer.style.height = 'auto';
+      pdfContainer.style.zIndex = '-1000'; // Atrás de tudo
+      pdfContainer.style.opacity = '1';
       pdfContainer.style.backgroundColor = '#ffffff';
-      // Não use visibility: hidden ou display: none, pois html2canvas pode ignorar o conteúdo
+      pdfContainer.style.overflow = 'visible';
       document.body.appendChild(pdfContainer);
 
       const pdfContent = (
-        <div style={{ 
-          backgroundColor: '#ffffff', 
-          width: '210mm', 
-          minHeight: '297mm',
-          padding: '0',
-          margin: '0'
-        }}>
+        <div 
+          className="pdf-content-wrapper"
+          style={{ 
+            backgroundColor: '#ffffff', 
+            width: '210mm',
+            minHeight: '297mm',
+            position: 'relative'
+          }}
+        >
           <EnhancedMuseteraReportPDF
             categoryData={dataToUse.categoryData}
             pieData={dataToUse.pieData}
@@ -1130,29 +1136,32 @@ export default function Evaluation() {
         
         const filename = `relatorio-musetera-completo-${(dataToUse.patientName || 'paciente').replace(/\s+/g, '_')}.pdf`;
         
-        // Aguarda renderização, fontes e imagens
-        await new Promise(resolve => setTimeout(resolve, 3500));
-
+        // Aguarda renderização completa (fontes, imagens, layout)
+        await new Promise(resolve => setTimeout(resolve, 3000));
 
         const opt = {
-          margin: 0, // Margens internas já estão no componente
+          margin: [0, 0, 0, 0],
           filename: filename,
           image: { type: 'jpeg', quality: 0.98 },
           html2canvas: { 
             scale: 2,
             useCORS: true,
-            logging: false,
+            logging: true, // Habilitar logs para depuração interna se necessário
             letterRendering: true,
             backgroundColor: '#ffffff',
-            scrollY: -window.scrollY // Garante que o scroll não afete a captura
+            windowWidth: 794, // 210mm em pixels (96 DPI)
+            scrollY: 0,
+            scrollX: 0
           },
           jsPDF: { 
             unit: 'mm', 
             format: 'a4', 
-            orientation: 'portrait'
+            orientation: 'portrait',
+            compress: true
           }
         };
 
+        // Captura o conteúdo explicitamente renderizado
         const pdfInst = html2pdf().set(opt).from(pdfContainer);
         const blob = await pdfInst.output('blob');
 
