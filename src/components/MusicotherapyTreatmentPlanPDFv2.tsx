@@ -436,7 +436,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
                 <img src={digitalStampUrl} alt="" crossOrigin="anonymous" style={{ width: 110, height: 110, objectFit: 'contain' }} />
               ) : (
                 <div style={{
-                  width: 130, height: 130, borderRadius: '50%',
+                  width: 110, height: 110, borderRadius: '50%',
                   border: `3px dashed ${GOLD}`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   color: GOLD_DARK, fontFamily: serifFont, fontSize: 12, textAlign: 'center', padding: 10,
