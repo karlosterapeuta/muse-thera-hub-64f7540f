@@ -73,7 +73,7 @@ const flexText: React.CSSProperties = {
   minWidth: 0,
 };
 
-const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; footer?: React.ReactNode; className?: string }> = ({ children, bg = '#ffffff', pad = 56, footer, className }) => (
+const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; footer?: React.ReactNode; className?: string }> = ({ children, bg = '#ffffff', pad = 48, footer, className }) => (
   <div className={`musetera-pdf-page${className ? ` ${className}` : ''}`} style={{
     width: `${A4_WIDTH}px`,
     maxWidth: `${A4_WIDTH}px`,
