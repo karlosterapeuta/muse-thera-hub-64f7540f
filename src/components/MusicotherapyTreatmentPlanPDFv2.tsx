@@ -398,21 +398,22 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
 
         {/* ===== Signature / Stamp ===== */}
         <div style={{
-          marginTop: 22,
-          marginBottom: 34,
+          marginTop: 16,
+          marginBottom: 24,
           border: `2px solid ${GOLD}`,
           borderRadius: 14,
           background: '#fff',
           overflow: 'hidden',
+          pageBreakInside: 'avoid',
         }}>
           <div style={{ height: 6, background: `linear-gradient(90deg, ${GOLD_DARK}, ${GOLD}, ${GOLD_LIGHT}, ${GOLD}, ${GOLD_DARK})` }} />
-          <div style={{ padding: 18, ...safeGrid, gap: 20, alignItems: 'center', flexWrap: 'nowrap' }}>
+          <div style={{ padding: 14, ...safeGrid, gap: 16, alignItems: 'center', flexWrap: 'nowrap' }}>
             <div style={{ ...wrapText, flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
                 {professionalPhotoUrl && (
                   <img src={professionalPhotoUrl} alt="" crossOrigin="anonymous" style={{
-                    width: 56, height: 56, borderRadius: '50%', objectFit: 'cover', flex: '0 0 auto',
-                    border: `3px solid ${GOLD}`,
+                    width: 48, height: 48, borderRadius: '50%', objectFit: 'cover', flex: '0 0 auto',
+                    border: `2px solid ${GOLD}`,
                   }} />
                 )}
                 <div style={wrapText}>
