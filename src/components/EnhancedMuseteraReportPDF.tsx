@@ -144,9 +144,10 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
       fontFamily: '"Segoe UI", system-ui, -apple-system, sans-serif',
       lineHeight: '1.6',
       color: '#1F2937',
-      maxWidth: '800px',
+      width: '210mm',
       margin: '0 auto',
-      backgroundColor: '#FFFFFF'
+      backgroundColor: '#FFFFFF',
+      display: 'block'
     }}>
       {/* Header Premium */}
       <div data-pdf-section style={{ 

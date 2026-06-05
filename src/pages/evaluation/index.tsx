@@ -1079,11 +1079,14 @@ export default function Evaluation() {
       pdfContainer.id = 'pdf-render-container';
       // Importante: html2pdf precisa que o elemento esteja VISÍVEL no DOM para capturar estilos corretamente
       // mas podemos colocá-lo bem longe ou escondido atrás de outros elementos
-      pdfContainer.style.position = 'absolute';
+      pdfContainer.style.position = 'fixed';
       pdfContainer.style.left = '0';
       pdfContainer.style.top = '0';
       pdfContainer.style.width = '210mm';
-      pdfContainer.style.zIndex = '-9999';
+      pdfContainer.style.zIndex = '9999';
+      pdfContainer.style.visibility = 'visible';
+      pdfContainer.style.opacity = '0.01';
+      pdfContainer.style.pointerEvents = 'none';
       pdfContainer.style.backgroundColor = '#ffffff';
       document.body.appendChild(pdfContainer);
 
