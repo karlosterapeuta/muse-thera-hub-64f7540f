@@ -1639,17 +1639,18 @@ export default function Evaluation() {
                 <TooltipComponent>
                   <TooltipTrigger asChild>
                     <Button
-                      onClick={handleGenerateEvaluationText}
+                      onClick={handleGenerateMuseteraPDF}
                       disabled={isGeneratingText}
                       className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-0 hover:from-blue-600 hover:to-cyan-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isGeneratingText ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
-                        <FileText className="h-4 w-4" />
+                        <FileDown className="h-4 w-4" />
                       )}
                       Baixar Avaliação
                     </Button>
+
                   </TooltipTrigger>
                   <TooltipContent className="bg-gray-900 text-white border-0">
                     <p>Gera texto profissional com análise dos parâmetros marcados via IA</p>
