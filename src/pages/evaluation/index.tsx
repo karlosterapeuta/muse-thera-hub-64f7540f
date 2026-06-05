@@ -2429,7 +2429,48 @@ export default function Evaluation() {
                       onToggleComparison={handleToggleComparison}
                       onLoadEvaluation={handleLoadEvaluation}
                       onDeleteEvaluation={deleteEvaluation}
-                      onDownloadEvaluation={handleGenerateEvaluationTextFromSaved}
+                       onDownloadEvaluation={(evaluation) => {
+                         const patientName = patients.find(p => p.id === evaluation.patient_id)?.name || "Paciente";
+                         const domainScores = evaluation.content?.domainScores?.map((d: any) => ({
+                           name: d.domain?.replace("Domínio ", "") || "Domínio",
+                           value: d.score || 0,
+                           fullMark: 100
+                         })) || [];
+                         
+                         const savedOverallScore: any = evaluation.content?.overallScore || {};
+                         const fullOverallScore = {
+                           raw: savedOverallScore.raw || 0,
+                           max: savedOverallScore.max || 100,
+                           percentage: savedOverallScore.percentage || 0,
+                           completionPercentage: savedOverallScore.completionPercentage || savedOverallScore.percentage || 0,
+                           evaluatedDomains: savedOverallScore.evaluatedDomains || evaluation.content?.domainScores?.length || 0,
+                           totalDomains: savedOverallScore.totalDomains || evaluationDomains.length,
+                           evaluatedParameters: savedOverallScore.evaluatedParameters || 0,
+                           totalParameters: savedOverallScore.totalParameters || 0
+                         };
+
+                         handleGenerateMuseteraPDF({
+                           categoryData: evaluation.content?.domainScores?.flatMap((d: any) => 
+                             (d.subdomains || []).map((sub: any) => ({
+                               name: sub.name,
+                               value: sub.score,
+                               domain: d.domain.replace("Domínio ", "")
+                             }))
+                           ) || [],
+                           pieData: [
+                             { name: "Desenvolvido", value: fullOverallScore.percentage },
+                             { name: "A desenvolver", value: 100 - fullOverallScore.percentage }
+                           ],
+                           patientName: patientName,
+                           professionalData: professionalData,
+                           radarData: domainScores,
+                           selectedParameters: evaluation.content?.selections || {},
+                           overallScore: fullOverallScore,
+                           evaluationDomains: evaluationDomains,
+                           evaluationDate: new Date(evaluation.date)
+                         });
+                       }}
+
                       onEditEvaluation={handleEditEvaluation}
                     />
                   </Card>
