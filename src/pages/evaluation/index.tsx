@@ -1081,32 +1081,12 @@ export default function Evaluation() {
         photoBase64 = await imageUrlToBase64(photoUrl);
       }
 
-      const pdfContainer = document.createElement('div');
-      pdfContainer.id = 'pdf-render-container';
-      
-      // Estilos críticos: o elemento deve estar no DOM e ser "visível" para o browser processar o layout,
-      // mas escondido do usuário.
-      pdfContainer.style.position = 'fixed';
-      pdfContainer.style.left = '0';
-      pdfContainer.style.top = '0';
-      pdfContainer.style.width = '210mm';
-      pdfContainer.style.height = 'auto';
-      pdfContainer.style.zIndex = '-1000'; // Atrás de tudo
-      pdfContainer.style.opacity = '1';
-      pdfContainer.style.backgroundColor = '#ffffff';
-      pdfContainer.style.overflow = 'visible';
-      document.body.appendChild(pdfContainer);
-
-      const pdfContent = (
-        <div 
-          className="pdf-content-wrapper"
-          style={{ 
-            backgroundColor: '#ffffff', 
-            width: '210mm',
-            minHeight: '297mm',
-            position: 'relative'
-          }}
-        >
+      try {
+        loadingToast = toast.loading("Gerando Relatório MuseTera Aprimorado...");
+        
+        const filename = `relatorio-musetera-completo-${(dataToUse.patientName || 'paciente').replace(/\s+/g, '_')}.pdf`;
+        
+        const blob = await generateSectionPdf(
           <EnhancedMuseteraReportPDF
             categoryData={dataToUse.categoryData}
             pieData={dataToUse.pieData}
@@ -1124,46 +1104,9 @@ export default function Evaluation() {
             professionalSpecialty={prof?.specialty || undefined}
             professionalPhotoUrl={photoBase64 || undefined}
             patientData={dataToUse.patientData}
-          />
-        </div>
-      );
-
-      const root = createRoot(pdfContainer);
-      root.render(pdfContent);
-
-      try {
-        loadingToast = toast.loading("Gerando Relatório MuseTera Aprimorado...");
-        
-        const filename = `relatorio-musetera-completo-${(dataToUse.patientName || 'paciente').replace(/\s+/g, '_')}.pdf`;
-        
-        // Aguarda renderização completa (fontes, imagens, layout)
-        await new Promise(resolve => setTimeout(resolve, 3000));
-
-        const opt = {
-          margin: [0, 0, 0, 0],
-          filename: filename,
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { 
-            scale: 2,
-            useCORS: true,
-            logging: true, // Habilitar logs para depuração interna se necessário
-            letterRendering: true,
-            backgroundColor: '#ffffff',
-            windowWidth: 794, // 210mm em pixels (96 DPI)
-            scrollY: 0,
-            scrollX: 0
-          },
-          jsPDF: { 
-            unit: 'mm', 
-            format: 'a4', 
-            orientation: 'portrait',
-            compress: true
-          }
-        };
-
-        // Captura o conteúdo explicitamente renderizado
-        const pdfInst = html2pdf().set(opt).from(pdfContainer);
-        const blob = await pdfInst.output('blob');
+          />,
+          { filename }
+        );
 
         const pdfUrl = URL.createObjectURL(blob);
         const link = document.createElement('a');
@@ -1180,11 +1123,6 @@ export default function Evaluation() {
           console.warn("Erro ao salvar no storage:", e); 
         }
         
-        // Cleanup
-        setTimeout(() => {
-          root.unmount();
-          document.body.removeChild(pdfContainer);
-        }, 1000);
       } catch (error) {
         console.error("Erro ao gerar PDF:", error);
         throw error;
