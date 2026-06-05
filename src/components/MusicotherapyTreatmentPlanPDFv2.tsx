@@ -90,8 +90,8 @@ const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; foo
     flexDirection: 'column',
     position: 'relative',
     overflow: 'hidden',
-    pageBreakAfter: 'always',
-    breakAfter: 'page',
+    pageBreakAfter: 'avoid',
+    breakAfter: 'avoid',
     margin: '0',
   }}>
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100%', minWidth: 0, overflow: 'hidden' }}>
@@ -223,8 +223,8 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
         .musetera-pdf-page {
           width: ${A4_WIDTH}px !important;
           height: ${A4_HEIGHT}px !important;
-          page-break-after: always !important;
-          break-after: page !important;
+          page-break-after: avoid !important;
+          break-after: avoid !important;
           overflow: hidden !important;
           position: relative !important;
           display: flex !important;

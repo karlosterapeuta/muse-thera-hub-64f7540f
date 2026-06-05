@@ -100,12 +100,17 @@ export const generateStaticPDF = async (
         backgroundColor: '#ffffff',
         logging: false,
         onclone: (clonedDoc: Document) => {
-          // Garante que o elemento clonado esteja visível
           const el = clonedDoc.getElementById('musetera-pdf-render-container');
           if (el) {
             el.style.position = 'static';
             el.style.zIndex = '1';
             el.style.opacity = '1';
+            // Remove espaços extras injetados por transformações de escala
+            const pages = el.querySelectorAll('.musetera-pdf-page');
+            pages.forEach((p: any) => {
+              p.style.marginBottom = '0px';
+              p.style.paddingBottom = '0px';
+            });
           }
         }
       },
