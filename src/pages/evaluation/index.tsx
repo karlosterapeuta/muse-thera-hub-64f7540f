@@ -1310,40 +1310,20 @@ export default function Evaluation() {
         </div>
       );
 
-      const { root, ready, cleanup } = renderForPdf(pdfContent);
-      await ready;
-      try {
+      const filename = `texto-avaliacao-${patient.name || 'paciente'}-${format(new Date(evaluation.date), 'yyyy-MM-dd')}.pdf`;
+      const blob = await generateSectionPdf(pdfContent, { filename, scale: 2 });
 
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
 
-      const opt = {
-        margin: [10, 10],
-        filename: `texto-avaliacao-${patient.name || 'paciente'}-${format(new Date(evaluation.date), 'yyyy-MM-dd')}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: '#ffffff',
-          logging: false,
-          letterRendering: true
-        },
-        jsPDF: { 
-          unit: 'mm', 
-          format: 'a4', 
-          orientation: 'portrait',
-          compress: true
-        },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-      };
+      try { await savePDFToStorage(blob, filename, "evaluation"); } catch(e) { console.warn(e); }
 
-      const pdfInst5 = html2pdf().set(opt).from(root);
-      await pdfInst5.save();
-      try { const blob = await pdfInst5.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
-      
-      } finally {
-        cleanup();
-      }
       
       toast.dismiss();
       toast.success("Texto de Avaliação gerado com sucesso!");
@@ -1445,40 +1425,20 @@ export default function Evaluation() {
         </div>
       );
 
-      const { root, ready, cleanup } = renderForPdf(pdfContent);
-      await ready;
-      try {
+      const filename = `texto-avaliacao-${selectedPatientData?.name || 'paciente'}.pdf`;
+      const blob = await generateSectionPdf(pdfContent, { filename, scale: 2 });
 
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
 
-      const opt = {
-        margin: [10, 10],
-        filename: `texto-avaliacao-${selectedPatientData?.name || 'paciente'}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: '#ffffff',
-          logging: false,
-          letterRendering: true
-        },
-        jsPDF: { 
-          unit: 'mm', 
-          format: 'a4', 
-          orientation: 'portrait',
-          compress: true
-        },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-      };
+      try { await savePDFToStorage(blob, filename, "evaluation"); } catch(e) { console.warn(e); }
 
-      const pdfInst6 = html2pdf().set(opt).from(root);
-      await pdfInst6.save();
-      try { const blob = await pdfInst6.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
-      
-      } finally {
-        cleanup();
-      }
       
       toast.dismiss();
       toast.success("Texto de Avaliação gerado com sucesso!");
