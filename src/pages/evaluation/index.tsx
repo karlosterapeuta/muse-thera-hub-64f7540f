@@ -1027,54 +1027,70 @@ export default function Evaluation() {
     }
   };
 
-  const handleGenerateMuseteraPDF = async () => {
+  const handleGenerateMuseteraPDF = async (overrideData?: any) => {
     // Verificar se há dados para gerar o PDF
-    if (Object.keys(selections).length === 0) {
+    if (!overrideData && Object.keys(selections).length === 0) {
       toast.error("Nenhum parâmetro avaliado. Preencha a avaliação ou carregue uma avaliação salva.");
       return;
     }
     
     let loadingToast: string | number | undefined;
     try {
+      // Usar dados fornecidos ou os estados atuais
+      const dataToUse = overrideData || {
+        categoryData: subdomainScores,
+        pieData: pieData,
+        patientName: selectedPatientData?.name,
+        professionalData: professionalData,
+        radarData: domainScores,
+        selectedParameters: selections,
+        overallScore: overallScore,
+        evaluationDomains: evaluationDomains,
+        evaluationDate: evaluationDate,
+        patientData: {
+          age: calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age ?? undefined,
+          birthDate: selectedPatientData?.birth_date || undefined
+        }
+      };
+
       // Converter URLs para Base64
       let signatureBase64: string | null = null;
       let stampBase64: string | null = null;
       let photoBase64: string | null = null;
 
-      if (professionalData?.digital_signature_url) {
-        signatureBase64 = await imageUrlToBase64(professionalData.digital_signature_url);
+      const prof = dataToUse.professionalData;
+      if (prof?.digital_signature_url) {
+        signatureBase64 = await imageUrlToBase64(prof.digital_signature_url);
       }
 
-      if (professionalData?.digital_stamp_url) {
-        stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
+      if (prof?.digital_stamp_url) {
+        stampBase64 = await imageUrlToBase64(prof.digital_stamp_url);
       }
 
-      if (professionalData?.stamp_photo_url) {
-        photoBase64 = await imageUrlToBase64(professionalData.stamp_photo_url);
+      const photoUrl = prof?.stamp_photo_url || prof?.avatar_url;
+      if (photoUrl) {
+        photoBase64 = await imageUrlToBase64(photoUrl);
       }
 
       const pdfContent = (
         <div id="pdf-content" style={{ display: 'block' }}>
           <EnhancedMuseteraReportPDF
-            categoryData={subdomainScores}
-            pieData={pieData}
-            patientName={selectedPatientData?.name}
-            professionalData={professionalData}
-            radarData={domainScores}
-            selectedParameters={selections}
-            overallScore={overallScore}
-            evaluationDomains={evaluationDomains}
-            evaluationDate={evaluationDate}
+            categoryData={dataToUse.categoryData}
+            pieData={dataToUse.pieData}
+            patientName={dataToUse.patientName}
+            professionalData={prof}
+            radarData={dataToUse.radarData}
+            selectedParameters={dataToUse.selectedParameters}
+            overallScore={dataToUse.overallScore}
+            evaluationDomains={dataToUse.evaluationDomains}
+            evaluationDate={dataToUse.evaluationDate}
             digitalSignatureUrl={signatureBase64 || undefined}
             digitalStampUrl={stampBase64 || undefined}
-            professionalEmail={professionalData?.email || undefined}
-            professionalPhone={professionalData?.phone || undefined}
-            professionalSpecialty={professionalData?.specialty || undefined}
+            professionalEmail={prof?.email || undefined}
+            professionalPhone={prof?.phone || undefined}
+            professionalSpecialty={prof?.specialty || undefined}
             professionalPhotoUrl={photoBase64 || undefined}
-            patientData={{
-              age: calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age ?? undefined,
-              birthDate: selectedPatientData?.birth_date || undefined
-            }}
+            patientData={dataToUse.patientData}
           />
         </div>
       );
@@ -1089,7 +1105,7 @@ export default function Evaluation() {
 
       const opt = {
         margin: [8, 8],
-        filename: `relatorio-musetera-completo-${selectedPatientData?.name || 'paciente'}.pdf`,
+        filename: `relatorio-musetera-completo-${dataToUse.patientName || 'paciente'}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
           scale: 1.8,
@@ -1116,6 +1132,7 @@ export default function Evaluation() {
       }
       
       toast.success("Relatório MuseTera Aprimorado gerado com sucesso!", { id: loadingToast });
+
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
       toast.error("Erro ao gerar PDF. Por favor, tente novamente.", { id: loadingToast });
