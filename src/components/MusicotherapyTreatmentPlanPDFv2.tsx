@@ -406,8 +406,8 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
           overflow: 'hidden',
         }}>
           <div style={{ height: 6, background: `linear-gradient(90deg, ${GOLD_DARK}, ${GOLD}, ${GOLD_LIGHT}, ${GOLD}, ${GOLD_DARK})` }} />
-          <div style={{ padding: 18, ...safeGrid, gap: 20, alignItems: 'center' }}>
-            <div style={wrapText}>
+          <div style={{ padding: 18, ...safeGrid, gap: 20, alignItems: 'center', flexWrap: 'nowrap' }}>
+            <div style={{ ...wrapText, flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
                 {professionalPhotoUrl && (
                   <img src={professionalPhotoUrl} alt="" crossOrigin="anonymous" style={{
