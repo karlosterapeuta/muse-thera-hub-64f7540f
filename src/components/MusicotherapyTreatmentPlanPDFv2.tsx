@@ -179,7 +179,7 @@ const SECTIONS = [
 ];
 
 export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
-  planData, therapistName, digitalStampUrl, professionalPhotoUrl,
+  planData, therapistName, digitalSignatureUrl, digitalStampUrl, professionalPhotoUrl,
   professionalEmail, professionalPhone, professionalSpecialty, professionalRegistry,
   planNumber,
 }) => {
