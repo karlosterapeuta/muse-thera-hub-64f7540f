@@ -19,7 +19,7 @@ import { format, parse } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { FinancialRecord } from "../types";
 import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
-import { CalendarIcon, RepeatIcon } from "lucide-react";
+import { CalendarIcon, RepeatIcon, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
@@ -382,8 +382,18 @@ export function FinancialRecordForm({ onSuccess, onCancel, record, seriesMode = 
   
   return (
     <Card className={`w-full ${isMobile ? 'rounded-none border-0 shadow-none h-screen flex flex-col' : 'max-h-[85vh] flex flex-col'}`}>
-      <CardHeader className={`${isMobile ? 'px-4 py-3' : ''} flex-shrink-0`}>
-        <CardTitle>{seriesMode ? "Editar Série Recorrente" : isUpdating ? "Editar Registro" : "Novo Registro Financeiro"}</CardTitle>
+      <CardHeader className={`${isMobile ? 'px-4 py-3' : ''} flex-shrink-0 flex flex-row items-center justify-between space-y-0`}>
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={handleCancel}
+            className="h-8 w-8"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <CardTitle>{seriesMode ? "Editar Série Recorrente" : isUpdating ? "Editar Registro" : "Novo Registro Financeiro"}</CardTitle>
+        </div>
         {seriesMode && (
           <p className="text-xs text-muted-foreground mt-1">
             As alterações serão aplicadas ao registro principal e regenerarão todas as ocorrências futuras.
