@@ -782,190 +782,169 @@ export default function FinancialRecords() {
               <p className="mt-2 text-muted-foreground">Carregando registros...</p>
             </div>
           ) : sortedRecords.length > 0 ? (
-            <>
-              <div className="overflow-x-auto -mx-2 md:mx-0">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-muted/30">
+            <div className="overflow-x-auto -mx-2 md:mx-0">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/30">
+                    <TableHead className="whitespace-nowrap">
+                      <div className="flex items-center">
+                        <CalendarIcon className="mr-2 h-3.5 w-3.5 text-primary" />
+                        Data
+                      </div>
+                    </TableHead>
+                    {!isMobile && (
+                      <TableHead className="whitespace-nowrap">Dia da Semana</TableHead>
+                    )}
+                    <TableHead className="whitespace-nowrap">
+                      <div className="flex items-center">
+                        <ClockIcon className="mr-2 h-3.5 w-3.5 text-primary" />
+                        Horário
+                      </div>
+                    </TableHead>
+                    {!isMobile && (
+                      <TableHead className="whitespace-nowrap">Duração</TableHead>
+                    )}
+                    <TableHead className="whitespace-nowrap">
+                      <div className="flex items-center">
+                        <BuildingIcon className="mr-2 h-3.5 w-3.5 text-primary" />
+                        Clínica
+                      </div>
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      <div className="flex items-center">
+                        <UserIcon className="mr-2 h-3.5 w-3.5 text-primary" />
+                        Paciente
+                      </div>
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      <div className="flex items-center">
+                        <DollarSignIcon className="mr-2 h-3.5 w-3.5 text-primary" />
+                        Valor
+                      </div>
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      <div className="flex items-center">
+                        <CheckCircle2Icon className="mr-2 h-3.5 w-3.5 text-primary" />
+                        Pagamento
+                      </div>
+                    </TableHead>
+                    {!isMobile && (
                       <TableHead className="whitespace-nowrap">
                         <div className="flex items-center">
-                          <CalendarIcon className="mr-2 h-3.5 w-3.5 text-primary" />
-                          Data
+                          <InfoIcon className="mr-2 h-3.5 w-3.5 text-primary" />
+                          Descrição
                         </div>
                       </TableHead>
+                    )}
+                    <TableHead className="w-[80px]">Ações</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {sortedRecords.map((record) => (
+                    <TableRow key={record.id} className="hover:bg-muted/20">
+                      <TableCell className="whitespace-nowrap">
+                        {format(parseDateLocal(record.session_date), "dd/MM/yyyy")}
+                      </TableCell>
                       {!isMobile && (
-                        <TableHead className="whitespace-nowrap">Dia da Semana</TableHead>
+                        <TableCell className="whitespace-nowrap">
+                          {getWeekdayLabel(record.description)}
+                        </TableCell>
                       )}
-                      <TableHead className="whitespace-nowrap">
-                        <div className="flex items-center">
-                          <ClockIcon className="mr-2 h-3.5 w-3.5 text-primary" />
-                          Horário
+                      <TableCell className="whitespace-nowrap">
+                        <div className="flex items-center font-medium">
+                          {getAppointmentTime(record.description)}
                         </div>
-                      </TableHead>
+                      </TableCell>
                       {!isMobile && (
-                        <TableHead className="whitespace-nowrap">Duração</TableHead>
+                        <TableCell className="whitespace-nowrap">
+                          {getAppointmentDuration(record.description)}
+                        </TableCell>
                       )}
-                      <TableHead className="whitespace-nowrap">
-                        <div className="flex items-center">
-                          <BuildingIcon className="mr-2 h-3.5 w-3.5 text-primary" />
-                          Clínica
+                      <TableCell>{record.clinic_name}</TableCell>
+                      <TableCell className="font-medium">
+                        <div className="flex items-center gap-2">
+                          {record.patient_name}
+                          <RecurringRecordIndicator record={record} />
                         </div>
-                      </TableHead>
-                      <TableHead className="whitespace-nowrap">
-                        <div className="flex items-center">
-                          <UserIcon className="mr-2 h-3.5 w-3.5 text-primary" />
-                          Paciente
-                        </div>
-                      </TableHead>
-                      <TableHead className="whitespace-nowrap">
-                          <div className="flex items-center">
-                            <DollarSignIcon className="mr-2 h-3.5 w-3.5 text-primary" />
-                            Valor
-                          </div>
-                        </TableHead>
-                        <TableHead className="whitespace-nowrap">
-                          <div className="flex items-center">
-                            <CheckCircle2Icon className="mr-2 h-3.5 w-3.5 text-primary" />
-                            Pagamento
-                          </div>
-                        </TableHead>
-                        {!isMobile && (
-                          <TableHead className="whitespace-nowrap">
-                            <div className="flex items-center">
-                              <InfoIcon className="mr-2 h-3.5 w-3.5 text-primary" />
-                              Descrição
-                            </div>
-                          </TableHead>
-                        )}
-                        <TableHead className="w-[80px]">Ações</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {sortedRecords.map((record) => (
-                        <TableRow key={record.id} className="hover:bg-primary/5 transition-colors">
-                          <TableCell className="whitespace-nowrap font-medium text-xs md:text-sm">
-                            {format(parseDateLocal(record.session_date), "dd/MM/yyyy", { locale: ptBR })}
-                          </TableCell>
-                          {!isMobile && (
-                            <TableCell className="whitespace-nowrap text-xs md:text-sm">
-                              {getWeekdayLabel(record.description) || "-"}
-                            </TableCell>
-                          )}
-                          <TableCell className="whitespace-nowrap font-medium text-primary text-xs md:text-sm">
-                            {getAppointmentTime(record.description) || "-"}
-                          </TableCell>
-                          {!isMobile && (
-                            <TableCell className="whitespace-nowrap text-xs md:text-sm">
-                              {getAppointmentDuration(record.description) || "-"}
-                            </TableCell>
-                          )}
-                          <TableCell className="font-medium text-xs md:text-sm">
-                            <div className="max-w-[100px] md:max-w-full truncate">
-                              {record.clinic_name}
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-xs md:text-sm">
-                            <div className="max-w-[100px] md:max-w-full truncate">
-                              {record.patient_name || '-'}
-                            </div>
-                          </TableCell>
-                          <TableCell className="font-bold text-primary text-xs md:text-sm">
-                            {formatCurrency(record.amount)}
-                          </TableCell>
-                          <TableCell>
-                            <PaymentStatusBadge status={record.payment_status as any} />
-                          </TableCell>
-                          {!isMobile && (
-                            <TableCell className="max-w-[150px] md:max-w-[200px] truncate text-xs md:text-sm">
-                              {getCleanDescription(record.description) || '-'}
-                            </TableCell>
-                          )}
-                          <TableCell>
-                            <div className="flex items-center gap-1 justify-end">
+                      </TableCell>
+                      <TableCell className="font-bold text-primary">
+                        {formatCurrency(record.amount)}
+                      </TableCell>
+                      <TableCell>
+                        <PaymentStatusBadge status={record.payment_status || "pendente"} />
+                      </TableCell>
+                      {!isMobile && (
+                        <TableCell className="max-w-[200px] truncate text-muted-foreground text-xs">
+                          {getCleanDescription(record.description)}
+                        </TableCell>
+                      )}
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" className="h-8 w-8 p-0">
+                                <MoreHorizontalIcon className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-[200px]">
+                              <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                className="flex items-center cursor-pointer"
+                                onClick={() => handleEditRecord(record)}
+                              >
+                                <PencilIcon className="mr-2 h-4 w-4" />
+                                Editar Registro
+                              </DropdownMenuItem>
+                              {record.is_recurring && (
+                                <DropdownMenuItem
+                                  className="flex items-center cursor-pointer"
+                                  onClick={() => handleEditSeries(record)}
+                                >
+                                  <CalendarIcon className="mr-2 h-4 w-4" />
+                                  Editar Série
+                                </DropdownMenuItem>
+                              )}
+                              <DropdownMenuSeparator />
                               {(record.payment_status || "pendente") === "pendente" ? (
-                                <Button
-                                  size="sm"
-                                  className="h-8 bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:opacity-90"
+                                <DropdownMenuItem
+                                  className="flex items-center cursor-pointer"
                                   onClick={() => {
                                     setPaymentRecord(record);
                                     requestAnimationFrame(() => setPaymentDialogOpen(true));
                                   }}
                                 >
-                                  <CheckCircle2Icon className="h-3.5 w-3.5 mr-1" />
-                                  {isMobile ? "" : "Receber"}
-                                </Button>
+                                  <CheckCircle2Icon className="mr-2 h-4 w-4 text-green-600" />
+                                  Confirmar Recebimento
+                                </DropdownMenuItem>
                               ) : (
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="h-8"
+                                <DropdownMenuItem
+                                  className="flex items-center cursor-pointer"
                                   onClick={() => {
                                     setReceiptRecord(record);
                                     requestAnimationFrame(() => setReceiptDialogOpen(true));
                                   }}
                                 >
-                                  <ReceiptIcon className="h-3.5 w-3.5 mr-1" />
-                                  {isMobile ? "" : "Recibo"}
-                                </Button>
+                                  <ReceiptIcon className="mr-2 h-4 w-4 text-primary" />
+                                  Emitir/Reenviar Recibo
+                                </DropdownMenuItem>
                               )}
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="hover:bg-primary/10 transition-colors h-8 w-8">
-                                    <MoreHorizontalIcon className="h-4 w-4" />
-                                    <span className="sr-only">Abrir menu</span>
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-[180px]">
-                                  <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                                  <DropdownMenuSeparator />
-                                  <DropdownMenuItem
-                                    className="flex items-center cursor-pointer"
-                                    onClick={() => handleEditRecord(record)}
-                                  >
-                                    <PencilIcon className="mr-2 h-4 w-4 text-primary" />
-                                    Editar
-                                  </DropdownMenuItem>
-                                  {(record.payment_status || "pendente") === "pendente" ? (
-                                    <DropdownMenuItem
-                                      className="flex items-center cursor-pointer"
-                                      onClick={() => {
-                                        setPaymentRecord(record);
-                                        requestAnimationFrame(() => setPaymentDialogOpen(true));
-                                      }}
-                                    >
-                                      <CheckCircle2Icon className="mr-2 h-4 w-4 text-green-600" />
-                                      Confirmar Recebimento
-                                    </DropdownMenuItem>
-                                  ) : (
-                                    <DropdownMenuItem
-                                      className="flex items-center cursor-pointer"
-                                      onClick={() => {
-                                        setReceiptRecord(record);
-                                        requestAnimationFrame(() => setReceiptDialogOpen(true));
-                                      }}
-                                    >
-                                      <ReceiptIcon className="mr-2 h-4 w-4 text-primary" />
-                                      Emitir/Reenviar Recibo
-                                    </DropdownMenuItem>
-                                  )}
-                                  <DropdownMenuItem
-                                    className="flex items-center text-destructive focus:text-destructive cursor-pointer"
-                                    onClick={() => handleDeleteClick(record.id)}
-                                  >
-                                    <TrashIcon className="mr-2 h-4 w-4" />
-                                    Excluir
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              )}
-            </>
+                              <DropdownMenuItem
+                                className="flex items-center text-destructive focus:text-destructive cursor-pointer"
+                                onClick={() => handleDeleteClick(record.id)}
+                              >
+                                <TrashIcon className="mr-2 h-4 w-4" />
+                                Excluir
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           ) : (
             <div className="py-20 text-center">
               <div className="rounded-full bg-primary/10 p-4 inline-block mb-3">
