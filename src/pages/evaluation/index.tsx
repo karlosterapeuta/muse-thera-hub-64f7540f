@@ -1114,7 +1114,8 @@ export default function Evaluation() {
         const filename = `relatorio-musetera-completo-${(dataToUse.patientName || 'paciente').replace(/\s+/g, '_')}.pdf`;
         
         // Simulação de delay para feedback visual
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Aguarda renderização e fontes
+        await new Promise(resolve => setTimeout(resolve, 2000));
 
         const opt = {
           margin: [10, 10],
@@ -1133,10 +1134,7 @@ export default function Evaluation() {
           }
         };
 
-        const element = document.getElementById('pdf-content');
-        if (!element) throw new Error("Elemento de conteúdo do PDF não encontrado");
-
-        const pdfInst = html2pdf().set(opt).from(element);
+        const pdfInst = html2pdf().set(opt).from(pdfContainer);
         const blob = await pdfInst.output('blob');
 
         const pdfUrl = URL.createObjectURL(blob);
@@ -1153,6 +1151,12 @@ export default function Evaluation() {
         } catch(e) { 
           console.warn("Erro ao salvar no storage:", e); 
         }
+        
+        // Cleanup
+        setTimeout(() => {
+          root.unmount();
+          document.body.removeChild(pdfContainer);
+        }, 1000);
       } catch (error) {
         console.error("Erro ao gerar PDF:", error);
         throw error;
