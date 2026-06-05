@@ -206,7 +206,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
           <div style={{ position: 'absolute', top: -150, right: -150, width: 500, height: 500, borderRadius: '50%', border: `1px solid ${GOLD}`, opacity: 0.1 }} />
           <div style={{ position: 'absolute', bottom: -180, left: -180, width: 500, height: 500, borderRadius: '50%', border: `1px solid ${GOLD}`, opacity: 0.12 }} />
 
-          <div style={{ position: 'absolute', inset: 0, padding: '54px 70px 86px', display: 'grid', gridTemplateRows: 'auto minmax(0, 1fr) 220px', rowGap: 22, color: '#fff', boxSizing: 'border-box', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', inset: 0, padding: '54px 70px 86px', display: 'flex', flexDirection: 'column', gap: 22, color: '#fff', boxSizing: 'border-box', overflow: 'hidden' }}>
             {/* Top brand */}
             <div style={{ minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingBottom: 6, overflow: 'hidden' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
