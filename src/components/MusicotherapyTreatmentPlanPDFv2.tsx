@@ -433,7 +433,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
             </div>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: '0 0 auto' }}>
               {digitalStampUrl ? (
-                <img src={digitalStampUrl} alt="" crossOrigin="anonymous" style={{ width: 130, height: 130, objectFit: 'contain' }} />
+                <img src={digitalStampUrl} alt="" crossOrigin="anonymous" style={{ width: 110, height: 110, objectFit: 'contain' }} />
               ) : (
                 <div style={{
                   width: 130, height: 130, borderRadius: '50%',
