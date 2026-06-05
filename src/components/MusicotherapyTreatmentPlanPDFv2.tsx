@@ -414,40 +414,50 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
           pageBreakInside: 'avoid',
         }}>
           <div style={{ height: 6, background: `linear-gradient(90deg, ${GOLD_DARK}, ${GOLD}, ${GOLD_LIGHT}, ${GOLD}, ${GOLD_DARK})` }} />
-          <div style={{ padding: 14, ...safeGrid, gap: 16, alignItems: 'center', flexWrap: 'nowrap' }}>
-            <div style={{ ...wrapText, flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+          <div style={{ padding: 18, display: 'flex', gap: 24, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+            <div style={{ flex: 1, minWidth: 300 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
                 {professionalPhotoUrl && (
                   <img src={professionalPhotoUrl} alt="" crossOrigin="anonymous" style={{
-                    width: 48, height: 48, borderRadius: '50%', objectFit: 'cover', flex: '0 0 auto',
+                    width: 56, height: 56, borderRadius: '50%', objectFit: 'cover', flex: '0 0 auto',
                     border: `2px solid ${GOLD}`,
                   }} />
                 )}
                 <div style={{ ...wrapText, flex: 1 }}>
-                  <div style={{ fontFamily: serifFont, fontSize: 14, fontWeight: 600, color: INK, lineHeight: 1.4, ...strictNameWrap }}>{makeTextBreakable(therapistName) || 'Musicoterapeuta'}</div>
-                  <div style={{ fontSize: 11, color: GOLD_DARK, marginTop: 2, ...strictNameWrap }}>{makeTextBreakable(professionalSpecialty) || 'Musicoterapeuta'}</div>
+                  <div style={{ fontFamily: serifFont, fontSize: 16, fontWeight: 600, color: INK, lineHeight: 1.4, ...strictNameWrap }}>{makeTextBreakable(therapistName) || 'Musicoterapeuta'}</div>
+                  <div style={{ fontSize: 12, color: GOLD_DARK, marginTop: 2, ...strictNameWrap }}>{makeTextBreakable(professionalSpecialty) || 'Musicoterapeuta'}</div>
                 </div>
               </div>
-              <div style={{ fontSize: 11.5, color: INK_SOFT, lineHeight: 1.6, ...strictNameWrap }}>
+
+              {digitalSignatureUrl && (
+                <div style={{ marginBottom: 16 }}>
+                  <img src={digitalSignatureUrl} alt="Assinatura" crossOrigin="anonymous" style={{ maxHeight: 60, maxWidth: 200, objectFit: 'contain', filter: 'contrast(1.2)' }} />
+                  <div style={{ width: 180, height: 1, background: LINE, marginTop: 4 }} />
+                </div>
+              )}
+
+              <div style={{ fontSize: 12, color: INK_SOFT, lineHeight: 1.7, ...strictNameWrap }}>
                 {professionalRegistry && <div style={{ ...strictNameWrap, marginBottom: 4 }}><strong style={{ color: GOLD_DARK }}>Registro:</strong> {makeTextBreakable(professionalRegistry)}</div>}
                 {professionalEmail && <div style={{ ...strictNameWrap, marginBottom: 4 }}><strong style={{ color: GOLD_DARK }}>E-mail:</strong> {makeTextBreakable(professionalEmail)}</div>}
                 {professionalPhone && <div style={strictNameWrap}><strong style={{ color: GOLD_DARK }}>Telefone:</strong> {makeTextBreakable(professionalPhone)}</div>}
               </div>
-              <div style={{ marginTop: 12, paddingTop: 10, borderTop: `1px dashed ${LINE}`, fontSize: 9.5, color: MUTED, letterSpacing: 0.8, display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ width: 7, height: 7, borderRadius: '50%', background: GOLD, display: 'inline-block', flex: '0 0 auto' }} />
-                <span style={wrapText}>ASSINATURA DIGITAL VERIFICADA · MUSETERA</span>
+
+              <div style={{ marginTop: 16, paddingTop: 12, borderTop: `1px dashed ${LINE}`, fontSize: 10, color: MUTED, letterSpacing: 0.8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: GOLD, display: 'inline-block', flex: '0 0 auto' }} />
+                <span style={wrapText}>DOCUMENTO AUTENTICADO DIGITALMENTE · MUSETERA</span>
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: '0 0 auto' }}>
+
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, flex: '0 0 auto' }}>
               {digitalStampUrl ? (
-                <img src={digitalStampUrl} alt="" crossOrigin="anonymous" style={{ width: 110, height: 110, objectFit: 'contain' }} />
+                <img src={digitalStampUrl} alt="Carimbo" crossOrigin="anonymous" style={{ width: 130, height: 130, objectFit: 'contain' }} />
               ) : (
                 <div style={{
-                  width: 110, height: 110, borderRadius: '50%',
+                  width: 120, height: 120, borderRadius: '50%',
                   border: `3px dashed ${GOLD}`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   color: GOLD_DARK, fontFamily: serifFont, fontSize: 12, textAlign: 'center', padding: 10,
-                }}>Carimbo Digital<br />MuseTera</div>
+                }}>Carimbo Profissional<br />Padrão MuseTera</div>
               )}
             </div>
           </div>
