@@ -959,7 +959,6 @@ export default function FinancialRecords() {
                               </DropdownMenu>
                             </div>
                           </TableCell>
-
                         </TableRow>
                       ))}
                     </TableBody>
