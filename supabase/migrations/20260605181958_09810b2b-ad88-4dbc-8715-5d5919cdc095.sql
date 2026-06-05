@@ -1,0 +1,6 @@
+ALTER TABLE public.anamnesis 
+ADD COLUMN IF NOT EXISTS mother_name TEXT,
+ADD COLUMN IF NOT EXISTS father_name TEXT,
+ADD COLUMN IF NOT EXISTS diagnosis_date TEXT,
+ADD COLUMN IF NOT EXISTS support_level TEXT,
+ADD COLUMN IF NOT EXISTS calming_strategies TEXT;

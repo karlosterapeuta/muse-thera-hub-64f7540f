@@ -119,6 +119,7 @@ export type Database = {
           body_musical_expression: boolean | null
           brazilian_popular: boolean | null
           broad_motor_dev: boolean | null
+          calming_strategies: string | null
           cerebral_palsy: boolean | null
           cervical_control: boolean | null
           childhood_sound_environment: string | null
@@ -133,6 +134,7 @@ export type Database = {
           created_at: string | null
           current_medication: string | null
           depression: boolean | null
+          diagnosis_date: string | null
           diagnosis_details: string | null
           down_syndrome: boolean | null
           echolalia: boolean | null
@@ -143,6 +145,7 @@ export type Database = {
           family_musical_history: string | null
           family_relationship: string | null
           family_support_network: string | null
+          father_name: string | null
           fine_motor_dev: boolean | null
           first_words: boolean | null
           fragile_x_syndrome: boolean | null
@@ -161,6 +164,7 @@ export type Database = {
           medication_effects: string | null
           medication_schedule: string | null
           mother_movements_songs: string | null
+          mother_name: string | null
           music_practice_time: string | null
           music_therapy: boolean | null
           musical_education: boolean | null
@@ -201,6 +205,7 @@ export type Database = {
           speech_therapy: boolean | null
           spontaneous_vocal: boolean | null
           stereotyped_behavior: boolean | null
+          support_level: string | null
           therapeutic_goals: string | null
           therapy_frequency: string | null
           therapy_observations: string | null
@@ -230,6 +235,7 @@ export type Database = {
           body_musical_expression?: boolean | null
           brazilian_popular?: boolean | null
           broad_motor_dev?: boolean | null
+          calming_strategies?: string | null
           cerebral_palsy?: boolean | null
           cervical_control?: boolean | null
           childhood_sound_environment?: string | null
@@ -244,6 +250,7 @@ export type Database = {
           created_at?: string | null
           current_medication?: string | null
           depression?: boolean | null
+          diagnosis_date?: string | null
           diagnosis_details?: string | null
           down_syndrome?: boolean | null
           echolalia?: boolean | null
@@ -254,6 +261,7 @@ export type Database = {
           family_musical_history?: string | null
           family_relationship?: string | null
           family_support_network?: string | null
+          father_name?: string | null
           fine_motor_dev?: boolean | null
           first_words?: boolean | null
           fragile_x_syndrome?: boolean | null
@@ -272,6 +280,7 @@ export type Database = {
           medication_effects?: string | null
           medication_schedule?: string | null
           mother_movements_songs?: string | null
+          mother_name?: string | null
           music_practice_time?: string | null
           music_therapy?: boolean | null
           musical_education?: boolean | null
@@ -312,6 +321,7 @@ export type Database = {
           speech_therapy?: boolean | null
           spontaneous_vocal?: boolean | null
           stereotyped_behavior?: boolean | null
+          support_level?: string | null
           therapeutic_goals?: string | null
           therapy_frequency?: string | null
           therapy_observations?: string | null
@@ -341,6 +351,7 @@ export type Database = {
           body_musical_expression?: boolean | null
           brazilian_popular?: boolean | null
           broad_motor_dev?: boolean | null
+          calming_strategies?: string | null
           cerebral_palsy?: boolean | null
           cervical_control?: boolean | null
           childhood_sound_environment?: string | null
@@ -355,6 +366,7 @@ export type Database = {
           created_at?: string | null
           current_medication?: string | null
           depression?: boolean | null
+          diagnosis_date?: string | null
           diagnosis_details?: string | null
           down_syndrome?: boolean | null
           echolalia?: boolean | null
@@ -365,6 +377,7 @@ export type Database = {
           family_musical_history?: string | null
           family_relationship?: string | null
           family_support_network?: string | null
+          father_name?: string | null
           fine_motor_dev?: boolean | null
           first_words?: boolean | null
           fragile_x_syndrome?: boolean | null
@@ -383,6 +396,7 @@ export type Database = {
           medication_effects?: string | null
           medication_schedule?: string | null
           mother_movements_songs?: string | null
+          mother_name?: string | null
           music_practice_time?: string | null
           music_therapy?: boolean | null
           musical_education?: boolean | null
@@ -423,6 +437,7 @@ export type Database = {
           speech_therapy?: boolean | null
           spontaneous_vocal?: boolean | null
           stereotyped_behavior?: boolean | null
+          support_level?: string | null
           therapeutic_goals?: string | null
           therapy_frequency?: string | null
           therapy_observations?: string | null
