@@ -430,7 +430,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
                 <span style={wrapText}>ASSINATURA DIGITAL VERIFICADA · MUSETERA</span>
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: '0 0 auto' }}>
               {digitalStampUrl ? (
                 <img src={digitalStampUrl} alt="" crossOrigin="anonymous" style={{ width: 130, height: 130, objectFit: 'contain' }} />
               ) : (
