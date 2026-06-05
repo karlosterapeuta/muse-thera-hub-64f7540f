@@ -1,7 +1,8 @@
-
 import { useState, useEffect, useMemo } from "react";
+import { createRoot } from "react-dom/client";
 import { calculateAgeFromBirthDate } from "@/utils/dateUtils";
 import { Card } from "@/components/ui/card";
+
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { 
   Select,
@@ -1074,55 +1075,67 @@ export default function Evaluation() {
         photoBase64 = await imageUrlToBase64(photoUrl);
       }
 
+      const pdfContainer = document.createElement('div');
+      pdfContainer.id = 'pdf-render-container';
+      pdfContainer.style.position = 'absolute';
+      pdfContainer.style.left = '-9999px';
+      pdfContainer.style.top = '0';
+      pdfContainer.style.width = '210mm';
+      document.body.appendChild(pdfContainer);
+
       const pdfContent = (
-        <div id="pdf-content" style={{ display: 'block' }}>
-          <EnhancedMuseteraReportPDF
-            categoryData={dataToUse.categoryData}
-            pieData={dataToUse.pieData}
-            patientName={dataToUse.patientName}
-            professionalData={prof}
-            radarData={dataToUse.radarData}
-            selectedParameters={dataToUse.selectedParameters}
-            overallScore={dataToUse.overallScore}
-            evaluationDomains={dataToUse.evaluationDomains}
-            evaluationDate={dataToUse.evaluationDate}
-            digitalSignatureUrl={signatureBase64 || undefined}
-            digitalStampUrl={stampBase64 || undefined}
-            professionalEmail={prof?.email || undefined}
-            professionalPhone={prof?.phone || undefined}
-            professionalSpecialty={prof?.specialty || undefined}
-            professionalPhotoUrl={photoBase64 || undefined}
-            patientData={dataToUse.patientData}
-          />
-        </div>
+        <EnhancedMuseteraReportPDF
+          categoryData={dataToUse.categoryData}
+          pieData={dataToUse.pieData}
+          patientName={dataToUse.patientName}
+          professionalData={prof}
+          radarData={dataToUse.radarData}
+          selectedParameters={dataToUse.selectedParameters}
+          overallScore={dataToUse.overallScore}
+          evaluationDomains={dataToUse.evaluationDomains}
+          evaluationDate={dataToUse.evaluationDate}
+          digitalSignatureUrl={signatureBase64 || undefined}
+          digitalStampUrl={stampBase64 || undefined}
+          professionalEmail={prof?.email || undefined}
+          professionalPhone={prof?.phone || undefined}
+          professionalSpecialty={prof?.specialty || undefined}
+          professionalPhotoUrl={photoBase64 || undefined}
+          patientData={dataToUse.patientData}
+        />
       );
+
+      const root = createRoot(pdfContainer);
+      root.render(pdfContent);
+
 
       try {
         loadingToast = toast.loading("Gerando Relatório MuseTera Aprimorado...");
         
         const filename = `relatorio-musetera-completo-${(dataToUse.patientName || 'paciente').replace(/\s+/g, '_')}.pdf`;
         
-        const blob = await generateSectionPdf(
-          <EnhancedMuseteraReportPDF
-            categoryData={dataToUse.categoryData}
-            pieData={dataToUse.pieData}
-            patientName={dataToUse.patientName}
-            professionalData={prof}
-            radarData={dataToUse.radarData}
-            selectedParameters={dataToUse.selectedParameters}
-            overallScore={dataToUse.overallScore}
-            evaluationDomains={dataToUse.evaluationDomains}
-            evaluationDate={dataToUse.evaluationDate}
-            digitalSignatureUrl={signatureBase64 || undefined}
-            digitalStampUrl={stampBase64 || undefined}
-            professionalEmail={prof?.email || undefined}
-            professionalPhone={prof?.phone || undefined}
-            professionalSpecialty={prof?.specialty || undefined}
-            professionalPhotoUrl={photoBase64 || undefined}
-            patientData={dataToUse.patientData}
-          />,
-          { filename }
-        );
+        // Simulação de delay para feedback visual
+        // Aguarda renderização e fontes
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        const opt = {
+          margin: [10, 10],
+          filename: filename,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { 
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff'
+          },
+          jsPDF: { 
+            unit: 'mm', 
+            format: 'a4', 
+            orientation: 'portrait'
+          }
+        };
+
+        const pdfInst = html2pdf().set(opt).from(pdfContainer);
+        const blob = await pdfInst.output('blob');
 
         const pdfUrl = URL.createObjectURL(blob);
         const link = document.createElement('a');
@@ -1138,6 +1151,12 @@ export default function Evaluation() {
         } catch(e) { 
           console.warn("Erro ao salvar no storage:", e); 
         }
+        
+        // Cleanup
+        setTimeout(() => {
+          root.unmount();
+          document.body.removeChild(pdfContainer);
+        }, 1000);
       } catch (error) {
         console.error("Erro ao gerar PDF:", error);
         throw error;

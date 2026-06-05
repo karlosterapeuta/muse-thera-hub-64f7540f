@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { PieChart, Pie, Cell, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
 import { ProfessionalData } from "@/hooks/useProfessionalData";
+
 
 interface EnhancedMuseteraReportPDFProps {
   categoryData: any[];
@@ -311,30 +310,10 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
             }}>
               📈 Perfil de Habilidades
             </h3>
-            <div style={{ height: '250px', width: '100%' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <RadarChart data={radarData}>
-                  <PolarGrid stroke="#E5E7EB" />
-                  <PolarAngleAxis 
-                    dataKey="name" 
-                    tick={{ fontSize: 10, fill: '#6B7280' }}
-                  />
-                  <PolarRadiusAxis 
-                    angle={30} 
-                    domain={[0, 100]} 
-                    tick={{ fontSize: 8, fill: '#9CA3AF' }}
-                  />
-                  <Radar 
-                    name="Perfil" 
-                    dataKey="value" 
-                    stroke="#3B82F6" 
-                    fill="#3B82F6" 
-                    fillOpacity={0.3}
-                    strokeWidth={2}
-                  />
-                </RadarChart>
-              </ResponsiveContainer>
+            <div style={{ height: '250px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <p style={{ fontSize: '14px', color: '#666' }}>[Gráfico de Radar: Perfil de Habilidades]</p>
             </div>
+
           </div>
 
           <div style={{ 
@@ -353,25 +332,10 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
             }}>
               🎯 Distribuição de Desenvolvimento
             </h3>
-            <div style={{ height: '250px', width: '100%' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
+            <div style={{ height: '250px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <p style={{ fontSize: '14px', color: '#666' }}>[Gráfico de Pizza: Distribuição de Desenvolvimento]</p>
             </div>
+
             <div style={{ textAlign: 'center', marginTop: '10px' }}>
               {pieData.map((entry, index) => (
                 <div key={index} style={{ 
