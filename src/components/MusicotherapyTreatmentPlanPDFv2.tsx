@@ -94,7 +94,6 @@ const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; foo
     flexDirection: 'column',
     position: 'relative',
     overflow: 'visible',
-    display: 'block',
     zIndex: 1,
   }}>
     {children}
