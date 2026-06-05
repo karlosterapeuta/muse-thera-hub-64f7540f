@@ -1102,27 +1102,31 @@ export default function Evaluation() {
         
         const filename = `relatorio-musetera-completo-${(dataToUse.patientName || 'paciente').replace(/\s+/g, '_')}.pdf`;
         
-        const blob = await generateSectionPdf(
-          <EnhancedMuseteraReportPDF
-            categoryData={dataToUse.categoryData}
-            pieData={dataToUse.pieData}
-            patientName={dataToUse.patientName}
-            professionalData={prof}
-            radarData={dataToUse.radarData}
-            selectedParameters={dataToUse.selectedParameters}
-            overallScore={dataToUse.overallScore}
-            evaluationDomains={dataToUse.evaluationDomains}
-            evaluationDate={dataToUse.evaluationDate}
-            digitalSignatureUrl={signatureBase64 || undefined}
-            digitalStampUrl={stampBase64 || undefined}
-            professionalEmail={prof?.email || undefined}
-            professionalPhone={prof?.phone || undefined}
-            professionalSpecialty={prof?.specialty || undefined}
-            professionalPhotoUrl={photoBase64 || undefined}
-            patientData={dataToUse.patientData}
-          />,
-          { filename }
-        );
+        // Simulação de delay para feedback visual
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        const opt = {
+          margin: [10, 10],
+          filename: filename,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { 
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff'
+          },
+          jsPDF: { 
+            unit: 'mm', 
+            format: 'a4', 
+            orientation: 'portrait'
+          }
+        };
+
+        const element = document.getElementById('pdf-content');
+        if (!element) throw new Error("Elemento de conteúdo do PDF não encontrado");
+
+        const pdfInst = html2pdf().set(opt).from(element);
+        const blob = await pdfInst.output('blob');
 
         const pdfUrl = URL.createObjectURL(blob);
         const link = document.createElement('a');
