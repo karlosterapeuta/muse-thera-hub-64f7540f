@@ -69,8 +69,8 @@ const safeGrid: React.CSSProperties = {
 
 const flexText: React.CSSProperties = {
   ...strictNameWrap,
-  flex: '1 1 0%',
-  width: 'auto',
+  flex: 1,
+  minWidth: 0,
 };
 
 const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; footer?: React.ReactNode; className?: string }> = ({ children, bg = '#ffffff', pad = 56, footer, className }) => (
