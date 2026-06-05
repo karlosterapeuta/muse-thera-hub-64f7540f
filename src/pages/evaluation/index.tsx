@@ -1,8 +1,7 @@
+
 import { useState, useEffect, useMemo } from "react";
-import { createRoot } from "react-dom/client";
 import { calculateAgeFromBirthDate } from "@/utils/dateUtils";
 import { Card } from "@/components/ui/card";
-
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { 
   Select,
@@ -1028,113 +1027,98 @@ export default function Evaluation() {
     }
   };
 
-  const handleGenerateMuseteraPDF = async (overrideData?: any) => {
+  const handleGenerateMuseteraPDF = async () => {
     // Verificar se há dados para gerar o PDF
-    const hasData = Object.keys(selections).length > 0;
-    
-    if (!overrideData && !hasData) {
-      toast.error("Nenhum parâmetro avaliado. Preencha a avaliação (Escala MuseTera) antes de baixar.");
+    if (Object.keys(selections).length === 0) {
+      toast.error("Nenhum parâmetro avaliado. Preencha a avaliação ou carregue uma avaliação salva.");
       return;
     }
     
     let loadingToast: string | number | undefined;
     try {
-      // Usar dados fornecidos ou os estados atuais
-      const dataToUse = overrideData || {
-        categoryData: subdomainScores,
-        pieData: pieData,
-        patientName: selectedPatientData?.name,
-        professionalData: professionalData,
-        radarData: domainScores,
-        selectedParameters: selections,
-        overallScore: overallScore,
-        evaluationDomains: evaluationDomains,
-        evaluationDate: evaluationDate,
-        patientData: {
-          age: calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age ?? undefined,
-          birthDate: selectedPatientData?.birth_date || undefined,
-          diagnosis: (selectedPatientData as any)?.diagnosis || '',
-          medications: (selectedPatientData as any)?.medications || '',
-          musicalPreferences: (selectedPatientData as any)?.musical_preferences || '',
-          previousTherapies: (selectedPatientData as any)?.previous_therapies || '',
-          familyHistory: (selectedPatientData as any)?.family_history || '',
-          developmentConcerns: (selectedPatientData as any)?.development_concerns || ''
-        }
-      };
-
       // Converter URLs para Base64
       let signatureBase64: string | null = null;
       let stampBase64: string | null = null;
       let photoBase64: string | null = null;
 
-      const prof = dataToUse.professionalData;
-      if (prof?.digital_signature_url) {
-        signatureBase64 = await imageUrlToBase64(prof.digital_signature_url);
+      if (professionalData?.digital_signature_url) {
+        signatureBase64 = await imageUrlToBase64(professionalData.digital_signature_url);
       }
 
-      if (prof?.digital_stamp_url) {
-        stampBase64 = await imageUrlToBase64(prof.digital_stamp_url);
+      if (professionalData?.digital_stamp_url) {
+        stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
       }
 
-      const photoUrl = prof?.stamp_photo_url || prof?.avatar_url;
-      if (photoUrl) {
-        photoBase64 = await imageUrlToBase64(photoUrl);
+      if (professionalData?.stamp_photo_url) {
+        photoBase64 = await imageUrlToBase64(professionalData.stamp_photo_url);
       }
 
+      const pdfContent = (
+        <div id="pdf-content" style={{ display: 'block' }}>
+          <EnhancedMuseteraReportPDF
+            categoryData={subdomainScores}
+            pieData={pieData}
+            patientName={selectedPatientData?.name}
+            professionalData={professionalData}
+            radarData={domainScores}
+            selectedParameters={selections}
+            overallScore={overallScore}
+            evaluationDomains={evaluationDomains}
+            evaluationDate={evaluationDate}
+            digitalSignatureUrl={signatureBase64 || undefined}
+            digitalStampUrl={stampBase64 || undefined}
+            professionalEmail={professionalData?.email || undefined}
+            professionalPhone={professionalData?.phone || undefined}
+            professionalSpecialty={professionalData?.specialty || undefined}
+            professionalPhotoUrl={photoBase64 || undefined}
+            patientData={{
+              age: calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age ?? undefined,
+              birthDate: selectedPatientData?.birth_date || undefined
+            }}
+          />
+        </div>
+      );
+
+      const { root, ready, cleanup } = renderForPdf(pdfContent);
+      await ready;
       try {
-        loadingToast = toast.loading("Gerando Relatório MuseTera Aprimorado...");
-        
-        const filename = `relatorio-musetera-completo-${(dataToUse.patientName || 'paciente').replace(/\s+/g, '_')}.pdf`;
-        
-        const blob = await generateSectionPdf(
-          <div style={{ display: 'block', width: '210mm', background: '#fff' }}>
-            <EnhancedMuseteraReportPDF
-              categoryData={dataToUse.categoryData}
-              pieData={dataToUse.pieData}
-              patientName={dataToUse.patientName}
-              professionalData={prof}
-              radarData={dataToUse.radarData}
-              selectedParameters={dataToUse.selectedParameters}
-              overallScore={dataToUse.overallScore}
-              evaluationDomains={dataToUse.evaluationDomains}
-              evaluationDate={dataToUse.evaluationDate}
-              digitalSignatureUrl={signatureBase64 || undefined}
-              digitalStampUrl={stampBase64 || undefined}
-              professionalEmail={prof?.email || undefined}
-              professionalPhone={prof?.phone || undefined}
-              professionalSpecialty={prof?.specialty || undefined}
-              professionalPhotoUrl={photoBase64 || undefined}
-              patientData={dataToUse.patientData}
-            />
-          </div>,
-          { filename }
-        );
 
-        const pdfUrl = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = pdfUrl;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(pdfUrl);
-        
-        try { 
-          await savePDFToStorage(blob, filename, "evaluation"); 
-        } catch(e) { 
-          console.warn("Erro ao salvar no storage:", e); 
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      loadingToast = toast.loading("Gerando Relatório MuseTera Aprimorado...");
+
+      const opt = {
+        margin: [8, 8],
+        filename: `relatorio-musetera-completo-${selectedPatientData?.name || 'paciente'}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 1.8,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          letterRendering: true
+        },
+        jsPDF: { 
+          unit: 'mm', 
+          format: 'a4', 
+          orientation: 'portrait',
+          compress: true
         }
-        
-      } catch (error) {
-        console.error("Erro ao gerar PDF:", error);
-        throw error;
+      };
+
+      const pdfInst4 = html2pdf().set(opt).from(root);
+      await pdfInst4.save();
+      try { const blob = await pdfInst4.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
+      
+      } finally {
+        cleanup();
       }
       
       toast.success("Relatório MuseTera Aprimorado gerado com sucesso!", { id: loadingToast });
-
-    } catch (error: any) {
-      console.error("Erro detalhado ao gerar PDF:", error);
-      toast.error(`Erro ao gerar PDF: ${error.message || 'Erro desconhecido'}. Verifique se o paciente possui dados preenchidos.`, { id: loadingToast });
+    } catch (error) {
+      console.error("Erro ao gerar PDF:", error);
+      toast.error("Erro ao gerar PDF. Por favor, tente novamente.", { id: loadingToast });
     }
   };
 
@@ -1326,45 +1310,39 @@ export default function Evaluation() {
         </div>
       );
 
+      const { root, ready, cleanup } = renderForPdf(pdfContent);
+      await ready;
       try {
-        const filename = `texto-avaliacao-${patient.name || 'paciente'}-${format(new Date(evaluation.date), 'yyyy-MM-dd')}.pdf`;
-        
-        const blob = await generateSectionPdf(
-          <EvaluationTextPDF
-            content={data.content}
-            patientName={patient.name || 'Paciente'}
-            patientAge={calculateAgeFromBirthDate(patient.birth_date) ?? patient.age ?? null}
-            evaluationDate={format(new Date(evaluation.date), 'dd/MM/yyyy')}
-            professionalName={professionalData?.name || 'Profissional'}
-            professionalRegister={professionalData?.register || undefined}
-            digitalSignatureUrl={signatureBase64 || undefined}
-            digitalStampUrl={stampBase64 || undefined}
-            professionalEmail={professionalData?.email || undefined}
-            professionalPhone={professionalData?.phone || undefined}
-            professionalSpecialty={professionalData?.specialty || undefined}
-            professionalPhotoUrl={photoBase64 || undefined}
-            overallScore={savedOverallScore}
-          />,
-          { filename }
-        );
 
-        const pdfUrl = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = pdfUrl;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(pdfUrl);
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
-        try { 
-          await savePDFToStorage(blob, filename, "evaluation"); 
-        } catch(e) { 
-          console.warn(e); 
-        }
-      } catch (error) {
-        console.error("Erro ao gerar PDF de texto salvo:", error);
-        throw error;
+      const opt = {
+        margin: [10, 10],
+        filename: `texto-avaliacao-${patient.name || 'paciente'}-${format(new Date(evaluation.date), 'yyyy-MM-dd')}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          letterRendering: true
+        },
+        jsPDF: { 
+          unit: 'mm', 
+          format: 'a4', 
+          orientation: 'portrait',
+          compress: true
+        },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+      };
+
+      const pdfInst5 = html2pdf().set(opt).from(root);
+      await pdfInst5.save();
+      try { const blob = await pdfInst5.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
+      
+      } finally {
+        cleanup();
       }
       
       toast.dismiss();
@@ -1467,45 +1445,39 @@ export default function Evaluation() {
         </div>
       );
 
+      const { root, ready, cleanup } = renderForPdf(pdfContent);
+      await ready;
       try {
-        const filename = `texto-avaliacao-${selectedPatientData?.name || 'paciente'}.pdf`;
-        
-        const blob = await generateSectionPdf(
-          <EvaluationTextPDF
-            content={data.content}
-            patientName={selectedPatientData?.name || 'Paciente'}
-            patientAge={calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age ?? null}
-            evaluationDate={format(evaluationDate, 'dd/MM/yyyy')}
-            professionalName={professionalData?.name || 'Profissional'}
-            professionalRegister={professionalData?.register || undefined}
-            digitalSignatureUrl={signatureBase64 || undefined}
-            digitalStampUrl={stampBase64 || undefined}
-            professionalEmail={professionalData?.email || undefined}
-            professionalPhone={professionalData?.phone || undefined}
-            professionalSpecialty={professionalData?.specialty || undefined}
-            professionalPhotoUrl={photoBase64 || undefined}
-            overallScore={overallScore}
-          />,
-          { filename }
-        );
 
-        const pdfUrl = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = pdfUrl;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(pdfUrl);
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
-        try { 
-          await savePDFToStorage(blob, filename, "evaluation"); 
-        } catch(e) { 
-          console.warn(e); 
-        }
-      } catch (error) {
-        console.error("Erro ao gerar PDF de texto:", error);
-        throw error;
+      const opt = {
+        margin: [10, 10],
+        filename: `texto-avaliacao-${selectedPatientData?.name || 'paciente'}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          letterRendering: true
+        },
+        jsPDF: { 
+          unit: 'mm', 
+          format: 'a4', 
+          orientation: 'portrait',
+          compress: true
+        },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+      };
+
+      const pdfInst6 = html2pdf().set(opt).from(root);
+      await pdfInst6.save();
+      try { const blob = await pdfInst6.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
+      
+      } finally {
+        cleanup();
       }
       
       toast.dismiss();
@@ -1667,18 +1639,17 @@ export default function Evaluation() {
                 <TooltipComponent>
                   <TooltipTrigger asChild>
                     <Button
-                      onClick={handleGenerateMuseteraPDF}
+                      onClick={handleGenerateEvaluationText}
                       disabled={isGeneratingText}
                       className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-0 hover:from-blue-600 hover:to-cyan-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isGeneratingText ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
-                        <FileDown className="h-4 w-4" />
+                        <FileText className="h-4 w-4" />
                       )}
                       Baixar Avaliação
                     </Button>
-
                   </TooltipTrigger>
                   <TooltipContent className="bg-gray-900 text-white border-0">
                     <p>Gera texto profissional com análise dos parâmetros marcados via IA</p>
@@ -2457,48 +2428,7 @@ export default function Evaluation() {
                       onToggleComparison={handleToggleComparison}
                       onLoadEvaluation={handleLoadEvaluation}
                       onDeleteEvaluation={deleteEvaluation}
-                       onDownloadEvaluation={(evaluation) => {
-                         const patientName = patients.find(p => p.id === evaluation.patient_id)?.name || "Paciente";
-                         const domainScores = evaluation.content?.domainScores?.map((d: any) => ({
-                           name: d.domain?.replace("Domínio ", "") || "Domínio",
-                           value: d.score || 0,
-                           fullMark: 100
-                         })) || [];
-                         
-                         const savedOverallScore: any = evaluation.content?.overallScore || {};
-                         const fullOverallScore = {
-                           raw: savedOverallScore.raw || 0,
-                           max: savedOverallScore.max || 100,
-                           percentage: savedOverallScore.percentage || 0,
-                           completionPercentage: savedOverallScore.completionPercentage || savedOverallScore.percentage || 0,
-                           evaluatedDomains: savedOverallScore.evaluatedDomains || evaluation.content?.domainScores?.length || 0,
-                           totalDomains: savedOverallScore.totalDomains || evaluationDomains.length,
-                           evaluatedParameters: savedOverallScore.evaluatedParameters || 0,
-                           totalParameters: savedOverallScore.totalParameters || 0
-                         };
-
-                         handleGenerateMuseteraPDF({
-                           categoryData: evaluation.content?.domainScores?.flatMap((d: any) => 
-                             (d.subdomains || []).map((sub: any) => ({
-                               name: sub.name,
-                               value: sub.score,
-                               domain: d.domain.replace("Domínio ", "")
-                             }))
-                           ) || [],
-                           pieData: [
-                             { name: "Desenvolvido", value: fullOverallScore.percentage },
-                             { name: "A desenvolver", value: 100 - fullOverallScore.percentage }
-                           ],
-                           patientName: patientName,
-                           professionalData: professionalData,
-                           radarData: domainScores,
-                           selectedParameters: evaluation.content?.selections || {},
-                           overallScore: fullOverallScore,
-                           evaluationDomains: evaluationDomains,
-                           evaluationDate: new Date(evaluation.date)
-                         });
-                       }}
-
+                      onDownloadEvaluation={handleGenerateEvaluationTextFromSaved}
                       onEditEvaluation={handleEditEvaluation}
                     />
                   </Card>

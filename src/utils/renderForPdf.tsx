@@ -36,7 +36,6 @@ export function renderForPdf(element: ReactElement): {
   container.style.zIndex = '-1';
   container.style.pointerEvents = 'none';
   container.style.visibility = 'visible';
-  container.style.display = 'block';
   container.style.opacity = '1';
   document.body.appendChild(container);
 
@@ -91,9 +90,7 @@ export function renderForPdf(element: ReactElement): {
 
     // Verificação defensiva: se o root estiver vazio, lança erro claro
     // (evita PDF em branco silencioso).
-    const content = root.innerHTML.trim();
-    if (content.length < 50) {
-      console.error("[renderForPdf] Conteúdo renderizado muito curto:", content);
+    if (root.innerHTML.trim().length < 50) {
       throw new Error(
         '[renderForPdf] Conteúdo renderizado vazio — verifique o componente.'
       );
