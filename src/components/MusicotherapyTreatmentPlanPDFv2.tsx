@@ -383,16 +383,16 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
 
         <SectionHeader n={9} title="Plano Terapêutico em Ação" />
         <Card>
-          <Field label="Estrutura das sessões" value={planData.session_structure} />
-          <Field label="Sequência das atividades" value={planData.activity_sequence} />
-          <Field label="Flexibilidade para ajustes" value={planData.flexibility_adjustments} />
+          <Field label="Estrutura das sessões" value={planData.session_structure} fullWidth />
+          <Field label="Sequência das atividades" value={planData.activity_sequence} fullWidth />
+          <Field label="Flexibilidade para ajustes" value={planData.flexibility_adjustments} fullWidth />
         </Card>
 
         <SectionHeader n={10} title="Reavaliação e Evolução" />
         <Card>
-          <Field label="Frequência da reavaliação" value={planData.reevaluation_frequency} />
-          <Field label="Registro da evolução" value={planData.evolution_recording} />
-          <Field label="Ajustes necessários" value={planData.necessary_adjustments} />
+          <Field label="Frequência da reavaliação" value={planData.reevaluation_frequency} fullWidth />
+          <Field label="Registro da evolução" value={planData.evolution_recording} fullWidth />
+          <Field label="Ajustes necessários" value={planData.necessary_adjustments} fullWidth />
         </Card>
 
         {/* ===== Signature / Stamp ===== */}
