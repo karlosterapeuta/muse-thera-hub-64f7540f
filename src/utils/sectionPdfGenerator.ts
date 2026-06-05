@@ -31,7 +31,13 @@ export async function generateSectionPdf(
 ): Promise<Blob> {
   const { filename, scale = 2 } = options;
   const { root, ready, cleanup } = renderForPdf(element);
-  await ready;
+  try {
+    await ready;
+  } catch (err: any) {
+    console.error("Erro no ready do PDF:", err);
+    cleanup();
+    throw err;
+  }
   try {
     const sections = Array.from(
       root.querySelectorAll('[data-pdf-section]')
@@ -57,8 +63,13 @@ export async function generateSectionPdf(
         backgroundColor: '#ffffff',
         useCORS: true,
         allowTaint: true,
-        logging: false,
-        windowWidth: sec.scrollWidth,
+        logging: true, // Habilitar para ver erros internos do canvas
+        windowWidth: 794, // 210mm em pixels (96 DPI)
+        onclone: (clonedDoc) => {
+          // Garante que o elemento clonado esteja visível
+          const el = clonedDoc.querySelector(`[data-pdf-section]`) as HTMLElement;
+          if (el) el.style.visibility = 'visible';
+        }
       });
 
       const heightMM = (canvas.height * CONTENT_W_MM) / canvas.width;
