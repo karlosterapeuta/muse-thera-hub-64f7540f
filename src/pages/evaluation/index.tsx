@@ -1124,12 +1124,15 @@ export default function Evaluation() {
       };
 
       const pdfInst4 = html2pdf().set(opt).from(root);
-      const pdfBlob = await pdfInst4.outputPdf('blob');
+      const pdfBlob = await pdfInst4.output('blob');
+      
       const pdfUrl = URL.createObjectURL(pdfBlob);
       const link = document.createElement('a');
       link.href = pdfUrl;
       link.download = opt.filename;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
       URL.revokeObjectURL(pdfUrl);
       
       try { await savePDFToStorage(pdfBlob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
@@ -1363,8 +1366,18 @@ export default function Evaluation() {
       };
 
       const pdfInst5 = html2pdf().set(opt).from(root);
-      await pdfInst5.save();
-      try { const blob = await pdfInst5.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
+      const pdfBlob = await pdfInst5.output('blob');
+      
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = pdfUrl;
+      link.download = opt.filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(pdfUrl);
+
+      try { await savePDFToStorage(pdfBlob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
       
       } finally {
         cleanup();
@@ -1498,8 +1511,18 @@ export default function Evaluation() {
       };
 
       const pdfInst6 = html2pdf().set(opt).from(root);
-      await pdfInst6.save();
-      try { const blob = await pdfInst6.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
+      const pdfBlob = await pdfInst6.output('blob');
+      
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = pdfUrl;
+      link.download = opt.filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(pdfUrl);
+
+      try { await savePDFToStorage(pdfBlob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
       
       } finally {
         cleanup();
