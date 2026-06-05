@@ -228,7 +228,8 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
       </div>
 
       {/* Sumário Executivo */}
-      <div style={{ padding: '30px' }}>
+      <div data-pdf-section style={{ padding: '30px' }}>
+
         <SectionHeader title="Sumário Executivo" icon="📊" />
         
         <div style={{ 
