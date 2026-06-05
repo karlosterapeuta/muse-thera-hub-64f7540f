@@ -229,7 +229,7 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
             {/* Center title */}
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
               <div style={{ fontSize: 12, color: GOLD, letterSpacing: 6, textTransform: 'uppercase', marginBottom: 14 }}>Documento Clínico</div>
-              <div style={{ fontFamily: serifFont, fontSize: 46, fontWeight: 600, lineHeight: 1.06, marginBottom: 14 }}>
+              <div style={{ fontFamily: serifFont, fontSize: 42, fontWeight: 600, lineHeight: 1.1, marginBottom: 14 }}>
                 Plano de<br />Tratamento<br /><span style={{ color: GOLD_LIGHT, fontStyle: 'italic' }}>Musicoterapêutico</span>
               </div>
               <div style={{ width: 80, height: 3, background: `linear-gradient(90deg, ${GOLD}, transparent)`, marginBottom: 26 }} />
