@@ -74,7 +74,8 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
       }}
     >
       {/* Cabeçalho */}
-      <div style={{ 
+      <div data-pdf-section style={{ 
+
         borderBottom: '3px solid #0f766e',
         paddingBottom: '15px',
         marginBottom: '25px',
