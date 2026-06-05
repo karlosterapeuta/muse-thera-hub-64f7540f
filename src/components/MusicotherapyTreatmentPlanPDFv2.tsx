@@ -238,19 +238,21 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
 
             {/* Bottom info */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: '100%', maxWidth: '100%', minHeight: 0, paddingTop: 20, borderTop: `1px solid ${GOLD}`, boxSizing: 'border-box' }}>
-              <div style={wrapText}>
-                <div style={{ fontSize: 10, color: GOLD, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 }}>Paciente</div>
-                <div style={{ fontFamily: serifFont, fontSize: 15, fontWeight: 500, lineHeight: 1.16, ...strictNameWrap }}>{makeTextBreakable(planData.patient_full_name) || '—'}</div>
-                <div style={{ fontSize: 10.5, color: '#B0B0BE', marginTop: 4, lineHeight: 1.25, ...strictNameWrap }}>
-                  {makeTextBreakable(planData.clinical_diagnosis ? `Diagnóstico: ${planData.clinical_diagnosis}` : '')}
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 20, width: '100%' }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 10, color: GOLD, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 }}>Paciente</div>
+                  <div style={{ fontFamily: serifFont, fontSize: 15, fontWeight: 500, lineHeight: 1.16, ...strictNameWrap }}>{makeTextBreakable(planData.patient_full_name) || '—'}</div>
+                  <div style={{ fontSize: 10.5, color: '#B0B0BE', marginTop: 4, lineHeight: 1.25, ...strictNameWrap }}>
+                    {makeTextBreakable(planData.clinical_diagnosis ? `Diagnóstico: ${planData.clinical_diagnosis}` : '')}
+                  </div>
                 </div>
-              </div>
-              <div style={{ textAlign: 'right', ...wrapText }}>
-                <div style={{ fontSize: 10, color: GOLD, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 }}>Profissional</div>
-                <div style={{ fontFamily: serifFont, fontSize: 13.5, fontWeight: 500, lineHeight: 1.16, ...strictNameWrap }}>{makeTextBreakable(therapistName) || 'Musicoterapeuta'}</div>
-                <div style={{ fontSize: 10.5, color: '#B0B0BE', marginTop: 4, lineHeight: 1.25, ...strictNameWrap }}>{makeTextBreakable(professionalRegistry) || ''}</div>
-                <div style={{ fontSize: 10.5, color: '#B0B0BE', marginTop: 8 }}>Emitido em {today}</div>
-                {planNumber && <div style={{ fontSize: 10.5, color: GOLD_LIGHT, marginTop: 2, ...strictNameWrap }}>Plano nº {makeTextBreakable(planNumber)}</div>}
+                <div style={{ flex: '0 0 auto', textAlign: 'right', minWidth: 0, maxWidth: '40%' }}>
+                  <div style={{ fontSize: 10, color: GOLD, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 }}>Profissional</div>
+                  <div style={{ fontFamily: serifFont, fontSize: 13.5, fontWeight: 500, lineHeight: 1.16, ...strictNameWrap }}>{makeTextBreakable(therapistName) || 'Musicoterapeuta'}</div>
+                  <div style={{ fontSize: 10.5, color: '#B0B0BE', marginTop: 4, lineHeight: 1.25, ...strictNameWrap }}>{makeTextBreakable(professionalRegistry) || ''}</div>
+                  <div style={{ fontSize: 10.5, color: '#B0B0BE', marginTop: 8 }}>Emitido em {today}</div>
+                  {planNumber && <div style={{ fontSize: 10.5, color: GOLD_LIGHT, marginTop: 2, ...strictNameWrap }}>Plano nº {makeTextBreakable(planNumber)}</div>}
+                </div>
               </div>
             </div>
           </div>
