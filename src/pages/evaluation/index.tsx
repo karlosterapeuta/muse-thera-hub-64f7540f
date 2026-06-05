@@ -1027,54 +1027,70 @@ export default function Evaluation() {
     }
   };
 
-  const handleGenerateMuseteraPDF = async () => {
+  const handleGenerateMuseteraPDF = async (overrideData?: any) => {
     // Verificar se há dados para gerar o PDF
-    if (Object.keys(selections).length === 0) {
+    if (!overrideData && Object.keys(selections).length === 0) {
       toast.error("Nenhum parâmetro avaliado. Preencha a avaliação ou carregue uma avaliação salva.");
       return;
     }
     
     let loadingToast: string | number | undefined;
     try {
+      // Usar dados fornecidos ou os estados atuais
+      const dataToUse = overrideData || {
+        categoryData: subdomainScores,
+        pieData: pieData,
+        patientName: selectedPatientData?.name,
+        professionalData: professionalData,
+        radarData: domainScores,
+        selectedParameters: selections,
+        overallScore: overallScore,
+        evaluationDomains: evaluationDomains,
+        evaluationDate: evaluationDate,
+        patientData: {
+          age: calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age ?? undefined,
+          birthDate: selectedPatientData?.birth_date || undefined
+        }
+      };
+
       // Converter URLs para Base64
       let signatureBase64: string | null = null;
       let stampBase64: string | null = null;
       let photoBase64: string | null = null;
 
-      if (professionalData?.digital_signature_url) {
-        signatureBase64 = await imageUrlToBase64(professionalData.digital_signature_url);
+      const prof = dataToUse.professionalData;
+      if (prof?.digital_signature_url) {
+        signatureBase64 = await imageUrlToBase64(prof.digital_signature_url);
       }
 
-      if (professionalData?.digital_stamp_url) {
-        stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
+      if (prof?.digital_stamp_url) {
+        stampBase64 = await imageUrlToBase64(prof.digital_stamp_url);
       }
 
-      if (professionalData?.stamp_photo_url) {
-        photoBase64 = await imageUrlToBase64(professionalData.stamp_photo_url);
+      const photoUrl = prof?.stamp_photo_url || prof?.avatar_url;
+      if (photoUrl) {
+        photoBase64 = await imageUrlToBase64(photoUrl);
       }
 
       const pdfContent = (
         <div id="pdf-content" style={{ display: 'block' }}>
           <EnhancedMuseteraReportPDF
-            categoryData={subdomainScores}
-            pieData={pieData}
-            patientName={selectedPatientData?.name}
-            professionalData={professionalData}
-            radarData={domainScores}
-            selectedParameters={selections}
-            overallScore={overallScore}
-            evaluationDomains={evaluationDomains}
-            evaluationDate={evaluationDate}
+            categoryData={dataToUse.categoryData}
+            pieData={dataToUse.pieData}
+            patientName={dataToUse.patientName}
+            professionalData={prof}
+            radarData={dataToUse.radarData}
+            selectedParameters={dataToUse.selectedParameters}
+            overallScore={dataToUse.overallScore}
+            evaluationDomains={dataToUse.evaluationDomains}
+            evaluationDate={dataToUse.evaluationDate}
             digitalSignatureUrl={signatureBase64 || undefined}
             digitalStampUrl={stampBase64 || undefined}
-            professionalEmail={professionalData?.email || undefined}
-            professionalPhone={professionalData?.phone || undefined}
-            professionalSpecialty={professionalData?.specialty || undefined}
+            professionalEmail={prof?.email || undefined}
+            professionalPhone={prof?.phone || undefined}
+            professionalSpecialty={prof?.specialty || undefined}
             professionalPhotoUrl={photoBase64 || undefined}
-            patientData={{
-              age: calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age ?? undefined,
-              birthDate: selectedPatientData?.birth_date || undefined
-            }}
+            patientData={dataToUse.patientData}
           />
         </div>
       );
@@ -1089,7 +1105,7 @@ export default function Evaluation() {
 
       const opt = {
         margin: [8, 8],
-        filename: `relatorio-musetera-completo-${selectedPatientData?.name || 'paciente'}.pdf`,
+        filename: `relatorio-musetera-completo-${dataToUse.patientName || 'paciente'}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
           scale: 1.8,
@@ -1116,6 +1132,7 @@ export default function Evaluation() {
       }
       
       toast.success("Relatório MuseTera Aprimorado gerado com sucesso!", { id: loadingToast });
+
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
       toast.error("Erro ao gerar PDF. Por favor, tente novamente.", { id: loadingToast });
@@ -1639,17 +1656,18 @@ export default function Evaluation() {
                 <TooltipComponent>
                   <TooltipTrigger asChild>
                     <Button
-                      onClick={handleGenerateEvaluationText}
+                      onClick={handleGenerateMuseteraPDF}
                       disabled={isGeneratingText}
                       className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-0 hover:from-blue-600 hover:to-cyan-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isGeneratingText ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
-                        <FileText className="h-4 w-4" />
+                        <FileDown className="h-4 w-4" />
                       )}
                       Baixar Avaliação
                     </Button>
+
                   </TooltipTrigger>
                   <TooltipContent className="bg-gray-900 text-white border-0">
                     <p>Gera texto profissional com análise dos parâmetros marcados via IA</p>
@@ -2428,7 +2446,48 @@ export default function Evaluation() {
                       onToggleComparison={handleToggleComparison}
                       onLoadEvaluation={handleLoadEvaluation}
                       onDeleteEvaluation={deleteEvaluation}
-                      onDownloadEvaluation={handleGenerateEvaluationTextFromSaved}
+                       onDownloadEvaluation={(evaluation) => {
+                         const patientName = patients.find(p => p.id === evaluation.patient_id)?.name || "Paciente";
+                         const domainScores = evaluation.content?.domainScores?.map((d: any) => ({
+                           name: d.domain?.replace("Domínio ", "") || "Domínio",
+                           value: d.score || 0,
+                           fullMark: 100
+                         })) || [];
+                         
+                         const savedOverallScore: any = evaluation.content?.overallScore || {};
+                         const fullOverallScore = {
+                           raw: savedOverallScore.raw || 0,
+                           max: savedOverallScore.max || 100,
+                           percentage: savedOverallScore.percentage || 0,
+                           completionPercentage: savedOverallScore.completionPercentage || savedOverallScore.percentage || 0,
+                           evaluatedDomains: savedOverallScore.evaluatedDomains || evaluation.content?.domainScores?.length || 0,
+                           totalDomains: savedOverallScore.totalDomains || evaluationDomains.length,
+                           evaluatedParameters: savedOverallScore.evaluatedParameters || 0,
+                           totalParameters: savedOverallScore.totalParameters || 0
+                         };
+
+                         handleGenerateMuseteraPDF({
+                           categoryData: evaluation.content?.domainScores?.flatMap((d: any) => 
+                             (d.subdomains || []).map((sub: any) => ({
+                               name: sub.name,
+                               value: sub.score,
+                               domain: d.domain.replace("Domínio ", "")
+                             }))
+                           ) || [],
+                           pieData: [
+                             { name: "Desenvolvido", value: fullOverallScore.percentage },
+                             { name: "A desenvolver", value: 100 - fullOverallScore.percentage }
+                           ],
+                           patientName: patientName,
+                           professionalData: professionalData,
+                           radarData: domainScores,
+                           selectedParameters: evaluation.content?.selections || {},
+                           overallScore: fullOverallScore,
+                           evaluationDomains: evaluationDomains,
+                           evaluationDate: new Date(evaluation.date)
+                         });
+                       }}
+
                       onEditEvaluation={handleEditEvaluation}
                     />
                   </Card>
