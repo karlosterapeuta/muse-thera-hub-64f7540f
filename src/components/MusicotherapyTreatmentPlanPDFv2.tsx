@@ -89,6 +89,9 @@ const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; foo
     breakAfter: 'page',
     pageBreakInside: 'avoid',
     breakInside: 'avoid',
+    marginBottom: 0, // Evita margens extras entre páginas
+    display: 'flex',
+    flexDirection: 'column',
     position: 'relative',
     overflow: 'visible',
     display: 'block',
@@ -164,6 +167,8 @@ const Card: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     padding: 18,
     marginBottom: 16,
     boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+    breakInside: 'avoid',
+    pageBreakInside: 'avoid',
   }}>{children}</div>
 );
 
