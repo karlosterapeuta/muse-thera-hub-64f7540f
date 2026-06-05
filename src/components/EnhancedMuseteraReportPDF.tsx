@@ -310,30 +310,10 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
             }}>
               📈 Perfil de Habilidades
             </h3>
-            <div style={{ height: '250px', width: '100%' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <RadarChart data={radarData}>
-                  <PolarGrid stroke="#E5E7EB" />
-                  <PolarAngleAxis 
-                    dataKey="name" 
-                    tick={{ fontSize: 10, fill: '#6B7280' }}
-                  />
-                  <PolarRadiusAxis 
-                    angle={30} 
-                    domain={[0, 100]} 
-                    tick={{ fontSize: 8, fill: '#9CA3AF' }}
-                  />
-                  <Radar 
-                    name="Perfil" 
-                    dataKey="value" 
-                    stroke="#3B82F6" 
-                    fill="#3B82F6" 
-                    fillOpacity={0.3}
-                    strokeWidth={2}
-                  />
-                </RadarChart>
-              </ResponsiveContainer>
+            <div style={{ height: '250px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <p style={{ fontSize: '14px', color: '#666' }}>[Gráfico de Radar: Perfil de Habilidades]</p>
             </div>
+
           </div>
 
           <div style={{ 
