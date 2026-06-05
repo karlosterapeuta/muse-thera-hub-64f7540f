@@ -398,7 +398,8 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
         <SectionHeader title="Análise Detalhada por Domínios" icon="🔍" />
         
         {evaluationDomains.map((domain, domainIndex) => (
-          <div key={domainIndex} style={{ 
+          <div key={domainIndex} data-pdf-section style={{ 
+
             backgroundColor: '#FFFFFF',
             border: '1px solid #E5E7EB',
             borderRadius: '12px',
