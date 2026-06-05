@@ -89,7 +89,7 @@ const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; foo
     pageBreakInside: 'avoid',
     breakInside: 'avoid',
     position: 'relative',
-    overflow: 'hidden',
+    overflow: 'visible',
   }}>
     {children}
     {footer}
