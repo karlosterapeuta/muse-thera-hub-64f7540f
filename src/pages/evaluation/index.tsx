@@ -1106,11 +1106,11 @@ export default function Evaluation() {
       loadingToast = toast.loading("Gerando Relatório MuseTera Aprimorado...");
 
       const opt = {
-        margin: [8, 8],
-        filename: `relatorio-musetera-completo-${dataToUse.patientName || 'paciente'}.pdf`,
+        margin: [10, 10],
+        filename: `relatorio-musetera-completo-${(dataToUse.patientName || 'paciente').replace(/\s+/g, '_')}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
-          scale: 1.8,
+          scale: 2,
           useCORS: true,
           allowTaint: true,
           backgroundColor: '#ffffff',
@@ -1121,8 +1121,10 @@ export default function Evaluation() {
           unit: 'mm', 
           format: 'a4', 
           orientation: 'portrait',
-          compress: true
-        }
+          compress: true,
+          precision: 2
+        },
+        pagebreak: { mode: ['css', 'legacy'] }
       };
 
       const pdfInst4 = html2pdf().set(opt).from(root);
