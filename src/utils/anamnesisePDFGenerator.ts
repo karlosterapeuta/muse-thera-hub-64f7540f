@@ -10,6 +10,10 @@ interface AnamnesisData {
   main_clinical_demand?: string;
   diagnosis_details?: string;
   cid_code?: string;
+  mother_name?: string;
+  father_name?: string;
+  diagnosis_date?: string;
+  support_level?: string;
   // Seção 2: Histórico Clínico
   clinical_details?: string;
   // Seção 3: Medicação
@@ -38,6 +42,7 @@ interface AnamnesisData {
   calming_sounds?: string;
   // Seção 10: Aspectos Comportamentais
   regulation_strategies?: string;
+  calming_strategies?: string;
   // Seção 11: Contexto Social
   school_enrollment?: string;
   school_adaptation?: string;

@@ -63,7 +63,9 @@ const basicDatabaseFields = [
   // Perfil musical adicional
   'instruments_played', 'music_practice_time',
   // Contexto social adicional
-  'family_support_network'
+  'family_support_network',
+  // Novos campos adicionados
+  'mother_name', 'father_name', 'diagnosis_date', 'support_level', 'calming_strategies'
 ];
 
 // Campos que podem não existir (dependem da migração)
