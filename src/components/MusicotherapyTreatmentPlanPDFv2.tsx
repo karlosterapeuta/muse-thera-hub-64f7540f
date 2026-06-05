@@ -36,14 +36,15 @@ const wrapText: React.CSSProperties = {
   minWidth: 0,
   maxWidth: '100%',
   boxSizing: 'border-box',
-  whiteSpace: 'normal',
-  overflowWrap: 'break-word',
+  whiteSpace: 'pre-wrap', 
+  overflowWrap: 'anywhere',
   wordBreak: 'normal',
   lineHeight: 1.6,
 };
 
 const strictNameWrap: React.CSSProperties = {
   ...wrapText,
+  whiteSpace: 'normal',
 };
 
 // Insere pontos de quebra invisíveis APENAS dentro de palavras muito longas
@@ -89,9 +90,11 @@ const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; foo
     breakAfter: 'page',
     pageBreakInside: 'avoid',
     breakInside: 'avoid',
+    marginBottom: 0, // Evita margens extras entre páginas
+    display: 'flex',
+    flexDirection: 'column',
     position: 'relative',
     overflow: 'visible',
-    display: 'block',
     zIndex: 1,
   }}>
     {children}
@@ -164,6 +167,8 @@ const Card: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     padding: 18,
     marginBottom: 16,
     boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+    breakInside: 'avoid',
+    pageBreakInside: 'avoid',
   }}>{children}</div>
 );
 

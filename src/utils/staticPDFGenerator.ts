@@ -91,7 +91,7 @@ export const generateStaticPDF = async (
 
     // 6. Configurações html2pdf
     const opt = {
-      margin: fullBleedPages ? 0 : [10, 10, 10, 10],
+      margin: 0,
       filename,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { 
@@ -119,8 +119,8 @@ export const generateStaticPDF = async (
       },
       pagebreak: { 
         mode: ['css', 'legacy'],
-        before: '.page-break-before',
-        avoid: ['.page-break-avoid', '.musetera-pdf-page', 'table', 'tr', 'thead', 'tbody']
+        before: '.musetera-pdf-page',
+        avoid: ['.page-break-avoid', 'table', 'tr', 'thead', 'tbody', '.musetera-card']
       }
     };
 
