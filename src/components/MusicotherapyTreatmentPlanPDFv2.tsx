@@ -60,6 +60,7 @@ const makeTextBreakable = (value?: React.ReactNode): React.ReactNode => {
 const safeGrid: React.CSSProperties = {
   display: 'flex',
   flexWrap: 'wrap',
+  justifyContent: 'space-between',
   width: '100%',
   maxWidth: '100%',
   minWidth: 0,
