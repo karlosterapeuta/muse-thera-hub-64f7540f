@@ -185,10 +185,32 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
 }) => {
   const today = new Date().toLocaleDateString('pt-BR');
 
+  // Fallback para evitar PDF em branco se os dados estiverem corrompidos
+  if (!planData) {
+    return (
+      <div style={{ padding: 40, fontFamily: 'sans-serif', textAlign: 'center' }}>
+        <h1>Erro: Dados do plano não encontrados</h1>
+        <p>Por favor, tente novamente ou entre em contato com o suporte.</p>
+      </div>
+    );
+  }
+
   return (
-    <div data-musetera-pdf="true" style={{ width: `${A4_WIDTH}px`, maxWidth: `${A4_WIDTH}px`, overflow: 'hidden', background: '#fff', fontFamily: baseFont, color: INK, boxSizing: 'border-box' }}>
+    <div 
+      data-musetera-pdf="true" 
+      id="musetera-pdf-content"
+      style={{ 
+        width: `${A4_WIDTH}px`, 
+        maxWidth: `${A4_WIDTH}px`, 
+        overflow: 'hidden', 
+        background: '#ffffff', 
+        fontFamily: baseFont, 
+        color: INK, 
+        boxSizing: 'border-box' 
+      }}
+    >
       <style>{`
-        [data-musetera-pdf], [data-musetera-pdf] * {
+        #musetera-pdf-content, #musetera-pdf-content * {
           box-sizing: border-box !important;
           max-width: 100% !important;
           overflow-wrap: break-word !important;
@@ -197,10 +219,12 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
           text-rendering: optimizeLegibility !important;
           -webkit-font-smoothing: antialiased !important;
         }
-        [data-musetera-pdf] img { max-width: 100% !important; display: block; }
+        #musetera-pdf-content img { max-width: 100% !important; display: block; }
         .musetera-pdf-page {
           page-break-after: always !important;
           break-after: page !important;
+          background: #ffffff !important;
+          -webkit-print-color-adjust: exact;
         }
       `}</style>
       {/* ============ COVER ============ */}
