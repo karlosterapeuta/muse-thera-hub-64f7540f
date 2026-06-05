@@ -119,6 +119,7 @@ export const generateStaticPDF = async (
       },
       pagebreak: { 
         mode: ['css'],
+        before: ['.musetera-cover-page', '.musetera-page-2', '.musetera-page-3', '.musetera-page-4', '.musetera-page-5'],
         avoid: ['.musetera-card', 'table', 'tr', 'thead', 'tbody']
       }
     };
