@@ -86,7 +86,7 @@ export const generateStaticPDF = async (
         allowTaint: true,
         backgroundColor: '#ffffff',
         logging: false,
-        letterRendering: true,
+        letterRendering: false,
         removeContainer: true,
         imageTimeout: 20000
       },
