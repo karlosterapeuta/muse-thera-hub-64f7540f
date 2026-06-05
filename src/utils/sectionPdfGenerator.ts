@@ -66,9 +66,12 @@ export async function generateSectionPdf(
         logging: true, // Habilitar para ver erros internos do canvas
         windowWidth: 794, // 210mm em pixels (96 DPI)
         onclone: (clonedDoc) => {
-          // Garante que o elemento clonado esteja visível
           const el = clonedDoc.querySelector(`[data-pdf-section]`) as HTMLElement;
-          if (el) el.style.visibility = 'visible';
+          if (el) {
+            el.style.display = 'block';
+            el.style.visibility = 'visible';
+            el.style.opacity = '1';
+          }
         }
       });
 
