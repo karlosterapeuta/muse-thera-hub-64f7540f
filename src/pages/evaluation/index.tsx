@@ -1083,21 +1083,24 @@ export default function Evaluation() {
 
       const pdfContainer = document.createElement('div');
       pdfContainer.id = 'pdf-render-container';
-      // Importante: html2pdf precisa que o elemento esteja VISÍVEL no DOM para capturar estilos corretamente
-      // mas podemos colocá-lo bem longe ou escondido atrás de outros elementos
-      pdfContainer.style.position = 'fixed';
-      pdfContainer.style.left = '0';
+      
+      // Estilos críticos para o container não ser ignorado pelo html2pdf/html2canvas
+      pdfContainer.style.position = 'absolute';
+      pdfContainer.style.left = '-9999px';
       pdfContainer.style.top = '0';
       pdfContainer.style.width = '210mm';
-      pdfContainer.style.zIndex = '9999';
-      pdfContainer.style.visibility = 'visible';
-      pdfContainer.style.opacity = '0.01';
-      pdfContainer.style.pointerEvents = 'none';
       pdfContainer.style.backgroundColor = '#ffffff';
+      // Não use visibility: hidden ou display: none, pois html2canvas pode ignorar o conteúdo
       document.body.appendChild(pdfContainer);
 
       const pdfContent = (
-        <div style={{ backgroundColor: '#ffffff', width: '100%', minHeight: '297mm' }}>
+        <div style={{ 
+          backgroundColor: '#ffffff', 
+          width: '210mm', 
+          minHeight: '297mm',
+          padding: '0',
+          margin: '0'
+        }}>
           <EnhancedMuseteraReportPDF
             categoryData={dataToUse.categoryData}
             pieData={dataToUse.pieData}
@@ -1132,14 +1135,16 @@ export default function Evaluation() {
 
 
         const opt = {
-          margin: [10, 10],
+          margin: 0, // Margens internas já estão no componente
           filename: filename,
           image: { type: 'jpeg', quality: 0.98 },
           html2canvas: { 
             scale: 2,
             useCORS: true,
-            allowTaint: true,
-            backgroundColor: '#ffffff'
+            logging: false,
+            letterRendering: true,
+            backgroundColor: '#ffffff',
+            scrollY: -window.scrollY // Garante que o scroll não afete a captura
           },
           jsPDF: { 
             unit: 'mm', 
