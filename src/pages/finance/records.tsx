@@ -80,7 +80,7 @@ export default function FinancialRecords() {
   const [receiptDialogOpen, setReceiptDialogOpen] = useState(false);
   const [paymentRecord, setPaymentRecord] = useState<FinancialRecord | null>(null);
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<"list" | "fixed">("fixed");
+  const [viewMode] = useState<"list" | "fixed">("list");
   const [clearAllDialogOpen, setClearAllDialogOpen] = useState(false);
   const [clearAllConfirmText, setClearAllConfirmText] = useState("");
   const isMobile = useIsMobile();
@@ -601,6 +601,98 @@ export default function FinancialRecords() {
           )}
         </div>
       </div>
+      
+      {/* Agenda Fixa Fixada no Topo conforme solicitação */}
+      <Card className="shadow-lg border-primary/20 overflow-hidden ring-2 ring-primary/5">
+        <CardHeader className="pb-2 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-primary/10 border-b border-primary/10">
+          <CardTitle className="flex items-center justify-between text-lg md:text-xl">
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 rounded-lg bg-amber-500 text-white flex items-center justify-center shadow-sm">
+                <PinIcon className="h-4 w-4" />
+              </div>
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-600 to-orange-600 font-bold">
+                Agenda Fixa dos Pacientes
+              </span>
+            </div>
+            <div className="hidden sm:flex text-xs font-medium text-amber-700 bg-amber-100 px-2 py-1 rounded-full items-center gap-1">
+              <InfoIcon className="h-3 w-3" />
+              Visualização permanente (independente do período)
+            </div>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-2 md:p-4 bg-amber-50/30">
+          <div className={`${isMobile ? 'space-y-4' : isTablet ? 'grid grid-cols-3 gap-3' : 'grid grid-cols-6 gap-3'}`}>
+            {isMobile ? (
+              <Tabs defaultValue={weekdays[new Date().getDay() - 1] || "SEG"} className="w-full">
+                <TabsList className="w-full grid grid-cols-6 text-[10px] h-9">
+                  {weekdays.map((day) => (
+                    <TabsTrigger key={day} value={day} className="px-0 data-[state=active]:bg-amber-500 data-[state=active]:text-white">
+                      {day}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+                {weekdays.map((day) => {
+                  const dayRecords = recordsByWeekday[day as keyof typeof recordsByWeekday] || [];
+                  const dayTotal = dayRecords.reduce((sum, r) => sum + r.amount, 0);
+                  const dayLabels: Record<string, string> = {
+                    SEG: "Segunda-feira", TER: "Terça-feira", QUA: "Quarta-feira",
+                    QUI: "Quinta-feira", SEX: "Sexta-feira", SAB: "Sábado"
+                  };
+                  return (
+                    <TabsContent key={day} value={day} className="animate-in fade-in slide-in-from-top-1 duration-200">
+                      <div className="space-y-2">
+                        <div className="p-2 rounded-md bg-white border border-amber-200 shadow-sm flex justify-between items-center">
+                          <span className="text-xs font-bold text-amber-700 uppercase">{dayLabels[day]}</span>
+                          <div className="flex items-center gap-3">
+                            <span className="text-[10px] text-muted-foreground">{dayRecords.length} pac.</span>
+                            <span className="text-xs font-bold text-primary">{formatCurrency(dayTotal)}</span>
+                          </div>
+                        </div>
+                        <div className="grid gap-2">
+                          {dayRecords.length > 0 ? (
+                            dayRecords.map(record => renderAppointmentCard(record))
+                          ) : (
+                            <div className="text-center py-6 text-muted-foreground text-xs italic bg-white/50 rounded-md border border-dashed border-amber-200">
+                              Nenhum paciente fixo
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </TabsContent>
+                  );
+                })}
+              </Tabs>
+            ) : (
+              weekdays.map((day) => {
+                const dayRecords = recordsByWeekday[day as keyof typeof recordsByWeekday] || [];
+                const dayTotal = dayRecords.reduce((sum, r) => sum + r.amount, 0);
+                const isCurrentDay = format(new Date(), "EEE", { locale: ptBR }).toUpperCase().startsWith(day.substring(0,2));
+                
+                return (
+                  <div key={day} className={`flex flex-col h-full rounded-xl border ${isCurrentDay ? 'border-amber-400 ring-2 ring-amber-400/20 shadow-md' : 'border-border/60'} bg-white overflow-hidden transition-all hover:shadow-md`}>
+                    <div className={`py-2 px-1 text-center font-bold ${isCurrentDay ? 'bg-amber-500 text-white' : 'bg-muted/30 text-muted-foreground'} border-b border-inherit`}>
+                      <div className="text-sm tracking-wider">{day}</div>
+                    </div>
+                    <div className="p-1.5 flex justify-between items-center text-[10px] bg-amber-50/50 border-b border-amber-100">
+                      <span className="font-medium text-amber-800">{dayRecords.length} pac.</span>
+                      <span className="font-bold text-primary">{formatCurrency(dayTotal)}</span>
+                    </div>
+                    <ScrollArea className="flex-grow h-[320px] p-1.5">
+                      {dayRecords.length > 0 ? (
+                        dayRecords.map(record => renderAppointmentCard(record))
+                      ) : (
+                        <div className="text-center py-10 text-muted-foreground text-[10px] italic">
+                          Vazio
+                        </div>
+                      )}
+                    </ScrollArea>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       <FinancialStatCards
         totalEarnings={periodKpis.total}
@@ -667,27 +759,11 @@ export default function FinancialRecords() {
             </Select>
           </div>
         </div>
-        <div className="bg-card/80 backdrop-blur-sm rounded-lg shadow-sm border border-border p-1.5 flex justify-center">
-          <Button 
-            variant={viewMode === "fixed" ? "default" : "outline"} 
-            size="sm" 
-            className="rounded-r-none"
-            onClick={() => setViewMode("fixed")}
-          >
-            <PinIcon className="h-4 w-4 mr-1 text-[#F97316]" />
-            <span className={isMobile ? "text-xs" : "inline"}>Agenda Fixa</span>
-          </Button>
-          <Button 
-            variant={viewMode === "list" ? "default" : "outline"} 
-            size="sm" 
-            className="rounded-l-none"
-            onClick={() => setViewMode("list")}
-          >
-            <ListIcon className="h-4 w-4 mr-1 text-[#8B5CF6]" />
-            <span className={isMobile ? "text-xs" : "inline"}>Lista</span>
-          </Button>
+        <div className="bg-card/80 backdrop-blur-sm rounded-lg shadow-sm border border-border p-1.5 flex justify-center text-sm font-medium text-muted-foreground">
+          Listagem completa de atendimentos
         </div>
       </div>
+
 
       
       <Card className="shadow-md border-border overflow-hidden">
@@ -695,14 +771,8 @@ export default function FinancialRecords() {
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center">
               <DollarSignIcon className="mr-2 h-5 w-5 text-primary" />
-              {viewMode === "fixed" ? "Agenda Fixa dos Pacientes" : "Registros"} 
+              Registros do Período
             </div>
-            {viewMode === "fixed" && (
-              <div className="text-sm text-muted-foreground flex items-center gap-1">
-                <PinIcon className="h-3.5 w-3.5" />
-                Permanente — não muda com o mês
-              </div>
-            )}
           </CardTitle>
         </CardHeader>
         <CardContent className="p-2 md:p-4">
@@ -711,125 +781,43 @@ export default function FinancialRecords() {
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
               <p className="mt-2 text-muted-foreground">Carregando registros...</p>
             </div>
-          ) : (sortedRecords.length > 0 || viewMode === "fixed") ? (
+          ) : sortedRecords.length > 0 ? (
             <>
-              {viewMode === "fixed" ? (
-                <div className={`${isMobile ? 'space-y-4' : isTablet ? 'grid grid-cols-3 gap-3' : 'grid grid-cols-6 gap-3'}`}>
-                  {isMobile ? (
-                    <Tabs defaultValue="SEG" className="w-full">
-                      <TabsList className="w-full grid grid-cols-6 text-xs">
-                        {weekdays.map((day) => (
-                          <TabsTrigger key={day} value={day} className="text-xs">
-                            {day}
-                          </TabsTrigger>
-                        ))}
-                      </TabsList>
-                      {weekdays.map((day) => {
-                        const dayRecords = recordsByWeekday[day as keyof typeof recordsByWeekday] || [];
-                        const dayTotal = dayRecords.reduce((sum, r) => sum + r.amount, 0);
-                        const dayLabels: Record<string, string> = {
-                          SEG: "Segunda-feira", TER: "Terça-feira", QUA: "Quarta-feira",
-                          QUI: "Quinta-feira", SEX: "Sexta-feira", SAB: "Sábado"
-                        };
-                        return (
-                          <TabsContent key={day} value={day} className="animate-fade-in">
-                            <div className="space-y-2">
-                              <div className="p-3 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 text-white">
-                                <div className="flex justify-between items-center">
-                                  <div>
-                                    <div className="font-semibold">{dayLabels[day]}</div>
-                                    <div className="text-sm opacity-75 flex items-center gap-1">
-                                      <PinIcon className="h-3 w-3" /> Agenda Fixa
-                                    </div>
-                                  </div>
-                                  <div className="text-right">
-                                    <div className="text-sm">{dayRecords.length} pacientes</div>
-                                    <div className="font-bold">{formatCurrency(dayTotal)}</div>
-                                  </div>
-                                </div>
-                              </div>
-                              <ScrollArea className="max-h-[400px]">
-                                {dayRecords.length > 0 ? (
-                                  dayRecords.map(record => renderAppointmentCard(record))
-                                ) : (
-                                  <div className="text-center py-8 text-muted-foreground text-sm">
-                                    Nenhum paciente fixo
-                                  </div>
-                                )}
-                              </ScrollArea>
-                            </div>
-                          </TabsContent>
-                        );
-                      })}
-                    </Tabs>
-                  ) : (
-                    weekdays.map((day) => {
-                      const dayRecords = recordsByWeekday[day as keyof typeof recordsByWeekday] || [];
-                      const dayTotal = dayRecords.reduce((sum, r) => sum + r.amount, 0);
-                      return (
-                        <div key={day} className="animate-fade-in">
-                          <div className="rounded-t-lg py-3 px-2 text-center text-white font-bold bg-gradient-to-br from-amber-500 to-orange-600">
-                            <div className="text-sm">{day}</div>
-                            <div className="text-[10px] opacity-80 flex items-center justify-center gap-1">
-                              <PinIcon className="h-2.5 w-2.5" /> Fixo
-                            </div>
-                          </div>
-                          <div className="bg-muted/50 border border-t-0 rounded-b-lg">
-                            <div className="p-2 bg-card border-b dark:border-border flex justify-between items-center text-xs">
-                              <span>{dayRecords.length} pacientes</span>
-                              <span className="font-semibold text-primary">{formatCurrency(dayTotal)}</span>
-                            </div>
-                            <ScrollArea className="h-[400px] p-2">
-                              {dayRecords.length > 0 ? (
-                                dayRecords.map(record => renderAppointmentCard(record))
-                              ) : (
-                                <div className="text-center py-8 text-muted-foreground text-sm">
-                                  Nenhum paciente fixo
-                                </div>
-                              )}
-                            </ScrollArea>
-                          </div>
+              <div className="overflow-x-auto -mx-2 md:mx-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/30">
+                      <TableHead className="whitespace-nowrap">
+                        <div className="flex items-center">
+                          <CalendarIcon className="mr-2 h-3.5 w-3.5 text-primary" />
+                          Data
                         </div>
-                      );
-                    })
-                  )}
-                </div>
-              ) : (
-                <div className="overflow-x-auto -mx-2 md:mx-0">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="bg-muted/30">
-                        <TableHead className="whitespace-nowrap">
-                          <div className="flex items-center">
-                            <CalendarIcon className="mr-2 h-3.5 w-3.5 text-primary" />
-                            Data
-                          </div>
-                        </TableHead>
-                        {!isMobile && (
-                          <TableHead className="whitespace-nowrap">Dia da Semana</TableHead>
-                        )}
-                        <TableHead className="whitespace-nowrap">
-                          <div className="flex items-center">
-                            <ClockIcon className="mr-2 h-3.5 w-3.5 text-primary" />
-                            Horário
-                          </div>
-                        </TableHead>
-                        {!isMobile && (
-                          <TableHead className="whitespace-nowrap">Duração</TableHead>
-                        )}
-                        <TableHead className="whitespace-nowrap">
-                          <div className="flex items-center">
-                            <BuildingIcon className="mr-2 h-3.5 w-3.5 text-primary" />
-                            Clínica
-                          </div>
-                        </TableHead>
-                        <TableHead className="whitespace-nowrap">
-                          <div className="flex items-center">
-                            <UserIcon className="mr-2 h-3.5 w-3.5 text-primary" />
-                            Paciente
-                          </div>
-                        </TableHead>
-                        <TableHead className="whitespace-nowrap">
+                      </TableHead>
+                      {!isMobile && (
+                        <TableHead className="whitespace-nowrap">Dia da Semana</TableHead>
+                      )}
+                      <TableHead className="whitespace-nowrap">
+                        <div className="flex items-center">
+                          <ClockIcon className="mr-2 h-3.5 w-3.5 text-primary" />
+                          Horário
+                        </div>
+                      </TableHead>
+                      {!isMobile && (
+                        <TableHead className="whitespace-nowrap">Duração</TableHead>
+                      )}
+                      <TableHead className="whitespace-nowrap">
+                        <div className="flex items-center">
+                          <BuildingIcon className="mr-2 h-3.5 w-3.5 text-primary" />
+                          Clínica
+                        </div>
+                      </TableHead>
+                      <TableHead className="whitespace-nowrap">
+                        <div className="flex items-center">
+                          <UserIcon className="mr-2 h-3.5 w-3.5 text-primary" />
+                          Paciente
+                        </div>
+                      </TableHead>
+                      <TableHead className="whitespace-nowrap">
                           <div className="flex items-center">
                             <DollarSignIcon className="mr-2 h-3.5 w-3.5 text-primary" />
                             Valor
