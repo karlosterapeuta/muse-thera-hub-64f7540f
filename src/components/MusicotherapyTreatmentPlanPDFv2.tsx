@@ -58,13 +58,12 @@ const makeTextBreakable = (value?: React.ReactNode): React.ReactNode => {
 };
 
 const safeGrid: React.CSSProperties = {
-  display: 'grid',
-  gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
+  display: 'flex',
+  flexWrap: 'wrap',
   width: '100%',
   maxWidth: '100%',
   minWidth: 0,
   boxSizing: 'border-box',
-  overflow: 'hidden',
 };
 
 const flexText: React.CSSProperties = {
