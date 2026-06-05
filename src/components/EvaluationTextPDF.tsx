@@ -296,7 +296,7 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
 
       {/* Objetivos Terapêuticos Sugeridos */}
       {content.objetivos && content.objetivos.length > 0 && (
-        <section style={{ marginBottom: '30px', pageBreakInside: 'avoid' }}>
+        <section data-pdf-section style={{ marginBottom: '30px', pageBreakInside: 'avoid' }}>
           <h3 style={{
             fontSize: '14pt',
             fontWeight: 'bold',
