@@ -25,11 +25,11 @@ const PAPER = '#FBF8F1';
 const MUTED = '#6B6B7A';
 const LINE = '#E6DFC9';
 
-const A4_WIDTH = 793; // 210mm at ~96dpi (safer margin)
-const A4_HEIGHT = 1120; // 297mm at ~96dpi (safer margin)
+const A4_WIDTH = 800;
+const A4_HEIGHT = 1130;
 
-const baseFont = "'Inter', 'Helvetica Neue', Arial, sans-serif";
-const serifFont = "'Lora', 'Georgia', serif";
+const baseFont = "'Inter', system-ui, -apple-system, sans-serif";
+const serifFont = "serif";
 
 const wrapText: React.CSSProperties = {
   display: 'block',
@@ -78,9 +78,11 @@ const flexText: React.CSSProperties = {
 const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; footer?: React.ReactNode; className?: string }> = ({ children, bg = '#ffffff', pad = 48, footer, className }) => (
   <div className={`musetera-pdf-page${className ? ` ${className}` : ''}`} style={{
     width: `${A4_WIDTH}px`,
+    height: `${A4_HEIGHT}px`,
     minHeight: `${A4_HEIGHT}px`,
+    maxHeight: `${A4_HEIGHT}px`,
     backgroundColor: bg,
-    padding: `${pad}px ${pad}px ${pad + 20}px`,
+    padding: `${pad}px`,
     boxSizing: 'border-box',
     fontFamily: baseFont,
     color: INK,
@@ -90,9 +92,9 @@ const Page: React.FC<{ children: React.ReactNode; bg?: string; pad?: number; foo
     overflow: 'hidden',
     pageBreakAfter: 'always',
     breakAfter: 'page',
-    margin: '0 auto',
+    margin: '0',
   }}>
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100%', minWidth: 0 }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100%', minWidth: 0, overflow: 'hidden' }}>
       {children}
     </div>
     {footer}
@@ -214,26 +216,25 @@ export const MusicotherapyTreatmentPlanPDFv2: React.FC<Props> = ({
       }}
     >
       <style>{`
-        #musetera-pdf-content, #musetera-pdf-content * {
-          box-sizing: border-box !important;
-          max-width: 100% !important;
-          overflow-wrap: break-word !important;
-          -webkit-print-color-adjust: exact !important;
-          print-color-adjust: exact !important;
-          text-rendering: optimizeLegibility !important;
-          -webkit-font-smoothing: antialiased !important;
+        #musetera-pdf-content {
+          background: #ffffff !important;
+          width: ${A4_WIDTH}px !important;
         }
-        #musetera-pdf-content img { max-width: 100% !important; display: block; }
         .musetera-pdf-page {
+          width: ${A4_WIDTH}px !important;
+          height: ${A4_HEIGHT}px !important;
           page-break-after: always !important;
           break-after: page !important;
-          background: #ffffff !important;
-          -webkit-print-color-adjust: exact;
-          display: block !important;
+          overflow: hidden !important;
+          position: relative !important;
+          display: flex !important;
+          flex-direction: column !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          box-sizing: border-box !important;
         }
-        .musetera-pdf-page:last-child {
-          page-break-after: avoid !important;
-          break-after: avoid !important;
+        .musetera-pdf-page * {
+          box-sizing: border-box !important;
         }
       `}</style>
       {/* ============ COVER ============ */}
