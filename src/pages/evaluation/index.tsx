@@ -1,7 +1,8 @@
-
 import { useState, useEffect, useMemo } from "react";
+import { createRoot } from "react-dom/client";
 import { calculateAgeFromBirthDate } from "@/utils/dateUtils";
 import { Card } from "@/components/ui/card";
+
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { 
   Select,
