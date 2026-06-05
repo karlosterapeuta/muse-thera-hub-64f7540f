@@ -262,7 +262,8 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
 
       {/* Recomendações Terapêuticas */}
       {content.recomendacoes && content.recomendacoes.length > 0 && (
-        <section style={{ marginBottom: '30px', pageBreakInside: 'avoid' }}>
+        <section data-pdf-section style={{ marginBottom: '30px', pageBreakInside: 'avoid' }}>
+
           <h3 style={{
             fontSize: '14pt',
             fontWeight: 'bold',
