@@ -150,7 +150,8 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
       backgroundColor: '#FFFFFF'
     }}>
       {/* Header Premium */}
-      <div style={{ 
+      <div data-pdf-section style={{ 
+
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         color: 'white',
         padding: '40px 30px',
@@ -227,7 +228,8 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
       </div>
 
       {/* Sumário Executivo */}
-      <div style={{ padding: '30px' }}>
+      <div data-pdf-section style={{ padding: '30px' }}>
+
         <SectionHeader title="Sumário Executivo" icon="📊" />
         
         <div style={{ 
@@ -396,7 +398,8 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
         <SectionHeader title="Análise Detalhada por Domínios" icon="🔍" />
         
         {evaluationDomains.map((domain, domainIndex) => (
-          <div key={domainIndex} style={{ 
+          <div key={domainIndex} data-pdf-section style={{ 
+
             backgroundColor: '#FFFFFF',
             border: '1px solid #E5E7EB',
             borderRadius: '12px',
@@ -486,7 +489,8 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
         {/* Recomendações Terapêuticas */}
         <SectionHeader title="Recomendações Terapêuticas" icon="💡" />
         
-        <div style={{ 
+        <div data-pdf-section style={{ 
+
           backgroundColor: '#FEF7CD',
           border: '2px solid #FDE047',
           borderRadius: '12px',
@@ -540,7 +544,8 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
         {/* Metodologia */}
         <SectionHeader title="Metodologia e Validação" icon="🔬" />
         
-        <div style={{ 
+        <div data-pdf-section style={{ 
+
           backgroundColor: '#F0F9FF',
           border: '1px solid #0EA5E9',
           borderRadius: '12px',
@@ -578,7 +583,8 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
         </div>
 
         {/* Informações do Profissional */}
-        <div style={{ 
+        <div data-pdf-section style={{ 
+
           border: '3px solid transparent',
           borderImage: 'linear-gradient(135deg, #0d9488, #14b8a6, #06b6d4) 1',
           borderRadius: '16px',

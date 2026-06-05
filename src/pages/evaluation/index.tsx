@@ -1097,53 +1097,50 @@ export default function Evaluation() {
         </div>
       );
 
-      const { root, ready, cleanup } = renderForPdf(pdfContent);
-      await ready;
       try {
+        loadingToast = toast.loading("Gerando Relatório MuseTera Aprimorado...");
+        
+        const filename = `relatorio-musetera-completo-${(dataToUse.patientName || 'paciente').replace(/\s+/g, '_')}.pdf`;
+        
+        const blob = await generateSectionPdf(
+          <EnhancedMuseteraReportPDF
+            categoryData={dataToUse.categoryData}
+            pieData={dataToUse.pieData}
+            patientName={dataToUse.patientName}
+            professionalData={prof}
+            radarData={dataToUse.radarData}
+            selectedParameters={dataToUse.selectedParameters}
+            overallScore={dataToUse.overallScore}
+            evaluationDomains={dataToUse.evaluationDomains}
+            evaluationDate={dataToUse.evaluationDate}
+            digitalSignatureUrl={signatureBase64 || undefined}
+            digitalStampUrl={stampBase64 || undefined}
+            professionalEmail={prof?.email || undefined}
+            professionalPhone={prof?.phone || undefined}
+            professionalSpecialty={prof?.specialty || undefined}
+            professionalPhotoUrl={photoBase64 || undefined}
+            patientData={dataToUse.patientData}
+          />,
+          { filename }
+        );
 
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      loadingToast = toast.loading("Gerando Relatório MuseTera Aprimorado...");
-
-      const opt = {
-        margin: [10, 10],
-        filename: `relatorio-musetera-completo-${(dataToUse.patientName || 'paciente').replace(/\s+/g, '_')}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: '#ffffff',
-          logging: false,
-          letterRendering: true
-        },
-        jsPDF: { 
-          unit: 'mm', 
-          format: 'a4', 
-          orientation: 'portrait',
-          compress: true,
-          precision: 2
-        },
-        pagebreak: { mode: ['css', 'legacy'] }
-      };
-
-      const pdfInst4 = html2pdf().set(opt).from(root);
-      const pdfBlob = await pdfInst4.output('blob');
-      
-      const pdfUrl = URL.createObjectURL(pdfBlob);
-      const link = document.createElement('a');
-      link.href = pdfUrl;
-      link.download = opt.filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(pdfUrl);
-      
-      try { await savePDFToStorage(pdfBlob, opt.filename, "evaluation"); } catch(e) { console.warn("Erro ao salvar no storage:", e); }
-
-      
-      } finally {
-        cleanup();
+        const pdfUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = pdfUrl;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(pdfUrl);
+        
+        try { 
+          await savePDFToStorage(blob, filename, "evaluation"); 
+        } catch(e) { 
+          console.warn("Erro ao salvar no storage:", e); 
+        }
+      } catch (error) {
+        console.error("Erro ao gerar PDF:", error);
+        throw error;
       }
       
       toast.success("Relatório MuseTera Aprimorado gerado com sucesso!", { id: loadingToast });
@@ -1342,49 +1339,45 @@ export default function Evaluation() {
         </div>
       );
 
-      const { root, ready, cleanup } = renderForPdf(pdfContent);
-      await ready;
       try {
+        const filename = `texto-avaliacao-${patient.name || 'paciente'}-${format(new Date(evaluation.date), 'yyyy-MM-dd')}.pdf`;
+        
+        const blob = await generateSectionPdf(
+          <EvaluationTextPDF
+            content={data.content}
+            patientName={patient.name || 'Paciente'}
+            patientAge={calculateAgeFromBirthDate(patient.birth_date) ?? patient.age ?? null}
+            evaluationDate={format(new Date(evaluation.date), 'dd/MM/yyyy')}
+            professionalName={professionalData?.name || 'Profissional'}
+            professionalRegister={professionalData?.register || undefined}
+            digitalSignatureUrl={signatureBase64 || undefined}
+            digitalStampUrl={stampBase64 || undefined}
+            professionalEmail={professionalData?.email || undefined}
+            professionalPhone={professionalData?.phone || undefined}
+            professionalSpecialty={professionalData?.specialty || undefined}
+            professionalPhotoUrl={photoBase64 || undefined}
+            overallScore={savedOverallScore}
+          />,
+          { filename }
+        );
 
-      await new Promise(resolve => setTimeout(resolve, 1500));
+        const pdfUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = pdfUrl;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(pdfUrl);
 
-      const opt = {
-        margin: [10, 10],
-        filename: `texto-avaliacao-${patient.name || 'paciente'}-${format(new Date(evaluation.date), 'yyyy-MM-dd')}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: '#ffffff',
-          logging: false,
-          letterRendering: true
-        },
-        jsPDF: { 
-          unit: 'mm', 
-          format: 'a4', 
-          orientation: 'portrait',
-          compress: true
-        },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-      };
-
-      const pdfInst5 = html2pdf().set(opt).from(root);
-      const pdfBlob = await pdfInst5.output('blob');
-      
-      const pdfUrl = URL.createObjectURL(pdfBlob);
-      const link = document.createElement('a');
-      link.href = pdfUrl;
-      link.download = opt.filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(pdfUrl);
-
-      try { await savePDFToStorage(pdfBlob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
-      
-      } finally {
-        cleanup();
+        try { 
+          await savePDFToStorage(blob, filename, "evaluation"); 
+        } catch(e) { 
+          console.warn(e); 
+        }
+      } catch (error) {
+        console.error("Erro ao gerar PDF de texto salvo:", error);
+        throw error;
       }
       
       toast.dismiss();
@@ -1487,49 +1480,45 @@ export default function Evaluation() {
         </div>
       );
 
-      const { root, ready, cleanup } = renderForPdf(pdfContent);
-      await ready;
       try {
+        const filename = `texto-avaliacao-${selectedPatientData?.name || 'paciente'}.pdf`;
+        
+        const blob = await generateSectionPdf(
+          <EvaluationTextPDF
+            content={data.content}
+            patientName={selectedPatientData?.name || 'Paciente'}
+            patientAge={calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age ?? null}
+            evaluationDate={format(evaluationDate, 'dd/MM/yyyy')}
+            professionalName={professionalData?.name || 'Profissional'}
+            professionalRegister={professionalData?.register || undefined}
+            digitalSignatureUrl={signatureBase64 || undefined}
+            digitalStampUrl={stampBase64 || undefined}
+            professionalEmail={professionalData?.email || undefined}
+            professionalPhone={professionalData?.phone || undefined}
+            professionalSpecialty={professionalData?.specialty || undefined}
+            professionalPhotoUrl={photoBase64 || undefined}
+            overallScore={overallScore}
+          />,
+          { filename }
+        );
 
-      await new Promise(resolve => setTimeout(resolve, 1500));
+        const pdfUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = pdfUrl;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(pdfUrl);
 
-      const opt = {
-        margin: [10, 10],
-        filename: `texto-avaliacao-${selectedPatientData?.name || 'paciente'}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: '#ffffff',
-          logging: false,
-          letterRendering: true
-        },
-        jsPDF: { 
-          unit: 'mm', 
-          format: 'a4', 
-          orientation: 'portrait',
-          compress: true
-        },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-      };
-
-      const pdfInst6 = html2pdf().set(opt).from(root);
-      const pdfBlob = await pdfInst6.output('blob');
-      
-      const pdfUrl = URL.createObjectURL(pdfBlob);
-      const link = document.createElement('a');
-      link.href = pdfUrl;
-      link.download = opt.filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(pdfUrl);
-
-      try { await savePDFToStorage(pdfBlob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
-      
-      } finally {
-        cleanup();
+        try { 
+          await savePDFToStorage(blob, filename, "evaluation"); 
+        } catch(e) { 
+          console.warn(e); 
+        }
+      } catch (error) {
+        console.error("Erro ao gerar PDF de texto:", error);
+        throw error;
       }
       
       toast.dismiss();

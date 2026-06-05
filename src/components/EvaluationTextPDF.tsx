@@ -74,7 +74,8 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
       }}
     >
       {/* Cabeçalho */}
-      <div style={{ 
+      <div data-pdf-section style={{ 
+
         borderBottom: '3px solid #0f766e',
         paddingBottom: '15px',
         marginBottom: '25px',
@@ -129,7 +130,8 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
       </div>
 
       {/* Síntese Geral */}
-      <section style={{ marginBottom: '30px' }}>
+      <section data-pdf-section style={{ marginBottom: '30px' }}>
+
         <h3 style={{
           fontSize: '14pt',
           fontWeight: 'bold',
@@ -151,7 +153,8 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
 
       {/* Conquistas Identificadas */}
       {content.conquistas && content.conquistas.por_dominio && content.conquistas.por_dominio.length > 0 && (
-        <section style={{ marginBottom: '30px', pageBreakInside: 'avoid' }}>
+        <section data-pdf-section style={{ marginBottom: '30px', pageBreakInside: 'avoid' }}>
+
           <h3 style={{
             fontSize: '14pt',
             fontWeight: 'bold',
@@ -205,7 +208,8 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
 
       {/* Áreas Prioritárias para Desenvolvimento */}
       {content.areas_desenvolvimento && content.areas_desenvolvimento.por_dominio && content.areas_desenvolvimento.por_dominio.length > 0 && (
-        <section style={{ marginBottom: '30px', pageBreakInside: 'avoid' }}>
+        <section data-pdf-section style={{ marginBottom: '30px', pageBreakInside: 'avoid' }}>
+
           <h3 style={{
             fontSize: '14pt',
             fontWeight: 'bold',
@@ -259,7 +263,8 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
 
       {/* Recomendações Terapêuticas */}
       {content.recomendacoes && content.recomendacoes.length > 0 && (
-        <section style={{ marginBottom: '30px', pageBreakInside: 'avoid' }}>
+        <section data-pdf-section style={{ marginBottom: '30px', pageBreakInside: 'avoid' }}>
+
           <h3 style={{
             fontSize: '14pt',
             fontWeight: 'bold',
@@ -292,7 +297,7 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
 
       {/* Objetivos Terapêuticos Sugeridos */}
       {content.objetivos && content.objetivos.length > 0 && (
-        <section style={{ marginBottom: '30px', pageBreakInside: 'avoid' }}>
+        <section data-pdf-section style={{ marginBottom: '30px', pageBreakInside: 'avoid' }}>
           <h3 style={{
             fontSize: '14pt',
             fontWeight: 'bold',
@@ -321,7 +326,8 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
       )}
 
       {/* Rodapé Profissional */}
-      <div style={{
+      <div data-pdf-section style={{
+
         marginTop: '50px',
         border: '3px solid transparent',
         borderImage: 'linear-gradient(135deg, #0d9488, #14b8a6, #06b6d4) 1',
