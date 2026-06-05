@@ -1339,49 +1339,45 @@ export default function Evaluation() {
         </div>
       );
 
-      const { root, ready, cleanup } = renderForPdf(pdfContent);
-      await ready;
       try {
+        const filename = `texto-avaliacao-${patient.name || 'paciente'}-${format(new Date(evaluation.date), 'yyyy-MM-dd')}.pdf`;
+        
+        const blob = await generateSectionPdf(
+          <EvaluationTextPDF
+            content={data.content}
+            patientName={patient.name || 'Paciente'}
+            patientAge={calculateAgeFromBirthDate(patient.birth_date) ?? patient.age ?? null}
+            evaluationDate={format(new Date(evaluation.date), 'dd/MM/yyyy')}
+            professionalName={professionalData?.name || 'Profissional'}
+            professionalRegister={professionalData?.register || undefined}
+            digitalSignatureUrl={signatureBase64 || undefined}
+            digitalStampUrl={stampBase64 || undefined}
+            professionalEmail={professionalData?.email || undefined}
+            professionalPhone={professionalData?.phone || undefined}
+            professionalSpecialty={professionalData?.specialty || undefined}
+            professionalPhotoUrl={photoBase64 || undefined}
+            overallScore={savedOverallScore}
+          />,
+          { filename }
+        );
 
-      await new Promise(resolve => setTimeout(resolve, 1500));
+        const pdfUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = pdfUrl;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(pdfUrl);
 
-      const opt = {
-        margin: [10, 10],
-        filename: `texto-avaliacao-${patient.name || 'paciente'}-${format(new Date(evaluation.date), 'yyyy-MM-dd')}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: '#ffffff',
-          logging: false,
-          letterRendering: true
-        },
-        jsPDF: { 
-          unit: 'mm', 
-          format: 'a4', 
-          orientation: 'portrait',
-          compress: true
-        },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-      };
-
-      const pdfInst5 = html2pdf().set(opt).from(root);
-      const pdfBlob = await pdfInst5.output('blob');
-      
-      const pdfUrl = URL.createObjectURL(pdfBlob);
-      const link = document.createElement('a');
-      link.href = pdfUrl;
-      link.download = opt.filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(pdfUrl);
-
-      try { await savePDFToStorage(pdfBlob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
-      
-      } finally {
-        cleanup();
+        try { 
+          await savePDFToStorage(blob, filename, "evaluation"); 
+        } catch(e) { 
+          console.warn(e); 
+        }
+      } catch (error) {
+        console.error("Erro ao gerar PDF de texto salvo:", error);
+        throw error;
       }
       
       toast.dismiss();
