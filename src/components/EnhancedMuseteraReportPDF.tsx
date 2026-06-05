@@ -139,91 +139,107 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
       boxSizing: 'border-box'
     }}>
       {/* 1. IDENTIFICAÇÃO DO PACIENTE */}
-      <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-        <h1 style={{ fontSize: '24px', fontWeight: '800', color: '#1e3a8a', margin: '0 0 5px 0' }}>RELATÓRIO DE AVALIAÇÃO MUSICOTERAPÊUTICA</h1>
-        <div style={{ height: '2px', background: '#3b82f6', width: '100px', margin: '0 auto 20px auto' }}></div>
-      </div>
-
-      <SectionHeader title="Identificação" icon="👤" />
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-        <div>
-          <InfoRow label="Nome do Paciente" value={patientName} />
-          <InfoRow label="Idade" value={patientData?.age ? `${patientData.age} anos` : '---'} />
-          <InfoRow label="Data da Avaliação" value={format(evaluationDate, "dd/MM/yyyy", { locale: ptBR })} />
+      <div data-pdf-section style={{ marginBottom: '20px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+          <h1 style={{ fontSize: '24px', fontWeight: '800', color: '#1e3a8a', margin: '0 0 5px 0' }}>RELATÓRIO DE AVALIAÇÃO MUSICOTERAPÊUTICA</h1>
+          <div style={{ height: '2px', background: '#3b82f6', width: '100px', margin: '0 auto 20px auto' }}></div>
         </div>
-        <div>
-          <InfoRow label="Terapeuta Responsável" value={professionalData?.name} />
-          <InfoRow label="Especialidade" value={professionalSpecialty || professionalData?.specialty} />
-          <InfoRow label="Registro Profissional" value={professionalData?.register || professionalData?.license_number} />
+
+        <SectionHeader title="Identificação" icon="👤" />
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
+          <div style={{ flex: '1', minWidth: '250px' }}>
+            <InfoRow label="Nome do Paciente" value={patientName} />
+            <InfoRow label="Idade" value={patientData?.age ? `${patientData.age} anos` : '---'} />
+            <InfoRow label="Data da Avaliação" value={format(evaluationDate, "dd/MM/yyyy", { locale: ptBR })} />
+          </div>
+          <div style={{ flex: '1', minWidth: '250px' }}>
+            <InfoRow label="Terapeuta Responsável" value={professionalData?.name} />
+            <InfoRow label="Especialidade" value={professionalSpecialty || professionalData?.specialty} />
+            <InfoRow label="Registro Profissional" value={professionalData?.register || professionalData?.license_number} />
+          </div>
         </div>
       </div>
 
       {/* 2. INSTRUMENTO DE AVALIAÇÃO */}
-      <SectionHeader title="Instrumento de Avaliação" icon="📋" />
-      <InfoRow label="Nome da Escala" value="Escala MuseTera" />
-      <InfoRow label="Objetivo" value="Avaliar o perfil funcional e o desenvolvimento do paciente em diversos domínios através de estímulos musicais." />
+      <div data-pdf-section>
+        <SectionHeader title="Instrumento de Avaliação" icon="📋" />
+        <InfoRow label="Nome da Escala" value="Escala MuseTera" />
+        <InfoRow label="Objetivo" value="Avaliar o perfil funcional e o desenvolvimento do paciente em diversos domínios através de estímulos musicais." />
+      </div>
       
       {/* 3. CONTEXTO DA AVALIAÇÃO */}
-      <SectionHeader title="Contexto da Avaliação" icon="🏥" />
-      <InfoRow label="Ambiente Terapêutico" value="Setting Musicoterapêutico especializado" />
-      <InfoRow label="Recursos Utilizados" value="Instrumentos de percussão, teclado, violão, recursos tecnológicos e materiais sonoros diversos." />
+      <div data-pdf-section>
+        <SectionHeader title="Contexto da Avaliação" icon="🏥" />
+        <InfoRow label="Ambiente Terapêutico" value="Setting Musicoterapêutico especializado" />
+        <InfoRow label="Recursos Utilizados" value="Instrumentos de percussão, teclado, violão, recursos tecnológicos e materiais sonoros diversos." />
+      </div>
 
       {/* 4. ANÁLISE CLÍNICA QUALITATIVA */}
-      <SectionHeader title="Análise Clínica Qualitativa" icon="📝" />
-      <div style={{ fontSize: '12px', color: '#374151', textAlign: 'justify' }}>
-        <p><strong>Resposta aos Elementos Musicais:</strong> 
-          O paciente apresenta uma resposta {overallScore.percentage >= 60 ? 'consistente' : 'em desenvolvimento'} aos estímulos de ritmo e melodia. 
-          {radarData.find(d => d.name === "Domínio Musical")?.value >= 70 ? ' Demonstra boa percepção rítmica e afinação vocal/instrumental.' : ' Requer maior estímulo para sincronização e percepção melódica.'}
-        </p>
-        <p><strong>Comunicação e Interação:</strong>
-          {radarData.find(d => d.name === "Domínio Comunicativo-Interativo")?.value >= 60 ? 
-            'Apresenta iniciativa comunicativa e engajamento adequado com o terapeuta.' : 
-            'Demonstra necessidade de suporte para manutenção do contato visual e turnos comunicativos.'}
-        </p>
-        <p><strong>Atenção e Engajamento:</strong>
-          O nível de engajamento nas atividades propostas é de {overallScore.percentage}%, indicando um aproveitamento {getScoreDescription(overallScore.percentage).toLowerCase()} do setting terapêutico.
-        </p>
+      <div data-pdf-section>
+        <SectionHeader title="Análise Clínica Qualitativa" icon="📝" />
+        <div style={{ fontSize: '12px', color: '#374151', textAlign: 'justify' }}>
+          <p><strong>Resposta aos Elementos Musicais:</strong> 
+            O paciente apresenta uma resposta {overallScore.percentage >= 60 ? 'consistente' : 'em desenvolvimento'} aos estímulos de ritmo e melodia. 
+            {radarData.find(d => d.name === "Domínio Musical")?.value >= 70 ? ' Demonstra boa percepção rítmica e afinação vocal/instrumental.' : ' Requer maior estímulo para sincronização e percepção melódica.'}
+          </p>
+          <p><strong>Comunicação e Interação:</strong>
+            {radarData.find(d => d.name === "Domínio Comunicativo-Interativo")?.value >= 60 ? 
+              'Apresenta iniciativa comunicativa e engajamento adequado com o terapeuta.' : 
+              'Demonstra necessidade de suporte para manutenção do contato visual e turnos comunicativos.'}
+          </p>
+          <p><strong>Atenção e Engajamento:</strong>
+            O nível de engajamento nas atividades propostas é de {overallScore.percentage}%, indicando um aproveitamento {getScoreDescription(overallScore.percentage).toLowerCase()} do setting terapêutico.
+          </p>
+        </div>
       </div>
 
       {/* 5. RESULTADOS QUANTITATIVOS */}
-      <SectionHeader title="Resultados Quantitativos" icon="📊" />
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
-        <div>
-          <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '10px' }}>Pontuação por Domínio</h3>
-          {radarData.map((domain, index) => (
-            <ProgressBar key={index} percentage={domain.value} label={domain.name} />
-          ))}
-        </div>
-        <div style={{ backgroundColor: '#f9fafb', padding: '15px', borderRadius: '8px', textAlign: 'center' }}>
-          <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '5px' }}>Pontuação Global</h3>
-          <div style={{ fontSize: '32px', fontWeight: '800', color: getScoreColor(overallScore.percentage) }}>{overallScore.percentage}%</div>
-          <p style={{ fontSize: '12px', fontWeight: '600' }}>{getScoreDescription(overallScore.percentage)}</p>
-          <p style={{ fontSize: '11px', color: '#6b7280', marginTop: '10px' }}>({overallScore.raw} de {overallScore.max} pontos totais)</p>
+      <div data-pdf-section>
+        <SectionHeader title="Resultados Quantitativos" icon="📊" />
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '30px' }}>
+          <div style={{ flex: '1', minWidth: '250px' }}>
+            <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '10px' }}>Pontuação por Domínio</h3>
+            {radarData.map((domain, index) => (
+              <ProgressBar key={index} percentage={domain.value} label={domain.name} />
+            ))}
+          </div>
+          <div style={{ flex: '0.8', minWidth: '200px', backgroundColor: '#f9fafb', padding: '15px', borderRadius: '8px', textAlign: 'center' }}>
+            <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '5px' }}>Pontuação Global</h3>
+            <div style={{ fontSize: '32px', fontWeight: '800', color: getScoreColor(overallScore.percentage) }}>{overallScore.percentage}%</div>
+            <p style={{ fontSize: '12px', fontWeight: '600' }}>{getScoreDescription(overallScore.percentage)}</p>
+            <p style={{ fontSize: '11px', color: '#6b7280', marginTop: '10px' }}>({overallScore.raw} de {overallScore.max} pontos totais)</p>
+          </div>
         </div>
       </div>
 
       {/* 6. INTERPRETAÇÃO CLÍNICA AUTOMÁTICA */}
-      <SectionHeader title="Interpretação Clínica" icon="🧠" />
-      <div style={{ fontSize: '12px', color: '#374151', textAlign: 'justify' }}>
-        <p>Com base nos dados coletados, observa-se que o paciente encontra-se em um estágio de desenvolvimento {overallScore.percentage >= 70 ? 'Avançado' : overallScore.percentage >= 40 ? 'Intermediário' : 'Inicial'}. 
-        {radarData.sort((a, b) => b.value - a.value)[0]?.name} destaca-se como o domínio de maior força, enquanto {radarData.sort((a, b) => a.value - b.value)[0]?.name} apresenta maiores desafios e necessidade de intervenção prioritária.</p>
+      <div data-pdf-section>
+        <SectionHeader title="Interpretação Clínica" icon="🧠" />
+        <div style={{ fontSize: '12px', color: '#374151', textAlign: 'justify' }}>
+          <p>Com base nos dados coletados, observa-se que o paciente encontra-se em um estágio de desenvolvimento {overallScore.percentage >= 70 ? 'Avançado' : overallScore.percentage >= 40 ? 'Intermediário' : 'Inicial'}. 
+          {radarData.sort((a, b) => b.value - a.value)[0]?.name} destaca-se como o domínio de maior força, enquanto {radarData.sort((a, b) => a.value - b.value)[0]?.name} apresenta maiores desafios e necessidade de intervenção prioritária.</p>
+        </div>
       </div>
 
       {/* 7. CONCLUSÃO E PLANO TERAPÊUTICO */}
-      <SectionHeader title="Conclusão e Recomendações" icon="🎯" />
-      <div style={{ fontSize: '12px', color: '#374151' }}>
-        <p><strong>Perfil Musical Funcional:</strong> {overallScore.percentage >= 70 ? 'Musicalmente Funcional / Avançado' : overallScore.percentage >= 40 ? 'Em Evolução / Intermediário' : 'Necessita Suporte / Inicial'}</p>
-        <p><strong>Foco Terapêutico Futuro:</strong> Priorizar atividades que estimulem o domínio {radarData.sort((a, b) => a.value - b.value)[0]?.name}, utilizando as forças identificadas no domínio {radarData.sort((a, b) => b.value - a.value)[0]?.name} como ponte para o desenvolvimento.</p>
-        <p><strong>Sugestões:</strong> Manter a frequência das sessões e integrar atividades musicais no ambiente domiciliar para generalização das habilidades.</p>
+      <div data-pdf-section>
+        <SectionHeader title="Conclusão e Recomendações" icon="🎯" />
+        <div style={{ fontSize: '12px', color: '#374151' }}>
+          <p><strong>Perfil Musical Funcional:</strong> {overallScore.percentage >= 70 ? 'Musicalmente Funcional / Avançado' : overallScore.percentage >= 40 ? 'Em Evolução / Intermediário' : 'Necessita Suporte / Inicial'}</p>
+          <p><strong>Foco Terapêutico Futuro:</strong> Priorizar atividades que estimulem o domínio {radarData.sort((a, b) => a.value - b.value)[0]?.name}, utilizando as forças identificadas no domínio {radarData.sort((a, b) => b.value - a.value)[0]?.name} como ponte para o desenvolvimento.</p>
+          <p><strong>Sugestões:</strong> Manter a frequência das sessões e integrar atividades musicais no ambiente domiciliar para generalização das habilidades.</p>
+        </div>
       </div>
 
       {/* ASSINATURA */}
-      <div style={{ marginTop: '50px', textAlign: 'center' }}>
+      <div data-pdf-section style={{ marginTop: '50px', textAlign: 'center' }}>
         <div style={{ height: '1px', background: '#d1d5db', width: '250px', margin: '0 auto 10px auto' }}></div>
         <p style={{ fontSize: '12px', fontWeight: '700', margin: '0' }}>{professionalData?.name}</p>
         <p style={{ fontSize: '11px', color: '#6b7280', margin: '0' }}>{professionalSpecialty || professionalData?.specialty} - {professionalData?.register || professionalData?.license_number}</p>
         {digitalStampUrl && (
-          <img src={digitalStampUrl} style={{ width: '120px', marginTop: '10px' }} alt="Carimbo" />
+          <div style={{ marginTop: '10px' }}>
+            <img src={digitalStampUrl} style={{ maxWidth: '150px', height: 'auto' }} alt="Carimbo" />
+          </div>
         )}
       </div>
 
