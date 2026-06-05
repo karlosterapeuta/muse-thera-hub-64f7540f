@@ -2,7 +2,7 @@
 import React from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { PieChart, Pie, Cell, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
 import { ProfessionalData } from "@/hooks/useProfessionalData";
 
 interface EnhancedMuseteraReportPDFProps {
@@ -115,6 +115,7 @@ export const EnhancedMuseteraReportPDF: React.FC<EnhancedMuseteraReportPDFProps>
       </div>
     );
   };
+
 
   const SectionHeader = ({ title, icon }: { title: string; icon: string }) => (
     <div style={{ 
