@@ -1124,12 +1124,15 @@ export default function Evaluation() {
       };
 
       const pdfInst4 = html2pdf().set(opt).from(root);
-      const pdfBlob = await pdfInst4.outputPdf('blob');
+      const pdfBlob = await pdfInst4.output('blob');
+      
       const pdfUrl = URL.createObjectURL(pdfBlob);
       const link = document.createElement('a');
       link.href = pdfUrl;
       link.download = opt.filename;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
       URL.revokeObjectURL(pdfUrl);
       
       try { await savePDFToStorage(pdfBlob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
