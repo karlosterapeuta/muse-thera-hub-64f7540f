@@ -1144,9 +1144,9 @@ export default function Evaluation() {
       
       toast.success("Relatório MuseTera Aprimorado gerado com sucesso!", { id: loadingToast });
 
-    } catch (error) {
-      console.error("Erro ao gerar PDF:", error);
-      toast.error("Erro ao gerar PDF. Por favor, tente novamente.", { id: loadingToast });
+    } catch (error: any) {
+      console.error("Erro detalhado ao gerar PDF:", error);
+      toast.error(`Erro ao gerar PDF: ${error.message || 'Erro desconhecido'}. Verifique se o paciente possui dados preenchidos.`, { id: loadingToast });
     }
   };
 
