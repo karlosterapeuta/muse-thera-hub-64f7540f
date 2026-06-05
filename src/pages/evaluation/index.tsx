@@ -1077,45 +1077,50 @@ export default function Evaluation() {
 
       const pdfContainer = document.createElement('div');
       pdfContainer.id = 'pdf-render-container';
+      // Importante: html2pdf precisa que o elemento esteja VISÍVEL no DOM para capturar estilos corretamente
+      // mas podemos colocá-lo bem longe ou escondido atrás de outros elementos
       pdfContainer.style.position = 'absolute';
-      pdfContainer.style.left = '-9999px';
+      pdfContainer.style.left = '0';
       pdfContainer.style.top = '0';
       pdfContainer.style.width = '210mm';
+      pdfContainer.style.zIndex = '-9999';
+      pdfContainer.style.backgroundColor = '#ffffff';
       document.body.appendChild(pdfContainer);
 
       const pdfContent = (
-        <EnhancedMuseteraReportPDF
-          categoryData={dataToUse.categoryData}
-          pieData={dataToUse.pieData}
-          patientName={dataToUse.patientName}
-          professionalData={prof}
-          radarData={dataToUse.radarData}
-          selectedParameters={dataToUse.selectedParameters}
-          overallScore={dataToUse.overallScore}
-          evaluationDomains={dataToUse.evaluationDomains}
-          evaluationDate={dataToUse.evaluationDate}
-          digitalSignatureUrl={signatureBase64 || undefined}
-          digitalStampUrl={stampBase64 || undefined}
-          professionalEmail={prof?.email || undefined}
-          professionalPhone={prof?.phone || undefined}
-          professionalSpecialty={prof?.specialty || undefined}
-          professionalPhotoUrl={photoBase64 || undefined}
-          patientData={dataToUse.patientData}
-        />
+        <div style={{ backgroundColor: '#ffffff', width: '100%', minHeight: '297mm' }}>
+          <EnhancedMuseteraReportPDF
+            categoryData={dataToUse.categoryData}
+            pieData={dataToUse.pieData}
+            patientName={dataToUse.patientName}
+            professionalData={prof}
+            radarData={dataToUse.radarData}
+            selectedParameters={dataToUse.selectedParameters}
+            overallScore={dataToUse.overallScore}
+            evaluationDomains={dataToUse.evaluationDomains}
+            evaluationDate={dataToUse.evaluationDate}
+            digitalSignatureUrl={signatureBase64 || undefined}
+            digitalStampUrl={stampBase64 || undefined}
+            professionalEmail={prof?.email || undefined}
+            professionalPhone={prof?.phone || undefined}
+            professionalSpecialty={prof?.specialty || undefined}
+            professionalPhotoUrl={photoBase64 || undefined}
+            patientData={dataToUse.patientData}
+          />
+        </div>
       );
 
       const root = createRoot(pdfContainer);
       root.render(pdfContent);
-
 
       try {
         loadingToast = toast.loading("Gerando Relatório MuseTera Aprimorado...");
         
         const filename = `relatorio-musetera-completo-${(dataToUse.patientName || 'paciente').replace(/\s+/g, '_')}.pdf`;
         
-        // Simulação de delay para feedback visual
-        // Aguarda renderização e fontes
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        // Aguarda renderização, fontes e imagens
+        await new Promise(resolve => setTimeout(resolve, 3500));
+
 
         const opt = {
           margin: [10, 10],
