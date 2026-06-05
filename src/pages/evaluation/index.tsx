@@ -1029,8 +1029,10 @@ export default function Evaluation() {
 
   const handleGenerateMuseteraPDF = async (overrideData?: any) => {
     // Verificar se há dados para gerar o PDF
-    if (!overrideData && Object.keys(selections).length === 0) {
-      toast.error("Nenhum parâmetro avaliado. Preencha a avaliação ou carregue uma avaliação salva.");
+    const hasData = Object.keys(selections).length > 0;
+    
+    if (!overrideData && !hasData) {
+      toast.error("Nenhum parâmetro avaliado. Preencha a avaliação (Escala MuseTera) antes de baixar.");
       return;
     }
     
