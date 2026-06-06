@@ -55,119 +55,128 @@ export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEdi
   }
 
   return (
-    <div className="overflow-x-auto">
+    <div className="w-full">
       <Table>
-        <TableHeader className="bg-gray-50 dark:bg-gray-800">
-          <TableRow>
-            <TableHead className="font-medium">Nome</TableHead>
-            <TableHead className="font-medium">Idade</TableHead>
-            <TableHead className="font-medium">Responsável</TableHead>
-            <TableHead className="font-medium">Contato</TableHead>
-            <TableHead className="font-medium">Anamnese</TableHead>
-            <TableHead className="text-right font-medium">Ações</TableHead>
+        <TableHeader className="bg-muted/50 border-b border-border/50">
+          <TableRow className="hover:bg-transparent">
+            <TableHead className="py-5 font-bold text-foreground tracking-tight pl-6">Paciente</TableHead>
+            <TableHead className="py-5 font-bold text-foreground tracking-tight">Idade</TableHead>
+            <TableHead className="py-5 font-bold text-foreground tracking-tight">Responsável</TableHead>
+            <TableHead className="py-5 font-bold text-foreground tracking-tight">Anamnese</TableHead>
+            <TableHead className="py-5 font-bold text-foreground tracking-tight text-right pr-6">Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {patients.map((patient) => (
-            <TableRow key={patient.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-              <TableCell className="font-medium">{patient.name}</TableCell>
-            <TableCell>
-              {patient.age !== null ? (
-                <div className="flex flex-col">
-                  <span>{patient.age} anos</span>
-                  {patient.birth_date && (
-                    <span className="text-xs text-muted-foreground">
-                      {formatBirthDateForDisplay(patient.birth_date)}
-                    </span>
-                  )}
+            <TableRow key={patient.id} className="group transition-colors hover:bg-muted/30 border-b border-border/50">
+              <TableCell className="py-4 pl-6 font-semibold text-foreground">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0">
+                    {patient.name.substring(0, 2).toUpperCase()}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="leading-tight">{patient.name}</span>
+                    <span className="text-xs text-muted-foreground font-normal mt-0.5">{patient.contact || "Sem contato"}</span>
+                  </div>
                 </div>
-              ) : "N/A"}
-            </TableCell>
-              <TableCell>{patient.responsible || "N/A"}</TableCell>
-              <TableCell>{patient.contact || "N/A"}</TableCell>
-              <TableCell>
+              </TableCell>
+              <TableCell className="py-4 font-medium text-muted-foreground">
+                {patient.age !== null ? (
+                  <div className="flex flex-col">
+                    <span className="text-foreground">{patient.age} anos</span>
+                    {patient.birth_date && (
+                      <span className="text-[10px] uppercase tracking-wider opacity-60">
+                        {formatBirthDateForDisplay(patient.birth_date)}
+                      </span>
+                    )}
+                  </div>
+                ) : <span className="opacity-40">N/A</span>}
+              </TableCell>
+              <TableCell className="py-4 text-muted-foreground italic font-medium">
+                {patient.responsible || <span className="opacity-40 font-normal">Não informado</span>}
+              </TableCell>
+              <TableCell className="py-4">
                 {patient.has_anamnesis ? (
-                  <Badge variant="outline" className="bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900 border-green-200 dark:border-green-700">
-                    Registrada
+                  <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 px-3 py-1 font-semibold text-[10px] uppercase tracking-widest">
+                    Completa
                   </Badge>
                 ) : (
-                  <Badge variant="outline" className="bg-muted text-muted-foreground hover:bg-muted/80 border-border">
-                    Não registrada
+                  <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/20 px-3 py-1 font-semibold text-[10px] uppercase tracking-widest">
+                    Pendente
                   </Badge>
                 )}
               </TableCell>
-              <TableCell className="text-right">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onEdit(patient)}
-                  className="text-muted-foreground hover:text-primary mr-1"
-                >
-                  <Pencil className="h-4 w-4 mr-1" />
-                  Editar
-                </Button>
-                
-                {patient.has_anamnesis && (
-                  <>
+              <TableCell className="py-4 text-right pr-6">
+                <div className="flex items-center justify-end gap-1">
+                  {patient.has_anamnesis && (
                     <Button
                       variant="ghost"
-                      size="sm"
+                      size="icon"
                       onClick={() => onViewAnamnesis(patient)}
-                      className="text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 mr-1"
+                      className="h-9 w-9 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all"
+                      title="Ver Anamnese"
                     >
-                      <FileText className="h-4 w-4 mr-1" />
-                      Ver Anamnese
+                      <FileText className="h-4 w-4" />
                     </Button>
-                    
-                    {onEditAnamnesis && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onEditAnamnesis(patient)}
-                        disabled={loadingAnamnesisPatientId === patient.id}
-                        className="text-muted-foreground hover:text-green-600 dark:hover:text-green-400 mr-1"
+                  )}
+                  
+                  {onEditAnamnesis && patient.has_anamnesis && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onEditAnamnesis(patient)}
+                      disabled={loadingAnamnesisPatientId === patient.id}
+                      className="h-9 w-9 text-muted-foreground hover:text-emerald-600 hover:bg-emerald-500/5 rounded-lg transition-all"
+                      title="Editar Anamnese"
+                    >
+                      {loadingAnamnesisPatientId === patient.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Pencil className="h-4 w-4" />
+                      )}
+                    </Button>
+                  )}
+
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onEdit(patient)}
+                    className="h-9 w-9 text-muted-foreground hover:text-indigo-600 hover:bg-indigo-500/5 rounded-lg transition-all"
+                    title="Editar Cadastro"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="icon"
+                        className="h-9 w-9 text-muted-foreground hover:text-destructive hover:bg-destructive/5 rounded-lg transition-all"
+                        title="Excluir Paciente"
                       >
-                        {loadingAnamnesisPatientId === patient.id ? (
-                          <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                        ) : (
-                          <Pencil className="h-4 w-4 mr-1" />
-                        )}
-                        {loadingAnamnesisPatientId === patient.id ? "Carregando..." : "Editar Anamnese"}
+                        <Trash2 className="h-4 w-4" />
                       </Button>
-                    )}
-                  </>
-                )}
-                
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      className="text-muted-foreground hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4 mr-1" />
-                      Excluir
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Esta ação irá excluir o paciente "{patient.name}" permanentemente e
-                        não poderá ser desfeita.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => onDelete(patient)}
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                      >
-                        Excluir
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="rounded-2xl border-none shadow-2xl">
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="text-xl font-bold">Excluir Paciente</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Deseja realmente excluir <strong>{patient.name}</strong>? Esta ação é definitiva e removerá todos os dados vinculados.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel className="rounded-xl">Cancelar</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => onDelete(patient)}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl"
+                        >
+                          Confirmar Exclusão
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
               </TableCell>
             </TableRow>
           ))}
