@@ -19,19 +19,33 @@ export function PatientPhotoUpload({ onPhotoUploaded, currentPhotoUrl }: Patient
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const startCamera = async () => {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      toast({
+        variant: "destructive",
+        title: "Câmera indisponível",
+        description: "Seu navegador não suporta acesso à câmera. Use o botão Upload.",
+      });
+      return;
+    }
     try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "user" },
+      });
       setIsCameraActive(true);
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error accessing camera:", err);
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Não foi possível acessar a câmera.",
-      });
+      let description = "Não foi possível acessar a câmera.";
+      if (err?.name === "NotAllowedError") {
+        description = "Permissão negada. Autorize o acesso à câmera nas configurações do navegador.";
+      } else if (err?.name === "NotFoundError") {
+        description = "Nenhuma câmera foi encontrada neste dispositivo.";
+      } else if (err?.name === "NotReadableError") {
+        description = "A câmera está sendo usada por outro aplicativo.";
+      }
+      toast({ variant: "destructive", title: "Erro", description });
       setIsCameraActive(false);
     }
   };
@@ -47,34 +61,48 @@ export function PatientPhotoUpload({ onPhotoUploaded, currentPhotoUrl }: Patient
   };
 
   const capturePhoto = async () => {
-    if (videoRef.current && canvasRef.current) {
-      const video = videoRef.current;
-      const canvas = canvasRef.current;
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const context = canvas.getContext("2d");
-      if (context) {
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const dataUrl = canvas.toDataURL("image/jpeg");
-        
-        // Convert dataUrl to Blob
-        const response = await fetch(dataUrl);
-        const blob = await response.blob();
-        uploadPhoto(blob);
-        stopCamera();
-      }
+    if (!videoRef.current || !canvasRef.current) return;
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    if (!video.videoWidth || !video.videoHeight) {
+      toast({
+        variant: "destructive",
+        title: "Aguarde",
+        description: "A câmera ainda está iniciando. Tente novamente.",
+      });
+      return;
+    }
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const blob: Blob | null = await new Promise((resolve) =>
+      canvas.toBlob((b) => resolve(b), "image/jpeg", 0.9)
+    );
+    stopCamera();
+    if (blob) {
+      await uploadPhoto(blob);
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Não foi possível capturar a foto.",
+      });
     }
   };
 
   const uploadPhoto = async (file: Blob | File) => {
     try {
       setIsUploading(true);
-      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.jpg`;
+      const ext = file.type === "image/png" ? "png" : "jpg";
+      const contentType = file.type || "image/jpeg";
+      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${ext}`;
       const filePath = `patient-photos/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from("patients")
-        .upload(filePath, file);
+        .upload(filePath, file, { contentType, upsert: true });
 
       if (uploadError) throw uploadError;
 
@@ -87,12 +115,12 @@ export function PatientPhotoUpload({ onPhotoUploaded, currentPhotoUrl }: Patient
         title: "Sucesso",
         description: "Foto enviada com sucesso.",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error uploading photo:", error);
       toast({
         variant: "destructive",
-        title: "Erro",
-        description: "Erro ao enviar a foto.",
+        title: "Erro ao enviar a foto",
+        description: error?.message || "Verifique sua conexão e tente novamente.",
       });
     } finally {
       setIsUploading(false);
