@@ -1,7 +1,6 @@
-
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Camera, Upload, X, Check } from "lucide-react";
+import { Camera, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -13,84 +12,8 @@ interface PatientPhotoUploadProps {
 export function PatientPhotoUpload({ onPhotoUploaded, currentPhotoUrl }: PatientPhotoUploadProps) {
   const { toast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
-  const [isCameraActive, setIsCameraActive] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const startCamera = async () => {
-    if (!navigator.mediaDevices?.getUserMedia) {
-      toast({
-        variant: "destructive",
-        title: "Câmera indisponível",
-        description: "Seu navegador não suporta acesso à câmera. Use o botão Upload.",
-      });
-      return;
-    }
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user" },
-      });
-      setIsCameraActive(true);
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-    } catch (err: any) {
-      console.error("Error accessing camera:", err);
-      let description = "Não foi possível acessar a câmera.";
-      if (err?.name === "NotAllowedError") {
-        description = "Permissão negada. Autorize o acesso à câmera nas configurações do navegador.";
-      } else if (err?.name === "NotFoundError") {
-        description = "Nenhuma câmera foi encontrada neste dispositivo.";
-      } else if (err?.name === "NotReadableError") {
-        description = "A câmera está sendo usada por outro aplicativo.";
-      }
-      toast({ variant: "destructive", title: "Erro", description });
-      setIsCameraActive(false);
-    }
-  };
-
-  const stopCamera = () => {
-    if (videoRef.current && videoRef.current.srcObject) {
-      const stream = videoRef.current.srcObject as MediaStream;
-      const tracks = stream.getTracks();
-      tracks.forEach(track => track.stop());
-      videoRef.current.srcObject = null;
-    }
-    setIsCameraActive(false);
-  };
-
-  const capturePhoto = async () => {
-    if (!videoRef.current || !canvasRef.current) return;
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    if (!video.videoWidth || !video.videoHeight) {
-      toast({
-        variant: "destructive",
-        title: "Aguarde",
-        description: "A câmera ainda está iniciando. Tente novamente.",
-      });
-      return;
-    }
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const context = canvas.getContext("2d");
-    if (!context) return;
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const blob: Blob | null = await new Promise((resolve) =>
-      canvas.toBlob((b) => resolve(b), "image/jpeg", 0.9)
-    );
-    stopCamera();
-    if (blob) {
-      await uploadPhoto(blob);
-    } else {
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Não foi possível capturar a foto.",
-      });
-    }
-  };
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const uploadPhoto = async (file: Blob | File) => {
     try {
@@ -131,6 +54,8 @@ export function PatientPhotoUpload({ onPhotoUploaded, currentPhotoUrl }: Patient
     const file = event.target.files?.[0];
     if (file) {
       uploadPhoto(file);
+      // Reset input value to allow selecting same file again
+      event.target.value = '';
     }
   };
 
@@ -149,39 +74,33 @@ export function PatientPhotoUpload({ onPhotoUploaded, currentPhotoUrl }: Patient
         )}
       </div>
 
-      {isCameraActive ? (
-        <div className="flex flex-col items-center gap-2">
-          <div className="relative w-64 aspect-video bg-black rounded-lg overflow-hidden">
-            <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
-            <canvas ref={canvasRef} className="hidden" />
-          </div>
-          <div className="flex gap-2">
-            <Button type="button" size="sm" onClick={capturePhoto} className="bg-primary hover:bg-primary/90">
-              <Check className="h-4 w-4 mr-2" /> Capturar
-            </Button>
-            <Button type="button" size="sm" variant="outline" onClick={stopCamera}>
-              <X className="h-4 w-4 mr-2" /> Cancelar
-            </Button>
-          </div>
-        </div>
-      ) : (
-        <div className="flex gap-2">
-          <Button type="button" size="sm" variant="outline" onClick={startCamera}>
-            <Camera className="h-4 w-4 mr-2" /> Tirar Foto
-          </Button>
-          <Button type="button" size="sm" variant="outline" onClick={() => fileInputRef.current?.click()}>
-            <Upload className="h-4 w-4 mr-2" /> Upload
-          </Button>
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            accept="image/*"
-            capture="user"
-            className="hidden"
-          />
-        </div>
-      )}
+      <div className="flex gap-2">
+        <Button type="button" size="sm" variant="outline" onClick={() => cameraInputRef.current?.click()}>
+          <Camera className="h-4 w-4 mr-2" /> Tirar Foto
+        </Button>
+        <Button type="button" size="sm" variant="outline" onClick={() => fileInputRef.current?.click()}>
+          <Upload className="h-4 w-4 mr-2" /> Upload
+        </Button>
+        
+        {/* Hidden input for Camera capture */}
+        <input
+          type="file"
+          ref={cameraInputRef}
+          onChange={handleFileChange}
+          accept="image/*"
+          capture="user"
+          className="hidden"
+        />
+
+        {/* Hidden input for File upload */}
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept="image/*"
+          className="hidden"
+        />
+      </div>
     </div>
   );
 }
