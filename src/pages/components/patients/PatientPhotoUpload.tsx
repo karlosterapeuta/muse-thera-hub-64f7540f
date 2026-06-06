@@ -177,6 +177,7 @@ export function PatientPhotoUpload({ onPhotoUploaded, currentPhotoUrl }: Patient
             ref={fileInputRef}
             onChange={handleFileChange}
             accept="image/*"
+            capture="user"
             className="hidden"
           />
         </div>
