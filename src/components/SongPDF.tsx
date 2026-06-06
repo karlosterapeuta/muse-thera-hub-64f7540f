@@ -28,7 +28,7 @@ export const SongPDF: React.FC<SongPDFProps> = ({ song, notes }) => {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
           <div style={{ width: '20px', height: '20px', marginRight: '12px' }}>
             <img
-              src="/lovable-uploads/934e42dc-e002-4eaa-add0-0fd741e314c8.png"
+              src="/assets-uploads/934e42dc-e002-4eaa-add0-0fd741e314c8.png"
               alt="Musetera Logo"
               style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
             />
@@ -148,7 +148,7 @@ export const SongPDF: React.FC<SongPDFProps> = ({ song, notes }) => {
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '8px' }}>
           <div style={{ width: '20px', height: '20px', marginRight: '8px' }}>
             <img
-              src="/lovable-uploads/934e42dc-e002-4eaa-add0-0fd741e314c8.png"
+              src="/assets-uploads/934e42dc-e002-4eaa-add0-0fd741e314c8.png"
               alt="Musetera Logo"
               style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
             />

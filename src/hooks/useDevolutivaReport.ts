@@ -389,7 +389,7 @@ export function useDevolutivaReport() {
       if (error.message?.includes('Rate limit')) {
         errorMessage = "Rate limit excedido. Por favor, aguarde alguns instantes e tente novamente.";
       } else if (error.message?.includes('Créditos insuficientes')) {
-        errorMessage = "Créditos insuficientes. Por favor, adicione créditos à sua conta Lovable AI.";
+        errorMessage = "Créditos insuficientes. Por favor, adicione créditos à sua conta.";
       }
       
       toast({

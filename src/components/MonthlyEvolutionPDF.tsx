@@ -25,7 +25,7 @@ export const MonthlyEvolutionPDF: React.FC<MonthlyEvolutionPDFProps> = ({
       <div style={{ textAlign: 'center', marginBottom: '24px', paddingBottom: '16px', borderBottom: '2px solid #E5E7EB' }}>
         <div style={{ marginBottom: '24px' }}>
           <img 
-            src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" 
+            src="/assets-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" 
             style={{ width: '60px', height: 'auto', margin: '0 auto' }} 
           />
         </div>

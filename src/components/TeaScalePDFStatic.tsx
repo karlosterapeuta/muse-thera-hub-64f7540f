@@ -62,7 +62,7 @@ export const TeaScalePDFStatic: React.FC<TeaScalePDFStaticProps> = ({
         <div className="border-b-2 border-gray-200 pb-4 mb-6">
           <div className="flex justify-center mb-4">
             <img 
-              src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" 
+              src="/assets-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" 
               alt="Logo" 
               style={{ width: '35px', height: 'auto' }} 
             />
