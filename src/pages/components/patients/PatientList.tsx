@@ -184,5 +184,4 @@ export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEdi
       </Table>
     </div>
   );
-  );
 }
