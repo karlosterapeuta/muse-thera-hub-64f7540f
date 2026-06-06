@@ -33,7 +33,8 @@ import {
   Search, 
   UserRoundPlus,
   Users,
-  Sparkles
+  Sparkles,
+  Trash2
 } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
