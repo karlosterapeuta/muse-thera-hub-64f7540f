@@ -19,19 +19,33 @@ export function PatientPhotoUpload({ onPhotoUploaded, currentPhotoUrl }: Patient
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const startCamera = async () => {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      toast({
+        variant: "destructive",
+        title: "Câmera indisponível",
+        description: "Seu navegador não suporta acesso à câmera. Use o botão Upload.",
+      });
+      return;
+    }
     try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "user" },
+      });
       setIsCameraActive(true);
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error accessing camera:", err);
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Não foi possível acessar a câmera.",
-      });
+      let description = "Não foi possível acessar a câmera.";
+      if (err?.name === "NotAllowedError") {
+        description = "Permissão negada. Autorize o acesso à câmera nas configurações do navegador.";
+      } else if (err?.name === "NotFoundError") {
+        description = "Nenhuma câmera foi encontrada neste dispositivo.";
+      } else if (err?.name === "NotReadableError") {
+        description = "A câmera está sendo usada por outro aplicativo.";
+      }
+      toast({ variant: "destructive", title: "Erro", description });
       setIsCameraActive(false);
     }
   };
