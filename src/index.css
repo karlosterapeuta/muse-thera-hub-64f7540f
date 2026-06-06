@@ -103,10 +103,9 @@
     overflow-x: hidden;
   }
 }
-  
-  #lovable-badge {
-    display: none !important;
-  }
+
+#lovable-badge {
+  display: none !important;
 }
 
 /* Enhanced animations */
