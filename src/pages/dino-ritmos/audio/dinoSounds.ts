@@ -124,8 +124,12 @@ export function startAmbient() {
   ];
   let i = 0;
   const loop = new Tone.Loop((time) => {
-    synth.triggerAttackRelease(chords[i % chords.length], "2n", time);
-    i++;
+    try {
+      synth.triggerAttackRelease(chords[i % chords.length], "2n", time);
+      i++;
+    } catch (e) {
+      console.warn("[DinoRitmos] ambient trigger error", e);
+    }
   }, "2n");
   loop.start(0);
   Tone.Transport.start();
