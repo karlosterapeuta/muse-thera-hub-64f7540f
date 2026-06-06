@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { loadProgress, resetProgress } from "../context/DinoSettings";
 import { dinos } from "../data/dinos";
-import { Star, Egg } from "lucide-react";
+import { Star, Egg, Brain, Music2, Activity, Clock } from "lucide-react";
 
 const MODE_LABELS: Record<string, string> = {
   free: "Modo Livre",
@@ -28,10 +28,10 @@ export function TherapistPanel({ onClose }: { onClose: () => void }) {
         </div>
 
         <div className="grid grid-cols-2 gap-3 mb-5">
-          <Stat icon={<Star className="w-5 h-5" />} label="Estrelas" value={p.stars} color="bg-yellow-100 text-yellow-800" />
-          <Stat icon={<Egg className="w-5 h-5" />} label="Ovos" value={p.eggs} color="bg-orange-100 text-orange-800" />
-          <Stat label="Interações" value={p.interactions} color="bg-purple-100 text-purple-800" />
-          <Stat label="Tempo total" value={`${minutes}m ${seconds}s`} color="bg-blue-100 text-blue-800" />
+          <Stat icon={<Star className="w-5 h-5" />} label="Estrelas" value={p.stars} color="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200" />
+          <Stat icon={<Egg className="w-5 h-5" />} label="Ovos" value={p.eggs} color="bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-200" />
+          <Stat icon={<Activity className="w-5 h-5" />} label="Interações" value={p.interactions} color="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-200" />
+          <Stat icon={<Clock className="w-5 h-5" />} label="Tempo total" value={`${minutes}m ${seconds}s`} color="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200" />
         </div>
 
         <section className="mb-5">

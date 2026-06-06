@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Settings, Sparkles, Star, Egg } from "lucide-react";
-import { DinoSettingsProvider, useDinoSettings, loadProgress, addTime } from "./context/DinoSettings";
+import { Settings, Sparkles, Star, Egg, Music2, Brain, Activity, Clock } from "lucide-react";
+import { DinoSettingsProvider, useDinoSettings, loadProgress, addTime, DinoProgress } from "./context/DinoSettings";
 import { ensureAudioReady, startAmbient, stopAmbient } from "./audio/dinoSounds";
 import { dinos } from "./data/dinos";
 import { SettingsPanel } from "./components/SettingsPanel";
