@@ -88,7 +88,7 @@ export function PatientPhotoUpload({ onPhotoUploaded, currentPhotoUrl }: Patient
           ref={cameraInputRef}
           onChange={handleFileChange}
           accept="image/*"
-          capture="user"
+          capture="environment"
           className="hidden"
         />
 
