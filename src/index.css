@@ -103,6 +103,11 @@
     overflow-x: hidden;
   }
 }
+  
+  #lovable-badge {
+    display: none !important;
+  }
+}
 
 /* Enhanced animations */
 @keyframes fadeIn {
