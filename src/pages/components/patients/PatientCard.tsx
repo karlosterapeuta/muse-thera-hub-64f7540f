@@ -156,4 +156,3 @@ export function PatientCard({ patient, onEdit, onDelete, onViewAnamnesis, onEdit
     </Card>
   );
 }
-}
