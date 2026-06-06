@@ -23,7 +23,7 @@ export function SidebarHeader({ collapsed }: SidebarHeaderProps) {
           <div className="relative group">
             <div className="absolute -inset-1 bg-gradient-to-r from-primary via-purple-600 to-pink-600 rounded-2xl blur-md opacity-40 group-hover:opacity-70 transition-opacity duration-500" />
             <img
-              src="/lovable-uploads/musetera-logo-new.png"
+              src="/assets-uploads/musetera-logo-new.png"
               alt="MuseTera"
               className="relative h-10 w-10 rounded-xl shadow-xl ring-2 ring-border/50 group-hover:ring-primary/40 transition-all group-hover:scale-110 duration-300"
             />
@@ -36,7 +36,7 @@ export function SidebarHeader({ collapsed }: SidebarHeaderProps) {
             <div className="absolute -inset-1.5 bg-gradient-to-r from-primary via-purple-600 to-pink-600 rounded-2xl blur-lg opacity-30 group-hover:opacity-60 transition-all duration-500" />
             <div className="relative">
               <img
-                src="/lovable-uploads/musetera-logo-new.png"
+                src="/assets-uploads/musetera-logo-new.png"
                 alt="MuseTera"
                 className="h-12 w-12 rounded-xl shadow-xl ring-2 ring-border/40 group-hover:ring-primary/40 transition-all group-hover:scale-105 duration-300"
               />

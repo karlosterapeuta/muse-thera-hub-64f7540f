@@ -237,7 +237,7 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
     <div style={{ marginBottom: '20px', borderBottom: '3px solid #2563eb', paddingBottom: '16px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" alt="Logo" style={{ width: '36px', height: 'auto' }} />
+          <img src="/assets-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" alt="Logo" style={{ width: '36px', height: 'auto' }} />
           <div>
             <h1 style={{ fontSize: '20px', fontWeight: 800, color: '#1e3a5f', margin: 0, letterSpacing: '-0.3px' }}>
               Relatório de Avaliação
@@ -543,7 +543,7 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
             {/* Mini header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', paddingBottom: '10px', borderBottom: '2px solid #e2e8f0' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" alt="Logo" style={{ width: '24px', height: 'auto' }} />
+                <img src="/assets-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" alt="Logo" style={{ width: '24px', height: 'auto' }} />
                 <span style={{ fontSize: '13px', fontWeight: 700, color: '#1e3a5f' }}>Detalhamento da Avaliação</span>
               </div>
               <span style={{ fontSize: '11px', color: '#64748b' }}>{patientName || 'Paciente'}</span>
@@ -659,7 +659,7 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
               {/* Mini header */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', paddingBottom: '10px', borderBottom: '2px solid #e2e8f0' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" alt="Logo" style={{ width: '24px', height: 'auto' }} />
+                  <img src="/assets-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" alt="Logo" style={{ width: '24px', height: 'auto' }} />
                   <span style={{ fontSize: '13px', fontWeight: 700, color: '#1e3a5f' }}>Evolução do Paciente</span>
                 </div>
                 <span style={{ fontSize: '11px', color: '#64748b' }}>{patientName || 'Paciente'}</span>
@@ -768,7 +768,7 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
             <div style={lastPageStyle}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', paddingBottom: '10px', borderBottom: '2px solid #e2e8f0' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <img src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" alt="Logo" style={{ width: '24px', height: 'auto' }} />
+                  <img src="/assets-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png" alt="Logo" style={{ width: '24px', height: 'auto' }} />
                   <span style={{ fontSize: '13px', fontWeight: 700, color: '#1e3a5f' }}>Perfil de Desempenho</span>
                 </div>
                 <span style={{ fontSize: '11px', color: '#64748b' }}>{patientName || 'Paciente'}</span>

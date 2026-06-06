@@ -88,7 +88,7 @@ export const ParametersGraphsPDFStatic: React.FC<ParametersGraphsPDFStaticProps>
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <img
-            src="/lovable-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png"
+            src="/assets-uploads/86b61f63-0028-428c-90d1-44c71413e24a.png"
             alt="MuseTera"
             style={{ width: 44, height: 'auto' }}
           />

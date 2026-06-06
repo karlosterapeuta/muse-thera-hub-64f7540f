@@ -6,7 +6,7 @@ export function HeaderLogo() {
       <div className="relative">
         <div className="absolute -inset-1 bg-gradient-to-br from-primary to-amber-500 rounded-lg blur opacity-40 group-hover:opacity-70 transition-all"></div>
         <img 
-          src="/lovable-uploads/musetera-logo-new.png"
+          src="/assets-uploads/musetera-logo-new.png"
           alt="MuseTera"
           className="relative h-7 w-7 rounded-lg shadow-lg group-hover:rotate-12 transition-transform duration-300"
         />

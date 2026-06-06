@@ -1334,7 +1334,7 @@ export default function Evaluation() {
       if (error.message?.includes('429') || error.status === 429) {
         toast.error("Limite de requisições excedido. Aguarde alguns instantes e tente novamente.");
       } else if (error.message?.includes('402') || error.status === 402) {
-        toast.error("Créditos insuficientes. Adicione créditos à sua conta Lovable AI.");
+        toast.error("Créditos insuficientes. Adicione créditos à sua conta.");
       } else {
         toast.error("Erro ao gerar texto. Tente novamente em alguns instantes.");
       }
@@ -1449,7 +1449,7 @@ export default function Evaluation() {
       if (error.message?.includes('429') || error.status === 429) {
         toast.error("Limite de requisições excedido. Aguarde alguns instantes e tente novamente.");
       } else if (error.message?.includes('402') || error.status === 402) {
-        toast.error("Créditos insuficientes. Adicione créditos à sua conta Lovable AI.");
+        toast.error("Créditos insuficientes. Adicione créditos à sua conta.");
       } else {
         toast.error("Erro ao gerar texto. Tente novamente em alguns instantes.");
       }
