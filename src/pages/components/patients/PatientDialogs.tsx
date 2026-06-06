@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { PatientPhotoUpload } from "./PatientPhotoUpload";
 
 // Updated Patient type to include both birth_date and age
 type Patient = {
@@ -27,6 +28,7 @@ type Patient = {
   age: number | null;
   responsible: string | null;
   contact: string | null;
+  photo_url?: string | null;
 };
 
 const FormSchema = z.object({
@@ -54,6 +56,7 @@ interface AddPatientDialogProps {
 export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -89,7 +92,8 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
             professional_id: user.id,
             birth_date: values.birth_date,
             responsible: values.responsible,
-            contact: values.contact
+            contact: values.contact,
+            photo_url: photoUrl
           },
         ])
         .select();
@@ -121,8 +125,10 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+    <div className="space-y-6">
+      <PatientPhotoUpload onPhotoUploaded={setPhotoUrl} currentPhotoUrl={photoUrl} />
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="name"
@@ -184,8 +190,9 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
             {isSubmitting ? "Criando..." : "Criar Paciente"}
           </Button>
         </DialogFooter>
-      </form>
-    </Form>
+        </form>
+      </Form>
+    </div>
   );
 }
 
@@ -198,6 +205,7 @@ interface EditPatientDialogProps {
 export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPatientDialogProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(patient.photo_url || null);
   
   const EditFormSchema = z.object({
     name: z.string().min(2, {
@@ -239,6 +247,7 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
           birth_date: values.birth_date,
           responsible: values.responsible,
           contact: values.contact,
+          photo_url: photoUrl,
           updated_at: new Date().toISOString(),
         })
         .eq('id', patient.id)
@@ -271,8 +280,10 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+    <div className="space-y-6">
+      <PatientPhotoUpload onPhotoUploaded={setPhotoUrl} currentPhotoUrl={photoUrl} />
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="name"
@@ -334,7 +345,8 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
             {isSubmitting ? "Salvando..." : "Salvar Alterações"}
           </Button>
         </DialogFooter>
-      </form>
-    </Form>
+        </form>
+      </Form>
+    </div>
   );
 }

@@ -1075,6 +1075,7 @@ export type Database = {
           created_at: string | null
           id: string
           name: string
+          photo_url: string | null
           professional_id: string | null
           responsible: string | null
           updated_at: string | null
@@ -1086,6 +1087,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           name: string
+          photo_url?: string | null
           professional_id?: string | null
           responsible?: string | null
           updated_at?: string | null
@@ -1097,6 +1099,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           name?: string
+          photo_url?: string | null
           professional_id?: string | null
           responsible?: string | null
           updated_at?: string | null

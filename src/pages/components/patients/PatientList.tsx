@@ -34,6 +34,7 @@ type Patient = {
   contact: string | null;
   age: number | null;
   has_anamnesis?: boolean;
+  photo_url?: string | null;
 };
 
 interface PatientListProps {
@@ -71,8 +72,12 @@ export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEdi
             <TableRow key={patient.id} className="group transition-colors hover:bg-muted/30 border-b border-border/50">
               <TableCell className="py-4 pl-6 font-semibold text-foreground">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0">
-                    {patient.name.substring(0, 2).toUpperCase()}
+                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0 overflow-hidden border border-primary/10">
+                    {patient.photo_url ? (
+                      <img src={patient.photo_url} alt={patient.name} className="w-full h-full object-cover" />
+                    ) : (
+                      patient.name.substring(0, 2).toUpperCase()
+                    )}
                   </div>
                   <div className="flex flex-col">
                     <span className="leading-tight">{patient.name}</span>
