@@ -104,7 +104,7 @@
   }
 }
 
-#lovable-badge {
+#lovable-badge, .lovable-badge, [id*="lovable-badge"] {
   display: none !important;
 }
 
