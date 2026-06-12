@@ -512,7 +512,7 @@ export default function FinancialRecords() {
         </div>
         
         <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center bg-primary text-white px-3 py-1 rounded-full text-sm font-medium">
+          <div className="flex items-center bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-medium">
             <ClockIcon className="h-3.5 w-3.5 mr-1" />
             {time || "Sem horário"}
           </div>
@@ -597,7 +597,7 @@ export default function FinancialRecords() {
             className="shadow-sm hover:shadow-md transition-all"
             disabled={!sortedRecords.length}
           >
-            <DownloadIcon className="h-4 w-4 sm:h-5 sm:w-5 text-[#0EA5E9]" />
+            <DownloadIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             {isMobile && <span className="ml-1 text-xs">CSV</span>}
             {!isMobile && <span className="inline">Exportar CSV</span>}
           </Button>
@@ -621,26 +621,26 @@ export default function FinancialRecords() {
         <CardHeader className="pb-2 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-primary/10 border-b border-primary/10">
           <CardTitle className="flex items-center justify-between text-lg md:text-xl">
             <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg bg-amber-500 text-white flex items-center justify-center shadow-sm">
+              <div className="h-8 w-8 rounded-lg bg-amber-500 text-amber-50 flex items-center justify-center shadow-sm">
                 <PinIcon className="h-4 w-4" />
               </div>
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-600 to-orange-600 font-bold">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-500 to-orange-500 font-bold">
                 Agenda Fixa dos Pacientes
               </span>
             </div>
-            <div className="hidden sm:flex text-xs font-medium text-amber-700 bg-amber-100 px-2 py-1 rounded-full items-center gap-1">
+            <div className="hidden sm:flex text-xs font-medium text-amber-700 dark:text-amber-300 bg-amber-500/10 px-2 py-1 rounded-full items-center gap-1">
               <InfoIcon className="h-3 w-3" />
               Visualização permanente (independente do período)
             </div>
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-2 md:p-4 bg-amber-50/30">
+        <CardContent className="p-2 md:p-4 bg-amber-500/5">
           <div className={`${isMobile ? 'space-y-4' : isTablet ? 'grid grid-cols-3 gap-3' : 'grid grid-cols-6 gap-3'}`}>
             {isMobile ? (
               <Tabs defaultValue={weekdays[new Date().getDay() - 1] || "SEG"} className="w-full">
                 <TabsList className="w-full grid grid-cols-6 text-[10px] h-9">
                   {weekdays.map((day) => (
-                    <TabsTrigger key={day} value={day} className="px-0 data-[state=active]:bg-amber-500 data-[state=active]:text-white">
+                    <TabsTrigger key={day} value={day} className="px-0 data-[state=active]:bg-amber-500 data-[state=active]:text-amber-50">
                       {day}
                     </TabsTrigger>
                   ))}
@@ -655,8 +655,8 @@ export default function FinancialRecords() {
                   return (
                     <TabsContent key={day} value={day} className="animate-in fade-in slide-in-from-top-1 duration-200">
                       <div className="space-y-2">
-                        <div className="p-2 rounded-md bg-white border border-amber-200 shadow-sm flex justify-between items-center">
-                          <span className="text-xs font-bold text-amber-700 uppercase">{dayLabels[day]}</span>
+                        <div className="p-2 rounded-md bg-card border border-amber-500/20 shadow-sm flex justify-between items-center">
+                          <span className="text-xs font-bold text-amber-700 dark:text-amber-300 uppercase">{dayLabels[day]}</span>
                           <div className="flex items-center gap-3">
                             <span className="text-[10px] text-muted-foreground">{dayRecords.length} pac.</span>
                             <span className="text-xs font-bold text-primary">{formatCurrency(dayTotal)}</span>
@@ -666,7 +666,7 @@ export default function FinancialRecords() {
                           {dayRecords.length > 0 ? (
                             dayRecords.map(record => renderAppointmentCard(record))
                           ) : (
-                            <div className="text-center py-6 text-muted-foreground text-xs italic bg-white/50 rounded-md border border-dashed border-amber-200">
+                            <div className="text-center py-6 text-muted-foreground text-xs italic bg-muted/30 rounded-md border border-dashed border-amber-500/20">
                               Nenhum paciente fixo
                             </div>
                           )}
@@ -683,12 +683,12 @@ export default function FinancialRecords() {
                 const isCurrentDay = format(new Date(), "EEE", { locale: ptBR }).toUpperCase().startsWith(day.substring(0,2));
                 
                 return (
-                  <div key={day} className={`flex flex-col h-full rounded-xl border ${isCurrentDay ? 'border-amber-400 ring-2 ring-amber-400/20 shadow-md' : 'border-border/60'} bg-white overflow-hidden transition-all hover:shadow-md`}>
-                    <div className={`py-2 px-1 text-center font-bold ${isCurrentDay ? 'bg-amber-500 text-white' : 'bg-muted/30 text-muted-foreground'} border-b border-inherit`}>
+                  <div key={day} className={`flex flex-col h-full rounded-xl border ${isCurrentDay ? 'border-amber-400 ring-2 ring-amber-400/20 shadow-md' : 'border-border/60'} bg-card overflow-hidden transition-all hover:shadow-md`}>
+                    <div className={`py-2 px-1 text-center font-bold ${isCurrentDay ? 'bg-amber-500 text-amber-50' : 'bg-muted/30 text-muted-foreground'} border-b border-inherit`}>
                       <div className="text-sm tracking-wider">{day}</div>
                     </div>
-                    <div className="p-1.5 flex justify-between items-center text-[10px] bg-amber-50/50 border-b border-amber-100">
-                      <span className="font-medium text-amber-800">{dayRecords.length} pac.</span>
+                    <div className="p-1.5 flex justify-between items-center text-[10px] bg-amber-500/10 border-b border-amber-500/15">
+                      <span className="font-medium text-amber-700 dark:text-amber-300">{dayRecords.length} pac.</span>
                       <span className="font-bold text-primary">{formatCurrency(dayTotal)}</span>
                     </div>
                     <ScrollArea className="flex-grow h-[320px] p-1.5">
