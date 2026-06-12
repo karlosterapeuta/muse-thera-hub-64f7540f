@@ -36,22 +36,24 @@ CAMPOS PREENCHIDOS:
 ${JSON.stringify(reportData.fieldValues || {}, null, 2)}
 
 INSTRUÇÕES:
-1. Organize as informações de forma lógica e profissional
-2. Melhore a redação mantendo o conteúdo técnico
-3. Conecte as diferentes seções de forma coerente
-4. Mantenha a linguagem científica e especializada
-5. Garanta que o texto flua naturalmente
-6. Foque na evolução terapêutica através da música
+1. Organize as informações de forma lógica e profissional.
+2. Melhore a redação mantendo o conteúdo técnico e especializado.
+3. CONSERVE E INCORPORE TODAS AS INFORMAÇÕES PRESENTES NO OBJETO "CAMPOS PREENCHIDOS", inclusive campos adicionais, escalas e seleções.
+4. Conecte as diferentes seções de forma coerente, garantindo que o texto flua naturalmente.
+5. Foque na evolução terapêutica através da música, evidenciando os ganhos clínicos.
+6. Se houver informações ricas em campos específicos (como 'vocalizations_observed', 'behavioral_changes', etc.), elas devem ser integradas na seção de evolução ou atividades correspondente.
 
-Retorne um objeto JSON com os campos organizados e melhorados, seguindo EXATAMENTE o schema abaixo.
+Retorne um objeto JSON com os campos organizados e melhorados.
 IMPORTANTE: responda SOMENTE com JSON puro (sem comentários, sem Markdown, sem \`\`\`).
+O JSON deve conter preferencialmente os campos abaixo, mas pode incluir outros se necessário para não perder informação:
 {
-  \"therapeutic_objectives\": \"texto organizado dos objetivos\",
-  \"session_activities\": \"texto organizado das atividades\", 
-  \"patient_evolution\": \"texto organizado da evolução\",
-  \"recommendations\": \"texto organizado das recomendações\",
-  \"conclusion\": \"texto organizado da conclusão\"
+  "therapeutic_objectives": "texto organizado e detalhado dos objetivos",
+  "session_activities": "texto organizado e detalhado das atividades, técnicas e instrumentos", 
+  "patient_evolution": "texto organizado e rico da evolução clínica e musical",
+  "recommendations": "texto organizado das recomendações e próximos passos",
+  "conclusion": "texto organizado da conclusão técnica"
 }
+
 `;
 
     console.log('Enviando prompt para Google AI:', prompt.substring(0, 200) + '...');
