@@ -39,6 +39,17 @@ export function FinalReviewSection({
     setIsExporting(true);
 
     try {
+      // 1. Organizar com IA antes de exportar
+      toast({
+        title: "Iniciando IA",
+        description: "Organizando os dados com IA para um PDF mais profissional...",
+      });
+      
+      await onOrganizeWithAI();
+      
+      // 2. Aguardar um pouco para garantir que os dados foram atualizados no estado global
+      await new Promise(resolve => setTimeout(resolve, 800));
+
       let photoBase64: string | null = null;
       let stampBase64: string | null = null;
 
@@ -80,7 +91,7 @@ export function FinalReviewSection({
 
       toast({
         title: "PDF Exportado com Sucesso!",
-        description: "O relatorio de musicoterapia foi baixado em formato PDF.",
+        description: "O relatorio foi organizado com IA e baixado em formato PDF.",
       });
     } catch (error) {
       console.error('Erro na exportacao PDF:', error);
