@@ -313,6 +313,20 @@ export default function FinancialRecords() {
     setFormOpen(true);
   };
   
+  // Safeguard: Radix (DropdownMenu + AlertDialog) pode deixar o body com
+  // `pointer-events: none` ao fechar, travando toda a interface. Restauramos
+  // sempre que nenhum diálogo de exclusão estiver aberto.
+  useEffect(() => {
+    if (!confirmDialogOpen && !clearAllDialogOpen) {
+      const t = setTimeout(() => {
+        if (document.body.style.pointerEvents === "none") {
+          document.body.style.pointerEvents = "";
+        }
+      }, 100);
+      return () => clearTimeout(t);
+    }
+  }, [confirmDialogOpen, clearAllDialogOpen]);
+
   const handleDeleteClick = (id: string) => {
     setRecordToDelete(id);
     // Defere a abertura para depois do fechamento do DropdownMenu (evita travamento Radix)
