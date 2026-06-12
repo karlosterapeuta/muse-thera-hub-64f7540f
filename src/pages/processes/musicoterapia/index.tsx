@@ -587,6 +587,20 @@ export default function MusicoterapiaPage() {
 
     setIsExporting(true);
     try {
+      // 1. Organizar com IA antes de exportar
+      toast({
+        title: "Iniciando IA",
+        description: "Organizando os dados com IA para um PDF mais profissional...",
+      });
+      
+      const organizedFields = await generateWithAI();
+      
+      // Criamos uma versão local dos dados para o PDF
+      const currentReportData = {
+        ...reportData,
+        fieldValues: organizedFields || reportData.fieldValues
+      };
+
       // Convert images to Base64
       let photoBase64: string | null = null;
       let stampBase64: string | null = null;
@@ -603,7 +617,7 @@ export default function MusicoterapiaPage() {
       tempDiv.style.fontFamily = 'Arial, sans-serif';
       tempDiv.style.color = '#000';
       tempDiv.style.backgroundColor = '#fff';
-      tempDiv.innerHTML = generatePDFContent(reportData, photoBase64, stampBase64);
+      tempDiv.innerHTML = generatePDFContent(currentReportData, photoBase64, stampBase64);
       
       document.body.appendChild(tempDiv);
 
