@@ -57,8 +57,9 @@ Exemplo de mapeamento esperado para campos de texto:
   "patient_evolution": "texto organizado...",
   "recommendations": "texto organizado...",
   "conclusion": "texto organizado...",
-  "...": "outros campos originais mantidos"
+  "..." : "outros campos originais mantidos"
 }
+
 
 
 `;
