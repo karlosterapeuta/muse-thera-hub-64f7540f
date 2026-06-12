@@ -640,7 +640,7 @@ export default function FinancialRecords() {
               <Tabs defaultValue={weekdays[new Date().getDay() - 1] || "SEG"} className="w-full">
                 <TabsList className="w-full grid grid-cols-6 text-[10px] h-9">
                   {weekdays.map((day) => (
-                    <TabsTrigger key={day} value={day} className="px-0 data-[state=active]:bg-amber-500 data-[state=active]:text-white">
+                    <TabsTrigger key={day} value={day} className="px-0 data-[state=active]:bg-amber-500 data-[state=active]:text-amber-50">
                       {day}
                     </TabsTrigger>
                   ))}
