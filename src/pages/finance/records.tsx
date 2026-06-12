@@ -655,8 +655,8 @@ export default function FinancialRecords() {
                   return (
                     <TabsContent key={day} value={day} className="animate-in fade-in slide-in-from-top-1 duration-200">
                       <div className="space-y-2">
-                        <div className="p-2 rounded-md bg-white border border-amber-200 shadow-sm flex justify-between items-center">
-                          <span className="text-xs font-bold text-amber-700 uppercase">{dayLabels[day]}</span>
+                        <div className="p-2 rounded-md bg-card border border-amber-500/20 shadow-sm flex justify-between items-center">
+                          <span className="text-xs font-bold text-amber-700 dark:text-amber-300 uppercase">{dayLabels[day]}</span>
                           <div className="flex items-center gap-3">
                             <span className="text-[10px] text-muted-foreground">{dayRecords.length} pac.</span>
                             <span className="text-xs font-bold text-primary">{formatCurrency(dayTotal)}</span>
@@ -666,7 +666,7 @@ export default function FinancialRecords() {
                           {dayRecords.length > 0 ? (
                             dayRecords.map(record => renderAppointmentCard(record))
                           ) : (
-                            <div className="text-center py-6 text-muted-foreground text-xs italic bg-white/50 rounded-md border border-dashed border-amber-200">
+                            <div className="text-center py-6 text-muted-foreground text-xs italic bg-muted/30 rounded-md border border-dashed border-amber-500/20">
                               Nenhum paciente fixo
                             </div>
                           )}
