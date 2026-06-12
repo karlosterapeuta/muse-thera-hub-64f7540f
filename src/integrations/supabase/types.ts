@@ -174,6 +174,7 @@ export type Database = {
           nonverbal_communication: boolean | null
           nutrition: boolean | null
           occupational_therapy: boolean | null
+          odd_disorder: boolean | null
           other_diagnoses: boolean | null
           other_musical_genres: boolean | null
           parents_sound_reactions: string | null
@@ -290,6 +291,7 @@ export type Database = {
           nonverbal_communication?: boolean | null
           nutrition?: boolean | null
           occupational_therapy?: boolean | null
+          odd_disorder?: boolean | null
           other_diagnoses?: boolean | null
           other_musical_genres?: boolean | null
           parents_sound_reactions?: string | null
@@ -406,6 +408,7 @@ export type Database = {
           nonverbal_communication?: boolean | null
           nutrition?: boolean | null
           occupational_therapy?: boolean | null
+          odd_disorder?: boolean | null
           other_diagnoses?: boolean | null
           other_musical_genres?: boolean | null
           parents_sound_reactions?: string | null

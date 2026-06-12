@@ -223,6 +223,7 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
               { id: "depression", label: "Depressão", checked: getBooleanValue("depression"), onChange: (v) => updateField("depression", v), icon: Heart },
               { id: "bipolar_disorder", label: "Transtorno Bipolar", checked: getBooleanValue("bipolar_disorder"), onChange: (v) => updateField("bipolar_disorder", v), icon: Activity },
               { id: "anxiety_disorders", label: "Transtornos de Ansiedade", checked: getBooleanValue("anxiety_disorders"), onChange: (v) => updateField("anxiety_disorders", v), icon: AlertTriangle },
+              { id: "odd_disorder", label: "TOD - Transtorno Opositor Desafiador", checked: getBooleanValue("odd_disorder"), onChange: (v) => updateField("odd_disorder", v), icon: AlertTriangle },
               { id: "other_diagnoses", label: "Outros Diagnósticos", checked: getBooleanValue("other_diagnoses"), onChange: (v) => updateField("other_diagnoses", v), icon: FileText },
             ]}
           />

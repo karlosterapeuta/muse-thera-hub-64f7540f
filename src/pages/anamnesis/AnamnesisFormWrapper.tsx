@@ -65,7 +65,8 @@ const basicDatabaseFields = [
   // Contexto social adicional
   'family_support_network',
   // Novos campos adicionados
-  'mother_name', 'father_name', 'diagnosis_date', 'support_level', 'calming_strategies'
+  'mother_name', 'father_name', 'diagnosis_date', 'support_level', 'calming_strategies',
+  'odd_disorder'
 ];
 
 // Campos que podem não existir (dependem da migração)

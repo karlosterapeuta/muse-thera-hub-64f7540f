@@ -259,6 +259,7 @@ export function ViewAnamnesisDialog({ patient, closeModal, onEdit }: ViewAnamnes
           { id: "adhd", label: "TDAH" },
           { id: "chronic_encephalopathy", label: "Encefalopatia Crônica" },
           { id: "anxiety_disorders", label: "Transtornos de Ansiedade" },
+          { id: "odd_disorder", label: "TOD" },
           { id: "other_diagnoses", label: "Outros Diagnósticos" }
         ]
       },
