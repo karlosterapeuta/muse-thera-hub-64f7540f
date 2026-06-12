@@ -665,37 +665,6 @@ export function FinalReviewSection({
           </div>
         </div>
 
-        {/* Organizar com IA */}
-        <div className="rounded-2xl border border-white/5 bg-[#0d0d0d]/30 hover:border-[#c9a84c]/30 hover:bg-[#0d0d0d]/50 transition-all p-4 sm:p-5 flex flex-col">
-          <div className="flex items-start gap-3 mb-4">
-            <div className="p-2.5 rounded-xl bg-[#c9a84c]/15 border border-[#c9a84c]/30 flex-shrink-0">
-              <Zap className="h-5 w-5 text-[#c9a84c]" />
-            </div>
-            <div>
-              <h3 className="text-sm sm:text-base font-semibold text-foreground">Organizar com IA</h3>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Estruture o relatorio automaticamente</p>
-            </div>
-          </div>
-          <div className="flex-1 flex flex-col justify-end">
-            <Button
-              onClick={onOrganizeWithAI}
-              disabled={isGeneratingWithAI}
-              className="w-full bg-[#c9a84c] hover:bg-[#f0d78c] text-black text-xs sm:text-sm"
-            >
-              {isGeneratingWithAI ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Organizando...
-                </>
-              ) : (
-                <>
-                  <Zap className="h-4 w-4 mr-2" />
-                  Organizar
-                </>
-              )}
-            </Button>
-          </div>
-        </div>
 
         {/* Salvar */}
         <div className="rounded-2xl border border-white/5 bg-[#0d0d0d]/30 hover:border-[#c9a84c]/30 hover:bg-[#0d0d0d]/50 transition-all p-4 sm:p-5 flex flex-col">
