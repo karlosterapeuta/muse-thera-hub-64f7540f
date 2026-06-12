@@ -86,20 +86,21 @@ export function useMusicoterapiaReport() {
 
         return newFieldValues;
       } else if (data.fallbackContent) {
-        const fallbackFields: Record<string, any> = {};
-        Object.entries(data.fallbackContent).forEach(([key, value]) => {
-          fallbackFields[key] = [value as string];
-        });
-
-        const newFieldValues = { ...reportData.fieldValues, ...fallbackFields };
+        // IA indisponível: usar os dados originais sem alterar a estrutura
+        const newFieldValues = { ...reportData.fieldValues, ...data.fallbackContent };
 
         updateReportData({
           fieldValues: newFieldValues
         });
 
+        toast({
+          title: "PDF gerado sem otimização de IA",
+          description: "O relatório usará os dados que você preencheu.",
+        });
+
         return newFieldValues;
       } else {
-        throw new Error('Resposta inválida da IA');
+        return reportData.fieldValues;
       }
 
     } catch (error) {
