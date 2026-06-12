@@ -55,20 +55,20 @@ export function useMusicoterapiaReport() {
       if (data.success && data.organizedContent) {
         // Converter texto organizado em arrays se necessário
         const organizedFields: Record<string, any> = {};
+        const arrayFields = ['therapeutic_objectives', 'session_activities', 'patient_evolution', 'recommendations', 'conclusion'];
         
         Object.entries(data.organizedContent).forEach(([key, value]) => {
-          if (typeof value === 'string') {
-            // Para campos que esperam arrays, converter texto em array com um item
-            const arrayFields = ['therapeutic_objectives', 'session_activities', 'patient_evolution', 'recommendations', 'conclusion'];
-            if (arrayFields.includes(key)) {
-              organizedFields[key] = [value];
-            } else {
-              organizedFields[key] = value;
-            }
+          if (arrayFields.includes(key)) {
+            // Se o campo original no template espera array, mas a IA retornou string, convertemos
+            // No entanto, o PDF generator parece lidar com ambos. 
+            // Para garantir consistência no Wizard (que usa textarea), mantemos como string
+            // ou array conforme o campo original.
+            organizedFields[key] = Array.isArray(value) ? value : [value];
           } else {
             organizedFields[key] = value;
           }
         });
+
 
         updateReportData({
           fieldValues: { ...reportData.fieldValues, ...organizedFields }
