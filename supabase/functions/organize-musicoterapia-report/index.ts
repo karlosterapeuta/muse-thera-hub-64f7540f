@@ -42,17 +42,24 @@ INSTRUÇÕES:
 4. Conecte as diferentes seções de forma coerente, garantindo que o texto flua naturalmente.
 5. Foque na evolução terapêutica através da música, evidenciando os ganhos clínicos.
 6. Se houver informações ricas em campos específicos (como 'vocalizations_observed', 'behavioral_changes', etc.), elas devem ser integradas na seção de evolução ou atividades correspondente.
+7. Para escalas numéricas (scores de 1 a 10), mencione os domínios avaliados e as pontuações no texto da evolução para dar embasamento técnico.
 
 Retorne um objeto JSON com os campos organizados e melhorados.
-IMPORTANTE: responda SOMENTE com JSON puro (sem comentários, sem Markdown, sem \`\`\`).
-O JSON deve conter preferencialmente os campos abaixo, mas pode incluir outros se necessário para não perder informação:
+IMPORTANTE: responda SOMENTE com JSON puro (sem comentários, sem Markdown, sem ```).
+O JSON deve conter exatamente os mesmos campos recebidos em "CAMPOS PREENCHIDOS", mas com os textos (especialmente os campos de texto longo) aprimorados e organizados.
+NÃO remova nenhum campo do objeto original. Se o campo for uma escala numérica, mantenha o valor numérico original.
+As chaves do JSON de retorno devem mapear diretamente para as chaves recebidas.
+
+Exemplo de mapeamento esperado para campos de texto:
 {
-  "therapeutic_objectives": "texto organizado e detalhado dos objetivos",
-  "session_activities": "texto organizado e detalhado das atividades, técnicas e instrumentos", 
-  "patient_evolution": "texto organizado e rico da evolução clínica e musical",
-  "recommendations": "texto organizado das recomendações e próximos passos",
-  "conclusion": "texto organizado da conclusão técnica"
+  "therapeutic_objectives": "texto organizado...",
+  "session_activities": "texto organizado...", 
+  "patient_evolution": "texto organizado...",
+  "recommendations": "texto organizado...",
+  "conclusion": "texto organizado...",
+  "...": "outros campos originais mantidos"
 }
+
 
 `;
 
