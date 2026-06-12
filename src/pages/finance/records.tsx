@@ -621,20 +621,20 @@ export default function FinancialRecords() {
         <CardHeader className="pb-2 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-primary/10 border-b border-primary/10">
           <CardTitle className="flex items-center justify-between text-lg md:text-xl">
             <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg bg-amber-500 text-white flex items-center justify-center shadow-sm">
+              <div className="h-8 w-8 rounded-lg bg-amber-500 text-amber-50 flex items-center justify-center shadow-sm">
                 <PinIcon className="h-4 w-4" />
               </div>
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-600 to-orange-600 font-bold">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-500 to-orange-500 font-bold">
                 Agenda Fixa dos Pacientes
               </span>
             </div>
-            <div className="hidden sm:flex text-xs font-medium text-amber-700 bg-amber-100 px-2 py-1 rounded-full items-center gap-1">
+            <div className="hidden sm:flex text-xs font-medium text-amber-700 dark:text-amber-300 bg-amber-500/10 px-2 py-1 rounded-full items-center gap-1">
               <InfoIcon className="h-3 w-3" />
               Visualização permanente (independente do período)
             </div>
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-2 md:p-4 bg-amber-50/30">
+        <CardContent className="p-2 md:p-4 bg-amber-500/5">
           <div className={`${isMobile ? 'space-y-4' : isTablet ? 'grid grid-cols-3 gap-3' : 'grid grid-cols-6 gap-3'}`}>
             {isMobile ? (
               <Tabs defaultValue={weekdays[new Date().getDay() - 1] || "SEG"} className="w-full">
