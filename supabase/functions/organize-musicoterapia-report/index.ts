@@ -7,7 +7,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -17,58 +16,30 @@ serve(async (req) => {
     
     const googleAIApiKey = Deno.env.get('GOOGLE_AI_API_KEY');
     if (!googleAIApiKey) {
-      throw new Error('GOOGLE_AI_API_KEY não configurada');
+      throw new Error('GOOGLE_AI_API_KEY nao configurada');
     }
 
-    // Construir prompt para organizar o relatório de musicoterapia
-    const prompt = `
-Você é um especialista em musicoterapia para TEA (Transtorno do Espectro Autista). 
-Organize e estruture o seguinte relatório de musicoterapia de forma profissional e coerente.
+    const patientName = reportData.patientName || 'Nao informado';
+    const patientAge = reportData.patientAge || 'Nao informado';
+    const patientDiagnosis = reportData.patientDiagnosis || 'Nao informado';
+    const professionalName = reportData.professionalName || 'Nao informado';
+    const sessionDate = reportData.sessionDate || 'Nao informado';
+    const fieldValuesJson = JSON.stringify(reportData.fieldValues || {}, null, 2);
 
-DADOS DO RELATÓRIO:
-- Paciente: ${reportData.patientName || 'Não informado'}
-- Idade: ${reportData.patientAge || 'Não informado'}  
-- Diagnóstico: ${reportData.patientDiagnosis || 'Não informado'}
-- Profissional: ${reportData.professionalName || 'Não informado'}
-- Data da Sessão: ${reportData.sessionDate || 'Não informado'}
+    const prompt = "Voce e um especialista em musicoterapia para TEA. Organize o seguinte relatorio: " + 
+      "Paciente: " + patientName + ", " +
+      "Idade: " + patientAge + ", " +
+      "Diagnostico: " + patientDiagnosis + ", " +
+      "Profissional: " + professionalName + ", " +
+      "Data: " + sessionDate + ". " +
+      "CAMPOS: " + fieldValuesJson + ". " +
+      "Instrucoes: 1. Melhore a redacao tecnica. 2. MANTENHA TODOS OS CAMPOS ORIGINAIS. 3. Retorne JSON puro.";
 
-CAMPOS PREENCHIDOS:
-${JSON.stringify(reportData.fieldValues || {}, null, 2)}
-
-INSTRUÇÕES:
-1. Organize as informações de forma lógica e profissional.
-2. Melhore a redação mantendo o conteúdo técnico e especializado.
-3. CONSERVE E INCORPORE TODAS AS INFORMAÇÕES PRESENTES NO OBJETO "CAMPOS PREENCHIDOS", inclusive campos adicionais, escalas e seleções.
-4. Conecte as diferentes seções de forma coerente, garantindo que o texto flua naturalmente.
-5. Foque na evolução terapêutica através da música, evidenciando os ganhos clínicos.
-6. Se houver informações ricas em campos específicos (como 'vocalizations_observed', 'behavioral_changes', etc.), elas devem ser integradas na seção de evolução ou atividades correspondente.
-
-Retorne um objeto JSON com os campos organizados e melhorados.
-IMPORTANTE: responda SOMENTE com JSON puro (sem comentários, sem Markdown, sem \`\`\`).
-O JSON deve conter preferencialmente os campos abaixo, mas pode incluir outros se necessário para não perder informação:
-{
-  "therapeutic_objectives": "texto organizado e detalhado dos objetivos",
-  "session_activities": "texto organizado e detalhado das atividades, técnicas e instrumentos", 
-  "patient_evolution": "texto organizado e rico da evolução clínica e musical",
-  "recommendations": "texto organizado das recomendações e próximos passos",
-  "conclusion": "texto organizado da conclusão técnica"
-}
-
-`;
-
-    console.log('Enviando prompt para Google AI:', prompt.substring(0, 200) + '...');
-
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${googleAIApiKey}`, {
+    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + googleAIApiKey, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: prompt
-          }]
-        }],
+        contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
           temperature: 0.2,
           maxOutputTokens: 4096,
@@ -78,82 +49,30 @@ O JSON deve conter preferencialmente os campos abaixo, mas pode incluir outros s
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Erro da API Google AI:', errorText);
-      throw new Error(`Erro da API Google AI: ${response.status} - ${errorText}`);
+      throw new Error("Erro da API Google AI");
     }
 
     const data = await response.json();
-    console.log('Resposta da Google AI:', JSON.stringify(data, null, 2));
-
-    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
-      throw new Error('Resposta inválida da API Google AI');
-    }
-
-    const finishReason = data.candidates?.[0]?.finishReason;
-    if (finishReason === 'MAX_TOKENS') {
-      console.warn('Resposta da IA truncada por limite de tokens (MAX_TOKENS).');
-    }
-
     const generatedText = data.candidates[0].content.parts[0].text;
-    console.log('Texto gerado:', generatedText);
 
-    // Tentar extrair JSON da resposta (robusto e tolerante a markdown)
     let organizedContent;
     try {
-      let text = generatedText.trim();
-
-      // Remover cercas de código ```json ... ``` se existirem
-      const fenced = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
-      if (fenced) {
-        text = fenced[1];
-      } else {
-        // Strip defensivo de marcas residuais
-        text = text.replace(/^```(?:json)?/i, '').replace(/```$/i, '').trim();
-      }
-
-      // Extrair bloco entre primeira { e última }
-      if (!text.startsWith('{')) {
-        const start = text.indexOf('{');
-        const end = text.lastIndexOf('}');
-        if (start !== -1 && end !== -1 && end > start) {
-          text = text.slice(start, end + 1);
-        }
-      }
-
-      organizedContent = JSON.parse(text);
+      organizedContent = JSON.parse(generatedText.trim());
     } catch (parseError) {
-      console.error('Erro ao parsear JSON:', parseError, 'Resposta bruta:', generatedText);
-      // Fallback: estrutura clara e neutra (sem texto bruto desorganizado)
-      organizedContent = {
-        therapeutic_objectives: 'Objetivos organizados com IA — revise e ajuste conforme necessário.',
-        session_activities: 'Atividades da sessão organizadas — inclua detalhes específicos observados.',
-        patient_evolution: 'Síntese da evolução musical e comportamental observada.',
-        recommendations: 'Recomendações terapêuticas para continuidade do plano.',
-        conclusion: 'Conclusão técnica com foco na evolução e próximos passos.'
-      };
+      organizedContent = reportData.fieldValues;
     }
 
     return new Response(JSON.stringify({ 
       success: true,
-      organizedContent,
-      originalResponse: generatedText
+      organizedContent
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
-    console.error('Erro na organização com IA:', error);
     return new Response(JSON.stringify({ 
       success: false,
-      error: error.message,
-      fallbackContent: {
-        therapeutic_objectives: "Objetivos terapêuticos estruturados - revisar e complementar",
-        session_activities: "Atividades de musicoterapia realizadas durante a sessão", 
-        patient_evolution: "Evolução observada no paciente através da musicoterapia",
-        recommendations: "Recomendações para continuidade e aprofundamento do tratamento",
-        conclusion: "A musicoterapia demonstra ser uma ferramenta eficaz para o desenvolvimento do paciente"
-      }
+      error: error.message
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

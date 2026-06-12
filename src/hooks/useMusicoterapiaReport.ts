@@ -55,15 +55,16 @@ export function useMusicoterapiaReport() {
       if (data.success && data.organizedContent) {
         // Converter texto organizado em arrays se necessário
         const organizedFields: Record<string, any> = {};
-        const arrayFields = ['therapeutic_objectives', 'session_activities', 'patient_evolution', 'recommendations', 'conclusion'];
         
         Object.entries(data.organizedContent).forEach(([key, value]) => {
-          if (arrayFields.includes(key)) {
+          // Manter campos que já são arrays como arrays
+          if (Array.isArray(reportData.fieldValues?.[key])) {
             organizedFields[key] = Array.isArray(value) ? value : [value];
           } else {
             organizedFields[key] = value;
           }
         });
+
 
         // Retornar o novo estado para que possa ser usado imediatamente
         const newFieldValues = { ...reportData.fieldValues, ...organizedFields };
