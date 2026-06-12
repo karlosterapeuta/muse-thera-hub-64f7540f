@@ -19,30 +19,23 @@ serve(async (req) => {
       throw new Error('GOOGLE_AI_API_KEY nao configurada');
     }
 
-    const prompt = \`
-Voce e um especialista em musicoterapia para TEA. 
-Organize e estruture o seguinte relatorio de musicoterapia.
+    const patientName = reportData.patientName || 'Nao informado';
+    const patientAge = reportData.patientAge || 'Nao informado';
+    const patientDiagnosis = reportData.patientDiagnosis || 'Nao informado';
+    const professionalName = reportData.professionalName || 'Nao informado';
+    const sessionDate = reportData.sessionDate || 'Nao informado';
+    const fieldValuesJson = JSON.stringify(reportData.fieldValues || {}, null, 2);
 
-DADOS DO RELATORIO:
-- Paciente: \${reportData.patientName || 'Nao informado'}
-- Idade: \${reportData.patientAge || 'Nao informado'}  
-- Diagnostico: \${reportData.patientDiagnosis || 'Nao informado'}
-- Profissional: \${reportData.professionalName || 'Nao informado'}
-- Data da Sessao: \${reportData.sessionDate || 'Nao informado'}
+    const prompt = "Voce e um especialista em musicoterapia para TEA. Organize o seguinte relatorio: " + 
+      "Paciente: " + patientName + ", " +
+      "Idade: " + patientAge + ", " +
+      "Diagnostico: " + patientDiagnosis + ", " +
+      "Profissional: " + professionalName + ", " +
+      "Data: " + sessionDate + ". " +
+      "CAMPOS: " + fieldValuesJson + ". " +
+      "Instrucoes: 1. Melhore a redacao tecnica. 2. MANTENHA TODOS OS CAMPOS ORIGINAIS. 3. Retorne JSON puro.";
 
-CAMPOS PREENCHIDOS:
-\${JSON.stringify(reportData.fieldValues || {}, null, 2)}
-
-INSTRUCOES:
-1. Melhore a redacao tecnica.
-2. CONSERVE TODAS AS INFORMACOES do objeto "CAMPOS PREENCHIDOS".
-3. Mantenha as mesmas chaves do JSON original.
-4. Para escalas numericas, mantenha o valor original.
-
-Retorne um objeto JSON puro.
-\`;
-
-    const response = await fetch(\`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=\${googleAIApiKey}\`, {
+    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + googleAIApiKey, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -56,8 +49,7 @@ Retorne um objeto JSON puro.
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(\`Erro da API Google AI: \${response.status}\`);
+      throw new Error("Erro da API Google AI");
     }
 
     const data = await response.json();
@@ -67,7 +59,6 @@ Retorne um objeto JSON puro.
     try {
       organizedContent = JSON.parse(generatedText.trim());
     } catch (parseError) {
-      console.error('Erro ao parsear JSON:', parseError);
       organizedContent = reportData.fieldValues;
     }
 
@@ -79,7 +70,6 @@ Retorne um objeto JSON puro.
     });
 
   } catch (error) {
-    console.error('Erro:', error);
     return new Response(JSON.stringify({ 
       success: false,
       error: error.message
