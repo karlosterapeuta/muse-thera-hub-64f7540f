@@ -75,7 +75,7 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
     "autism_spectrum", "adhd", "down_syndrome", "intellectual_disability",
     "cerebral_palsy", "epilepsy", "chronic_encephalopathy", "williams_syndrome",
     "fragile_x_syndrome", "rett_syndrome", "alzheimer", "parkinson",
-    "depression", "bipolar_disorder", "anxiety_disorders", "other_diagnoses",
+    "depression", "bipolar_disorder", "anxiety_disorders", "odd_disorder", "other_diagnoses",
     "clinical_details",
   ];
 
