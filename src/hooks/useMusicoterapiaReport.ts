@@ -47,7 +47,12 @@ export function useMusicoterapiaReport() {
 
       if (error) {
         console.error('Erro na edge function:', error);
-        throw new Error(error.message || 'Erro ao chamar serviço de IA');
+        // Não interromper: usar dados originais para o PDF
+        toast({
+          title: "PDF gerado sem otimização de IA",
+          description: "Não foi possível otimizar com IA agora; o relatório usará os dados originais.",
+        });
+        return reportData.fieldValues;
       }
 
       console.log('Resposta da edge function:', data);
@@ -81,20 +86,21 @@ export function useMusicoterapiaReport() {
 
         return newFieldValues;
       } else if (data.fallbackContent) {
-        const fallbackFields: Record<string, any> = {};
-        Object.entries(data.fallbackContent).forEach(([key, value]) => {
-          fallbackFields[key] = [value as string];
-        });
-
-        const newFieldValues = { ...reportData.fieldValues, ...fallbackFields };
+        // IA indisponível: usar os dados originais sem alterar a estrutura
+        const newFieldValues = { ...reportData.fieldValues, ...data.fallbackContent };
 
         updateReportData({
           fieldValues: newFieldValues
         });
 
+        toast({
+          title: "PDF gerado sem otimização de IA",
+          description: "O relatório usará os dados que você preencheu.",
+        });
+
         return newFieldValues;
       } else {
-        throw new Error('Resposta inválida da IA');
+        return reportData.fieldValues;
       }
 
     } catch (error) {

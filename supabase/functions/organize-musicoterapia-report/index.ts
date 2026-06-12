@@ -1,4 +1,3 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
@@ -8,15 +7,26 @@ const corsHeaders = {
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response('ok', { headers: corsHeaders });
   }
 
+  let reportData: any = {};
+
   try {
-    const { reportData } = await req.json();
-    
-    const googleAIApiKey = Deno.env.get('GOOGLE_AI_API_KEY');
-    if (!googleAIApiKey) {
-      throw new Error('GOOGLE_AI_API_KEY nao configurada');
+    const body = await req.json();
+    reportData = body?.reportData || {};
+
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    if (!LOVABLE_API_KEY) {
+      console.error('LOVABLE_API_KEY nao configurada');
+      return new Response(JSON.stringify({
+        success: false,
+        fallbackContent: reportData.fieldValues || {},
+        error: 'AI_NOT_CONFIGURED',
+      }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const patientName = reportData.patientName || 'Nao informado';
@@ -26,55 +36,93 @@ serve(async (req) => {
     const sessionDate = reportData.sessionDate || 'Nao informado';
     const fieldValuesJson = JSON.stringify(reportData.fieldValues || {}, null, 2);
 
-    const prompt = "Voce e um especialista em musicoterapia para TEA. Organize o seguinte relatorio: " + 
-      "Paciente: " + patientName + ", " +
-      "Idade: " + patientAge + ", " +
-      "Diagnostico: " + patientDiagnosis + ", " +
-      "Profissional: " + professionalName + ", " +
-      "Data: " + sessionDate + ". " +
-      "CAMPOS: " + fieldValuesJson + ". " +
-      "Instrucoes: 1. Melhore a redacao tecnica. 2. MANTENHA TODOS OS CAMPOS ORIGINAIS. 3. Retorne JSON puro.";
+    const systemPrompt =
+      "Voce e um especialista em musicoterapia para TEA (Transtorno do Espectro Autista). " +
+      "Sua tarefa e organizar e melhorar a redacao tecnica de um relatorio clinico. " +
+      "REGRAS OBRIGATORIAS: " +
+      "1. MANTENHA TODAS as chaves (campos) originais do objeto JSON recebido, sem remover nenhuma. " +
+      "2. NAO invente informacoes novas; apenas melhore a redacao do conteudo existente. " +
+      "3. Para campos que sao arrays, retorne arrays. Para campos de texto, retorne texto. " +
+      "4. Mantenha valores numericos (escalas) exatamente como recebidos. " +
+      "5. Retorne EXCLUSIVAMENTE um JSON valido com a mesma estrutura de chaves recebida, sem texto extra, sem markdown.";
 
-    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + googleAIApiKey, {
+    const userPrompt =
+      "Dados do paciente: Nome: " + patientName + ", Idade: " + patientAge +
+      ", Diagnostico: " + patientDiagnosis + ". " +
+      "Profissional: " + professionalName + ". Data: " + sessionDate + ". " +
+      "Campos do relatorio (JSON a ser organizado e devolvido com as mesmas chaves):\n" + fieldValuesJson;
+
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          temperature: 0.2,
-          maxOutputTokens: 4096,
-          response_mime_type: "application/json",
-        }
+        model: 'google/gemini-2.5-flash',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
+        ],
+        response_format: { type: 'json_object' },
+        temperature: 0.2,
       }),
     });
 
     if (!response.ok) {
-      throw new Error("Erro da API Google AI");
+      const errText = await response.text();
+      console.error('Erro do AI Gateway:', response.status, errText);
+
+      let error = 'SERVICE_UNAVAILABLE';
+      if (response.status === 429) error = 'RATE_LIMITED';
+      if (response.status === 402) error = 'CREDITS_EXHAUSTED';
+
+      return new Response(JSON.stringify({
+        success: false,
+        fallbackContent: reportData.fieldValues || {},
+        error,
+      }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const data = await response.json();
-    const generatedText = data.candidates[0].content.parts[0].text;
+    const generatedText = data?.choices?.[0]?.message?.content || '';
 
     let organizedContent;
     try {
       organizedContent = JSON.parse(generatedText.trim());
-    } catch (parseError) {
-      organizedContent = reportData.fieldValues;
+    } catch (_parseError) {
+      console.warn('Falha ao parsear JSON da IA, usando fallback.');
+      return new Response(JSON.stringify({
+        success: false,
+        fallbackContent: reportData.fieldValues || {},
+        error: 'PARSE_FAILED',
+      }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    return new Response(JSON.stringify({ 
+    // Garantir que nenhum campo original seja perdido
+    const merged = { ...(reportData.fieldValues || {}), ...organizedContent };
+
+    return new Response(JSON.stringify({
       success: true,
-      organizedContent
+      organizedContent: merged,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
-    return new Response(JSON.stringify({ 
+    console.error('Erro inesperado:', error);
+    return new Response(JSON.stringify({
       success: false,
-      error: error.message
+      fallbackContent: reportData.fieldValues || {},
+      error: 'SERVICE_FAILED',
     }), {
-      status: 500,
+      status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
