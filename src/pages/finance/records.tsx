@@ -512,7 +512,7 @@ export default function FinancialRecords() {
         </div>
         
         <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center bg-primary text-white px-3 py-1 rounded-full text-sm font-medium">
+          <div className="flex items-center bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-medium">
             <ClockIcon className="h-3.5 w-3.5 mr-1" />
             {time || "Sem horário"}
           </div>
