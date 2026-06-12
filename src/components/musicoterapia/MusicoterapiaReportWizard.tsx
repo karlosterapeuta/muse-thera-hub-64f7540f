@@ -580,12 +580,12 @@ export function MusicoterapiaReportWizard({
     return missingFields.length === 0;
   };
 
-  const handleAIGeneration = () => {
+  const handleAIGeneration = async () => {
     const observations = Object.entries(reportData.fieldValues || {})
       .map(([key, value]) => `${key}: ${value}`)
       .join('\n');
     
-    onGenerateWithAI(observations || 'Sessão de musicoterapia para TEA');
+    return await onGenerateWithAI(observations || 'Sessão de musicoterapia para TEA');
   };
 
   const renderStepFields = () => {
