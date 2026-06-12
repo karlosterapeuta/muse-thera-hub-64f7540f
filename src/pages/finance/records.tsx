@@ -683,12 +683,12 @@ export default function FinancialRecords() {
                 const isCurrentDay = format(new Date(), "EEE", { locale: ptBR }).toUpperCase().startsWith(day.substring(0,2));
                 
                 return (
-                  <div key={day} className={`flex flex-col h-full rounded-xl border ${isCurrentDay ? 'border-amber-400 ring-2 ring-amber-400/20 shadow-md' : 'border-border/60'} bg-white overflow-hidden transition-all hover:shadow-md`}>
-                    <div className={`py-2 px-1 text-center font-bold ${isCurrentDay ? 'bg-amber-500 text-white' : 'bg-muted/30 text-muted-foreground'} border-b border-inherit`}>
+                  <div key={day} className={`flex flex-col h-full rounded-xl border ${isCurrentDay ? 'border-amber-400 ring-2 ring-amber-400/20 shadow-md' : 'border-border/60'} bg-card overflow-hidden transition-all hover:shadow-md`}>
+                    <div className={`py-2 px-1 text-center font-bold ${isCurrentDay ? 'bg-amber-500 text-amber-50' : 'bg-muted/30 text-muted-foreground'} border-b border-inherit`}>
                       <div className="text-sm tracking-wider">{day}</div>
                     </div>
-                    <div className="p-1.5 flex justify-between items-center text-[10px] bg-amber-50/50 border-b border-amber-100">
-                      <span className="font-medium text-amber-800">{dayRecords.length} pac.</span>
+                    <div className="p-1.5 flex justify-between items-center text-[10px] bg-amber-500/10 border-b border-amber-500/15">
+                      <span className="font-medium text-amber-700 dark:text-amber-300">{dayRecords.length} pac.</span>
                       <span className="font-bold text-primary">{formatCurrency(dayTotal)}</span>
                     </div>
                     <ScrollArea className="flex-grow h-[320px] p-1.5">
