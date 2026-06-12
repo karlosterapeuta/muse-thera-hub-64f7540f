@@ -14,7 +14,7 @@ import { MusicoterapiaGuidance } from './MusicoterapiaGuidance';
 interface MusicoterapiaReportWizardProps {
   reportData: Partial<ReportData>;
   onUpdateData: (data: Partial<ReportData>) => void;
-  onGenerateWithAI: (keyPoints: string) => void;
+  onGenerateWithAI: (keyPoints: string) => Promise<any>;
   isGeneratingWithAI: boolean;
   patients: any[];
   onSaveReport: () => void;
