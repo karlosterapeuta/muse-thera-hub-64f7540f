@@ -16,31 +16,31 @@ serve(async (req) => {
     
     const googleAIApiKey = Deno.env.get('GOOGLE_AI_API_KEY');
     if (!googleAIApiKey) {
-      throw new Error('GOOGLE_AI_API_KEY não configurada');
+      throw new Error('GOOGLE_AI_API_KEY nao configurada');
     }
 
-    const prompt = `
-Você é um especialista em musicoterapia para TEA. 
-Organize e estruture o seguinte relatório de musicoterapia.
+    const prompt = \`
+Voce e um especialista em musicoterapia para TEA. 
+Organize e estruture o seguinte relatorio de musicoterapia.
 
-DADOS DO RELATÓRIO:
-- Paciente: ${reportData.patientName || 'Não informado'}
-- Idade: ${reportData.patientAge || 'Não informado'}  
-- Diagnóstico: ${reportData.patientDiagnosis || 'Não informado'}
-- Profissional: ${reportData.professionalName || 'Não informado'}
-- Data da Sessão: ${reportData.sessionDate || 'Não informado'}
+DADOS DO RELATORIO:
+- Paciente: \${reportData.patientName || 'Nao informado'}
+- Idade: \${reportData.patientAge || 'Nao informado'}  
+- Diagnostico: \${reportData.patientDiagnosis || 'Nao informado'}
+- Profissional: \${reportData.professionalName || 'Nao informado'}
+- Data da Sessao: \${reportData.sessionDate || 'Nao informado'}
 
 CAMPOS PREENCHIDOS:
-${JSON.stringify(reportData.fieldValues || {}, null, 2)}
+\${JSON.stringify(reportData.fieldValues || {}, null, 2)}
 
-INSTRUÇÕES:
-1. Melhore a redação técnica.
-2. CONSERVE TODAS AS INFORMAÇÕES do objeto "CAMPOS PREENCHIDOS".
+INSTRUCOES:
+1. Melhore a redacao tecnica.
+2. CONSERVE TODAS AS INFORMACOES do objeto "CAMPOS PREENCHIDOS".
 3. Mantenha as mesmas chaves do JSON original.
-4. Para escalas numéricas, mantenha o valor original.
+4. Para escalas numericas, mantenha o valor original.
 
 Retorne um objeto JSON puro.
-`;
+\`;
 
     const response = await fetch(\`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=\${googleAIApiKey}\`, {
       method: 'POST',
