@@ -47,7 +47,12 @@ export function useMusicoterapiaReport() {
 
       if (error) {
         console.error('Erro na edge function:', error);
-        throw new Error(error.message || 'Erro ao chamar serviço de IA');
+        // Não interromper: usar dados originais para o PDF
+        toast({
+          title: "PDF gerado sem otimização de IA",
+          description: "Não foi possível otimizar com IA agora; o relatório usará os dados originais.",
+        });
+        return reportData.fieldValues;
       }
 
       console.log('Resposta da edge function:', data);
