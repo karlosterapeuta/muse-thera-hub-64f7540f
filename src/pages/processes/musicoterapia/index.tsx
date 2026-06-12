@@ -587,6 +587,20 @@ export default function MusicoterapiaPage() {
 
     setIsExporting(true);
     try {
+      // 1. Organizar com IA antes de exportar
+      toast({
+        title: "Iniciando IA",
+        description: "Organizando os dados com IA para um PDF mais profissional...",
+      });
+      
+      const organizedFields = await generateWithAI();
+      
+      // Criamos uma versão local dos dados para o PDF
+      const currentReportData = {
+        ...reportData,
+        fieldValues: organizedFields || reportData.fieldValues
+      };
+
       // Convert images to Base64
       let photoBase64: string | null = null;
       let stampBase64: string | null = null;
@@ -603,7 +617,7 @@ export default function MusicoterapiaPage() {
       tempDiv.style.fontFamily = 'Arial, sans-serif';
       tempDiv.style.color = '#000';
       tempDiv.style.backgroundColor = '#fff';
-      tempDiv.innerHTML = generatePDFContent(reportData, photoBase64, stampBase64);
+      tempDiv.innerHTML = generatePDFContent(currentReportData, photoBase64, stampBase64);
       
       document.body.appendChild(tempDiv);
 
@@ -886,10 +900,10 @@ export default function MusicoterapiaPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
-                      Exportar Relatório em PDF
+                      Gerar Relatório Final (IA)
                     </h3>
                     <p className="text-sm text-muted-foreground">
-                      Gere o documento formatado para impressão ou compartilhamento.
+                      Organiza seus dados automaticamente e gera o PDF final.
                     </p>
                   </div>
                 </div>
@@ -901,12 +915,12 @@ export default function MusicoterapiaPage() {
                   {isExporting ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                      Gerando PDF...
+                      Processando com IA...
                     </>
                   ) : (
                     <>
                       <Download className="h-4 w-4 mr-2" />
-                      Exportar PDF
+                      Exportar PDF com IA
                     </>
                   )}
                 </Button>

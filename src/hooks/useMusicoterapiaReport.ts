@@ -59,41 +59,39 @@ export function useMusicoterapiaReport() {
         
         Object.entries(data.organizedContent).forEach(([key, value]) => {
           if (arrayFields.includes(key)) {
-            // Se o campo original no template espera array, mas a IA retornou string, convertemos
-            // No entanto, o PDF generator parece lidar com ambos. 
-            // Para garantir consistência no Wizard (que usa textarea), mantemos como string
-            // ou array conforme o campo original.
             organizedFields[key] = Array.isArray(value) ? value : [value];
           } else {
             organizedFields[key] = value;
           }
         });
 
-
+        // Retornar o novo estado para que possa ser usado imediatamente
+        const newFieldValues = { ...reportData.fieldValues, ...organizedFields };
+        
         updateReportData({
-          fieldValues: { ...reportData.fieldValues, ...organizedFields }
+          fieldValues: newFieldValues
         });
 
         toast({
           title: "✅ Relatório Organizado com Sucesso!",
-          description: "Seu relatório foi estruturado pela IA e está pronto para baixar ou salvar. Revise o conteúdo e finalize quando desejar.",
-          duration: 6000,
+          description: "Seu relatório foi estruturado pela IA para a geração do PDF.",
+          duration: 3000,
         });
+
+        return newFieldValues;
       } else if (data.fallbackContent) {
-        // Usar conteúdo de fallback em caso de erro
         const fallbackFields: Record<string, any> = {};
         Object.entries(data.fallbackContent).forEach(([key, value]) => {
           fallbackFields[key] = [value as string];
         });
 
+        const newFieldValues = { ...reportData.fieldValues, ...fallbackFields };
+
         updateReportData({
-          fieldValues: { ...reportData.fieldValues, ...fallbackFields }
+          fieldValues: newFieldValues
         });
 
-        toast({
-          title: "Conteúdo Básico Adicionado",
-          description: "Foi adicionado conteúdo básico. Revise e complemente conforme necessário.",
-        });
+        return newFieldValues;
       } else {
         throw new Error('Resposta inválida da IA');
       }
@@ -105,6 +103,7 @@ export function useMusicoterapiaReport() {
         title: "Erro na Organização com IA",
         description: error instanceof Error ? error.message : "Não foi possível organizar o relatório automaticamente.",
       });
+      return reportData.fieldValues;
     } finally {
       setIsGeneratingWithAI(false);
     }

@@ -13,7 +13,7 @@ import { savePDFToStorage } from '@/utils/pdfStorageUtils';
 
 interface FinalReviewSectionProps {
   reportData: Partial<ReportData>;
-  onOrganizeWithAI: () => void;
+  onOrganizeWithAI: () => Promise<any>;
   isGeneratingWithAI: boolean;
   onSaveReport: () => void;
   isSaving: boolean;
@@ -39,6 +39,20 @@ export function FinalReviewSection({
     setIsExporting(true);
 
     try {
+      // 1. Organizar com IA antes de exportar
+      toast({
+        title: "Iniciando IA",
+        description: "Organizando os dados com IA para um PDF mais profissional...",
+      });
+      
+      const organizedFields = await onOrganizeWithAI();
+      
+      // Criamos uma versão local dos dados para o PDF que já contém os novos campos
+      const currentReportData = {
+        ...reportData,
+        fieldValues: organizedFields || reportData.fieldValues
+      };
+
       let photoBase64: string | null = null;
       let stampBase64: string | null = null;
 
@@ -54,7 +68,9 @@ export function FinalReviewSection({
       tempDiv.style.fontFamily = 'Arial, sans-serif';
       tempDiv.style.color = '#000';
       tempDiv.style.backgroundColor = '#fff';
-      tempDiv.innerHTML = generatePDFContent(photoBase64, stampBase64);
+      
+      // Usamos o objeto local atualizado
+      tempDiv.innerHTML = generatePDFContentWithData(currentReportData, photoBase64, stampBase64);
 
       document.body.appendChild(tempDiv);
 
@@ -80,7 +96,7 @@ export function FinalReviewSection({
 
       toast({
         title: "PDF Exportado com Sucesso!",
-        description: "O relatorio de musicoterapia foi baixado em formato PDF.",
+        description: "O relatorio foi organizado com IA e baixado em formato PDF.",
       });
     } catch (error) {
       console.error('Erro na exportacao PDF:', error);
@@ -92,6 +108,159 @@ export function FinalReviewSection({
     } finally {
       setIsExporting(false);
     }
+  };
+
+  const generatePDFContentWithData = (dataToUse: Partial<ReportData>, photoBase64?: string | null, stampBase64?: string | null) => {
+    const fields = dataToUse.fieldValues || {};
+
+    return `
+      <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #c9a84c; padding-bottom: 20px;">
+        ${logoUrl ? `<img src="${logoUrl}" style="max-width: 150px; max-height: 80px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;" alt="Logo" />` : ''}
+        <h1 style="margin:  0; color: #c9a84c; font-size: 28px;">Relatorio MuseTera TEA</h1>
+        <p style="margin: 5px 0 0 0; color: #666; font-size: 16px;">Musicoterapia para Transtorno do Espectro Autista</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+        <div>
+          <h3 style="color: #c9a84c; margin-bottom: 15px; font-size: 18px;">Dados do Paciente</h3>
+          <p style="margin: 8px 0;"><strong>Nome:</strong> ${dataToUse.patientName || 'Nao informado'}</p>
+          <p style="margin: 8px 0;"><strong>Idade:</strong> ${dataToUse.patientAge || 'Nao informado'}</p>
+          <p style="margin: 8px 0;"><strong>Diagnostico:</strong> ${dataToUse.patientDiagnosis || 'Nao informado'}</p>
+        </div>
+
+        <div>
+          <h3 style="color: #c9a84c; margin-bottom: 15px; font-size: 18px;">Dados do Profissional</h3>
+          <p style="margin: 8px 0;"><strong>Nome:</strong> ${dataToUse.professionalName || 'Nao informado'}</p>
+          <p style="margin: 8px 0;"><strong>Registro:</strong> ${dataToUse.professionalRegistry || 'Nao informado'}</p>
+          <p style="margin: 8px 0;"><strong>Data da Sessao:</strong> ${dataToUse.sessionDate ? new Date(dataToUse.sessionDate).toLocaleDateString('pt-BR') : 'Nao informado'}</p>
+        </div>
+      </div>
+
+      ${fields.therapeutic_objectives && Array.isArray(fields.therapeutic_objectives) && fields.therapeutic_objectives.length > 0 ? `
+        <div style="margin-bottom: 25px;">
+          <h3 style="color: #c9a84c; margin-bottom: 15px; font-size: 18px;">Objetivos Terapeuticos</h3>
+          <div style="text-align: justify; line-height: 1.6;">
+            ${fields.therapeutic_objectives.map(obj => `<p style="margin: 12px 0;">- ${obj}</p>`).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      ${fields.session_activities && Array.isArray(fields.session_activities) && fields.session_activities.length > 0 ? `
+        <div style="margin-bottom: 25px;">
+          <h3 style="color: #c9a84c; margin-bottom: 15px; font-size: 18px;">Atividades Realizadas</h3>
+          <div style="text-align: justify; line-height: 1.6;">
+            ${fields.session_activities.map(act => `<p style="margin: 12px 0;">- ${act}</p>`).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      ${fields.patient_evolution && Array.isArray(fields.patient_evolution) && fields.patient_evolution.length > 0 ? `
+        <div style="margin-bottom: 25px;">
+          <h3 style="color: #c9a84c; margin-bottom: 15px; font-size: 18px;">Evolucao do Paciente</h3>
+          <div style="text-align: justify; line-height: 1.6;">
+            ${fields.patient_evolution.map(evo => `<p style="margin: 12px 0;">- ${evo}</p>`).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      ${fields.recommendations && Array.isArray(fields.recommendations) && fields.recommendations.length > 0 ? `
+        <div style="margin-bottom: 25px;">
+          <h3 style="color: #c9a84c; margin-bottom: 15px; font-size: 18px;">Recomendacoes</h3>
+          <div style="text-align: justify; line-height: 1.6;">
+            ${fields.recommendations.map(rec => `<p style="margin: 12px 0;">- ${rec}</p>`).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      ${fields.conclusion && Array.isArray(fields.conclusion) && fields.conclusion.length > 0 ? `
+        <div style="margin-bottom: 25px;">
+          <h3 style="color: #c9a84c; margin-bottom: 15px; font-size: 18px;">Conclusao</h3>
+          <div style="text-align: justify; line-height: 1.6;">
+            ${fields.conclusion.map(con => `<p style="margin: 12px 0;">- ${con}</p>`).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      <div style="margin-top: 25px; border: 2px solid transparent; border-radius: 10px; overflow: hidden; background: #ffffff; background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, #0d0d0d, #1a1a1a, #c9a84c); background-origin: border-box; background-clip: padding-box, border-box;">
+        <div style="height: 4px; background: linear-gradient(90deg, #c9a84c 0%, #f0d78c 50%, #c9a84c 100%);"></div>
+        <div style="padding: 16px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start;">
+            <div style="background: linear-gradient(135deg, #faf8f5, #f0ebe3); border: 1px solid #c9a84c; border-radius: 8px; overflow: hidden;">
+              <div style="height: 4px; background: linear-gradient(to right, #c9a84c, #f0d78c, #c9a84c);"></div>
+              <div style="padding: 12px;">
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                  ${photoBase64 ? `
+                    <div style="position: relative;">
+                      <div style="position: absolute; width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, rgba(201,168,76,0.4), rgba(240,215,140,0.3)); filter: blur(5px); top: -2px; left: -2px;"></div>
+                      <div style="width: 48px; height: 48px; border-radius: 50%; overflow: hidden; border: 2px solid #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.1); position: relative; background: linear-gradient(135deg, #c9a84c, #f0d78c); padding: 2px;">
+                        <div style="width: 100%; height: 100%; border-radius: 50%; overflow: hidden;">
+                          <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
+                        </div>
+                      </div>
+                    </div>
+                  ` : ''}
+                  <div style="text-align: center;">
+                    <div style="font-size: 9px; font-weight: bold; color: #0d0d0d; margin-bottom: 6px; line-height: 1.3; word-wrap: break-word;">${professionalData?.name || dataToUse.professionalName || 'Profissional'}</div>
+                    <div style="display: inline-flex; align-items: center; gap: 3px; background: #f0ebe3; border: 1px solid #c9a84c; border-radius: 10px; padding: 3px 7px; margin-bottom: 8px;">
+                      <span style="color: #0d0d0d; font-size: 7px;">&#9835;</span>
+                      <span style="font-size: 7px; font-weight: 600; color: #0d0d0d;">${professionalData?.specialty || dataToUse.professionalSpecialty || 'Musicoterapeuta'}</span>
+                    </div>
+                    <div style="font-size: 7px; color: #374151; line-height: 1.8;">
+                      ${professionalData?.register ? `<div><strong style="color: #c9a84c;">Registro:</strong> ${professionalData.register}</div>` : ''}
+                      ${professionalData?.email ? `<div style="word-wrap: break-word;"><strong style="color: #c9a84c;">Email:</strong> ${professionalData.email}</div>` : ''}
+                      ${professionalData?.phone ? `<div><strong style="color: #c9a84c;">Telefone:</strong> ${professionalData.phone}</div>` : ''}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div style="border-top: 1px solid #c9a84c; background: linear-gradient(to right, #faf8f5, #f0ebe3, #faf8f5); padding: 7px;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                  <span style="color: #c9a84c; font-size: 8px;">&#10004;</span>
+                  <span style="font-size: 6px; font-weight: 600; color: #0d0d0d;">Assinatura Digital Verificada</span>
+                  <span style="color: #c9a84c; font-size: 7px;">&#9835;</span>
+                  <span style="font-size: 6px; color: #6b7280;">Sistema MuseTera</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; align-items: center;">
+              ${stampBase64 || photoBase64 ? `
+                <div style="width: 140px; height: 140px; position: relative; display: flex; align-items: center; justify-content: center;">
+                  <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 2px dashed #c9a84c; opacity: 0.3;"></div>
+                  <div style="position: absolute; width: 92%; height: 92%; border-radius: 50%; border: 1px solid #c9a84c; opacity: 0.5;"></div>
+                  <div style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #faf8f5, #f0ebe3); border: 3px solid #c9a84c; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px; box-shadow: 0 4px 12px rgba(201,168,76,0.25);">
+                    ${photoBase64 ? `
+                      <div style="position: relative; margin-bottom: 5px;">
+                        <div style="position: absolute; width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, rgba(201,168,76,0.4), rgba(240,215,140,0.3)); filter: blur(4px); top: -2px; left: -2px;"></div>
+                        <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; border: 2px solid #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.1); position: relative;">
+                          <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
+                        </div>
+                      </div>
+                    ` : ''}
+                    <div style="font-size: 7px; font-weight: bold; color: #0d0d0d; text-align: center; margin-bottom: 3px; max-width: 90px; line-height: 1.3; word-wrap: break-word;">${professionalData?.name || dataToUse.professionalName || 'Profissional'}</div>
+                    <div style="width: 30px; height: 1px; background: linear-gradient(to right, transparent, #c9a84c, transparent); margin-bottom: 3px;"></div>
+                    <div style="display: inline-flex; align-items: center; gap: 2px; background: #f0ebe3; border: 1px solid #c9a84c; border-radius: 8px; padding: 2px 5px; margin-bottom: 2px;">
+                      <span style="font-size: 5px; color: #0d0d0d;">&#9835;</span>
+                      <span style="font-size: 5px; font-weight: 600; color: #0d0d0d; text-transform: uppercase; letter-spacing: 0.3px;">${professionalData?.specialty || dataToUse.professionalSpecialty || 'Musicoterapeuta'}</span>
+                    </div>
+                    ${professionalData?.register ? `<div style="font-size: 6px; color: #374151; font-weight: 600;">${professionalData.register}</div>` : ''}
+                  </div>
+                </div>
+                <div style="margin-top: 6px; background: linear-gradient(135deg, #c9a84c, #f0d78c); color: #0d0d0d; padding: 4px 9px; border-radius: 10px; display: inline-flex; align-items: center; gap: 3px; box-shadow: 0 2px 6px rgba(201,168,76,0.3);">
+                  <span style="font-size: 6px;">&#10004;</span>
+                  <span style="font-size: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;">MuseTera Verified</span>
+                  <span style="font-size: 6px;">&#9835;</span>
+                </div>
+              ` : `
+                <div style="width: 120px; height: 120px; border: 2px dashed #c9a84c; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 7px; color: #6b7280; background: #faf8f5;">
+                  Carimbo Digital
+                </div>
+              `}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
   };
 
   const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -654,37 +823,6 @@ export function FinalReviewSection({
           </div>
         </div>
 
-        {/* Organizar com IA */}
-        <div className="rounded-2xl border border-white/5 bg-[#0d0d0d]/30 hover:border-[#c9a84c]/30 hover:bg-[#0d0d0d]/50 transition-all p-4 sm:p-5 flex flex-col">
-          <div className="flex items-start gap-3 mb-4">
-            <div className="p-2.5 rounded-xl bg-[#c9a84c]/15 border border-[#c9a84c]/30 flex-shrink-0">
-              <Zap className="h-5 w-5 text-[#c9a84c]" />
-            </div>
-            <div>
-              <h3 className="text-sm sm:text-base font-semibold text-foreground">Organizar com IA</h3>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Estruture o relatorio automaticamente</p>
-            </div>
-          </div>
-          <div className="flex-1 flex flex-col justify-end">
-            <Button
-              onClick={onOrganizeWithAI}
-              disabled={isGeneratingWithAI}
-              className="w-full bg-[#c9a84c] hover:bg-[#f0d78c] text-black text-xs sm:text-sm"
-            >
-              {isGeneratingWithAI ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Organizando...
-                </>
-              ) : (
-                <>
-                  <Zap className="h-4 w-4 mr-2" />
-                  Organizar
-                </>
-              )}
-            </Button>
-          </div>
-        </div>
 
         {/* Salvar */}
         <div className="rounded-2xl border border-white/5 bg-[#0d0d0d]/30 hover:border-[#c9a84c]/30 hover:bg-[#0d0d0d]/50 transition-all p-4 sm:p-5 flex flex-col">
