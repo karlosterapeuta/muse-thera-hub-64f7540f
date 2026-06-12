@@ -13,7 +13,7 @@ import { savePDFToStorage } from '@/utils/pdfStorageUtils';
 
 interface FinalReviewSectionProps {
   reportData: Partial<ReportData>;
-  onOrganizeWithAI: () => void;
+  onOrganizeWithAI: () => Promise<any>;
   isGeneratingWithAI: boolean;
   onSaveReport: () => void;
   isSaving: boolean;
