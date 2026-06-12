@@ -597,7 +597,7 @@ export default function FinancialRecords() {
             className="shadow-sm hover:shadow-md transition-all"
             disabled={!sortedRecords.length}
           >
-            <DownloadIcon className="h-4 w-4 sm:h-5 sm:w-5 text-[#0EA5E9]" />
+            <DownloadIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             {isMobile && <span className="ml-1 text-xs">CSV</span>}
             {!isMobile && <span className="inline">Exportar CSV</span>}
           </Button>
