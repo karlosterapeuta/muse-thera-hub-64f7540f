@@ -868,8 +868,8 @@ export function MusicoterapiaReportWizard({
       </nav>
 
       {/* Main Wizard Card — Monolithic */}
-      <div ref={stepContentRef} className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <section className="lg:col-span-3 bg-[#1a1a1a] rounded-2xl sm:rounded-[2rem] lg:rounded-[2.5rem] border border-white/5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden relative">
+      <div ref={stepContentRef} className={`grid grid-cols-1 gap-6 ${showQuickFill ? 'lg:grid-cols-4' : ''}`}>
+        <section className={`${showQuickFill ? 'lg:col-span-3' : ''} bg-[#1a1a1a] rounded-2xl sm:rounded-[2rem] lg:rounded-[2.5rem] border border-white/5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden relative`}>
           {/* Premium accent light */}
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#c9a84c]/10 blur-[100px] rounded-full pointer-events-none" />
 
