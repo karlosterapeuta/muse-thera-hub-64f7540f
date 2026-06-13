@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -40,9 +40,23 @@ export function RecurringRecordActions({ record, onEdit, onEditSeries }: Recurri
   const isChild = !!record.parent_record_id;
   const isRecurring = isParent || isChild;
 
+  const releaseInteractionLock = () => {
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        if (document.body.style.pointerEvents === "none") {
+          document.body.style.pointerEvents = "";
+        }
+      }, 120);
+    });
+  };
+
+  useEffect(() => {
+    if (!deleteDialogOpen) releaseInteractionLock();
+  }, [deleteDialogOpen]);
+
   const handleDeleteClick = (type: 'single' | 'all') => {
     setDeleteType(type);
-    setDeleteDialogOpen(true);
+    requestAnimationFrame(() => setDeleteDialogOpen(true));
   };
 
   const handleStatusChange = (status: SessionStatus) => {
@@ -50,23 +64,27 @@ export function RecurringRecordActions({ record, onEdit, onEditSeries }: Recurri
   };
 
   const confirmDelete = () => {
+    const selectedDeleteType = deleteType;
+    setDeleteDialogOpen(false);
+    releaseInteractionLock();
+
     deleteRecurringSeries.mutate(
       {
         recordId: record.id,
-        deleteAll: deleteType === 'all'
+        deleteAll: selectedDeleteType === 'all'
       },
       {
         onSuccess: () => {
-          setDeleteDialogOpen(false);
           toast.success(
-            deleteType === 'all' 
+            selectedDeleteType === 'all' 
               ? "Série recorrente excluída com sucesso!" 
               : "Registro excluído com sucesso!"
           );
         },
         onError: () => {
           toast.error("Erro ao excluir registro");
-        }
+        },
+        onSettled: releaseInteractionLock,
       }
     );
   };
