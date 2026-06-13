@@ -832,7 +832,7 @@ export function MusicoterapiaReportWizard({
         </div>
 
         {/* Desktop: full stepper */}
-        <div className="hidden sm:block relative">
+        <div className="hidden lg:block relative">
           <div className="absolute top-5 left-0 w-full h-[1px] bg-white/5" />
           <ul className="relative flex justify-between">
             {STEPS.map((step, index) => {
