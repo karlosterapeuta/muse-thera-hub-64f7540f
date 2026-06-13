@@ -745,7 +745,7 @@ export function MusicoterapiaReportWizard({
   const StepIcon = currentStepData.icon;
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8 sm:space-y-12 lg:space-y-16 px-3 sm:px-4 lg:px-0" style={{ fontFamily: "'Work Sans', sans-serif" }}>
+    <div className={`${showQuickFill ? 'max-w-6xl' : 'max-w-3xl'} mx-auto space-y-8 sm:space-y-12 lg:space-y-16 px-3 sm:px-4 lg:px-0 transition-[max-width] duration-300`} style={{ fontFamily: "'Work Sans', sans-serif" }}>
       {/* Editorial Hero — Monolithic noir & gold */}
       <header className="flex flex-col items-center text-center space-y-4 sm:space-y-6 lg:space-y-8 pt-2">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#c9a84c]/30 bg-[#c9a84c]/5 text-[#f0d78c] text-[9px] sm:text-[10px] font-bold tracking-[0.2em] uppercase">
@@ -783,7 +783,7 @@ export function MusicoterapiaReportWizard({
       {/* Stepper Indicator — compact on mobile, full on desktop */}
       <nav className="relative px-1 sm:px-2">
         {/* Mobile: compact pill view */}
-        <div className="sm:hidden space-y-3">
+        <div className="lg:hidden space-y-3">
           <div className="flex items-center justify-between gap-3">
             <button
               type="button"
@@ -832,7 +832,7 @@ export function MusicoterapiaReportWizard({
         </div>
 
         {/* Desktop: full stepper */}
-        <div className="hidden sm:block relative">
+        <div className="hidden lg:block relative">
           <div className="absolute top-5 left-0 w-full h-[1px] bg-white/5" />
           <ul className="relative flex justify-between">
             {STEPS.map((step, index) => {
@@ -868,8 +868,8 @@ export function MusicoterapiaReportWizard({
       </nav>
 
       {/* Main Wizard Card — Monolithic */}
-      <div ref={stepContentRef} className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <section className="lg:col-span-3 bg-[#1a1a1a] rounded-2xl sm:rounded-[2rem] lg:rounded-[2.5rem] border border-white/5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden relative">
+      <div ref={stepContentRef} className={`grid grid-cols-1 gap-6 ${showQuickFill ? 'lg:grid-cols-4' : ''}`}>
+        <section className={`${showQuickFill ? 'lg:col-span-3' : ''} bg-[#1a1a1a] rounded-2xl sm:rounded-[2rem] lg:rounded-[2.5rem] border border-white/5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden relative`}>
           {/* Premium accent light */}
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#c9a84c]/10 blur-[100px] rounded-full pointer-events-none" />
 
