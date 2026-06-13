@@ -493,19 +493,19 @@ export default function FinancialRecords() {
     const getCardStatusClasses = (status?: string) => {
       switch (status) {
         case 'completed':
-          return 'bg-green-100 dark:bg-green-900/30 border-green-500 dark:border-green-600';
+          return 'bg-card border-border/60 border-l-4 border-l-green-500';
         case 'no_show':
-          return 'bg-red-100 dark:bg-red-900/30 border-red-500 dark:border-red-600';
+          return 'bg-card border-border/60 border-l-4 border-l-red-500';
         case 'scheduled':
         default:
-          return 'bg-blue-100 dark:bg-blue-900/30 border-blue-500 dark:border-blue-600';
+          return 'bg-card border-border/60 border-l-4 border-l-primary';
       }
     };
     
     return (
       <div 
         key={record.id} 
-        className={`${getCardStatusClasses(record.session_status)} rounded-lg p-3 shadow-sm mb-2 hover:shadow-md transition-all hover:border-opacity-50 relative group`}
+        className={`${getCardStatusClasses(record.session_status)} border rounded-lg p-3 shadow-sm mb-2 hover:shadow-md transition-all relative group`}
       >
         <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
           <RecurringRecordActions record={record} onEdit={handleEditRecord} onEditSeries={handleEditSeries} />
