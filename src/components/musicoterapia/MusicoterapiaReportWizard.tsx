@@ -745,7 +745,7 @@ export function MusicoterapiaReportWizard({
   const StepIcon = currentStepData.icon;
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8 sm:space-y-12 lg:space-y-16 px-3 sm:px-4 lg:px-0" style={{ fontFamily: "'Work Sans', sans-serif" }}>
+    <div className={`${showQuickFill ? 'max-w-6xl' : 'max-w-3xl'} mx-auto space-y-8 sm:space-y-12 lg:space-y-16 px-3 sm:px-4 lg:px-0 transition-[max-width] duration-300`} style={{ fontFamily: "'Work Sans', sans-serif" }}>
       {/* Editorial Hero — Monolithic noir & gold */}
       <header className="flex flex-col items-center text-center space-y-4 sm:space-y-6 lg:space-y-8 pt-2">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#c9a84c]/30 bg-[#c9a84c]/5 text-[#f0d78c] text-[9px] sm:text-[10px] font-bold tracking-[0.2em] uppercase">
