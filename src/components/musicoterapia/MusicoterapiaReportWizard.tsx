@@ -783,7 +783,7 @@ export function MusicoterapiaReportWizard({
       {/* Stepper Indicator — compact on mobile, full on desktop */}
       <nav className="relative px-1 sm:px-2">
         {/* Mobile: compact pill view */}
-        <div className="sm:hidden space-y-3">
+        <div className="lg:hidden space-y-3">
           <div className="flex items-center justify-between gap-3">
             <button
               type="button"
