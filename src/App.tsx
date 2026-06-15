@@ -160,6 +160,7 @@ const App = () => {
           <Route path="/creator-dashboard" element={<CreatorDashboardPage />} />
           <Route path="/creator-course-preview/:courseId" element={<CreatorCoursePreview />} />
           <Route path="/encontrar-musicoterapeuta" element={<EncontrarMusicoterapeuta />} />
+          <Route path="/profissional/:slug" element={<PerfilPublicoPage />} />
           <Route path="/musicoterapeuta/:slug" element={<PerfilPublicoPage />} />
           <Route path="/" element={<Layout />}>
             <Route index element={<Navigate to="/login" replace />} />
