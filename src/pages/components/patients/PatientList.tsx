@@ -22,6 +22,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
+import { PatientPhotoAvatar } from "./PatientPhotoAvatar";
 
 // Updated Patient type to include anamnesis status
 type Patient = {
