@@ -24,6 +24,7 @@ import {
   FolderOpen,
   History,
   Music2,
+  Magnet,
 } from "lucide-react";
 
 export const mainMenuItems = [
