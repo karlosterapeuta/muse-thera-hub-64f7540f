@@ -162,10 +162,15 @@ export default function EncontrarMusicoterapeuta() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map((p) => (
-              <Card key={p.id} className="overflow-hidden hover:shadow-lg transition-shadow relative">
+              <Card key={p.id} className={`overflow-hidden hover:shadow-lg transition-shadow relative ${p.plan === "premium" ? "border-amber-400/60 ring-1 ring-amber-400/30" : ""}`}>
                 {p.plan === "premium" && (
                   <div className="absolute top-3 right-3 z-10">
                     <Badge className="bg-amber-500 text-white gap-1"><Crown className="h-3 w-3" /> Premium</Badge>
+                  </div>
+                )}
+                {p.plan === "profissional" && (
+                  <div className="absolute top-3 right-3 z-10">
+                    <Badge className="bg-primary text-primary-foreground gap-1"><BadgeCheck className="h-3 w-3" /> Verificado</Badge>
                   </div>
                 )}
                 <CardContent className="p-5">
