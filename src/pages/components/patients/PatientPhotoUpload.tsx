@@ -67,8 +67,8 @@ export function PatientPhotoUpload({ onPhotoUploaded, currentPhotoUrl }: Patient
   return (
     <div className="flex flex-col items-center gap-4 p-4 border rounded-xl bg-muted/30">
       <div className="relative w-32 h-32 rounded-full overflow-hidden bg-muted flex items-center justify-center border-2 border-primary/20">
-        {currentPhotoUrl ? (
-          <img src={currentPhotoUrl} alt="Paciente" className="w-full h-full object-cover" />
+        {previewUrl ? (
+          <img src={previewUrl} alt="Paciente" className="w-full h-full object-cover" />
         ) : (
           <div className="text-muted-foreground text-xs text-center px-2">Sem foto</div>
         )}
