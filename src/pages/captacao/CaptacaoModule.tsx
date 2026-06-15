@@ -377,8 +377,70 @@ function AdminTab() {
         </CardContent>
       </Card>
 
+      <PlanAdmin />
+
       <SeoManager />
     </div>
+  );
+}
+
+const PLAN_LABELS: Record<string, string> = {
+  gratuito: "Gratuito",
+  profissional: "Profissional",
+  premium: "Premium",
+};
+
+function PlanAdmin() {
+  const [loading, setLoading] = useState(true);
+  const [profiles, setProfiles] = useState<any[]>([]);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const { data } = await supabase.from("public_profiles" as any)
+      .select("id, full_name, city, state, plan, is_published")
+      .order("full_name");
+    setProfiles((data as any) ?? []);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const changePlan = async (profile: any, newPlan: string) => {
+    const { error } = await supabase.from("public_profiles" as any)
+      .update({ plan: newPlan }).eq("id", profile.id);
+    if (error) { toast.error("Erro ao alterar plano."); return; }
+    setProfiles((prev) => prev.map((p) => (p.id === profile.id ? { ...p, plan: newPlan } : p)));
+    toast.success(`Plano de ${profile.full_name} atualizado para ${PLAN_LABELS[newPlan]}.`);
+  };
+
+  return (
+    <Card>
+      <CardHeader><CardTitle className="text-base flex items-center gap-2"><Crown className="h-4 w-4" /> Gestão de planos dos profissionais</CardTitle></CardHeader>
+      <CardContent className="space-y-3">
+        {loading && <Loader2 className="h-5 w-5 animate-spin text-primary mx-auto" />}
+        {!loading && profiles.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">Nenhum perfil cadastrado ainda.</p>}
+        {profiles.map((p) => (
+          <div key={p.id} className="flex items-center gap-3 border rounded-lg p-3">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-medium truncate">{p.full_name}</span>
+                {!p.is_published && <Badge variant="outline">Rascunho</Badge>}
+                <Badge variant={p.plan === "premium" ? "default" : p.plan === "profissional" ? "secondary" : "outline"}>
+                  {PLAN_LABELS[p.plan] ?? p.plan}
+                </Badge>
+              </div>
+              <p className="text-xs text-muted-foreground mt-0.5">{[p.city, p.state].filter(Boolean).join(", ")}</p>
+            </div>
+            <Select value={p.plan} onValueChange={(v) => changePlan(p, v)}>
+              <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {Object.entries(PLAN_LABELS).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
   );
 }
 
