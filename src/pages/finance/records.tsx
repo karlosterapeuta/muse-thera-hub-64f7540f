@@ -439,48 +439,48 @@ export default function FinancialRecords() {
     const getCardStatusClasses = (status?: string) => {
       switch (status) {
         case 'completed':
-          return 'bg-green-100 dark:bg-green-900/30 border-green-400 dark:border-green-600';
+          return 'border-l-emerald-500';
         case 'no_show':
-          return 'bg-red-100 dark:bg-red-900/30 border-red-400 dark:border-red-600';
+          return 'border-l-rose-500';
         case 'scheduled':
         default:
-          return 'bg-blue-100 dark:bg-blue-900/30 border-blue-400 dark:border-blue-600';
+          return 'border-l-primary';
       }
     };
     
     return (
       <div 
         key={record.id} 
-        className={`${getCardStatusClasses(record.session_status)} rounded-md p-3 shadow-sm mb-2 hover:shadow-md transition-all hover:border-opacity-50 relative group`}
+        className={`bg-card/90 border border-border/60 border-l-[3px] ${getCardStatusClasses(record.session_status)} rounded-lg p-2.5 shadow-sm mb-2 hover:shadow-md hover:border-border transition-all relative group`}
       >
-        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
           <RecurringRecordActions record={record} onEdit={handleEditRecord} onEditSeries={handleEditSeries} />
         </div>
         
-        <div className="flex items-center mb-2">
-          <div className="flex items-center bg-primary/10 px-2 py-1 rounded-md text-primary font-medium">
-            <ClockIcon className="h-3.5 w-3.5 mr-1" />
+        <div className="flex items-center gap-1.5 mb-2">
+          <div className="flex items-center bg-primary/10 px-2 py-0.5 rounded-md text-primary text-xs font-semibold">
+            <ClockIcon className="h-3 w-3 mr-1" />
             {time}
           </div>
           {duration && (
-            <div className="text-xs text-muted-foreground ml-2 px-2 py-1 bg-muted rounded-md">
+            <div className="text-[10px] text-muted-foreground px-1.5 py-0.5 bg-muted rounded-md">
               {duration}
             </div>
           )}
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-1.5">
             <SessionStatusBadge status={record.session_status || 'scheduled'} />
             <RecurringRecordIndicator record={record} />
           </div>
         </div>
         
         <div className="mt-1">
-          <div className="font-medium line-clamp-1">{record.patient_name || 'Sem paciente'}</div>
+          <div className="text-sm font-semibold text-foreground line-clamp-1">{record.patient_name || 'Sem paciente'}</div>
           <div className="text-xs text-muted-foreground line-clamp-1">{record.clinic_name}</div>
         </div>
         
-        <div className="flex items-center justify-between mt-2 pt-2 border-t border-dashed border-primary/10">
-          <div className="text-xs text-muted-foreground line-clamp-1">{getCleanDescription(record.description) || 'Sem descrição'}</div>
-          <div className="font-bold text-primary">{formatCurrency(record.amount)}</div>
+        <div className="flex items-center justify-between mt-2 pt-2 border-t border-dashed border-border/70">
+          <div className="text-[11px] text-muted-foreground line-clamp-1">{getCleanDescription(record.description) || 'Sem descrição'}</div>
+          <div className="text-sm font-bold text-primary whitespace-nowrap">{formatCurrency(record.amount)}</div>
         </div>
       </div>
     );
