@@ -373,6 +373,80 @@ function AdminTab() {
           })}
         </CardContent>
       </Card>
+
+      <SeoManager />
     </div>
   );
 }
+
+function SeoManager() {
+  const [pages, setPages] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState<any>({ slug: "", title: "", meta_description: "", h1: "", body_content: "", city: "", is_published: true });
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const { data } = await supabase.from("seo_pages" as any).select("*").order("created_at", { ascending: false });
+    setPages((data as any) ?? []);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const create = async () => {
+    if (!form.title.trim()) { toast.error("Informe um título."); return; }
+    setSaving(true);
+    const slug = (form.slug?.trim() || slugify(form.title));
+    const { error } = await supabase.from("seo_pages" as any).upsert({
+      slug, title: form.title.trim(), meta_description: form.meta_description?.trim() || null,
+      h1: form.h1?.trim() || null, body_content: form.body_content?.trim() || null,
+      city: form.city?.trim() || null, page_type: "landing", is_published: form.is_published,
+    }, { onConflict: "slug" });
+    setSaving(false);
+    if (error) { toast.error("Erro ao salvar página."); return; }
+    toast.success("Página de SEO salva.");
+    setForm({ slug: "", title: "", meta_description: "", h1: "", body_content: "", city: "", is_published: true });
+    load();
+  };
+
+  const togglePublish = async (p: any) => {
+    await supabase.from("seo_pages" as any).update({ is_published: !p.is_published }).eq("id", p.id);
+    load();
+  };
+
+  return (
+    <Card>
+      <CardHeader><CardTitle className="text-base flex items-center gap-2"><BarChart3 className="h-4 w-4" /> Páginas de SEO (Landing pages)</CardTitle></CardHeader>
+      <CardContent className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="space-y-1"><Label>Título (SEO)</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Musicoterapia em São Paulo" /></div>
+          <div className="space-y-1"><Label>Slug</Label><Input value={form.slug} onChange={(e) => setForm({ ...form, slug: slugify(e.target.value) })} placeholder="gerado do título" /></div>
+          <div className="space-y-1"><Label>Cidade</Label><Input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="São Paulo" /></div>
+          <div className="space-y-1"><Label>H1</Label><Input value={form.h1} onChange={(e) => setForm({ ...form, h1: e.target.value })} placeholder="Encontre musicoterapeutas em São Paulo" /></div>
+          <div className="space-y-1 sm:col-span-2"><Label>Meta descrição</Label><Input value={form.meta_description} onChange={(e) => setForm({ ...form, meta_description: e.target.value })} maxLength={160} /></div>
+          <div className="space-y-1 sm:col-span-2"><Label>Conteúdo</Label><Textarea rows={4} value={form.body_content} onChange={(e) => setForm({ ...form, body_content: e.target.value })} /></div>
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2"><Switch checked={form.is_published} onCheckedChange={(v) => setForm({ ...form, is_published: v })} /><Label>Publicada</Label></div>
+          <Button onClick={create} disabled={saving}>{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Salvar página</Button>
+        </div>
+
+        <div className="space-y-2 pt-2">
+          {loading && <Loader2 className="h-5 w-5 animate-spin text-primary mx-auto" />}
+          {!loading && pages.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">Nenhuma página criada ainda.</p>}
+          {pages.map((p) => (
+            <div key={p.id} className="flex items-center gap-2 border rounded-lg p-2 text-sm">
+              <span className="font-medium truncate flex-1">{p.title}</span>
+              <Link to={`/musicoterapia/${p.slug}`} target="_blank" className="text-muted-foreground hover:text-primary"><ExternalLink className="h-4 w-4" /></Link>
+              <Badge variant={p.is_published ? "default" : "outline"} className="cursor-pointer" onClick={() => togglePublish(p)}>
+                {p.is_published ? "Publicada" : "Rascunho"}
+              </Badge>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
