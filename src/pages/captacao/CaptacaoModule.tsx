@@ -37,6 +37,7 @@ function slugify(text: string) {
 export default function CaptacaoModule() {
   const [params, setParams] = useSearchParams();
   const tab = params.get("tab") || "perfil";
+  const { data: isAdmin } = useAdmin();
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-6xl">
@@ -46,19 +47,22 @@ export default function CaptacaoModule() {
       </div>
 
       <Tabs value={tab} onValueChange={(v) => setParams({ tab: v })}>
-        <TabsList className="grid grid-cols-3 w-full sm:w-auto">
+        <TabsList className={`grid ${isAdmin ? "grid-cols-4" : "grid-cols-3"} w-full sm:w-auto`}>
           <TabsTrigger value="perfil"><UserCircle className="h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Meu Perfil</span></TabsTrigger>
           <TabsTrigger value="leads"><Inbox className="h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Leads</span></TabsTrigger>
           <TabsTrigger value="stats"><BarChart3 className="h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Estatísticas</span></TabsTrigger>
+          {isAdmin && <TabsTrigger value="admin"><Shield className="h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Admin</span></TabsTrigger>}
         </TabsList>
 
         <TabsContent value="perfil" className="mt-6"><PerfilTab /></TabsContent>
         <TabsContent value="leads" className="mt-6"><LeadsTab /></TabsContent>
         <TabsContent value="stats" className="mt-6"><StatsTab /></TabsContent>
+        {isAdmin && <TabsContent value="admin" className="mt-6"><AdminTab /></TabsContent>}
       </Tabs>
     </div>
   );
 }
+
 
 function PerfilTab() {
   const [loading, setLoading] = useState(true);
