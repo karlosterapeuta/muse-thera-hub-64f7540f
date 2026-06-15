@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Camera, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { usePatientPhotoUrl } from "@/hooks/usePatientPhotoUrl";
 
 interface PatientPhotoUploadProps {
   onPhotoUploaded: (url: string) => void;
@@ -14,14 +15,21 @@ export function PatientPhotoUpload({ onPhotoUploaded, currentPhotoUrl }: Patient
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+  const previewUrl = usePatientPhotoUrl(currentPhotoUrl);
 
   const uploadPhoto = async (file: Blob | File) => {
     try {
       setIsUploading(true);
+
+      const { data: userData } = await supabase.auth.getUser();
+      const userId = userData?.user?.id;
+      if (!userId) throw new Error("Sessão expirada. Faça login novamente.");
+
       const ext = file.type === "image/png" ? "png" : "jpg";
       const contentType = file.type || "image/jpeg";
       const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${ext}`;
-      const filePath = `patient-photos/${fileName}`;
+      // Store inside the owner's folder so storage RLS scopes access per user
+      const filePath = `${userId}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from("patients")
@@ -29,11 +37,8 @@ export function PatientPhotoUpload({ onPhotoUploaded, currentPhotoUrl }: Patient
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from("patients")
-        .getPublicUrl(filePath);
-
-      onPhotoUploaded(publicUrl);
+      // Store the storage path; display uses short-lived signed URLs
+      onPhotoUploaded(filePath);
       toast({
         title: "Sucesso",
         description: "Foto enviada com sucesso.",
