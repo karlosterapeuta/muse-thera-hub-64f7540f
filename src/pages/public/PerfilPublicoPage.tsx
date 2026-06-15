@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   MapPin, Star, Crown, GraduationCap, Stethoscope, Globe, Instagram,
-  MessageCircle, Loader2, ArrowLeft, ShieldCheck,
+  MessageCircle, Loader2, ArrowLeft, ShieldCheck, BadgeCheck,
 } from "lucide-react";
 import { SolicitarAtendimentoDialog } from "@/components/captacao/SolicitarAtendimentoDialog";
 
