@@ -17,6 +17,8 @@ import {
   UserCircle, Inbox, BarChart3, Loader2, ExternalLink, Save, TrendingUp, Target, CheckCircle2,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAdmin } from "@/hooks/use-admin";
+import { Shield } from "lucide-react";
 
 const STATUS_LABELS: Record<string, string> = {
   novo: "Novo Lead",
