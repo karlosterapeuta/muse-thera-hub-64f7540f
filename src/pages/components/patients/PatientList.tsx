@@ -22,6 +22,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
+import { PatientPhotoAvatar } from "./PatientPhotoAvatar";
 
 // Updated Patient type to include anamnesis status
 type Patient = {
@@ -73,11 +74,8 @@ export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEdi
               <TableCell className="py-4 pl-6 font-semibold text-foreground">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0 overflow-hidden border border-primary/10">
-                    {patient.photo_url ? (
-                      <img src={patient.photo_url} alt={patient.name} className="w-full h-full object-cover" />
-                    ) : (
-                      patient.name.substring(0, 2).toUpperCase()
-                    )}
+                    <PatientPhotoAvatar value={patient.photo_url} name={patient.name} />
+
                   </div>
                   <div className="flex flex-col">
                     <span className="leading-tight">{patient.name}</span>
