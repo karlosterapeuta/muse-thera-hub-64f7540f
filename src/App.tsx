@@ -100,6 +100,7 @@ import CreatorCoursePreview from "./pages/creator/course-preview";
 import CaptacaoModule from "./pages/captacao/CaptacaoModule";
 import EncontrarMusicoterapeuta from "./pages/public/EncontrarMusicoterapeuta";
 import PerfilPublicoPage from "./pages/public/PerfilPublicoPage";
+import SeoLandingPage from "./pages/public/SeoLandingPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -162,6 +163,7 @@ const App = () => {
           <Route path="/encontrar-musicoterapeuta" element={<EncontrarMusicoterapeuta />} />
           <Route path="/profissional/:slug" element={<PerfilPublicoPage />} />
           <Route path="/musicoterapeuta/:slug" element={<PerfilPublicoPage />} />
+          <Route path="/musicoterapia/:slug" element={<SeoLandingPage />} />
           <Route path="/" element={<Layout />}>
             <Route index element={<Navigate to="/login" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
