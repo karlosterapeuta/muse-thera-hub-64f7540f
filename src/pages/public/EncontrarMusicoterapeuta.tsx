@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MapPin, Star, Search, Crown, Stethoscope, Loader2 } from "lucide-react";
+import { MapPin, Star, Search, Crown, Stethoscope, Loader2, BadgeCheck } from "lucide-react";
 import { SolicitarAtendimentoDialog } from "@/components/captacao/SolicitarAtendimentoDialog";
 
 interface PublicProfile {
