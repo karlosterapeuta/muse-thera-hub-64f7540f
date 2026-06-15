@@ -1580,6 +1580,18 @@ export type Database = {
           },
         ]
       }
+      test_captacao: {
+        Row: {
+          id: string
+        }
+        Insert: {
+          id?: string
+        }
+        Update: {
+          id?: string
+        }
+        Relationships: []
+      }
       treatment_plan_versions: {
         Row: {
           created_at: string
