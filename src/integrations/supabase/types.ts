@@ -1013,6 +1013,27 @@ export type Database = {
           },
         ]
       }
+      insurance_providers: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
       invite_codes: {
         Row: {
           code: string
@@ -1580,15 +1601,24 @@ export type Database = {
           },
         ]
       }
-      test_captacao: {
+      specialties: {
         Row: {
+          created_at: string
           id: string
+          name: string
+          slug: string
         }
         Insert: {
+          created_at?: string
           id?: string
+          name: string
+          slug: string
         }
         Update: {
+          created_at?: string
           id?: string
+          name?: string
+          slug?: string
         }
         Relationships: []
       }
@@ -2190,7 +2220,16 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "professional"
+      attendance_mode: "online" | "presencial" | "ambos"
       invite_code_status: "unused" | "used" | "expired"
+      lead_status:
+        | "novo"
+        | "contatado"
+        | "avaliacao_agendada"
+        | "em_atendimento"
+        | "convertido"
+        | "perdido"
+      plan_tier: "gratuito" | "profissional" | "premium"
       report_type:
         | "initial_evaluation"
         | "progress_report"
@@ -2339,7 +2378,17 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "professional"],
+      attendance_mode: ["online", "presencial", "ambos"],
       invite_code_status: ["unused", "used", "expired"],
+      lead_status: [
+        "novo",
+        "contatado",
+        "avaliacao_agendada",
+        "em_atendimento",
+        "convertido",
+        "perdido",
+      ],
+      plan_tier: ["gratuito", "profissional", "premium"],
       report_type: [
         "initial_evaluation",
         "progress_report",
