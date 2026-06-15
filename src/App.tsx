@@ -100,6 +100,7 @@ import CreatorCoursePreview from "./pages/creator/course-preview";
 import CaptacaoModule from "./pages/captacao/CaptacaoModule";
 import EncontrarMusicoterapeuta from "./pages/public/EncontrarMusicoterapeuta";
 import PerfilPublicoPage from "./pages/public/PerfilPublicoPage";
+import SeoLandingPage from "./pages/public/SeoLandingPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
