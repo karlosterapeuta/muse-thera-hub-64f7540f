@@ -298,3 +298,81 @@ function StatsTab() {
     </div>
   );
 }
+
+function AdminTab() {
+  const [loading, setLoading] = useState(true);
+  const [leads, setLeads] = useState<any[]>([]);
+  const [stats, setStats] = useState({ leads: 0, matches: 0, converted: 0, profiles: 0 });
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const [{ data: leadsData }, { data: matchesData }, { count: profilesCount }] = await Promise.all([
+      supabase.from("patient_leads" as any).select("*, lead_matches(id, status, score, profile_id)").order("created_at", { ascending: false }).limit(200),
+      supabase.from("lead_matches" as any).select("status"),
+      supabase.from("public_profiles" as any).select("id", { count: "exact", head: true }).eq("is_published", true),
+    ]);
+    const m = (matchesData as any) ?? [];
+    setLeads((leadsData as any) ?? []);
+    setStats({
+      leads: ((leadsData as any) ?? []).length,
+      matches: m.length,
+      converted: m.filter((x: any) => x.status === "convertido").length,
+      profiles: profilesCount ?? 0,
+    });
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  if (loading) return <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
+
+  const cards = [
+    { label: "Leads totais", value: stats.leads, icon: Target, color: "text-blue-500" },
+    { label: "Matches gerados", value: stats.matches, icon: BarChart3, color: "text-violet-500" },
+    { label: "Convertidos", value: stats.converted, icon: CheckCircle2, color: "text-green-500" },
+    { label: "Perfis publicados", value: stats.profiles, icon: UserCircle, color: "text-amber-500" },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        {cards.map((c) => (
+          <Card key={c.label}><CardContent className="p-5">
+            <c.icon className={`h-5 w-5 ${c.color} mb-2`} />
+            <p className="text-2xl font-bold">{c.value}</p>
+            <p className="text-xs text-muted-foreground">{c.label}</p>
+          </CardContent></Card>
+        ))}
+      </div>
+
+      <Card>
+        <CardHeader><CardTitle className="text-base flex items-center gap-2"><Inbox className="h-4 w-4" /> Todos os leads recebidos</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          {leads.length === 0 && <p className="text-sm text-muted-foreground py-6 text-center">Nenhum lead cadastrado ainda.</p>}
+          {leads.map((lead) => {
+            const matches = lead.lead_matches ?? [];
+            return (
+              <div key={lead.id} className="border rounded-lg p-3">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-semibold">{lead.patient_name}</span>
+                  {lead.patient_age && <Badge variant="outline">{lead.patient_age} anos</Badge>}
+                  <Badge variant="secondary">{matches.length} match(es)</Badge>
+                  <span className="text-xs text-muted-foreground ml-auto">{new Date(lead.created_at).toLocaleDateString("pt-BR")}</span>
+                </div>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {[lead.city, lead.state].filter(Boolean).join(", ")} • {lead.mode}
+                  {lead.diagnosis && ` • ${lead.diagnosis}`}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {lead.guardian_name && `Resp.: ${lead.guardian_name} • `}
+                  {lead.whatsapp && `WhatsApp: ${lead.whatsapp} `}
+                  {lead.email && `• ${lead.email}`}
+                </p>
+              </div>
+            );
+          })}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
