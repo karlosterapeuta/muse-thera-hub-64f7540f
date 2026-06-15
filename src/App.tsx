@@ -96,6 +96,11 @@ import CreatorRegisterPage from "./pages/creator/register";
 import CreatorDashboardPage from "./pages/creator/dashboard";
 import CreatorCoursePreview from "./pages/creator/course-preview";
 
+// Captação de Pacientes
+import CaptacaoModule from "./pages/captacao/CaptacaoModule";
+import EncontrarMusicoterapeuta from "./pages/public/EncontrarMusicoterapeuta";
+import PerfilPublicoPage from "./pages/public/PerfilPublicoPage";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
