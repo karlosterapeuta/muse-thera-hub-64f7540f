@@ -1219,6 +1219,78 @@ export type Database = {
         }
         Relationships: []
       }
+      professional_insurances: {
+        Row: {
+          created_at: string
+          id: string
+          insurance_id: string
+          profile_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          insurance_id: string
+          profile_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          insurance_id?: string
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_insurances_insurance_id_fkey"
+            columns: ["insurance_id"]
+            isOneToOne: false
+            referencedRelation: "insurance_providers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "professional_insurances_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      professional_specialties: {
+        Row: {
+          created_at: string
+          id: string
+          profile_id: string
+          specialty_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          profile_id: string
+          specialty_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          profile_id?: string
+          specialty_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_specialties_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "professional_specialties_specialty_id_fkey"
+            columns: ["specialty_id"]
+            isOneToOne: false
+            referencedRelation: "specialties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       professionals: {
         Row: {
           association: string | null
@@ -1306,6 +1378,90 @@ export type Database = {
           plan_start_date?: string | null
           status?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      public_profiles: {
+        Row: {
+          accepts_private: boolean
+          attends_in_person: boolean
+          attends_online: boolean
+          avatar_url: string | null
+          avg_rating: number
+          bio: string | null
+          city: string | null
+          created_at: string
+          education: string | null
+          full_name: string
+          id: string
+          instagram: string | null
+          is_published: boolean
+          plan: Database["public"]["Enums"]["plan_tier"]
+          postgraduate: string | null
+          professional_registration: string | null
+          reviews_count: number
+          slug: string
+          state: string | null
+          target_audience: string | null
+          updated_at: string
+          user_id: string
+          website: string | null
+          whatsapp: string | null
+          years_experience: number | null
+        }
+        Insert: {
+          accepts_private?: boolean
+          attends_in_person?: boolean
+          attends_online?: boolean
+          avatar_url?: string | null
+          avg_rating?: number
+          bio?: string | null
+          city?: string | null
+          created_at?: string
+          education?: string | null
+          full_name: string
+          id?: string
+          instagram?: string | null
+          is_published?: boolean
+          plan?: Database["public"]["Enums"]["plan_tier"]
+          postgraduate?: string | null
+          professional_registration?: string | null
+          reviews_count?: number
+          slug: string
+          state?: string | null
+          target_audience?: string | null
+          updated_at?: string
+          user_id: string
+          website?: string | null
+          whatsapp?: string | null
+          years_experience?: number | null
+        }
+        Update: {
+          accepts_private?: boolean
+          attends_in_person?: boolean
+          attends_online?: boolean
+          avatar_url?: string | null
+          avg_rating?: number
+          bio?: string | null
+          city?: string | null
+          created_at?: string
+          education?: string | null
+          full_name?: string
+          id?: string
+          instagram?: string | null
+          is_published?: boolean
+          plan?: Database["public"]["Enums"]["plan_tier"]
+          postgraduate?: string | null
+          professional_registration?: string | null
+          reviews_count?: number
+          slug?: string
+          state?: string | null
+          target_audience?: string | null
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+          whatsapp?: string | null
+          years_experience?: number | null
         }
         Relationships: []
       }
@@ -1524,6 +1680,44 @@ export type Database = {
             columns: ["professional_id"]
             isOneToOne: false
             referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          is_approved: boolean
+          profile_id: string
+          rating: number
+          reviewer_name: string | null
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          is_approved?: boolean
+          profile_id: string
+          rating: number
+          reviewer_name?: string | null
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          is_approved?: boolean
+          profile_id?: string
+          rating?: number
+          reviewer_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
         ]
