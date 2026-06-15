@@ -2625,6 +2625,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      creator_confirm_purchase: {
+        Args: { p_purchase_id: string }
+        Returns: boolean
+      }
       force_user_logout:
         | { Args: { target_user_id: string }; Returns: boolean }
         | {

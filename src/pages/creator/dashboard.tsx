@@ -177,29 +177,12 @@ export default function CreatorDashboardPage() {
 
   const handleConfirmPayment = async (purchaseId: string) => {
     try {
-      const { error } = await supabase
-        .from('course_purchases')
-        .update({
-          payment_status: 'paid',
-          paid_at: new Date().toISOString(),
-          confirmed_by_creator_at: new Date().toISOString()
-        })
-        .eq('id', purchaseId);
+      // Secure confirmation: marks payment as paid and grants access server-side
+      const { error } = await supabase.rpc('creator_confirm_purchase', {
+        p_purchase_id: purchaseId,
+      });
 
       if (error) throw error;
-
-      // Grant course access
-      const purchase = purchases.find(p => p.id === purchaseId);
-      if (purchase) {
-        await supabase
-          .from('course_access')
-          .upsert({
-            course_id: purchase.course_id,
-            user_id: purchase.user_id,
-            purchase_id: purchaseId,
-            is_active: true
-          }, { onConflict: 'course_id,user_id' });
-      }
 
       toast.success("Pagamento confirmado! Acesso liberado para o aluno.");
       
