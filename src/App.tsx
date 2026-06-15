@@ -159,9 +159,12 @@ const App = () => {
           <Route path="/creator-register" element={<CreatorRegisterPage />} />
           <Route path="/creator-dashboard" element={<CreatorDashboardPage />} />
           <Route path="/creator-course-preview/:courseId" element={<CreatorCoursePreview />} />
+          <Route path="/encontrar-musicoterapeuta" element={<EncontrarMusicoterapeuta />} />
+          <Route path="/musicoterapeuta/:slug" element={<PerfilPublicoPage />} />
           <Route path="/" element={<Layout />}>
             <Route index element={<Navigate to="/login" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
+            <Route path="captacao" element={<CaptacaoModule />} />
             <Route path="professional" element={<Professional />} />
             <Route path="patients" element={<Patients />} />
             <Route path="patient-history" element={<PatientHistory />} />
