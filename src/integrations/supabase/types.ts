@@ -500,6 +500,36 @@ export type Database = {
           },
         ]
       }
+      captacao_notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          is_read: boolean
+          link: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       clinics: {
         Row: {
           address: string | null
@@ -1064,6 +1094,89 @@ export type Database = {
         }
         Relationships: []
       }
+      lead_matches: {
+        Row: {
+          created_at: string
+          id: string
+          lead_id: string
+          profile_id: string
+          score: number
+          status: Database["public"]["Enums"]["lead_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lead_id: string
+          profile_id: string
+          score?: number
+          status?: Database["public"]["Enums"]["lead_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lead_id?: string
+          profile_id?: string
+          score?: number
+          status?: Database["public"]["Enums"]["lead_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_matches_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "patient_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_matches_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_status_history: {
+        Row: {
+          changed_by: string | null
+          created_at: string
+          id: string
+          match_id: string
+          new_status: Database["public"]["Enums"]["lead_status"]
+          note: string | null
+          previous_status: Database["public"]["Enums"]["lead_status"] | null
+        }
+        Insert: {
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          match_id: string
+          new_status: Database["public"]["Enums"]["lead_status"]
+          note?: string | null
+          previous_status?: Database["public"]["Enums"]["lead_status"] | null
+        }
+        Update: {
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          match_id?: string
+          new_status?: Database["public"]["Enums"]["lead_status"]
+          note?: string | null
+          previous_status?: Database["public"]["Enums"]["lead_status"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_status_history_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "lead_matches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_logs: {
         Row: {
           id: string
@@ -1090,6 +1203,80 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      patient_leads: {
+        Row: {
+          cid: string | null
+          city: string | null
+          created_at: string
+          diagnosis: string | null
+          email: string | null
+          guardian_name: string | null
+          id: string
+          insurance: string | null
+          lgpd_consent: boolean
+          mode: Database["public"]["Enums"]["attendance_mode"]
+          notes: string | null
+          patient_age: number | null
+          patient_name: string
+          phone: string | null
+          preferred_profile_id: string | null
+          state: string | null
+          therapeutic_goal: string | null
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          cid?: string | null
+          city?: string | null
+          created_at?: string
+          diagnosis?: string | null
+          email?: string | null
+          guardian_name?: string | null
+          id?: string
+          insurance?: string | null
+          lgpd_consent?: boolean
+          mode?: Database["public"]["Enums"]["attendance_mode"]
+          notes?: string | null
+          patient_age?: number | null
+          patient_name: string
+          phone?: string | null
+          preferred_profile_id?: string | null
+          state?: string | null
+          therapeutic_goal?: string | null
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          cid?: string | null
+          city?: string | null
+          created_at?: string
+          diagnosis?: string | null
+          email?: string | null
+          guardian_name?: string | null
+          id?: string
+          insurance?: string | null
+          lgpd_consent?: boolean
+          mode?: Database["public"]["Enums"]["attendance_mode"]
+          notes?: string | null
+          patient_age?: number | null
+          patient_name?: string
+          phone?: string | null
+          preferred_profile_id?: string | null
+          state?: string | null
+          therapeutic_goal?: string | null
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "patient_leads_preferred_profile_id_fkey"
+            columns: ["preferred_profile_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       patients: {
         Row: {
@@ -1722,6 +1909,51 @@ export type Database = {
           },
         ]
       }
+      seo_pages: {
+        Row: {
+          body_content: string | null
+          city: string | null
+          created_at: string
+          h1: string | null
+          id: string
+          is_published: boolean
+          meta_description: string | null
+          page_type: string
+          slug: string
+          specialty_slug: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body_content?: string | null
+          city?: string | null
+          created_at?: string
+          h1?: string | null
+          id?: string
+          is_published?: boolean
+          meta_description?: string | null
+          page_type: string
+          slug: string
+          specialty_slug?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body_content?: string | null
+          city?: string | null
+          created_at?: string
+          h1?: string | null
+          id?: string
+          is_published?: boolean
+          meta_description?: string | null
+          page_type?: string
+          slug?: string
+          specialty_slug?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       Session: {
         Row: {
           expires: string
@@ -2013,6 +2245,50 @@ export type Database = {
             columns: ["professional_id"]
             isOneToOne: false
             referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      triage_reports: {
+        Row: {
+          case_summary: string | null
+          created_at: string
+          id: string
+          identified_needs: string | null
+          lead_id: string
+          priority_level: string | null
+          raw_response: Json | null
+          recommended_profile: string | null
+          therapeutic_area: string | null
+        }
+        Insert: {
+          case_summary?: string | null
+          created_at?: string
+          id?: string
+          identified_needs?: string | null
+          lead_id: string
+          priority_level?: string | null
+          raw_response?: Json | null
+          recommended_profile?: string | null
+          therapeutic_area?: string | null
+        }
+        Update: {
+          case_summary?: string | null
+          created_at?: string
+          id?: string
+          identified_needs?: string | null
+          lead_id?: string
+          priority_level?: string | null
+          raw_response?: Json | null
+          recommended_profile?: string | null
+          therapeutic_area?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "triage_reports_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "patient_leads"
             referencedColumns: ["id"]
           },
         ]
