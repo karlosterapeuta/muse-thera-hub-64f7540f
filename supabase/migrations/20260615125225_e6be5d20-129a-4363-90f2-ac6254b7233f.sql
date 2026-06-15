@@ -1,0 +1,1 @@
+CREATE TABLE public.test_captacao (id uuid PRIMARY KEY DEFAULT gen_random_uuid());
