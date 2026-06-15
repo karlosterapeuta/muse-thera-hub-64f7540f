@@ -14,6 +14,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { PatientPhotoAvatar } from "./PatientPhotoAvatar";
 
 type Patient = {
   id: string;
