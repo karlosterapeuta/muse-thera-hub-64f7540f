@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   MapPin, Star, Crown, GraduationCap, Stethoscope, Globe, Instagram,
-  MessageCircle, Loader2, ArrowLeft, ShieldCheck,
+  MessageCircle, Loader2, ArrowLeft, ShieldCheck, BadgeCheck,
 } from "lucide-react";
 import { SolicitarAtendimentoDialog } from "@/components/captacao/SolicitarAtendimentoDialog";
 
@@ -104,6 +104,7 @@ export default function PerfilPublicoPage() {
                 <div className="flex items-center gap-2 flex-wrap">
                   <h1 className="text-2xl font-bold">{profile.full_name}</h1>
                   {profile.plan === "premium" && <Badge className="bg-amber-500 text-white gap-1"><Crown className="h-3 w-3" /> Premium</Badge>}
+                  {profile.plan === "profissional" && <Badge className="bg-primary text-primary-foreground gap-1"><BadgeCheck className="h-3 w-3" /> Verificado</Badge>}
                 </div>
                 {location && <p className="text-muted-foreground flex items-center gap-1 mt-1"><MapPin className="h-4 w-4" /> {location}</p>}
                 {profile.professional_registration && (
