@@ -86,6 +86,8 @@ export default function MusicoterapiaPage() {
           selectedPatientId: patientIdFromQuery,
           patientName: selectedPatient.name,
           patientAge: age,
+          patientBirthDate: (selectedPatient as any).birth_date || '',
+          patientGuardian: (selectedPatient as any).responsible || '',
           patientDiagnosis: 'TEA - Transtorno do Espectro Autista'
         });
       }
