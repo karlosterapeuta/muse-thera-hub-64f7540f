@@ -187,9 +187,9 @@ const STEP_TEMPLATES: Record<string, TemplateOption[]> = {
       values: {
         theoretical_framework: 'A prática fundamenta-se em abordagem integrativa: Modelo Benenzon (Princípio do ISO), modelo de Bruscia (níveis e métodos — receptivo, recriativo, improvisacional e compositivo) e Musicoterapia Criativa de Nordoff-Robbins, associados às diretrizes de intervenção em TEA conforme DSM-5-TR e CID-11.',
         assessment_tools_used: 'Instrumentos: Escala MuseTera, IMTAP, mapeamento do ISO, observação clínica sistematizada e registro qualitativo por método.',
-        session_setting: 'Setting individual em ambiente acústico controlado, com instrumental diversificado e adaptações sensoriais individualizadas.',
+        session_setting: 'Individual',
         session_structure: 'Sessões com estrutura previsível e flexível, contemplando abertura, desenvolvimento (com diferentes métodos) e encerramento.',
-        session_activities: 'Atividades receptivas, recriativas, improvisacionais e compositivas, ajustadas ao perfil e ao momento clínico do paciente.',
+        session_activities: ['Atividades receptivas, recriativas, improvisacionais e compositivas, ajustadas ao perfil e ao momento clínico do paciente.'],
         improvisation_use: 'A improvisação foi utilizada como recurso central de vínculo e comunicação, integrada às demais técnicas.',
         receptive_techniques: 'Audição musical seletiva, relaxamento sonoro e escuta de repertório significativo para regulação.',
         recreative_techniques: 'Recriação de canções e padrões rítmicos, favorecendo participação, antecipação e troca de turnos.',
