@@ -240,7 +240,7 @@ export const musicoterapiaPhrases: PhraseBank[] = [
   },
   {
     id: 'imtap_phrases',
-    name: 'Domínios IMTAP',
+    name: 'Domínios - Escala MuseTera',
     phrases: [
       'no domínio da musicalidade, demonstra capacidade emergente de manter pulso por períodos curtos',
       'no domínio comunicativo não-verbal, utiliza gestos musicais funcionais para fazer pedidos',
