@@ -133,9 +133,9 @@ const STEP_TEMPLATES: Record<string, TemplateOption[]> = {
       values: {
         theoretical_framework: 'A intervenção fundamenta-se no Modelo Benenzon de Musicoterapia, com ênfase no Princípio do ISO (Identidade Sonora) — gestacional, universal, cultural, complementar e grupal —, articulado às diretrizes de intervenção em TEA conforme DSM-5-TR e CID-11.',
         assessment_tools_used: 'Instrumentos: observação clínica sistematizada, mapeamento do ISO do paciente, registro de respostas sonoro-musicais e Escala MuseTera de avaliação musicoterapêutica.',
-        session_setting: 'As sessões ocorreram em setting individual, em ambiente acústico controlado, com instrumental diversificado (percussão, melódicos e objetos intermediários sonoros), priorizando previsibilidade e segurança sensorial.',
+        session_setting: 'Individual',
         session_structure: 'Sessões com estrutura previsível: ritual de abertura sonoro-musical, desenvolvimento (exploração e improvisação) e ritual de encerramento, com duração média de 40 a 50 minutos.',
-        session_activities: 'Atividades de exploração instrumental livre, diálogos sonoros, improvisações vinculares e uso de objetos intermediários, respeitando o ISO do paciente.',
+        session_activities: ['Atividades de exploração instrumental livre, diálogos sonoros, improvisações vinculares e uso de objetos intermediários, respeitando o ISO do paciente.'],
         improvisation_use: 'A improvisação clínica foi utilizada como principal recurso de vínculo e comunicação não-verbal, partindo do ISO do paciente para construção de diálogos sonoros.',
         receptive_techniques: 'Técnicas receptivas: audição de canções e trechos musicais pertencentes ao ISO do paciente, favorecendo regulação e disponibilidade interna.',
         recreative_techniques: 'Técnicas recriativas: recriação de canções familiares e padrões rítmicos, favorecendo participação ativa e troca de turnos.',
