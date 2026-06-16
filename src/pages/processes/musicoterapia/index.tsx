@@ -96,10 +96,37 @@ export default function MusicoterapiaPage() {
     reportDataForPDF: any, 
     photoBase64?: string | null, 
     stampBase64?: string | null,
-    logoUrl?: string | null
+    logoUrl?: string | null,
+    narrative?: { title: string; content: string }[] | null
   ) => {
     const fields = reportDataForPDF.fieldValues || {};
     const currentDate = new Date().toLocaleDateString('pt-BR');
+
+    const escapeHtml = (s: string) =>
+      String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+    const narrativeBlock = (narrative && narrative.length > 0) ? `
+      <div class="section-block" style="margin-bottom: 25px; border: 2px solid #14b8a6; border-radius: 10px; overflow: hidden; background: #ffffff; page-break-inside: auto;">
+        <div style="background: linear-gradient(135deg, #0d9488 0%, #14b8a6 60%, #06b6d4 100%); color: white; padding: 12px 16px;">
+          <h2 style="margin: 0; font-size: 16px; font-weight: 700; letter-spacing: 0.3px;">Relatório Clínico Narrativo</h2>
+          <p style="margin: 4px 0 0 0; font-size: 10px; opacity: 0.92;">Análise clínica gerada com Inteligência Artificial a partir das respostas do questionário</p>
+        </div>
+        <div style="padding: 16px 18px;">
+          ${narrative.map((sec) => `
+            <div style="margin-bottom: 16px; page-break-inside: avoid;">
+              <h3 style="color: #0d9488; margin: 0 0 6px 0; font-size: 13px; border-bottom: 1px solid #99f6e4; padding-bottom: 4px;">${escapeHtml(sec.title)}</h3>
+              ${String(sec.content).split(/\n{2,}/).map((p) => p.trim()).filter(Boolean).map((p) =>
+                `<p style="margin: 0 0 8px 0; font-size: 11.5px; line-height: 1.7; text-align: justify; color: #1f2937; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${escapeHtml(p)}</p>`
+              ).join('')}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    ` : '';
+
     
     return `
       <div style="font-family: Arial, sans-serif; color: #000; background-color: #fff; width: 210mm; min-height: 297mm; padding: 20mm; margin: 0 auto; font-size: 12px; line-height: 1.6; box-sizing: border-box;">
