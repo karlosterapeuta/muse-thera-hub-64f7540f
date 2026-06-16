@@ -1,6 +1,5 @@
 
 import { useEffect, useRef } from "react";
-import { PushNotificationManager } from "./notifications/PushNotificationManager";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
@@ -11,7 +10,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { HeaderLogo } from "./header/HeaderLogo";
 import { HeaderGreeting } from "./header/HeaderGreeting";
 import { HeaderTime } from "./header/HeaderTime";
-import { NotificationBell } from "./header/NotificationBell";
+
 import { ProfessionalAvatar } from "./ProfessionalAvatar";
 import ThemeToggle from "./ThemeToggle";
 import { Separator } from "./ui/separator";
@@ -199,7 +198,6 @@ function LayoutContent({ children }: LayoutProps) {
             {/* Right: Actions */}
             <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
               <HeaderTime />
-              <NotificationBell />
               <ThemeToggle />
               <ProfessionalAvatar size="sm" />
             </div>
@@ -221,8 +219,7 @@ function LayoutContent({ children }: LayoutProps) {
           </div>
         </footer>
         
-        {/* Push Notification Manager */}
-        <PushNotificationManager />
+
         
         {/* Floating Chat Button */}
         <FloatingChat />
