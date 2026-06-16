@@ -121,7 +121,7 @@ interface TemplateOption {
   id: string;
   label: string;
   description: string;
-  values: Record<string, string>;
+  values: Record<string, string | string[]>;
 }
 
 const STEP_TEMPLATES: Record<string, TemplateOption[]> = {
