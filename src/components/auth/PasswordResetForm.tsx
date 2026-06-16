@@ -74,7 +74,7 @@ export default function PasswordResetForm({ onSwitchToLogin }: PasswordResetForm
         {/* Logo */}
         <div className="flex flex-col items-center space-y-2">
           <img
-            src="/assets-uploads/musetera-logo-new.png"
+            src="/lovable-uploads/musetera-logo-new.png"
             alt="MuseTera Logo"
             className="h-20 w-20"
           />
@@ -123,7 +123,7 @@ export default function PasswordResetForm({ onSwitchToLogin }: PasswordResetForm
       {/* Logo */}
       <div className="flex flex-col items-center space-y-2">
         <img
-          src="/assets-uploads/musetera-logo-new.png"
+          src="/lovable-uploads/musetera-logo-new.png"
           alt="MuseTera Logo"
           className="h-20 w-20"
         />

@@ -161,7 +161,7 @@ export default function CreatorRegisterPage() {
           <div className="mx-auto w-24 h-24 mb-4 relative group">
             <div className="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-full blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
             <img 
-              src="/assets-uploads/musetera-logo-new.png" 
+              src="/lovable-uploads/musetera-logo-new.png" 
               alt="MuseTera Logo" 
               className="relative w-full h-full object-cover rounded-full shadow-lg"
             />

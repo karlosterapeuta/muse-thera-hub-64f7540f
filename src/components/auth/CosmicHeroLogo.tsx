@@ -16,7 +16,7 @@ export function CosmicHeroLogo() {
 
     // Load logo image and remove embedded dark background pixels
     const logo = new Image();
-    logo.src = "/assets-uploads/musetera-logo-new.png";
+    logo.src = "/lovable-uploads/musetera-logo-new.png";
     logo.onload = () => {
       logoRef.current = logo;
 
