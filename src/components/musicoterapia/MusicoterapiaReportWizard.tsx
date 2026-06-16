@@ -151,9 +151,9 @@ const STEP_TEMPLATES: Record<string, TemplateOption[]> = {
       values: {
         theoretical_framework: 'A intervenção fundamenta-se na Musicoterapia Criativa de Nordoff-Robbins, que enfatiza a improvisação clínica e o desenvolvimento do "Music Child", articulada às diretrizes de intervenção em TEA conforme DSM-5-TR e CID-11.',
         assessment_tools_used: 'Instrumentos: escalas Nordoff-Robbins (Child-Therapist Relationship e Musical Communicativeness), observação clínica e registro audiovisual de sessões.',
-        session_setting: 'Setting individual com piano/teclado e instrumental de percussão acessível, organizado para favorecer a iniciativa musical do paciente.',
+        session_setting: 'Individual',
         session_structure: 'Sessões estruturadas em torno da improvisação clínica responsiva, com abertura, desenvolvimento musical co-criativo e encerramento.',
-        session_activities: 'Improvisações instrumentais e vocais responsivas, canções terapêuticas compostas para o paciente e atividades de turno musical.',
+        session_activities: ['Improvisações instrumentais e vocais responsivas, canções terapêuticas compostas para o paciente e atividades de turno musical.'],
         improvisation_use: 'A improvisação clínica foi o eixo central das sessões, com o terapeuta acompanhando e ampliando musicalmente as iniciativas do paciente.',
         receptive_techniques: 'Momentos receptivos pontuais para regulação e escuta de motivos musicais significativos.',
         recreative_techniques: 'Recriação de canções terapêuticas e padrões musicais, estimulando engajamento e antecipação.',
