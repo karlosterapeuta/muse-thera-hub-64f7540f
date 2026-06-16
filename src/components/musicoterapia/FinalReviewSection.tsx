@@ -863,8 +863,8 @@ export function FinalReviewSection({
               <Download className="h-5 w-5 text-[#c9a84c]" />
             </div>
             <div>
-              <h3 className="text-sm sm:text-base font-semibold text-foreground">Exportar PDF</h3>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Gere o relatorio em formato PDF</p>
+              <h3 className="text-sm sm:text-base font-semibold text-foreground">Exportar PDF com IA</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Organiza os dados com IA e gera o PDF final</p>
             </div>
           </div>
           <div className="flex-1 flex flex-col justify-end">
@@ -876,12 +876,12 @@ export function FinalReviewSection({
               {isExporting ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Exportando...
+                  Processando com IA...
                 </>
               ) : (
                 <>
                   <Download className="h-4 w-4 mr-2" />
-                  Exportar PDF
+                  Exportar PDF com IA
                 </>
               )}
             </Button>
