@@ -114,7 +114,7 @@ export default function MusicoterapiaPage() {
       <div class="section-block" style="margin-bottom: 25px; border: 2px solid #14b8a6; border-radius: 10px; overflow: hidden; background: #ffffff; page-break-inside: auto;">
         <div style="background: linear-gradient(135deg, #0d9488 0%, #14b8a6 60%, #06b6d4 100%); color: white; padding: 12px 16px;">
           <h2 style="margin: 0; font-size: 16px; font-weight: 700; letter-spacing: 0.3px;">Relatório de Evolução Musicoterapêutica</h2>
-          <p style="margin: 4px 0 0 0; font-size: 10px; opacity: 0.92;">Documento clínico estruturado gerado com Inteligência Artificial a partir das respostas do questionário</p>
+          
         </div>
         <div style="padding: 16px 18px;">
           ${narrative.map((sec) => `
