@@ -169,9 +169,9 @@ const STEP_TEMPLATES: Record<string, TemplateOption[]> = {
       values: {
         theoretical_framework: 'A intervenção fundamenta-se no modelo de Musicoterapia Neurológica (NMT) de Michael Thaut, baseado na neurociência da música e na plasticidade cerebral, utilizando técnicas padronizadas para reabilitação sensório-motora, cognitiva e de linguagem em TEA, em consonância com DSM-5-TR e CID-11.',
         assessment_tools_used: 'Instrumentos: protocolos NMT padronizados, avaliação de sincronização rítmica, testes de atenção e função executiva e registro neurocomportamental sistematizado.',
-        session_setting: 'Setting estruturado com instrumental rítmico e melódico, metrônomo e recursos para estimulação sensório-motora controlada.',
+        session_setting: 'Individual',
         session_structure: 'Sessões organizadas por objetivos neurofuncionais, com aquecimento, aplicação de técnicas NMT específicas e fechamento, com registro de respostas.',
-        session_activities: 'Atividades de sincronização rítmica, marcha sonora, exercícios motores instrumentais e tarefas de atenção e memória musical.',
+        session_activities: ['Atividades de sincronização rítmica, marcha sonora, exercícios motores instrumentais e tarefas de atenção e memória musical.'],
         improvisation_use: 'A improvisação foi utilizada de forma estruturada, como recurso complementar às técnicas padronizadas.',
         receptive_techniques: 'Estimulação auditiva rítmica (RAS) e padrões sonoros para regulação e organização sensório-motora.',
         recreative_techniques: 'Execução musical instrumental terapêutica (TIMP) para treino motor e coordenação.',
