@@ -502,6 +502,17 @@ const STEP_TEMPLATES: Record<string, TemplateOption[]> = {
         quantitative_indicators: 'Os indicadores quantitativos da Escala MuseTera mantêm-se em patamares iniciais, refletindo o caráter recente do processo terapêutico e a importância da continuidade para evolução mensurável.',
         treatment_summary: 'O período avaliado corresponde a uma fase inicial do processo terapêutico, marcada pela construção do vínculo e pela adaptação ao setting. Os ganhos, ainda discretos, sinalizam abertura para evolução com a continuidade do tratamento.'
       }
+    },
+    {
+      id: 'results_unfavorable',
+      label: 'Resposta abaixo do esperado',
+      description: 'Paciente não respondeu bem às intervenções no período.',
+      values: {
+        goals_achieved: 'No período avaliado, as metas terapêuticas propostas não foram alcançadas conforme o esperado, observando-se respostas inconsistentes às intervenções musicoterapêuticas e dificuldade de engajamento sustentado nas atividades.',
+        goals_in_progress: 'A maioria das metas permanece sem evolução significativa, exigindo revisão do plano terapêutico, das estratégias adotadas e das adaptações sensoriais e ambientais oferecidas.',
+        quantitative_indicators: 'Os indicadores quantitativos da Escala MuseTera mantiveram-se estáveis ou apresentaram pouca variação, refletindo a baixa resposta às intervenções no período avaliado.',
+        treatment_summary: 'O período terapêutico caracterizou-se por resposta abaixo do esperado, com baixo engajamento e ganhos pouco expressivos. Recomenda-se reavaliação do plano terapêutico, investigação de fatores intervenientes (clínicos, sensoriais, contextuais) e eventual articulação interdisciplinar.'
+      }
     }
   ],
   pending_intervention: [
@@ -530,6 +541,15 @@ const STEP_TEMPLATES: Record<string, TemplateOption[]> = {
       values: {
         goals_not_achieved: 'As metas relacionadas à integração sensorial, à coordenação motora e à tolerância a diferentes estímulos sonoros e texturas instrumentais ainda estão em desenvolvimento.',
         red_flags_to_monitor: 'Monitorar respostas de defesa sensorial (auditiva, tátil), bem como sinais de hipo ou hiper-reatividade que possam interferir na participação nas atividades.'
+      }
+    },
+    {
+      id: 'pending_low_response',
+      label: 'Resposta global limitada',
+      description: 'Paciente com baixo engajamento e dificuldades amplas.',
+      values: {
+        goals_not_achieved: 'A maior parte das metas terapêuticas não foi alcançada no período, observando-se baixo engajamento global, dificuldade de adesão ao setting e respostas inconsistentes às diferentes propostas musicais. Recomenda-se revisão do plano terapêutico e das estratégias de abordagem.',
+        red_flags_to_monitor: 'Atenção a sinais de sobrecarga sensorial persistente, recusa frequente das atividades, aumento de comportamentos de esquiva ou desregulação, e possíveis fatores clínicos ou contextuais que estejam interferindo na resposta terapêutica, com indicação de articulação interdisciplinar.'
       }
     }
   ],
@@ -568,6 +588,18 @@ const STEP_TEMPLATES: Record<string, TemplateOption[]> = {
         next_objectives_long: 'Longo prazo (6-12 meses): Preparar a alta terapêutica gradual, com orientações de continuidade musical em ambiente familiar e/ou escolar.',
         proposed_interventions: 'Intervenções improvisacionais e compositivas centradas na autonomia do paciente, com orientação familiar e interdisciplinar para sustentação dos ganhos.',
         expected_outcomes: 'Espera-se que o paciente utilize a música como recurso autorregulatório e comunicativo de forma autônoma e generalizada, sustentando os ganhos após a alta.'
+      }
+    },
+    {
+      id: 'prognosis_unfavorable',
+      label: 'Prognóstico desfavorável / a reavaliar',
+      description: 'Baixa resposta no período; necessita revisão do plano.',
+      values: {
+        next_objectives_short: 'Curto prazo (1-3 meses): Reestruturar o setting e as estratégias de abordagem; priorizar o restabelecimento do vínculo terapêutico e a tolerância mínima às atividades; reduzir demandas e ampliar adaptações sensoriais.',
+        next_objectives_medium: 'Médio prazo (3-6 meses): Investigar e tratar fatores intervenientes (clínicos, sensoriais, emocionais, contextuais); reavaliar a indicação e a frequência dos atendimentos em conjunto com a equipe interdisciplinar.',
+        next_objectives_long: 'Longo prazo (6-12 meses): Redefinir objetivos terapêuticos a partir de nova avaliação, considerando o ritmo individual do paciente e a necessidade de suporte intensivo e articulado.',
+        proposed_interventions: 'Intervenções predominantemente receptivas e de baixa demanda, com estruturação altamente previsível, adaptações sensoriais constantes e revisão contínua do plano terapêutico em articulação interdisciplinar.',
+        expected_outcomes: 'Prognóstico reservado a desfavorável no momento: a evolução depende da identificação e do manejo dos fatores que limitaram a resposta terapêutica, bem como da continuidade do tratamento com plano revisado e suporte familiar e interdisciplinar consistente.'
       }
     }
   ]
