@@ -330,5 +330,90 @@ export const musicoterapiaPhrases: PhraseBank[] = [
       'fatores externos (faltas, instabilidade de rotina, intercorrências de saúde) podem ter impactado a evolução no período'
     ],
     fieldContext: ['goals_in_progress','treatment_summary','quantitative_indicators']
+  },
+  {
+    id: 'pending_goals_not_achieved',
+    name: 'Aspectos a Intervir — Metas Não Alcançadas',
+    phrases: [
+      'as metas relacionadas à comunicação verbal expressiva ainda não foram alcançadas, permanecendo como foco prioritário do próximo ciclo',
+      'os objetivos de interação social espontânea com pares permanecem em aberto, demandando contextos progressivamente menos estruturados',
+      'a generalização das habilidades adquiridas para contextos familiares e escolares ainda não se consolidou no período avaliado',
+      'as metas de autorregulação emocional em situações de frustração ou imprevisibilidade ainda requerem intervenção contínua',
+      'os objetivos relacionados ao contato visual sustentado e à atenção compartilhada não foram plenamente atingidos',
+      'a ampliação do repertório de iniciativas comunicativas funcionais permanece como meta a ser trabalhada',
+      'as metas de tolerância a estímulos sensoriais (auditivos e táteis) ainda não foram consolidadas, exigindo dessensibilização gradual'
+    ],
+    fieldContext: ['goals_not_achieved']
+  },
+  {
+    id: 'pending_red_flags',
+    name: 'Aspectos a Intervir — Sinais a Monitorar',
+    phrases: [
+      'monitorar a ocorrência de comportamentos repetitivos e estereotipias que possam interferir no engajamento nas atividades',
+      'acompanhar episódios de desregulação emocional e crises, registrando gatilhos e estratégias de manejo eficazes',
+      'observar sinais de retraimento social ou recusa à interação, ajustando o setting conforme necessário',
+      'vigiar oscilações no padrão de sono, alimentação ou rotina que possam impactar o desempenho terapêutico',
+      'monitorar respostas de hiper ou hiporreatividade sensorial diante de estímulos sonoros e ambientais',
+      'acompanhar a evolução da comunicação para identificar eventuais regressões em habilidades já adquiridas',
+      'observar a presença de comportamentos de auto ou heteroagressão, articulando conduta com a equipe multiprofissional'
+    ],
+    fieldContext: ['red_flags_to_monitor']
+  },
+  {
+    id: 'prognosis_short_term',
+    name: 'Prognóstico — Curto Prazo',
+    phrases: [
+      'a curto prazo, prevê-se ampliação do repertório de canções funcionais aplicáveis às rotinas diárias',
+      'a curto prazo, espera-se aumento do tempo de atenção sustentada e do engajamento nas atividades musicais',
+      'a curto prazo, objetiva-se fortalecimento do vínculo terapêutico e maior previsibilidade no setting',
+      'a curto prazo, projeta-se incremento das iniciativas comunicativas espontâneas dentro do contexto musical'
+    ],
+    fieldContext: ['next_objectives_short']
+  },
+  {
+    id: 'prognosis_medium_term',
+    name: 'Prognóstico — Médio Prazo',
+    phrases: [
+      'a médio prazo, planeja-se a introdução gradual em setting de dupla, com par cuidadosamente selecionado',
+      'a médio prazo, espera-se consolidação das habilidades de turnos comunicativos e atenção compartilhada',
+      'a médio prazo, objetiva-se a transferência das competências adquiridas para situações progressivamente menos estruturadas',
+      'a médio prazo, projeta-se evolução nos domínios de autorregulação emocional e flexibilidade comportamental'
+    ],
+    fieldContext: ['next_objectives_medium']
+  },
+  {
+    id: 'prognosis_long_term',
+    name: 'Prognóstico — Longo Prazo',
+    phrases: [
+      'a longo prazo, objetiva-se a generalização das habilidades musicais para contextos escolares e familiares',
+      'a longo prazo, projeta-se maior autonomia comunicativa e participação ativa em contextos sociais ampliados',
+      'a longo prazo, espera-se a consolidação de estratégias de autorregulação aplicáveis ao cotidiano',
+      'a longo prazo, prevê-se prognóstico favorável diante da continuidade e regularidade do acompanhamento'
+    ],
+    fieldContext: ['next_objectives_long']
+  },
+  {
+    id: 'proposed_interventions_phrases',
+    name: 'Intervenções Propostas',
+    phrases: [
+      'propõe-se a introdução de Neurologic Music Therapy (NMT) com técnicas de AMMT para estimulação da fala',
+      'recomenda-se a inclusão de songwriting terapêutico para favorecer a expressão verbal e o autoconhecimento',
+      'sugere-se a ampliação do uso de improvisação clínica para promover comunicação não-verbal e reciprocidade',
+      'planeja-se a incorporação de atividades rítmico-corporais para integração sensório-motora e organização temporal',
+      'indica-se a articulação interdisciplinar com fonoaudiologia e terapia ocupacional para potencializar os ganhos'
+    ],
+    fieldContext: ['proposed_interventions']
+  },
+  {
+    id: 'expected_outcomes_phrases',
+    name: 'Resultados Esperados',
+    phrases: [
+      'espera-se evolução consistente nas pontuações dos domínios da Escala MuseTera ao final do próximo ciclo de sessões',
+      'projeta-se ampliação das competências comunicativas e maior intencionalidade nas trocas sociais',
+      'antecipa-se melhora na autorregulação emocional, com redução de comportamentos desorganizados',
+      'estima-se maior generalização das habilidades adquiridas para os contextos familiar e escolar',
+      'espera-se aumento progressivo do tempo de engajamento e da participação ativa nas atividades propostas'
+    ],
+    fieldContext: ['expected_outcomes']
   }
 ];
