@@ -784,15 +784,20 @@ export function MusicoterapiaReportWizard({
 
         {/* Templates profissionais (noir/gold) */}
         {templateOptions && (
-          <div className="rounded-2xl border border-[#c9a84c]/15 bg-[#0d0d0d]/40 p-5 space-y-4">
-            <div className="flex items-start gap-3">
-              <div className="h-9 w-9 rounded-lg bg-[#c9a84c]/10 border border-[#c9a84c]/25 flex items-center justify-center shrink-0">
-                <Wand2 className="h-4 w-4 text-[#f0d78c]" />
+          <div className="relative rounded-2xl border-2 border-[#c9a84c]/40 bg-gradient-to-br from-[#c9a84c]/[0.10] via-[#0d0d0d]/60 to-[#0d0d0d]/40 p-5 sm:p-6 space-y-5 shadow-[0_0_40px_-12px_rgba(201,168,76,0.35)]">
+            <div className="absolute -top-3 left-5 px-3 py-1 rounded-full bg-[#c9a84c] text-[#0d0d0d] text-[10px] uppercase tracking-[0.18em] font-black shadow-lg">
+              ✦ Textos prontos
+            </div>
+            <div className="flex items-start gap-3 pt-1">
+              <div className="h-11 w-11 rounded-xl bg-[#c9a84c]/15 border border-[#c9a84c]/40 flex items-center justify-center shrink-0">
+                <Wand2 className="h-5 w-5 text-[#f0d78c]" />
               </div>
               <div className="space-y-1">
-                <div className="text-[10px] uppercase tracking-[0.2em] text-[#c9a84c] font-bold">Templates profissionais (opcional)</div>
-                <p className="text-sm text-gray-400 font-light leading-relaxed">
-                  Escolha o modelo mais próximo do perfil clínico — os campos serão preenchidos e você poderá editá-los livremente.
+                <h3 className="text-lg text-[#f0d78c] font-bold" style={{ fontFamily: "'Instrument Serif', serif" }}>
+                  Selecione um texto pronto
+                </h3>
+                <p className="text-sm text-gray-300 font-light leading-relaxed">
+                  Escolha o modelo mais próximo do perfil clínico do paciente — os campos serão preenchidos automaticamente e você poderá editá-los livremente.
                 </p>
               </div>
             </div>
@@ -806,8 +811,8 @@ export function MusicoterapiaReportWizard({
                     onClick={() => applyTemplateOption(opt)}
                     className={`group text-left p-4 rounded-xl border transition-all ${
                       isActive
-                        ? 'border-[#c9a84c] bg-[#c9a84c]/10 shadow-[0_0_30px_-10px_rgba(201,168,76,0.5)]'
-                        : 'border-white/10 bg-[#1a1a1a]/60 hover:border-[#c9a84c]/50 hover:bg-[#c9a84c]/[0.04]'
+                        ? 'border-[#c9a84c] bg-[#c9a84c]/15 shadow-[0_0_30px_-10px_rgba(201,168,76,0.6)]'
+                        : 'border-[#c9a84c]/25 bg-[#1a1a1a]/70 hover:border-[#c9a84c]/60 hover:bg-[#c9a84c]/[0.08] hover:-translate-y-0.5'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2 mb-1.5">
