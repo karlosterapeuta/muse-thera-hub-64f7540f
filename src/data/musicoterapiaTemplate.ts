@@ -21,6 +21,8 @@ export interface ReportData {
   selectedPatientId?: string;
   patientName: string;
   patientAge: string;
+  patientBirthDate?: string;
+  patientGuardian?: string;
   patientDiagnosis: string;
   professionalName: string;
   professionalRegistry: string;

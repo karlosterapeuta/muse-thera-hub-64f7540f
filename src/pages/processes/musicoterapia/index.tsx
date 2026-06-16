@@ -86,6 +86,8 @@ export default function MusicoterapiaPage() {
           selectedPatientId: patientIdFromQuery,
           patientName: selectedPatient.name,
           patientAge: age,
+          patientBirthDate: (selectedPatient as any).birth_date || '',
+          patientGuardian: (selectedPatient as any).responsible || '',
           patientDiagnosis: 'TEA - Transtorno do Espectro Autista'
         });
       }
@@ -137,21 +139,49 @@ export default function MusicoterapiaPage() {
           <p style="color: #666; margin: 5px 0 0 0; font-size: 13px;">Musicoterapia para Transtorno do Espectro Autista</p>
         </div>
 
-        <!-- Patient and Professional Info -->
-        <div class="section-block" style="display: flex; gap: 20px; margin-bottom: 25px; padding: 16px; background: #f0fdfa; border-radius: 8px; page-break-inside: avoid;">
-          <div style="flex: 1;">
-            <h3 style="color: #0d9488; margin: 0 0 10px 0; font-size: 14px;">Dados do Paciente</h3>
-            <p style="margin: 5px 0;"><strong>Nome:</strong> ${reportDataForPDF.patientName || 'Nao informado'}</p>
-            <p style="margin: 5px 0;"><strong>Idade:</strong> ${reportDataForPDF.patientAge || 'Nao informado'}</p>
-            <p style="margin: 5px 0;"><strong>Diagnostico:</strong> ${reportDataForPDF.patientDiagnosis || 'Nao informado'}</p>
+        ${(() => {
+          const formatDateBR = (d: any) => {
+            if (!d) return '';
+            const s = String(d);
+            const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+            if (m) return `${m[3]}/${m[2]}/${m[1]}`;
+            return s;
+          };
+          const row = (label: string, value: any) =>
+            value && String(value).trim()
+              ? `<p style="margin: 4px 0;"><strong>${label}:</strong> ${String(value)}</p>`
+              : '';
+          const patientRows = [
+            row('Nome completo', reportDataForPDF.patientName),
+            row('Data de nascimento', formatDateBR(reportDataForPDF.patientBirthDate)),
+            row('Idade', reportDataForPDF.patientAge),
+            row('Diagnóstico clínico', reportDataForPDF.patientDiagnosis),
+            row('CID', fields.cid_code),
+            row('Responsável', reportDataForPDF.patientGuardian),
+            row('Início dos atendimentos', formatDateBR(fields.treatment_start_date)),
+            row('Período avaliado', fields.evaluation_period),
+            row('Frequência dos atendimentos', fields.session_frequency),
+          ].filter(Boolean).join('');
+          const proRows = [
+            row('Musicoterapeuta', reportDataForPDF.professionalName || professionalData?.name),
+            row('Registro profissional', reportDataForPDF.professionalRegistry || professionalData?.register),
+            row('Especialidade', reportDataForPDF.professionalSpecialty || professionalData?.specialty),
+            row('Data do relatório', reportDataForPDF.sessionDate || currentDate),
+          ].filter(Boolean).join('');
+          return `
+        <div class="section-block" style="margin-bottom: 25px; padding: 16px; background: #f0fdfa; border-radius: 8px; page-break-inside: avoid;">
+          <h2 style="color: #0d9488; margin: 0 0 12px 0; font-size: 15px; border-bottom: 2px solid #14b8a6; padding-bottom: 6px;">1. Identificação do Paciente</h2>
+          <div style="display: flex; gap: 20px;">
+            <div style="flex: 1; font-size: 12px;">
+              ${patientRows || '<p style="margin: 4px 0;">Não informado</p>'}
+            </div>
+            <div style="flex: 1; font-size: 12px; border-left: 1px solid #99f6e4; padding-left: 16px;">
+              <h3 style="color: #0d9488; margin: 0 0 8px 0; font-size: 13px;">Profissional Responsável</h3>
+              ${proRows || '<p style="margin: 4px 0;">Não informado</p>'}
+            </div>
           </div>
-          <div style="flex: 1;">
-            <h3 style="color: #0d9488; margin: 0 0 10px 0; font-size: 14px;">Dados do Profissional</h3>
-            <p style="margin: 5px 0;"><strong>Nome:</strong> ${reportDataForPDF.professionalName || professionalData?.name || 'Nao informado'}</p>
-            <p style="margin: 5px 0;"><strong>Registro:</strong> ${reportDataForPDF.professionalRegistry || professionalData?.register || 'Nao informado'}</p>
-            <p style="margin: 5px 0;"><strong>Data:</strong> ${reportDataForPDF.sessionDate || currentDate}</p>
-          </div>
-        </div>
+        </div>`;
+        })()}
 
         <!-- AI Clinical Narrative -->
         ${narrativeBlock}
