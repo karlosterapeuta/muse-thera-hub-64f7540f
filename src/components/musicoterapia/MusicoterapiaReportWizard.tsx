@@ -121,7 +121,7 @@ interface TemplateOption {
   id: string;
   label: string;
   description: string;
-  values: Record<string, string>;
+  values: Record<string, string | string[]>;
 }
 
 const STEP_TEMPLATES: Record<string, TemplateOption[]> = {
@@ -133,9 +133,9 @@ const STEP_TEMPLATES: Record<string, TemplateOption[]> = {
       values: {
         theoretical_framework: 'A intervenção fundamenta-se no Modelo Benenzon de Musicoterapia, com ênfase no Princípio do ISO (Identidade Sonora) — gestacional, universal, cultural, complementar e grupal —, articulado às diretrizes de intervenção em TEA conforme DSM-5-TR e CID-11.',
         assessment_tools_used: 'Instrumentos: observação clínica sistematizada, mapeamento do ISO do paciente, registro de respostas sonoro-musicais e Escala MuseTera de avaliação musicoterapêutica.',
-        session_setting: 'As sessões ocorreram em setting individual, em ambiente acústico controlado, com instrumental diversificado (percussão, melódicos e objetos intermediários sonoros), priorizando previsibilidade e segurança sensorial.',
+        session_setting: 'Individual',
         session_structure: 'Sessões com estrutura previsível: ritual de abertura sonoro-musical, desenvolvimento (exploração e improvisação) e ritual de encerramento, com duração média de 40 a 50 minutos.',
-        session_activities: 'Atividades de exploração instrumental livre, diálogos sonoros, improvisações vinculares e uso de objetos intermediários, respeitando o ISO do paciente.',
+        session_activities: ['Atividades de exploração instrumental livre, diálogos sonoros, improvisações vinculares e uso de objetos intermediários, respeitando o ISO do paciente.'],
         improvisation_use: 'A improvisação clínica foi utilizada como principal recurso de vínculo e comunicação não-verbal, partindo do ISO do paciente para construção de diálogos sonoros.',
         receptive_techniques: 'Técnicas receptivas: audição de canções e trechos musicais pertencentes ao ISO do paciente, favorecendo regulação e disponibilidade interna.',
         recreative_techniques: 'Técnicas recriativas: recriação de canções familiares e padrões rítmicos, favorecendo participação ativa e troca de turnos.',
@@ -151,9 +151,9 @@ const STEP_TEMPLATES: Record<string, TemplateOption[]> = {
       values: {
         theoretical_framework: 'A intervenção fundamenta-se na Musicoterapia Criativa de Nordoff-Robbins, que enfatiza a improvisação clínica e o desenvolvimento do "Music Child", articulada às diretrizes de intervenção em TEA conforme DSM-5-TR e CID-11.',
         assessment_tools_used: 'Instrumentos: escalas Nordoff-Robbins (Child-Therapist Relationship e Musical Communicativeness), observação clínica e registro audiovisual de sessões.',
-        session_setting: 'Setting individual com piano/teclado e instrumental de percussão acessível, organizado para favorecer a iniciativa musical do paciente.',
+        session_setting: 'Individual',
         session_structure: 'Sessões estruturadas em torno da improvisação clínica responsiva, com abertura, desenvolvimento musical co-criativo e encerramento.',
-        session_activities: 'Improvisações instrumentais e vocais responsivas, canções terapêuticas compostas para o paciente e atividades de turno musical.',
+        session_activities: ['Improvisações instrumentais e vocais responsivas, canções terapêuticas compostas para o paciente e atividades de turno musical.'],
         improvisation_use: 'A improvisação clínica foi o eixo central das sessões, com o terapeuta acompanhando e ampliando musicalmente as iniciativas do paciente.',
         receptive_techniques: 'Momentos receptivos pontuais para regulação e escuta de motivos musicais significativos.',
         recreative_techniques: 'Recriação de canções terapêuticas e padrões musicais, estimulando engajamento e antecipação.',
@@ -169,9 +169,9 @@ const STEP_TEMPLATES: Record<string, TemplateOption[]> = {
       values: {
         theoretical_framework: 'A intervenção fundamenta-se no modelo de Musicoterapia Neurológica (NMT) de Michael Thaut, baseado na neurociência da música e na plasticidade cerebral, utilizando técnicas padronizadas para reabilitação sensório-motora, cognitiva e de linguagem em TEA, em consonância com DSM-5-TR e CID-11.',
         assessment_tools_used: 'Instrumentos: protocolos NMT padronizados, avaliação de sincronização rítmica, testes de atenção e função executiva e registro neurocomportamental sistematizado.',
-        session_setting: 'Setting estruturado com instrumental rítmico e melódico, metrônomo e recursos para estimulação sensório-motora controlada.',
+        session_setting: 'Individual',
         session_structure: 'Sessões organizadas por objetivos neurofuncionais, com aquecimento, aplicação de técnicas NMT específicas e fechamento, com registro de respostas.',
-        session_activities: 'Atividades de sincronização rítmica, marcha sonora, exercícios motores instrumentais e tarefas de atenção e memória musical.',
+        session_activities: ['Atividades de sincronização rítmica, marcha sonora, exercícios motores instrumentais e tarefas de atenção e memória musical.'],
         improvisation_use: 'A improvisação foi utilizada de forma estruturada, como recurso complementar às técnicas padronizadas.',
         receptive_techniques: 'Estimulação auditiva rítmica (RAS) e padrões sonoros para regulação e organização sensório-motora.',
         recreative_techniques: 'Execução musical instrumental terapêutica (TIMP) para treino motor e coordenação.',
@@ -187,9 +187,9 @@ const STEP_TEMPLATES: Record<string, TemplateOption[]> = {
       values: {
         theoretical_framework: 'A prática fundamenta-se em abordagem integrativa: Modelo Benenzon (Princípio do ISO), modelo de Bruscia (níveis e métodos — receptivo, recriativo, improvisacional e compositivo) e Musicoterapia Criativa de Nordoff-Robbins, associados às diretrizes de intervenção em TEA conforme DSM-5-TR e CID-11.',
         assessment_tools_used: 'Instrumentos: Escala MuseTera, IMTAP, mapeamento do ISO, observação clínica sistematizada e registro qualitativo por método.',
-        session_setting: 'Setting individual em ambiente acústico controlado, com instrumental diversificado e adaptações sensoriais individualizadas.',
+        session_setting: 'Individual',
         session_structure: 'Sessões com estrutura previsível e flexível, contemplando abertura, desenvolvimento (com diferentes métodos) e encerramento.',
-        session_activities: 'Atividades receptivas, recriativas, improvisacionais e compositivas, ajustadas ao perfil e ao momento clínico do paciente.',
+        session_activities: ['Atividades receptivas, recriativas, improvisacionais e compositivas, ajustadas ao perfil e ao momento clínico do paciente.'],
         improvisation_use: 'A improvisação foi utilizada como recurso central de vínculo e comunicação, integrada às demais técnicas.',
         receptive_techniques: 'Audição musical seletiva, relaxamento sonoro e escuta de repertório significativo para regulação.',
         recreative_techniques: 'Recriação de canções e padrões rítmicos, favorecendo participação, antecipação e troca de turnos.',
