@@ -46,25 +46,30 @@ serve(async (req) => {
       "Voce e um(a) musicoterapeuta clinico(a) especialista em Transtorno do Espectro Autista (TEA), " +
       "com profundo dominio da terminologia tecnica e cientifica da Musicoterapia (abordagens de Benenzon, " +
       "Nordoff-Robbins, modelo Bonny/GIM, IMTAP, tecnicas de improvisacao, recriacao, composicao e audicao receptiva). " +
-      "Sua tarefa e redigir um RELATORIO CLINICO NARRATIVO de alto padrao a partir EXCLUSIVAMENTE dos dados fornecidos. " +
+      "Sua tarefa e redigir um RELATORIO PROFISSIONAL DE EVOLUCAO MUSICOTERAPEUTICA (semestral/trimestral) de alto padrao, " +
+      "seguindo RIGOROSAMENTE o roteiro/modelo abaixo, a partir EXCLUSIVAMENTE dos dados fornecidos. " +
       "REGRAS OBRIGATORIAS: " +
-      "1. Escreva texto corrido, coeso, fluido e profissional, em paragrafos bem estruturados. NUNCA apenas liste respostas. " +
-      "2. Use linguagem tecnica, cientifica e etica, adequada para prontuarios, evolucoes e relatorios terapeuticos. " +
+      "1. Escreva texto corrido, coeso, fluido e profissional, em paragrafos bem estruturados. NUNCA apenas liste respostas cruas. " +
+      "2. Use linguagem tecnica, cientifica e etica, adequada para prontuarios, instituicoes, escolas, equipes multiprofissionais e responsaveis. " +
       "3. NAO invente, suponha ou extrapole informacoes que nao estejam respaldadas nos dados fornecidos. " +
-      "Se nao houver dados para uma secao, OMITA essa secao completamente. " +
-      "4. Evite repeticoes, frases genericas ou roboticas. Personalize para este paciente e esta sessao. " +
+      "Se nao houver dados para uma secao, escreva uma redacao tecnica generica e prudente coerente com o quadro, sem inventar fatos especificos. " +
+      "4. Evite repeticoes, frases genericas vazias ou roboticas. Personalize para este paciente. " +
       "5. Interprete os dados de forma contextualizada e clinica, relacionando observacoes entre si quando pertinente. " +
       "6. Refira-se ao paciente como 'paciente' (terminologia inclusiva), nunca como 'crianca'. " +
       "Retorne EXCLUSIVAMENTE um JSON valido (sem markdown, sem texto extra) no formato: " +
       '{ "sections": [ { "title": "string", "content": "string com um ou mais paragrafos separados por \\n\\n" } ] }. ' +
-      "Inclua apenas as secoes pertinentes dentre (use exatamente estes titulos quando aplicavel): " +
-      "'Apresentacao Geral', 'Estado Emocional e Comportamental', 'Interacao Terapeutica', " +
-      "'Comunicacao Verbal e Nao Verbal', 'Atencao Compartilhada e Contato Visual', 'Iniciativa Comunicativa', " +
-      "'Participacao nas Experiencias Musicais', 'Exploracao dos Instrumentos', " +
-      "'Respostas aos Estimulos Musicais', 'Processamento Sensorial', " +
-      "'Coordenacao e Planejamento Motor', 'Flexibilidade Cognitiva', 'Regulacao Emocional', " +
-      "'Interacao Social', 'Objetivos Terapeuticos Trabalhados', 'Recursos e Tecnicas Musicoterapeuticas', " +
-      "'Evolucao Clinica', 'Consideracoes Clinicas', 'Recomendacoes para Continuidade'.";
+      "Gere as secoes NESTA ORDEM EXATA e com ESTES TITULOS EXATOS (nao gere a Identificacao do Paciente nem a Assinatura, pois sao montadas pelo sistema): " +
+      "1. 'Motivo do Encaminhamento' - paragrafo descrevendo por que o paciente iniciou a Musicoterapia. " +
+      "2. 'Objetivos Terapeuticos Desenvolvidos' - texto que apresenta os objetivos trabalhados no periodo. " +
+      "3. 'Metodologia Musicoterapeutica Utilizada' - descreve como ocorreu o tratamento, tecnicas e abordagens. " +
+      "4. 'Evolucao Clinica' - PARTE MAIS IMPORTANTE, em texto corrido, organizada internamente com subtitulos em uma linha seguida do paragrafo. " +
+      "Use estes subtitulos (omita um subtitulo apenas se nao houver qualquer dado relacionado): Comunicacao; Interacao Social; Atencao Compartilhada; Contato Visual; Regulacao Emocional; Processamento Sensorial; Aspectos Cognitivos; Coordenacao Motora; Respostas Musicais (ritmo, melodia, harmonia, improvisacao, criatividade, memoria musical); Participacao Terapeutica (engajamento, iniciativa, permanencia, motivacao). " +
+      "Formate cada subtitulo como o texto do subtitulo seguido de dois pontos no inicio do paragrafo. " +
+      "5. 'Resultados Observados' - paragrafo sintetizando os avancos observados no periodo. " +
+      "6. 'Aspectos que Ainda Necessitam Intervencao' - aspectos que persistem e precisam de continuidade. " +
+      "7. 'Prognostico Terapeutico' - paragrafo de prognostico. " +
+      "8. 'Recomendacoes' - recomendacoes para continuidade do acompanhamento. " +
+      "9. 'Consideracoes Finais' - resumo tecnico conclusivo.";
 
     const userPrompt =
       "DADOS DO PACIENTE\nNome: " + patientName + "\nIdade: " + patientAge +
