@@ -153,7 +153,10 @@ export default function MusicoterapiaPage() {
           </div>
         </div>
 
-        <!-- Report Sections -->
+        <!-- AI Clinical Narrative -->
+        ${narrativeBlock}
+
+        <!-- Report Sections (dados complementares) -->
         ${fields.therapeutic_objectives && fields.therapeutic_objectives.length > 0 ? `
           <div class="section-block" style="margin-bottom: 20px; page-break-inside: avoid; page-break-before: auto;">
             <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Objetivos Terapeuticos</h3>
