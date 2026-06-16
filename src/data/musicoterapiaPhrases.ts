@@ -290,5 +290,45 @@ export const musicoterapiaPhrases: PhraseBank[] = [
       'fundamentação adicional na Revisão Cochrane de Geretsegger et al. (2014) sobre musicoterapia para TEA'
     ],
     fieldContext: ['theoretical_framework','assessment_tools_used','references_cited']
+  },
+  {
+    id: 'results_positive_phrases',
+    name: 'Resultados — Evolução Positiva',
+    phrases: [
+      'o paciente apresentou evolução significativa no período avaliado, com ganhos consistentes nos domínios trabalhados',
+      'observou-se progresso expressivo na interação social, comunicação e participação nas experiências musicais',
+      'as metas terapêuticas estabelecidas foram majoritariamente alcançadas, com generalização para outros contextos',
+      'houve melhora importante na autorregulação emocional, com redução de comportamentos desorganizados durante as sessões',
+      'o paciente ampliou o repertório de iniciativas comunicativas espontâneas, demonstrando maior intencionalidade',
+      'as intervenções musicoterapêuticas mostraram-se altamente efetivas para os objetivos propostos no período',
+      'verificou-se aumento consistente no tempo de atenção sustentada e no engajamento nas atividades propostas'
+    ],
+    fieldContext: ['goals_achieved','treatment_summary','quantitative_indicators']
+  },
+  {
+    id: 'results_partial_phrases',
+    name: 'Resultados — Evolução Parcial',
+    phrases: [
+      'o paciente apresentou evolução parcial no período, com avanços em alguns domínios e metas ainda em consolidação',
+      'observaram-se progressos pontuais na comunicação e interação, que necessitam de continuidade para consolidação',
+      'parte das metas terapêuticas foi alcançada, enquanto outras permanecem em andamento e requerem novo ciclo de intervenções',
+      'a evolução foi gradual e oscilante, com avanços dependentes de contextos estruturados e previsíveis',
+      'os ganhos observados ainda se restringem ao setting terapêutico, sendo necessária maior generalização',
+      'as intervenções mostraram-se parcialmente efetivas, indicando-se ajustes no plano para potencializar os resultados'
+    ],
+    fieldContext: ['goals_in_progress','goals_achieved','treatment_summary','quantitative_indicators']
+  },
+  {
+    id: 'results_limited_phrases',
+    name: 'Resultados — Evolução Limitada',
+    phrases: [
+      'no período avaliado, o paciente apresentou evolução discreta, com metas terapêuticas ainda não alcançadas',
+      'os progressos foram limitados, observando-se necessidade de reformulação dos objetivos e estratégias terapêuticas',
+      'as respostas às intervenções foram inconsistentes, indicando-se reavaliação do plano terapêutico',
+      'mantêm-se desafios significativos nos domínios de comunicação, interação social e autorregulação',
+      'recomenda-se intensificação da frequência dos atendimentos e maior articulação com a equipe multiprofissional',
+      'fatores externos (faltas, instabilidade de rotina, intercorrências de saúde) podem ter impactado a evolução no período'
+    ],
+    fieldContext: ['goals_in_progress','treatment_summary','quantitative_indicators']
   }
 ];
