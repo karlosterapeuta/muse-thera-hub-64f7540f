@@ -43,6 +43,7 @@ export default function MusicoterapiaPage() {
     reportData,
     updateReportData,
     generateWithAI,
+    generateNarrative,
     isGeneratingWithAI,
     validateReport,
     template,
