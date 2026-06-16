@@ -7,22 +7,22 @@ import { Card, CardContent } from '@/components/ui/card';
 export function PhotosSection() {
   const photos = [
     {
-      src: '/assets-uploads/3d7825ca-4115-46a1-a33f-069a18aaf1a2.png',
+      src: '/lovable-uploads/3d7825ca-4115-46a1-a33f-069a18aaf1a2.png',
       alt: 'Sessão de musicoterapia com instrumentos de percussão leves em ambiente clínico',
       caption: 'Sessão individual com foco em coordenação rítmica e autorregulação.'
     },
     {
-      src: '/assets-uploads/6302f00d-e2bf-4d19-95f3-eb52823c19d8.png',
+      src: '/lovable-uploads/6302f00d-e2bf-4d19-95f3-eb52823c19d8.png',
       alt: 'Paciente utilizando xilofone colorido durante avaliação musicoterapêutica',
       caption: 'Uso de instrumentos melódicos para avaliação de percepção e expressão musical.'
     },
     {
-      src: '/assets-uploads/80847e14-0ceb-4478-9e62-d9757cbd7b10.png',
+      src: '/lovable-uploads/80847e14-0ceb-4478-9e62-d9757cbd7b10.png',
       alt: 'Atividade de comunicação não-verbal com sinais musicais em musicoterapia',
       caption: 'Interação comunicativa e turnos conversacionais mediados pela música.'
     },
     {
-      src: '/assets-uploads/65fe902f-d08a-48e5-8c93-7c4a7cc6e6a6.png',
+      src: '/lovable-uploads/65fe902f-d08a-48e5-8c93-7c4a7cc6e6a6.png',
       alt: 'Técnicas de integração sensório-motora com instrumentos vibratórios',
       caption: 'Integração sensório-motora e propriocepção com suporte musical.'
     }

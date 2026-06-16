@@ -403,7 +403,7 @@ export function MuseTeraPlayer({
       <div className="absolute top-4 right-4 z-30 opacity-70 pointer-events-none">
         <div className="flex items-center gap-2 bg-black/50 backdrop-blur-sm rounded-full px-3 py-1.5">
           <img 
-            src="/assets-uploads/musetera-logo-new.png" 
+            src="/lovable-uploads/musetera-logo-new.png" 
             alt="MuseTera" 
             className="w-6 h-6 rounded-full"
             draggable={false}

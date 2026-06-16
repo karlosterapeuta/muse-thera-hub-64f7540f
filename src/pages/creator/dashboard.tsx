@@ -245,7 +245,7 @@ export default function CreatorDashboardPage() {
             <div className="w-12 h-12 relative group">
               <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-secondary rounded-full blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
               <img 
-                src="/assets-uploads/musetera-logo-new.png" 
+                src="/lovable-uploads/musetera-logo-new.png" 
                 alt="MuseTera Logo" 
                 className="relative w-full h-full object-cover rounded-full shadow-lg"
               />

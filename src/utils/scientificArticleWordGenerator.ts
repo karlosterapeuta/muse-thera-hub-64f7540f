@@ -20,12 +20,12 @@ export const generateScientificArticleWord = async (): Promise<boolean> => {
 
     // Prepare MuseTera Scale figures (max 6)
     const figurePaths = [
-      '/assets-uploads/460b68cd-687b-4148-a562-03baaa061f0e.png', // Visão Geral
-      '/assets-uploads/00843ad9-07f6-49b9-a0fa-0ebd2d697fc9.png', // Sistema de Pontuação
-      '/assets-uploads/978b95d8-86ef-426b-bb26-4ab75eb24587.png', // Domínio Musical
-      '/assets-uploads/8abd4927-9dea-44ba-a4f1-f63e79c8d171.png', // Domínio Psicossocial
-      '/assets-uploads/bd8289ea-d474-46f4-87d3-48ad1567394f.png', // Domínio Cognitivo
-      '/assets-uploads/6f316512-b637-496d-b3fe-472381b4c647.png', // Domínio Sensório‑Motor
+      '/lovable-uploads/460b68cd-687b-4148-a562-03baaa061f0e.png', // Visão Geral
+      '/lovable-uploads/00843ad9-07f6-49b9-a0fa-0ebd2d697fc9.png', // Sistema de Pontuação
+      '/lovable-uploads/978b95d8-86ef-426b-bb26-4ab75eb24587.png', // Domínio Musical
+      '/lovable-uploads/8abd4927-9dea-44ba-a4f1-f63e79c8d171.png', // Domínio Psicossocial
+      '/lovable-uploads/bd8289ea-d474-46f4-87d3-48ad1567394f.png', // Domínio Cognitivo
+      '/lovable-uploads/6f316512-b637-496d-b3fe-472381b4c647.png', // Domínio Sensório‑Motor
     ];
 
     const figureCaptions = [

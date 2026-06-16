@@ -225,7 +225,7 @@ export const PrintableMuseTeraScalePDF: React.FC<PrintableMuseTeraScalePDFProps>
         }} />
         
         <img
-          src="/assets-uploads/e2913969-bc69-4ab0-b094-391957877d51.png"
+          src="/lovable-uploads/e2913969-bc69-4ab0-b094-391957877d51.png"
           alt="Logo MuseTera"
           style={{ 
             width: '60px', 
