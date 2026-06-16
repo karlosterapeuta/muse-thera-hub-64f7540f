@@ -468,6 +468,108 @@ const STEP_TEMPLATES: Record<string, TemplateOption[]> = {
         references_cited: 'Stige, B. (2002). Culture-Centered Music Therapy. Barcelona Publishers. Stige, B.; Aaro, L. E. (2012). Invitation to Community Music Therapy. Routledge. Pavlicevic, M.; Ansdell, G. (2004). Community Music Therapy. Jessica Kingsley. APA (2022). DSM-5-TR.'
       }
     }
+  ],
+  observed_results: [
+    {
+      id: 'results_positive',
+      label: 'Evolução positiva',
+      description: 'Paciente alcançou a maioria das metas com ganhos consistentes.',
+      values: {
+        goals_achieved: 'A maioria das metas terapêuticas propostas foi alcançada com sucesso, com destaque para a ampliação da comunicação (verbal e/ou não-verbal), maior tempo de atenção compartilhada e melhora na autorregulação emocional durante as atividades musicais.',
+        goals_in_progress: 'Algumas metas encontram-se em fase de consolidação, evoluindo de forma consistente sessão a sessão, com tendência clara de generalização para contextos familiar e escolar.',
+        quantitative_indicators: 'Os indicadores quantitativos da Escala MuseTera demonstraram evolução ascendente em todos os domínios avaliados, com ganhos mais expressivos nas dimensões comunicativa e socioemocional.',
+        treatment_summary: 'O período terapêutico caracterizou-se por evolução clínica favorável e consistente. O paciente respondeu positivamente às intervenções musicoterapêuticas, demonstrando engajamento progressivo, ampliação de repertório de habilidades e ganhos generalizáveis ao cotidiano.'
+      }
+    },
+    {
+      id: 'results_partial',
+      label: 'Evolução parcial',
+      description: 'Ganhos importantes, com metas ainda em desenvolvimento.',
+      values: {
+        goals_achieved: 'Parte das metas terapêuticas foi alcançada, com ganhos pontuais em comunicação não-verbal, tolerância ao setting e participação em atividades musicais estruturadas.',
+        goals_in_progress: 'Diversas metas permanecem em desenvolvimento, exigindo continuidade do processo terapêutico para consolidação. Observa-se evolução gradual, ainda dependente de mediação e apoio estruturado.',
+        quantitative_indicators: 'Os indicadores quantitativos da Escala MuseTera apontam evolução moderada, com avanços em domínios específicos e estabilidade em outros, indicando necessidade de manutenção do plano terapêutico.',
+        treatment_summary: 'O período terapêutico apresentou evolução parcial, com avanços relevantes em áreas específicas e metas ainda em processo de consolidação. Recomenda-se continuidade do tratamento para potencializar os ganhos observados.'
+      }
+    },
+    {
+      id: 'results_limited',
+      label: 'Evolução limitada / inicial',
+      description: 'Fase inicial ou ganhos discretos, vínculo em construção.',
+      values: {
+        goals_achieved: 'Nesta fase inicial, observam-se ganhos discretos, especialmente relacionados ao estabelecimento do vínculo terapêutico e à tolerância progressiva ao ambiente sonoro-musical.',
+        goals_in_progress: 'A maior parte das metas permanece em estágio inicial de desenvolvimento, demandando tempo, constância e adaptações sensoriais para que se efetivem ganhos mais consistentes.',
+        quantitative_indicators: 'Os indicadores quantitativos da Escala MuseTera mantêm-se em patamares iniciais, refletindo o caráter recente do processo terapêutico e a importância da continuidade para evolução mensurável.',
+        treatment_summary: 'O período avaliado corresponde a uma fase inicial do processo terapêutico, marcada pela construção do vínculo e pela adaptação ao setting. Os ganhos, ainda discretos, sinalizam abertura para evolução com a continuidade do tratamento.'
+      }
+    }
+  ],
+  pending_intervention: [
+    {
+      id: 'pending_communication',
+      label: 'Foco em comunicação',
+      description: 'Aspectos comunicativos ainda a desenvolver.',
+      values: {
+        goals_not_achieved: 'As metas relacionadas à comunicação verbal expressiva e ao uso funcional da linguagem em contextos sociais ainda não foram plenamente alcançadas, permanecendo como prioridade para a próxima etapa terapêutica.',
+        red_flags_to_monitor: 'Recomenda-se monitorar a frequência de comportamentos repetitivos e estereotipias, bem como possíveis sinais de sobrecarga sensorial durante as atividades musicais.'
+      }
+    },
+    {
+      id: 'pending_social_regulation',
+      label: 'Foco em interação e regulação',
+      description: 'Interação social e autorregulação a fortalecer.',
+      values: {
+        goals_not_achieved: 'As metas voltadas à interação social recíproca, à atenção compartilhada sustentada e à autorregulação emocional em situações de frustração ainda requerem maior consolidação.',
+        red_flags_to_monitor: 'Atenção a episódios de desregulação emocional, dificuldade em transições e variações na qualidade do contato visual, que devem ser acompanhados ao longo do processo.'
+      }
+    },
+    {
+      id: 'pending_sensory',
+      label: 'Foco sensório-motor',
+      description: 'Integração sensorial e aspectos motores a evoluir.',
+      values: {
+        goals_not_achieved: 'As metas relacionadas à integração sensorial, à coordenação motora e à tolerância a diferentes estímulos sonoros e texturas instrumentais ainda estão em desenvolvimento.',
+        red_flags_to_monitor: 'Monitorar respostas de defesa sensorial (auditiva, tátil), bem como sinais de hipo ou hiper-reatividade que possam interferir na participação nas atividades.'
+      }
+    }
+  ],
+  prognosis: [
+    {
+      id: 'prognosis_favorable',
+      label: 'Prognóstico favorável',
+      description: 'Boa resposta terapêutica e perspectiva de evolução consistente.',
+      values: {
+        next_objectives_short: 'Curto prazo (1-3 meses): Ampliar repertório de canções funcionais; consolidar troca de turnos musicais; aumentar o tempo de atenção compartilhada.',
+        next_objectives_medium: 'Médio prazo (3-6 meses): Desenvolver autorregulação por meio de improvisações estruturadas; estimular comunicação intencional via instrumentos.',
+        next_objectives_long: 'Longo prazo (6-12 meses): Promover a generalização das habilidades musicais para os contextos familiar e escolar.',
+        proposed_interventions: 'Manutenção das intervenções receptivas, recriativas e improvisacionais, com foco em ISO de Benenzon e adaptações sensoriais individualizadas.',
+        expected_outcomes: 'Espera-se evolução consistente nas dimensões comunicativa, socioemocional e sensório-motora, com generalização para contextos do cotidiano. Prognóstico favorável.'
+      }
+    },
+    {
+      id: 'prognosis_reserved',
+      label: 'Prognóstico reservado',
+      description: 'Evolução possível, dependente de continuidade e suporte.',
+      values: {
+        next_objectives_short: 'Curto prazo (1-3 meses): Fortalecer o vínculo terapêutico; ampliar a tolerância ao setting; consolidar rotinas sonoras previsíveis.',
+        next_objectives_medium: 'Médio prazo (3-6 meses): Desenvolver gradualmente a atenção compartilhada e a comunicação intencional, respeitando o ritmo do paciente.',
+        next_objectives_long: 'Longo prazo (6-12 meses): Buscar a consolidação de ganhos básicos, com reavaliação contínua dos objetivos conforme a evolução clínica.',
+        proposed_interventions: 'Intervenções predominantemente receptivas e exploratórias, com estruturação altamente previsível e adaptações sensoriais constantes.',
+        expected_outcomes: 'Prognóstico reservado: a evolução é possível, porém gradual, e fortemente dependente da continuidade do tratamento e do suporte familiar e interdisciplinar.'
+      }
+    },
+    {
+      id: 'prognosis_discharge',
+      label: 'Preparação para alta',
+      description: 'Ganhos consolidados, com vistas à alta terapêutica gradual.',
+      values: {
+        next_objectives_short: 'Curto prazo (1-3 meses): Estimular a autonomia na escolha de atividades musicais; consolidar a autorregulação por meio da música.',
+        next_objectives_medium: 'Médio prazo (3-6 meses): Promover a participação em atividades musicais grupais; transferir estratégias para o cotidiano.',
+        next_objectives_long: 'Longo prazo (6-12 meses): Preparar a alta terapêutica gradual, com orientações de continuidade musical em ambiente familiar e/ou escolar.',
+        proposed_interventions: 'Intervenções improvisacionais e compositivas centradas na autonomia do paciente, com orientação familiar e interdisciplinar para sustentação dos ganhos.',
+        expected_outcomes: 'Espera-se que o paciente utilize a música como recurso autorregulatório e comunicativo de forma autônoma e generalizada, sustentando os ganhos após a alta.'
+      }
+    }
   ]
 };
 
