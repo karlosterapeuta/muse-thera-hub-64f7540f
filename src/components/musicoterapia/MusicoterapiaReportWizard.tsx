@@ -125,6 +125,80 @@ interface TemplateOption {
 }
 
 const STEP_TEMPLATES: Record<string, TemplateOption[]> = {
+  methodology: [
+    {
+      id: 'methodology_benenzon',
+      label: 'Modelo Benenzon (ISO)',
+      description: 'Abordagem centrada no Princípio do ISO, com técnicas receptivas e improvisacionais.',
+      values: {
+        theoretical_framework: 'A intervenção fundamenta-se no Modelo Benenzon de Musicoterapia, com ênfase no Princípio do ISO (Identidade Sonora) — gestacional, universal, cultural, complementar e grupal —, articulado às diretrizes de intervenção em TEA conforme DSM-5-TR e CID-11.',
+        assessment_tools_used: 'Instrumentos: observação clínica sistematizada, mapeamento do ISO do paciente, registro de respostas sonoro-musicais e Escala MuseTera de avaliação musicoterapêutica.',
+        session_setting: 'As sessões ocorreram em setting individual, em ambiente acústico controlado, com instrumental diversificado (percussão, melódicos e objetos intermediários sonoros), priorizando previsibilidade e segurança sensorial.',
+        session_structure: 'Sessões com estrutura previsível: ritual de abertura sonoro-musical, desenvolvimento (exploração e improvisação) e ritual de encerramento, com duração média de 40 a 50 minutos.',
+        session_activities: 'Atividades de exploração instrumental livre, diálogos sonoros, improvisações vinculares e uso de objetos intermediários, respeitando o ISO do paciente.',
+        improvisation_use: 'A improvisação clínica foi utilizada como principal recurso de vínculo e comunicação não-verbal, partindo do ISO do paciente para construção de diálogos sonoros.',
+        receptive_techniques: 'Técnicas receptivas: audição de canções e trechos musicais pertencentes ao ISO do paciente, favorecendo regulação e disponibilidade interna.',
+        recreative_techniques: 'Técnicas recriativas: recriação de canções familiares e padrões rítmicos, favorecendo participação ativa e troca de turnos.',
+        compositional_techniques: 'Recursos compositivos pontuais, com criação conjunta de pequenos motivos sonoros como forma de expressão e pertencimento.',
+        tempo_dynamics_used: 'Variações de andamento e dinâmica foram utilizadas para regular estados de ativação, alternando momentos de organização e de expansão.',
+        vocal_work: 'Trabalho vocal por meio de vocalizações, cantos e modulações de voz, favorecendo a comunicação e a expressão emocional.'
+      }
+    },
+    {
+      id: 'methodology_nordoff_robbins',
+      label: 'Nordoff-Robbins (Criativa)',
+      description: 'Improvisação clínica e desenvolvimento do "Music Child".',
+      values: {
+        theoretical_framework: 'A intervenção fundamenta-se na Musicoterapia Criativa de Nordoff-Robbins, que enfatiza a improvisação clínica e o desenvolvimento do "Music Child", articulada às diretrizes de intervenção em TEA conforme DSM-5-TR e CID-11.',
+        assessment_tools_used: 'Instrumentos: escalas Nordoff-Robbins (Child-Therapist Relationship e Musical Communicativeness), observação clínica e registro audiovisual de sessões.',
+        session_setting: 'Setting individual com piano/teclado e instrumental de percussão acessível, organizado para favorecer a iniciativa musical do paciente.',
+        session_structure: 'Sessões estruturadas em torno da improvisação clínica responsiva, com abertura, desenvolvimento musical co-criativo e encerramento.',
+        session_activities: 'Improvisações instrumentais e vocais responsivas, canções terapêuticas compostas para o paciente e atividades de turno musical.',
+        improvisation_use: 'A improvisação clínica foi o eixo central das sessões, com o terapeuta acompanhando e ampliando musicalmente as iniciativas do paciente.',
+        receptive_techniques: 'Momentos receptivos pontuais para regulação e escuta de motivos musicais significativos.',
+        recreative_techniques: 'Recriação de canções terapêuticas e padrões musicais, estimulando engajamento e antecipação.',
+        compositional_techniques: 'Composição de canções terapêuticas personalizadas, integrando nome, interesses e respostas do paciente.',
+        tempo_dynamics_used: 'Uso intencional de andamento, intensidade e contraste musical para sustentar a atenção e modular respostas emocionais.',
+        vocal_work: 'Trabalho vocal por meio do canto terapêutico e de vocalizações responsivas, favorecendo a comunicação musical.'
+      }
+    },
+    {
+      id: 'methodology_nmt',
+      label: 'Musicoterapia Neurológica (NMT)',
+      description: 'Técnicas padronizadas de Thaut (RAS, TIMP, MACT...) com base em neurociência.',
+      values: {
+        theoretical_framework: 'A intervenção fundamenta-se no modelo de Musicoterapia Neurológica (NMT) de Michael Thaut, baseado na neurociência da música e na plasticidade cerebral, utilizando técnicas padronizadas para reabilitação sensório-motora, cognitiva e de linguagem em TEA, em consonância com DSM-5-TR e CID-11.',
+        assessment_tools_used: 'Instrumentos: protocolos NMT padronizados, avaliação de sincronização rítmica, testes de atenção e função executiva e registro neurocomportamental sistematizado.',
+        session_setting: 'Setting estruturado com instrumental rítmico e melódico, metrônomo e recursos para estimulação sensório-motora controlada.',
+        session_structure: 'Sessões organizadas por objetivos neurofuncionais, com aquecimento, aplicação de técnicas NMT específicas e fechamento, com registro de respostas.',
+        session_activities: 'Atividades de sincronização rítmica, marcha sonora, exercícios motores instrumentais e tarefas de atenção e memória musical.',
+        improvisation_use: 'A improvisação foi utilizada de forma estruturada, como recurso complementar às técnicas padronizadas.',
+        receptive_techniques: 'Estimulação auditiva rítmica (RAS) e padrões sonoros para regulação e organização sensório-motora.',
+        recreative_techniques: 'Execução musical instrumental terapêutica (TIMP) para treino motor e coordenação.',
+        compositional_techniques: 'Uso pontual de criação de sequências musicais para treino de memória e função executiva (MACT/MMT).',
+        tempo_dynamics_used: 'Andamento e pulsação controlados por metrônomo e variações dinâmicas para favorecer sincronização e regulação.',
+        vocal_work: 'Técnicas vocais como entonação melódica (MIT) e estimulação musical da fala, conforme objetivos de linguagem.'
+      }
+    },
+    {
+      id: 'methodology_integrative',
+      label: 'Abordagem integrativa',
+      description: 'Combinação de Benenzon, Bruscia, Nordoff-Robbins e recursos sensoriais.',
+      values: {
+        theoretical_framework: 'A prática fundamenta-se em abordagem integrativa: Modelo Benenzon (Princípio do ISO), modelo de Bruscia (níveis e métodos — receptivo, recriativo, improvisacional e compositivo) e Musicoterapia Criativa de Nordoff-Robbins, associados às diretrizes de intervenção em TEA conforme DSM-5-TR e CID-11.',
+        assessment_tools_used: 'Instrumentos: Escala MuseTera, IMTAP, mapeamento do ISO, observação clínica sistematizada e registro qualitativo por método.',
+        session_setting: 'Setting individual em ambiente acústico controlado, com instrumental diversificado e adaptações sensoriais individualizadas.',
+        session_structure: 'Sessões com estrutura previsível e flexível, contemplando abertura, desenvolvimento (com diferentes métodos) e encerramento.',
+        session_activities: 'Atividades receptivas, recriativas, improvisacionais e compositivas, ajustadas ao perfil e ao momento clínico do paciente.',
+        improvisation_use: 'A improvisação foi utilizada como recurso central de vínculo e comunicação, integrada às demais técnicas.',
+        receptive_techniques: 'Audição musical seletiva, relaxamento sonoro e escuta de repertório significativo para regulação.',
+        recreative_techniques: 'Recriação de canções e padrões rítmicos, favorecendo participação, antecipação e troca de turnos.',
+        compositional_techniques: 'Criação conjunta de canções e motivos musicais como forma de expressão e pertencimento.',
+        tempo_dynamics_used: 'Variações de andamento e dinâmica utilizadas intencionalmente para regular ativação e sustentar a atenção.',
+        vocal_work: 'Trabalho vocal por meio de cantos, vocalizações e modulações, favorecendo comunicação e expressão emocional.'
+      }
+    }
+  ],
   communication_language: [
     {
       id: 'verbal_emerging',
