@@ -25,96 +25,97 @@ interface MusicoterapiaReportWizardProps {
 const STEPS = [
   {
     id: 'basic_info',
-    title: '1. Informações Básicas',
-    description: 'Dados do paciente e profissional',
+    title: '1. Identificação do Paciente',
+    description: 'Dados do paciente e do profissional',
     icon: Target,
-    fields: ['patient_name', 'patient_age', 'patient_diagnosis', 'session_date', 'professional_name', 'professional_registry']
+    fields: ['patient_name', 'patient_age', 'patient_diagnosis', 'cid_code', 'support_level', 'comorbidities', 'current_medications', 'treatment_start_date', 'session_count', 'session_frequency', 'session_duration', 'professional_name', 'professional_registry', 'session_date']
+  },
+  {
+    id: 'referral',
+    title: '2. Motivo do Encaminhamento',
+    description: 'Origem e justificativa do encaminhamento',
+    icon: ClipboardList,
+    fields: ['referral_source', 'referral_reason']
   },
   {
     id: 'therapeutic_objectives',
-    title: '2. Objetivos Terapêuticos',
+    title: '3. Objetivos Terapêuticos',
     description: 'Metas e planejamento',
     icon: Target,
     fields: ['therapeutic_objectives', 'specific_goals']
   },
   {
-    id: 'session_activities',
-    title: '3. Sessão e Atividades',
-    description: 'Detalhamento clínico das técnicas',
+    id: 'methodology',
+    title: '4. Metodologia Musicoterapêutica',
+    description: 'Abordagem, técnicas e procedimentos',
     icon: Music,
-    fields: ['session_setting', 'session_structure', 'session_activities', 'instruments_used', 'musical_techniques', 'musical_genres', 'improvisation_use', 'receptive_techniques', 'recreative_techniques', 'compositional_techniques', 'tempo_dynamics_used', 'vocal_work']
+    fields: ['theoretical_framework', 'assessment_tools_used', 'session_setting', 'session_structure', 'session_activities', 'improvisation_use', 'receptive_techniques', 'recreative_techniques', 'compositional_techniques', 'tempo_dynamics_used', 'vocal_work']
   },
   {
-    id: 'communication_language',
-    title: '4. Comunicação e Linguagem',
-    description: 'Vocalizações, CAA e pragmática',
-    icon: Music,
-    fields: ['vocalizations_observed', 'verbal_output_during_music', 'echolalia_musical', 'aac_use', 'pragmatic_skills']
-  },
-  {
-    id: 'patient_evolution',
-    title: '5. Evolução do Paciente',
-    description: 'Comparativos, metas e indicadores',
+    id: 'clinical_evolution',
+    title: '5. Evolução Clínica',
+    description: 'Progressos por domínios do desenvolvimento',
     icon: Heart,
-    fields: ['patient_evolution', 'behavioral_changes', 'skill_improvements', 'evolution_compared_baseline', 'goals_achieved', 'goals_in_progress', 'goals_not_achieved', 'quantitative_indicators']
+    fields: ['domain_communication_verbal', 'domain_communication_nonverbal', 'domain_social_interaction', 'joint_attention', 'eye_contact_quality', 'domain_emotional', 'self_regulation_strategies', 'domain_sensory_integration', 'domain_cognitive', 'domain_motor_gross', 'domain_motor_fine', 'domain_musicality', 'vocalizations_observed', 'verbal_output_during_music', 'echolalia_musical', 'aac_use', 'pragmatic_skills', 'patient_evolution', 'evolution_compared_baseline']
   },
   {
-    id: 'future_plan',
-    title: '6. Plano Terapêutico Futuro',
-    description: 'Próximos passos e prognóstico',
+    id: 'observed_results',
+    title: '6. Resultados Observados',
+    description: 'Metas atingidas e indicadores',
+    icon: Brain,
+    fields: ['goals_achieved', 'goals_in_progress', 'quantitative_indicators', 'treatment_summary']
+  },
+  {
+    id: 'pending_intervention',
+    title: '7. Aspectos a Intervir',
+    description: 'Pontos que ainda necessitam de intervenção',
+    icon: Target,
+    fields: ['goals_not_achieved', 'red_flags_to_monitor']
+  },
+  {
+    id: 'prognosis',
+    title: '8. Prognóstico Terapêutico',
+    description: 'Objetivos futuros e prognóstico',
     icon: Target,
     fields: ['next_objectives_short', 'next_objectives_medium', 'next_objectives_long', 'proposed_interventions', 'expected_outcomes', 'revaluation_date']
   },
   {
     id: 'recommendations',
-    title: '7. Encaminhamentos',
+    title: '9. Recomendações',
     description: 'Família, escola e equipe',
     icon: Home,
-    fields: ['recommendations', 'home_activities', 'family_guidance', 'school_recommendations', 'interdisciplinary_team_notes', 'playlist_recommended', 'red_flags_to_monitor']
+    fields: ['recommendations', 'home_activities', 'family_guidance', 'school_recommendations', 'interdisciplinary_team_notes', 'playlist_recommended']
   },
   {
-    id: 'theoretical_foundation',
-    title: '8. Fundamentação Teórica',
-    description: 'Abordagens e referências',
-    icon: Brain,
-    fields: ['theoretical_framework', 'assessment_tools_used', 'references_cited']
-  },
-  {
-    id: 'conclusion',
-    title: '9. Conclusão',
-    description: 'Síntese e resumo',
-    icon: Brain,
-    fields: ['conclusion', 'treatment_summary']
-  },
-  {
-    id: 'complementary_observations',
-    title: '10. Observações Complementares',
-    description: 'Notas adicionais',
-    icon: Heart,
-    fields: ['complementary_observations', 'additional_notes']
+    id: 'final_considerations',
+    title: '10. Considerações Finais',
+    description: 'Síntese conclusiva',
+    icon: Sparkles,
+    fields: ['final_considerations', 'conclusion', 'complementary_observations', 'additional_notes']
   },
   {
     id: 'final_review',
-    title: '11. Revisão Final',
-    description: 'Verificação e finalização',
-    icon: Target,
+    title: '11. Assinatura',
+    description: 'Assinatura e finalização',
+    icon: Check,
     fields: ['signature', 'review_notes']
   }
 ];
 
 const STEP_HINTS: Record<string, { icon: React.ElementType; title: string; description: string }> = {
-  basic_info: { icon: Info, title: 'Identificação clínica', description: 'Confirme dados do paciente e do profissional antes de prosseguir. Esses dados aparecem no cabeçalho do relatório final.' },
+  basic_info: { icon: Info, title: 'Identificação do paciente', description: 'Confirme dados do paciente e do profissional. Esses dados aparecem no cabeçalho do relatório final.' },
+  referral: { icon: ClipboardList, title: 'Motivo do encaminhamento', description: 'Descreva quem encaminhou e a razão clínica que originou o início dos atendimentos.' },
   therapeutic_objectives: { icon: Target, title: 'Objetivos terapêuticos', description: 'Descreva metas claras, mensuráveis e individualizadas. Quanto mais específicas, mais sólido o relatório.' },
-  session_activities: { icon: Music, title: 'Sessão e técnicas', description: 'Detalhe setting, técnicas (receptivas, recriativas, improvisacionais, compositivas) e instrumentos utilizados.' },
-  communication_language: { icon: MessageSquare, title: 'Comunicação e linguagem', description: 'Registre vocalizações, ecolalia, CAA e habilidades pragmáticas observadas durante o fazer musical.' },
-  patient_evolution: { icon: Heart, title: 'Evolução clínica', description: 'Compare com a linha de base e descreva ganhos observáveis, indicadores quantitativos e metas atingidas.' },
-  future_plan: { icon: Target, title: 'Plano futuro', description: 'Estruture objetivos de curto, médio e longo prazo, com prognóstico e data de reavaliação.' },
-  recommendations: { icon: Home, title: 'Encaminhamentos', description: 'Oriente família, escola e equipe interdisciplinar com recomendações práticas e sinais de alerta.' },
-  theoretical_foundation: { icon: BookOpen, title: 'Fundamentação teórica', description: 'Cite o referencial (Benenzon, Bruscia, Nordoff-Robbins, IMTAP) e ferramentas de avaliação utilizadas.' },
-  conclusion: { icon: Sparkles, title: 'Conclusão', description: 'Sintetize achados, ganhos e direção do tratamento de forma clara e objetiva.' },
-  complementary_observations: { icon: ClipboardList, title: 'Observações complementares', description: 'Adicione contextos relevantes que não couberam nas seções anteriores.' },
-  final_review: { icon: Check, title: 'Revisão final', description: 'Revise todas as seções, organize com IA se desejar e finalize o relatório.' },
+  methodology: { icon: Music, title: 'Metodologia musicoterapêutica', description: 'Detalhe a abordagem teórica, técnicas (receptivas, recriativas, improvisacionais, compositivas) e procedimentos utilizados.' },
+  clinical_evolution: { icon: Heart, title: 'Evolução clínica', description: 'Registre os progressos por domínio: comunicação, interação social, regulação emocional, cognição, motricidade e respostas musicais.' },
+  observed_results: { icon: Brain, title: 'Resultados observados', description: 'Sintetize as metas atingidas e os indicadores objetivos de progresso no período avaliado.' },
+  pending_intervention: { icon: Target, title: 'Aspectos a intervir', description: 'Liste os pontos que ainda necessitam de intervenção e os sinais a monitorar.' },
+  prognosis: { icon: Target, title: 'Prognóstico terapêutico', description: 'Estruture objetivos de curto, médio e longo prazo, com prognóstico e data de reavaliação.' },
+  recommendations: { icon: Home, title: 'Recomendações', description: 'Oriente família, escola e equipe interdisciplinar com recomendações práticas.' },
+  final_considerations: { icon: Sparkles, title: 'Considerações finais', description: 'Sintetize a evolução global e a indicação de continuidade do acompanhamento.' },
+  final_review: { icon: Check, title: 'Assinatura', description: 'Revise o relatório, organize com IA se desejar, assine e finalize.' },
 };
+
 
 interface TemplateOption {
   id: string;
