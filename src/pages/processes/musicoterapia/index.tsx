@@ -1052,7 +1052,50 @@ export default function MusicoterapiaPage() {
               </Card>
             </TabsContent>
           </Tabs>
+
+          {/* Export PDF Card (bottom duplicate) */}
+          <Card className="relative overflow-hidden border border-border/60 bg-card/60 backdrop-blur-xl shadow-lg rounded-2xl">
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary via-amber-500 to-primary" />
+            <CardContent className="p-5 sm:p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="relative flex-shrink-0">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary to-amber-500 blur-lg opacity-40" />
+                    <div className="relative flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-amber-500 shadow-md">
+                      <Download className="h-6 w-6 text-white" />
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
+                      Gerar Relatório Final (IA)
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Organiza seus dados automaticamente e gera o PDF final.
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  onClick={handleExportPDF}
+                  disabled={isExporting}
+                  className="bg-gradient-to-br from-primary to-amber-500 hover:opacity-90 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200 font-semibold"
+                >
+                  {isExporting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                      Processando com IA...
+                    </>
+                  ) : (
+                    <>
+                      <Download className="h-4 w-4 mr-2" />
+                      Exportar PDF com IA
+                    </>
+                  )}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </>
+
       ) : (
         /* Lista de Relatórios Salvos */
         <div className="space-y-6">
