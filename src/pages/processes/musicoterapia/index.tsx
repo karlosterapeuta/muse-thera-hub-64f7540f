@@ -621,7 +621,7 @@ export default function MusicoterapiaPage() {
       // 1. Organizar com IA antes de exportar
       toast({
         title: "Iniciando IA",
-        description: "Organizando os dados com IA para um PDF mais profissional...",
+        description: "Analisando as respostas e gerando o relatório clínico narrativo...",
       });
       
       const organizedFields = await generateWithAI();
@@ -631,6 +631,20 @@ export default function MusicoterapiaPage() {
         ...reportData,
         fieldValues: organizedFields || reportData.fieldValues
       };
+
+      // 2. Gerar relatório narrativo clínico com IA
+      const narrative = await generateNarrative(currentReportData);
+      if (narrative && narrative.length > 0) {
+        toast({
+          title: "Relatório narrativo gerado",
+          description: "A IA produziu uma análise clínica personalizada para o paciente.",
+        });
+      } else {
+        toast({
+          title: "PDF gerado sem narrativa de IA",
+          description: "Não foi possível gerar o texto narrativo agora; o relatório usará os dados estruturados.",
+        });
+      }
 
       // Convert images to Base64
       let photoBase64: string | null = null;
@@ -648,7 +662,8 @@ export default function MusicoterapiaPage() {
       tempDiv.style.fontFamily = 'Arial, sans-serif';
       tempDiv.style.color = '#000';
       tempDiv.style.backgroundColor = '#fff';
-      tempDiv.innerHTML = generatePDFContent(currentReportData, photoBase64, stampBase64);
+      tempDiv.innerHTML = generatePDFContent(currentReportData, photoBase64, stampBase64, null, narrative);
+
       
       document.body.appendChild(tempDiv);
 
