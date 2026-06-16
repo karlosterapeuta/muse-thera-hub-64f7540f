@@ -502,6 +502,17 @@ const STEP_TEMPLATES: Record<string, TemplateOption[]> = {
         quantitative_indicators: 'Os indicadores quantitativos da Escala MuseTera mantêm-se em patamares iniciais, refletindo o caráter recente do processo terapêutico e a importância da continuidade para evolução mensurável.',
         treatment_summary: 'O período avaliado corresponde a uma fase inicial do processo terapêutico, marcada pela construção do vínculo e pela adaptação ao setting. Os ganhos, ainda discretos, sinalizam abertura para evolução com a continuidade do tratamento.'
       }
+    },
+    {
+      id: 'results_unfavorable',
+      label: 'Resposta abaixo do esperado',
+      description: 'Paciente não respondeu bem às intervenções no período.',
+      values: {
+        goals_achieved: 'No período avaliado, as metas terapêuticas propostas não foram alcançadas conforme o esperado, observando-se respostas inconsistentes às intervenções musicoterapêuticas e dificuldade de engajamento sustentado nas atividades.',
+        goals_in_progress: 'A maioria das metas permanece sem evolução significativa, exigindo revisão do plano terapêutico, das estratégias adotadas e das adaptações sensoriais e ambientais oferecidas.',
+        quantitative_indicators: 'Os indicadores quantitativos da Escala MuseTera mantiveram-se estáveis ou apresentaram pouca variação, refletindo a baixa resposta às intervenções no período avaliado.',
+        treatment_summary: 'O período terapêutico caracterizou-se por resposta abaixo do esperado, com baixo engajamento e ganhos pouco expressivos. Recomenda-se reavaliação do plano terapêutico, investigação de fatores intervenientes (clínicos, sensoriais, contextuais) e eventual articulação interdisciplinar.'
+      }
     }
   ],
   pending_intervention: [
@@ -530,6 +541,15 @@ const STEP_TEMPLATES: Record<string, TemplateOption[]> = {
       values: {
         goals_not_achieved: 'As metas relacionadas à integração sensorial, à coordenação motora e à tolerância a diferentes estímulos sonoros e texturas instrumentais ainda estão em desenvolvimento.',
         red_flags_to_monitor: 'Monitorar respostas de defesa sensorial (auditiva, tátil), bem como sinais de hipo ou hiper-reatividade que possam interferir na participação nas atividades.'
+      }
+    },
+    {
+      id: 'pending_low_response',
+      label: 'Resposta global limitada',
+      description: 'Paciente com baixo engajamento e dificuldades amplas.',
+      values: {
+        goals_not_achieved: 'A maior parte das metas terapêuticas não foi alcançada no período, observando-se baixo engajamento global, dificuldade de adesão ao setting e respostas inconsistentes às diferentes propostas musicais. Recomenda-se revisão do plano terapêutico e das estratégias de abordagem.',
+        red_flags_to_monitor: 'Atenção a sinais de sobrecarga sensorial persistente, recusa frequente das atividades, aumento de comportamentos de esquiva ou desregulação, e possíveis fatores clínicos ou contextuais que estejam interferindo na resposta terapêutica, com indicação de articulação interdisciplinar.'
       }
     }
   ],
@@ -568,6 +588,18 @@ const STEP_TEMPLATES: Record<string, TemplateOption[]> = {
         next_objectives_long: 'Longo prazo (6-12 meses): Preparar a alta terapêutica gradual, com orientações de continuidade musical em ambiente familiar e/ou escolar.',
         proposed_interventions: 'Intervenções improvisacionais e compositivas centradas na autonomia do paciente, com orientação familiar e interdisciplinar para sustentação dos ganhos.',
         expected_outcomes: 'Espera-se que o paciente utilize a música como recurso autorregulatório e comunicativo de forma autônoma e generalizada, sustentando os ganhos após a alta.'
+      }
+    },
+    {
+      id: 'prognosis_unfavorable',
+      label: 'Prognóstico desfavorável / a reavaliar',
+      description: 'Baixa resposta no período; necessita revisão do plano.',
+      values: {
+        next_objectives_short: 'Curto prazo (1-3 meses): Reestruturar o setting e as estratégias de abordagem; priorizar o restabelecimento do vínculo terapêutico e a tolerância mínima às atividades; reduzir demandas e ampliar adaptações sensoriais.',
+        next_objectives_medium: 'Médio prazo (3-6 meses): Investigar e tratar fatores intervenientes (clínicos, sensoriais, emocionais, contextuais); reavaliar a indicação e a frequência dos atendimentos em conjunto com a equipe interdisciplinar.',
+        next_objectives_long: 'Longo prazo (6-12 meses): Redefinir objetivos terapêuticos a partir de nova avaliação, considerando o ritmo individual do paciente e a necessidade de suporte intensivo e articulado.',
+        proposed_interventions: 'Intervenções predominantemente receptivas e de baixa demanda, com estruturação altamente previsível, adaptações sensoriais constantes e revisão contínua do plano terapêutico em articulação interdisciplinar.',
+        expected_outcomes: 'Prognóstico reservado a desfavorável no momento: a evolução depende da identificação e do manejo dos fatores que limitaram a resposta terapêutica, bem como da continuidade do tratamento com plano revisado e suporte familiar e interdisciplinar consistente.'
       }
     }
   ]
@@ -752,15 +784,20 @@ export function MusicoterapiaReportWizard({
 
         {/* Templates profissionais (noir/gold) */}
         {templateOptions && (
-          <div className="rounded-2xl border border-[#c9a84c]/15 bg-[#0d0d0d]/40 p-5 space-y-4">
-            <div className="flex items-start gap-3">
-              <div className="h-9 w-9 rounded-lg bg-[#c9a84c]/10 border border-[#c9a84c]/25 flex items-center justify-center shrink-0">
-                <Wand2 className="h-4 w-4 text-[#f0d78c]" />
+          <div className="relative rounded-2xl border-2 border-[#c9a84c]/40 bg-gradient-to-br from-[#c9a84c]/[0.10] via-[#0d0d0d]/60 to-[#0d0d0d]/40 p-5 sm:p-6 space-y-5 shadow-[0_0_40px_-12px_rgba(201,168,76,0.35)]">
+            <div className="absolute -top-3 left-5 px-3 py-1 rounded-full bg-[#c9a84c] text-[#0d0d0d] text-[10px] uppercase tracking-[0.18em] font-black shadow-lg">
+              ✦ Textos prontos
+            </div>
+            <div className="flex items-start gap-3 pt-1">
+              <div className="h-11 w-11 rounded-xl bg-[#c9a84c]/15 border border-[#c9a84c]/40 flex items-center justify-center shrink-0">
+                <Wand2 className="h-5 w-5 text-[#f0d78c]" />
               </div>
               <div className="space-y-1">
-                <div className="text-[10px] uppercase tracking-[0.2em] text-[#c9a84c] font-bold">Templates profissionais (opcional)</div>
-                <p className="text-sm text-gray-400 font-light leading-relaxed">
-                  Escolha o modelo mais próximo do perfil clínico — os campos serão preenchidos e você poderá editá-los livremente.
+                <h3 className="text-lg text-[#f0d78c] font-bold" style={{ fontFamily: "'Instrument Serif', serif" }}>
+                  Selecione um texto pronto
+                </h3>
+                <p className="text-sm text-gray-300 font-light leading-relaxed">
+                  Escolha o modelo mais próximo do perfil clínico do paciente — os campos serão preenchidos automaticamente e você poderá editá-los livremente.
                 </p>
               </div>
             </div>
@@ -774,8 +811,8 @@ export function MusicoterapiaReportWizard({
                     onClick={() => applyTemplateOption(opt)}
                     className={`group text-left p-4 rounded-xl border transition-all ${
                       isActive
-                        ? 'border-[#c9a84c] bg-[#c9a84c]/10 shadow-[0_0_30px_-10px_rgba(201,168,76,0.5)]'
-                        : 'border-white/10 bg-[#1a1a1a]/60 hover:border-[#c9a84c]/50 hover:bg-[#c9a84c]/[0.04]'
+                        ? 'border-[#c9a84c] bg-[#c9a84c]/15 shadow-[0_0_30px_-10px_rgba(201,168,76,0.6)]'
+                        : 'border-[#c9a84c]/25 bg-[#1a1a1a]/70 hover:border-[#c9a84c]/60 hover:bg-[#c9a84c]/[0.08] hover:-translate-y-0.5'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2 mb-1.5">
