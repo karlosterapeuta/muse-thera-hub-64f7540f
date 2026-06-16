@@ -176,6 +176,7 @@ export function useMusicoterapiaReport() {
     reportData,
     updateReportData,
     generateWithAI,
+    generateNarrative,
     isGeneratingWithAI,
     validateReport,
     template: musicoterapiaTemplate,
