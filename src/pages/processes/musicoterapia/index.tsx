@@ -43,6 +43,7 @@ export default function MusicoterapiaPage() {
     reportData,
     updateReportData,
     generateWithAI,
+    generateNarrative,
     isGeneratingWithAI,
     validateReport,
     template,
@@ -95,10 +96,37 @@ export default function MusicoterapiaPage() {
     reportDataForPDF: any, 
     photoBase64?: string | null, 
     stampBase64?: string | null,
-    logoUrl?: string | null
+    logoUrl?: string | null,
+    narrative?: { title: string; content: string }[] | null
   ) => {
     const fields = reportDataForPDF.fieldValues || {};
     const currentDate = new Date().toLocaleDateString('pt-BR');
+
+    const escapeHtml = (s: string) =>
+      String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+    const narrativeBlock = (narrative && narrative.length > 0) ? `
+      <div class="section-block" style="margin-bottom: 25px; border: 2px solid #14b8a6; border-radius: 10px; overflow: hidden; background: #ffffff; page-break-inside: auto;">
+        <div style="background: linear-gradient(135deg, #0d9488 0%, #14b8a6 60%, #06b6d4 100%); color: white; padding: 12px 16px;">
+          <h2 style="margin: 0; font-size: 16px; font-weight: 700; letter-spacing: 0.3px;">Relatório Clínico Narrativo</h2>
+          <p style="margin: 4px 0 0 0; font-size: 10px; opacity: 0.92;">Análise clínica gerada com Inteligência Artificial a partir das respostas do questionário</p>
+        </div>
+        <div style="padding: 16px 18px;">
+          ${narrative.map((sec) => `
+            <div style="margin-bottom: 16px; page-break-inside: avoid;">
+              <h3 style="color: #0d9488; margin: 0 0 6px 0; font-size: 13px; border-bottom: 1px solid #99f6e4; padding-bottom: 4px;">${escapeHtml(sec.title)}</h3>
+              ${String(sec.content).split(/\n{2,}/).map((p) => p.trim()).filter(Boolean).map((p) =>
+                `<p style="margin: 0 0 8px 0; font-size: 11.5px; line-height: 1.7; text-align: justify; color: #1f2937; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${escapeHtml(p)}</p>`
+              ).join('')}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    ` : '';
+
     
     return `
       <div style="font-family: Arial, sans-serif; color: #000; background-color: #fff; width: 210mm; min-height: 297mm; padding: 20mm; margin: 0 auto; font-size: 12px; line-height: 1.6; box-sizing: border-box;">
@@ -125,7 +153,10 @@ export default function MusicoterapiaPage() {
           </div>
         </div>
 
-        <!-- Report Sections -->
+        <!-- AI Clinical Narrative -->
+        ${narrativeBlock}
+
+        <!-- Report Sections (dados complementares) -->
         ${fields.therapeutic_objectives && fields.therapeutic_objectives.length > 0 ? `
           <div class="section-block" style="margin-bottom: 20px; page-break-inside: avoid; page-break-before: auto;">
             <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Objetivos Terapeuticos</h3>
@@ -590,7 +621,7 @@ export default function MusicoterapiaPage() {
       // 1. Organizar com IA antes de exportar
       toast({
         title: "Iniciando IA",
-        description: "Organizando os dados com IA para um PDF mais profissional...",
+        description: "Analisando as respostas e gerando o relatório clínico narrativo...",
       });
       
       const organizedFields = await generateWithAI();
@@ -600,6 +631,20 @@ export default function MusicoterapiaPage() {
         ...reportData,
         fieldValues: organizedFields || reportData.fieldValues
       };
+
+      // 2. Gerar relatório narrativo clínico com IA
+      const narrative = await generateNarrative(currentReportData);
+      if (narrative && narrative.length > 0) {
+        toast({
+          title: "Relatório narrativo gerado",
+          description: "A IA produziu uma análise clínica personalizada para o paciente.",
+        });
+      } else {
+        toast({
+          title: "PDF gerado sem narrativa de IA",
+          description: "Não foi possível gerar o texto narrativo agora; o relatório usará os dados estruturados.",
+        });
+      }
 
       // Convert images to Base64
       let photoBase64: string | null = null;
@@ -617,7 +662,8 @@ export default function MusicoterapiaPage() {
       tempDiv.style.fontFamily = 'Arial, sans-serif';
       tempDiv.style.color = '#000';
       tempDiv.style.backgroundColor = '#fff';
-      tempDiv.innerHTML = generatePDFContent(currentReportData, photoBase64, stampBase64);
+      tempDiv.innerHTML = generatePDFContent(currentReportData, photoBase64, stampBase64, null, narrative);
+
       
       document.body.appendChild(tempDiv);
 

@@ -116,6 +116,33 @@ export function useMusicoterapiaReport() {
     }
   }, [reportData, updateReportData, toast]);
 
+  const generateNarrative = useCallback(async (overrideReportData?: Partial<ReportData>): Promise<{ title: string; content: string }[] | null> => {
+    const payload = overrideReportData
+      ? { ...reportData, ...overrideReportData }
+      : reportData;
+
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-tea-narrative', {
+        body: { reportData: payload }
+      });
+
+      if (error) {
+        console.error('Erro na edge function de narrativa:', error);
+        return null;
+      }
+
+      if (data?.success && Array.isArray(data.sections) && data.sections.length > 0) {
+        return data.sections as { title: string; content: string }[];
+      }
+
+      console.warn('Narrativa de IA indisponível:', data?.error);
+      return null;
+    } catch (err) {
+      console.error('Erro ao gerar narrativa clínica:', err);
+      return null;
+    }
+  }, [reportData]);
+
   const validateReport = useCallback(() => {
     console.log('Validando relatório...', reportData);
     
@@ -149,6 +176,7 @@ export function useMusicoterapiaReport() {
     reportData,
     updateReportData,
     generateWithAI,
+    generateNarrative,
     isGeneratingWithAI,
     validateReport,
     template: musicoterapiaTemplate,
