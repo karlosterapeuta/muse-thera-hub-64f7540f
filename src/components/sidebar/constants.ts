@@ -49,6 +49,7 @@ export const toolsMenuItems = [
   { icon: Music2, text: "🦖 Dino Ritmos", path: "/dino-ritmos", gradient: "from-purple-500 to-pink-500", isNew: true },
   { icon: Waves, text: "🧠 Frequências Binaurais", path: "/binaural-frequencies", gradient: "from-green-500 to-emerald-600" },
   { icon: GraduationCap, text: "Curso Flix", path: "/courses", gradient: "from-red-600 to-red-700", isNew: true, isNetflixStyle: true },
+  { icon: Magnet, text: "💼 Vagas", path: "https://vagasmusetera.lovable.app", gradient: "from-cyan-500 to-blue-600", isNew: true, external: true },
 ];
 
 export const managementMenuItems = [
