@@ -89,6 +89,7 @@ import AIAssistant from "./pages/ai-assistant";
 import Resources from "./pages/Resources";
 import OrquestraAnimal from "./pages/orquestra-animal";
 import DinoRitmos from "./pages/dino-ritmos";
+import VagasEmbed from "./pages/VagasEmbed";
 
 // Creator pages (separate from MuseTera)
 import CreatorLoginPage from "./pages/creator/login";
