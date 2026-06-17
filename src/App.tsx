@@ -226,6 +226,7 @@ const App = () => {
             <Route path="resources" element={<Resources />} />
             <Route path="orquestra-animal" element={<OrquestraAnimal />} />
             <Route path="dino-ritmos" element={<DinoRitmos />} />
+            <Route path="vagas" element={<VagasEmbed />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
