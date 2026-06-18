@@ -1,33 +1,68 @@
-## Problema
+# Anamnese por Link Público (preenchida pela mãe)
 
-Ao clicar em **"Exportar PDF com IA"** no Relatório MuseTera TEA, aparece um erro.
+## Objetivo
+Permitir que o profissional gere um link único para enviar à mãe/responsável do paciente. A mãe abre o link (sem login), preenche o formulário de anamnese, e os dados ficam salvos automaticamente no sistema, vinculados ao profissional que enviou o link e ao paciente correspondente.
 
-A causa é a função de IA `organize-musicoterapia-report`: ela chama o modelo **`gemini-1.5-flash`** diretamente na API do Google (`generativelanguage.googleapis.com`). Esse modelo foi descontinuado, então a chamada falha e a função retorna erro 500. Como o botão "Exportar PDF" primeiro organiza com IA e só depois gera o PDF, a falha da IA interrompe todo o processo e mostra o toast de erro — sem gerar o PDF.
+## Fluxo do usuário
+```
+Profissional (Anamnese)
+   → seleciona/escolhe paciente
+   → clica "Enviar link para responsável"
+   → sistema gera link único + opção de copiar / WhatsApp
+        │
+        ▼
+Mãe / responsável (abre o link, sem login)
+   → vê nome do profissional e do paciente
+   → preenche o formulário de anamnese
+   → envia
+        │
+        ▼
+Dados salvos na anamnese do paciente, vinculados ao profissional
+   → profissional vê a anamnese preenchida na sua lista (marcada como "Preenchida pelo responsável")
+```
 
-Todas as outras funções de IA do projeto que funcionam (`generate-evaluation-text`, `musicotherapy-chat`) já usam o **Lovable AI Gateway** com `google/gemini-2.5-flash`. A função de musicoterapia ficou desatualizada.
+## Banco de dados (migração)
+Criar tabela `anamnesis_invitations`:
+- `token` (texto único, gerado aleatoriamente — usado na URL)
+- `professional_id` (dono do link)
+- `patient_id` (paciente alvo)
+- `status` (`pending` / `completed`)
+- `anamnesis_id` (preenchido após envio)
+- `expires_at` (validade, ex.: 14 dias)
+- `completed_at`
+- campos padrão (id, created_at, updated_at)
 
-## Solução
+Regras de acesso:
+- Profissional pode criar/ver/excluir apenas os próprios convites (RLS por `professional_id = auth.uid()`).
+- O acesso público (mãe sem login) NÃO usa RLS direto — será feito por Edge Functions com privilégio de servidor, validando o token. Assim o link não expõe a tabela inteira.
+- GRANTs adequados para `authenticated` e `service_role`.
 
-### 1. Migrar a edge function para o Lovable AI Gateway
-Reescrever `supabase/functions/organize-musicoterapia-report/index.ts`:
-- Usar `https://ai.gateway.lovable.dev/v1/chat/completions` com `Authorization: Bearer ${LOVABLE_API_KEY}` e modelo `google/gemini-2.5-flash` (mesmo padrão das funções que funcionam).
-- Manter o prompt que preserva **todos** os campos preenchidos e melhora a redação técnica.
-- Solicitar saída em JSON e extrair o conteúdo da resposta do gateway.
+## Edge Functions (acesso público sem login)
+1. `get-public-anamnesis` — recebe o `token`, valida (existe, não expirado, status pending) e retorna apenas o necessário para a tela: nome do paciente e nome do profissional/clínica. Não retorna dados sensíveis.
+2. `submit-public-anamnesis` — recebe `token` + dados do formulário. Valida o token, insere (ou atualiza) o registro na tabela `anamnesis` usando o `professional_id` e `patient_id` do convite, marca o convite como `completed` e vincula `anamnesis_id`. Marca a anamnese como originada de preenchimento externo.
 
-### 2. Tornar a função resiliente (nunca quebrar o PDF)
-- Nunca retornar 500 por falha da IA. Em qualquer erro (modelo, parse, rate limit), retornar status 200 com `success: false` + `fallbackContent` contendo os campos originais.
-- Tratar 429 (limite) e 402 (créditos) com mensagens claras, mas ainda devolvendo os campos originais como fallback para o PDF.
+Ambas com CORS e validação de entrada (Zod). Usam `SUPABASE_SERVICE_ROLE_KEY` internamente.
 
-### 3. Garantir que o PDF sempre seja gerado no cliente
-Em `src/pages/processes/musicoterapia/index.tsx` (`handleExportPDF`) e no hook `useMusicoterapiaReport.ts`:
-- Se a IA falhar, usar os dados originais e **continuar gerando o PDF** normalmente, exibindo um aviso suave ("PDF gerado sem otimização de IA") em vez de um erro que interrompe tudo.
+## Frontend
+1. **Botão "Enviar link para o responsável"** na tela de Anamnese (junto às ações). Ao clicar:
+   - Garante que um paciente está selecionado.
+   - Cria um convite (token) para aquele paciente.
+   - Abre um diálogo com o link gerado, botão "Copiar link" e botão "Enviar por WhatsApp".
+
+2. **Nova rota pública** `/anamnese-publica/:token` (fora da área autenticada, em `App.tsx`):
+   - Tela com a identidade visual MuseTera (logo dourado, fundo cósmico).
+   - Chama `get-public-anamnesis` para validar o token e mostrar "Anamnese de **[paciente]** — solicitada por **[profissional]**".
+   - Reaproveita o componente `InitialEvaluationForm` existente para o preenchimento.
+   - Ao enviar, chama `submit-public-anamnesis` e mostra tela de confirmação ("Obrigado! As informações foram enviadas.").
+   - Trata estados: token inválido/expirado e já preenchido.
+
+3. **Indicação na lista de anamneses**: mostrar um selo "Preenchida pelo responsável" nas anamneses originadas de link, para o profissional diferenciar.
 
 ## Detalhes técnicos
+- O token será um valor aleatório (ex.: `crypto.randomUUID()` ou string de 32 chars) gerado no cliente/edge e guardado na tabela.
+- A rota pública não passa pelos guards de autenticação; será adicionada antes/fora do layout protegido em `App.tsx`.
+- O formulário público reusa a mesma estrutura de campos (`InitialEvaluationForm`), garantindo consistência com o formulário interno.
+- A anamnese salva fica idêntica às demais (mesma tabela `anamnesis`), portanto aparece normalmente na lista e nos PDFs do profissional.
 
-- Arquivo principal: `supabase/functions/organize-musicoterapia-report/index.ts` (reescrita da chamada de IA).
-- Hook: `src/hooks/useMusicoterapiaReport.ts` — já trata `fallbackContent`; ajustar para não mostrar toast destrutivo quando houver fallback válido.
-- Página: `src/pages/processes/musicoterapia/index.tsx` — `handleExportPDF` continua o fluxo do PDF mesmo se a IA não otimizar.
-- A função será re-deployada automaticamente.
-
-## Resultado esperado
-Clicar em "Exportar PDF com IA" passa a organizar o relatório com o modelo atual e gerar o PDF com todas as opções selecionadas. Se a IA estiver indisponível, o PDF ainda é gerado com os dados originais, sem erro bloqueante.
+## Observação
+A autenticação do profissional já existe e funciona — apenas o link da mãe é público (validado por token via Edge Function), o que mantém a segurança sem expor os dados de outros pacientes.
