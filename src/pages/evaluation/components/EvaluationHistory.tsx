@@ -19,6 +19,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Trash2, FileText, Loader2, History, CheckCircle2, Download, Pencil, User } from "lucide-react";
 import { SavedEvaluation } from "@/hooks/useEvaluationStorage";
+import { EVALUATION_TYPES, resolveEvaluationMeta } from "@/utils/evaluationTypes";
 
 interface EvaluationHistoryProps {
   evaluations: SavedEvaluation[];
@@ -32,17 +33,6 @@ interface EvaluationHistoryProps {
   maxComparisons?: number;
 }
 
-const evaluationTypeLabels: Record<string, string> = {
-  avaliacao_inicial: "Avaliação Inicial",
-  avaliacao_progresso: "Avaliação de Progresso",
-  avaliacao_periodica: "Avaliação Periódica",
-  avaliacao_final: "Avaliação Final",
-  musetera_evaluation: "Escala MuseTera",
-  "1": "Avaliação Inicial",
-  "2": "Avaliação de Progresso",
-  "3": "Avaliação Periódica",
-  "4": "Avaliação Final",
-};
 
 export function EvaluationHistory({
   evaluations,
@@ -120,11 +110,36 @@ export function EvaluationHistory({
       </div>
 
       <ScrollArea className="h-[400px] pr-4">
-        <div className="space-y-3">
-          {evaluations.map((evaluation) => {
-            const score = evaluation.content?.overallScore?.percentage || 0;
-            const isSelected = selectedForComparison.includes(evaluation.id);
-            const canSelect = isSelected || selectedForComparison.length < maxComparisons;
+        <div className="space-y-5">
+          {EVALUATION_TYPES.map((typeMeta) => {
+            const group = evaluations.filter(
+              (e) => resolveEvaluationMeta(e).key === typeMeta.key
+            );
+            if (group.length === 0) return null;
+
+            return (
+              <div key={typeMeta.key} className="space-y-3">
+                <div className="flex items-center gap-2 sticky top-0 z-10 py-1.5 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
+                  <span
+                    className="inline-block h-3 w-3 rounded-full"
+                    style={{ backgroundColor: typeMeta.color }}
+                  />
+                  <h4 className="text-sm font-bold text-gray-800 dark:text-gray-100">
+                    {typeMeta.label}
+                  </h4>
+                  <Badge variant="outline" className={`text-[10px] ${typeMeta.badgeClass}`}>
+                    {group.length}
+                  </Badge>
+                  <span className="text-[11px] text-gray-400 dark:text-gray-500 hidden sm:inline">
+                    {typeMeta.description}
+                  </span>
+                </div>
+
+                {group.map((evaluation) => {
+                  const score = evaluation.content?.overallScore?.percentage || 0;
+                  const isSelected = selectedForComparison.includes(evaluation.id);
+                  const canSelect = isSelected || selectedForComparison.length < maxComparisons;
+                  const meta = resolveEvaluationMeta(evaluation);
 
             return (
               <div
@@ -134,6 +149,7 @@ export function EvaluationHistory({
                     ? "border-purple-500 bg-purple-50 dark:bg-purple-950/30"
                     : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-purple-300 dark:hover:border-purple-700"
                 }`}
+                style={{ borderLeftWidth: 5, borderLeftColor: meta.color }}
               >
                 <div className="flex items-start gap-3">
                   <Checkbox
@@ -160,8 +176,8 @@ export function EvaluationHistory({
                       <span className="font-semibold text-gray-800 dark:text-gray-200">
                         {format(new Date(evaluation.date), "dd/MM/yyyy", { locale: ptBR })}
                       </span>
-                      <Badge variant="outline" className="text-xs">
-                        {evaluationTypeLabels[evaluation.type] || evaluationTypeLabels[evaluation.content?.evaluationType] || "Avaliação"}
+                      <Badge variant="outline" className={`text-xs ${meta.badgeClass}`}>
+                        {meta.label}
                       </Badge>
                     </div>
                     <div className="flex items-center gap-2 mb-2">
@@ -251,9 +267,13 @@ export function EvaluationHistory({
                 </div>
               </div>
             );
+                })}
+              </div>
+            );
           })}
         </div>
       </ScrollArea>
+
 
       {evaluations.length >= 2 && (
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-4 text-center">

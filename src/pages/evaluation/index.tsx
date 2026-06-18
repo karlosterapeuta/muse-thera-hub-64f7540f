@@ -61,6 +61,7 @@ import { PatientEvaluationCards, PatientWithEvaluations } from "./components/Pat
 import { EvolutionTimeline } from "./components/EvolutionTimeline";
 import { AreasAnalysis } from "./components/AreasAnalysis";
 import { TherapeuticSuggestions } from "./components/TherapeuticSuggestions";
+import { getEvaluationTypeMeta } from "@/utils/evaluationTypes";
 
 interface Patient {
   id: string;
@@ -131,7 +132,8 @@ export default function Evaluation() {
     loadAllEvaluations();
   }, [loadAllEvaluations]);
 
-  // Auto-carregar a avaliação mais recente quando paciente é selecionado
+  // Auto-carregar a avaliação mais recente do TIPO selecionado quando paciente é selecionado.
+  // Cada período (Inicial/Progresso/Periódica/Final) é tratado de forma separada e exclusiva.
   const [skipAutoLoad, setSkipAutoLoad] = useState(draftLoaded);
   useEffect(() => {
     // Não auto-carregar se está editando, carregando, ou se acabou de restaurar draft
@@ -142,28 +144,34 @@ export default function Evaluation() {
       setSkipAutoLoad(false);
       return;
     }
-    
-    if (savedEvaluations.length > 0) {
-      // Carregar a avaliação mais recente do paciente selecionado
-      const mostRecentEvaluation = savedEvaluations[0]; // Já ordenada por data desc
-      
+
+    // Filtra apenas avaliações do tipo (período) atualmente selecionado
+    const sameType = savedEvaluations.filter(
+      (e) => (e.content?.evaluationType || e.type) === selectedEvaluation
+        || getEvaluationTypeMeta(e.type).value === selectedEvaluation
+    );
+
+    if (sameType.length > 0) {
+      // Carregar a avaliação mais recente DESTE tipo (já ordenada por data desc)
+      const mostRecentEvaluation = sameType[0];
+
       if (mostRecentEvaluation && mostRecentEvaluation.content) {
         setSelections(mostRecentEvaluation.content.selections || {});
         setObservations(mostRecentEvaluation.content.observations || {});
         setEvaluationDate(new Date(mostRecentEvaluation.date));
-        if (mostRecentEvaluation.content.evaluationType) {
-          setSelectedEvaluation(mostRecentEvaluation.content.evaluationType);
-        }
-        
-        toast.info(`Avaliação de ${format(new Date(mostRecentEvaluation.date), 'dd/MM/yyyy')} carregada automaticamente`);
+
+        toast.info(
+          `${getEvaluationTypeMeta(selectedEvaluation).label} de ${format(new Date(mostRecentEvaluation.date), 'dd/MM/yyyy')} carregada`
+        );
       }
     } else if (selectedPatient) {
-      // Limpar dados se paciente não tem avaliações salvas
+      // Sem avaliação salva deste período: começar em branco (exclusivo do tipo)
       setSelections({});
       setObservations({});
       setEvaluationDate(new Date());
     }
-  }, [savedEvaluations, selectedPatient, isLoadingEvaluations, editingEvaluationId]);
+  }, [savedEvaluations, selectedPatient, selectedEvaluation, isLoadingEvaluations, editingEvaluationId]);
+
 
   // Agrupar avaliações por paciente (apenas pacientes COM avaliações salvas)
   const patientsWithEvaluations = useMemo<PatientWithEvaluations[]>(() => {
@@ -1011,6 +1019,7 @@ export default function Evaluation() {
           overallScore={savedOverallScore}
           professionalPhotoBase64={professionalPhotoBase64}
           digitalStampBase64={digitalStampBase64}
+          evaluationType={evaluation.type || savedContent.evaluationType}
         />,
         { filename }
       );
@@ -1588,11 +1597,22 @@ export default function Evaluation() {
                   <SelectValue placeholder="Selecione a avaliação" />
                 </SelectTrigger>
                 <SelectContent className="border-0 shadow-xl">
-                  <SelectItem value="1">Avaliação Inicial</SelectItem>
-                  <SelectItem value="2">Avaliação de Progresso</SelectItem>
-                  <SelectItem value="3">Avaliação Periódica</SelectItem>
-                  <SelectItem value="4">Avaliação Final</SelectItem>
+                  {["1", "2", "3", "4"].map((v) => {
+                    const meta = getEvaluationTypeMeta(v);
+                    return (
+                      <SelectItem key={v} value={v}>
+                        <span className="flex items-center gap-2">
+                          <span
+                            className="inline-block h-2.5 w-2.5 rounded-full"
+                            style={{ backgroundColor: meta.color }}
+                          />
+                          {meta.label}
+                        </span>
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
+
               </Select>
 
               <TooltipProvider>

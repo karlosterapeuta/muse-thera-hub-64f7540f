@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { StaticChart } from '@/components/StaticChart';
 import type { ProfessionalData } from '@/hooks/useProfessionalData';
+import { getEvaluationTypeMeta } from '@/utils/evaluationTypes';
 
 interface EvaluationDomain {
   title: string;
@@ -36,6 +37,8 @@ interface GraphReportPDFProps {
   };
   professionalPhotoBase64?: string;
   digitalStampBase64?: string;
+  /** período/tipo da avaliação (chave, valor do seletor ou label) */
+  evaluationType?: string;
 }
 
 const DOMAIN_COLORS: Record<string, string> = {
@@ -100,7 +103,9 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
   overallScore,
   professionalPhotoBase64,
   digitalStampBase64,
+  evaluationType,
 }) => {
+  const typeMeta = getEvaluationTypeMeta(evaluationType);
   const formattedDate = format(evaluationDate, "dd 'de' MMMM 'de' yyyy", {
     locale: ptBR,
   });
@@ -200,9 +205,27 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
             <div style={{ fontWeight: 700, color: '#0f172a' }}>
               Avaliação Musicoterapêutica
             </div>
-            <div>Emitido em {issuedAt}</div>
+            <div
+              style={{
+                display: 'inline-block',
+                marginTop: 4,
+                padding: '3px 10px',
+                borderRadius: 999,
+                fontSize: 9,
+                fontWeight: 800,
+                letterSpacing: '0.4px',
+                textTransform: 'uppercase',
+                color: typeMeta.color,
+                background: typeMeta.bgColor,
+                border: `1.5px solid ${typeMeta.color}`,
+              }}
+            >
+              {typeMeta.label}
+            </div>
+            <div style={{ marginTop: 4 }}>Emitido em {issuedAt}</div>
           </div>
         </div>
+
 
         {/* Identificação */}
         <div
@@ -225,6 +248,7 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
                 patientAge != null ? `${patientAge} ${patientAge === 1 ? 'ano' : 'anos'}` : '—',
             },
             { label: 'Data da Avaliação', value: formattedDate },
+            { label: 'Tipo de Avaliação', value: typeMeta.label },
             {
               label: 'Musicoterapeuta',
               value: professionalData?.name || 'Não informado',
