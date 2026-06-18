@@ -1902,96 +1902,8 @@ export default function Evaluation() {
                             )}
                           </div>
                           
-                          {/* Desktop Table Layout */}
-                          <div className="hidden md:block overflow-x-auto rounded-xl shadow-inner">
-                            <Table className="min-w-full">
-                              <TableHeader>
-                                <TableRow className={`${colors.headerBg}`}>
-                                  <TableHead className="min-w-[200px] font-bold text-white text-base">Parâmetros Avaliados</TableHead>
-                                  <TableHead className="w-16 text-center text-white">
-                                    <span className="block text-sm font-semibold">Não Obs.</span>
-                                    <span className="block text-xs font-medium text-white/70">(0)</span>
-                                  </TableHead>
-                                  <TableHead className="w-16 text-center text-white">
-                                    <span className="block text-sm font-semibold">Emergente</span>
-                                    <span className="block text-xs font-medium text-white/70">(1)</span>
-                                  </TableHead>
-                                  <TableHead className="w-16 text-center text-white">
-                                    <span className="block text-sm font-semibold">Inconsist.</span>
-                                    <span className="block text-xs font-medium text-white/70">(2)</span>
-                                  </TableHead>
-                                  <TableHead className="w-16 text-center text-white">
-                                    <span className="block text-sm font-semibold">Moderado</span>
-                                    <span className="block text-xs font-medium text-white/70">(3)</span>
-                                  </TableHead>
-                                  <TableHead className="w-16 text-center text-white">
-                                    <span className="block text-sm font-semibold">Consistente</span>
-                                    <span className="block text-xs font-medium text-white/70">(4)</span>
-                                  </TableHead>
-                                  <TableHead className="w-16 text-center text-white">
-                                    <span className="block text-sm font-semibold">Excepcional</span>
-                                    <span className="block text-xs font-medium text-white/70">(5)</span>
-                                  </TableHead>
-                                </TableRow>
-                              </TableHeader>
-                              <TableBody>
-                                {subdomain.parameters.map((parameter, paramIndex) => (
-                                  <TableRow key={paramIndex} className="hover:bg-blue-50/50 transition-colors duration-200">
-                                    <TableCell className="text-sm sm:text-base font-semibold text-white py-4 bg-gradient-to-r from-gray-700 to-gray-600 rounded-l-lg">{parameter}</TableCell>
-                                    {["nao_observado", "emergente", "inconsistente", "moderado", "consistente", "excepcional"].map((level, levelIndex) => (
-                                      <TableCell 
-                                        key={level} 
-                                        className={`text-center p-2 sm:p-4 transition-all duration-300 rounded-lg ${
-                                          selections[`${domain.title}-${subdomain.title}-${parameter}`] === level
-                                            ? levelIndex === 0 ? 'bg-gray-200/70 dark:bg-gray-700/50'
-                                            : levelIndex === 1 ? 'bg-red-100/70 dark:bg-red-900/30'
-                                            : levelIndex === 2 ? 'bg-orange-100/70 dark:bg-orange-900/30'
-                                            : levelIndex === 3 ? 'bg-yellow-100/70 dark:bg-yellow-900/30'
-                                            : levelIndex === 4 ? 'bg-lime-100/70 dark:bg-lime-900/30'
-                                            : 'bg-green-100/70 dark:bg-green-900/30'
-                                            : ''
-                                        }`}
-                                      >
-                                        <RadioGroup
-                                          value={selections[`${domain.title}-${subdomain.title}-${parameter}`]}
-                                          onValueChange={(value) => 
-                                            setSelections(prev => ({
-                                              ...prev,
-                                              [`${domain.title}-${subdomain.title}-${parameter}`]: value
-                                            }))
-                                          }
-                                          className="flex justify-center"
-                                        >
-                                          <div className="relative">
-                                            <RadioGroupItem
-                                              value={level}
-                                              id={`${domain.title}-${subdomain.title}-${parameter}-${level}`}
-                                              className="sr-only"
-                                            />
-                                            <label
-                                              htmlFor={`${domain.title}-${subdomain.title}-${parameter}-${level}`}
-                                              className="flex items-center justify-center w-10 h-10 sm:w-8 sm:h-8 cursor-pointer touch-manipulation"
-                                            >
-                                              <span
-                                                className={`block w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 transition-all duration-200 ${getScoreColor(levelToScore(level))} ${
-                                                  selections[`${domain.title}-${subdomain.title}-${parameter}`] === level
-                                                    ? `${getScoreBgColor(levelToScore(level), true)} scale-110 shadow-md`
-                                                    : "bg-background hover:scale-105"
-                                                }`}
-                                              />
-                                            </label>
-                                          </div>
-                                        </RadioGroup>
-                                      </TableCell>
-                                    ))}
-                                  </TableRow>
-                                ))}
-                              </TableBody>
-                            </Table>
-                          </div>
-
-                          {/* Mobile Card Layout */}
-                          <div className="md:hidden space-y-3">
+                          {/* Unified Button Grid Layout — desktop & mobile */}
+                          <div className="space-y-3">
                             {subdomain.parameters.map((parameter, paramIndex) => {
                               const selectionKey = `${domain.title}-${subdomain.title}-${parameter}`;
                               const currentSelection = selections[selectionKey];
@@ -2006,7 +1918,7 @@ export default function Evaluation() {
                               return (
                                 <div key={paramIndex} className="rounded-xl border bg-card p-4 shadow-sm">
                                   <p className="text-sm font-semibold text-foreground mb-3">{parameter}</p>
-                                  <div className="grid grid-cols-3 gap-2">
+                                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                                     {levels.map((lvl) => {
                                       const isSelected = currentSelection === lvl.value;
                                       return (
@@ -2019,14 +1931,14 @@ export default function Evaluation() {
                                               [selectionKey]: lvl.value
                                             }))
                                           }
-                                          className={`h-11 rounded-lg text-xs font-medium border transition-all duration-200 touch-manipulation ${
+                                          className={`h-11 sm:h-12 rounded-lg text-xs sm:text-sm font-medium border transition-all duration-200 touch-manipulation ${
                                             isSelected
                                               ? `${lvl.bgSelected} border-transparent shadow-md scale-[1.02]`
                                               : `${lvl.bg} ${lvl.border} hover:opacity-80`
                                           }`}
                                         >
                                           <span className="block leading-tight">{lvl.label}</span>
-                                          <span className={`block text-[10px] ${isSelected ? 'text-white/80' : 'text-muted-foreground'}`}>({lvl.score})</span>
+                                          <span className={`block text-[10px] sm:text-xs ${isSelected ? 'text-white/80' : 'text-muted-foreground'}`}>({lvl.score})</span>
                                         </button>
                                       );
                                     })}
