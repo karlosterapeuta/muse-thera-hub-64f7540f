@@ -37,6 +37,8 @@ interface GraphReportPDFProps {
   };
   professionalPhotoBase64?: string;
   digitalStampBase64?: string;
+  /** período/tipo da avaliação (chave, valor do seletor ou label) */
+  evaluationType?: string;
 }
 
 const DOMAIN_COLORS: Record<string, string> = {
