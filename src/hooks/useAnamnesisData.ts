@@ -9,6 +9,7 @@ export type AnamnesisItem = {
   updated_at: string;
   patient_name?: string;
   main_clinical_demand?: string;
+  filled_by_guardian?: boolean;
 };
 
 const ANAMNESIS_QUERY_KEY = ["anamnesis"];
