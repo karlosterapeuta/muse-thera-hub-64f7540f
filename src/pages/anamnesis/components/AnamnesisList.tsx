@@ -204,10 +204,15 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <CardTitle className="text-lg">{anamnesis.patient_name}</CardTitle>
-                    <div className="flex items-center gap-2 mt-1">
+                    <div className="flex items-center gap-2 mt-1 flex-wrap">
                       <Badge variant="secondary" className="text-xs">
                         ID: {anamnesis.patient_id.slice(-8)}
                       </Badge>
+                      {anamnesis.filled_by_guardian && (
+                        <Badge className="text-xs bg-cyan-600 hover:bg-cyan-600 text-white">
+                          Preenchida pelo responsável
+                        </Badge>
+                      )}
                     </div>
                   </div>
                 </div>

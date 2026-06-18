@@ -146,6 +146,7 @@ export type Database = {
           family_relationship: string | null
           family_support_network: string | null
           father_name: string | null
+          filled_by_guardian: boolean
           fine_motor_dev: boolean | null
           first_words: boolean | null
           fragile_x_syndrome: boolean | null
@@ -263,6 +264,7 @@ export type Database = {
           family_relationship?: string | null
           family_support_network?: string | null
           father_name?: string | null
+          filled_by_guardian?: boolean
           fine_motor_dev?: boolean | null
           first_words?: boolean | null
           fragile_x_syndrome?: boolean | null
@@ -380,6 +382,7 @@ export type Database = {
           family_relationship?: string | null
           family_support_network?: string | null
           father_name?: string | null
+          filled_by_guardian?: boolean
           fine_motor_dev?: boolean | null
           first_words?: boolean | null
           fragile_x_syndrome?: boolean | null
@@ -461,6 +464,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      anamnesis_invitations: {
+        Row: {
+          anamnesis_id: string | null
+          completed_at: string | null
+          created_at: string
+          expires_at: string
+          id: string
+          patient_id: string
+          professional_id: string
+          status: string
+          token: string
+          updated_at: string
+        }
+        Insert: {
+          anamnesis_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          patient_id: string
+          professional_id: string
+          status?: string
+          token: string
+          updated_at?: string
+        }
+        Update: {
+          anamnesis_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          patient_id?: string
+          professional_id?: string
+          status?: string
+          token?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       assessments: {
         Row: {
