@@ -248,6 +248,7 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
                 patientAge != null ? `${patientAge} ${patientAge === 1 ? 'ano' : 'anos'}` : '—',
             },
             { label: 'Data da Avaliação', value: formattedDate },
+            { label: 'Tipo de Avaliação', value: typeMeta.label },
             {
               label: 'Musicoterapeuta',
               value: professionalData?.name || 'Não informado',
