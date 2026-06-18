@@ -34,6 +34,7 @@ export const useAnamnesisData = () => {
           created_at,
           updated_at,
           main_clinical_demand,
+          filled_by_guardian,
           patients(name)
         `)
         .eq("professional_id", user.id)
@@ -47,6 +48,7 @@ export const useAnamnesisData = () => {
         created_at: item.created_at,
         updated_at: item.updated_at,
         main_clinical_demand: item.main_clinical_demand,
+        filled_by_guardian: (item as any).filled_by_guardian,
         patient_name: item.patients?.name
       })) || [];
     },
