@@ -61,6 +61,7 @@ import { PatientEvaluationCards, PatientWithEvaluations } from "./components/Pat
 import { EvolutionTimeline } from "./components/EvolutionTimeline";
 import { AreasAnalysis } from "./components/AreasAnalysis";
 import { TherapeuticSuggestions } from "./components/TherapeuticSuggestions";
+import { getEvaluationTypeMeta } from "@/utils/evaluationTypes";
 
 interface Patient {
   id: string;
