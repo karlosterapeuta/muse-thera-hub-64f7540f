@@ -19,6 +19,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Trash2, FileText, Loader2, History, CheckCircle2, Download, Pencil, User } from "lucide-react";
 import { SavedEvaluation } from "@/hooks/useEvaluationStorage";
+import { EVALUATION_TYPES, resolveEvaluationMeta } from "@/utils/evaluationTypes";
 
 interface EvaluationHistoryProps {
   evaluations: SavedEvaluation[];
@@ -32,17 +33,6 @@ interface EvaluationHistoryProps {
   maxComparisons?: number;
 }
 
-const evaluationTypeLabels: Record<string, string> = {
-  avaliacao_inicial: "Avaliação Inicial",
-  avaliacao_progresso: "Avaliação de Progresso",
-  avaliacao_periodica: "Avaliação Periódica",
-  avaliacao_final: "Avaliação Final",
-  musetera_evaluation: "Escala MuseTera",
-  "1": "Avaliação Inicial",
-  "2": "Avaliação de Progresso",
-  "3": "Avaliação Periódica",
-  "4": "Avaliação Final",
-};
 
 export function EvaluationHistory({
   evaluations,
