@@ -656,13 +656,22 @@ export default function AnamnesisFormWrapper({
           <CardContent className="p-8">
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* Patient Selection */}
-              <div className="bg-card rounded-xl p-6 border border-border shadow-sm">
+              <div className="bg-card rounded-xl p-6 border border-border shadow-sm space-y-4">
                 <PatientSelect
                   patients={patients}
                   selectedPatient={selectedPatient}
                   onSelect={setSelectedPatient}
                   disabled={!!editPatientId}
                 />
+                {selectedPatient && professionalId && (
+                  <div className="flex justify-end border-t border-border pt-4">
+                    <SendAnamnesisLinkDialog
+                      professionalId={professionalId}
+                      patientId={selectedPatient}
+                      patientName={patients.find((p) => p.id === selectedPatient)?.name || "o paciente"}
+                    />
+                  </div>
+                )}
               </div>
               
               {/* Form Content in Tabs */}
