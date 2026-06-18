@@ -1011,6 +1011,7 @@ export default function Evaluation() {
           overallScore={savedOverallScore}
           professionalPhotoBase64={professionalPhotoBase64}
           digitalStampBase64={digitalStampBase64}
+          evaluationType={evaluation.type || savedContent.evaluationType}
         />,
         { filename }
       );
