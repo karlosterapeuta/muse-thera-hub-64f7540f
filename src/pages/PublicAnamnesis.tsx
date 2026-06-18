@@ -29,8 +29,8 @@ export default function PublicAnamnesis() {
       }
       try {
         const { data, error } = await supabase.functions.invoke(
-          `get-public-anamnesis?token=${encodeURIComponent(token)}`,
-          { method: "GET" }
+          "get-public-anamnesis",
+          { method: "POST", body: { token } }
         );
         if (error) {
           // Try to read the error context body
