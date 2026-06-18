@@ -205,9 +205,27 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
             <div style={{ fontWeight: 700, color: '#0f172a' }}>
               Avaliação Musicoterapêutica
             </div>
-            <div>Emitido em {issuedAt}</div>
+            <div
+              style={{
+                display: 'inline-block',
+                marginTop: 4,
+                padding: '3px 10px',
+                borderRadius: 999,
+                fontSize: 9,
+                fontWeight: 800,
+                letterSpacing: '0.4px',
+                textTransform: 'uppercase',
+                color: typeMeta.color,
+                background: typeMeta.bgColor,
+                border: `1.5px solid ${typeMeta.color}`,
+              }}
+            >
+              {typeMeta.label}
+            </div>
+            <div style={{ marginTop: 4 }}>Emitido em {issuedAt}</div>
           </div>
         </div>
+
 
         {/* Identificação */}
         <div
