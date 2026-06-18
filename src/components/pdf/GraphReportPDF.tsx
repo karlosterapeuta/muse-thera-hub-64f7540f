@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { StaticChart } from '@/components/StaticChart';
 import type { ProfessionalData } from '@/hooks/useProfessionalData';
+import { getEvaluationTypeMeta } from '@/utils/evaluationTypes';
 
 interface EvaluationDomain {
   title: string;
