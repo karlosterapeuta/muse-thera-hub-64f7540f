@@ -9,6 +9,7 @@ import { ModernAnamnesisHeader } from "./components/ModernAnamnesisHeader";
 import { ModernTabsNavigation } from "./components/ModernTabsNavigation";
 import { ModernActionButtons } from "./components/ModernActionButtons";
 import { AnamnesisValidationSummary } from "./components/AnamnesisValidationSummary";
+import { SendAnamnesisLinkDialog } from "./components/SendAnamnesisLinkDialog";
 import { useAnamnesisValidation } from "./hooks/useAnamnesisValidation";
 import { generateProfessionalAnamnesePDF } from "@/utils/anamnesisePDFGenerator";
 import { imageUrlToBase64 } from "@/utils/imageToBase64";
