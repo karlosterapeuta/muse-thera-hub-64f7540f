@@ -7,8 +7,13 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const url = new URL(req.url)
-    const token = url.searchParams.get('token')?.trim()
+    let token = new URL(req.url).searchParams.get('token')?.trim()
+    if (!token) {
+      try {
+        const body = await req.json()
+        token = (body?.token as string | undefined)?.trim()
+      } catch (_) { /* no body */ }
+    }
 
     if (!token) {
       return new Response(JSON.stringify({ error: 'Token não informado.' }), {
