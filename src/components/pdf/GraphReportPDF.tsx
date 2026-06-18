@@ -103,7 +103,9 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
   overallScore,
   professionalPhotoBase64,
   digitalStampBase64,
+  evaluationType,
 }) => {
+  const typeMeta = getEvaluationTypeMeta(evaluationType);
   const formattedDate = format(evaluationDate, "dd 'de' MMMM 'de' yyyy", {
     locale: ptBR,
   });
