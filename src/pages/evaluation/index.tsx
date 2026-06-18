@@ -1597,11 +1597,22 @@ export default function Evaluation() {
                   <SelectValue placeholder="Selecione a avaliação" />
                 </SelectTrigger>
                 <SelectContent className="border-0 shadow-xl">
-                  <SelectItem value="1">Avaliação Inicial</SelectItem>
-                  <SelectItem value="2">Avaliação de Progresso</SelectItem>
-                  <SelectItem value="3">Avaliação Periódica</SelectItem>
-                  <SelectItem value="4">Avaliação Final</SelectItem>
+                  {["1", "2", "3", "4"].map((v) => {
+                    const meta = getEvaluationTypeMeta(v);
+                    return (
+                      <SelectItem key={v} value={v}>
+                        <span className="flex items-center gap-2">
+                          <span
+                            className="inline-block h-2.5 w-2.5 rounded-full"
+                            style={{ backgroundColor: meta.color }}
+                          />
+                          {meta.label}
+                        </span>
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
+
               </Select>
 
               <TooltipProvider>
