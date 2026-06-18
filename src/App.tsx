@@ -158,6 +158,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/verify-receipt/:id" element={<VerifyReceipt />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/anamnese-publica/:token" element={<PublicAnamnesis />} />
           <Route path="/creator-login" element={<CreatorLoginPage />} />
           <Route path="/creator-register" element={<CreatorRegisterPage />} />
           <Route path="/creator-dashboard" element={<CreatorDashboardPage />} />
