@@ -50,6 +50,7 @@ import InviteCodes from "./pages/InviteCodes";
 import DigitalStamp from "./pages/DigitalStamp";
 import PatientHistory from "./pages/patient-history";
 import Install from "./pages/Install";
+import PublicAnamnesis from "./pages/PublicAnamnesis";
 
 // Process pages
 import MusicoterapiaReport from "./pages/processes/musicoterapia";
