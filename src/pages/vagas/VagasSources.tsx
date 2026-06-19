@@ -150,6 +150,26 @@ export default function VagasSources() {
                                 <Instagram className="h-3 w-3" /> TEA
                               </a>
                             </Button>
+                            <Button
+                              asChild
+                              size="sm"
+                              variant="outline"
+                              className="h-7 px-2 text-[11px] gap-1"
+                            >
+                              <a href={st.google} target="_blank" rel="noopener noreferrer">
+                                <Globe className="h-3 w-3" /> Google
+                              </a>
+                            </Button>
+                            <Button
+                              asChild
+                              size="sm"
+                              variant="outline"
+                              className="h-7 px-2 text-[11px] gap-1"
+                            >
+                              <a href={st.facebook} target="_blank" rel="noopener noreferrer">
+                                <Facebook className="h-3 w-3" /> Facebook
+                              </a>
+                            </Button>
                           </div>
                         </div>
                       ))}
