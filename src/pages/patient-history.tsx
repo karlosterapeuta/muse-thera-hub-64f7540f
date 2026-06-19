@@ -1181,9 +1181,9 @@ export default function PatientHistoryPage() {
                         setSearchTerm("");
                         setActiveTab("timeline");
                       }}
-                      className="group relative flex items-center gap-3 p-4 rounded-xl border border-border bg-card hover:border-primary/40 hover:shadow-lg transition-all duration-300 text-left"
+                      className="group relative flex items-center gap-3 p-4 rounded-2xl border border-border/40 bg-card/70 backdrop-blur-sm hover:border-primary/50 hover:bg-card/90 hover:shadow-[0_8px_30px_-12px_hsl(var(--primary)/0.4)] hover:-translate-y-0.5 transition-all duration-300 text-left"
                     >
-                      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-purple-500/20 text-primary font-bold text-sm shrink-0">
+                      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-primary/30 to-amber-400/30 text-primary font-bold text-sm shrink-0 ring-1 ring-primary/20">
                         {patient.name.charAt(0).toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -1195,7 +1195,8 @@ export default function PatientHistoryPage() {
                           {patient.responsible && ` · ${patient.responsible}`}
                         </p>
                       </div>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground/40 group-hover:text-primary transition-colors" />
+                      <ChevronRight className="h-4 w-4 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+
                     </motion.button>
                   ))}
                 </div>
