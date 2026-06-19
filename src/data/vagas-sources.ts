@@ -67,6 +67,31 @@ const nationalBoards: VagaSource[] = [
     description: "Vagas e concursos do Sistema Nacional de Emprego",
     url: `https://www.google.com/search?q=${q("concurso musicoterapeuta edital 2025")}`,
   },
+  {
+    name: "Empregos.com.br",
+    description: "Portal tradicional com vagas em saúde, educação e terapias",
+    url: `https://www.empregos.com.br/vagas/${q("musicoterapeuta")}`,
+  },
+  {
+    name: "Jooble",
+    description: "Buscador que agrega vagas de centenas de sites num só lugar",
+    url: `https://br.jooble.org/empregos-${q("musicoterapeuta")}`,
+  },
+  {
+    name: "SimplyHired Brasil",
+    description: "Agregador internacional com vagas de terapias no Brasil",
+    url: `https://www.simplyhired.com.br/search?q=${q("musicoterapeuta")}`,
+  },
+  {
+    name: "99empregos / Trabalha Brasil",
+    description: "Vagas regionais e de pequenas clínicas em todo o país",
+    url: `https://www.trabalhabrasil.com.br/vagas-empregos/${q("musicoterapeuta")}`,
+  },
+  {
+    name: "Concursos Públicos (PCI / JC)",
+    description: "Editais de prefeituras, APAEs e secretarias de saúde/educação",
+    url: `https://www.pciconcursos.com.br/busca/?q=${q("musicoterapeuta")}`,
+  },
 ];
 
 // ---------------------------------------------------------------------------
