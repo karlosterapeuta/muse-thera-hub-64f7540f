@@ -67,8 +67,9 @@ function synthFallback(animal: AnimalMusician) {
   osc.type = animal.section === "cordas" ? "sawtooth" : animal.section === "metais" ? "square" : "triangle";
   osc.frequency.value = animal.frequency;
   gain.gain.setValueAtTime(0, t0);
-  gain.gain.linearRampToValueAtTime(0.3, t0 + 0.02);
+  gain.gain.linearRampToValueAtTime(0.3 * masterVolume, t0 + 0.02);
   gain.gain.linearRampToValueAtTime(0, t0 + 1);
+
   osc.connect(gain);
   gain.connect(ctx.destination);
   osc.start(t0);
