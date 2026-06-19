@@ -167,31 +167,46 @@ export default function PatientsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background/50">
-      <div className="container mx-auto py-6 md:py-10 space-y-8 animate-fadeIn max-w-7xl">
-        {/* Header Section com Design Moderno */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-primary font-medium tracking-wide uppercase text-xs mb-1">
-              <div className="h-px w-8 bg-primary/30" />
-              Gestão de Atendimento
+    <div className="min-h-screen relative w-full overflow-x-hidden">
+      <CosmicBackground />
+
+      {/* Ambient cosmic blobs */}
+      <div className="pointer-events-none absolute inset-0 -z-0 overflow-hidden">
+        <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
+        <div className="absolute top-1/3 -right-32 h-96 w-96 rounded-full bg-amber-400/10 blur-3xl" />
+        <div className="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-primary/5 blur-3xl" />
+      </div>
+
+      <div className="relative z-10 container mx-auto py-6 md:py-10 space-y-8 animate-fadeIn max-w-7xl px-4">
+        {/* Elegant Hero Header */}
+        <div className="relative overflow-hidden rounded-3xl border border-border/40 bg-card/60 backdrop-blur-xl shadow-2xl">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-amber-400/10 pointer-events-none" />
+          <div className="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
+          <div className="relative flex flex-col md:flex-row md:items-end justify-between gap-6 p-6 md:p-10">
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-primary font-semibold tracking-[0.2em] uppercase text-xs">
+                <span className="inline-flex items-center justify-center h-6 w-6 rounded-lg bg-primary/15 text-primary">
+                  <HeartPulse className="h-3.5 w-3.5" />
+                </span>
+                Gestão de Atendimento
+              </div>
+              <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-none bg-gradient-to-br from-foreground via-foreground to-primary bg-clip-text text-transparent">
+                Pacientes
+              </h1>
+              <p className="text-muted-foreground text-base md:text-lg max-w-xl leading-relaxed">
+                Centralize o histórico, anamneses e informações vitais dos seus pacientes em um só lugar.
+              </p>
             </div>
-            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-primary via-purple-600 to-indigo-600 bg-clip-text text-transparent">
-              Pacientes
-            </h1>
-            <p className="text-muted-foreground text-lg max-w-xl">
-              Centralize o histórico, anamneses e informações vitais dos seus pacientes em um só lugar.
-            </p>
+
+            <Button 
+              onClick={() => setIsAddDialogOpen(true)} 
+              size="lg"
+              className="bg-gradient-to-r from-primary to-amber-500 hover:from-primary/90 hover:to-amber-500/90 text-primary-foreground shadow-xl hover:shadow-primary/30 transition-all duration-300 transform hover:-translate-y-1 px-8 rounded-2xl font-semibold"
+            >
+              <UserRoundPlus className="h-5 w-5 mr-2" />
+              Novo Paciente
+            </Button>
           </div>
-          
-          <Button 
-            onClick={() => setIsAddDialogOpen(true)} 
-            size="lg"
-            className="bg-primary hover:bg-primary/90 text-white shadow-xl hover:shadow-primary/20 transition-all duration-300 transform hover:-translate-y-1 px-8 rounded-xl font-semibold"
-          >
-            <UserRoundPlus className="h-5 w-5 mr-2" />
-            Novo Paciente
-          </Button>
         </div>
 
         {/* Stats & Search Row */}
@@ -205,28 +220,28 @@ export default function PatientsPage() {
               placeholder="Pesquisar por nome ou responsável..."
               value={searchTerm}
               onChange={handleSearchChange}
-              className="pl-12 py-6 bg-card border-none shadow-sm rounded-2xl text-lg focus-visible:ring-2 focus-visible:ring-primary/20 transition-all placeholder:text-muted-foreground/60"
+              className="pl-12 py-6 bg-card/70 backdrop-blur-sm border border-border/40 shadow-lg rounded-2xl text-lg focus-visible:ring-2 focus-visible:ring-primary/30 transition-all placeholder:text-muted-foreground/60"
             />
           </div>
           
-          <div className="flex items-center justify-between lg:justify-end gap-4 p-4 bg-card/50 backdrop-blur-sm rounded-2xl border border-border/50 shadow-sm">
+          <div className="flex items-center justify-between lg:justify-end gap-4 p-4 bg-card/60 backdrop-blur-xl rounded-2xl border border-border/40 shadow-lg">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary/10 rounded-lg">
+              <div className="p-2.5 bg-primary/10 rounded-xl ring-1 ring-primary/20">
                 <Users className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <div className="text-2xl font-bold">{patients.length}</div>
-                <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Total Ativos</div>
+                <div className="text-2xl font-bold leading-none">{patients.length}</div>
+                <div className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mt-1">Total Ativos</div>
               </div>
             </div>
             <div className="h-10 w-px bg-border/50 hidden sm:block" />
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-500/10 rounded-lg">
-                <Sparkles className="h-5 w-5 text-green-600" />
+              <div className="p-2.5 bg-emerald-500/10 rounded-xl ring-1 ring-emerald-500/20">
+                <Sparkles className="h-5 w-5 text-emerald-500" />
               </div>
               <div>
-                <div className="text-2xl font-bold">{patients.filter(p => p.has_anamnesis).length}</div>
-                <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Anamneses</div>
+                <div className="text-2xl font-bold leading-none">{patients.filter(p => p.has_anamnesis).length}</div>
+                <div className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mt-1">Anamneses</div>
               </div>
             </div>
           </div>
