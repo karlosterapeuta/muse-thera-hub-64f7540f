@@ -1085,8 +1085,14 @@ export default function PatientHistoryPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto py-4 md:py-8 space-y-6 animate-fadeIn">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      <CosmicBackground />
+      {/* Cosmic atmosphere blobs */}
+      <div className="pointer-events-none absolute -top-32 -left-24 h-[28rem] w-[28rem] rounded-full bg-primary/10 blur-[120px]" />
+      <div className="pointer-events-none absolute top-1/3 -right-32 h-[26rem] w-[26rem] rounded-full bg-amber-400/10 blur-[120px]" />
+      <div className="pointer-events-none absolute bottom-0 left-1/4 h-[22rem] w-[22rem] rounded-full bg-primary/5 blur-[120px]" />
+
+      <div className="container mx-auto py-4 md:py-8 space-y-6 animate-fadeIn relative z-10">
         {/* Back button */}
         <div className="flex justify-start">
           <Button
@@ -1101,19 +1107,23 @@ export default function PatientHistoryPage() {
         </div>
 
         {/* Hero */}
-        <div className="text-center space-y-3 mb-6">
-          <div className="relative inline-flex items-center justify-center w-14 h-14 bg-gradient-to-r from-primary to-purple-600 rounded-2xl shadow-2xl">
-            <History className="h-7 w-7 text-white" />
-          </div>
-          <div className="space-y-1.5">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Histórico do Paciente
-            </h1>
-            <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto">
-              Visualize todo o percurso terapêutico com analytics detalhados
-            </p>
+        <div className="relative overflow-hidden rounded-3xl border border-border/40 bg-card/60 backdrop-blur-xl shadow-2xl">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-amber-400/10" />
+          <div className="relative px-6 py-8 md:px-10 md:py-10 flex flex-col items-center text-center gap-4">
+            <div className="relative inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary via-amber-400 to-primary shadow-[0_0_40px_-8px_hsl(var(--primary))]">
+              <History className="h-8 w-8 text-primary-foreground" />
+            </div>
+            <div className="space-y-2">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight bg-gradient-to-br from-foreground via-foreground to-primary bg-clip-text text-transparent">
+                Histórico do Paciente
+              </h1>
+              <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto">
+                Visualize todo o percurso terapêutico com analytics detalhados
+              </p>
+            </div>
           </div>
         </div>
+
 
         {!selectedPatient ? (
           /* Patient Selection */
