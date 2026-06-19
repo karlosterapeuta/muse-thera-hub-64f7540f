@@ -189,6 +189,36 @@ const socialSources: VagaSource[] = [
     description: "Grupos que reúnem vagas de clínicas de autismo",
     url: `https://www.facebook.com/search/groups/?q=${q("vagas terapeuta autismo TEA")}`,
   },
+  {
+    name: "Instagram #vagasaba",
+    description: "Clínicas ABA que recrutam equipe multidisciplinar para TEA",
+    url: "https://www.instagram.com/explore/tags/vagasaba/",
+  },
+  {
+    name: "Instagram #musicoterapia",
+    description: "Profissionais e clínicas que postam oportunidades e parcerias",
+    url: "https://www.instagram.com/explore/tags/musicoterapia/",
+  },
+  {
+    name: "Instagram #clinicamultidisciplinar",
+    description: "Centros multidisciplinares de TEA que divulgam contratações",
+    url: "https://www.instagram.com/explore/tags/clinicamultidisciplinar/",
+  },
+  {
+    name: "Instagram #terapiaocupacionaltea",
+    description: "Rede de clínicas de autismo — vagas frequentes em stories",
+    url: "https://www.instagram.com/explore/tags/terapiaocupacionaltea/",
+  },
+  {
+    name: "Facebook — Musicoterapia Brasil",
+    description: "Comunidade nacional de musicoterapeutas com vagas e substituições",
+    url: `https://www.facebook.com/search/groups/?q=${q("musicoterapia brasil")}`,
+  },
+  {
+    name: "LinkedIn #musicoterapia",
+    description: "Publicações e vagas marcadas por clínicas e recrutadores",
+    url: `https://www.linkedin.com/feed/hashtag/?keywords=${q("musicoterapia")}`,
+  },
 ];
 
 // ---------------------------------------------------------------------------
