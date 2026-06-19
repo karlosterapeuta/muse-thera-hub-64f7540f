@@ -62,6 +62,7 @@ import {
   ResponsiveContainer, PieChart as RechartsPieChart, Pie, Cell, Legend,
   BarChart, Bar,
 } from "recharts";
+import { CosmicBackground } from "@/components/auth/CosmicBackground";
 
 type HistoryType =
   | "anamnesis"
