@@ -26,16 +26,26 @@ const activeAudios = new Set<HTMLAudioElement>();
 const activeSynths = new Set<{ osc: OscillatorNode; gain: GainNode }>();
 const activeTimeouts = new Set<ReturnType<typeof setTimeout>>();
 
+// ---------- Master volume ----------
+let masterVolume = 1;
+export function setMasterVolume(v: number) {
+  masterVolume = Math.min(1, Math.max(0, v));
+}
+export function getMasterVolume() {
+  return masterVolume;
+}
+
 function playUrl(url: string, volume = 1): Promise<void> {
   // Clone so overlapping clicks don't cut each other off
   const base = getAudio(url);
   const el = base.cloneNode(true) as HTMLAudioElement;
-  el.volume = volume;
+  el.volume = Math.min(1, Math.max(0, volume * masterVolume));
   activeAudios.add(el);
   el.addEventListener("ended", () => activeAudios.delete(el));
   const p = el.play();
   return p instanceof Promise ? p.then(() => {}) : Promise.resolve();
 }
+
 
 // ---------- Synth fallback (used only if URL fails) ----------
 
