@@ -4,6 +4,7 @@ import { RefreshCw, Maximize, X, Music, Star, Briefcase, Smartphone, Globe, Tren
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
+import VagasSources from "@/pages/vagas/VagasSources";
 
 export default function VagasEmbed() {
   const [isLoading, setIsLoading] = useState(true);
