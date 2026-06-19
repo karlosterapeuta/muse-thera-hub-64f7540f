@@ -31,7 +31,7 @@ export function ModernAnamnesisHeader({ editMode = false }: ModernAnamnesisHeade
                 Avaliação Clínica · Musicoterapia
               </div>
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight bg-gradient-to-br from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
-                {editMode ? "Editar Anamnese" : "Nova Anamnese Musicoterapêutica"}
+                {editMode ? "Editar Anamnese" : "Anamnese MuseTera"}
               </h1>
               <p className="text-sm sm:text-base text-muted-foreground max-w-2xl leading-relaxed">
                 Avaliação completa do paciente através de uma abordagem musicoterapêutica integral.
