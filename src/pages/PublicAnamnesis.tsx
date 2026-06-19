@@ -91,7 +91,7 @@ export default function PublicAnamnesis() {
       <div className="relative z-10 w-full max-w-4xl mx-auto px-3 py-8">
         <div className="flex flex-col items-center text-center mb-8">
           <img
-            src="/lovable-uploads/ln-new.png"
+            src="/lovable-uploads/musetera-logo-new.png"
             alt="MuseTera"
             className="h-20 w-auto mb-4 drop-shadow-[0_0_20px_rgba(234,179,8,0.5)]"
           />
