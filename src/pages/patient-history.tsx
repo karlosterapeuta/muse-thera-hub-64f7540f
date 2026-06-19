@@ -1127,11 +1127,11 @@ export default function PatientHistoryPage() {
 
         {!selectedPatient ? (
           /* Patient Selection */
-          <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm">
-            <CardHeader className="bg-gradient-to-r from-primary/5 via-purple-500/5 to-pink-500/5 border-b border-border">
+          <Card className="border border-border/40 shadow-2xl bg-card/70 backdrop-blur-xl rounded-3xl overflow-hidden">
+            <CardHeader className="bg-gradient-to-r from-primary/10 via-transparent to-amber-400/10 border-b border-border/40">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-gradient-to-r from-primary to-purple-600 rounded-xl">
-                  <Users className="h-5 w-5 text-white" />
+                <div className="p-2.5 bg-gradient-to-br from-primary to-amber-400 rounded-xl shadow-lg">
+                  <Users className="h-5 w-5 text-primary-foreground" />
                 </div>
                 <div>
                   <CardTitle className="text-xl font-bold text-foreground">
@@ -1146,7 +1146,7 @@ export default function PatientHistoryPage() {
             <CardContent className="p-6">
               {/* Search */}
               <div className="relative max-w-md mx-auto mb-6">
-                <div className="flex items-center bg-background border-2 border-border rounded-xl p-3 hover:border-primary/30 transition-colors">
+                <div className="flex items-center bg-card/70 backdrop-blur-sm border border-border/40 rounded-xl p-3 hover:border-primary/40 transition-colors">
                   <Search className="h-4 w-4 text-muted-foreground mr-2" />
                   <Input
                     type="search"
@@ -1157,6 +1157,7 @@ export default function PatientHistoryPage() {
                   />
                 </div>
               </div>
+
 
               {loadingPatients ? (
                 <div className="flex items-center justify-center py-12">
