@@ -235,7 +235,7 @@ export default function OrquestraAnimal() {
             score={quizScore}
             rounds={quizRounds}
             feedback={quizFeedback}
-            lastAnswerName={null}
+            lastAnswerName={lastTargetName}
             onNewRound={startQuizRound}
             onReplay={replayQuiz}
           />
