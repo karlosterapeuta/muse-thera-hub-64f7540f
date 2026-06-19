@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, MapPin, ChevronDown, Linkedin, Search, Instagram } from "lucide-react";
+import { ExternalLink, MapPin, ChevronDown, Linkedin, Search, Instagram, Globe, Facebook } from "lucide-react";
 import {
   vagaCategories,
   stateSourcesByRegion,
@@ -148,6 +148,26 @@ export default function VagasSources() {
                             >
                               <a href={st.instagram} target="_blank" rel="noopener noreferrer">
                                 <Instagram className="h-3 w-3" /> TEA
+                              </a>
+                            </Button>
+                            <Button
+                              asChild
+                              size="sm"
+                              variant="outline"
+                              className="h-7 px-2 text-[11px] gap-1"
+                            >
+                              <a href={st.google} target="_blank" rel="noopener noreferrer">
+                                <Globe className="h-3 w-3" /> Google
+                              </a>
+                            </Button>
+                            <Button
+                              asChild
+                              size="sm"
+                              variant="outline"
+                              className="h-7 px-2 text-[11px] gap-1"
+                            >
+                              <a href={st.facebook} target="_blank" rel="noopener noreferrer">
+                                <Facebook className="h-3 w-3" /> Facebook
                               </a>
                             </Button>
                           </div>

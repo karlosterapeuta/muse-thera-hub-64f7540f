@@ -67,6 +67,31 @@ const nationalBoards: VagaSource[] = [
     description: "Vagas e concursos do Sistema Nacional de Emprego",
     url: `https://www.google.com/search?q=${q("concurso musicoterapeuta edital 2025")}`,
   },
+  {
+    name: "Empregos.com.br",
+    description: "Portal tradicional com vagas em saúde, educação e terapias",
+    url: `https://www.empregos.com.br/vagas/${q("musicoterapeuta")}`,
+  },
+  {
+    name: "Jooble",
+    description: "Buscador que agrega vagas de centenas de sites num só lugar",
+    url: `https://br.jooble.org/empregos-${q("musicoterapeuta")}`,
+  },
+  {
+    name: "SimplyHired Brasil",
+    description: "Agregador internacional com vagas de terapias no Brasil",
+    url: `https://www.simplyhired.com.br/search?q=${q("musicoterapeuta")}`,
+  },
+  {
+    name: "99empregos / Trabalha Brasil",
+    description: "Vagas regionais e de pequenas clínicas em todo o país",
+    url: `https://www.trabalhabrasil.com.br/vagas-empregos/${q("musicoterapeuta")}`,
+  },
+  {
+    name: "Concursos Públicos (PCI / JC)",
+    description: "Editais de prefeituras, APAEs e secretarias de saúde/educação",
+    url: `https://www.pciconcursos.com.br/busca/?q=${q("musicoterapeuta")}`,
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -103,6 +128,31 @@ const specializedSources: VagaSource[] = [
     description: "Pesquisa ampla por clínicas de autismo com vagas abertas",
     url: `https://www.google.com/search?q=${q("clínica TEA contratando musicoterapeuta vaga")}`,
   },
+  {
+    name: "Mundo Azul / Tismoo / Autismo & Realidade",
+    description: "Institutos e portais de referência em TEA que divulgam vagas",
+    url: `https://www.google.com/search?q=${q("vaga musicoterapeuta instituto autismo TEA ABA")}`,
+  },
+  {
+    name: "Redes ABA (Genial, Liber, Method, Vítwo)",
+    description: "Grandes redes de terapia ABA que contratam em vários estados",
+    url: `https://www.google.com/search?q=${q("rede clínica ABA TEA vagas musicoterapeuta carreiras")}`,
+  },
+  {
+    name: "APAE Brasil",
+    description: "Rede nacional de atendimento a pessoas com deficiência",
+    url: `https://www.google.com/search?q=${q("APAE vaga musicoterapeuta edital seleção")}`,
+  },
+  {
+    name: "AMA — Associação de Amigos do Autista",
+    description: "Associações de autismo com processos seletivos abertos",
+    url: `https://www.google.com/search?q=${q("AMA associação autista vaga musicoterapeuta")}`,
+  },
+  {
+    name: "Sociedade Brasileira de Musicoterapia",
+    description: "Notícias, eventos e divulgação de oportunidades da categoria",
+    url: `https://www.google.com/search?q=${q("sociedade brasileira de musicoterapia vagas oportunidades")}`,
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -138,6 +188,36 @@ const socialSources: VagaSource[] = [
     name: "Facebook — Vagas para Terapeutas TEA",
     description: "Grupos que reúnem vagas de clínicas de autismo",
     url: `https://www.facebook.com/search/groups/?q=${q("vagas terapeuta autismo TEA")}`,
+  },
+  {
+    name: "Instagram #vagasaba",
+    description: "Clínicas ABA que recrutam equipe multidisciplinar para TEA",
+    url: "https://www.instagram.com/explore/tags/vagasaba/",
+  },
+  {
+    name: "Instagram #musicoterapia",
+    description: "Profissionais e clínicas que postam oportunidades e parcerias",
+    url: "https://www.instagram.com/explore/tags/musicoterapia/",
+  },
+  {
+    name: "Instagram #clinicamultidisciplinar",
+    description: "Centros multidisciplinares de TEA que divulgam contratações",
+    url: "https://www.instagram.com/explore/tags/clinicamultidisciplinar/",
+  },
+  {
+    name: "Instagram #terapiaocupacionaltea",
+    description: "Rede de clínicas de autismo — vagas frequentes em stories",
+    url: "https://www.instagram.com/explore/tags/terapiaocupacionaltea/",
+  },
+  {
+    name: "Facebook — Musicoterapia Brasil",
+    description: "Comunidade nacional de musicoterapeutas com vagas e substituições",
+    url: `https://www.facebook.com/search/groups/?q=${q("musicoterapia brasil")}`,
+  },
+  {
+    name: "LinkedIn #musicoterapia",
+    description: "Publicações e vagas marcadas por clínicas e recrutadores",
+    url: `https://www.linkedin.com/feed/hashtag/?keywords=${q("musicoterapia")}`,
   },
 ];
 
@@ -207,6 +287,8 @@ export type StateSource = {
   linkedin: string;
   indeed: string;
   instagram: string;
+  google: string;
+  facebook: string;
 };
 
 export const stateSourcesByRegion: { region: string; states: StateSource[] }[] =
@@ -221,6 +303,12 @@ export const stateSourcesByRegion: { region: string; states: StateSource[] }[] =
       indeed: `https://br.indeed.com/jobs?q=${q("musicoterapeuta")}&l=${q(name)}`,
       instagram: `https://www.google.com/search?q=${q(
         `clínica TEA ${name} musicoterapeuta vaga instagram`
+      )}`,
+      google: `https://www.google.com/search?q=${q(
+        `vaga musicoterapeuta ${name} clínica autismo TEA ABA`
+      )}`,
+      facebook: `https://www.facebook.com/search/groups/?q=${q(
+        `vagas musicoterapia ${name}`
       )}`,
     })),
   }));
