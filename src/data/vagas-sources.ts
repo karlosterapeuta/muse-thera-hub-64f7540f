@@ -128,6 +128,31 @@ const specializedSources: VagaSource[] = [
     description: "Pesquisa ampla por clínicas de autismo com vagas abertas",
     url: `https://www.google.com/search?q=${q("clínica TEA contratando musicoterapeuta vaga")}`,
   },
+  {
+    name: "Mundo Azul / Tismoo / Autismo & Realidade",
+    description: "Institutos e portais de referência em TEA que divulgam vagas",
+    url: `https://www.google.com/search?q=${q("vaga musicoterapeuta instituto autismo TEA ABA")}`,
+  },
+  {
+    name: "Redes ABA (Genial, Liber, Method, Vítwo)",
+    description: "Grandes redes de terapia ABA que contratam em vários estados",
+    url: `https://www.google.com/search?q=${q("rede clínica ABA TEA vagas musicoterapeuta carreiras")}`,
+  },
+  {
+    name: "APAE Brasil",
+    description: "Rede nacional de atendimento a pessoas com deficiência",
+    url: `https://www.google.com/search?q=${q("APAE vaga musicoterapeuta edital seleção")}`,
+  },
+  {
+    name: "AMA — Associação de Amigos do Autista",
+    description: "Associações de autismo com processos seletivos abertos",
+    url: `https://www.google.com/search?q=${q("AMA associação autista vaga musicoterapeuta")}`,
+  },
+  {
+    name: "Sociedade Brasileira de Musicoterapia",
+    description: "Notícias, eventos e divulgação de oportunidades da categoria",
+    url: `https://www.google.com/search?q=${q("sociedade brasileira de musicoterapia vagas oportunidades")}`,
+  },
 ];
 
 // ---------------------------------------------------------------------------
