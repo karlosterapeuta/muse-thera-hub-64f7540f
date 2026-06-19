@@ -313,6 +313,133 @@ export const stateSourcesByRegion: { region: string; states: StateSource[] }[] =
     })),
   }));
 
+// ---------------------------------------------------------------------------
+// TEA clinics / networks by major capital (careers + recruitment searches)
+// ---------------------------------------------------------------------------
+export type ClinicSource = {
+  city: string;
+  uf: string;
+  clinics: VagaSource[];
+};
+
+export const clinicsByCapital: ClinicSource[] = [
+  {
+    city: "São Paulo",
+    uf: "SP",
+    clinics: [
+      {
+        name: "Genial Care",
+        description: "Rede de terapia para TEA — vagas para equipe multidisciplinar",
+        url: "https://genialcare.com.br/trabalhe-conosco",
+      },
+      {
+        name: "Method Centro Terapêutico",
+        description: "Centro ABA com unidades em SP — contrata terapeutas",
+        url: `https://www.google.com/search?q=${q("Method centro terapêutico São Paulo trabalhe conosco musicoterapeuta")}`,
+      },
+      {
+        name: "AMA — Associação de Amigos do Autista",
+        description: "Referência histórica em autismo em São Paulo",
+        url: `https://www.google.com/search?q=${q("AMA autismo São Paulo vaga musicoterapeuta")}`,
+      },
+    ],
+  },
+  {
+    city: "Rio de Janeiro",
+    uf: "RJ",
+    clinics: [
+      {
+        name: "Tismoo / Clínicas TEA-RJ",
+        description: "Centros de neurodesenvolvimento e autismo no Rio",
+        url: `https://www.google.com/search?q=${q("clínica autismo TEA Rio de Janeiro vaga musicoterapeuta trabalhe conosco")}`,
+      },
+      {
+        name: "Instituto Priorit / Espaço Azul",
+        description: "Atendimento multidisciplinar a TEA na cidade do Rio",
+        url: `https://www.google.com/search?q=${q("instituto autismo Rio de Janeiro musicoterapia vaga")}`,
+      },
+    ],
+  },
+  {
+    city: "Belo Horizonte",
+    uf: "MG",
+    clinics: [
+      {
+        name: "Redes ABA / Clínicas TEA-BH",
+        description: "Clínicas de autismo em BH com equipe multidisciplinar",
+        url: `https://www.google.com/search?q=${q("clínica TEA Belo Horizonte vaga musicoterapeuta trabalhe conosco")}`,
+      },
+    ],
+  },
+  {
+    city: "Brasília",
+    uf: "DF",
+    clinics: [
+      {
+        name: "Clínicas TEA — DF",
+        description: "Centros de autismo no Distrito Federal contratando",
+        url: `https://www.google.com/search?q=${q("clínica autismo TEA Brasília DF vaga musicoterapeuta")}`,
+      },
+    ],
+  },
+  {
+    city: "Curitiba",
+    uf: "PR",
+    clinics: [
+      {
+        name: "Clínicas TEA — Curitiba",
+        description: "Centros multidisciplinares de autismo no Paraná",
+        url: `https://www.google.com/search?q=${q("clínica TEA Curitiba vaga musicoterapeuta trabalhe conosco")}`,
+      },
+    ],
+  },
+  {
+    city: "Porto Alegre",
+    uf: "RS",
+    clinics: [
+      {
+        name: "Clínicas TEA — Porto Alegre",
+        description: "Centros de autismo no Rio Grande do Sul recrutando",
+        url: `https://www.google.com/search?q=${q("clínica TEA Porto Alegre vaga musicoterapeuta trabalhe conosco")}`,
+      },
+    ],
+  },
+  {
+    city: "Salvador",
+    uf: "BA",
+    clinics: [
+      {
+        name: "Clínicas TEA — Salvador",
+        description: "Centros de autismo na Bahia com vagas para terapeutas",
+        url: `https://www.google.com/search?q=${q("clínica TEA Salvador Bahia vaga musicoterapeuta")}`,
+      },
+    ],
+  },
+  {
+    city: "Recife",
+    uf: "PE",
+    clinics: [
+      {
+        name: "Clínicas TEA — Recife",
+        description: "Centros multidisciplinares de autismo em Pernambuco",
+        url: `https://www.google.com/search?q=${q("clínica TEA Recife Pernambuco vaga musicoterapeuta")}`,
+      },
+    ],
+  },
+  {
+    city: "Fortaleza",
+    uf: "CE",
+    clinics: [
+      {
+        name: "Clínicas TEA — Fortaleza",
+        description: "Centros de autismo no Ceará contratando equipe",
+        url: `https://www.google.com/search?q=${q("clínica TEA Fortaleza Ceará vaga musicoterapeuta")}`,
+      },
+    ],
+  },
+];
+
+
 export const vagaCategories: VagaCategory[] = [
   {
     id: "national",
