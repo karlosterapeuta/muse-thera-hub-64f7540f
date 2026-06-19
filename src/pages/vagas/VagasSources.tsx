@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, MapPin, ChevronDown, Linkedin, Search, Instagram } from "lucide-react";
+import { ExternalLink, MapPin, ChevronDown, Linkedin, Search, Instagram, Globe, Facebook } from "lucide-react";
 import {
   vagaCategories,
   stateSourcesByRegion,
