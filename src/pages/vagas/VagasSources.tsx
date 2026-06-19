@@ -182,6 +182,58 @@ export default function VagasSources() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Clinics by capital */}
+      <Card className="border-cyan-500/20">
+        <CardContent className="p-5 sm:p-6">
+          <div className="flex items-center gap-2 mb-1">
+            <MapPin className="h-5 w-5 text-cyan-500" />
+            <h3 className="font-semibold text-base">Clínicas de TEA por Capital</h3>
+          </div>
+          <p className="text-xs text-muted-foreground mb-4">
+            Redes e clínicas de autismo das maiores capitais com páginas de carreira
+            ou recrutamento ativo.
+          </p>
+
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {clinicsByCapital.map((capital) => (
+              <div
+                key={capital.city}
+                className="rounded-xl border border-border/50 bg-card p-4"
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="inline-flex items-center justify-center h-6 px-1.5 rounded bg-cyan-500/10 text-[11px] font-bold text-cyan-500">
+                    {capital.uf}
+                  </span>
+                  <span className="text-sm font-semibold">{capital.city}</span>
+                </div>
+                <ul className="space-y-2">
+                  {capital.clinics.map((clinic) => (
+                    <li key={clinic.name}>
+                      <a
+                        href={clinic.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex items-start gap-2 rounded-lg p-2 -mx-2 hover:bg-cyan-500/10 transition-colors"
+                      >
+                        <ExternalLink className="h-3.5 w-3.5 mt-0.5 text-cyan-500 shrink-0" />
+                        <span className="min-w-0">
+                          <span className="block text-sm font-medium text-foreground group-hover:text-cyan-500 transition-colors">
+                            {clinic.name}
+                          </span>
+                          <span className="block text-xs text-muted-foreground leading-snug">
+                            {clinic.description}
+                          </span>
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </section>
   );
 }
