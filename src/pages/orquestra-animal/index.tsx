@@ -1,18 +1,45 @@
 import { useEffect, useMemo, useState } from "react";
-import { orchestraAnimals, type Section } from "./data/orchestraAnimals";
-import { orchestraAudio, preloadAnimalSounds } from "./utils/orchestraAudioEngine";
+import { orchestraAnimals, type Section, type AnimalMusician as AnimalType } from "./data/orchestraAnimals";
+import {
+  orchestraAudio,
+  preloadAnimalSounds,
+  setMasterVolume,
+  getMasterVolume,
+} from "./utils/orchestraAudioEngine";
 import { AnimalMusician } from "./components/AnimalMusician";
 import { SectionFilter } from "./components/SectionFilter";
 import { InstrumentInfoCard } from "./components/InstrumentInfoCard";
+import { SequencerBar } from "./components/SequencerBar";
+import { QuizPanel } from "./components/QuizPanel";
+
+type Mode = "livre" | "compositor" | "quiz";
 
 export default function OrquestraAnimal() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState<Section | "tutti">("tutti");
+  const [mode, setMode] = useState<Mode>("livre");
+  const [volume, setVolume] = useState<number>(getMasterVolume());
+
+  // Sequencer state
+  const [sequence, setSequence] = useState<AnimalType[]>([]);
+  const [seqPlaying, setSeqPlaying] = useState(false);
+
+  // Quiz state
+  const [quizTarget, setQuizTarget] = useState<AnimalType | null>(null);
+  const [quizScore, setQuizScore] = useState(0);
+  const [quizRounds, setQuizRounds] = useState(0);
+  const [quizFeedback, setQuizFeedback] = useState<"correct" | "wrong" | null>(null);
+  const [lastTargetName, setLastTargetName] = useState<string | null>(null);
+
 
   useEffect(() => {
     preloadAnimalSounds(orchestraAnimals);
   }, []);
+
+  useEffect(() => {
+    setMasterVolume(volume);
+  }, [volume]);
 
   const filtered = useMemo(() => {
     if (activeSection === "tutti") return orchestraAnimals;
@@ -27,7 +54,34 @@ export default function OrquestraAnimal() {
   const handleAnimalClick = (id: string) => {
     const animal = orchestraAnimals.find((a) => a.id === id);
     if (!animal) return;
-    // Call audio FIRST, synchronously, inside the user gesture
+
+    if (mode === "compositor") {
+      orchestraAudio.play(animal);
+      setSequence((prev) => [...prev, animal]);
+      setPlayingId(id);
+      setTimeout(() => setPlayingId(null), 600);
+      return;
+    }
+
+    if (mode === "quiz") {
+      if (!quizTarget) return;
+      orchestraAudio.play(animal);
+      setPlayingId(id);
+      setTimeout(() => setPlayingId(null), 600);
+      const correct = animal.id === quizTarget.id;
+      setQuizRounds((r) => r + 1);
+      if (correct) setQuizScore((s) => s + 1);
+      setQuizFeedback(correct ? "correct" : "wrong");
+      setLastTargetName(quizTarget.name);
+      setQuizTarget(null);
+      setTimeout(() => {
+        startQuizRound();
+      }, 1600);
+      return;
+    }
+
+
+    // Free play
     orchestraAudio.play(animal);
     setSelectedId(id);
     setPlayingId(id);
@@ -43,7 +97,49 @@ export default function OrquestraAnimal() {
   const handleStop = () => {
     orchestraAudio.stopAll();
     setPlayingId(null);
+    setSeqPlaying(false);
   };
+
+  // ----- Sequencer handlers -----
+  const playSequence = () => {
+    if (sequence.length === 0) return;
+    setSeqPlaying(true);
+    orchestraAudio.playSequence(
+      sequence,
+      650,
+      (a) => {
+        setPlayingId(a.id);
+        setTimeout(() => setPlayingId(null), 500);
+      },
+      () => setSeqPlaying(false)
+    );
+  };
+
+  // ----- Quiz handlers -----
+  const startQuizRound = () => {
+    setQuizFeedback(null);
+    const target = orchestraAnimals[Math.floor(Math.random() * orchestraAnimals.length)];
+    setQuizTarget(target);
+    setTimeout(() => orchestraAudio.play(target), 250);
+  };
+
+  const replayQuiz = () => {
+    if (quizTarget) orchestraAudio.play(quizTarget);
+  };
+
+  const switchMode = (m: Mode) => {
+    handleStop();
+    setMode(m);
+    setSelectedId(null);
+    setQuizFeedback(null);
+    setQuizTarget(null);
+  };
+
+  const modeButtons: { id: Mode; label: string; emoji: string }[] = [
+    { id: "livre", label: "Livre", emoji: "🎵" },
+    { id: "compositor", label: "Compositor", emoji: "🎼" },
+    { id: "quiz", label: "Adivinhe", emoji: "🎯" },
+  ];
 
   return (
     <div className="min-h-[calc(100vh-4rem)] relative overflow-hidden">
@@ -56,7 +152,6 @@ export default function OrquestraAnimal() {
               "linear-gradient(180deg, #7f1d1d 0%, #991b1b 30%, #b91c1c 55%, #fbbf24 56%, #f59e0b 100%)",
           }}
         />
-        {/* Curtain folds */}
         <div
           className="absolute inset-0 opacity-30"
           style={{
@@ -65,7 +160,6 @@ export default function OrquestraAnimal() {
             height: "56%",
           }}
         />
-        {/* Spotlight */}
         <div
           className="absolute left-1/2 top-0 -translate-x-1/2 w-[80%] h-[60%] rounded-b-full opacity-30 blur-2xl"
           style={{ background: "radial-gradient(ellipse at top, #fef3c7 0%, transparent 60%)" }}
@@ -92,34 +186,95 @@ export default function OrquestraAnimal() {
           </p>
         </div>
 
-        {/* Filters */}
-        <div className="mb-6">
-          <SectionFilter
-            active={activeSection}
-            onChange={setActiveSection}
-            onPlayTutti={handlePlayTutti}
+        {/* Mode selector */}
+        <div className="flex justify-center gap-2 mb-4 flex-wrap">
+          {modeButtons.map((b) => (
+            <button
+              key={b.id}
+              onClick={() => switchMode(b.id)}
+              className={`rounded-full px-4 py-2 text-sm font-black uppercase tracking-wide border-4 shadow-md transition-all hover:scale-105 active:scale-95 ${
+                mode === b.id
+                  ? "bg-yellow-300 text-amber-900 border-amber-600 scale-105"
+                  : "bg-white/90 text-gray-700 border-white"
+              }`}
+              style={{ fontFamily: "'Fredoka', 'Comic Sans MS', sans-serif" }}
+            >
+              {b.emoji} {b.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Volume control */}
+        <div className="flex justify-center items-center gap-2 mb-6">
+          <span className="text-xl">{volume === 0 ? "🔇" : "🔊"}</span>
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.05}
+            value={volume}
+            onChange={(e) => setVolume(Number(e.target.value))}
+            aria-label="Controle de volume"
+            className="w-40 sm:w-56 accent-yellow-400 cursor-pointer"
           />
         </div>
 
-        {/* Stage — animals grid (semicircle vibe via flex wrap) */}
-        <div className="relative bg-amber-100/40 backdrop-blur-sm rounded-[3rem] p-4 sm:p-8 border-4 border-amber-300/60 shadow-2xl">
-          {/* Conductor */}
-          <div className="flex justify-center mb-4">
-            <button
-              onClick={handlePlayTutti}
-              aria-label="Maestro: tocar toda a orquestra"
-              className="group relative flex flex-col items-center bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-3xl px-5 py-3 border-4 border-yellow-300 shadow-xl hover:scale-110 active:scale-95 transition-all"
-            >
-              <div className="text-4xl sm:text-5xl">🐧</div>
-              <span
-                className="text-xs sm:text-sm font-black uppercase tracking-wider mt-1"
-                style={{ fontFamily: "'Fredoka', 'Comic Sans MS', sans-serif" }}
-              >
-                Maestro Pinguim
-              </span>
-              <span className="text-[10px] sm:text-xs opacity-90">Toca tudo junto!</span>
-            </button>
+        {/* Mode-specific panels */}
+        {mode === "compositor" && (
+          <SequencerBar
+            sequence={sequence}
+            isPlaying={seqPlaying}
+            onPlay={playSequence}
+            onClear={() => setSequence([])}
+            onRemoveLast={() => setSequence((prev) => prev.slice(0, -1))}
+          />
+        )}
+        {mode === "quiz" && (
+          <QuizPanel
+            question={quizTarget ? quizTarget.name : null}
+            score={quizScore}
+            rounds={quizRounds}
+            feedback={quizFeedback}
+            lastAnswerName={lastTargetName}
+            onNewRound={startQuizRound}
+            onReplay={replayQuiz}
+          />
+        )}
+
+        {/* Filters (hidden in quiz mode to avoid confusion) */}
+        {mode !== "quiz" && (
+          <div className="mb-6">
+            <SectionFilter
+              active={activeSection}
+              onChange={setActiveSection}
+              onPlayTutti={handlePlayTutti}
+            />
           </div>
+        )}
+
+        {/* Stage — animals grid */}
+        <div className="relative bg-amber-100/40 backdrop-blur-sm rounded-[3rem] p-4 sm:p-8 border-4 border-amber-300/60 shadow-2xl">
+          {mode === "livre" && (
+            <>
+              {/* Conductor */}
+              <div className="flex justify-center mb-4">
+                <button
+                  onClick={handlePlayTutti}
+                  aria-label="Maestro: tocar toda a orquestra"
+                  className="group relative flex flex-col items-center bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-3xl px-5 py-3 border-4 border-yellow-300 shadow-xl hover:scale-110 active:scale-95 transition-all"
+                >
+                  <div className="text-4xl sm:text-5xl">🐧</div>
+                  <span
+                    className="text-xs sm:text-sm font-black uppercase tracking-wider mt-1"
+                    style={{ fontFamily: "'Fredoka', 'Comic Sans MS', sans-serif" }}
+                  >
+                    Maestro Pinguim
+                  </span>
+                  <span className="text-[10px] sm:text-xs opacity-90">Toca tudo junto!</span>
+                </button>
+              </div>
+            </>
+          )}
 
           {/* Stop button */}
           <div className="flex justify-center mb-4">
@@ -134,24 +289,26 @@ export default function OrquestraAnimal() {
             </button>
           </div>
 
-          {/* Musicians grid */}
+          {/* Musicians grid — quiz uses full roster */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 justify-items-center">
-            {filtered.map((animal) => (
+            {(mode === "quiz" ? orchestraAnimals : filtered).map((animal) => (
               <AnimalMusician
                 key={animal.id}
                 animal={animal}
                 isPlaying={playingId === animal.id || playingId === "__tutti__"}
-                isSelected={selectedId === animal.id}
+                isSelected={mode === "livre" && selectedId === animal.id}
                 onClick={() => handleAnimalClick(animal.id)}
               />
             ))}
           </div>
         </div>
 
-        {/* Info card */}
-        <div className="mt-6 max-w-2xl mx-auto">
-          <InstrumentInfoCard animal={selectedAnimal} />
-        </div>
+        {/* Info card (only in free play) */}
+        {mode === "livre" && (
+          <div className="mt-6 max-w-2xl mx-auto">
+            <InstrumentInfoCard animal={selectedAnimal} />
+          </div>
+        )}
       </div>
 
       {/* Inline keyframes for floating notes */}

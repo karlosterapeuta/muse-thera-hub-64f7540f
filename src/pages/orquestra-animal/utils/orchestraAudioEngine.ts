@@ -26,16 +26,26 @@ const activeAudios = new Set<HTMLAudioElement>();
 const activeSynths = new Set<{ osc: OscillatorNode; gain: GainNode }>();
 const activeTimeouts = new Set<ReturnType<typeof setTimeout>>();
 
+// ---------- Master volume ----------
+let masterVolume = 1;
+export function setMasterVolume(v: number) {
+  masterVolume = Math.min(1, Math.max(0, v));
+}
+export function getMasterVolume() {
+  return masterVolume;
+}
+
 function playUrl(url: string, volume = 1): Promise<void> {
   // Clone so overlapping clicks don't cut each other off
   const base = getAudio(url);
   const el = base.cloneNode(true) as HTMLAudioElement;
-  el.volume = volume;
+  el.volume = Math.min(1, Math.max(0, volume * masterVolume));
   activeAudios.add(el);
   el.addEventListener("ended", () => activeAudios.delete(el));
   const p = el.play();
   return p instanceof Promise ? p.then(() => {}) : Promise.resolve();
 }
+
 
 // ---------- Synth fallback (used only if URL fails) ----------
 
@@ -57,8 +67,9 @@ function synthFallback(animal: AnimalMusician) {
   osc.type = animal.section === "cordas" ? "sawtooth" : animal.section === "metais" ? "square" : "triangle";
   osc.frequency.value = animal.frequency;
   gain.gain.setValueAtTime(0, t0);
-  gain.gain.linearRampToValueAtTime(0.3, t0 + 0.02);
+  gain.gain.linearRampToValueAtTime(0.3 * masterVolume, t0 + 0.02);
   gain.gain.linearRampToValueAtTime(0, t0 + 1);
+
   osc.connect(gain);
   gain.connect(ctx.destination);
   osc.start(t0);
@@ -97,6 +108,35 @@ export const orchestraAudio = {
       activeTimeouts.add(t);
     });
   },
+
+  /** Play a built sequence with a step interval; calls onStep as each animal plays. */
+  playSequence(
+    animals: AnimalMusician[],
+    stepMs = 650,
+    onStep?: (animal: AnimalMusician, index: number) => void,
+    onDone?: () => void
+  ) {
+    animals.forEach((a, i) => {
+      const t = setTimeout(() => {
+        activeTimeouts.delete(t);
+        onStep?.(a, i);
+        if (a.soundUrl) {
+          playUrl(a.soundUrl, 1).catch(() => synthFallback(a));
+        } else {
+          synthFallback(a);
+        }
+        if (i === animals.length - 1) {
+          const end = setTimeout(() => {
+            activeTimeouts.delete(end);
+            onDone?.();
+          }, stepMs);
+          activeTimeouts.add(end);
+        }
+      }, i * stepMs);
+      activeTimeouts.add(t);
+    });
+  },
+
 
   stopAll() {
     console.log("[OrchestraAudio] stopAll()");
