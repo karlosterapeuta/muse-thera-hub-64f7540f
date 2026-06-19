@@ -34,8 +34,10 @@ import {
   UserRoundPlus,
   Users,
   Sparkles,
-  Trash2
+  Trash2,
+  HeartPulse
 } from "lucide-react";
+import { CosmicBackground } from "@/components/auth/CosmicBackground";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
