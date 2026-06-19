@@ -243,6 +243,10 @@ export default function VagasEmbed() {
           </CardContent>
         </Card>
 
+        {/* Curated additional job sources */}
+        <VagasSources />
+
+
         {/* Mobile Tips */}
         {isMobile && !isFullscreen && (
           <div className="mt-4 space-y-2">
