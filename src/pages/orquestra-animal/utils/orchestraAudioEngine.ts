@@ -109,6 +109,35 @@ export const orchestraAudio = {
     });
   },
 
+  /** Play a built sequence with a step interval; calls onStep as each animal plays. */
+  playSequence(
+    animals: AnimalMusician[],
+    stepMs = 650,
+    onStep?: (animal: AnimalMusician, index: number) => void,
+    onDone?: () => void
+  ) {
+    animals.forEach((a, i) => {
+      const t = setTimeout(() => {
+        activeTimeouts.delete(t);
+        onStep?.(a, i);
+        if (a.soundUrl) {
+          playUrl(a.soundUrl, 1).catch(() => synthFallback(a));
+        } else {
+          synthFallback(a);
+        }
+        if (i === animals.length - 1) {
+          const end = setTimeout(() => {
+            activeTimeouts.delete(end);
+            onDone?.();
+          }, stepMs);
+          activeTimeouts.add(end);
+        }
+      }, i * stepMs);
+      activeTimeouts.add(t);
+    });
+  },
+
+
   stopAll() {
     console.log("[OrchestraAudio] stopAll()");
     activeTimeouts.forEach((t) => clearTimeout(t));
