@@ -287,6 +287,8 @@ export type StateSource = {
   linkedin: string;
   indeed: string;
   instagram: string;
+  google: string;
+  facebook: string;
 };
 
 export const stateSourcesByRegion: { region: string; states: StateSource[] }[] =
@@ -301,6 +303,12 @@ export const stateSourcesByRegion: { region: string; states: StateSource[] }[] =
       indeed: `https://br.indeed.com/jobs?q=${q("musicoterapeuta")}&l=${q(name)}`,
       instagram: `https://www.google.com/search?q=${q(
         `clínica TEA ${name} musicoterapeuta vaga instagram`
+      )}`,
+      google: `https://www.google.com/search?q=${q(
+        `vaga musicoterapeuta ${name} clínica autismo TEA ABA`
+      )}`,
+      facebook: `https://www.facebook.com/search/groups/?q=${q(
+        `vagas musicoterapia ${name}`
       )}`,
     })),
   }));
