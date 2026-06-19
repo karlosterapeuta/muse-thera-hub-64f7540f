@@ -72,14 +72,14 @@ export default function OrquestraAnimal() {
       setQuizRounds((r) => r + 1);
       if (correct) setQuizScore((s) => s + 1);
       setQuizFeedback(correct ? "correct" : "wrong");
-      const finished = quizTarget;
+      setLastTargetName(quizTarget.name);
       setQuizTarget(null);
       setTimeout(() => {
         startQuizRound();
       }, 1600);
-      void finished;
       return;
     }
+
 
     // Free play
     orchestraAudio.play(animal);
