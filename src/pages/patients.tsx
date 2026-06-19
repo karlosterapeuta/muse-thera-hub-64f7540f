@@ -282,7 +282,7 @@ export default function PatientsPage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="bg-card rounded-3xl border border-border/50 shadow-xl overflow-hidden">
+                  <div className="bg-card/70 backdrop-blur-xl rounded-3xl border border-border/40 shadow-2xl overflow-hidden">
                     <PatientList
                       patients={filteredPatients}
                       onEdit={handleEditClick}
@@ -294,7 +294,7 @@ export default function PatientsPage() {
                   </div>
                 )
               ) : (
-                <div className="text-center py-32 bg-card/30 border-2 border-dashed border-border rounded-3xl">
+                <div className="text-center py-32 bg-card/40 backdrop-blur-xl border-2 border-dashed border-border/60 rounded-3xl shadow-xl">
                   <div className="inline-flex p-6 bg-muted rounded-full mb-6">
                     <Users className="h-12 w-12 text-muted-foreground" />
                   </div>
