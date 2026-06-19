@@ -30,6 +30,8 @@ export default function OrquestraAnimal() {
   const [quizScore, setQuizScore] = useState(0);
   const [quizRounds, setQuizRounds] = useState(0);
   const [quizFeedback, setQuizFeedback] = useState<"correct" | "wrong" | null>(null);
+  const [lastTargetName, setLastTargetName] = useState<string | null>(null);
+
 
   useEffect(() => {
     preloadAnimalSounds(orchestraAnimals);
