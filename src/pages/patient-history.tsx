@@ -1207,7 +1207,8 @@ export default function PatientHistoryPage() {
           /* Patient History */
           <div className="space-y-5">
             {/* Back + Patient Info */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 rounded-3xl border border-border/40 bg-card/60 backdrop-blur-xl shadow-xl p-4 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-amber-400/5 pointer-events-none" />
               <Button
                 variant="ghost"
                 size="sm"
@@ -1215,13 +1216,13 @@ export default function PatientHistoryPage() {
                   setSelectedPatient(null);
                   setTypeFilter("all");
                 }}
-                className="gap-1.5 text-muted-foreground hover:text-foreground"
+                className="gap-1.5 text-muted-foreground hover:text-foreground relative z-10"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Voltar
               </Button>
-              <div className="flex items-center gap-3 flex-1">
-                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-primary to-purple-600 text-white font-bold text-lg shadow-lg">
+              <div className="flex items-center gap-3 flex-1 relative z-10">
+                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-primary to-amber-400 text-primary-foreground font-bold text-lg shadow-[0_0_30px_-6px_hsl(var(--primary))]">
                   {selectedPatient.name.charAt(0).toUpperCase()}
                 </div>
                 <div>
@@ -1240,6 +1241,7 @@ export default function PatientHistoryPage() {
                 </div>
               </div>
             </div>
+
 
             {/* Tabs: Timeline / Analytics */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
