@@ -6,6 +6,7 @@ import { ExternalLink, MapPin, ChevronDown, Linkedin, Search, Instagram, Globe, 
 import {
   vagaCategories,
   stateSourcesByRegion,
+  clinicsByCapital,
 } from "@/data/vagas-sources";
 
 export default function VagasSources() {
