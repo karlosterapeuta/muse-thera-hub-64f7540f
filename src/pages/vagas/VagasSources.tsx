@@ -9,6 +9,13 @@ import {
   clinicsByCapital,
 } from "@/data/vagas-sources";
 
+// Estilo padrão unificado de card para toda a página de Vagas
+const CARD_STYLE =
+  "border-cyan-500/20 bg-gradient-to-b from-cyan-500/[0.03] to-transparent backdrop-blur-sm overflow-hidden";
+// Estilo padrão para sub-cards internos (estados, clínicas)
+const SUBCARD_STYLE =
+  "rounded-xl border border-cyan-500/20 bg-gradient-to-b from-cyan-500/[0.03] to-transparent p-4";
+
 export default function VagasSources() {
   const [openRegion, setOpenRegion] = useState<string | null>("Sudeste");
 
