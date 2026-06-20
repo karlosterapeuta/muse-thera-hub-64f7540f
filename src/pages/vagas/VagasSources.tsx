@@ -45,24 +45,12 @@ export default function VagasSources() {
               <p className="text-xs text-muted-foreground mb-4">{cat.description}</p>
               <ul className="space-y-2">
                 {cat.sources.map((src) => (
-                  <li key={src.name}>
-                    <a
-                      href={src.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group flex items-start gap-2 rounded-lg p-2 -mx-2 hover:bg-cyan-500/10 transition-colors"
-                    >
-                      <ExternalLink className="h-3.5 w-3.5 mt-0.5 text-cyan-500 shrink-0" />
-                      <span className="min-w-0">
-                        <span className="block text-sm font-medium text-foreground group-hover:text-cyan-500 transition-colors">
-                          {src.name}
-                        </span>
-                        <span className="block text-xs text-muted-foreground leading-snug">
-                          {src.description}
-                        </span>
-                      </span>
-                    </a>
-                  </li>
+                  <VagaLinkItem
+                    key={src.name}
+                    url={src.url}
+                    name={src.name}
+                    description={src.description}
+                  />
                 ))}
               </ul>
             </CardContent>
