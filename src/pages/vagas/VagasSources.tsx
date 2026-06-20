@@ -9,6 +9,13 @@ import {
   clinicsByCapital,
 } from "@/data/vagas-sources";
 
+// Estilo padrão unificado de card para toda a página de Vagas
+const CARD_STYLE =
+  "border-cyan-500/20 bg-gradient-to-b from-cyan-500/[0.03] to-transparent backdrop-blur-sm overflow-hidden";
+// Estilo padrão para sub-cards internos (estados, clínicas)
+const SUBCARD_STYLE =
+  "rounded-xl border border-cyan-500/20 bg-gradient-to-b from-cyan-500/[0.03] to-transparent p-4";
+
 export default function VagasSources() {
   const [openRegion, setOpenRegion] = useState<string | null>("Sudeste");
 
@@ -28,10 +35,7 @@ export default function VagasSources() {
       {/* Category grids */}
       <div className="grid gap-5 md:grid-cols-3">
         {vagaCategories.map((cat) => (
-          <Card
-            key={cat.id}
-            className="border-cyan-500/20 bg-gradient-to-b from-cyan-500/[0.03] to-transparent backdrop-blur-sm overflow-hidden"
-          >
+          <Card key={cat.id} className={CARD_STYLE}>
             <CardContent className="p-5">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-xl">{cat.emoji}</span>
@@ -66,7 +70,7 @@ export default function VagasSources() {
       </div>
 
       {/* Per-state search */}
-      <Card className="border-cyan-500/20">
+      <Card className={CARD_STYLE}>
         <CardContent className="p-5 sm:p-6">
           <div className="flex items-center gap-2 mb-1">
             <MapPin className="h-5 w-5 text-cyan-500" />
@@ -83,7 +87,7 @@ export default function VagasSources() {
               return (
                 <div
                   key={region}
-                  className="rounded-xl border border-border/60 overflow-hidden"
+                  className="rounded-xl border border-cyan-500/20 overflow-hidden"
                 >
                   <button
                     onClick={() => setOpenRegion(isOpen ? null : region)}
@@ -108,10 +112,7 @@ export default function VagasSources() {
                   {isOpen && (
                     <div className="grid gap-2 p-3 sm:grid-cols-2 lg:grid-cols-3">
                       {states.map((st) => (
-                        <div
-                          key={st.uf}
-                          className="rounded-lg border border-border/50 bg-card p-3"
-                        >
+                        <div key={st.uf} className={SUBCARD_STYLE.replace("p-4", "p-3")}>
                           <div className="flex items-center gap-2 mb-2">
                             <span className="inline-flex items-center justify-center h-6 px-1.5 rounded bg-cyan-500/10 text-[11px] font-bold text-cyan-500">
                               {st.uf}
@@ -184,7 +185,7 @@ export default function VagasSources() {
       </Card>
 
       {/* Clinics by capital */}
-      <Card className="border-cyan-500/20">
+      <Card className={CARD_STYLE}>
         <CardContent className="p-5 sm:p-6">
           <div className="flex items-center gap-2 mb-1">
             <MapPin className="h-5 w-5 text-cyan-500" />
@@ -197,10 +198,7 @@ export default function VagasSources() {
 
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {clinicsByCapital.map((capital) => (
-              <div
-                key={capital.city}
-                className="rounded-xl border border-border/50 bg-card p-4"
-              >
+              <div key={capital.city} className={SUBCARD_STYLE}>
                 <div className="flex items-center gap-2 mb-3">
                   <span className="inline-flex items-center justify-center h-6 px-1.5 rounded bg-cyan-500/10 text-[11px] font-bold text-cyan-500">
                     {capital.uf}

@@ -197,7 +197,7 @@ export default function VagasEmbed() {
         </div>
 
         {/* Info Context Card */}
-        <Card className="mt-6 bg-gradient-to-r from-cyan-500/5 to-blue-600/10 border-cyan-500/20">
+        <Card className="mt-6 border-cyan-500/20 bg-gradient-to-b from-cyan-500/[0.03] to-transparent backdrop-blur-sm overflow-hidden">
           <CardContent className="p-6">
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
