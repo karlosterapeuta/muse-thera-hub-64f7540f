@@ -113,18 +113,7 @@ Deno.serve(async (req) => {
 
     const evoInstanceName = await resolveInstance();
 
-    if (body.action === "debug_env") {
-      return new Response(
-        JSON.stringify({
-          url: evoUrlBase,
-          configuredInstance,
-          resolvedInstance: evoInstanceName,
-          keyLen: evoApiKey?.length ?? 0,
-          keyHead: evoApiKey?.slice(0, 4) ?? null,
-        }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
-    }
+
 
 
     // Action: list WhatsApp groups so the admin can pick the right group JID.
