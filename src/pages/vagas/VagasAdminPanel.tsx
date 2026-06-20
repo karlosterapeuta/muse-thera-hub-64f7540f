@@ -247,7 +247,7 @@ export default function VagasAdminPanel() {
           </div>
         </div>
 
-
+        <div className="flex flex-wrap gap-2 border-b border-cyan-500/10 pb-2">
           {STATUS_TABS.map((t) => (
             <button
               key={t.key}
