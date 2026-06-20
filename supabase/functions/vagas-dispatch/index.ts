@@ -85,9 +85,9 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const period: Period = body.period ?? currentPeriod();
 
-    const evoUrlBase = Deno.env.get("EVOLUTION_API_URL")?.replace(/\/+$/, "");
-    const evoApiKey = Deno.env.get("EVOLUTION_API_KEY");
-    const evoInstanceName = Deno.env.get("EVOLUTION_INSTANCE_NAME");
+    const evoUrlBase = Deno.env.get("EVOLUTION_API_URL")?.trim().replace(/\/+$/, "");
+    const evoApiKey = Deno.env.get("EVOLUTION_API_KEY")?.trim();
+    const evoInstanceName = Deno.env.get("EVOLUTION_INSTANCE_NAME")?.trim();
 
     if (body.action === "debug_env") {
       return new Response(
