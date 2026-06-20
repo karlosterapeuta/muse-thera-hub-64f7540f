@@ -426,6 +426,31 @@ export default function MusicotherapyTreatmentPlanPage() {
           </div>
         </div>
 
+        {/* Outer layout: Formulário / Preview / Histórico (mirrors Devolutiva TEA) */}
+        <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as typeof viewMode)}>
+          <TabsList className="grid w-full grid-cols-3 bg-card/60 backdrop-blur-xl border border-border/60 rounded-xl p-1 h-auto">
+            <TabsTrigger
+              value="form"
+              className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary data-[state=active]:to-amber-500 data-[state=active]:text-white rounded-lg"
+            >
+              📝 Formulário
+            </TabsTrigger>
+            <TabsTrigger
+              value="preview"
+              className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary data-[state=active]:to-amber-500 data-[state=active]:text-white rounded-lg"
+            >
+              👁️ Preview
+            </TabsTrigger>
+            <TabsTrigger
+              value="history"
+              className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary data-[state=active]:to-amber-500 data-[state=active]:text-white rounded-lg"
+            >
+              📚 Histórico
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="form" className="space-y-6 mt-6">
+
         {/* Sticky Header */}
         <PlanStickyHeader
           isEditing={!!id}
