@@ -7,6 +7,13 @@ import { useAdmin } from "@/hooks/use-admin";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
 import {
   Search,
@@ -17,6 +24,7 @@ import {
   Loader2,
   Sparkles,
   RefreshCw,
+  Users,
 } from "lucide-react";
 
 const CARD_STYLE =
