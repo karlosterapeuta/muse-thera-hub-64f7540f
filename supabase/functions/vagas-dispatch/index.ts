@@ -89,8 +89,15 @@ Deno.serve(async (req) => {
     const evoApiKey = Deno.env.get("EVOLUTION_API_KEY")?.trim();
     const configuredInstance = Deno.env.get("EVOLUTION_INSTANCE_NAME")?.trim();
 
-    // Resolve the active Evolution instance. The configured name may be wrong,
-    // so we verify it against the server and fall back to the connected instance.
+    // Desired sender number (digits only) configured by the admin.
+    const { data: settings } = await admin.from("vagas_settings").select("*").limit(1).maybeSingle();
+    const senderDigits = (settings?.whatsapp_sender_number ?? "").replace(/\D/g, "");
+    const senderTail = senderDigits.slice(-8); // last 8 digits ignore country/9th-digit issues
+
+    // Resolve which Evolution instance to use. Priority:
+    // 1) instance whose connected number matches the desired sender (last 8 digits)
+    // 2) the configured instance name if it exists
+    // 3) any connected instance
     async function resolveInstance(): Promise<string | null> {
       if (!evoUrlBase || !evoApiKey) return null;
       try {
@@ -98,12 +105,24 @@ Deno.serve(async (req) => {
           headers: { apikey: evoApiKey },
         });
         if (!resp.ok) return configuredInstance ?? null;
-        const list = (await resp.json()) as Array<{ name?: string; connectionStatus?: string }>;
+        const list = (await resp.json()) as Array<{
+          name?: string;
+          connectionStatus?: string;
+          ownerJid?: string;
+        }>;
         if (!Array.isArray(list) || list.length === 0) return configuredInstance ?? null;
-        // Prefer the configured instance if it exists on the server.
-        const match = configuredInstance && list.find((i) => i.name === configuredInstance);
-        if (match) return match.name!;
-        // Otherwise use the first connected instance, then any instance.
+
+        if (senderTail) {
+          const byNumber = list.find((i) => {
+            const jidDigits = (i.ownerJid ?? "").replace(/\D/g, "");
+            return jidDigits.slice(-8) === senderTail;
+          });
+          if (byNumber?.name) return byNumber.name;
+        }
+
+        const byName = configuredInstance && list.find((i) => i.name === configuredInstance);
+        if (byName) return byName.name!;
+
         const open = list.find((i) => i.connectionStatus === "open");
         return (open?.name ?? list[0]?.name) ?? configuredInstance ?? null;
       } catch {
@@ -112,6 +131,7 @@ Deno.serve(async (req) => {
     }
 
     const evoInstanceName = await resolveInstance();
+
 
 
 
@@ -148,7 +168,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { data: settings } = await admin.from("vagas_settings").select("*").limit(1).maybeSingle();
     const perPeriod: number = settings?.per_period ?? 2;
     const groupUrl: string | null = settings?.whatsapp_group_url ?? null;
 
