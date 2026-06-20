@@ -1136,6 +1136,66 @@ export type Database = {
         }
         Relationships: []
       }
+      job_vacancies: {
+        Row: {
+          company: string | null
+          content_hash: string
+          created_at: string
+          description: string | null
+          id: string
+          is_music_therapy: boolean
+          link_ok: boolean | null
+          location: string | null
+          posted_at: string | null
+          relevance_score: number | null
+          sent_at: string | null
+          sent_period: string | null
+          source: string | null
+          status: string
+          title: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          company?: string | null
+          content_hash: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_music_therapy?: boolean
+          link_ok?: boolean | null
+          location?: string | null
+          posted_at?: string | null
+          relevance_score?: number | null
+          sent_at?: string | null
+          sent_period?: string | null
+          source?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          company?: string | null
+          content_hash?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_music_therapy?: boolean
+          link_ok?: boolean | null
+          location?: string | null
+          posted_at?: string | null
+          relevance_score?: number | null
+          sent_at?: string | null
+          sent_period?: string | null
+          source?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       lead_matches: {
         Row: {
           created_at: string
@@ -2509,6 +2569,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      vagas_settings: {
+        Row: {
+          auto_send: boolean
+          created_at: string
+          id: string
+          keywords: string[]
+          per_period: number
+          search_enabled: boolean
+          updated_at: string
+          whatsapp_group_url: string | null
+        }
+        Insert: {
+          auto_send?: boolean
+          created_at?: string
+          id?: string
+          keywords?: string[]
+          per_period?: number
+          search_enabled?: boolean
+          updated_at?: string
+          whatsapp_group_url?: string | null
+        }
+        Update: {
+          auto_send?: boolean
+          created_at?: string
+          id?: string
+          keywords?: string[]
+          per_period?: number
+          search_enabled?: boolean
+          updated_at?: string
+          whatsapp_group_url?: string | null
+        }
+        Relationships: []
       }
       VerificationToken: {
         Row: {
