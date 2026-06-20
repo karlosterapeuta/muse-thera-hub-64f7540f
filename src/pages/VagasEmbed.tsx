@@ -125,6 +125,16 @@ export default function VagasEmbed() {
               <RefreshCw className="h-4 w-4" />
               {!isMobile && "Atualizar"}
             </Button>
+
+            <Button
+              onClick={handleShare}
+              size={isMobile ? "sm" : "default"}
+              className="flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:from-cyan-600 hover:to-blue-700 shadow-md transition-all"
+            >
+              <Share2 className="h-4 w-4" />
+              {!isMobile && "Compartilhar"}
+            </Button>
+            
             
             <Button
               onClick={toggleFullscreen}
