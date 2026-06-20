@@ -2574,6 +2574,7 @@ export type Database = {
         Row: {
           auto_send: boolean
           created_at: string
+          cron_token: string | null
           id: string
           keywords: string[]
           per_period: number
@@ -2584,6 +2585,7 @@ export type Database = {
         Insert: {
           auto_send?: boolean
           created_at?: string
+          cron_token?: string | null
           id?: string
           keywords?: string[]
           per_period?: number
@@ -2594,6 +2596,7 @@ export type Database = {
         Update: {
           auto_send?: boolean
           created_at?: string
+          cron_token?: string | null
           id?: string
           keywords?: string[]
           per_period?: number
