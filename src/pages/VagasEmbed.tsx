@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Maximize, X, Music, Star, Briefcase, Smartphone, Globe, TrendingUp, Users } from "lucide-react";
+import { RefreshCw, Maximize, X, Music, Star, Briefcase, Smartphone, Globe, TrendingUp, Users, Share2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { toast } from "@/hooks/use-toast";
 import VagasSources from "@/pages/vagas/VagasSources";
 
 export default function VagasEmbed() {
