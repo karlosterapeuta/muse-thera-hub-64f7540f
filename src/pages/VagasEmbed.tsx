@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Maximize, X, Music, Star, Briefcase, Smartphone, Globe, TrendingUp, Users } from "lucide-react";
+import { RefreshCw, Maximize, X, Music, Star, Briefcase, Smartphone, Globe, TrendingUp, Users, Share2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { toast } from "@/hooks/use-toast";
 import VagasSources from "@/pages/vagas/VagasSources";
 
 export default function VagasEmbed() {
@@ -38,6 +39,34 @@ export default function VagasEmbed() {
     if (iframeRef.current) {
       setIsLoading(true);
       iframeRef.current.src = iframeRef.current.src;
+    }
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      title: "💼 Vagas MuseTera",
+      text: "Confira as oportunidades para musicoterapeutas no Vagas MuseTera!",
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+        return;
+      }
+      await navigator.clipboard.writeText(shareData.url);
+      toast({
+        title: "Link copiado!",
+        description: "O link das vagas foi copiado para a área de transferência.",
+      });
+    } catch (error) {
+      // Usuário cancelou o compartilhamento ou recurso indisponível
+      if ((error as Error)?.name === "AbortError") return;
+      toast({
+        title: "Não foi possível compartilhar",
+        description: "Tente copiar o link manualmente.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -96,6 +125,16 @@ export default function VagasEmbed() {
               <RefreshCw className="h-4 w-4" />
               {!isMobile && "Atualizar"}
             </Button>
+
+            <Button
+              onClick={handleShare}
+              size={isMobile ? "sm" : "default"}
+              className="flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:from-cyan-600 hover:to-blue-700 shadow-md transition-all"
+            >
+              <Share2 className="h-4 w-4" />
+              {!isMobile && "Compartilhar"}
+            </Button>
+            
             
             <Button
               onClick={toggleFullscreen}
