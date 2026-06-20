@@ -198,10 +198,7 @@ export default function VagasSources() {
 
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {clinicsByCapital.map((capital) => (
-              <div
-                key={capital.city}
-                className="rounded-xl border border-border/50 bg-card p-4"
-              >
+              <div key={capital.city} className={SUBCARD_STYLE}>
                 <div className="flex items-center gap-2 mb-3">
                   <span className="inline-flex items-center justify-center h-6 px-1.5 rounded bg-cyan-500/10 text-[11px] font-bold text-cyan-500">
                     {capital.uf}
