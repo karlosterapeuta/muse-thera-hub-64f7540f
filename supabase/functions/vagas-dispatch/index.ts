@@ -54,6 +54,14 @@ Deno.serve(async (req) => {
     const internalKey = req.headers.get("x-internal-key");
     const authHeader = req.headers.get("Authorization") ?? "";
     let authorized = internalKey === serviceKey;
+    if (!authorized && internalKey) {
+      const { data: tokenRow } = await admin
+        .from("vagas_settings")
+        .select("cron_token")
+        .limit(1)
+        .maybeSingle();
+      authorized = !!tokenRow?.cron_token && internalKey === tokenRow.cron_token;
+    }
     if (!authorized && authHeader.startsWith("Bearer ")) {
       const token = authHeader.replace("Bearer ", "");
       const { data: userData } = await admin.auth.getUser(token);
