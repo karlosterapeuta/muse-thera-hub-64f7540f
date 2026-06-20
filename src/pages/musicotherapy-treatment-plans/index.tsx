@@ -159,65 +159,67 @@ export default function MusicotherapyTreatmentPlans() {
   };
 
   return (
-    <div className="relative min-h-screen bg-background overflow-hidden">
-      {/* Cosmic ambient blobs */}
+    <div className="min-h-screen relative w-full overflow-x-hidden bg-background">
+      {/* Ambient cosmic blobs */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
-        <div className="absolute top-1/3 -right-24 h-96 w-96 rounded-full bg-amber-400/10 blur-3xl" />
+        <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
+        <div className="absolute top-1/3 -right-32 h-96 w-96 rounded-full bg-amber-400/10 blur-3xl" />
         <div className="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-primary/5 blur-3xl" />
       </div>
 
-      <div className="relative container mx-auto px-3 sm:px-4 lg:px-6 py-6 lg:py-10 max-w-7xl space-y-6">
-        {/* Premium header */}
-        <motion.div
-          initial={{ opacity: 0, y: -16 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-3xl border border-border/60 bg-card/60 backdrop-blur-xl shadow-2xl"
-        >
-          <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-amber-500 to-primary" />
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-amber-500/5" />
-          <div className="relative p-6 sm:p-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-            <div className="flex items-start gap-4">
-              <div className="relative shrink-0">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary to-amber-500 blur-xl opacity-60" />
-                <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-amber-500 text-primary-foreground shadow-lg">
-                  <ClipboardList className="h-7 w-7" />
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+        {/* Premium Header */}
+        <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-card/60 backdrop-blur-xl shadow-2xl">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-amber-400/5" />
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+
+          <div className="relative p-6 sm:p-8 lg:p-10">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+              <div className="flex items-start gap-5">
+                <div className="relative flex-shrink-0">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary to-amber-500 blur-xl opacity-40" />
+                  <div className="relative p-4 rounded-2xl bg-gradient-to-br from-primary to-amber-500 shadow-lg">
+                    <ClipboardList className="h-7 w-7 lg:h-8 lg:w-8 text-white" />
+                  </div>
+                </div>
+                <div className="space-y-2 min-w-0">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border/60 bg-background/40 backdrop-blur text-xs font-medium text-muted-foreground">
+                    <Sparkles className="h-3 w-3 text-amber-500" />
+                    Plano Clínico · IA Integrada
+                  </div>
+                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight bg-gradient-to-br from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
+                    Planos Musicoterapêuticos
+                  </h1>
+                  <p className="text-sm sm:text-base text-muted-foreground max-w-2xl leading-relaxed">
+                    Crie, organize e acompanhe os planos de tratamento musicoterapêuticos dos seus pacientes.
+                  </p>
                 </div>
               </div>
-              <div>
-                <div className="inline-flex items-center gap-2 rounded-full bg-background/40 backdrop-blur px-3 py-1 text-xs font-medium text-primary mb-3">
-                  <Sparkles className="h-3 w-3" />
-                  Plano Clínico · IA Integrada
-                </div>
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight">
-                  Planos{' '}
-                  <span className="bg-gradient-to-r from-primary to-amber-500 bg-clip-text text-transparent">
-                    Musicoterapêuticos
-                  </span>
-                </h1>
-                <p className="text-sm sm:text-base text-muted-foreground mt-1 max-w-xl">
-                  Crie, organize e acompanhe os planos de tratamento dos seus pacientes
-                </p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-background/40 backdrop-blur px-3 py-1 text-xs font-medium text-foreground/80">
-                    <ClipboardList className="h-3 w-3" /> {stats.total} planos
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-background/40 backdrop-blur px-3 py-1 text-xs font-medium text-foreground/80">
-                    <Sparkles className="h-3 w-3" /> Assistente IA
-                  </span>
-                </div>
+
+              <Button
+                onClick={() => navigate('/musicotherapy-treatment-plan')}
+                className="bg-gradient-to-br from-primary to-amber-500 text-white border-0 shadow-md hover:opacity-90 transition-all duration-200 font-semibold gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Novo Plano
+              </Button>
+            </div>
+
+            {/* Status pills */}
+            <div className="mt-6 flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border/60 bg-background/40 backdrop-blur text-xs font-medium">
+                <ClipboardList className="h-3.5 w-3.5 text-primary" /> {stats.total} planos
+              </div>
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border/60 bg-background/40 backdrop-blur text-xs font-medium">
+                <Sparkles className="h-3.5 w-3.5 text-amber-500" /> Assistente IA
+              </div>
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border/60 bg-background/40 backdrop-blur text-xs font-medium">
+                <Filter className="h-3.5 w-3.5 text-rose-400" /> Filtros avançados
               </div>
             </div>
-            <Button
-              onClick={() => navigate('/musicotherapy-treatment-plan')}
-              size="lg"
-              className="gap-2 shadow-lg shadow-primary/20 bg-gradient-to-br from-primary to-amber-500 hover:opacity-90"
-            >
-              <Plus className="h-4 w-4" />
-              Novo Plano
-            </Button>
           </div>
-        </motion.div>
+        </div>
+
 
         {/* Stats */}
         <PlanStatsHeader total={stats.total} active={stats.active} draft={stats.draft} completed={stats.completed} />
