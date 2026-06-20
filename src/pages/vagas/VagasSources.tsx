@@ -35,10 +35,7 @@ export default function VagasSources() {
       {/* Category grids */}
       <div className="grid gap-5 md:grid-cols-3">
         {vagaCategories.map((cat) => (
-          <Card
-            key={cat.id}
-            className="border-cyan-500/20 bg-gradient-to-b from-cyan-500/[0.03] to-transparent backdrop-blur-sm overflow-hidden"
-          >
+          <Card key={cat.id} className={CARD_STYLE}>
             <CardContent className="p-5">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-xl">{cat.emoji}</span>
