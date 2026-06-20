@@ -2,12 +2,13 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, MapPin, ChevronDown, Linkedin, Search, Instagram, Globe, Facebook } from "lucide-react";
+import { MapPin, ChevronDown, Linkedin, Search, Instagram, Globe, Facebook } from "lucide-react";
 import {
   vagaCategories,
   stateSourcesByRegion,
   clinicsByCapital,
 } from "@/data/vagas-sources";
+import { VagaLinkItem } from "@/pages/vagas/VagaLinkItem";
 
 // Estilo padrão unificado de card para toda a página de Vagas
 const CARD_STYLE =
