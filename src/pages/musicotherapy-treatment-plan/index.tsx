@@ -50,6 +50,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { planSections, getCompletion } from './sections';
 import { PlanSectionHeader } from '@/components/treatment-plan/PlanSectionNav';
 import { PlanWizardStepper } from '@/components/treatment-plan/PlanWizardStepper';
+import { PlanPreview } from '@/components/treatment-plan/PlanPreview';
+import { Eye, FileDown } from 'lucide-react';
 
 type Patient = {
   id: string;
