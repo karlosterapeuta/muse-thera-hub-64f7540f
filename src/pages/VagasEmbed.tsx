@@ -283,6 +283,9 @@ export default function VagasEmbed() {
           </CardContent>
         </Card>
 
+        {/* Admin control panel for the automated WhatsApp engine */}
+        <VagasAdminPanel />
+
         {/* Curated additional job sources */}
         <VagasSources />
 
