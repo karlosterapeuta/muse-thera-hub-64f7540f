@@ -1003,15 +1003,26 @@ export default function MusicotherapyTreatmentPlanPage() {
             Seção {activeIndex + 1} de {tabSections.length}
           </div>
 
-          <Button
-            className="gap-2 bg-gradient-to-r from-primary to-purple-600 hover:opacity-90"
-            onClick={() => { if (activeIndex < tabSections.length - 1) goToSection(tabSections[activeIndex + 1].id); }}
-            disabled={activeIndex === tabSections.length - 1}
-          >
-            <span className="hidden sm:inline">{activeIndex < tabSections.length - 1 ? tabSections[activeIndex + 1].navLabel : 'Próxima'}</span>
-            <span className="sm:hidden">Próxima</span>
-            <ArrowLeft className="h-4 w-4 rotate-180" />
-          </Button>
+          {activeIndex < tabSections.length - 1 ? (
+            <Button
+              className="gap-2 bg-gradient-to-r from-primary to-amber-500 hover:opacity-90"
+              onClick={() => goToSection(tabSections[activeIndex + 1].id)}
+            >
+              <span className="hidden sm:inline">Próxima: {tabSections[activeIndex + 1].navLabel}</span>
+              <span className="sm:hidden">Próxima</span>
+              <ArrowLeft className="h-4 w-4 rotate-180" />
+            </Button>
+          ) : (
+            <Button
+              className="gap-2 bg-gradient-to-r from-emerald-500 to-primary hover:opacity-90"
+              onClick={() => savePlan()}
+              disabled={isSaving}
+            >
+              <CheckCircle className="h-4 w-4" />
+              {isSaving ? 'Salvando...' : 'Finalizar e salvar'}
+            </Button>
+          )}
+
         </div>
 
       </div>
