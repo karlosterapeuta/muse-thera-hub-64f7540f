@@ -49,6 +49,7 @@ import { Sparkles, Wand2, FileSearch, History } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { planSections, getCompletion } from './sections';
 import { PlanSectionHeader } from '@/components/treatment-plan/PlanSectionNav';
+import { PlanWizardStepper } from '@/components/treatment-plan/PlanWizardStepper';
 
 type Patient = {
   id: string;
