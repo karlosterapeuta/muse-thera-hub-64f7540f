@@ -85,6 +85,42 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const period: Period = body.period ?? currentPeriod();
 
+    const evoUrlBase = Deno.env.get("EVOLUTION_API_URL")?.replace(/\/+$/, "");
+    const evoApiKey = Deno.env.get("EVOLUTION_API_KEY");
+    const evoInstanceName = Deno.env.get("EVOLUTION_INSTANCE_NAME");
+
+    // Action: list WhatsApp groups so the admin can pick the right group JID.
+    if (body.action === "list_groups") {
+      if (!evoUrlBase || !evoApiKey || !evoInstanceName) {
+        return new Response(JSON.stringify({ error: "Evolution não configurado" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const resp = await fetch(
+        `${evoUrlBase}/group/fetchAllGroups/${evoInstanceName}?getParticipants=false`,
+        { headers: { apikey: evoApiKey } },
+      );
+      const text = await resp.text();
+      if (!resp.ok) {
+        return new Response(JSON.stringify({ error: `Evolution ${resp.status}`, detail: text }), {
+          status: 502,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      let parsed: unknown = [];
+      try { parsed = JSON.parse(text); } catch { parsed = []; }
+      const arr = Array.isArray(parsed) ? parsed : [];
+      const groups = arr.map((g: Record<string, unknown>) => ({
+        id: g.id as string,
+        subject: (g.subject as string) ?? "(sem nome)",
+        size: (g.size as number) ?? null,
+      }));
+      return new Response(JSON.stringify({ groups }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { data: settings } = await admin.from("vagas_settings").select("*").limit(1).maybeSingle();
     const perPeriod: number = settings?.per_period ?? 2;
     const groupUrl: string | null = settings?.whatsapp_group_url ?? null;
