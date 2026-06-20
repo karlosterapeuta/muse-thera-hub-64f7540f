@@ -502,30 +502,18 @@ export default function MusicotherapyTreatmentPlanPage() {
           className="mb-6"
         />
 
-        {/* Devolutiva-style tabbed layout */}
+        {/* Step-by-step wizard layout */}
         <Tabs value={activeTab} onValueChange={goToSection} className="w-full min-w-0">
-          <TabsList className="flex flex-wrap h-auto w-full gap-1 bg-card/60 backdrop-blur-xl border border-border/60 rounded-xl p-1">
-            {tabSections.map((section, index) => {
-              const Icon = section.icon;
-              const complete = section.isComplete(planData);
-              return (
-                <TabsTrigger
-                  key={section.id}
-                  value={section.id}
-                  className="flex-1 min-w-[120px] gap-1.5 rounded-lg text-xs data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary data-[state=active]:to-amber-500 data-[state=active]:text-white"
-                >
-                  {complete ? (
-                    <CheckCircle className="h-3.5 w-3.5 text-emerald-400 data-[state=active]:text-white" />
-                  ) : (
-                    <Icon className="h-3.5 w-3.5" />
-                  )}
-                  <span className="truncate">{index + 1}. {section.navLabel}</span>
-                </TabsTrigger>
-              );
-            })}
-          </TabsList>
+          <PlanWizardStepper
+            sections={tabSections}
+            activeIndex={activeIndex}
+            plan={planData}
+            completion={completion}
+            onSelect={goToSection}
+          />
 
           <PlanSectionHeader section={activeSection} index={activeIndex} total={tabSections.length} />
+
 
 
           {/* Tab Contents */}
