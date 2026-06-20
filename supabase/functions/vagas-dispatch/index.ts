@@ -87,13 +87,38 @@ Deno.serve(async (req) => {
 
     const evoUrlBase = Deno.env.get("EVOLUTION_API_URL")?.trim().replace(/\/+$/, "");
     const evoApiKey = Deno.env.get("EVOLUTION_API_KEY")?.trim();
-    const evoInstanceName = Deno.env.get("EVOLUTION_INSTANCE_NAME")?.trim();
+    const configuredInstance = Deno.env.get("EVOLUTION_INSTANCE_NAME")?.trim();
+
+    // Resolve the active Evolution instance. The configured name may be wrong,
+    // so we verify it against the server and fall back to the connected instance.
+    async function resolveInstance(): Promise<string | null> {
+      if (!evoUrlBase || !evoApiKey) return null;
+      try {
+        const resp = await fetch(`${evoUrlBase}/instance/fetchInstances`, {
+          headers: { apikey: evoApiKey },
+        });
+        if (!resp.ok) return configuredInstance ?? null;
+        const list = (await resp.json()) as Array<{ name?: string; connectionStatus?: string }>;
+        if (!Array.isArray(list) || list.length === 0) return configuredInstance ?? null;
+        // Prefer the configured instance if it exists on the server.
+        const match = configuredInstance && list.find((i) => i.name === configuredInstance);
+        if (match) return match.name!;
+        // Otherwise use the first connected instance, then any instance.
+        const open = list.find((i) => i.connectionStatus === "open");
+        return (open?.name ?? list[0]?.name) ?? configuredInstance ?? null;
+      } catch {
+        return configuredInstance ?? null;
+      }
+    }
+
+    const evoInstanceName = await resolveInstance();
 
     if (body.action === "debug_env") {
       return new Response(
         JSON.stringify({
           url: evoUrlBase,
-          instance: evoInstanceName,
+          configuredInstance,
+          resolvedInstance: evoInstanceName,
           keyLen: evoApiKey?.length ?? 0,
           keyHead: evoApiKey?.slice(0, 4) ?? null,
         }),
