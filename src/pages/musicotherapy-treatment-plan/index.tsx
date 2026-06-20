@@ -370,8 +370,57 @@ export default function MusicotherapyTreatmentPlanPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-6xl mx-auto px-4 pb-10">
+    <div className="min-h-screen relative w-full overflow-x-hidden bg-background">
+      {/* Ambient cosmic blobs */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
+        <div className="absolute top-1/3 -right-32 h-96 w-96 rounded-full bg-amber-400/10 blur-3xl" />
+        <div className="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-primary/5 blur-3xl" />
+      </div>
+
+      <div className="relative z-10 max-w-6xl mx-auto px-4 pb-10 pt-6 space-y-6">
+        {/* Premium Header */}
+        <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-card/60 backdrop-blur-xl shadow-2xl">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-amber-400/5" />
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+
+          <div className="relative p-6 sm:p-8 lg:p-10">
+            <div className="flex items-start gap-5">
+              <div className="relative flex-shrink-0">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary to-amber-500 blur-xl opacity-40" />
+                <div className="relative p-4 rounded-2xl bg-gradient-to-br from-primary to-amber-500 shadow-lg">
+                  <Music className="h-7 w-7 lg:h-8 lg:w-8 text-white" />
+                </div>
+              </div>
+              <div className="space-y-2 min-w-0">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border/60 bg-background/40 backdrop-blur text-xs font-medium text-muted-foreground">
+                  <Sparkles className="h-3 w-3 text-amber-500" />
+                  Plano Clínico · IA Integrada
+                </div>
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight bg-gradient-to-br from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
+                  Plano Musicoterapêutico
+                </h1>
+                <p className="text-sm sm:text-base text-muted-foreground max-w-2xl leading-relaxed">
+                  Estruture objetivos, recursos e estratégias do plano de tratamento com modelos prontos e assistente de IA.
+                </p>
+              </div>
+            </div>
+
+            {/* Status pills */}
+            <div className="mt-6 flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border/60 bg-background/40 backdrop-blur text-xs font-medium">
+                <Target className="h-3.5 w-3.5 text-primary" /> Objetivos
+              </div>
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border/60 bg-background/40 backdrop-blur text-xs font-medium">
+                <Sparkles className="h-3.5 w-3.5 text-amber-500" /> Assistente IA
+              </div>
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border/60 bg-background/40 backdrop-blur text-xs font-medium">
+                <Download className="h-3.5 w-3.5 text-rose-400" /> Exportar PDF
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Sticky Header */}
         <PlanStickyHeader
           isEditing={!!id}
