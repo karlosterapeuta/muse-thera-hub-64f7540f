@@ -42,6 +42,34 @@ export default function VagasEmbed() {
     }
   };
 
+  const handleShare = async () => {
+    const shareData = {
+      title: "💼 Vagas MuseTera",
+      text: "Confira as oportunidades para musicoterapeutas no Vagas MuseTera!",
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+        return;
+      }
+      await navigator.clipboard.writeText(shareData.url);
+      toast({
+        title: "Link copiado!",
+        description: "O link das vagas foi copiado para a área de transferência.",
+      });
+    } catch (error) {
+      // Usuário cancelou o compartilhamento ou recurso indisponível
+      if ((error as Error)?.name === "AbortError") return;
+      toast({
+        title: "Não foi possível compartilhar",
+        description: "Tente copiar o link manualmente.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const toggleFullscreen = () => {
     setIsFullscreen(!isFullscreen);
     
