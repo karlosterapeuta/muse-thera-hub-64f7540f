@@ -196,24 +196,12 @@ export default function VagasSources() {
                 </div>
                 <ul className="space-y-2">
                   {capital.clinics.map((clinic) => (
-                    <li key={clinic.name}>
-                      <a
-                        href={clinic.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group flex items-start gap-2 rounded-lg p-2 -mx-2 hover:bg-cyan-500/10 transition-colors"
-                      >
-                        <ExternalLink className="h-3.5 w-3.5 mt-0.5 text-cyan-500 shrink-0" />
-                        <span className="min-w-0">
-                          <span className="block text-sm font-medium text-foreground group-hover:text-cyan-500 transition-colors">
-                            {clinic.name}
-                          </span>
-                          <span className="block text-xs text-muted-foreground leading-snug">
-                            {clinic.description}
-                          </span>
-                        </span>
-                      </a>
-                    </li>
+                    <VagaLinkItem
+                      key={clinic.name}
+                      url={clinic.url}
+                      name={clinic.name}
+                      description={clinic.description}
+                    />
                   ))}
                 </ul>
               </div>
