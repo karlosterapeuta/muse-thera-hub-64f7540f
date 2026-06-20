@@ -62,6 +62,47 @@ export default function VagasAdminPanel() {
   const { data: isAdmin } = useAdmin();
   const queryClient = useQueryClient();
   const [tab, setTab] = useState<Status>("pending");
+  const [groups, setGroups] = useState<{ id: string; subject: string; size: number | null }[]>([]);
+
+  const { data: settings } = useQuery({
+    queryKey: ["vagas_settings"],
+    enabled: !!isAdmin,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("vagas_settings")
+        .select("id, whatsapp_group_url")
+        .limit(1)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const listGroupsMutation = useMutation({
+    mutationFn: () => invokeFunction("vagas-dispatch", { action: "list_groups" }),
+    onSuccess: (data: { groups?: { id: string; subject: string; size: number | null }[] }) => {
+      setGroups(data?.groups ?? []);
+      toast({ title: "Grupos carregados", description: `${data?.groups?.length ?? 0} grupo(s) encontrado(s).` });
+    },
+    onError: (e: Error) => toast({ title: "Erro ao listar grupos", description: e.message, variant: "destructive" }),
+  });
+
+  const setGroupMutation = useMutation({
+    mutationFn: async (jid: string) => {
+      if (!settings?.id) throw new Error("Configurações não encontradas");
+      const { error } = await supabase
+        .from("vagas_settings")
+        .update({ whatsapp_group_url: jid })
+        .eq("id", settings.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({ title: "Grupo definido", description: "Vagas serão enviadas para este grupo." });
+      queryClient.invalidateQueries({ queryKey: ["vagas_settings"] });
+    },
+    onError: (e: Error) => toast({ title: "Erro", description: e.message, variant: "destructive" }),
+  });
+
 
   const { data: vacancies, isLoading } = useQuery({
     queryKey: ["job_vacancies", tab],
