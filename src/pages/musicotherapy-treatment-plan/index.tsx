@@ -419,7 +419,7 @@ export default function MusicotherapyTreatmentPlanPage() {
         <PlanTemplatesDialog
           open={templatesOpen}
           onOpenChange={setTemplatesOpen}
-          onApply={applyPartialPlan}
+          onApply={applyTemplate}
         />
         <PlanAIGeneratorDialog
           open={aiOpen}
