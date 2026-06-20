@@ -70,7 +70,7 @@ export default function VagasSources() {
       </div>
 
       {/* Per-state search */}
-      <Card className="border-cyan-500/20">
+      <Card className={CARD_STYLE}>
         <CardContent className="p-5 sm:p-6">
           <div className="flex items-center gap-2 mb-1">
             <MapPin className="h-5 w-5 text-cyan-500" />
