@@ -112,10 +112,7 @@ export default function VagasSources() {
                   {isOpen && (
                     <div className="grid gap-2 p-3 sm:grid-cols-2 lg:grid-cols-3">
                       {states.map((st) => (
-                        <div
-                          key={st.uf}
-                          className="rounded-lg border border-border/50 bg-card p-3"
-                        >
+                        <div key={st.uf} className={SUBCARD_STYLE.replace("p-4", "p-3")}>
                           <div className="flex items-center gap-2 mb-2">
                             <span className="inline-flex items-center justify-center h-6 px-1.5 rounded bg-cyan-500/10 text-[11px] font-bold text-cyan-500">
                               {st.uf}
