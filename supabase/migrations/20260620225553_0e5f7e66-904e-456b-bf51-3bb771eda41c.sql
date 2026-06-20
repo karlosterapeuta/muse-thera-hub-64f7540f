@@ -1,0 +1,1 @@
+ALTER TABLE public.vagas_settings ADD COLUMN cron_token TEXT;
