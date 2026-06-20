@@ -158,10 +158,10 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Evolution API config — sends directly to the WhatsApp group.
-    const evoUrl = Deno.env.get("EVOLUTION_API_URL")?.replace(/\/+$/, "");
-    const evoKey = Deno.env.get("EVOLUTION_API_KEY");
-    const evoInstance = Deno.env.get("EVOLUTION_INSTANCE_NAME");
+    // Evolution API sends directly to the WhatsApp group.
+    const evoUrl = evoUrlBase;
+    const evoKey = evoApiKey;
+    const evoInstance = evoInstanceName;
     // The group JID (e.g. 1203...@g.us) is stored in settings.whatsapp_group_url.
     const groupJid: string | null = groupUrl;
     const outboundConfigured = !!(evoUrl && evoKey && evoInstance && groupJid);
