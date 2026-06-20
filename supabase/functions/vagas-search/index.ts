@@ -88,7 +88,15 @@ Deno.serve(async (req) => {
         continue;
       }
       const json = await res.json();
-      const results = json.data ?? json.web ?? [];
+      // Firecrawl v2 returns { success, data: { web: [...] } }; tolerate variants.
+      const raw = json?.data ?? json;
+      const results = Array.isArray(raw)
+        ? raw
+        : Array.isArray(raw?.web)
+          ? raw.web
+          : Array.isArray(json?.web)
+            ? json.web
+            : [];
       for (const r of results) {
         if (!r.url) continue;
         candidates.push({
