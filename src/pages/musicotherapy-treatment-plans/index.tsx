@@ -159,33 +159,64 @@ export default function MusicotherapyTreatmentPlans() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-6 lg:py-10 max-w-7xl space-y-6">
-        {/* Header */}
-        <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium mb-3">
-              <Sparkles className="h-3 w-3" />
-              Etapa 3 do fluxo musicoterapêutico
+    <div className="relative min-h-screen bg-background overflow-hidden">
+      {/* Cosmic ambient blobs */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
+        <div className="absolute top-1/3 -right-24 h-96 w-96 rounded-full bg-amber-400/10 blur-3xl" />
+        <div className="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-primary/5 blur-3xl" />
+      </div>
+
+      <div className="relative container mx-auto px-3 sm:px-4 lg:px-6 py-6 lg:py-10 max-w-7xl space-y-6">
+        {/* Premium header */}
+        <motion.div
+          initial={{ opacity: 0, y: -16 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative overflow-hidden rounded-3xl border border-border/60 bg-card/60 backdrop-blur-xl shadow-2xl"
+        >
+          <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-amber-500 to-primary" />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-amber-500/5" />
+          <div className="relative p-6 sm:p-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div className="flex items-start gap-4">
+              <div className="relative shrink-0">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary to-amber-500 blur-xl opacity-60" />
+                <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-amber-500 text-primary-foreground shadow-lg">
+                  <ClipboardList className="h-7 w-7" />
+                </div>
+              </div>
+              <div>
+                <div className="inline-flex items-center gap-2 rounded-full bg-background/40 backdrop-blur px-3 py-1 text-xs font-medium text-primary mb-3">
+                  <Sparkles className="h-3 w-3" />
+                  Plano Clínico · IA Integrada
+                </div>
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight">
+                  Planos{' '}
+                  <span className="bg-gradient-to-r from-primary to-amber-500 bg-clip-text text-transparent">
+                    Musicoterapêuticos
+                  </span>
+                </h1>
+                <p className="text-sm sm:text-base text-muted-foreground mt-1 max-w-xl">
+                  Crie, organize e acompanhe os planos de tratamento dos seus pacientes
+                </p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-background/40 backdrop-blur px-3 py-1 text-xs font-medium text-foreground/80">
+                    <ClipboardList className="h-3 w-3" /> {stats.total} planos
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-background/40 backdrop-blur px-3 py-1 text-xs font-medium text-foreground/80">
+                    <Sparkles className="h-3 w-3" /> Assistente IA
+                  </span>
+                </div>
+              </div>
             </div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-foreground">
-              Planos{' '}
-              <span className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                Musicoterapêuticos
-              </span>
-            </h1>
-            <p className="text-sm sm:text-base text-muted-foreground mt-1">
-              Crie, organize e acompanhe os planos de tratamento dos seus pacientes
-            </p>
+            <Button
+              onClick={() => navigate('/musicotherapy-treatment-plan')}
+              size="lg"
+              className="gap-2 shadow-lg shadow-primary/20 bg-gradient-to-br from-primary to-amber-500 hover:opacity-90"
+            >
+              <Plus className="h-4 w-4" />
+              Novo Plano
+            </Button>
           </div>
-          <Button
-            onClick={() => navigate('/musicotherapy-treatment-plan')}
-            size="lg"
-            className="gap-2 shadow-lg shadow-primary/20"
-          >
-            <Plus className="h-4 w-4" />
-            Novo Plano
-          </Button>
         </motion.div>
 
         {/* Stats */}
