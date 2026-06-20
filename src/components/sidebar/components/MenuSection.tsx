@@ -3,8 +3,10 @@ import { NavLink } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { ChevronRight } from "lucide-react";
 import type { MenuSectionProps } from "../types";
+import { useNewVacanciesCount } from "@/hooks/useNewVacanciesCount";
 
 export function MenuSection({ title, items, collapsed, onNavigate, showTitle = true }: MenuSectionProps) {
+  const vagasCount = useNewVacanciesCount();
   return (
     <div className="space-y-0.5">
       {!collapsed && showTitle && (
@@ -119,6 +121,20 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
                       </span>
                     )}
                   </div>
+                )}
+
+                {/* New vacancies counter badge */}
+                {item.path === "/vagas" && vagasCount > 0 && (
+                  <span
+                    className={cn(
+                      "z-10 flex items-center justify-center rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold shadow",
+                      collapsed
+                        ? "absolute top-0.5 right-0.5 h-4 min-w-4 px-1 text-[9px]"
+                        : "h-5 min-w-5 px-1.5 text-[10px]"
+                    )}
+                  >
+                    {vagasCount > 99 ? "99+" : vagasCount}
+                  </span>
                 )}
 
                 {/* Arrow indicator on hover (non-active) */}
