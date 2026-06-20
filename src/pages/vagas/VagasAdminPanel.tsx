@@ -7,6 +7,13 @@ import { useAdmin } from "@/hooks/use-admin";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
 import {
   Search,
@@ -17,6 +24,7 @@ import {
   Loader2,
   Sparkles,
   RefreshCw,
+  Users,
 } from "lucide-react";
 
 const CARD_STYLE =
@@ -54,6 +62,47 @@ export default function VagasAdminPanel() {
   const { data: isAdmin } = useAdmin();
   const queryClient = useQueryClient();
   const [tab, setTab] = useState<Status>("pending");
+  const [groups, setGroups] = useState<{ id: string; subject: string; size: number | null }[]>([]);
+
+  const { data: settings } = useQuery({
+    queryKey: ["vagas_settings"],
+    enabled: !!isAdmin,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("vagas_settings")
+        .select("id, whatsapp_group_url")
+        .limit(1)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const listGroupsMutation = useMutation({
+    mutationFn: () => invokeFunction("vagas-dispatch", { action: "list_groups" }),
+    onSuccess: (data: { groups?: { id: string; subject: string; size: number | null }[] }) => {
+      setGroups(data?.groups ?? []);
+      toast({ title: "Grupos carregados", description: `${data?.groups?.length ?? 0} grupo(s) encontrado(s).` });
+    },
+    onError: (e: Error) => toast({ title: "Erro ao listar grupos", description: e.message, variant: "destructive" }),
+  });
+
+  const setGroupMutation = useMutation({
+    mutationFn: async (jid: string) => {
+      if (!settings?.id) throw new Error("Configurações não encontradas");
+      const { error } = await supabase
+        .from("vagas_settings")
+        .update({ whatsapp_group_url: jid })
+        .eq("id", settings.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({ title: "Grupo definido", description: "Vagas serão enviadas para este grupo." });
+      queryClient.invalidateQueries({ queryKey: ["vagas_settings"] });
+    },
+    onError: (e: Error) => toast({ title: "Erro", description: e.message, variant: "destructive" }),
+  });
+
 
   const { data: vacancies, isLoading } = useQuery({
     queryKey: ["job_vacancies", tab],
@@ -146,6 +195,56 @@ export default function VagasAdminPanel() {
           >
             <RefreshCw className="h-4 w-4" />
           </Button>
+        </div>
+
+        <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/[0.03] p-3">
+          <div className="flex items-center gap-2 text-sm font-medium">
+            <Users className="h-4 w-4 text-cyan-500" />
+            Grupo de destino (WhatsApp)
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {settings?.whatsapp_group_url?.endsWith("@g.us")
+              ? `Grupo configurado: ${settings.whatsapp_group_url}`
+              : "Nenhum grupo selecionado. Liste os grupos e escolha um."}
+          </p>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-2 border-cyan-500/30"
+              onClick={() => listGroupsMutation.mutate()}
+              disabled={listGroupsMutation.isPending}
+            >
+              {listGroupsMutation.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Users className="h-4 w-4" />
+              )}
+              Listar grupos
+            </Button>
+            {groups.length > 0 && (
+              <Select
+                onValueChange={(jid) => setGroupMutation.mutate(jid)}
+                defaultValue={
+                  settings?.whatsapp_group_url?.endsWith("@g.us")
+                    ? settings.whatsapp_group_url
+                    : undefined
+                }
+              >
+                <SelectTrigger className="h-9 w-[260px] border-cyan-500/30 text-xs">
+                  <SelectValue placeholder="Selecione o grupo" />
+                </SelectTrigger>
+                <SelectContent>
+                  {groups.map((g) => (
+                    <SelectItem key={g.id} value={g.id} className="text-xs">
+                      {g.subject}
+                      {g.size ? ` (${g.size})` : ""}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
         </div>
 
         <div className="flex flex-wrap gap-2 border-b border-cyan-500/10 pb-2">
