@@ -3,8 +3,10 @@ import { NavLink } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { ChevronRight } from "lucide-react";
 import type { MenuSectionProps } from "../types";
+import { useNewVacanciesCount } from "@/hooks/useNewVacanciesCount";
 
 export function MenuSection({ title, items, collapsed, onNavigate, showTitle = true }: MenuSectionProps) {
+  const vagasCount = useNewVacanciesCount();
   return (
     <div className="space-y-0.5">
       {!collapsed && showTitle && (
