@@ -1053,6 +1053,50 @@ export default function MusicotherapyTreatmentPlanPage() {
           )}
 
         </div>
+          </TabsContent>
+
+          <TabsContent value="preview" className="mt-6 space-y-4">
+            <PlanPreview planData={planData} />
+            <div className="flex flex-wrap justify-end gap-3">
+              <Button variant="outline" onClick={() => setViewMode('form')}>
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Voltar ao Formulário
+              </Button>
+              <Button
+                onClick={handleDownloadPDF}
+                disabled={isGeneratingPDF || !planData.patient_full_name}
+                className="bg-gradient-to-br from-primary to-amber-500 text-white border-0 shadow-md hover:opacity-90 transition-all duration-200 font-semibold"
+              >
+                <FileDown className="h-4 w-4 mr-2" />
+                {isGeneratingPDF ? 'Gerando PDF...' : 'Exportar PDF'}
+              </Button>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="history" className="mt-6">
+            <Card className="bg-card/60 backdrop-blur-xl border-border/60 shadow-xl">
+              <CardContent className="flex flex-col items-center gap-4 py-12 text-center">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-amber-500 text-white shadow-lg">
+                  <History className="h-7 w-7" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-lg font-semibold">Histórico de versões</h3>
+                  <p className="max-w-md text-sm text-muted-foreground">
+                    Consulte, rotule e restaure versões anteriores deste plano musicoterapêutico.
+                  </p>
+                </div>
+                <Button
+                  onClick={() => setVersionsOpen(true)}
+                  disabled={!planData.id}
+                  className="bg-gradient-to-br from-primary to-amber-500 text-white border-0 shadow-md hover:opacity-90 transition-all duration-200 font-semibold"
+                >
+                  <History className="h-4 w-4 mr-2" />
+                  {planData.id ? 'Abrir versões' : 'Salve o plano para versionar'}
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
 
       </div>
     </div>
