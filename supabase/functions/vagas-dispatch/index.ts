@@ -122,8 +122,13 @@ Deno.serve(async (req) => {
       );
     }
 
-    const outboundUrl = Deno.env.get("WHATSAPP_OUTBOUND_URL");
-    const outboundKey = Deno.env.get("WHATSAPP_BOT_API_KEY");
+    // Evolution API config — sends directly to the WhatsApp group.
+    const evoUrl = Deno.env.get("EVOLUTION_API_URL")?.replace(/\/+$/, "");
+    const evoKey = Deno.env.get("EVOLUTION_API_KEY");
+    const evoInstance = Deno.env.get("EVOLUTION_INSTANCE_NAME");
+    // The group JID (e.g. 1203...@g.us) is stored in settings.whatsapp_group_url.
+    const groupJid: string | null = groupUrl;
+    const outboundConfigured = !!(evoUrl && evoKey && evoInstance && groupJid);
 
     let sent = 0;
     const results: unknown[] = [];
@@ -131,20 +136,20 @@ Deno.serve(async (req) => {
       const message = buildMessage(v, period);
       let delivered = false;
 
-      if (outboundUrl) {
+      if (outboundConfigured) {
         try {
-          const resp = await fetch(outboundUrl, {
+          const resp = await fetch(`${evoUrl}/message/sendText/${evoInstance}`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              ...(outboundKey ? { "x-api-key": outboundKey } : {}),
+              apikey: evoKey!,
             },
-            body: JSON.stringify({ group: groupUrl, message }),
+            body: JSON.stringify({ number: groupJid, text: message }),
           });
           delivered = resp.ok;
-          if (!resp.ok) console.error("WhatsApp outbound failed", resp.status, await resp.text());
+          if (!resp.ok) console.error("Evolution send failed", resp.status, await resp.text());
         } catch (e) {
-          console.error("WhatsApp outbound error", e);
+          console.error("Evolution send error", e);
         }
       }
 
@@ -162,7 +167,8 @@ Deno.serve(async (req) => {
       JSON.stringify({
         sent,
         period,
-        outbound_configured: !!outboundUrl,
+        outbound_configured: outboundConfigured,
+        group_configured: !!groupJid,
         results,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
