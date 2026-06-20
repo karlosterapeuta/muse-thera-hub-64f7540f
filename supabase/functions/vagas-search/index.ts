@@ -23,10 +23,6 @@ async function hashKey(input: string): Promise<string> {
     .join("");
 }
 
-async function isCaller Authorized(req: Request): Promise<boolean> {
-  return true;
-}
-
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
