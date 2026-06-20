@@ -50,6 +50,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { planSections, getCompletion } from './sections';
 import { PlanSectionHeader } from '@/components/treatment-plan/PlanSectionNav';
 import { PlanWizardStepper } from '@/components/treatment-plan/PlanWizardStepper';
+import { PlanPreview } from '@/components/treatment-plan/PlanPreview';
+import { FileDown } from 'lucide-react';
 
 type Patient = {
   id: string;
@@ -83,6 +85,8 @@ export default function MusicotherapyTreatmentPlanPage() {
   const [selectedPatient, setSelectedPatient] = useState("");
   const [isLoadingPatients, setIsLoadingPatients] = useState(true);
   const [activeTab, setActiveTab] = useState("identification");
+  /** Outer view mode mirroring the Devolutiva TEA layout: Formulário / Preview / Histórico. */
+  const [viewMode, setViewMode] = useState<"form" | "preview" | "history">("form");
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [templatesOpen, setTemplatesOpen] = useState(false);
   const [aiOpen, setAiOpen] = useState(false);
@@ -421,6 +425,31 @@ export default function MusicotherapyTreatmentPlanPage() {
             </div>
           </div>
         </div>
+
+        {/* Outer layout: Formulário / Preview / Histórico (mirrors Devolutiva TEA) */}
+        <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as typeof viewMode)}>
+          <TabsList className="grid w-full grid-cols-3 bg-card/60 backdrop-blur-xl border border-border/60 rounded-xl p-1 h-auto">
+            <TabsTrigger
+              value="form"
+              className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary data-[state=active]:to-amber-500 data-[state=active]:text-white rounded-lg"
+            >
+              📝 Formulário
+            </TabsTrigger>
+            <TabsTrigger
+              value="preview"
+              className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary data-[state=active]:to-amber-500 data-[state=active]:text-white rounded-lg"
+            >
+              👁️ Preview
+            </TabsTrigger>
+            <TabsTrigger
+              value="history"
+              className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary data-[state=active]:to-amber-500 data-[state=active]:text-white rounded-lg"
+            >
+              📚 Histórico
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="form" className="space-y-6 mt-6">
 
         {/* Sticky Header */}
         <PlanStickyHeader
@@ -1024,6 +1053,50 @@ export default function MusicotherapyTreatmentPlanPage() {
           )}
 
         </div>
+          </TabsContent>
+
+          <TabsContent value="preview" className="mt-6 space-y-4">
+            <PlanPreview planData={planData} />
+            <div className="flex flex-wrap justify-end gap-3">
+              <Button variant="outline" onClick={() => setViewMode('form')}>
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Voltar ao Formulário
+              </Button>
+              <Button
+                onClick={handleDownloadPDF}
+                disabled={isGeneratingPDF || !planData.patient_full_name}
+                className="bg-gradient-to-br from-primary to-amber-500 text-white border-0 shadow-md hover:opacity-90 transition-all duration-200 font-semibold"
+              >
+                <FileDown className="h-4 w-4 mr-2" />
+                {isGeneratingPDF ? 'Gerando PDF...' : 'Exportar PDF'}
+              </Button>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="history" className="mt-6">
+            <Card className="bg-card/60 backdrop-blur-xl border-border/60 shadow-xl">
+              <CardContent className="flex flex-col items-center gap-4 py-12 text-center">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-amber-500 text-white shadow-lg">
+                  <History className="h-7 w-7" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-lg font-semibold">Histórico de versões</h3>
+                  <p className="max-w-md text-sm text-muted-foreground">
+                    Consulte, rotule e restaure versões anteriores deste plano musicoterapêutico.
+                  </p>
+                </div>
+                <Button
+                  onClick={() => setVersionsOpen(true)}
+                  disabled={!planData.id}
+                  className="bg-gradient-to-br from-primary to-amber-500 text-white border-0 shadow-md hover:opacity-90 transition-all duration-200 font-semibold"
+                >
+                  <History className="h-4 w-4 mr-2" />
+                  {planData.id ? 'Abrir versões' : 'Salve o plano para versionar'}
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
 
       </div>
     </div>
