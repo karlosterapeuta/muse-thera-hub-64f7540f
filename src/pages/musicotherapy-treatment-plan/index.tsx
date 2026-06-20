@@ -106,6 +106,30 @@ export default function MusicotherapyTreatmentPlanPage() {
     if (Object.keys(updates).length) updatePlanData(updates as Partial<MusicotherapyTreatmentPlan>);
   };
 
+  /** Substitui integralmente os campos presentes no modelo selecionado. */
+  const replaceWithTemplate = (partial: Partial<MusicotherapyTreatmentPlan>) => {
+    const updates: Record<string, any> = {};
+    Object.entries(partial).forEach(([key, value]) => {
+      if (value === undefined || value === null) return;
+      updates[key] = value;
+    });
+    if (Object.keys(updates).length) updatePlanData(updates as Partial<MusicotherapyTreatmentPlan>);
+  };
+
+  /** Aplica um modelo clínico no modo escolhido (completar ou substituir). */
+  const applyTemplate = (
+    data: Partial<MusicotherapyTreatmentPlan>,
+    mode: 'complete' | 'replace',
+  ) => {
+    if (mode === 'replace') {
+      replaceWithTemplate(data);
+      toast({ title: 'Modelo aplicado', description: 'O plano foi preenchido com o modelo selecionado.' });
+    } else {
+      applyPartialPlan(data);
+      toast({ title: 'Campos completados', description: 'Apenas os campos vazios foram preenchidos.' });
+    }
+  };
+
   // Warning for unsaved changes
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -395,7 +419,7 @@ export default function MusicotherapyTreatmentPlanPage() {
         <PlanTemplatesDialog
           open={templatesOpen}
           onOpenChange={setTemplatesOpen}
-          onApply={applyPartialPlan}
+          onApply={applyTemplate}
         />
         <PlanAIGeneratorDialog
           open={aiOpen}
