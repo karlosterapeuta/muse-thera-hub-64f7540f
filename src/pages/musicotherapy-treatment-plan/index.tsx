@@ -83,6 +83,8 @@ export default function MusicotherapyTreatmentPlanPage() {
   const [selectedPatient, setSelectedPatient] = useState("");
   const [isLoadingPatients, setIsLoadingPatients] = useState(true);
   const [activeTab, setActiveTab] = useState("identification");
+  /** Outer view mode mirroring the Devolutiva TEA layout: Formulário / Preview / Histórico. */
+  const [viewMode, setViewMode] = useState<"form" | "preview" | "history">("form");
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [templatesOpen, setTemplatesOpen] = useState(false);
   const [aiOpen, setAiOpen] = useState(false);
