@@ -87,7 +87,7 @@ export default function VagasSources() {
               return (
                 <div
                   key={region}
-                  className="rounded-xl border border-border/60 overflow-hidden"
+                  className="rounded-xl border border-cyan-500/20 overflow-hidden"
                 >
                   <button
                     onClick={() => setOpenRegion(isOpen ? null : region)}
