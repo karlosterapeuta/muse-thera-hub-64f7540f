@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "@/hooks/use-toast";
 import VagasSources from "@/pages/vagas/VagasSources";
+import VagasAdminPanel from "@/pages/vagas/VagasAdminPanel";
 
 export default function VagasEmbed() {
   const [isLoading, setIsLoading] = useState(true);
