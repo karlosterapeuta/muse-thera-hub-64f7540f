@@ -168,7 +168,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { data: settings } = await admin.from("vagas_settings").select("*").limit(1).maybeSingle();
     const perPeriod: number = settings?.per_period ?? 2;
     const groupUrl: string | null = settings?.whatsapp_group_url ?? null;
 
