@@ -137,7 +137,7 @@ export function PlanPreview({ planData }: PlanPreviewProps) {
       icon: Sparkles,
       fields: [
         { label: 'Estrutura das sessões', value: planData.session_structure },
-        { label: 'Sequência de atividades', value: planData.activities_sequence },
+        { label: 'Sequência de atividades', value: planData.activity_sequence },
       ],
     },
     {
