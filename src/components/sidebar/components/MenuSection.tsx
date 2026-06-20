@@ -123,6 +123,20 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
                   </div>
                 )}
 
+                {/* New vacancies counter badge */}
+                {item.path === "/vagas" && vagasCount > 0 && (
+                  <span
+                    className={cn(
+                      "z-10 flex items-center justify-center rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold shadow",
+                      collapsed
+                        ? "absolute top-0.5 right-0.5 h-4 min-w-4 px-1 text-[9px]"
+                        : "h-5 min-w-5 px-1.5 text-[10px]"
+                    )}
+                  >
+                    {vagasCount > 99 ? "99+" : vagasCount}
+                  </span>
+                )}
+
                 {/* Arrow indicator on hover (non-active) */}
                 {!collapsed && !isActive && (
                   <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/0 group-hover:text-muted-foreground/60 transition-all duration-200 group-hover:translate-x-0.5" />
