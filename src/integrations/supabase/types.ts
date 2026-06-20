@@ -2581,6 +2581,7 @@ export type Database = {
           search_enabled: boolean
           updated_at: string
           whatsapp_group_url: string | null
+          whatsapp_sender_number: string | null
         }
         Insert: {
           auto_send?: boolean
@@ -2592,6 +2593,7 @@ export type Database = {
           search_enabled?: boolean
           updated_at?: string
           whatsapp_group_url?: string | null
+          whatsapp_sender_number?: string | null
         }
         Update: {
           auto_send?: boolean
@@ -2603,6 +2605,7 @@ export type Database = {
           search_enabled?: boolean
           updated_at?: string
           whatsapp_group_url?: string | null
+          whatsapp_sender_number?: string | null
         }
         Relationships: []
       }

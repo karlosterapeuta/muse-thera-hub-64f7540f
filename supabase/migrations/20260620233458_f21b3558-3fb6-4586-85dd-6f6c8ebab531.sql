@@ -1,0 +1,1 @@
+ALTER TABLE public.vagas_settings ADD COLUMN IF NOT EXISTS whatsapp_sender_number text;
