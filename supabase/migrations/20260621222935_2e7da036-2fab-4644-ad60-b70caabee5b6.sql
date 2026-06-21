@@ -1,0 +1,1 @@
+ALTER TABLE public.anamnesis ADD COLUMN IF NOT EXISTS angelman_syndrome boolean DEFAULT false;

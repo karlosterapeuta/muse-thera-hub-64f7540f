@@ -74,7 +74,7 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
   const section2Fields = [
     "autism_spectrum", "adhd", "down_syndrome", "intellectual_disability",
     "cerebral_palsy", "epilepsy", "chronic_encephalopathy", "williams_syndrome",
-    "fragile_x_syndrome", "rett_syndrome", "alzheimer", "parkinson",
+    "fragile_x_syndrome", "rett_syndrome", "angelman_syndrome", "alzheimer", "parkinson",
     "depression", "bipolar_disorder", "anxiety_disorders", "odd_disorder", "other_diagnoses",
     "clinical_details",
   ];
@@ -218,6 +218,7 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
               { id: "williams_syndrome", label: "Síndrome de Williams", checked: getBooleanValue("williams_syndrome"), onChange: (v) => updateField("williams_syndrome", v), icon: Heart },
               { id: "fragile_x_syndrome", label: "Síndrome X Frágil", checked: getBooleanValue("fragile_x_syndrome"), onChange: (v) => updateField("fragile_x_syndrome", v), icon: Brain },
               { id: "rett_syndrome", label: "Síndrome de Rett", checked: getBooleanValue("rett_syndrome"), onChange: (v) => updateField("rett_syndrome", v), icon: Heart },
+              { id: "angelman_syndrome", label: "Síndrome de Angelman", checked: getBooleanValue("angelman_syndrome"), onChange: (v) => updateField("angelman_syndrome", v), icon: Heart },
               { id: "alzheimer", label: "Doença de Alzheimer", checked: getBooleanValue("alzheimer"), onChange: (v) => updateField("alzheimer", v), icon: Brain },
               { id: "parkinson", label: "Doença de Parkinson", checked: getBooleanValue("parkinson"), onChange: (v) => updateField("parkinson", v), icon: Activity },
               { id: "depression", label: "Depressão", checked: getBooleanValue("depression"), onChange: (v) => updateField("depression", v), icon: Heart },
