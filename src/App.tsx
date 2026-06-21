@@ -4,108 +4,109 @@ import { Toaster as ShadcnToaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { navItems } from "./nav-items";
 import "./App.css";
 import Layout from "./components/Layout";
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { globalCacheManager } from "@/utils/cacheManager";
 // Auth state validation is centralized in Layout.tsx to avoid token refresh storms
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { PWAInstallProvider } from "@/contexts/PWAInstallContext";
+
+// Eager: rotas críticas de entrada
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
-// Import all pages dynamically
-import Dashboard from "./pages/Dashboard";
-import Professional from "./pages/Professional";
-import Patients from "./pages/patients";
-import Anamnesis from "./pages/anamnesis";
-import Processes from "./pages/processes";
-import TreatmentPlan from "./pages/treatment-plan";
-import MusicotherapyTreatmentPlan from "./pages/musicotherapy-treatment-plan";
-import MusicotherapyTreatmentPlans from "./pages/musicotherapy-treatment-plans";
-import PtiList from "./pages/pti";
-import PtiEditor from "./pages/pti/editor";
-import PtiReavaliacao from "./pages/pti/reavaliacao";
-import Intervention from "./pages/intervention";
-import InterventionPlans from "./pages/intervention-plans";
-import Evaluation from "./pages/evaluation";
-import Reevaluation from "./pages/reevaluation";
-import Finance from "./pages/finance";
-import ScientificArticle from "./pages/scientific-article";
-import Activities from "./pages/activities";
-import MusicalBells from "./pages/musical-bells";
-import BellHero from "./pages/bell-hero";
-import TeaHero from "./pages/tea-hero";
-import Musicogram from "./pages/musicogram";
-import SprunKi from "./pages/SprunKi";
-import BoomwhackerHero from "./pages/boomwhacker-hero";
-import XylophoneHero from "./pages/xylophone-hero";
-import MusicComposer from "./pages/music-composer";
-import Songs from "./pages/songs";
-import BinauralFrequencies from "./pages/binaural-frequencies";
-import ChromeMusicLab from "./pages/ChromeMusicLab";
-import Hawkins from "./pages/hawkins";
-import Users from "./pages/users";
-import InviteCodes from "./pages/InviteCodes";
-import DigitalStamp from "./pages/DigitalStamp";
-import PatientHistory from "./pages/patient-history";
-import Install from "./pages/Install";
-import PublicAnamnesis from "./pages/PublicAnamnesis";
+// Lazy: demais páginas (code-splitting por rota)
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Professional = lazy(() => import("./pages/Professional"));
+const Patients = lazy(() => import("./pages/patients"));
+const Anamnesis = lazy(() => import("./pages/anamnesis"));
+const Processes = lazy(() => import("./pages/processes"));
+const TreatmentPlan = lazy(() => import("./pages/treatment-plan"));
+const MusicotherapyTreatmentPlan = lazy(() => import("./pages/musicotherapy-treatment-plan"));
+const MusicotherapyTreatmentPlans = lazy(() => import("./pages/musicotherapy-treatment-plans"));
+const PtiList = lazy(() => import("./pages/pti"));
+const PtiEditor = lazy(() => import("./pages/pti/editor"));
+const PtiReavaliacao = lazy(() => import("./pages/pti/reavaliacao"));
+const Intervention = lazy(() => import("./pages/intervention"));
+const InterventionPlans = lazy(() => import("./pages/intervention-plans"));
+const Evaluation = lazy(() => import("./pages/evaluation"));
+const Reevaluation = lazy(() => import("./pages/reevaluation"));
+const Finance = lazy(() => import("./pages/finance"));
+const ScientificArticle = lazy(() => import("./pages/scientific-article"));
+const Activities = lazy(() => import("./pages/activities"));
+const MusicalBells = lazy(() => import("./pages/musical-bells"));
+const BellHero = lazy(() => import("./pages/bell-hero"));
+const TeaHero = lazy(() => import("./pages/tea-hero"));
+const Musicogram = lazy(() => import("./pages/musicogram"));
+const SprunKi = lazy(() => import("./pages/SprunKi"));
+const BoomwhackerHero = lazy(() => import("./pages/boomwhacker-hero"));
+const XylophoneHero = lazy(() => import("./pages/xylophone-hero"));
+const MusicComposer = lazy(() => import("./pages/music-composer"));
+const Songs = lazy(() => import("./pages/songs"));
+const BinauralFrequencies = lazy(() => import("./pages/binaural-frequencies"));
+const ChromeMusicLab = lazy(() => import("./pages/ChromeMusicLab"));
+const Hawkins = lazy(() => import("./pages/hawkins"));
+const Users = lazy(() => import("./pages/users"));
+const InviteCodes = lazy(() => import("./pages/InviteCodes"));
+const DigitalStamp = lazy(() => import("./pages/DigitalStamp"));
+const PatientHistory = lazy(() => import("./pages/patient-history"));
+const Install = lazy(() => import("./pages/Install"));
+const PublicAnamnesis = lazy(() => import("./pages/PublicAnamnesis"));
 
 // Process pages
-import MusicoterapiaReport from "./pages/processes/musicoterapia";
-import EvolutionReport from "./pages/processes/evolution";
-import TeaArticle from "./pages/evaluation/tea-article";
-import EvaluationArticle from "./pages/evaluation/article";
-import ProcessReport from "./pages/processes/report";
-import ProcessReports from "./pages/processes/reports";
-import DevolutivaTea from "./pages/processes/devolutiva-tea";
+const MusicoterapiaReport = lazy(() => import("./pages/processes/musicoterapia"));
+const EvolutionReport = lazy(() => import("./pages/processes/evolution"));
+const TeaArticle = lazy(() => import("./pages/evaluation/tea-article"));
+const EvaluationArticle = lazy(() => import("./pages/evaluation/article"));
+const ProcessReport = lazy(() => import("./pages/processes/report"));
+const ProcessReports = lazy(() => import("./pages/processes/reports"));
+const DevolutivaTea = lazy(() => import("./pages/processes/devolutiva-tea"));
 
 // Finance pages
-import FinanceRecords from "./pages/finance/records";
-import FinanceReports from "./pages/finance/reports";
-import FinanceClinics from "./pages/finance/clinics";
-import ReceiptProfile from "./pages/finance/receipt-profile";
-import ReceiptsList from "./pages/finance/receipts";
-import VerifyReceipt from "./pages/verify-receipt";
+const FinanceRecords = lazy(() => import("./pages/finance/records"));
+const FinanceReports = lazy(() => import("./pages/finance/reports"));
+const FinanceClinics = lazy(() => import("./pages/finance/clinics"));
+const ReceiptsList = lazy(() => import("./pages/finance/receipts"));
+const VerifyReceipt = lazy(() => import("./pages/verify-receipt"));
 
 // Activities pages
-import ActivityFavorites from "./pages/activities/favorites";
-import ActivityCategory from "./pages/activities/category";
-import ProfessionalActivitiesPage from "./pages/activities/ProfessionalActivitiesPage";
+const ActivityFavorites = lazy(() => import("./pages/activities/favorites"));
+const ActivityCategory = lazy(() => import("./pages/activities/category"));
+const ProfessionalActivitiesPage = lazy(() => import("./pages/activities/ProfessionalActivitiesPage"));
 
 // Courses pages
-import CoursesPage from "./pages/courses";
-import CoursePlayerPage from "./pages/courses/[courseId]";
-import CreatorDashboardAdmin from "./pages/courses/admin/creator/[creatorId]";
-import CourseAdminPage from "./pages/courses/admin";
+const CoursesPage = lazy(() => import("./pages/courses"));
+const CoursePlayerPage = lazy(() => import("./pages/courses/[courseId]"));
+const CreatorDashboardAdmin = lazy(() => import("./pages/courses/admin/creator/[creatorId]"));
+const CourseAdminPage = lazy(() => import("./pages/courses/admin"));
 
 // Backup page
-import BackupPage from "./pages/backup";
+const BackupPage = lazy(() => import("./pages/backup"));
 
 // AI Assistant
-import AIAssistant from "./pages/ai-assistant";
+const AIAssistant = lazy(() => import("./pages/ai-assistant"));
 
 // Resources
-import Resources from "./pages/Resources";
-import OrquestraAnimal from "./pages/orquestra-animal";
-import DinoRitmos from "./pages/dino-ritmos";
-import VagasEmbed from "./pages/VagasEmbed";
+const Resources = lazy(() => import("./pages/Resources"));
+const OrquestraAnimal = lazy(() => import("./pages/orquestra-animal"));
+const DinoRitmos = lazy(() => import("./pages/dino-ritmos"));
+const VagasEmbed = lazy(() => import("./pages/VagasEmbed"));
 
 // Creator pages (separate from MuseTera)
-import CreatorLoginPage from "./pages/creator/login";
-import CreatorRegisterPage from "./pages/creator/register";
-import CreatorDashboardPage from "./pages/creator/dashboard";
-import CreatorCoursePreview from "./pages/creator/course-preview";
+const CreatorLoginPage = lazy(() => import("./pages/creator/login"));
+const CreatorRegisterPage = lazy(() => import("./pages/creator/register"));
+const CreatorDashboardPage = lazy(() => import("./pages/creator/dashboard"));
+const CreatorCoursePreview = lazy(() => import("./pages/creator/course-preview"));
 
 // Captação de Pacientes
-import CaptacaoModule from "./pages/captacao/CaptacaoModule";
-import EncontrarMusicoterapeuta from "./pages/public/EncontrarMusicoterapeuta";
-import PerfilPublicoPage from "./pages/public/PerfilPublicoPage";
-import SeoLandingPage from "./pages/public/SeoLandingPage";
+const CaptacaoModule = lazy(() => import("./pages/captacao/CaptacaoModule"));
+const EncontrarMusicoterapeuta = lazy(() => import("./pages/public/EncontrarMusicoterapeuta"));
+const PerfilPublicoPage = lazy(() => import("./pages/public/PerfilPublicoPage"));
+const SeoLandingPage = lazy(() => import("./pages/public/SeoLandingPage"));
+
 
 const queryClient = new QueryClient({
   defaultOptions: {
