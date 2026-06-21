@@ -66,6 +66,7 @@ Deno.serve(async (req) => {
     const firecrawlKey = Deno.env.get("FIRECRAWL_API_KEY");
     if (!firecrawlKey) throw new Error("FIRECRAWL_API_KEY not configured");
     const lovableKey = Deno.env.get("LOVABLE_API_KEY");
+    const geminiKey = Deno.env.get("GOOGLE_AI_API_KEY");
 
     const { data: settings } = await admin.from("vagas_settings").select("*").limit(1).maybeSingle();
     const keywords: string[] = settings?.keywords ?? ["musicoterapeuta", "musicoterapia"];
