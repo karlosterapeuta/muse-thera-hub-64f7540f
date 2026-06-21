@@ -200,12 +200,20 @@ Deno.serve(async (req) => {
 
 
     // --- 4. Link-health check + insert ---------------------------------------
+    console.log(`Fresh candidates: ${fresh.length}, classifications:`, JSON.stringify(classifications));
     let inserted = 0;
+    let skippedClass = 0;
     for (let i = 0; i < fresh.length; i++) {
       const c = fresh[i];
       const cls = classifications[i] ?? { music: true, score: 50 };
-      if (!cls.music || cls.score < 40) continue;
+      if (!cls.music || cls.score < 40) {
+        skippedClass++;
+        continue;
+      }
 
+      // Best-effort link health check. Many job boards block server-side
+      // requests (403/999), so we never DROP a vacancy on a failed check —
+      // we only record link_ok so the UI can flag it.
       let linkOk = true;
       try {
         const ping = await fetch(c.url, { method: "GET", redirect: "follow" });
@@ -213,7 +221,6 @@ Deno.serve(async (req) => {
       } catch {
         linkOk = false;
       }
-      if (!linkOk) continue;
 
       const { error } = await admin.from("job_vacancies").insert({
         title: c.title.slice(0, 300),
@@ -226,10 +233,12 @@ Deno.serve(async (req) => {
         link_ok: linkOk,
         status: autoSend && cls.music && cls.score >= AUTO_APPROVE_MIN_SCORE ? "approved" : "pending",
       });
+      if (error) console.error("Insert failed", c.url, error.message);
       if (!error) inserted++;
     }
 
-    return new Response(JSON.stringify({ inserted, candidates: candidates.length }), {
+    console.log(`Inserted: ${inserted}, skipped by classification: ${skippedClass}`);
+    return new Response(JSON.stringify({ inserted, candidates: candidates.length, fresh: fresh.length, skippedClass }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
