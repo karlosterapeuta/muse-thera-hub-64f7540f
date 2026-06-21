@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { SavedEvaluation } from "@/hooks/useEvaluationStorage";
 import { resolveEvaluationMeta } from "@/utils/evaluationTypes";
+import { buildEvolutionAnalysis } from "@/utils/evolutionAnalysis";
 import { formatBirthDateForDisplay } from "@/utils/dateUtils";
 
 export interface EvolutionReportProfessional {
