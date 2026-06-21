@@ -311,12 +311,21 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
           alignItems: "flex-end",
         }}
       >
-        <div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: "#6d28d9" }}>
-            Relatório de Evolução do Paciente
-          </div>
-          <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>
-            Escala de Avaliação Musicoterapêutica MuseTera
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          {logoBase64 ? (
+            <img
+              src={logoBase64}
+              alt="MuseTera"
+              style={{ height: 56, width: "auto", objectFit: "contain", ...crispImg }}
+            />
+          ) : null}
+          <div>
+            <div style={{ fontSize: 22, fontWeight: 800, color: "#6d28d9" }}>
+              Relatório de Evolução do Paciente
+            </div>
+            <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>
+              Escala de Avaliação Musicoterapêutica MuseTera
+            </div>
           </div>
         </div>
         <div style={{ textAlign: "right", fontSize: 10, color: "#94a3b8" }}>
