@@ -12,7 +12,7 @@ import {
   EMPTY_FILTERS,
   type VagasFilterState,
 } from "@/components/vagas/VagasFilters";
-import museteraLogo from "@/assets/musetera-logo-transparent.png.asset.json";
+const MUSETERA_LOGO = "/lovable-uploads/musetera-logo-new.png";
 
 const norm = (s: string) =>
   s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -69,7 +69,7 @@ export default function VagasEmbed() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
             <img
-              src={museteraLogo.url}
+              src={MUSETERA_LOGO}
               alt="Logotipo MuseTera"
               width={48}
               height={48}
@@ -152,7 +152,7 @@ export default function VagasEmbed() {
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-3 mb-2">
             <img
-              src={museteraLogo.url}
+              src={MUSETERA_LOGO}
               alt="MuseTera"
               width={32}
               height={32}
