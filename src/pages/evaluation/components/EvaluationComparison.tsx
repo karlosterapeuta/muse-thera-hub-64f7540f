@@ -23,9 +23,10 @@ import {
 } from "recharts";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { TrendingUp, TrendingDown, Minus, BarChart3 } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, BarChart3, ArrowRight, Activity, Target, Award, Gauge } from "lucide-react";
 import { SavedEvaluation } from "@/hooks/useEvaluationStorage";
 import { resolveEvaluationMeta } from "@/utils/evaluationTypes";
+import { buildEvolutionAnalysis } from "@/utils/evolutionAnalysis";
 
 interface EvaluationComparisonProps {
   evaluations: SavedEvaluation[];
