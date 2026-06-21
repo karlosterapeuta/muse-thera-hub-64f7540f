@@ -223,6 +223,44 @@ export function PatientEvaluationCards({
               {isSelected ? "Selecionado" : "Ver Evolução"}
               <ChevronRight className="h-4 w-4 ml-auto" />
             </Button>
+
+            {/* Botão Excluir Avaliações */}
+            {onDeletePatient && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full mt-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Excluir avaliações
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Excluir todas as avaliações?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Esta ação irá excluir permanentemente todas as{" "}
+                      {patient.totalEvaluations}{" "}
+                      {patient.totalEvaluations === 1 ? "avaliação" : "avaliações"} de{" "}
+                      <strong>{patient.patientName}</strong>. Isso permite refazer uma
+                      nova avaliação do zero. Esta ação não pode ser desfeita.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction
+                      className="bg-red-600 hover:bg-red-700"
+                      onClick={() => onDeletePatient(patient.patientId)}
+                    >
+                      Excluir tudo
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
           </Card>
         );
       })}
