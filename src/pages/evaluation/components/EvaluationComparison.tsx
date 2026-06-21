@@ -89,10 +89,30 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
     });
   }, [selectedEvaluations]);
 
+  // Comparação entre avaliações (Inicial → Final) pelo Score Global
+  const stageData = useMemo(() => {
+    return selectedEvaluations.map((evaluation) => {
+      const meta = resolveEvaluationMeta(evaluation);
+      return {
+        stage: meta.shortLabel,
+        label: meta.label,
+        color: meta.color,
+        date: format(new Date(evaluation.date), "dd/MM/yy", { locale: ptBR }),
+        score: evaluation.content?.overallScore?.percentage || 0,
+      };
+    });
+  }, [selectedEvaluations]);
+
+  const stageVariation = useMemo(() => {
+    if (stageData.length < 2) return 0;
+    return stageData[stageData.length - 1].score - stageData[0].score;
+  }, [stageData]);
+
   const comparisonTableData = useMemo(() => {
     if (selectedEvaluations.length < 2) return [];
 
     const domains = selectedEvaluations[0]?.content?.domainScores?.map((d) => d.domain) || [];
+
 
     return domains.map((domain) => {
       const scores = selectedEvaluations.map((evaluation) => {
