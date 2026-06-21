@@ -53,8 +53,25 @@ export default function PatientEvolutionPage() {
 
         setEvaluations(mapped);
         setPatientName(mapped[0]?.patient_name || "Paciente");
-        // Selecionar automaticamente as avaliações mais recentes para comparar
-        setSelectedForComparison(mapped.slice(0, MAX_COMPARISONS).map((e) => e.id));
+        // Selecionar automaticamente a avaliação inicial e a final para comparar
+        const byDateAsc = [...mapped].sort(
+          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+        );
+        const typedInitial = byDateAsc.find(
+          (e) => (e.content?.evaluationType || e.type) === "avaliacao_inicial"
+        );
+        const typedFinal = [...byDateAsc]
+          .reverse()
+          .find((e) => (e.content?.evaluationType || e.type) === "avaliacao_final");
+        const initial = typedInitial || byDateAsc[0];
+        const final =
+          typedFinal && typedFinal.id !== initial?.id
+            ? typedFinal
+            : byDateAsc[byDateAsc.length - 1];
+        const autoSelected = [initial?.id, final?.id].filter(
+          (id, idx, arr) => id && arr.indexOf(id) === idx
+        ) as string[];
+        setSelectedForComparison(autoSelected);
       } catch (err) {
         console.error("Erro ao carregar avaliações:", err);
         toast.error("Erro ao carregar avaliações do paciente");
@@ -67,38 +84,6 @@ export default function PatientEvolutionPage() {
       active = false;
     };
   }, [patientId]);
-
-  // Avaliação inicial (mais antiga / tipo inicial) e final (mais recente / tipo final)
-  const { initialEval, finalEval } = useMemo(() => {
-    if (evaluations.length === 0) return { initialEval: null, finalEval: null };
-    const byDateAsc = [...evaluations].sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
-    const typedInitial = byDateAsc.find(
-      (e) => (e.content?.evaluationType || e.type) === "avaliacao_inicial"
-    );
-    const typedFinal = [...byDateAsc]
-      .reverse()
-      .find((e) => (e.content?.evaluationType || e.type) === "avaliacao_final");
-    const initial = typedInitial || byDateAsc[0];
-    const final = typedFinal || byDateAsc[byDateAsc.length - 1];
-    return {
-      initialEval: initial,
-      finalEval: final && final.id !== initial?.id ? final : byDateAsc[byDateAsc.length - 1],
-    };
-  }, [evaluations]);
-
-  const canCompareInitialFinal =
-    initialEval && finalEval && initialEval.id !== finalEval.id;
-
-  const handleCompareInitialFinal = () => {
-    if (!canCompareInitialFinal) {
-      toast.info("São necessárias pelo menos 2 avaliações para comparar.");
-      return;
-    }
-    setSelectedForComparison([initialEval!.id, finalEval!.id]);
-    toast.success("Comparando avaliação inicial → final");
-  };
 
   const handleToggleComparison = (id: string) => {
     setSelectedForComparison((prev) => {
@@ -196,21 +181,13 @@ export default function PatientEvolutionPage() {
 
           {/* Comparação e Gráficos de Evolução */}
           <Card className="p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-xl">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-              <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                📊 Comparação e Evolução
-              </h2>
-              {canCompareInitialFinal && (
-                <Button
-                  onClick={handleCompareInitialFinal}
-                  className="gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:opacity-90"
-                  size="sm"
-                >
-                  <FileBarChart className="h-4 w-4" />
-                  Comparar Inicial → Final
-                </Button>
-              )}
-            </div>
+            <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1 flex items-center gap-2">
+              📊 Comparação: Avaliação Inicial → Final
+            </h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+              Comparação automática entre a primeira e a última avaliação. Você
+              pode ajustar as avaliações na lista acima.
+            </p>
             {hasEnoughForComparison ? (
               <EvaluationComparison
                 evaluations={evaluations}
