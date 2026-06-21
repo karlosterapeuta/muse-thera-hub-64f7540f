@@ -233,10 +233,12 @@ Deno.serve(async (req) => {
         link_ok: linkOk,
         status: autoSend && cls.music && cls.score >= AUTO_APPROVE_MIN_SCORE ? "approved" : "pending",
       });
+      if (error) console.error("Insert failed", c.url, error.message);
       if (!error) inserted++;
     }
 
-    return new Response(JSON.stringify({ inserted, candidates: candidates.length }), {
+    console.log(`Inserted: ${inserted}, skipped by classification: ${skippedClass}`);
+    return new Response(JSON.stringify({ inserted, candidates: candidates.length, fresh: fresh.length, skippedClass }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
