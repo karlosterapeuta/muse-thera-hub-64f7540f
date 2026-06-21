@@ -30,10 +30,10 @@ export function ProfessionalCredentialsCard({
   ].filter((association, index, arr) => arr.indexOf(association) === index); // Remove duplicates
 
   return (
-    <Card className="group overflow-hidden border-border/60 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
-      <CardHeader className="pb-4 bg-gradient-to-r from-purple-500/10 to-transparent border-b border-border/40">
+    <Card className="group overflow-hidden rounded-2xl border border-white/10 bg-card/70 backdrop-blur-xl shadow-lg hover:shadow-2xl hover:shadow-amber-500/10 hover:-translate-y-1 transition-all duration-300">
+      <CardHeader className="pb-4 bg-gradient-to-r from-amber-500/10 via-purple-500/5 to-transparent border-b border-white/10">
         <CardTitle className="flex items-center gap-3 text-lg">
-          <span className="flex items-center justify-center h-9 w-9 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400 ring-1 ring-purple-500/20">
+          <span className="flex items-center justify-center h-9 w-9 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-300 ring-1 ring-amber-400/30">
             <Award className="h-5 w-5" />
           </span>
           Credenciais Profissionais

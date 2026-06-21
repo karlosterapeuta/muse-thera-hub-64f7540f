@@ -9,6 +9,7 @@ import { ProfessionalHeader } from "./Professional/components/ProfessionalHeader
 import { PersonalInfoCard } from "./Professional/components/PersonalInfoCard";
 import { ProfessionalCredentialsCard } from "./Professional/components/ProfessionalCredentialsCard";
 import { ActionButtons } from "./Professional/components/ActionButtons";
+import { DashboardBackground } from "@/components/dashboard/DashboardBackground";
 
 interface ProfessionalData {
   id?: string;
@@ -229,8 +230,9 @@ export default function Professional() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className={`mx-auto p-4 space-y-8 animate-fade-in ${isMobile ? 'max-w-full px-2' : 'max-w-4xl'}`}>
+    <div className="relative min-h-screen bg-background">
+      <DashboardBackground />
+      <div className={`relative z-10 mx-auto p-4 space-y-8 animate-fade-in ${isMobile ? 'max-w-full px-2' : 'max-w-4xl'}`}>
         <ProfessionalHeader
           avatarUrl={avatarUrl}
           isEditing={isEditing}
