@@ -149,6 +149,20 @@ export function useMusicotherapyTreatmentPlan(planId?: string, onCreated?: (newI
     triggerAutoSave();
   }, [triggerAutoSave]);
 
+  // Reset the form back to a blank plan
+  const resetPlan = useCallback(() => {
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+    initialDataRef.current = undefined;
+    setPlanData({
+      ...defaultTreatmentPlan,
+      professional_id: professionalData?.id,
+    });
+    setHasUnsavedChanges(false);
+    setLastSaved(null);
+  }, [professionalData?.id]);
+
   // Cleanup auto-save timeout on unmount
   useEffect(() => {
     return () => {
@@ -274,6 +288,7 @@ export function useMusicotherapyTreatmentPlan(planId?: string, onCreated?: (newI
   return {
     planData,
     updatePlanData,
+    resetPlan,
     savePlan: (data?: Partial<MusicotherapyTreatmentPlan>) => {
       const dataToSave = data || planData;
       const errors = data ? [] : getValidationErrors();
