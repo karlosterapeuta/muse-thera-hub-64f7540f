@@ -583,10 +583,10 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
             <img
               src={signatureBase64}
               alt="Assinatura"
-              style={{ maxHeight: 60, maxWidth: 220, objectFit: "contain", margin: "0 auto" }}
+              style={{ maxHeight: 80, maxWidth: 240, objectFit: "contain", margin: "0 auto", ...crispImg }}
             />
           ) : (
-            <div style={{ height: 60 }} />
+            <div style={{ height: 80 }} />
           )}
           <div style={{ borderTop: "1px solid #475569", paddingTop: 4, marginTop: 2 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: "#0f172a" }}>
@@ -601,7 +601,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
           <img
             src={stampBase64}
             alt="Carimbo"
-            style={{ maxHeight: 90, maxWidth: 160, objectFit: "contain" }}
+            style={{ maxHeight: 110, maxWidth: 180, objectFit: "contain", ...crispImg }}
           />
         ) : null}
       </div>
