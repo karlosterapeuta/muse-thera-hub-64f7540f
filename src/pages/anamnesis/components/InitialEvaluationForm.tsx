@@ -299,6 +299,7 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
               { id: "sensory_integration", label: "Integração Sensorial", checked: getBooleanValue("sensory_integration"), onChange: (v) => updateField("sensory_integration", v) },
               { id: "psychomotricity", label: "Psicomotricidade", checked: getBooleanValue("psychomotricity"), onChange: (v) => updateField("psychomotricity", v) },
               { id: "nutrition", label: "Nutrição", checked: getBooleanValue("nutrition"), onChange: (v) => updateField("nutrition", v) },
+              { id: "music_therapy", label: "Musicoterapia", checked: getBooleanValue("music_therapy"), onChange: (v) => updateField("music_therapy", v) },
             ]}
           />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -340,6 +341,7 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
               { id: "choral_activities", label: "Canto/Coral", checked: getBooleanValue("choral_activities"), onChange: (v) => updateField("choral_activities", v), icon: MessageCircle },
               { id: "body_musical_expression", label: "Expressão Corporal Musical", checked: getBooleanValue("body_musical_expression"), onChange: (v) => updateField("body_musical_expression", v), icon: Hand },
               { id: "vocal_expression", label: "Expressão Vocal", checked: getBooleanValue("vocal_expression"), onChange: (v) => updateField("vocal_expression", v), icon: MessageCircle },
+              { id: "music_therapy_experience", label: "Experiência em Musicoterapia", checked: getBooleanValue("music_therapy_experience"), onChange: (v) => updateField("music_therapy_experience", v), icon: Music },
               { id: "no_musical_experience", label: "Sem Experiência Musical Formal", checked: getBooleanValue("no_musical_experience"), onChange: (v) => updateField("no_musical_experience", v), icon: FileText },
             ]}
           />

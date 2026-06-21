@@ -169,6 +169,7 @@ export type Database = {
           mother_name: string | null
           music_practice_time: string | null
           music_therapy: boolean | null
+          music_therapy_experience: boolean | null
           musical_education: boolean | null
           night_body_sounds: string | null
           no_musical_experience: boolean | null
@@ -288,6 +289,7 @@ export type Database = {
           mother_name?: string | null
           music_practice_time?: string | null
           music_therapy?: boolean | null
+          music_therapy_experience?: boolean | null
           musical_education?: boolean | null
           night_body_sounds?: string | null
           no_musical_experience?: boolean | null
@@ -407,6 +409,7 @@ export type Database = {
           mother_name?: string | null
           music_practice_time?: string | null
           music_therapy?: boolean | null
+          music_therapy_experience?: boolean | null
           musical_education?: boolean | null
           night_body_sounds?: string | null
           no_musical_experience?: boolean | null
