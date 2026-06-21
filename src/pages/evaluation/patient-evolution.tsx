@@ -13,6 +13,8 @@ import { AreasAnalysis } from "./components/AreasAnalysis";
 import { EVALUATION_TYPES } from "@/utils/evaluationTypes";
 import { generateStaticPDF } from "@/utils/staticPDFGenerator";
 import { EvolutionReportPDF } from "@/components/EvolutionReportPDF";
+import { useProfessionalData } from "@/hooks/useProfessionalData";
+import { imageUrlToBase64 } from "@/utils/imageToBase64";
 import React from "react";
 
 const MAX_COMPARISONS = 4;
@@ -28,6 +30,8 @@ const REQUIRED_TYPES = [
 export default function PatientEvolutionPage() {
   const { patientId } = useParams<{ patientId: string }>();
   const navigate = useNavigate();
+
+  const { data: professional } = useProfessionalData();
 
   const [evaluations, setEvaluations] = useState<SavedEvaluation[]>([]);
   const [patientName, setPatientName] = useState<string>("Paciente");
@@ -172,11 +176,39 @@ export default function PatientEvolutionPage() {
         .filter(Boolean)
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()) as SavedEvaluation[];
 
+      // Converte assinatura e carimbo para base64 (html2canvas não suporta imagens remotas)
+      const [signatureBase64, stampBase64] = await Promise.all([
+        professional?.digital_signature_url
+          ? imageUrlToBase64(professional.digital_signature_url)
+          : Promise.resolve(null),
+        professional?.digital_stamp_url || professional?.stamp_photo_url
+          ? imageUrlToBase64(
+              (professional.digital_stamp_url || professional.stamp_photo_url) as string
+            )
+          : Promise.resolve(null),
+      ]);
+
+      const reportCode = `MT-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`;
+
       const ok = await generateStaticPDF(
         React.createElement(EvolutionReportPDF, {
           patientName,
           patientAge: ordered[0]?.patient_age,
+          patientBirthDate: ordered[0]?.patient_birth_date,
           evaluations: ordered,
+          professional: professional
+            ? {
+                name: professional.name,
+                specialty: professional.specialty,
+                register: professional.register || professional.license_number,
+                association: professional.association,
+                email: professional.email,
+                phone: professional.phone,
+              }
+            : undefined,
+          signatureBase64,
+          stampBase64,
+          reportCode,
         }),
         {
           filename: `Relatorio_Evolucao_${patientName.replace(/\s+/g, "_")}_${

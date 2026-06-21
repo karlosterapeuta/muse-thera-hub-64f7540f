@@ -3,12 +3,26 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { SavedEvaluation } from "@/hooks/useEvaluationStorage";
 import { resolveEvaluationMeta } from "@/utils/evaluationTypes";
+import { formatBirthDateForDisplay } from "@/utils/dateUtils";
+
+export interface EvolutionReportProfessional {
+  name?: string;
+  specialty?: string;
+  register?: string;
+  association?: string;
+  email?: string;
+  phone?: string;
+}
 
 interface EvolutionReportPDFProps {
   patientName: string;
   patientAge?: number;
+  patientBirthDate?: string;
   evaluations: SavedEvaluation[]; // já ordenadas por data ascendente
-  professionalName?: string;
+  professional?: EvolutionReportProfessional;
+  signatureBase64?: string | null;
+  stampBase64?: string | null;
+  reportCode?: string;
 }
 
 const SERIES_COLORS = ["#2563eb", "#7c3aed", "#0891b2", "#059669", "#d97706"];
@@ -107,7 +121,7 @@ function MultiRadar({
 // ---- Linha de evolução do score global (SVG) ----
 function ScoreLine({
   points,
-  width = 640,
+  width = 700,
   height = 220,
 }: {
   points: { label: string; value: number }[];
@@ -157,11 +171,43 @@ function ScoreLine({
   );
 }
 
+// ---- Bloco rótulo + valor para tabelas de identificação ----
+const InfoRow: React.FC<{ label: string; value?: string }> = ({ label, value }) => (
+  <div style={{ display: "flex", gap: 6, fontSize: 11, lineHeight: 1.5 }}>
+    <span style={{ color: "#64748b", fontWeight: 600, minWidth: 92 }}>{label}:</span>
+    <span style={{ color: "#0f172a", fontWeight: 500 }}>{value || "—"}</span>
+  </div>
+);
+
+const SectionTitle: React.FC<{ children: React.ReactNode; color?: string }> = ({
+  children,
+  color = "#6d28d9",
+}) => (
+  <div
+    style={{
+      fontSize: 13,
+      fontWeight: 800,
+      color,
+      marginBottom: 10,
+      textTransform: "uppercase",
+      letterSpacing: 0.5,
+      borderLeft: `4px solid ${color}`,
+      paddingLeft: 8,
+    }}
+  >
+    {children}
+  </div>
+);
+
 export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
   patientName,
   patientAge,
+  patientBirthDate,
   evaluations,
-  professionalName,
+  professional,
+  signatureBase64,
+  stampBase64,
+  reportCode,
 }) => {
   const domains =
     evaluations[0]?.content?.domainScores?.map((d) => d.domain.replace("Domínio ", "")) || [];
@@ -185,6 +231,20 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
   const lastScore = evaluations[evaluations.length - 1]?.content?.overallScore?.percentage || 0;
   const globalVariation = lastScore - firstScore;
 
+  const firstDate = evaluations[0] ? new Date(evaluations[0].date) : null;
+  const lastDate = evaluations[evaluations.length - 1]
+    ? new Date(evaluations[evaluations.length - 1].date)
+    : null;
+  const periodMonths =
+    firstDate && lastDate
+      ? Math.max(
+          0,
+          Math.round(
+            (lastDate.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24 * 30.44)
+          )
+        )
+      : 0;
+
   const tableRows = (evaluations[0]?.content?.domainScores || []).map((d) => {
     const scores = evaluations.map(
       (e) => e.content?.domainScores?.find((x) => x.domain === d.domain)?.score || 0
@@ -199,6 +259,18 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
   const varColor = (v: number) => (v > 5 ? "#059669" : v < -5 ? "#dc2626" : "#64748b");
   const varText = (v: number) => (v > 0 ? `+${v}%` : `${v}%`);
 
+  // Domínios com maior e menor evolução para a narrativa
+  const sortedByVar = [...tableRows].sort((a, b) => b.variation - a.variation);
+  const topGains = sortedByVar.filter((r) => r.variation > 0).slice(0, 3);
+  const declines = sortedByVar.filter((r) => r.variation < 0).slice(-3).reverse();
+
+  const trendText =
+    globalVariation > 5
+      ? "evolução clínica positiva"
+      : globalVariation < -5
+      ? "necessidade de revisão do plano terapêutico"
+      : "estabilidade do quadro";
+
   const cellStyle: React.CSSProperties = {
     padding: "6px 8px",
     fontSize: 10,
@@ -206,12 +278,14 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
     textAlign: "center",
   };
 
+  const professionalName = professional?.name;
+
   return (
     <div
       className="musetera-pdf-page"
       style={{
         width: 800,
-        padding: 28,
+        padding: 32,
         boxSizing: "border-box",
         backgroundColor: "#ffffff",
         fontFamily: "Helvetica, Arial, sans-serif",
@@ -224,22 +298,84 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
           borderBottom: "3px solid #7c3aed",
           paddingBottom: 14,
           marginBottom: 18,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-end",
         }}
       >
-        <div style={{ fontSize: 22, fontWeight: 800, color: "#6d28d9" }}>
-          Relatório de Evolução do Paciente
+        <div>
+          <div style={{ fontSize: 22, fontWeight: 800, color: "#6d28d9" }}>
+            Relatório de Evolução do Paciente
+          </div>
+          <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>
+            Escala de Avaliação Musicoterapêutica MuseTera
+          </div>
         </div>
-        <div style={{ fontSize: 13, color: "#475569", marginTop: 4 }}>
-          {patientName}
-          {patientAge ? ` • ${patientAge} anos` : ""}
+        <div style={{ textAlign: "right", fontSize: 10, color: "#94a3b8" }}>
+          <div>Emitido em {format(new Date(), "dd/MM/yyyy", { locale: ptBR })}</div>
+          {reportCode ? <div>Documento nº {reportCode}</div> : null}
         </div>
-        <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>
-          Comparação da Avaliação Inicial até a Avaliação Final • Gerado em{" "}
-          {format(new Date(), "dd/MM/yyyy", { locale: ptBR })}
+      </div>
+
+      {/* Identificação: Paciente + Profissional */}
+      <div style={{ display: "flex", gap: 16, marginBottom: 22 }}>
+        <div
+          style={{
+            flex: 1,
+            border: "1px solid #e2e8f0",
+            borderRadius: 10,
+            padding: "12px 14px",
+            backgroundColor: "#f8fafc",
+          }}
+        >
+          <div style={{ fontSize: 11, fontWeight: 800, color: "#6d28d9", marginBottom: 8 }}>
+            DADOS DO PACIENTE
+          </div>
+          <InfoRow label="Nome" value={patientName} />
+          <InfoRow
+            label="Idade"
+            value={patientAge != null ? `${patientAge} anos` : undefined}
+          />
+          <InfoRow
+            label="Nascimento"
+            value={patientBirthDate ? formatBirthDateForDisplay(patientBirthDate) : undefined}
+          />
+          <InfoRow label="Avaliações" value={`${evaluations.length} registros`} />
+          <InfoRow
+            label="Período"
+            value={
+              firstDate && lastDate
+                ? `${format(firstDate, "dd/MM/yyyy", { locale: ptBR })} a ${format(
+                    lastDate,
+                    "dd/MM/yyyy",
+                    { locale: ptBR }
+                  )}${periodMonths ? ` (${periodMonths} ${periodMonths === 1 ? "mês" : "meses"})` : ""}`
+                : undefined
+            }
+          />
+        </div>
+        <div
+          style={{
+            flex: 1,
+            border: "1px solid #e2e8f0",
+            borderRadius: 10,
+            padding: "12px 14px",
+            backgroundColor: "#f8fafc",
+          }}
+        >
+          <div style={{ fontSize: 11, fontWeight: 800, color: "#6d28d9", marginBottom: 8 }}>
+            PROFISSIONAL RESPONSÁVEL
+          </div>
+          <InfoRow label="Nome" value={professionalName} />
+          <InfoRow label="Especialidade" value={professional?.specialty} />
+          <InfoRow label="Registro" value={professional?.register} />
+          <InfoRow label="Associação" value={professional?.association} />
+          <InfoRow label="Contato" value={professional?.phone || professional?.email} />
         </div>
       </div>
 
       {/* Cards das avaliações */}
+      <SectionTitle>Resultados por Avaliação</SectionTitle>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 22 }}>
         {series.map((s, i) => (
           <div
@@ -296,9 +432,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
 
       {/* Radar comparativo */}
       <div style={{ marginBottom: 8 }}>
-        <div style={{ fontSize: 14, fontWeight: 700, color: "#6d28d9", marginBottom: 8 }}>
-          Comparação por Domínios
-        </div>
+        <SectionTitle>Comparação por Domínios</SectionTitle>
         <MultiRadar domains={domains} series={series} />
         <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center", marginTop: 6 }}>
           {series.map((s, i) => (
@@ -314,17 +448,13 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
 
       {/* Evolução temporal */}
       <div style={{ marginTop: 22, marginBottom: 8 }}>
-        <div style={{ fontSize: 14, fontWeight: 700, color: "#047857", marginBottom: 8 }}>
-          Evolução do Score Global
-        </div>
+        <SectionTitle color="#047857">Evolução do Score Global</SectionTitle>
         <ScoreLine points={linePoints} />
       </div>
 
       {/* Tabela comparativa */}
       <div style={{ marginTop: 22 }}>
-        <div style={{ fontSize: 14, fontWeight: 700, color: "#1d4ed8", marginBottom: 8 }}>
-          Análise Comparativa Detalhada
-        </div>
+        <SectionTitle color="#1d4ed8">Análise Comparativa Detalhada</SectionTitle>
         <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #e2e8f0" }}>
           <thead>
             <tr style={{ backgroundColor: "#f8fafc" }}>
@@ -368,18 +498,114 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
         </table>
       </div>
 
+      {/* Síntese clínica */}
+      <div style={{ marginTop: 22 }}>
+        <SectionTitle color="#9333ea">Síntese Clínica</SectionTitle>
+        <div
+          style={{
+            fontSize: 11,
+            lineHeight: 1.7,
+            color: "#334155",
+            backgroundColor: "#faf5ff",
+            border: "1px solid #f0e7ff",
+            borderRadius: 10,
+            padding: "12px 16px",
+            textAlign: "justify",
+          }}
+        >
+          O paciente <strong>{patientName}</strong> foi acompanhado por meio de{" "}
+          {evaluations.length} avaliações pela Escala MuseTera
+          {periodMonths
+            ? `, ao longo de aproximadamente ${periodMonths} ${
+                periodMonths === 1 ? "mês" : "meses"
+              }`
+            : ""}
+          . O score global evoluiu de <strong>{firstScore}%</strong> na avaliação inicial para{" "}
+          <strong>{lastScore}%</strong> na avaliação final, representando uma variação de{" "}
+          <strong style={{ color: varColor(globalVariation) }}>{varText(globalVariation)}</strong>,
+          o que indica <strong>{trendText}</strong>.
+          {topGains.length > 0 && (
+            <>
+              {" "}
+              Os domínios com maior progresso foram{" "}
+              <strong>
+                {topGains
+                  .map((d) => `${d.domain} (${varText(d.variation)})`)
+                  .join(", ")}
+              </strong>
+              .
+            </>
+          )}
+          {declines.length > 0 && (
+            <>
+              {" "}
+              Recomenda-se atenção aos domínios{" "}
+              <strong>
+                {declines
+                  .map((d) => `${d.domain} (${varText(d.variation)})`)
+                  .join(", ")}
+              </strong>
+              , que apresentaram redução no período avaliado.
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Assinatura / Carimbo */}
+      <div
+        style={{
+          marginTop: 36,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "flex-end",
+          gap: 48,
+        }}
+      >
+        <div style={{ textAlign: "center", minWidth: 240 }}>
+          {signatureBase64 ? (
+            <img
+              src={signatureBase64}
+              alt="Assinatura"
+              style={{ maxHeight: 60, maxWidth: 220, objectFit: "contain", margin: "0 auto" }}
+            />
+          ) : (
+            <div style={{ height: 60 }} />
+          )}
+          <div style={{ borderTop: "1px solid #475569", paddingTop: 4, marginTop: 2 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#0f172a" }}>
+              {professionalName || "Profissional Responsável"}
+            </div>
+            <div style={{ fontSize: 9, color: "#64748b" }}>
+              {[professional?.specialty, professional?.register].filter(Boolean).join(" • ")}
+            </div>
+          </div>
+        </div>
+        {stampBase64 ? (
+          <img
+            src={stampBase64}
+            alt="Carimbo"
+            style={{ maxHeight: 90, maxWidth: 160, objectFit: "contain" }}
+          />
+        ) : null}
+      </div>
+
       {/* Rodapé */}
       <div
         style={{
           marginTop: 26,
           paddingTop: 12,
           borderTop: "1px solid #e2e8f0",
-          fontSize: 10,
+          fontSize: 9,
           color: "#94a3b8",
           textAlign: "center",
+          lineHeight: 1.5,
         }}
       >
-        {professionalName ? `${professionalName} • ` : ""}MuseTera — Escala de Avaliação Musicoterapêutica
+        Documento gerado eletronicamente pela plataforma MuseTera —
+        Escala de Avaliação Musicoterapêutica.
+        <br />
+        Este relatório reflete os dados registrados pelo profissional responsável e tem caráter
+        de acompanhamento clínico.
       </div>
     </div>
   );
