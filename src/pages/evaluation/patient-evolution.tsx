@@ -177,8 +177,8 @@ export default function PatientEvolutionPage() {
         .filter(Boolean)
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()) as SavedEvaluation[];
 
-      // Converte assinatura e carimbo para base64 (html2canvas não suporta imagens remotas)
-      const [signatureBase64, stampBase64] = await Promise.all([
+      // Converte assinatura, carimbo e logo para base64 (html2canvas não suporta imagens remotas)
+      const [signatureBase64, stampBase64, logoBase64] = await Promise.all([
         professional?.digital_signature_url
           ? imageUrlToBase64(professional.digital_signature_url)
           : Promise.resolve(null),
@@ -187,6 +187,7 @@ export default function PatientEvolutionPage() {
               (professional.digital_stamp_url || professional.stamp_photo_url) as string
             )
           : Promise.resolve(null),
+        imageUrlToBase64(museteraLogo.url),
       ]);
 
       const reportCode = `MT-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`;
