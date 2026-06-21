@@ -1,0 +1,1 @@
+DELETE FROM public.job_vacancies WHERE status = 'pending';
