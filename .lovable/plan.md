@@ -1,68 +1,82 @@
-# Anamnese por Link Público (preenchida pela mãe)
+# Plano Terapêutico Individual (PTI) — Musicoterapia
 
-## Objetivo
-Permitir que o profissional gere um link único para enviar à mãe/responsável do paciente. A mãe abre o link (sem login), preenche o formulário de anamnese, e os dados ficam salvos automaticamente no sistema, vinculados ao profissional que enviou o link e ao paciente correspondente.
+A new, self-contained clinical module added to **Processos Musicoterapêuticos**, reusing the app's existing patterns (cosmic UI, professional signature/stamp, html2canvas PDF, Lovable AI) while introducing a richer, structured 18-section plan.
 
-## Fluxo do usuário
-```
-Profissional (Anamnese)
-   → seleciona/escolhe paciente
-   → clica "Enviar link para responsável"
-   → sistema gera link único + opção de copiar / WhatsApp
-        │
-        ▼
-Mãe / responsável (abre o link, sem login)
-   → vê nome do profissional e do paciente
-   → preenche o formulário de anamnese
-   → envia
-        │
-        ▼
-Dados salvos na anamnese do paciente, vinculados ao profissional
-   → profissional vê a anamnese preenchida na sua lista (marcada como "Preenchida pelo responsável")
-```
+## Scope & approach
 
-## Banco de dados (migração)
-Criar tabela `anamnesis_invitations`:
-- `token` (texto único, gerado aleatoriamente — usado na URL)
-- `professional_id` (dono do link)
-- `patient_id` (paciente alvo)
-- `status` (`pending` / `completed`)
-- `anamnesis_id` (preenchido após envio)
-- `expires_at` (validade, ex.: 14 dias)
-- `completed_at`
-- campos padrão (id, created_at, updated_at)
+This is a large module. To ship it reliably and let you review along the way, I'll build it in phases. Phase 1 delivers a fully usable PTI (data model, card, editor, save, PDF). Later phases add AI, reavaliação and the dashboard.
 
-Regras de acesso:
-- Profissional pode criar/ver/excluir apenas os próprios convites (RLS por `professional_id = auth.uid()`).
-- O acesso público (mãe sem login) NÃO usa RLS direto — será feito por Edge Functions com privilégio de servidor, validando o token. Assim o link não expõe a tabela inteira.
-- GRANTs adequados para `authenticated` e `service_role`.
+The PTI is structurally different from the current `treatment_plans` (checkbox grids, scored scales 1–5, objetivos/metas as arrays of objects). So it gets its **own table** with a single structured `content` JSONB column — flexible, versionable, and easy to extend without constant migrations.
 
-## Edge Functions (acesso público sem login)
-1. `get-public-anamnesis` — recebe o `token`, valida (existe, não expirado, status pending) e retorna apenas o necessário para a tela: nome do paciente e nome do profissional/clínica. Não retorna dados sensíveis.
-2. `submit-public-anamnesis` — recebe `token` + dados do formulário. Valida o token, insere (ou atualiza) o registro na tabela `anamnesis` usando o `professional_id` e `patient_id` do convite, marca o convite como `completed` e vincula `anamnesis_id`. Marca a anamnese como originada de preenchimento externo.
+## Data model (Phase 1 migration)
 
-Ambas com CORS e validação de entrada (Zod). Usam `SUPABASE_SERVICE_ROLE_KEY` internamente.
+New table `public.pti_plans`:
+- `id`, `professional_id`, `patient_id`, `title`, `status` (rascunho/ativo/concluído), `plan_date`
+- `content` JSONB — the entire 18-section structure
+- `progress` int (0–100), `created_at`, `updated_at`, `created_by`
+- RLS: a professional sees/edits only their own rows (`professional_id` via `professionals.user_id = auth.uid()`); admin full access. GRANTs to `authenticated` + `service_role`.
 
-## Frontend
-1. **Botão "Enviar link para o responsável"** na tela de Anamnese (junto às ações). Ao clicar:
-   - Garante que um paciente está selecionado.
-   - Cria um convite (token) para aquele paciente.
-   - Abre um diálogo com o link gerado, botão "Copiar link" e botão "Enviar por WhatsApp".
+New table `public.pti_reavaliacoes`:
+- `id`, `pti_id` (FK), `professional_id`, `snapshot` JSONB (scores + objetivos at that date), `report` JSONB (AI comparison output), `created_at`.
 
-2. **Nova rota pública** `/anamnese-publica/:token` (fora da área autenticada, em `App.tsx`):
-   - Tela com a identidade visual MuseTera (logo dourado, fundo cósmico).
-   - Chama `get-public-anamnesis` para validar o token e mostrar "Anamnese de **[paciente]** — solicitada por **[profissional]**".
-   - Reaproveita o componente `InitialEvaluationForm` existente para o preenchimento.
-   - Ao enviar, chama `submit-public-anamnesis` e mostra tela de confirmação ("Obrigado! As informações foram enviadas.").
-   - Trata estados: token inválido/expirado e já preenchido.
+Version history reuses the same approach: each save can append to `pti_versions` (`id`, `pti_id`, `content`, `created_at`, `created_by`) for the audit/version diff requirement.
 
-3. **Indicação na lista de anamneses**: mostrar um selo "Preenchida pelo responsável" nas anamneses originadas de link, para o profissional diferenciar.
+## UI structure
 
-## Detalhes técnicos
-- O token será um valor aleatório (ex.: `crypto.randomUUID()` ou string de 32 chars) gerado no cliente/edge e guardado na tabela.
-- A rota pública não passa pelos guards de autenticação; será adicionada antes/fora do layout protegido em `App.tsx`.
-- O formulário público reusa a mesma estrutura de campos (`InitialEvaluationForm`), garantindo consistência com o formulário interno.
-- A anamnese salva fica idêntica às demais (mesma tabela `anamnesis`), portanto aparece normalmente na lista e nos PDFs do profissional.
+1. **Card in `src/pages/processes.tsx`** — "Plano Terapêutico Individual (PTI)" with a clinical icon (ClipboardList/HeartPulse), routed to `/pti`.
+2. **`/pti` (list/dashboard)** — indicators (total, ativos, em reavaliação, objetivos concluídos, metas alcançadas), evolution chart, filters (paciente/diagnóstico/período), and actions: Novo Plano, Planos Salvos, Reavaliações, Histórico.
+3. **`/pti/novo` and `/pti/:id`** — the editor.
+4. **`/pti/:id/reavaliacao`** — reavaliação flow.
 
-## Observação
-A autenticação do profissional já existe e funciona — apenas o link da mãe é público (validado por token via Edge Function), o que mantém a segurança sem expor os dados de outros pacientes.
+## Editor (18 sections, Accordion + progress bar)
+
+Collapsible accordion sections with auto-save and a top progress bar:
+1. Identificação (auto-fill nome, idade, nascimento, sexo, responsável, telefone, diagnóstico, CID, DSM, data, profissional, CBO)
+2. Queixa Principal (textarea + IA)
+3. Histórico Clínico (sub-campos: desenvolvimento, escolaridade, comunicação, terapias anteriores, histórico/preferências musicais, hiper/hipossensibilidades)
+4. Avaliação Musicoterapêutica — checkbox grids + observações for Comunicação, Socialização, Cognição, Sensorial, Musicalidade
+5. Potencialidades (textarea + IA)
+6. Dificuldades (textarea + IA)
+7. Objetivo Geral (textarea + IA)
+8. Objetivos Específicos (repeatable: descrição, prazo, prioridade, área)
+9. Metas Terapêuticas (repeatable: descrição, indicador, % esperado, prazo, critério de sucesso)
+10. Estratégias Musicoterapêuticas (multi-select library + add custom)
+11. Recursos Utilizados (multi-select + outros)
+12. Frequência (sessões / duração / atendimento)
+13. Critérios de Evolução (8 áreas, escala 1–5, chart in reavaliações)
+14. Critérios para Alta (textarea + IA)
+15. Plano Familiar (textarea + IA)
+16. Integração Multiprofissional (multi-select + observações)
+17. Fundamentação Técnica (textarea pre-filled with standard text + IA)
+18. Assinatura (auto: nome, CBO, assinatura digital, carimbo, data)
+
+## Integration / auto-fill
+
+On patient select, prefill from `patients`, `anamnesis`, `assessments`/evaluation, and latest `treatment_plans`/evoluções where fields exist (diagnóstico, objetivos anteriores, histórico). All fields remain editable.
+
+## AI (Phase 2)
+
+Edge function `pti-ai-assist` (Lovable AI, `google/gemini-3-flash-preview`) with a `section` parameter. Each section's "✨ Gerar com IA" sends patient context (anamnese, avaliação, evoluções, diagnóstico, idade, objetivos antigos, histórico) and returns an **editable suggestion** shown in a dialog — never auto-replacing the professional's text.
+
+## Reavaliação inteligente (Phase 3)
+
+"📈 Gerar Reavaliação" snapshots current scores/objetivos, compares against the previous plan via AI, and produces a report: objetivos atingidos / parciais / não atingidos / novos, plus sugestões clínicas, with a comparison chart (recharts radar/bar).
+
+## PDF export
+
+Reuse the html2canvas A4 pattern (`generateStaticPDF`) and professional identity (logo, assinatura, carimbo) per existing memory constraints. Buttons: Exportar PDF, Imprimir, Compartilhar.
+
+## Phasing
+
+- **Phase 1** — Migration, Processos card, `/pti` list + dashboard shell, full 18-section editor with auto-save and PDF export. (Usable end-to-end.)
+- **Phase 2** — AI assist edge function + "Gerar com IA" across sections; templates/biblioteca reutilizável of objetivos & estratégias.
+- **Phase 3** — Reavaliação inteligente, evolution charts, version history/audit, duplicar plano, reavaliação reminders.
+
+## Technical notes
+
+- Stack: React + JSONB content model keeps the schema stable as sections evolve.
+- Charts via existing `recharts`.
+- New code under `src/pages/pti/**`, `src/components/pti/**`, `src/hooks/usePti*.ts`, `supabase/functions/pti-ai-assist`.
+- `src/integrations/supabase/types.ts` regenerates automatically after the migration.
+
+I'll start with Phase 1 once you approve. Want me to proceed with all three phases sequentially, or stop after Phase 1 for review?
