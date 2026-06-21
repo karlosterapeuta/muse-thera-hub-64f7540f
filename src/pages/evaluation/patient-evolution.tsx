@@ -53,8 +53,25 @@ export default function PatientEvolutionPage() {
 
         setEvaluations(mapped);
         setPatientName(mapped[0]?.patient_name || "Paciente");
-        // Selecionar automaticamente as avaliações mais recentes para comparar
-        setSelectedForComparison(mapped.slice(0, MAX_COMPARISONS).map((e) => e.id));
+        // Selecionar automaticamente a avaliação inicial e a final para comparar
+        const byDateAsc = [...mapped].sort(
+          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+        );
+        const typedInitial = byDateAsc.find(
+          (e) => (e.content?.evaluationType || e.type) === "avaliacao_inicial"
+        );
+        const typedFinal = [...byDateAsc]
+          .reverse()
+          .find((e) => (e.content?.evaluationType || e.type) === "avaliacao_final");
+        const initial = typedInitial || byDateAsc[0];
+        const final =
+          typedFinal && typedFinal.id !== initial?.id
+            ? typedFinal
+            : byDateAsc[byDateAsc.length - 1];
+        const autoSelected = [initial?.id, final?.id].filter(
+          (id, idx, arr) => id && arr.indexOf(id) === idx
+        ) as string[];
+        setSelectedForComparison(autoSelected);
       } catch (err) {
         console.error("Erro ao carregar avaliações:", err);
         toast.error("Erro ao carregar avaliações do paciente");
