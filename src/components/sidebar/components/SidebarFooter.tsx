@@ -46,35 +46,25 @@ export function SidebarFooter({ collapsed, onNavigate }: SidebarFooterProps) {
   };
 
   return (
-    <div className="relative border-t border-border/30">
-      {/* Subtle top gradient */}
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
-      
-      <div className="p-3 space-y-1.5">
+    <div className="relative border-t border-white/5">
+      <div className="p-3 space-y-1">
         {/* Install App Button */}
         {!isStandalone && (
           <Button
             variant="ghost"
             className={cn(
-              "w-full h-10 rounded-xl transition-all duration-300 group relative overflow-hidden",
-              collapsed ? "justify-center px-2" : "justify-start gap-3 px-3"
+              "w-full h-11 rounded-xl transition-all duration-300 group text-foreground/60 hover:text-foreground hover:bg-white/5",
+              collapsed ? "justify-center px-2" : "justify-start gap-3 px-4"
             )}
             onClick={handleInstallClick}
           >
-            {/* Hover gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-cyan-500/0 to-blue-500/0 group-hover:from-blue-500/10 group-hover:via-cyan-500/10 group-hover:to-blue-500/10 transition-all duration-300 rounded-xl" />
-            
-            <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 group-hover:bg-blue-500/10 transition-colors duration-200">
-              <Download size={15} className="text-muted-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
-            </div>
+            <Download size={18} className="shrink-0 opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all" />
             {!collapsed && (
-              <div className="relative flex items-center gap-2 flex-1">
-                <span className="font-medium text-[13px] text-foreground/80 group-hover:text-foreground transition-colors">
-                  Instalar App
-                </span>
+              <div className="flex items-center gap-2 flex-1">
+                <span className="text-sm font-medium">Instalar App</span>
                 {canInstallNatively && (
-                  <Badge 
-                    variant="outline" 
+                  <Badge
+                    variant="outline"
                     className="ml-auto text-[9px] px-1.5 py-0 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
                   >
                     ✓ Pronto
@@ -89,21 +79,14 @@ export function SidebarFooter({ collapsed, onNavigate }: SidebarFooterProps) {
         <Button
           variant="ghost"
           className={cn(
-            "w-full h-10 rounded-xl transition-all duration-300 group relative overflow-hidden",
-            collapsed ? "justify-center px-2" : "justify-start gap-3 px-3"
+            "w-full h-11 rounded-xl transition-all duration-300 group text-rose-400 hover:text-rose-300 hover:bg-rose-500/10",
+            collapsed ? "justify-center px-2" : "justify-start gap-3 px-4"
           )}
           onClick={handleLogout}
         >
-          {/* Hover gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-red-500/0 via-pink-500/0 to-red-500/0 group-hover:from-red-500/10 group-hover:via-pink-500/10 group-hover:to-red-500/10 transition-all duration-300 rounded-xl" />
-          
-          <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 group-hover:bg-red-500/10 transition-colors duration-200">
-            <LogOut size={15} className="text-muted-foreground group-hover:text-red-500 transition-colors" />
-          </div>
+          <LogOut size={18} className="shrink-0 opacity-80 group-hover:scale-110 transition-transform" />
           {!collapsed && (
-            <span className="relative font-medium text-[13px] text-foreground/80 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
-              Sair do Sistema
-            </span>
+            <span className="text-sm font-medium">Sair do Sistema</span>
           )}
         </Button>
       </div>
