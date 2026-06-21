@@ -22,8 +22,15 @@ interface EvolutionReportPDFProps {
   professional?: EvolutionReportProfessional;
   signatureBase64?: string | null;
   stampBase64?: string | null;
+  logoBase64?: string | null;
   reportCode?: string;
 }
+
+// Garante nitidez máxima das imagens (logo/assinatura/carimbo) no PDF
+const crispImg: React.CSSProperties = {
+  imageRendering: "auto" as React.CSSProperties["imageRendering"],
+  WebkitFontSmoothing: "antialiased",
+};
 
 const SERIES_COLORS = ["#2563eb", "#7c3aed", "#0891b2", "#059669", "#d97706"];
 
