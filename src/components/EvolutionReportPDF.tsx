@@ -22,8 +22,15 @@ interface EvolutionReportPDFProps {
   professional?: EvolutionReportProfessional;
   signatureBase64?: string | null;
   stampBase64?: string | null;
+  logoBase64?: string | null;
   reportCode?: string;
 }
+
+// Garante nitidez máxima das imagens (logo/assinatura/carimbo) no PDF
+const crispImg: React.CSSProperties = {
+  imageRendering: "auto" as React.CSSProperties["imageRendering"],
+  WebkitFontSmoothing: "antialiased",
+};
 
 const SERIES_COLORS = ["#2563eb", "#7c3aed", "#0891b2", "#059669", "#d97706"];
 
@@ -207,6 +214,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
   professional,
   signatureBase64,
   stampBase64,
+  logoBase64,
   reportCode,
 }) => {
   const domains =
@@ -303,12 +311,21 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
           alignItems: "flex-end",
         }}
       >
-        <div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: "#6d28d9" }}>
-            Relatório de Evolução do Paciente
-          </div>
-          <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>
-            Escala de Avaliação Musicoterapêutica MuseTera
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          {logoBase64 ? (
+            <img
+              src={logoBase64}
+              alt="MuseTera"
+              style={{ height: 56, width: "auto", objectFit: "contain", ...crispImg }}
+            />
+          ) : null}
+          <div>
+            <div style={{ fontSize: 22, fontWeight: 800, color: "#6d28d9" }}>
+              Relatório de Evolução do Paciente
+            </div>
+            <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>
+              Escala de Avaliação Musicoterapêutica MuseTera
+            </div>
           </div>
         </div>
         <div style={{ textAlign: "right", fontSize: 10, color: "#94a3b8" }}>
@@ -566,10 +583,10 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
             <img
               src={signatureBase64}
               alt="Assinatura"
-              style={{ maxHeight: 60, maxWidth: 220, objectFit: "contain", margin: "0 auto" }}
+              style={{ maxHeight: 80, maxWidth: 240, objectFit: "contain", margin: "0 auto", ...crispImg }}
             />
           ) : (
-            <div style={{ height: 60 }} />
+            <div style={{ height: 80 }} />
           )}
           <div style={{ borderTop: "1px solid #475569", paddingTop: 4, marginTop: 2 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: "#0f172a" }}>
@@ -584,7 +601,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
           <img
             src={stampBase64}
             alt="Carimbo"
-            style={{ maxHeight: 90, maxWidth: 160, objectFit: "contain" }}
+            style={{ maxHeight: 110, maxWidth: 180, objectFit: "contain", ...crispImg }}
           />
         ) : null}
       </div>

@@ -15,6 +15,7 @@ import { generateStaticPDF } from "@/utils/staticPDFGenerator";
 import { EvolutionReportPDF } from "@/components/EvolutionReportPDF";
 import { useProfessionalData } from "@/hooks/useProfessionalData";
 import { imageUrlToBase64 } from "@/utils/imageToBase64";
+import museteraLogo from "@/assets/musetera-logo-transparent.png.asset.json";
 import React from "react";
 
 const MAX_COMPARISONS = 4;
@@ -176,8 +177,8 @@ export default function PatientEvolutionPage() {
         .filter(Boolean)
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()) as SavedEvaluation[];
 
-      // Converte assinatura e carimbo para base64 (html2canvas não suporta imagens remotas)
-      const [signatureBase64, stampBase64] = await Promise.all([
+      // Converte assinatura, carimbo e logo para base64 (html2canvas não suporta imagens remotas)
+      const [signatureBase64, stampBase64, logoBase64] = await Promise.all([
         professional?.digital_signature_url
           ? imageUrlToBase64(professional.digital_signature_url)
           : Promise.resolve(null),
@@ -186,6 +187,7 @@ export default function PatientEvolutionPage() {
               (professional.digital_stamp_url || professional.stamp_photo_url) as string
             )
           : Promise.resolve(null),
+        imageUrlToBase64(museteraLogo.url),
       ]);
 
       const reportCode = `MT-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`;
@@ -208,14 +210,15 @@ export default function PatientEvolutionPage() {
             : undefined,
           signatureBase64,
           stampBase64,
+          logoBase64,
           reportCode,
         }),
         {
           filename: `Relatorio_Evolucao_${patientName.replace(/\s+/g, "_")}_${
             new Date().toISOString().split("T")[0]
           }.pdf`,
-          waitTime: 1800,
-          quality: 2.0,
+          waitTime: 2200,
+          quality: 3,
         }
       );
       if (ok) toast.success("Relatório de evolução gerado com sucesso!");
