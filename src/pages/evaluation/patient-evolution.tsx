@@ -143,6 +143,57 @@ export default function PatientEvolutionPage() {
 
   const hasEnoughForComparison = selectedForComparison.length >= 2;
 
+  // Verifica quais dos 4 tipos obrigatórios já foram concluídos
+  const typeOf = (e: SavedEvaluation) =>
+    (e.content?.evaluationType
+      ? EVALUATION_TYPES.find((t) => t.value === e.content?.evaluationType)?.key
+      : e.type) || e.type;
+
+  const completedTypes = REQUIRED_TYPES.filter((key) =>
+    evaluations.some((e) => typeOf(e) === key)
+  );
+  const allFourCompleted = completedTypes.length === REQUIRED_TYPES.length;
+
+  const handleExportReport = async () => {
+    if (!allFourCompleted) {
+      toast.info("Conclua as 4 avaliações (Inicial, Progresso, Periódica e Final) para gerar o relatório.");
+      return;
+    }
+    setIsExporting(true);
+    try {
+      // Pega a avaliação mais recente de cada tipo obrigatório, em ordem cronológica
+      const ordered = REQUIRED_TYPES.map((key) => {
+        const ofType = evaluations
+          .filter((e) => typeOf(e) === key)
+          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        return ofType[0];
+      })
+        .filter(Boolean)
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()) as SavedEvaluation[];
+
+      const ok = await generateStaticPDF(
+        React.createElement(EvolutionReportPDF, {
+          patientName,
+          patientAge: ordered[0]?.patient_age,
+          evaluations: ordered,
+        }),
+        {
+          filename: `Relatorio_Evolucao_${patientName.replace(/\s+/g, "_")}_${
+            new Date().toISOString().split("T")[0]
+          }.pdf`,
+          waitTime: 1800,
+          quality: 2.0,
+        }
+      );
+      if (ok) toast.success("Relatório de evolução gerado com sucesso!");
+    } catch (err) {
+      console.error("Erro ao gerar relatório de evolução:", err);
+      toast.error("Erro ao gerar o relatório de evolução");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-6 max-w-6xl">
       <Button
