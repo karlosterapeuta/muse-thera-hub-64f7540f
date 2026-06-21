@@ -76,10 +76,14 @@ Deno.serve(async (req) => {
     // Auto-approve any vacancy classified as music therapy (no manual review).
     const AUTO_APPROVE_MIN_SCORE = 40;
 
-    // --- 1. Search public job boards via Firecrawl ----------------------------
+    // --- 1. Search public job boards + Instagram (TEA clinics) via Firecrawl --
     const queries = [
       `vaga emprego ${keywords[0]} Brasil`,
       `${keywords[0]} contratação clínica hospital`,
+      // Instagram: TEA/autism clinics that post music-therapist openings
+      `site:instagram.com clínica TEA autismo vaga ${keywords[0]}`,
+      `site:instagram.com vaga ${keywords[0]} clínica autismo "trabalhe conosco"`,
+      `instagram clínica TEA contratando ${keywords[0]} vaga`,
     ];
 
     const candidates: Candidate[] = [];
