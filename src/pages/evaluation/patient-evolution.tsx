@@ -210,14 +210,15 @@ export default function PatientEvolutionPage() {
             : undefined,
           signatureBase64,
           stampBase64,
+          logoBase64,
           reportCode,
         }),
         {
           filename: `Relatorio_Evolucao_${patientName.replace(/\s+/g, "_")}_${
             new Date().toISOString().split("T")[0]
           }.pdf`,
-          waitTime: 1800,
-          quality: 2.0,
+          waitTime: 2200,
+          quality: 3,
         }
       );
       if (ok) toast.success("Relatório de evolução gerado com sucesso!");
