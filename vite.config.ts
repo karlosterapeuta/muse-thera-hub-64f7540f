@@ -9,6 +9,10 @@ export default defineConfig(({ mode }) => ({
   define: {
     __APP_VERSION__: JSON.stringify(Date.now().toString()),
   },
+  esbuild: {
+    // Remove logs de desenvolvimento no build de produção (mantém warn/error)
+    pure: mode === 'production' ? ['console.log', 'console.info', 'console.debug'] : [],
+  },
   server: {
     host: "::",
     port: 8080,
