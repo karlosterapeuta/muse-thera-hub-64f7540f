@@ -69,6 +69,10 @@ Deno.serve(async (req) => {
 
     const { data: settings } = await admin.from("vagas_settings").select("*").limit(1).maybeSingle();
     const keywords: string[] = settings?.keywords ?? ["musicoterapeuta", "musicoterapia"];
+    // When auto_send is on, high-confidence vacancies are approved automatically
+    // so they can be dispatched to the WhatsApp group without manual review.
+    const autoSend: boolean = settings?.auto_send === true;
+    const AUTO_APPROVE_MIN_SCORE = 70;
 
     // --- 1. Search public job boards via Firecrawl ----------------------------
     const queries = [
@@ -182,7 +186,7 @@ Deno.serve(async (req) => {
         is_music_therapy: cls.music,
         relevance_score: cls.score,
         link_ok: linkOk,
-        status: "pending",
+        status: autoSend && cls.music && cls.score >= AUTO_APPROVE_MIN_SCORE ? "approved" : "pending",
       });
       if (!error) inserted++;
     }
