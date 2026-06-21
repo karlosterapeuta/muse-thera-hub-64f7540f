@@ -145,7 +145,8 @@ export const PTI_PROFISSIONAIS = [
   "Terapeuta Ocupacional",
   "Neuropediatra",
   "Psicopedagogo",
-  "Escola",
+  "Nutrição",
+  "Psicomotricidade",
   "Outros",
 ];
 
