@@ -92,6 +92,8 @@ const AIAssistant = lazy(() => import("./pages/ai-assistant"));
 
 // Resources
 const Resources = lazy(() => import("./pages/Resources"));
+const OrquestraAnimal = lazy(() => import("./pages/orquestra-animal"));
+const DinoRitmos = lazy(() => import("./pages/dino-ritmos"));
 const VagasEmbed = lazy(() => import("./pages/VagasEmbed"));
 const VagasAdminPanel = lazy(() => import("./pages/vagas/VagasAdminPanel"));
 
