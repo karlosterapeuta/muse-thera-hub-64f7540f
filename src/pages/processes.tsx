@@ -188,8 +188,15 @@ export default function Processes() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="w-full px-3 sm:px-4 lg:px-6 py-6 sm:py-8 lg:py-10 max-w-7xl mx-auto">
+    <div className="relative min-h-screen bg-background overflow-hidden">
+      {/* Decorative background orbs */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-32 -left-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute top-1/3 -right-40 w-[28rem] h-[28rem] bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
+        <div className="absolute bottom-0 left-1/3 w-80 h-80 bg-pink-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }} />
+      </div>
+
+      <div className="relative w-full px-3 sm:px-4 lg:px-6 py-6 sm:py-8 lg:py-10 max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -197,8 +204,8 @@ export default function Processes() {
           transition={{ duration: 0.5 }}
           className="text-center mb-10 lg:mb-14"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-5 backdrop-blur-sm">
-            <Sparkles className="h-4 w-4" />
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-primary/15 via-purple-500/15 to-pink-500/15 text-primary text-sm font-semibold mb-5 backdrop-blur-sm ring-1 ring-primary/20 shadow-lg shadow-primary/10">
+            <Sparkles className="h-4 w-4 animate-pulse" />
             Fluxo Terapêutico Completo
           </div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground mb-4 tracking-tight">
@@ -210,7 +217,22 @@ export default function Processes() {
           <p className="text-base sm:text-lg text-muted-foreground max-w-xl mx-auto">
             Gerencie todo o ciclo terapêutico com ferramentas especializadas
           </p>
+
+          {/* Step flow chips */}
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-2">
+            {["Anamnese", "Avaliação", "PTI", "Intervenção", "Reavaliação"].map((label, i, arr) => (
+              <div key={label} className="flex items-center gap-2">
+                <span className="px-3 py-1 rounded-full bg-card/70 border border-border/60 text-xs font-medium text-foreground/80 backdrop-blur-sm shadow-sm">
+                  {label}
+                </span>
+                {i < arr.length - 1 && (
+                  <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/50" />
+                )}
+              </div>
+            ))}
+          </div>
         </motion.div>
+
 
         {/* Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-6">
