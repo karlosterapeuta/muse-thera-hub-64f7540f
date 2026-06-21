@@ -109,6 +109,26 @@ export default function PatientEvolutionPage() {
     }
   };
 
+  const handleLoadEvaluation = (evaluation: SavedEvaluation) => {
+    try {
+      const content: any = evaluation.content || {};
+      const draft = {
+        selectedPatient: evaluation.patient_id || patientId || "",
+        selectedEvaluation: content.evaluationType || evaluation.type || "1",
+        evaluationDate: new Date(evaluation.date).toISOString(),
+        selections: content.selections || {},
+        observations: content.observations || {},
+        activeTab: "evaluation",
+      };
+      sessionStorage.setItem("musetera-eval-draft", JSON.stringify(draft));
+      toast.success("Avaliação carregada! Abrindo na Escala MuseTera...");
+      navigate("/evaluation");
+    } catch (err) {
+      console.error("Erro ao carregar avaliação:", err);
+      toast.error("Erro ao carregar avaliação");
+    }
+  };
+
   const hasEnoughForComparison = selectedForComparison.length >= 2;
 
   return (
@@ -173,7 +193,7 @@ export default function PatientEvolutionPage() {
               isLoading={false}
               selectedForComparison={selectedForComparison}
               onToggleComparison={handleToggleComparison}
-              onLoadEvaluation={() => {}}
+              onLoadEvaluation={handleLoadEvaluation}
               onDeleteEvaluation={handleDeleteEvaluation}
               maxComparisons={MAX_COMPARISONS}
             />
