@@ -483,9 +483,9 @@ export default function PtiEditor() {
           <SectionItem value="s13" title="13. Critérios de Evolução (1 a 5)">
             <div className="space-y-3">
               {PTI_CRITERIOS_EVOLUCAO.map((area) => (
-                <div key={area} className="flex items-center justify-between gap-3">
+                <div key={area} className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-2 xs:gap-3">
                   <span className="text-sm">{area}</span>
-                  <div className="flex gap-1.5">
+                  <div className="flex gap-1.5 shrink-0">
                     {[1, 2, 3, 4, 5].map((n) => (
                       <button key={n} type="button"
                         onClick={() => update({ criteriosEvolucao: { ...content.criteriosEvolucao, [area]: n } })}
