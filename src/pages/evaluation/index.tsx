@@ -1740,21 +1740,21 @@ export default function Evaluation() {
             <TabsList className="grid w-full grid-cols-3 bg-background/80 backdrop-blur-sm p-1.5 rounded-2xl h-auto min-h-[4.5rem] border border-blue-200/50 dark:border-blue-800/50 shadow-lg">
               <TabsTrigger 
                 value="evaluation" 
-                className="rounded-xl text-sm sm:text-base md:text-lg font-bold px-3 py-3 gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-blue-300/60 dark:data-[state=active]:ring-blue-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
+                className="rounded-xl text-sm sm:text-base md:text-lg font-bold px-3 py-3 gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-primary-foreground data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-blue-300/60 dark:data-[state=active]:ring-blue-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
               >
                 <ClipboardList className="h-5 w-5" />
                 Escala MuseTera
               </TabsTrigger>
               <TabsTrigger 
                 value="results" 
-                className="rounded-xl text-sm sm:text-base md:text-lg font-bold px-3 py-3 gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-emerald-300/60 dark:data-[state=active]:ring-emerald-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
+                className="rounded-xl text-sm sm:text-base md:text-lg font-bold px-3 py-3 gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-primary-foreground data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-emerald-300/60 dark:data-[state=active]:ring-emerald-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
               >
                 <BarChart2 className="h-5 w-5" />
                 Resultados
               </TabsTrigger>
               <TabsTrigger 
                 value="comparison" 
-                className="rounded-xl text-sm sm:text-base md:text-lg font-bold px-3 py-3 gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-purple-300/60 dark:data-[state=active]:ring-purple-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
+                className="rounded-xl text-sm sm:text-base md:text-lg font-bold px-3 py-3 gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-primary-foreground data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-purple-300/60 dark:data-[state=active]:ring-purple-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
               >
                 <TrendingUp className="h-5 w-5" />
                 Evolução do Paciente
