@@ -12,7 +12,7 @@ import {
   EMPTY_FILTERS,
   type VagasFilterState,
 } from "@/components/vagas/VagasFilters";
-import museteraLogo from "@/assets/musetera-logo-transparent.png.asset.json";
+const MUSETERA_LOGO = "/lovable-uploads/musetera-logo-new.png";
 
 const norm = (s: string) =>
   s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
