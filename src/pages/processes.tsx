@@ -247,7 +247,7 @@ export default function Processes() {
               >
                 <Link to={process.path} className="group block h-full">
                   <div
-                    className={`relative h-full rounded-2xl bg-card border border-border/60 dark:border-border/40 overflow-hidden transition-all duration-500 hover:-translate-y-2 shadow-lg ${colors.glow} hover:shadow-2xl hover:${colors.glowHover}`}
+                    className={`relative h-full rounded-2xl bg-card/80 backdrop-blur-sm border border-border/60 dark:border-border/40 overflow-hidden transition-all duration-500 hover:-translate-y-2 shadow-lg ${colors.glow} hover:shadow-2xl hover:${colors.glowHover}`}
                   >
                     {/* Gradient background overlay on hover */}
                     <div className={`absolute inset-0 bg-gradient-to-br ${colors.gradient} opacity-0 group-hover:opacity-[0.04] dark:group-hover:opacity-[0.08] transition-opacity duration-500`} />
