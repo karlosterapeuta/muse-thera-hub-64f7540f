@@ -18,7 +18,7 @@ export function useNewVacanciesCount() {
   useEffect(() => {
     load();
     const channel = supabase
-      .channel("job_vacancies_count")
+      .channel(`job_vacancies_count_${Math.random().toString(36).slice(2)}`)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "job_vacancies" },
