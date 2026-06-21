@@ -451,7 +451,74 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
         </div>
       </div>
 
-      {/* Radar comparativo */}
+      {/* Indicadores gerais (levantamento de dados) */}
+      <SectionTitle color="#4338ca">Levantamento de Dados</SectionTitle>
+      <div style={{ display: "flex", gap: 10, marginBottom: 22 }}>
+        {[
+          { label: "Score Médio", value: `${analysis.averageScore}%`, sub: `${analysis.stages.length} avaliações`, color: "#4338ca" },
+          { label: "Pico", value: `${analysis.peakScore}%`, sub: analysis.peakStage?.meta.shortLabel || "—", color: "#059669" },
+          { label: "Evolução Total", value: varText(globalVariation), sub: `${analysis.globalPercentChange > 0 ? "+" : ""}${analysis.globalPercentChange}% relativo`, color: varColor(globalVariation) },
+          { label: "Período", value: `${analysis.periodMonths} ${analysis.periodMonths === 1 ? "mês" : "meses"}`, sub: `${analysis.periodDays} dias`, color: "#d97706" },
+        ].map((card, i) => (
+          <div
+            key={i}
+            style={{
+              flex: 1,
+              border: "1px solid #e2e8f0",
+              borderTop: `3px solid ${card.color}`,
+              borderRadius: 8,
+              padding: "10px 12px",
+              backgroundColor: "#f8fafc",
+              textAlign: "center",
+            }}
+          >
+            <div style={{ fontSize: 9, fontWeight: 700, color: card.color, textTransform: "uppercase", letterSpacing: 0.3 }}>
+              {card.label}
+            </div>
+            <div style={{ fontSize: 20, fontWeight: 800, color: "#0f172a", marginTop: 2 }}>{card.value}</div>
+            <div style={{ fontSize: 8, color: "#94a3b8" }}>{card.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Comparação detalhada entre etapas */}
+      {analysis.transitions.length > 0 && (
+        <div style={{ marginBottom: 22 }}>
+          <SectionTitle color="#0891b2">Comparação entre Etapas (Inicial → Final)</SectionTitle>
+          <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #e2e8f0" }}>
+            <thead>
+              <tr style={{ backgroundColor: "#f8fafc" }}>
+                <th style={{ ...cellStyle, textAlign: "left", fontWeight: 700 }}>Transição</th>
+                <th style={{ ...cellStyle, fontWeight: 700 }}>De</th>
+                <th style={{ ...cellStyle, fontWeight: 700 }}>Para</th>
+                <th style={{ ...cellStyle, fontWeight: 700 }}>Intervalo</th>
+                <th style={{ ...cellStyle, fontWeight: 700 }}>Variação</th>
+                <th style={{ ...cellStyle, fontWeight: 700 }}>Relativa</th>
+              </tr>
+            </thead>
+            <tbody>
+              {analysis.transitions.map((t, i) => (
+                <tr key={i}>
+                  <td style={{ ...cellStyle, textAlign: "left", fontWeight: 600 }}>
+                    {t.from.meta.shortLabel} → {t.to.meta.shortLabel}
+                  </td>
+                  <td style={cellStyle}>{t.from.score}%</td>
+                  <td style={cellStyle}>{t.to.score}%</td>
+                  <td style={cellStyle}>{t.daysBetween} dias</td>
+                  <td style={{ ...cellStyle, fontWeight: 700, color: varColor(t.variation) }}>
+                    {varText(t.variation)}
+                  </td>
+                  <td style={{ ...cellStyle, color: varColor(t.variation) }}>
+                    {t.percentChange > 0 ? "+" : ""}{t.percentChange}%
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+
       <div style={{ marginBottom: 8 }}>
         <SectionTitle>Comparação por Domínios</SectionTitle>
         <MultiRadar domains={domains} series={series} />
