@@ -1,5 +1,7 @@
 
 import { ProfessionalAvatar } from "@/components/ProfessionalAvatar";
+import { cn } from "@/lib/utils";
+
 
 interface ProfessionalInfoProps {
   collapsed: boolean;
