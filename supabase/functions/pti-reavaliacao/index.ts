@@ -1,12 +1,17 @@
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 
+const SYSTEM_INSTRUCTION =
+  "Você é um musicoterapeuta clínico experiente, especialista em documentação clínica e relatórios de reavaliação baseados em evidências.";
+
+const GEMINI_MODEL = "gemini-2.5-flash";
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    const apiKey = Deno.env.get("LOVABLE_API_KEY");
+    const apiKey = Deno.env.get("GOOGLE_AI_API_KEY");
     if (!apiKey) {
-      return new Response(JSON.stringify({ error: "Missing LOVABLE_API_KEY" }), {
+      return new Response(JSON.stringify({ error: "Missing GOOGLE_AI_API_KEY" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -42,33 +47,21 @@ Estruture a resposta em:
 4. Recomendações e ajustes terapêuticos (tópicos)
 Use português do Brasil, terminologia inclusiva ('paciente'), tom técnico e baseado em evidências.`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
+          contents: [{ role: "user", parts: [{ text: userPrompt }] }],
+        }),
       },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          {
-            role: "system",
-            content:
-              "Você é um musicoterapeuta clínico experiente, especialista em documentação clínica e relatórios de reavaliação baseados em evidências.",
-          },
-          { role: "user", content: userPrompt },
-        ],
-      }),
-    });
+    );
 
     if (response.status === 429) {
       return new Response(JSON.stringify({ error: "Limite de requisições atingido. Tente novamente em instantes." }), {
         status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-    if (response.status === 402) {
-      return new Response(JSON.stringify({ error: "Créditos de IA esgotados. Adicione créditos para continuar." }), {
-        status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
     if (!response.ok) {
@@ -79,7 +72,8 @@ Use português do Brasil, terminologia inclusiva ('paciente'), tom técnico e ba
     }
 
     const data = await response.json();
-    const report = data.choices?.[0]?.message?.content ?? "";
+    const report =
+      data?.candidates?.[0]?.content?.parts?.map((p: any) => p.text).join("") ?? "";
 
     return new Response(JSON.stringify({ report }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

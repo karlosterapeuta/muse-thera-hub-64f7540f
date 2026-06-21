@@ -13,13 +13,18 @@ const SECTION_PROMPTS: Record<string, string> = {
   historicoClinico: "Escreva um resumo de histórico clínico relevante para o plano de musicoterapia.",
 };
 
+const SYSTEM_INSTRUCTION =
+  "Você é um musicoterapeuta clínico experiente. Gere textos técnicos, claros, em português do Brasil, baseados em práticas baseadas em evidências da Musicoterapia Clínica. Use terminologia inclusiva ('paciente'). Seja conciso e profissional.";
+
+const GEMINI_MODEL = "gemini-2.5-flash";
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    const apiKey = Deno.env.get("LOVABLE_API_KEY");
+    const apiKey = Deno.env.get("GOOGLE_AI_API_KEY");
     if (!apiKey) {
-      return new Response(JSON.stringify({ error: "Missing LOVABLE_API_KEY" }), {
+      return new Response(JSON.stringify({ error: "Missing GOOGLE_AI_API_KEY" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -46,33 +51,21 @@ Dados do paciente e do plano (use apenas o que for relevante):
 - Objetivos anteriores: ${ctx.objetivosAnteriores || "—"}
 `;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
+          contents: [{ role: "user", parts: [{ text: `${sectionInstruction}\n\n${contextText}` }] }],
+        }),
       },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          {
-            role: "system",
-            content:
-              "Você é um musicoterapeuta clínico experiente. Gere textos técnicos, claros, em português do Brasil, baseados em práticas baseadas em evidências da Musicoterapia Clínica. Use terminologia inclusiva ('paciente'). Seja conciso e profissional.",
-          },
-          { role: "user", content: `${sectionInstruction}\n\n${contextText}` },
-        ],
-      }),
-    });
+    );
 
     if (response.status === 429) {
       return new Response(JSON.stringify({ error: "Limite de requisições atingido. Tente novamente em instantes." }), {
         status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-    if (response.status === 402) {
-      return new Response(JSON.stringify({ error: "Créditos de IA esgotados. Adicione créditos para continuar." }), {
-        status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
     if (!response.ok) {
@@ -83,7 +76,8 @@ Dados do paciente e do plano (use apenas o que for relevante):
     }
 
     const data = await response.json();
-    const suggestion = data.choices?.[0]?.message?.content ?? "";
+    const suggestion =
+      data?.candidates?.[0]?.content?.parts?.map((p: any) => p.text).join("") ?? "";
 
     return new Response(JSON.stringify({ suggestion }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
