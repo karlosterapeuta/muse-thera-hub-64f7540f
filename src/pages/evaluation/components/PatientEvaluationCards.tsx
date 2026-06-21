@@ -40,6 +40,7 @@ interface PatientEvaluationCardsProps {
   patientsWithEvaluations: PatientWithEvaluations[];
   selectedPatientId: string | null;
   onSelectPatient: (patientId: string) => void;
+  onDeletePatient?: (patientId: string) => void;
   isLoading: boolean;
 }
 
