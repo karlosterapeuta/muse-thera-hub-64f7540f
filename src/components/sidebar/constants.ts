@@ -72,6 +72,7 @@ export const getAdminMenuItems = (userEmail: string | null, isAdmin: boolean | u
     adminMenuItems.push(
       { icon: LayoutDashboard, text: "🎬 Creator Dashboard", path: "/creator-dashboard", gradient: "from-orange-500 to-amber-600", isNew: true },
       { icon: UsersRound, text: "👤 Gestão de Usuários", path: "/users", gradient: "from-slate-500 to-gray-600" },
+      { icon: Magnet, text: "💼 Vagas Admin", path: "/vagas/admin", gradient: "from-cyan-600 to-blue-700", isNew: true },
       { icon: Database, text: "💾 Backup de Dados", path: "/backup", gradient: "from-slate-500 to-zinc-600", isNew: true }
     );
   }
