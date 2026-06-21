@@ -8,10 +8,10 @@ import { useNewVacanciesCount } from "@/hooks/useNewVacanciesCount";
 export function MenuSection({ title, items, collapsed, onNavigate, showTitle = true }: MenuSectionProps) {
   const vagasCount = useNewVacanciesCount();
   return (
-    <div className="space-y-0.5">
+    <div className="space-y-1">
       {!collapsed && showTitle && (
         <div className="px-4 pt-1 pb-2">
-          <span className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-[0.15em]">
+          <span className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.2em]">
             {title}
           </span>
         </div>
@@ -26,25 +26,23 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
               rel="noopener noreferrer"
               onClick={() => onNavigate?.()}
               className={cn(
-                "group relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 mx-2 text-foreground/80 hover:text-foreground hover:bg-accent/60",
+                "group relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 mx-2 text-foreground/50 hover:text-foreground hover:bg-white/5",
                 collapsed && "justify-center px-2"
               )}
             >
-              <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 group-hover:bg-accent transition-colors duration-200">
-                <item.icon
-                  size={16}
-                  className="text-muted-foreground group-hover:text-foreground transition-colors duration-200"
-                />
-              </div>
+              <item.icon
+                size={18}
+                className="shrink-0 opacity-70 group-hover:opacity-100 transition-opacity duration-200"
+              />
 
               {!collapsed && (
-                <span className="font-medium text-[13px] flex-1 truncate">
+                <span className="text-sm font-medium flex-1 truncate">
                   {item.text}
                 </span>
               )}
 
               {!collapsed && (
-                <svg className="w-3 h-3 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3 h-3 text-muted-foreground/40 group-hover:text-muted-foreground transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>
               )}
@@ -61,48 +59,36 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
             onClick={() => onNavigate?.()}
             className={({ isActive }) =>
               cn(
-                "group relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 mx-2 overflow-hidden",
+                "group relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 mx-2 overflow-hidden",
                 collapsed && "justify-center px-2",
                 isActive
-                  ? "bg-gradient-to-r text-white shadow-lg shadow-primary/20 scale-[1.01]"
-                  : "text-foreground/80 hover:text-foreground hover:bg-accent/60 hover:translate-x-0.5",
-                isActive && item.gradient,
-                isProcessesItem && !isActive && "ring-1 ring-primary/20 bg-primary/5 dark:bg-primary/10 hover:ring-primary/40"
+                  ? "text-white shadow-lg shadow-purple-600/20 bg-gradient-to-r from-primary/85 to-purple-600/85"
+                  : "text-foreground/50 hover:text-foreground hover:bg-white/5 hover:translate-x-0.5",
+                isProcessesItem && !isActive && "text-foreground/80 bg-white/5"
               )
             }
           >
             {({ isActive }) => (
               <>
-                {/* Active left indicator bar */}
-                {isActive && !collapsed && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-r-full bg-white/80 shadow-[0_0_8px_hsl(var(--primary))]" />
-                )}
-
-                {/* Subtle shine effect on active */}
+                {/* Shine sweep on active */}
                 {isActive && (
                   <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                 )}
 
-                {/* Icon container */}
-                <div className={cn(
-                  "relative flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-300 group-hover:scale-110",
-                  isActive
-                    ? "bg-white/20 shadow-inner"
-                    : "bg-muted/60 group-hover:bg-accent",
-                  isProcessesItem && !isActive && "bg-primary/10"
-                )}>
+                {/* Icon */}
+                {isProcessesItem && !isActive ? (
+                  <div className="relative shrink-0 p-1.5 -m-1.5 bg-yellow-500/10 rounded-lg">
+                    <item.icon size={16} className="text-yellow-500" />
+                  </div>
+                ) : (
                   <item.icon
-                    size={16}
+                    size={18}
                     className={cn(
-                      "transition-all duration-200",
-                      isActive
-                        ? "text-white"
-                        : "text-muted-foreground group-hover:text-foreground",
-                      isProcessesItem && !isActive && "text-primary"
+                      "relative shrink-0 transition-all duration-300 group-hover:scale-110",
+                      isActive ? "text-white opacity-95" : "opacity-70 group-hover:opacity-100"
                     )}
                   />
-                </div>
-
+                )}
 
                 {!collapsed && (
                   <div className="flex items-center gap-2 flex-1 min-w-0 relative z-10">
@@ -119,9 +105,9 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
                       </span>
                     ) : (
                       <span className={cn(
-                        "font-medium text-[13px] truncate transition-colors duration-200",
-                        isActive ? "text-white font-semibold" : "",
-                        isProcessesItem && !isActive && "font-semibold text-foreground"
+                        "text-sm font-medium truncate transition-colors duration-200",
+                        isActive && "font-semibold",
+                        isProcessesItem && !isActive && "font-semibold"
                       )}>
                         {item.text}
                       </span>
@@ -144,13 +130,13 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
                 )}
 
                 {/* Arrow indicator on hover (non-active) */}
-                {!collapsed && !isActive && (
-                  <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/0 group-hover:text-muted-foreground/60 transition-all duration-200 group-hover:translate-x-0.5" />
+                {!collapsed && !isActive && item.path !== "/vagas" && (
+                  <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/0 group-hover:text-muted-foreground/50 transition-all duration-200 group-hover:translate-x-0.5" />
                 )}
 
-                {/* Active dot */}
+                {/* Active pulsing dot */}
                 {isActive && !collapsed && (
-                  <div className="w-1.5 h-1.5 bg-white rounded-full shadow-sm" />
+                  <div className="relative z-10 w-1.5 h-1.5 bg-white rounded-full animate-pulse shadow-sm" />
                 )}
               </>
             )}
