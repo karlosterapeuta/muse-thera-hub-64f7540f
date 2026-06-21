@@ -62,7 +62,7 @@ const basicDatabaseFields = [
   'aba_therapy', 'sensory_integration', 'psychomotricity', 'nutrition', 'music_therapy',
   'therapy_frequency', 'therapy_observations',
   // Perfil musical adicional
-  'instruments_played', 'music_practice_time',
+  'instruments_played', 'music_practice_time', 'music_therapy_experience',
   // Contexto social adicional
   'family_support_network',
   // Novos campos adicionados
