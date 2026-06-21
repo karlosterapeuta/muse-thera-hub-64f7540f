@@ -15,6 +15,7 @@ import { generateStaticPDF } from "@/utils/staticPDFGenerator";
 import { EvolutionReportPDF } from "@/components/EvolutionReportPDF";
 import { useProfessionalData } from "@/hooks/useProfessionalData";
 import { imageUrlToBase64 } from "@/utils/imageToBase64";
+import museteraLogo from "@/assets/musetera-logo-transparent.png.asset.json";
 import React from "react";
 
 const MAX_COMPARISONS = 4;
