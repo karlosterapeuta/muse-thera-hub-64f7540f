@@ -79,6 +79,7 @@ export function PatientEvaluationCards({
   patientsWithEvaluations,
   selectedPatientId,
   onSelectPatient,
+  onDeletePatient,
   isLoading,
 }: PatientEvaluationCardsProps) {
   if (isLoading) {
