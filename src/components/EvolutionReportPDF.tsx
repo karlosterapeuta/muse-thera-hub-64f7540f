@@ -652,15 +652,15 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
           gap: 48,
         }}
       >
-        <div style={{ textAlign: "center", minWidth: 240 }}>
+        <div style={{ textAlign: "center", minWidth: 260 }}>
           {signatureBase64 ? (
             <img
               src={signatureBase64}
               alt="Assinatura"
-              style={{ maxHeight: 80, maxWidth: 240, objectFit: "contain", margin: "0 auto", ...crispImg }}
+              style={{ maxHeight: 110, maxWidth: 300, objectFit: "contain", margin: "0 auto", ...crispImg }}
             />
           ) : (
-            <div style={{ height: 80 }} />
+            <div style={{ height: 110 }} />
           )}
           <div style={{ borderTop: "1px solid #475569", paddingTop: 4, marginTop: 2 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: "#0f172a" }}>
@@ -675,7 +675,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
           <img
             src={stampBase64}
             alt="Carimbo"
-            style={{ maxHeight: 110, maxWidth: 180, objectFit: "contain", ...crispImg }}
+            style={{ maxHeight: 160, maxWidth: 240, objectFit: "contain", ...crispImg }}
           />
         ) : null}
       </div>
