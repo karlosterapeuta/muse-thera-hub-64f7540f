@@ -375,17 +375,23 @@ export const generateProfessionalAnamnesePDF = async (
                   <div style="margin-bottom: 16px;">
                     <div style="font-weight: 600; font-size: 11px; color: #0f766e; margin-bottom: 10px; text-transform: uppercase;">Diagnósticos / Condições</div>
                     ${renderCheckboxes([
-                      { id: 'autism_spectrum', label: 'Transtorno do Espectro Autista (TEA)' },
+                      { id: 'autism_spectrum', label: 'TEA - Transtorno do Espectro Autista' },
+                      { id: 'adhd', label: 'TDAH' },
                       { id: 'down_syndrome', label: 'Síndrome de Down' },
                       { id: 'intellectual_disability', label: 'Deficiência Intelectual' },
-                      { id: 'adhd', label: 'TDAH' },
-                      { id: 'chronic_encephalopathy', label: 'Encefalopatia Crônica' },
-                      { id: 'anxiety_disorders', label: 'Transtornos de Ansiedade' },
                       { id: 'cerebral_palsy', label: 'Paralisia Cerebral' },
                       { id: 'epilepsy', label: 'Epilepsia' },
-                      { id: 'genetic_syndrome', label: 'Síndrome Genética' },
-                      { id: 'hearing_impairment', label: 'Deficiência Auditiva' },
-                      { id: 'visual_impairment', label: 'Deficiência Visual' },
+                      { id: 'chronic_encephalopathy', label: 'Encefalopatia Crônica' },
+                      { id: 'williams_syndrome', label: 'Síndrome de Williams' },
+                      { id: 'fragile_x_syndrome', label: 'Síndrome X Frágil' },
+                      { id: 'rett_syndrome', label: 'Síndrome de Rett' },
+                      { id: 'angelman_syndrome', label: 'Síndrome de Angelman' },
+                      { id: 'alzheimer', label: 'Doença de Alzheimer' },
+                      { id: 'parkinson', label: 'Doença de Parkinson' },
+                      { id: 'depression', label: 'Depressão' },
+                      { id: 'bipolar_disorder', label: 'Transtorno Bipolar' },
+                      { id: 'anxiety_disorders', label: 'Transtornos de Ansiedade' },
+                      { id: 'odd_disorder', label: 'TOD - Transtorno Opositor Desafiador' },
                       { id: 'other_diagnoses', label: 'Outros Diagnósticos' }
                     ])}
                   </div>
