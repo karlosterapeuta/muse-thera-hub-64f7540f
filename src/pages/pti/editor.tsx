@@ -80,7 +80,10 @@ export default function PtiEditor() {
 
   const doSave = useCallback(
     async (silent = false) => {
-      if (!professional) return;
+      if (!professional) {
+        if (!silent) toast.error("Carregando seus dados profissionais. Aguarde um instante e tente novamente.");
+        return;
+      }
       try {
         const savedId = await saveMutation.mutateAsync({
           id: planId,
