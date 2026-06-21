@@ -30,14 +30,17 @@ export function ProfessionalCredentialsCard({
   ].filter((association, index, arr) => arr.indexOf(association) === index); // Remove duplicates
 
   return (
-    <Card className="hover:shadow-lg transition-shadow duration-300">
-      <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-2 text-xl">
-          <Award className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+    <Card className="group overflow-hidden border-border/60 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
+      <CardHeader className="pb-4 bg-gradient-to-r from-purple-500/10 to-transparent border-b border-border/40">
+        <CardTitle className="flex items-center gap-3 text-lg">
+          <span className="flex items-center justify-center h-9 w-9 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400 ring-1 ring-purple-500/20">
+            <Award className="h-5 w-5" />
+          </span>
           Credenciais Profissionais
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-6 pt-6">
+
         <div className="space-y-2">
           <Label htmlFor="specialty" className="flex items-center gap-2 text-sm font-medium">
             <Award className="h-4 w-4 text-muted-foreground" />
