@@ -690,7 +690,24 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
         <ScoreLine points={linePoints} />
       </div>
 
-      {/* Tabela comparativa */}
+      {/* Gráfico de evolução por domínio (Inicial vs Final) */}
+      <div style={{ marginTop: 22, marginBottom: 8 }}>
+        <SectionTitle color="#7c3aed">Evolução por Domínio (Inicial → Final)</SectionTitle>
+        <DomainVariationBars rows={variationRows} />
+        <div style={{ display: "flex", gap: 16, justifyContent: "center", marginTop: 4, fontSize: 9, color: "#64748b" }}>
+          <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <span style={{ width: 10, height: 10, backgroundColor: "#059669", borderRadius: 2 }} /> Evolução
+          </span>
+          <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <span style={{ width: 10, height: 10, backgroundColor: "#dc2626", borderRadius: 2 }} /> Redução
+          </span>
+          <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <span style={{ width: 10, height: 10, backgroundColor: "#94a3b8", borderRadius: 2 }} /> Estável
+          </span>
+        </div>
+      </div>
+
+
       <div style={{ marginTop: 22 }}>
         <SectionTitle color="#1d4ed8">Análise Comparativa Detalhada</SectionTitle>
         <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #e2e8f0" }}>
