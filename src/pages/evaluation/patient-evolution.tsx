@@ -33,6 +33,7 @@ export default function PatientEvolutionPage() {
   const [patientName, setPatientName] = useState<string>("Paciente");
   const [isLoading, setIsLoading] = useState(true);
   const [selectedForComparison, setSelectedForComparison] = useState<string[]>([]);
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     let active = true;
