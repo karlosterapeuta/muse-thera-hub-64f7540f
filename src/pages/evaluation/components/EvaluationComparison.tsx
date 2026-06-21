@@ -11,6 +11,10 @@ import {
   ResponsiveContainer,
   LineChart,
   Line,
+  BarChart,
+  Bar,
+  Cell,
+  LabelList,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -21,6 +25,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { TrendingUp, TrendingDown, Minus, BarChart3 } from "lucide-react";
 import { SavedEvaluation } from "@/hooks/useEvaluationStorage";
+import { resolveEvaluationMeta } from "@/utils/evaluationTypes";
 
 interface EvaluationComparisonProps {
   evaluations: SavedEvaluation[];
