@@ -12,6 +12,7 @@ import {
   EMPTY_FILTERS,
   type VagasFilterState,
 } from "@/components/vagas/VagasFilters";
+import museteraLogo from "@/assets/musetera-logo-transparent.png.asset.json";
 
 const norm = (s: string) =>
   s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -68,9 +69,12 @@ export default function VagasEmbed() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
             <img
-              src="/lovable-uploads/7e9c8dee-0549-4b2a-9a82-3b3e2717c34f.png"
+              src={museteraLogo.url}
               alt="Logotipo MuseTera"
-              className={`${isMobile ? "h-10 w-10" : "h-12 w-12"} rounded-xl shadow-md ring-2 ring-primary/20`}
+              width={48}
+              height={48}
+              loading="lazy"
+              className={`${isMobile ? "h-10 w-10" : "h-12 w-12"} drop-shadow-lg`}
             />
             <div>
               <h1
@@ -148,9 +152,12 @@ export default function VagasEmbed() {
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-3 mb-2">
             <img
-              src="/lovable-uploads/7e9c8dee-0549-4b2a-9a82-3b3e2717c34f.png"
+              src={museteraLogo.url}
               alt="MuseTera"
-              className="h-8 w-8 rounded-lg shadow-sm"
+              width={32}
+              height={32}
+              loading="lazy"
+              className="h-8 w-8 drop-shadow-md"
             />
             <div className="text-sm">
               <div className="font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">
