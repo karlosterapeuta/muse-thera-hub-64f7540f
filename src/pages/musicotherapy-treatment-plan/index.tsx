@@ -478,6 +478,10 @@ export default function MusicotherapyTreatmentPlanPage() {
             </div>
             <div className="text-xs text-muted-foreground">Aplique um template clínico ou gere uma sugestão com IA.</div>
           </div>
+          <Button variant="outline" size="sm" onClick={handleResetPlan} className="text-rose-500 hover:text-rose-600">
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Zerar plano
+          </Button>
           <Button variant="outline" size="sm" onClick={() => setImportOpen(true)} disabled={!planData.patient_id}>
             <FileSearch className="h-4 w-4 mr-2" />
             Importar prontuário
