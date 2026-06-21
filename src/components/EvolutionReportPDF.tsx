@@ -182,6 +182,68 @@ function ScoreLine({
   );
 }
 
+// ---- Barras de variação por domínio (Inicial vs Final) ----
+function DomainVariationBars({
+  rows,
+  width = 700,
+  rowHeight = 30,
+}: {
+  rows: { domain: string; initial: number; final: number; variation: number }[];
+  width?: number;
+  rowHeight?: number;
+}) {
+  if (!rows.length) return null;
+  const labelW = 150;
+  const valW = 110;
+  const barAreaW = width - labelW - valW;
+  const maxAbs = Math.max(10, ...rows.map((r) => Math.abs(r.variation)));
+  const zeroX = labelW + barAreaW / 2;
+  const half = barAreaW / 2;
+  const height = rows.length * rowHeight + 20;
+  const color = (v: number) => (v > 5 ? "#059669" : v < -5 ? "#dc2626" : "#94a3b8");
+
+  return (
+    <svg width={width} height={height} style={{ display: "block" }}>
+      {/* eixo zero */}
+      <line x1={zeroX} y1={6} x2={zeroX} y2={height - 14} stroke="#cbd5e1" strokeWidth={1} />
+      <text x={zeroX} y={height - 2} fontSize={8} textAnchor="middle" fill="#94a3b8">
+        0
+      </text>
+      {rows.map((r, i) => {
+        const cy = 10 + i * rowHeight + rowHeight / 2;
+        const len = (Math.abs(r.variation) / maxAbs) * half;
+        const barX = r.variation >= 0 ? zeroX : zeroX - len;
+        return (
+          <g key={r.domain}>
+            <text x={labelW - 8} y={cy + 3} fontSize={9} textAnchor="end" fill="#334155" fontWeight="600">
+              {r.domain.length > 22 ? r.domain.substring(0, 21) + "…" : r.domain}
+            </text>
+            <rect
+              x={barX}
+              y={cy - 8}
+              width={Math.max(len, 1)}
+              height={16}
+              rx={3}
+              fill={color(r.variation)}
+              fillOpacity={0.85}
+            />
+            <text
+              x={width - 8}
+              y={cy + 3}
+              fontSize={9}
+              textAnchor="end"
+              fill={color(r.variation)}
+              fontWeight="700"
+            >
+              {r.initial}% → {r.final}% ({r.variation > 0 ? "+" : ""}{r.variation}%)
+            </text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
 // ---- Bloco rótulo + valor para tabelas de identificação ----
 const InfoRow: React.FC<{ label: string; value?: string }> = ({ label, value }) => (
   <div style={{ display: "flex", gap: 6, fontSize: 11, lineHeight: 1.5 }}>
