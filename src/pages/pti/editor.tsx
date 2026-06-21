@@ -215,33 +215,37 @@ export default function PtiEditor() {
     <div className="min-h-screen bg-background pb-24">
       {/* Sticky header */}
       <div className="sticky top-0 z-30 bg-background/80 backdrop-blur-lg border-b border-border/60">
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/pti")}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div className="flex-1 min-w-0">
-            <h1 className="text-base font-bold truncate flex items-center gap-2">
-              <Stethoscope className="h-4 w-4 text-primary" />
-              Plano Terapêutico Individual
-            </h1>
-            <div className="flex items-center gap-2 mt-1">
-              <Progress value={progress} className="h-1.5 flex-1 max-w-[180px]" />
-              <span className="text-xs text-muted-foreground">{progress}%</span>
-              {lastSaved && (
-                <span className="text-xs text-emerald-600 flex items-center gap-1">
-                  <Check className="h-3 w-3" /> salvo
-                </span>
-              )}
+        <div className="max-w-4xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Button variant="ghost" size="icon" className="shrink-0 h-9 w-9" onClick={() => navigate("/pti")}>
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <div className="flex-1 min-w-0">
+              <h1 className="text-sm sm:text-base font-bold truncate flex items-center gap-2">
+                <Stethoscope className="h-4 w-4 text-primary shrink-0" />
+                <span className="truncate">Plano Terapêutico Individual</span>
+              </h1>
+              <div className="flex items-center gap-2 mt-1">
+                <Progress value={progress} className="h-1.5 flex-1 max-w-[180px]" />
+                <span className="text-xs text-muted-foreground shrink-0">{progress}%</span>
+                {lastSaved && (
+                  <span className="text-xs text-emerald-600 flex items-center gap-1 shrink-0">
+                    <Check className="h-3 w-3" /> salvo
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+              <Button variant="outline" size="sm" onClick={handleDownloadPDF} disabled={downloading} className="gap-1.5 px-2.5 sm:px-3">
+                {downloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />}
+                <span className="hidden xs:inline">PDF</span>
+              </Button>
+              <Button size="sm" onClick={() => doSave(false)} disabled={saveMutation.isPending} className="gap-1.5 px-2.5 sm:px-3">
+                {saveMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                <span className="hidden xs:inline">Salvar</span>
+              </Button>
             </div>
           </div>
-          <Button variant="outline" size="sm" onClick={handleDownloadPDF} disabled={downloading} className="gap-1.5">
-            {downloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />}
-            PDF
-          </Button>
-          <Button size="sm" onClick={() => doSave(false)} disabled={saveMutation.isPending} className="gap-1.5">
-            {saveMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-            Salvar
-          </Button>
         </div>
       </div>
 
