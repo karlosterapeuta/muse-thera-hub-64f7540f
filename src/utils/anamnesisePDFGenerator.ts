@@ -375,17 +375,23 @@ export const generateProfessionalAnamnesePDF = async (
                   <div style="margin-bottom: 16px;">
                     <div style="font-weight: 600; font-size: 11px; color: #0f766e; margin-bottom: 10px; text-transform: uppercase;">Diagnósticos / Condições</div>
                     ${renderCheckboxes([
-                      { id: 'autism_spectrum', label: 'Transtorno do Espectro Autista (TEA)' },
+                      { id: 'autism_spectrum', label: 'TEA - Transtorno do Espectro Autista' },
+                      { id: 'adhd', label: 'TDAH' },
                       { id: 'down_syndrome', label: 'Síndrome de Down' },
                       { id: 'intellectual_disability', label: 'Deficiência Intelectual' },
-                      { id: 'adhd', label: 'TDAH' },
-                      { id: 'chronic_encephalopathy', label: 'Encefalopatia Crônica' },
-                      { id: 'anxiety_disorders', label: 'Transtornos de Ansiedade' },
                       { id: 'cerebral_palsy', label: 'Paralisia Cerebral' },
                       { id: 'epilepsy', label: 'Epilepsia' },
-                      { id: 'genetic_syndrome', label: 'Síndrome Genética' },
-                      { id: 'hearing_impairment', label: 'Deficiência Auditiva' },
-                      { id: 'visual_impairment', label: 'Deficiência Visual' },
+                      { id: 'chronic_encephalopathy', label: 'Encefalopatia Crônica' },
+                      { id: 'williams_syndrome', label: 'Síndrome de Williams' },
+                      { id: 'fragile_x_syndrome', label: 'Síndrome X Frágil' },
+                      { id: 'rett_syndrome', label: 'Síndrome de Rett' },
+                      { id: 'angelman_syndrome', label: 'Síndrome de Angelman' },
+                      { id: 'alzheimer', label: 'Doença de Alzheimer' },
+                      { id: 'parkinson', label: 'Doença de Parkinson' },
+                      { id: 'depression', label: 'Depressão' },
+                      { id: 'bipolar_disorder', label: 'Transtorno Bipolar' },
+                      { id: 'anxiety_disorders', label: 'Transtornos de Ansiedade' },
+                      { id: 'odd_disorder', label: 'TOD - Transtorno Opositor Desafiador' },
                       { id: 'other_diagnoses', label: 'Outros Diagnósticos' }
                     ])}
                   </div>
@@ -418,9 +424,10 @@ export const generateProfessionalAnamnesePDF = async (
                       { id: 'physiotherapy', label: 'Fisioterapia' },
                       { id: 'equine_therapy', label: 'Equoterapia' },
                       { id: 'aba_therapy', label: 'Terapia ABA' },
-                      { id: 'nutritionist', label: 'Nutricionista' },
-                      { id: 'neurologist', label: 'Neurologista' },
-                      { id: 'psychiatrist', label: 'Psiquiatra' }
+                      { id: 'sensory_integration', label: 'Integração Sensorial' },
+                      { id: 'psychomotricity', label: 'Psicomotricidade' },
+                      { id: 'nutrition', label: 'Nutrição' },
+                      { id: 'music_therapy', label: 'Musicoterapia' }
                     ])}
                   </div>
                   ${renderTextField('Frequência das Terapias', 'therapy_frequency')}
@@ -437,10 +444,11 @@ export const generateProfessionalAnamnesePDF = async (
                     ${renderCheckboxes([
                       { id: 'musical_education', label: 'Educação Musical Formal' },
                       { id: 'instrumental_practice', label: 'Prática Instrumental' },
+                      { id: 'choral_activities', label: 'Canto/Coral' },
                       { id: 'body_musical_expression', label: 'Expressão Corporal Musical' },
                       { id: 'vocal_expression', label: 'Expressão Vocal' },
-                      { id: 'choral_activities', label: 'Atividades Corais' },
-                      { id: 'no_musical_experience', label: 'Sem Experiência Musical' }
+                      { id: 'music_therapy_experience', label: 'Experiência em Musicoterapia' },
+                      { id: 'no_musical_experience', label: 'Sem Experiência Musical Formal' }
                     ])}
                   </div>
                   <div style="margin-bottom: 16px;">
@@ -489,12 +497,11 @@ export const generateProfessionalAnamnesePDF = async (
                     <div style="font-weight: 600; font-size: 11px; color: #0f766e; margin-bottom: 10px; text-transform: uppercase;">Comportamentos Observados</div>
                     ${renderCheckboxes([
                       { id: 'active_musical_listening', label: 'Escuta Musical Ativa' },
-                      { id: 'body_expression', label: 'Expressão Corporal Espontânea' },
-                      { id: 'sound_responsiveness', label: 'Responsividade a Estímulos Sonoros' },
-                      { id: 'spontaneous_vocal', label: 'Vocalizações Espontâneas' },
+                      { id: 'body_expression', label: 'Expressão Corporal' },
+                      { id: 'sound_responsiveness', label: 'Responsividade Sonora' },
+                      { id: 'spontaneous_vocal', label: 'Emissões Vocais Espontâneas' },
                       { id: 'instrumental_exploration', label: 'Exploração Instrumental' },
-                      { id: 'musical_imitation', label: 'Imitação Musical' },
-                      { id: 'rhythmic_synchronization', label: 'Sincronização Rítmica' }
+                      { id: 'adverse_sound_reactivity', label: 'Reatividade Adversa a Sons' }
                     ])}
                   </div>
                   ${renderTextField('Descrição do Comportamento Musical', 'musical_behavior_description')}
@@ -511,10 +518,9 @@ export const generateProfessionalAnamnesePDF = async (
                       { id: 'auditory_hypersensitivity', label: 'Hipersensibilidade Auditiva' },
                       { id: 'positive_musical_response', label: 'Resposta Positiva à Música' },
                       { id: 'nominal_call_response', label: 'Resposta ao Chamado Nominal' },
-                      { id: 'active_sound_search', label: 'Busca Ativa por Fontes Sonoras' },
+                      { id: 'active_sound_search', label: 'Busca Ativa por Sons' },
                       { id: 'specific_sound_aversion', label: 'Aversão a Sons Específicos' },
-                      { id: 'sound_source_location', label: 'Localização de Fonte Sonora' },
-                      { id: 'adverse_sound_reactivity', label: 'Reatividade Adversa a Sons' }
+                      { id: 'sound_source_location', label: 'Localização de Fonte Sonora' }
                     ])}
                   </div>
                   ${renderTextField('Sons que Causam Desconforto', 'discomfort_sounds')}
