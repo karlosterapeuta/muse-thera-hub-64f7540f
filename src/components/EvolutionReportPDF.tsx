@@ -31,6 +31,9 @@ interface EvolutionReportPDFProps {
 const crispImg: React.CSSProperties = {
   imageRendering: "auto" as React.CSSProperties["imageRendering"],
   WebkitFontSmoothing: "antialiased",
+  // Renderização de alta qualidade para downscale de imagens (logo/assinatura/carimbo)
+  WebkitBackfaceVisibility: "hidden" as React.CSSProperties["WebkitBackfaceVisibility"],
+  transform: "translateZ(0)",
 };
 
 const SERIES_COLORS = ["#2563eb", "#7c3aed", "#0891b2", "#059669", "#d97706"];
