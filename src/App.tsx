@@ -158,6 +158,7 @@ const App = () => {
         <ShadcnToaster />
         
         <BrowserRouter>
+        <Suspense fallback={<div className="flex h-dvh w-full items-center justify-center bg-background"><div className="h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" /></div>}>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/verify-receipt/:id" element={<VerifyReceipt />} />
