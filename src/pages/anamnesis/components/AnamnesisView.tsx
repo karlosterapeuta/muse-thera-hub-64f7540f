@@ -593,13 +593,14 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         "Experiências Musicais",
         Music,
         "from-violet-500 to-purple-500",
-        ['musical_education', 'instrumental_practice', 'body_musical_expression', 'vocal_expression', 'choral_activities', 'no_musical_experience'],
+        ['musical_education', 'instrumental_practice', 'body_musical_expression', 'vocal_expression', 'choral_activities', 'music_therapy_experience', 'no_musical_experience'],
         {
           musical_education: 'Educação musical',
           instrumental_practice: 'Prática instrumental',
           body_musical_expression: 'Expressão corporal musical',
           vocal_expression: 'Expressão vocal',
           choral_activities: 'Atividades corais',
+          music_therapy_experience: 'Experiência em Musicoterapia',
           no_musical_experience: 'Sem experiência musical'
         }
       )}
