@@ -69,9 +69,12 @@ export default function VagasEmbed() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
             <img
-              src="/lovable-uploads/7e9c8dee-0549-4b2a-9a82-3b3e2717c34f.png"
+              src={museteraLogo.url}
               alt="Logotipo MuseTera"
-              className={`${isMobile ? "h-10 w-10" : "h-12 w-12"} rounded-xl shadow-md ring-2 ring-primary/20`}
+              width={48}
+              height={48}
+              loading="lazy"
+              className={`${isMobile ? "h-10 w-10" : "h-12 w-12"} drop-shadow-lg`}
             />
             <div>
               <h1
