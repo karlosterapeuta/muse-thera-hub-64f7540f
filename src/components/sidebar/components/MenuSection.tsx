@@ -64,8 +64,8 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
                 "group relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 mx-2 overflow-hidden",
                 collapsed && "justify-center px-2",
                 isActive
-                  ? "bg-gradient-to-r text-white shadow-lg"
-                  : "text-foreground/80 hover:text-foreground hover:bg-accent/60",
+                  ? "bg-gradient-to-r text-white shadow-lg shadow-primary/20 scale-[1.01]"
+                  : "text-foreground/80 hover:text-foreground hover:bg-accent/60 hover:translate-x-0.5",
                 isActive && item.gradient,
                 isProcessesItem && !isActive && "ring-1 ring-primary/20 bg-primary/5 dark:bg-primary/10 hover:ring-primary/40"
               )
@@ -73,6 +73,11 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
           >
             {({ isActive }) => (
               <>
+                {/* Active left indicator bar */}
+                {isActive && !collapsed && (
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-r-full bg-white/80 shadow-[0_0_8px_hsl(var(--primary))]" />
+                )}
+
                 {/* Subtle shine effect on active */}
                 {isActive && (
                   <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
@@ -80,9 +85,9 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
 
                 {/* Icon container */}
                 <div className={cn(
-                  "relative flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200",
+                  "relative flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-300 group-hover:scale-110",
                   isActive
-                    ? "bg-white/20"
+                    ? "bg-white/20 shadow-inner"
                     : "bg-muted/60 group-hover:bg-accent",
                   isProcessesItem && !isActive && "bg-primary/10"
                 )}>
@@ -97,6 +102,7 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
                     )}
                   />
                 </div>
+
 
                 {!collapsed && (
                   <div className="flex items-center gap-2 flex-1 min-w-0 relative z-10">
