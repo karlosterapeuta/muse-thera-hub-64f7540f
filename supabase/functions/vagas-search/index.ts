@@ -131,12 +131,52 @@ Deno.serve(async (req) => {
     }
 
     // --- 3. Classify relevance with the LLM ----------------------------------
+    // Primary: Google Gemini (GOOGLE_AI_API_KEY). Fallback: Lovable AI Gateway.
     let classifications: Record<number, { music: boolean; score: number }> = {};
-    if (lovableKey) {
-      const list = fresh
-        .map((c, i) => `${i}. ${c.title} — ${c.description} (${c.url})`)
-        .join("\n");
-      const prompt = `Você é um classificador de vagas de emprego. Para cada item abaixo, decida se é REALMENTE uma vaga de emprego aberta para MUSICOTERAPEUTA (não curso, não notícia, não artigo). Responda APENAS um JSON array no formato [{"i":0,"music":true,"score":85}], onde music indica se é vaga de musicoterapeuta e score (0-100) a confiança.\n\n${list}`;
+    const list = fresh
+      .map((c, i) => `${i}. ${c.title} — ${c.description} (${c.url})`)
+      .join("\n");
+    const prompt = `Você é um classificador de vagas de emprego. Para cada item abaixo, decida se é REALMENTE uma vaga de emprego aberta para MUSICOTERAPEUTA (não curso, não notícia, não artigo, não evento). Responda APENAS um JSON array no formato [{"i":0,"music":true,"score":85}], onde music indica se é vaga de musicoterapeuta e score (0-100) a confiança.\n\n${list}`;
+
+    function parseClassifications(text: string) {
+      const match = text.match(/\[[\s\S]*\]/);
+      const arr = match ? JSON.parse(match[0]) : [];
+      for (const item of arr) {
+        classifications[item.i] = { music: !!item.music, score: Number(item.score) || 0 };
+      }
+    }
+
+    let classified = false;
+
+    // Primary provider: Google Gemini direct.
+    if (geminiKey) {
+      try {
+        const gRes = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              contents: [{ role: "user", parts: [{ text: prompt }] }],
+            }),
+          },
+        );
+        if (gRes.ok) {
+          const gJson = await gRes.json();
+          const text: string =
+            gJson?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text ?? "").join("") ?? "[]";
+          parseClassifications(text);
+          classified = Object.keys(classifications).length > 0;
+        } else {
+          console.error("Gemini classify failed", gRes.status, await gRes.text());
+        }
+      } catch (e) {
+        console.error("Gemini classify error", e);
+      }
+    }
+
+    // Fallback provider: Lovable AI Gateway.
+    if (!classified && lovableKey) {
       try {
         const aiRes = await fetch(AI_GATEWAY, {
           method: "POST",
@@ -149,11 +189,7 @@ Deno.serve(async (req) => {
         if (aiRes.ok) {
           const aiJson = await aiRes.json();
           const text: string = aiJson.choices?.[0]?.message?.content ?? "[]";
-          const match = text.match(/\[[\s\S]*\]/);
-          const arr = match ? JSON.parse(match[0]) : [];
-          for (const item of arr) {
-            classifications[item.i] = { music: !!item.music, score: Number(item.score) || 0 };
-          }
+          parseClassifications(text);
         } else {
           console.error("AI gateway failed", aiRes.status, await aiRes.text());
         }
@@ -161,6 +197,7 @@ Deno.serve(async (req) => {
         console.error("AI classification error", e);
       }
     }
+
 
     // --- 4. Link-health check + insert ---------------------------------------
     let inserted = 0;
