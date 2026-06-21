@@ -288,6 +288,7 @@ export function useMusicotherapyTreatmentPlan(planId?: string, onCreated?: (newI
   return {
     planData,
     updatePlanData,
+    resetPlan,
     savePlan: (data?: Partial<MusicotherapyTreatmentPlan>) => {
       const dataToSave = data || planData;
       const errors = data ? [] : getValidationErrors();
