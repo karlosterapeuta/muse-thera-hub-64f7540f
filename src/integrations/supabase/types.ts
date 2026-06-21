@@ -108,6 +108,7 @@ export type Database = {
           adhd: boolean | null
           adverse_sound_reactivity: boolean | null
           alzheimer: boolean | null
+          angelman_syndrome: boolean | null
           anxiety: boolean | null
           anxiety_disorders: boolean | null
           auditory_hypersensitivity: boolean | null
@@ -226,6 +227,7 @@ export type Database = {
           adhd?: boolean | null
           adverse_sound_reactivity?: boolean | null
           alzheimer?: boolean | null
+          angelman_syndrome?: boolean | null
           anxiety?: boolean | null
           anxiety_disorders?: boolean | null
           auditory_hypersensitivity?: boolean | null
@@ -344,6 +346,7 @@ export type Database = {
           adhd?: boolean | null
           adverse_sound_reactivity?: boolean | null
           alzheimer?: boolean | null
+          angelman_syndrome?: boolean | null
           anxiety?: boolean | null
           anxiety_disorders?: boolean | null
           auditory_hypersensitivity?: boolean | null
