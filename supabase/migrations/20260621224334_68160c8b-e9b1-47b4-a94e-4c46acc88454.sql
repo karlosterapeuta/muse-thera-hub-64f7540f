@@ -1,0 +1,1 @@
+ALTER TABLE public.anamnesis ADD COLUMN IF NOT EXISTS music_therapy_experience boolean DEFAULT false;
