@@ -23,9 +23,10 @@ import {
 } from "recharts";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { TrendingUp, TrendingDown, Minus, BarChart3 } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, BarChart3, ArrowRight, Activity, Target, Award, Gauge } from "lucide-react";
 import { SavedEvaluation } from "@/hooks/useEvaluationStorage";
 import { resolveEvaluationMeta } from "@/utils/evaluationTypes";
+import { buildEvolutionAnalysis } from "@/utils/evolutionAnalysis";
 
 interface EvaluationComparisonProps {
   evaluations: SavedEvaluation[];
@@ -107,6 +108,12 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
     if (stageData.length < 2) return 0;
     return stageData[stageData.length - 1].score - stageData[0].score;
   }, [stageData]);
+
+  // Levantamento de dados / análise detalhada entre as avaliações
+  const analysis = useMemo(
+    () => buildEvolutionAnalysis(selectedEvaluations),
+    [selectedEvaluations]
+  );
 
   const comparisonTableData = useMemo(() => {
     if (selectedEvaluations.length < 2) return [];
@@ -254,8 +261,123 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
         </div>
       </Card>
 
+      {/* Levantamento de Dados — Indicadores Gerais */}
+      <Card className="p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-0 shadow-xl">
+        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4 text-center flex items-center justify-center gap-2">
+          <Activity className="h-5 w-5 text-indigo-600" />
+          Levantamento de Dados
+        </h3>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="rounded-xl p-4 bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950/50 dark:to-violet-950/50">
+            <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-300 text-xs font-semibold mb-1">
+              <Gauge className="h-4 w-4" /> Score Médio
+            </div>
+            <div className="text-2xl font-extrabold text-gray-800 dark:text-gray-100">
+              {analysis.averageScore}%
+            </div>
+          </div>
+          <div className="rounded-xl p-4 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/50 dark:to-teal-950/50">
+            <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-300 text-xs font-semibold mb-1">
+              <Award className="h-4 w-4" /> Pico
+            </div>
+            <div className="text-2xl font-extrabold text-gray-800 dark:text-gray-100">
+              {analysis.peakScore}%
+            </div>
+            <div className="text-[11px] text-gray-500 dark:text-gray-400">
+              {analysis.peakStage?.meta.shortLabel}
+            </div>
+          </div>
+          <div className="rounded-xl p-4 bg-gradient-to-br from-purple-50 to-fuchsia-50 dark:from-purple-950/50 dark:to-fuchsia-950/50">
+            <div className="flex items-center gap-2 text-purple-600 dark:text-purple-300 text-xs font-semibold mb-1">
+              <TrendingUp className="h-4 w-4" /> Evolução Total
+            </div>
+            <div className={`text-2xl font-extrabold ${analysis.globalVariation > 5 ? "text-emerald-600" : analysis.globalVariation < -5 ? "text-red-600" : "text-gray-600"}`}>
+              {analysis.globalVariation > 0 ? `+${analysis.globalVariation}` : analysis.globalVariation}%
+            </div>
+            <div className="text-[11px] text-gray-500 dark:text-gray-400">
+              {analysis.globalPercentChange > 0 ? `+${analysis.globalPercentChange}` : analysis.globalPercentChange}% relativo
+            </div>
+          </div>
+          <div className="rounded-xl p-4 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/50 dark:to-orange-950/50">
+            <div className="flex items-center gap-2 text-amber-600 dark:text-amber-300 text-xs font-semibold mb-1">
+              <Target className="h-4 w-4" /> Período
+            </div>
+            <div className="text-2xl font-extrabold text-gray-800 dark:text-gray-100">
+              {analysis.periodMonths}<span className="text-sm font-semibold"> {analysis.periodMonths === 1 ? "mês" : "meses"}</span>
+            </div>
+            <div className="text-[11px] text-gray-500 dark:text-gray-400">
+              {analysis.stages.length} avaliações
+            </div>
+          </div>
+        </div>
+      </Card>
 
-      {/* Gráfico de Evolução Temporal */}
+      {/* Comparação etapa a etapa (Inicial → Final) */}
+      {analysis.transitions.length > 0 && (
+        <Card className="p-6 bg-gradient-to-br from-slate-50 to-gray-50 dark:from-slate-900/50 dark:to-gray-900/50 border-0 shadow-xl">
+          <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1 text-center">
+            Comparação Detalhada entre Etapas
+          </h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-5">
+            Variação do Score Global entre cada avaliação consecutiva
+          </p>
+          <div className="space-y-3">
+            {analysis.transitions.map((t, i) => (
+              <div
+                key={i}
+                className="flex items-center justify-between gap-3 rounded-xl bg-white/70 dark:bg-gray-800/70 p-4 shadow-sm"
+              >
+                <div className="flex items-center gap-2 min-w-0 flex-1">
+                  <div className="flex flex-col items-center">
+                    <span className="text-xs font-semibold" style={{ color: t.from.meta.color }}>
+                      {t.from.meta.shortLabel}
+                    </span>
+                    <span className="text-lg font-bold text-gray-700 dark:text-gray-200">{t.from.score}%</span>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-gray-400 shrink-0" />
+                  <div className="flex flex-col items-center">
+                    <span className="text-xs font-semibold" style={{ color: t.to.meta.color }}>
+                      {t.to.meta.shortLabel}
+                    </span>
+                    <span className="text-lg font-bold text-gray-700 dark:text-gray-200">{t.to.score}%</span>
+                  </div>
+                </div>
+                <div className="text-center hidden sm:block">
+                  <span className="text-xs text-gray-400">{t.daysBetween} dias</span>
+                </div>
+                <Badge className={`${getVariationColor(t.variation)} flex items-center gap-1 text-sm px-3 py-1`}>
+                  {getVariationIcon(t.variation)}
+                  {t.variation > 0 ? `+${t.variation}` : t.variation}%
+                </Badge>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      {/* Síntese Clínica automatizada */}
+      <Card className="p-6 bg-gradient-to-br from-violet-50 to-fuchsia-50 dark:from-violet-950/50 dark:to-fuchsia-950/50 border-0 shadow-xl">
+        <h3 className="text-lg font-bold text-violet-800 dark:text-violet-200 mb-3 text-center">
+          Síntese Clínica
+        </h3>
+        <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300 text-justify">
+          O paciente foi acompanhado por meio de <strong>{analysis.stages.length} avaliações</strong>
+          {analysis.periodMonths ? <> ao longo de aproximadamente <strong>{analysis.periodMonths} {analysis.periodMonths === 1 ? "mês" : "meses"}</strong></> : null}.
+          O score global evoluiu de <strong>{analysis.firstScore}%</strong> (avaliação inicial) para{" "}
+          <strong>{analysis.lastScore}%</strong> (avaliação final), uma variação de{" "}
+          <strong className={analysis.globalVariation > 5 ? "text-emerald-600" : analysis.globalVariation < -5 ? "text-red-600" : "text-gray-600"}>
+            {analysis.globalVariation > 0 ? `+${analysis.globalVariation}` : analysis.globalVariation}%
+          </strong>, indicando <strong>{analysis.trendLabel.toLowerCase()}</strong>, com {analysis.consistency}.
+          {analysis.topGains.length > 0 && (
+            <> Os domínios com maior progresso foram <strong>{analysis.topGains.map((d) => `${d.domain} (+${d.variation}%)`).join(", ")}</strong>.</>
+          )}
+          {analysis.declines.length > 0 && (
+            <> Recomenda-se atenção aos domínios <strong>{analysis.declines.map((d) => `${d.domain} (${d.variation}%)`).join(", ")}</strong>, que apresentaram redução no período.</>
+          )}
+        </p>
+      </Card>
+
+
       <Card className="p-6 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/50 dark:to-teal-950/50 border-0 shadow-xl">
         <h3 className="text-lg font-bold text-emerald-800 dark:text-emerald-200 mb-4 text-center">
           Evolução ao Longo do Tempo
