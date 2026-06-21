@@ -152,9 +152,12 @@ export default function VagasEmbed() {
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-3 mb-2">
             <img
-              src="/lovable-uploads/7e9c8dee-0549-4b2a-9a82-3b3e2717c34f.png"
+              src={museteraLogo.url}
               alt="MuseTera"
-              className="h-8 w-8 rounded-lg shadow-sm"
+              width={32}
+              height={32}
+              loading="lazy"
+              className="h-8 w-8 drop-shadow-md"
             />
             <div className="text-sm">
               <div className="font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">
