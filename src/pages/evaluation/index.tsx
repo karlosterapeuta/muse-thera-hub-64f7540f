@@ -82,6 +82,7 @@ function loadDraft() {
 }
 
 export default function Evaluation() {
+  const navigate = useNavigate();
   const draft = useMemo(() => loadDraft(), []);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<string>(draft?.selectedPatient || "");
