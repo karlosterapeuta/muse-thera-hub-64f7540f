@@ -71,25 +71,34 @@ export default function PatientEvolutionPage() {
 
         setEvaluations(mapped);
         setPatientName(mapped[0]?.patient_name || "Paciente");
-        // Selecionar automaticamente a avaliação inicial e a final para comparar
+        // Comparação progressiva: seleciona automaticamente uma avaliação de cada
+        // etapa concluída, na ordem Inicial → Progresso → Periódica → Final.
+        // Com apenas a inicial, o sistema aguarda (sem comparação).
         const byDateAsc = [...mapped].sort(
           (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
         );
-        const typedInitial = byDateAsc.find(
-          (e) => (e.content?.evaluationType || e.type) === "avaliacao_inicial"
-        );
-        const typedFinal = [...byDateAsc]
-          .reverse()
-          .find((e) => (e.content?.evaluationType || e.type) === "avaliacao_final");
-        const initial = typedInitial || byDateAsc[0];
-        const final =
-          typedFinal && typedFinal.id !== initial?.id
-            ? typedFinal
-            : byDateAsc[byDateAsc.length - 1];
-        const autoSelected = [initial?.id, final?.id].filter(
-          (id, idx, arr) => id && arr.indexOf(id) === idx
-        ) as string[];
-        setSelectedForComparison(autoSelected);
+        const stageOrder = [
+          "avaliacao_inicial",
+          "avaliacao_progresso",
+          "avaliacao_periodica",
+          "avaliacao_final",
+        ];
+        const getType = (e: SavedEvaluation) => e.content?.evaluationType || e.type;
+        const autoSelected = stageOrder
+          .map((stage) => {
+            // a mais recente de cada etapa (caso haja repetições)
+            const matches = byDateAsc.filter((e) => getType(e) === stage);
+            return matches[matches.length - 1]?.id;
+          })
+          .filter(Boolean) as string[];
+
+        // Fallback: se nenhuma avaliação tipada for encontrada, usa as disponíveis
+        const finalSelection =
+          autoSelected.length > 0
+            ? autoSelected
+            : (byDateAsc.map((e) => e.id).slice(0, MAX_COMPARISONS) as string[]);
+
+        setSelectedForComparison(finalSelection);
       } catch (err) {
         console.error("Erro ao carregar avaliações:", err);
         toast.error("Erro ao carregar avaliações do paciente");
