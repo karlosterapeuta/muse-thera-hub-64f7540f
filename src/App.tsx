@@ -33,6 +33,7 @@ const PtiReavaliacao = lazy(() => import("./pages/pti/reavaliacao"));
 const Intervention = lazy(() => import("./pages/intervention"));
 const InterventionPlans = lazy(() => import("./pages/intervention-plans"));
 const Evaluation = lazy(() => import("./pages/evaluation"));
+const PatientEvolution = lazy(() => import("./pages/evaluation/patient-evolution"));
 const Reevaluation = lazy(() => import("./pages/reevaluation"));
 const Finance = lazy(() => import("./pages/finance"));
 const ScientificArticle = lazy(() => import("./pages/scientific-article"));
