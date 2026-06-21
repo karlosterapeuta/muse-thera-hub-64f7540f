@@ -193,7 +193,7 @@ export default function PatientEvolutionPage() {
               isLoading={false}
               selectedForComparison={selectedForComparison}
               onToggleComparison={handleToggleComparison}
-              onLoadEvaluation={() => {}}
+              onLoadEvaluation={handleLoadEvaluation}
               onDeleteEvaluation={handleDeleteEvaluation}
               maxComparisons={MAX_COMPARISONS}
             />
