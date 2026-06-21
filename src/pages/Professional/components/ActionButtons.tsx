@@ -22,7 +22,7 @@ export function ActionButtons({
       <div className="flex justify-center">
         <Button
           onClick={onEdit}
-          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+          className="bg-gradient-to-r from-indigo-600 via-purple-600 to-amber-500 hover:opacity-90 text-white px-8 py-3 rounded-xl shadow-lg shadow-indigo-500/20 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
           size="lg"
         >
           <Pen className="h-4 w-4 mr-2" />
