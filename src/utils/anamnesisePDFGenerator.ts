@@ -497,12 +497,11 @@ export const generateProfessionalAnamnesePDF = async (
                     <div style="font-weight: 600; font-size: 11px; color: #0f766e; margin-bottom: 10px; text-transform: uppercase;">Comportamentos Observados</div>
                     ${renderCheckboxes([
                       { id: 'active_musical_listening', label: 'Escuta Musical Ativa' },
-                      { id: 'body_expression', label: 'Expressão Corporal Espontânea' },
-                      { id: 'sound_responsiveness', label: 'Responsividade a Estímulos Sonoros' },
-                      { id: 'spontaneous_vocal', label: 'Vocalizações Espontâneas' },
+                      { id: 'body_expression', label: 'Expressão Corporal' },
+                      { id: 'sound_responsiveness', label: 'Responsividade Sonora' },
+                      { id: 'spontaneous_vocal', label: 'Emissões Vocais Espontâneas' },
                       { id: 'instrumental_exploration', label: 'Exploração Instrumental' },
-                      { id: 'musical_imitation', label: 'Imitação Musical' },
-                      { id: 'rhythmic_synchronization', label: 'Sincronização Rítmica' }
+                      { id: 'adverse_sound_reactivity', label: 'Reatividade Adversa a Sons' }
                     ])}
                   </div>
                   ${renderTextField('Descrição do Comportamento Musical', 'musical_behavior_description')}
