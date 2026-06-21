@@ -28,6 +28,7 @@ import MusicotherapyTreatmentPlan from "./pages/musicotherapy-treatment-plan";
 import MusicotherapyTreatmentPlans from "./pages/musicotherapy-treatment-plans";
 import PtiList from "./pages/pti";
 import PtiEditor from "./pages/pti/editor";
+import PtiReavaliacao from "./pages/pti/reavaliacao";
 import Intervention from "./pages/intervention";
 import InterventionPlans from "./pages/intervention-plans";
 import Evaluation from "./pages/evaluation";
