@@ -348,6 +348,47 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
       ? "necessidade de revisão do plano terapêutico"
       : "estabilidade do quadro";
 
+  // Veredito objetivo: houve evolução ou não entre as escalas?
+  const hasEvolution = globalVariation > 5;
+  const hasRegression = globalVariation < -5;
+  const improvedDomains = tableRows.filter((r) => r.variation > 5).length;
+  const declinedDomains = tableRows.filter((r) => r.variation < -5).length;
+  const stableCount = tableRows.length - improvedDomains - declinedDomains;
+  const verdict = hasEvolution
+    ? {
+        title: "HOUVE EVOLUÇÃO",
+        color: "#059669",
+        bg: "#ecfdf5",
+        border: "#a7f3d0",
+        text: `Comparando a avaliação inicial (${firstScore}%) com a final (${lastScore}%), houve evolução clínica positiva de ${varText(globalVariation)}.`,
+      }
+    : hasRegression
+    ? {
+        title: "NÃO HOUVE EVOLUÇÃO",
+        color: "#dc2626",
+        bg: "#fef2f2",
+        border: "#fecaca",
+        text: `Comparando a avaliação inicial (${firstScore}%) com a final (${lastScore}%), observou-se redução de ${varText(globalVariation)}, sem evolução no período.`,
+      }
+    : {
+        title: "QUADRO ESTÁVEL",
+        color: "#d97706",
+        bg: "#fffbeb",
+        border: "#fde68a",
+        text: `Comparando a avaliação inicial (${firstScore}%) com a final (${lastScore}%), o quadro manteve-se estável (${varText(globalVariation)}), sem evolução ou redução significativa.`,
+      };
+
+  // Linhas de variação por domínio (Inicial vs Final) para o gráfico de barras
+  const variationRows = tableRows
+    .map((r) => ({
+      domain: r.domain,
+      initial: r.scores[0] ?? 0,
+      final: r.scores[r.scores.length - 1] ?? 0,
+      variation: r.variation,
+    }))
+    .sort((a, b) => b.variation - a.variation);
+
+
   const cellStyle: React.CSSProperties = {
     padding: "6px 8px",
     fontSize: 10,
