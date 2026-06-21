@@ -109,6 +109,12 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
     return stageData[stageData.length - 1].score - stageData[0].score;
   }, [stageData]);
 
+  // Levantamento de dados / análise detalhada entre as avaliações
+  const analysis = useMemo(
+    () => buildEvolutionAnalysis(selectedEvaluations),
+    [selectedEvaluations]
+  );
+
   const comparisonTableData = useMemo(() => {
     if (selectedEvaluations.length < 2) return [];
 
