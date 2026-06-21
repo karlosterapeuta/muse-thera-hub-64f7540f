@@ -273,6 +273,19 @@ export default function MusicotherapyTreatmentPlanPage() {
     );
   };
 
+  const handleResetPlan = () => {
+    if (!window.confirm('Tem certeza que deseja zerar o plano? Todos os campos preenchidos serão limpos.')) {
+      return;
+    }
+    resetPlan();
+    setSelectedPatient("");
+    setActiveTab("identification");
+    if (id) {
+      navigate('/musicotherapy-treatment-plan', { replace: true });
+    }
+    toast({ title: 'Plano zerado', description: 'Todos os campos foram limpos.' });
+  };
+
   const handleDownloadPDF = async () => {
     if (!planData.patient_full_name) {
       toast({
