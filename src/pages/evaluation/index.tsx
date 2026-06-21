@@ -15,7 +15,7 @@ import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { FileDown, Info, HelpCircle, FileBarChart, FileText, CalendarIcon, Loader2, Save, User, AlertTriangle, X, Stethoscope, ChevronDown } from "lucide-react";
+import { FileDown, Info, HelpCircle, FileBarChart, FileText, CalendarIcon, Loader2, Save, User, AlertTriangle, X, Stethoscope, ChevronDown, ClipboardList, BarChart2, TrendingUp } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import html2pdf from "html2pdf.js";
 import { savePDFToStorage } from "@/utils/pdfStorageUtils";
@@ -1737,23 +1737,26 @@ export default function Evaluation() {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-            <TabsList className="grid w-full grid-cols-3 bg-background/80 backdrop-blur-sm p-1 rounded-2xl h-14 border border-blue-200/50 dark:border-blue-800/50 shadow-md">
+            <TabsList className="grid w-full grid-cols-3 bg-background/80 backdrop-blur-sm p-1.5 rounded-2xl h-auto min-h-[4.5rem] border border-blue-200/50 dark:border-blue-800/50 shadow-lg">
               <TabsTrigger 
                 value="evaluation" 
-                className="rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-50 data-[state=active]:to-blue-100 dark:data-[state=active]:from-blue-900 dark:data-[state=active]:to-blue-800 data-[state=active]:border data-[state=active]:border-blue-300 dark:data-[state=active]:border-blue-700 data-[state=active]:shadow-lg data-[state=active]:text-blue-700 dark:data-[state=active]:text-blue-300 transition-all duration-300"
+                className="rounded-xl text-sm sm:text-base md:text-lg font-bold px-3 py-3 gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-blue-300/60 dark:data-[state=active]:ring-blue-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
               >
+                <ClipboardList className="h-5 w-5" />
                 Escala MuseTera
               </TabsTrigger>
               <TabsTrigger 
                 value="results" 
-                className="rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-50 data-[state=active]:to-blue-100 dark:data-[state=active]:from-blue-900 dark:data-[state=active]:to-blue-800 data-[state=active]:border data-[state=active]:border-blue-300 dark:data-[state=active]:border-blue-700 data-[state=active]:shadow-lg data-[state=active]:text-blue-700 dark:data-[state=active]:text-blue-300 transition-all duration-300"
+                className="rounded-xl text-sm sm:text-base md:text-lg font-bold px-3 py-3 gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-emerald-300/60 dark:data-[state=active]:ring-emerald-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
               >
+                <BarChart2 className="h-5 w-5" />
                 Resultados
               </TabsTrigger>
               <TabsTrigger 
                 value="comparison" 
-                className="rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-50 data-[state=active]:to-blue-100 dark:data-[state=active]:from-blue-900 dark:data-[state=active]:to-blue-800 data-[state=active]:border data-[state=active]:border-blue-300 dark:data-[state=active]:border-blue-700 data-[state=active]:shadow-lg data-[state=active]:text-blue-700 dark:data-[state=active]:text-blue-300 transition-all duration-300"
+                className="rounded-xl text-sm sm:text-base md:text-lg font-bold px-3 py-3 gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-purple-300/60 dark:data-[state=active]:ring-purple-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
               >
+                <TrendingUp className="h-5 w-5" />
                 Evolução do Paciente
               </TabsTrigger>
             </TabsList>
