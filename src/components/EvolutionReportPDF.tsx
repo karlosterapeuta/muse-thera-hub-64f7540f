@@ -182,6 +182,68 @@ function ScoreLine({
   );
 }
 
+// ---- Barras de variação por domínio (Inicial vs Final) ----
+function DomainVariationBars({
+  rows,
+  width = 700,
+  rowHeight = 30,
+}: {
+  rows: { domain: string; initial: number; final: number; variation: number }[];
+  width?: number;
+  rowHeight?: number;
+}) {
+  if (!rows.length) return null;
+  const labelW = 150;
+  const valW = 110;
+  const barAreaW = width - labelW - valW;
+  const maxAbs = Math.max(10, ...rows.map((r) => Math.abs(r.variation)));
+  const zeroX = labelW + barAreaW / 2;
+  const half = barAreaW / 2;
+  const height = rows.length * rowHeight + 20;
+  const color = (v: number) => (v > 5 ? "#059669" : v < -5 ? "#dc2626" : "#94a3b8");
+
+  return (
+    <svg width={width} height={height} style={{ display: "block" }}>
+      {/* eixo zero */}
+      <line x1={zeroX} y1={6} x2={zeroX} y2={height - 14} stroke="#cbd5e1" strokeWidth={1} />
+      <text x={zeroX} y={height - 2} fontSize={8} textAnchor="middle" fill="#94a3b8">
+        0
+      </text>
+      {rows.map((r, i) => {
+        const cy = 10 + i * rowHeight + rowHeight / 2;
+        const len = (Math.abs(r.variation) / maxAbs) * half;
+        const barX = r.variation >= 0 ? zeroX : zeroX - len;
+        return (
+          <g key={r.domain}>
+            <text x={labelW - 8} y={cy + 3} fontSize={9} textAnchor="end" fill="#334155" fontWeight="600">
+              {r.domain.length > 22 ? r.domain.substring(0, 21) + "…" : r.domain}
+            </text>
+            <rect
+              x={barX}
+              y={cy - 8}
+              width={Math.max(len, 1)}
+              height={16}
+              rx={3}
+              fill={color(r.variation)}
+              fillOpacity={0.85}
+            />
+            <text
+              x={width - 8}
+              y={cy + 3}
+              fontSize={9}
+              textAnchor="end"
+              fill={color(r.variation)}
+              fontWeight="700"
+            >
+              {r.initial}% → {r.final}% ({r.variation > 0 ? "+" : ""}{r.variation}%)
+            </text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
 // ---- Bloco rótulo + valor para tabelas de identificação ----
 const InfoRow: React.FC<{ label: string; value?: string }> = ({ label, value }) => (
   <div style={{ display: "flex", gap: 6, fontSize: 11, lineHeight: 1.5 }}>
@@ -285,6 +347,47 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
       : globalVariation < -5
       ? "necessidade de revisão do plano terapêutico"
       : "estabilidade do quadro";
+
+  // Veredito objetivo: houve evolução ou não entre as escalas?
+  const hasEvolution = globalVariation > 5;
+  const hasRegression = globalVariation < -5;
+  const improvedDomains = tableRows.filter((r) => r.variation > 5).length;
+  const declinedDomains = tableRows.filter((r) => r.variation < -5).length;
+  const stableCount = tableRows.length - improvedDomains - declinedDomains;
+  const verdict = hasEvolution
+    ? {
+        title: "HOUVE EVOLUÇÃO",
+        color: "#059669",
+        bg: "#ecfdf5",
+        border: "#a7f3d0",
+        text: `Comparando a avaliação inicial (${firstScore}%) com a final (${lastScore}%), houve evolução clínica positiva de ${varText(globalVariation)}.`,
+      }
+    : hasRegression
+    ? {
+        title: "NÃO HOUVE EVOLUÇÃO",
+        color: "#dc2626",
+        bg: "#fef2f2",
+        border: "#fecaca",
+        text: `Comparando a avaliação inicial (${firstScore}%) com a final (${lastScore}%), observou-se redução de ${varText(globalVariation)}, sem evolução no período.`,
+      }
+    : {
+        title: "QUADRO ESTÁVEL",
+        color: "#d97706",
+        bg: "#fffbeb",
+        border: "#fde68a",
+        text: `Comparando a avaliação inicial (${firstScore}%) com a final (${lastScore}%), o quadro manteve-se estável (${varText(globalVariation)}), sem evolução ou redução significativa.`,
+      };
+
+  // Linhas de variação por domínio (Inicial vs Final) para o gráfico de barras
+  const variationRows = tableRows
+    .map((r) => ({
+      domain: r.domain,
+      initial: r.scores[0] ?? 0,
+      final: r.scores[r.scores.length - 1] ?? 0,
+      variation: r.variation,
+    }))
+    .sort((a, b) => b.variation - a.variation);
+
 
   const cellStyle: React.CSSProperties = {
     padding: "6px 8px",
@@ -454,7 +557,51 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
         </div>
       </div>
 
-      {/* Indicadores gerais (levantamento de dados) */}
+      {/* Veredito de evolução: houve ou não evolução entre as escalas? */}
+      <SectionTitle color={verdict.color}>Veredito da Evolução</SectionTitle>
+      <div
+        style={{
+          backgroundColor: verdict.bg,
+          border: `1px solid ${verdict.border}`,
+          borderLeft: `6px solid ${verdict.color}`,
+          borderRadius: 10,
+          padding: "14px 18px",
+          marginBottom: 22,
+        }}
+      >
+        <div style={{ fontSize: 18, fontWeight: 800, color: verdict.color, marginBottom: 6 }}>
+          {verdict.title}
+        </div>
+        <div style={{ fontSize: 11, lineHeight: 1.6, color: "#334155", marginBottom: 10 }}>
+          {verdict.text} Dos {tableRows.length} domínios avaliados,{" "}
+          <strong style={{ color: "#059669" }}>{improvedDomains} evoluíram</strong>,{" "}
+          <strong style={{ color: "#dc2626" }}>{declinedDomains} regrediram</strong> e{" "}
+          <strong style={{ color: "#64748b" }}>{stableCount} permaneceram estáveis</strong>.
+        </div>
+        <div style={{ display: "flex", gap: 10 }}>
+          {[
+            { label: "Domínios em evolução", value: improvedDomains, color: "#059669" },
+            { label: "Domínios em queda", value: declinedDomains, color: "#dc2626" },
+            { label: "Domínios estáveis", value: stableCount, color: "#64748b" },
+          ].map((c, i) => (
+            <div
+              key={i}
+              style={{
+                flex: 1,
+                backgroundColor: "#ffffff",
+                border: `1px solid ${c.color}33`,
+                borderRadius: 8,
+                padding: "8px 10px",
+                textAlign: "center",
+              }}
+            >
+              <div style={{ fontSize: 22, fontWeight: 800, color: c.color }}>{c.value}</div>
+              <div style={{ fontSize: 8, color: "#64748b" }}>{c.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <SectionTitle color="#4338ca">Levantamento de Dados</SectionTitle>
       <div style={{ display: "flex", gap: 10, marginBottom: 22 }}>
         {[
@@ -543,7 +690,24 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
         <ScoreLine points={linePoints} />
       </div>
 
-      {/* Tabela comparativa */}
+      {/* Gráfico de evolução por domínio (Inicial vs Final) */}
+      <div style={{ marginTop: 22, marginBottom: 8 }}>
+        <SectionTitle color="#7c3aed">Evolução por Domínio (Inicial → Final)</SectionTitle>
+        <DomainVariationBars rows={variationRows} />
+        <div style={{ display: "flex", gap: 16, justifyContent: "center", marginTop: 4, fontSize: 9, color: "#64748b" }}>
+          <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <span style={{ width: 10, height: 10, backgroundColor: "#059669", borderRadius: 2 }} /> Evolução
+          </span>
+          <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <span style={{ width: 10, height: 10, backgroundColor: "#dc2626", borderRadius: 2 }} /> Redução
+          </span>
+          <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <span style={{ width: 10, height: 10, backgroundColor: "#94a3b8", borderRadius: 2 }} /> Estável
+          </span>
+        </div>
+      </div>
+
+
       <div style={{ marginTop: 22 }}>
         <SectionTitle color="#1d4ed8">Análise Comparativa Detalhada</SectionTitle>
         <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #e2e8f0" }}>
