@@ -31,6 +31,8 @@ export default function PatientEvolutionPage() {
   const { patientId } = useParams<{ patientId: string }>();
   const navigate = useNavigate();
 
+  const { data: professional } = useProfessionalData();
+
   const [evaluations, setEvaluations] = useState<SavedEvaluation[]>([]);
   const [patientName, setPatientName] = useState<string>("Paciente");
   const [isLoading, setIsLoading] = useState(true);
