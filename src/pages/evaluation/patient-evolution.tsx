@@ -68,6 +68,38 @@ export default function PatientEvolutionPage() {
     };
   }, [patientId]);
 
+  // Avaliação inicial (mais antiga / tipo inicial) e final (mais recente / tipo final)
+  const { initialEval, finalEval } = useMemo(() => {
+    if (evaluations.length === 0) return { initialEval: null, finalEval: null };
+    const byDateAsc = [...evaluations].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+    const typedInitial = byDateAsc.find(
+      (e) => (e.content?.evaluationType || e.type) === "avaliacao_inicial"
+    );
+    const typedFinal = [...byDateAsc]
+      .reverse()
+      .find((e) => (e.content?.evaluationType || e.type) === "avaliacao_final");
+    const initial = typedInitial || byDateAsc[0];
+    const final = typedFinal || byDateAsc[byDateAsc.length - 1];
+    return {
+      initialEval: initial,
+      finalEval: final && final.id !== initial?.id ? final : byDateAsc[byDateAsc.length - 1],
+    };
+  }, [evaluations]);
+
+  const canCompareInitialFinal =
+    initialEval && finalEval && initialEval.id !== finalEval.id;
+
+  const handleCompareInitialFinal = () => {
+    if (!canCompareInitialFinal) {
+      toast.info("São necessárias pelo menos 2 avaliações para comparar.");
+      return;
+    }
+    setSelectedForComparison([initialEval!.id, finalEval!.id]);
+    toast.success("Comparando avaliação inicial → final");
+  };
+
   const handleToggleComparison = (id: string) => {
     setSelectedForComparison((prev) => {
       if (prev.includes(id)) return prev.filter((x) => x !== id);
@@ -164,9 +196,21 @@ export default function PatientEvolutionPage() {
 
           {/* Comparação e Gráficos de Evolução */}
           <Card className="p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-xl">
-            <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
-              📊 Comparação e Evolução
-            </h2>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+              <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                📊 Comparação e Evolução
+              </h2>
+              {canCompareInitialFinal && (
+                <Button
+                  onClick={handleCompareInitialFinal}
+                  className="gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:opacity-90"
+                  size="sm"
+                >
+                  <FileBarChart className="h-4 w-4" />
+                  Comparar Inicial → Final
+                </Button>
+              )}
+            </div>
             {hasEnoughForComparison ? (
               <EvaluationComparison
                 evaluations={evaluations}
