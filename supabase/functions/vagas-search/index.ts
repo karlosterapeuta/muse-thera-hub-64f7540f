@@ -73,7 +73,8 @@ Deno.serve(async (req) => {
     // When auto_send is on, high-confidence vacancies are approved automatically
     // so they can be dispatched to the WhatsApp group without manual review.
     const autoSend: boolean = settings?.auto_send === true;
-    const AUTO_APPROVE_MIN_SCORE = 70;
+    // Auto-approve any vacancy classified as music therapy (no manual review).
+    const AUTO_APPROVE_MIN_SCORE = 40;
 
     // --- 1. Search public job boards via Firecrawl ----------------------------
     const queries = [
