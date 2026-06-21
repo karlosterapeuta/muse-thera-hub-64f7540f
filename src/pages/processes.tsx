@@ -36,20 +36,12 @@ export default function Processes() {
       step: 2,
     },
     {
-      title: "Planos Musicoterapêuticos",
-      description: "Crie e gerencie planos de tratamento personalizados",
-      icon: ClipboardList,
-      path: "/musicotherapy-treatment-plans",
-      accentColor: "emerald",
-      step: 3,
-    },
-    {
       title: "Intervenção",
       description: "Aplicação das técnicas e atividades musicoterapêuticas",
       icon: Users,
       path: "/intervention",
       accentColor: "orange",
-      step: 4,
+      step: 3,
     },
     {
       title: "Reavaliação",
@@ -57,7 +49,7 @@ export default function Processes() {
       icon: ChartBar,
       path: "/reevaluation",
       accentColor: "indigo",
-      step: 5,
+      step: 4,
     },
     {
       title: "Relatório MuseTera TEA",
@@ -65,7 +57,7 @@ export default function Processes() {
       icon: Music,
       path: "/processes/musicoterapia",
       accentColor: "violet",
-      step: 6,
+      step: 5,
     },
     {
       title: "Relatório de Evolução",
@@ -73,7 +65,7 @@ export default function Processes() {
       icon: TrendingUp,
       path: "/processes/evolution",
       accentColor: "teal",
-      step: 7,
+      step: 6,
     },
     {
       title: "Devolutiva TEA",
@@ -81,7 +73,7 @@ export default function Processes() {
       icon: Heart,
       path: "/processes/devolutiva-tea",
       accentColor: "rose",
-      step: 8,
+      step: 7,
     },
   ];
 
