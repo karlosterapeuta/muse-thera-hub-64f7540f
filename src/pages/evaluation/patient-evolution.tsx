@@ -68,6 +68,38 @@ export default function PatientEvolutionPage() {
     };
   }, [patientId]);
 
+  // Avaliação inicial (mais antiga / tipo inicial) e final (mais recente / tipo final)
+  const { initialEval, finalEval } = useMemo(() => {
+    if (evaluations.length === 0) return { initialEval: null, finalEval: null };
+    const byDateAsc = [...evaluations].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+    const typedInitial = byDateAsc.find(
+      (e) => (e.content?.evaluationType || e.type) === "avaliacao_inicial"
+    );
+    const typedFinal = [...byDateAsc]
+      .reverse()
+      .find((e) => (e.content?.evaluationType || e.type) === "avaliacao_final");
+    const initial = typedInitial || byDateAsc[0];
+    const final = typedFinal || byDateAsc[byDateAsc.length - 1];
+    return {
+      initialEval: initial,
+      finalEval: final && final.id !== initial?.id ? final : byDateAsc[byDateAsc.length - 1],
+    };
+  }, [evaluations]);
+
+  const canCompareInitialFinal =
+    initialEval && finalEval && initialEval.id !== finalEval.id;
+
+  const handleCompareInitialFinal = () => {
+    if (!canCompareInitialFinal) {
+      toast.info("São necessárias pelo menos 2 avaliações para comparar.");
+      return;
+    }
+    setSelectedForComparison([initialEval!.id, finalEval!.id]);
+    toast.success("Comparando avaliação inicial → final");
+  };
+
   const handleToggleComparison = (id: string) => {
     setSelectedForComparison((prev) => {
       if (prev.includes(id)) return prev.filter((x) => x !== id);
