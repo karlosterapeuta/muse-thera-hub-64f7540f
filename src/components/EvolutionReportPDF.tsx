@@ -268,6 +268,9 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
   const varColor = (v: number) => (v > 5 ? "#059669" : v < -5 ? "#dc2626" : "#64748b");
   const varText = (v: number) => (v > 0 ? `+${v}%` : `${v}%`);
 
+  // Análise detalhada centralizada (transições, indicadores, consistência)
+  const analysis = buildEvolutionAnalysis(evaluations);
+
   // Domínios com maior e menor evolução para a narrativa
   const sortedByVar = [...tableRows].sort((a, b) => b.variation - a.variation);
   const topGains = sortedByVar.filter((r) => r.variation > 0).slice(0, 3);
