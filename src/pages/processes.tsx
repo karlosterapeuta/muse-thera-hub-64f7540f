@@ -37,12 +37,20 @@ export default function Processes() {
       step: 2,
     },
     {
+      title: "Plano Terapêutico Individual (PTI)",
+      description: "Plano terapêutico completo e individualizado de Musicoterapia, com IA e exportação em PDF",
+      icon: Stethoscope,
+      path: "/pti",
+      accentColor: "emerald",
+      step: 3,
+    },
+    {
       title: "Intervenção",
       description: "Aplicação das técnicas e atividades musicoterapêuticas",
       icon: Users,
       path: "/intervention",
       accentColor: "orange",
-      step: 3,
+      step: 4,
     },
     {
       title: "Reavaliação",
@@ -50,7 +58,7 @@ export default function Processes() {
       icon: ChartBar,
       path: "/reevaluation",
       accentColor: "indigo",
-      step: 4,
+      step: 5,
     },
     {
       title: "Relatório MuseTera TEA",
@@ -58,7 +66,7 @@ export default function Processes() {
       icon: Music,
       path: "/processes/musicoterapia",
       accentColor: "violet",
-      step: 5,
+      step: 6,
     },
     {
       title: "Relatório de Evolução",
@@ -66,7 +74,7 @@ export default function Processes() {
       icon: TrendingUp,
       path: "/processes/evolution",
       accentColor: "teal",
-      step: 6,
+      step: 7,
     },
     {
       title: "Devolutiva TEA",
@@ -74,14 +82,6 @@ export default function Processes() {
       icon: Heart,
       path: "/processes/devolutiva-tea",
       accentColor: "rose",
-      step: 7,
-    },
-    {
-      title: "Plano Terapêutico Individual (PTI)",
-      description: "Plano terapêutico completo e individualizado de Musicoterapia, com IA e exportação em PDF",
-      icon: Stethoscope,
-      path: "/pti",
-      accentColor: "emerald",
       step: 8,
     },
   ];
