@@ -57,7 +57,7 @@ const basicDatabaseFields = [
   'medication_schedule', 'medication_effects',
   // Diagnósticos adicionais
   'cerebral_palsy', 'epilepsy', 'williams_syndrome', 'fragile_x_syndrome',
-  'rett_syndrome', 'alzheimer', 'parkinson', 'depression', 'bipolar_disorder',
+  'rett_syndrome', 'angelman_syndrome', 'alzheimer', 'parkinson', 'depression', 'bipolar_disorder',
   // Terapias adicionais
   'aba_therapy', 'sensory_integration', 'psychomotricity', 'nutrition', 'music_therapy',
   'therapy_frequency', 'therapy_observations',

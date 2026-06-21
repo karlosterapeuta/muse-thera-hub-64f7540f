@@ -705,7 +705,7 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         "Transtornos e Condições",
         Brain,
         "from-orange-500 to-red-500",
-        ['autism_spectrum', 'down_syndrome', 'intellectual_disability', 'other_diagnoses', 'adhd', 'chronic_encephalopathy', 'anxiety_disorders', 'cerebral_palsy', 'epilepsy', 'williams_syndrome', 'fragile_x_syndrome', 'rett_syndrome', 'alzheimer', 'parkinson', 'depression', 'bipolar_disorder'],
+        ['autism_spectrum', 'down_syndrome', 'intellectual_disability', 'other_diagnoses', 'adhd', 'chronic_encephalopathy', 'anxiety_disorders', 'cerebral_palsy', 'epilepsy', 'williams_syndrome', 'fragile_x_syndrome', 'rett_syndrome', 'angelman_syndrome', 'alzheimer', 'parkinson', 'depression', 'bipolar_disorder'],
         {
           autism_spectrum: 'Espectro autista',
           down_syndrome: 'Síndrome de Down',
