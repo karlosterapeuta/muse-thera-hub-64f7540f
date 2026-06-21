@@ -2297,6 +2297,14 @@ export default function Evaluation() {
                   patientsWithEvaluations={patientsWithEvaluations}
                   selectedPatientId={evolutionPatientId}
                   onSelectPatient={(patientId) => navigate(`/evaluation/paciente/${patientId}`)}
+                  onDeletePatient={async (patientId) => {
+                    const toDelete = allEvaluations.filter((e) => e.patient_id === patientId);
+                    for (const ev of toDelete) {
+                      await deleteEvaluation(ev.id);
+                    }
+                    await loadAllEvaluations();
+                    toast.success("Avaliações excluídas. Você pode iniciar uma nova avaliação.");
+                  }}
                   isLoading={isLoadingAll}
                 />
               </Card>
