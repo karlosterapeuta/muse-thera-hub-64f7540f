@@ -719,6 +719,7 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
           williams_syndrome: 'Síndrome de Williams',
           fragile_x_syndrome: 'Síndrome X Frágil',
           rett_syndrome: 'Síndrome de Rett',
+          angelman_syndrome: 'Síndrome de Angelman',
           alzheimer: 'Doença de Alzheimer',
           parkinson: 'Doença de Parkinson',
           depression: 'Depressão',
