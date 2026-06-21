@@ -557,7 +557,51 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
         </div>
       </div>
 
-      {/* Indicadores gerais (levantamento de dados) */}
+      {/* Veredito de evolução: houve ou não evolução entre as escalas? */}
+      <SectionTitle color={verdict.color}>Veredito da Evolução</SectionTitle>
+      <div
+        style={{
+          backgroundColor: verdict.bg,
+          border: `1px solid ${verdict.border}`,
+          borderLeft: `6px solid ${verdict.color}`,
+          borderRadius: 10,
+          padding: "14px 18px",
+          marginBottom: 22,
+        }}
+      >
+        <div style={{ fontSize: 18, fontWeight: 800, color: verdict.color, marginBottom: 6 }}>
+          {verdict.title}
+        </div>
+        <div style={{ fontSize: 11, lineHeight: 1.6, color: "#334155", marginBottom: 10 }}>
+          {verdict.text} Dos {tableRows.length} domínios avaliados,{" "}
+          <strong style={{ color: "#059669" }}>{improvedDomains} evoluíram</strong>,{" "}
+          <strong style={{ color: "#dc2626" }}>{declinedDomains} regrediram</strong> e{" "}
+          <strong style={{ color: "#64748b" }}>{stableCount} permaneceram estáveis</strong>.
+        </div>
+        <div style={{ display: "flex", gap: 10 }}>
+          {[
+            { label: "Domínios em evolução", value: improvedDomains, color: "#059669" },
+            { label: "Domínios em queda", value: declinedDomains, color: "#dc2626" },
+            { label: "Domínios estáveis", value: stableCount, color: "#64748b" },
+          ].map((c, i) => (
+            <div
+              key={i}
+              style={{
+                flex: 1,
+                backgroundColor: "#ffffff",
+                border: `1px solid ${c.color}33`,
+                borderRadius: 8,
+                padding: "8px 10px",
+                textAlign: "center",
+              }}
+            >
+              <div style={{ fontSize: 22, fontWeight: 800, color: c.color }}>{c.value}</div>
+              <div style={{ fontSize: 8, color: "#64748b" }}>{c.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <SectionTitle color="#4338ca">Levantamento de Dados</SectionTitle>
       <div style={{ display: "flex", gap: 10, marginBottom: 22 }}>
         {[
