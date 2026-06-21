@@ -5,13 +5,25 @@ import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, FileBarChart, User } from "lucide-react";
+import { ArrowLeft, FileBarChart, User, FileDown, Loader2, CheckCircle2 } from "lucide-react";
 import { SavedEvaluation } from "@/hooks/useEvaluationStorage";
 import { EvaluationHistory } from "./components/EvaluationHistory";
 import { EvaluationComparison } from "./components/EvaluationComparison";
 import { AreasAnalysis } from "./components/AreasAnalysis";
+import { EVALUATION_TYPES } from "@/utils/evaluationTypes";
+import { generateStaticPDF } from "@/utils/staticPDFGenerator";
+import { EvolutionReportPDF } from "@/components/EvolutionReportPDF";
+import React from "react";
 
 const MAX_COMPARISONS = 4;
+
+// As 4 etapas obrigatórias da jornada de avaliação
+const REQUIRED_TYPES = [
+  "avaliacao_inicial",
+  "avaliacao_progresso",
+  "avaliacao_periodica",
+  "avaliacao_final",
+];
 
 export default function PatientEvolutionPage() {
   const { patientId } = useParams<{ patientId: string }>();
@@ -21,6 +33,7 @@ export default function PatientEvolutionPage() {
   const [patientName, setPatientName] = useState<string>("Paciente");
   const [isLoading, setIsLoading] = useState(true);
   const [selectedForComparison, setSelectedForComparison] = useState<string[]>([]);
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -131,6 +144,57 @@ export default function PatientEvolutionPage() {
 
   const hasEnoughForComparison = selectedForComparison.length >= 2;
 
+  // Verifica quais dos 4 tipos obrigatórios já foram concluídos
+  const typeOf = (e: SavedEvaluation) =>
+    (e.content?.evaluationType
+      ? EVALUATION_TYPES.find((t) => t.value === e.content?.evaluationType)?.key
+      : e.type) || e.type;
+
+  const completedTypes = REQUIRED_TYPES.filter((key) =>
+    evaluations.some((e) => typeOf(e) === key)
+  );
+  const allFourCompleted = completedTypes.length === REQUIRED_TYPES.length;
+
+  const handleExportReport = async () => {
+    if (!allFourCompleted) {
+      toast.info("Conclua as 4 avaliações (Inicial, Progresso, Periódica e Final) para gerar o relatório.");
+      return;
+    }
+    setIsExporting(true);
+    try {
+      // Pega a avaliação mais recente de cada tipo obrigatório, em ordem cronológica
+      const ordered = REQUIRED_TYPES.map((key) => {
+        const ofType = evaluations
+          .filter((e) => typeOf(e) === key)
+          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        return ofType[0];
+      })
+        .filter(Boolean)
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()) as SavedEvaluation[];
+
+      const ok = await generateStaticPDF(
+        React.createElement(EvolutionReportPDF, {
+          patientName,
+          patientAge: ordered[0]?.patient_age,
+          evaluations: ordered,
+        }),
+        {
+          filename: `Relatorio_Evolucao_${patientName.replace(/\s+/g, "_")}_${
+            new Date().toISOString().split("T")[0]
+          }.pdf`,
+          waitTime: 1800,
+          quality: 2.0,
+        }
+      );
+      if (ok) toast.success("Relatório de evolução gerado com sucesso!");
+    } catch (err) {
+      console.error("Erro ao gerar relatório de evolução:", err);
+      toast.error("Erro ao gerar o relatório de evolução");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-6 max-w-6xl">
       <Button
@@ -181,13 +245,60 @@ export default function PatientEvolutionPage() {
         <div className="space-y-6">
           {/* Histórico de Avaliações Salvas */}
           <Card className="p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-xl">
-            <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1 flex items-center gap-2">
-              📜 Avaliações Salvas
-            </h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-              Selecione 2 ou mais avaliações para comparar a evolução nos gráficos
-              abaixo.
-            </p>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
+              <div>
+                <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1 flex items-center gap-2">
+                  📜 Avaliações Salvas
+                </h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Selecione 2 ou mais avaliações para comparar a evolução nos gráficos
+                  abaixo.
+                </p>
+              </div>
+              <Button
+                onClick={handleExportReport}
+                disabled={!allFourCompleted || isExporting}
+                className="gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg shrink-0"
+              >
+                {isExporting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <FileDown className="h-4 w-4" />
+                )}
+                {isExporting ? "Gerando PDF..." : "Exportar Relatório PDF"}
+              </Button>
+            </div>
+
+            {/* Progresso das 4 avaliações obrigatórias */}
+            <div className="flex flex-wrap items-center gap-2 mb-4 p-3 rounded-xl bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-700">
+              {REQUIRED_TYPES.map((key) => {
+                const meta = EVALUATION_TYPES.find((t) => t.key === key)!;
+                const done = completedTypes.includes(key);
+                return (
+                  <div
+                    key={key}
+                    className={`flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full border ${
+                      done
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800"
+                        : "bg-white text-gray-400 border-gray-200 dark:bg-gray-800 dark:text-gray-500 dark:border-gray-700"
+                    }`}
+                  >
+                    {done ? (
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                    ) : (
+                      <span className="h-3.5 w-3.5 rounded-full border-2 border-current inline-block" />
+                    )}
+                    {meta.shortLabel}
+                  </div>
+                );
+              })}
+              <span className="text-xs text-gray-500 dark:text-gray-400 ml-auto">
+                {allFourCompleted
+                  ? "✅ Todas concluídas — relatório disponível"
+                  : `${completedTypes.length}/4 concluídas`}
+              </span>
+            </div>
+
             <EvaluationHistory
               evaluations={evaluations}
               isLoading={false}
