@@ -186,6 +186,7 @@ const App = () => {
             <Route path="processes/report/:id" element={<ProcessReport />} />
             <Route path="processes/reports" element={<ProcessReports />} />
             <Route path="pti" element={<PtiList />} />
+            <Route path="pti/:id/reavaliacao" element={<PtiReavaliacao />} />
             <Route path="pti/:id" element={<PtiEditor />} />
             <Route path="treatment-plan" element={<TreatmentPlan />} />
             <Route path="musicotherapy-treatment-plans" element={<MusicotherapyTreatmentPlans />} />
