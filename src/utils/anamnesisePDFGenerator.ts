@@ -518,10 +518,9 @@ export const generateProfessionalAnamnesePDF = async (
                       { id: 'auditory_hypersensitivity', label: 'Hipersensibilidade Auditiva' },
                       { id: 'positive_musical_response', label: 'Resposta Positiva à Música' },
                       { id: 'nominal_call_response', label: 'Resposta ao Chamado Nominal' },
-                      { id: 'active_sound_search', label: 'Busca Ativa por Fontes Sonoras' },
+                      { id: 'active_sound_search', label: 'Busca Ativa por Sons' },
                       { id: 'specific_sound_aversion', label: 'Aversão a Sons Específicos' },
-                      { id: 'sound_source_location', label: 'Localização de Fonte Sonora' },
-                      { id: 'adverse_sound_reactivity', label: 'Reatividade Adversa a Sons' }
+                      { id: 'sound_source_location', label: 'Localização de Fonte Sonora' }
                     ])}
                   </div>
                   ${renderTextField('Sons que Causam Desconforto', 'discomfort_sounds')}
