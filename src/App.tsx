@@ -95,6 +95,7 @@ const Resources = lazy(() => import("./pages/Resources"));
 const OrquestraAnimal = lazy(() => import("./pages/orquestra-animal"));
 const DinoRitmos = lazy(() => import("./pages/dino-ritmos"));
 const VagasEmbed = lazy(() => import("./pages/VagasEmbed"));
+const VagasAdminPanel = lazy(() => import("./pages/vagas/VagasAdminPanel"));
 
 // Creator pages (separate from MuseTera)
 const CreatorLoginPage = lazy(() => import("./pages/creator/login"));
@@ -240,6 +241,7 @@ const App = () => {
             <Route path="orquestra-animal" element={<OrquestraAnimal />} />
             <Route path="dino-ritmos" element={<DinoRitmos />} />
             <Route path="vagas" element={<VagasEmbed />} />
+            <Route path="vagas/admin" element={<VagasAdminPanel />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
