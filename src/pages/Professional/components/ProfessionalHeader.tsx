@@ -33,20 +33,21 @@ export function ProfessionalHeader({
   };
 
   return (
-    <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-purple-600 via-indigo-600 to-blue-700 text-white shadow-2xl">
+    <Card className="relative overflow-hidden border border-amber-300/20 bg-gradient-to-br from-[#0A0F2C] via-[#141B45] to-[#1A1545] text-white shadow-2xl rounded-3xl">
       {/* Decorative glows */}
-      <div className="absolute -top-24 -right-16 h-64 w-64 rounded-full bg-pink-400/30 blur-3xl" />
-      <div className="absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-cyan-400/20 blur-3xl" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.18),transparent_55%)]" />
+      <div className="absolute -top-24 -right-16 h-64 w-64 rounded-full bg-amber-400/20 blur-3xl" />
+      <div className="absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-indigo-500/25 blur-3xl" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,215,140,0.12),transparent_55%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(120,100,220,0.18),transparent_60%)]" />
 
       <div className="relative p-8 md:p-10">
         <div className="flex flex-col md:flex-row items-center gap-8">
           <div className="relative group">
-            <div className="absolute -inset-1.5 rounded-full bg-gradient-to-tr from-white/40 to-transparent blur-md opacity-60" />
+            <div className="absolute -inset-2 rounded-full bg-gradient-to-tr from-amber-300/50 via-amber-200/20 to-transparent blur-md opacity-70" />
             <div className="relative">
-              <Avatar className="h-32 w-32 border-4 border-white/40 shadow-2xl ring-4 ring-white/10">
+              <Avatar className="h-32 w-32 border-4 border-amber-200/40 shadow-2xl ring-4 ring-white/10">
                 <AvatarImage src={avatarUrl || ""} alt="Foto do Profissional" />
-                <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-2xl font-bold">
+                <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-2xl font-bold">
                   {getInitials()}
                 </AvatarFallback>
               </Avatar>
@@ -75,7 +76,7 @@ export function ProfessionalHeader({
               )}
             </div>
             <div className="absolute -bottom-2 -right-2">
-              <div className="bg-green-500 p-2 rounded-full border-2 border-white shadow-lg">
+              <div className="bg-gradient-to-br from-emerald-400 to-emerald-600 p-2 rounded-full border-2 border-white shadow-lg">
                 <Shield className="h-4 w-4 text-white" />
               </div>
             </div>
@@ -83,30 +84,30 @@ export function ProfessionalHeader({
 
           <div className="flex-1 text-center md:text-left space-y-4">
             <div>
-              <div className="inline-flex items-center gap-2 mb-3 rounded-full bg-white/15 px-3 py-1 backdrop-blur-sm ring-1 ring-white/20">
-                <Star className="h-4 w-4 text-yellow-300 fill-yellow-300" />
-                <span className="text-xs font-semibold uppercase tracking-wider">
+              <div className="inline-flex items-center gap-2 mb-3 rounded-full bg-amber-300/15 px-3 py-1 backdrop-blur-sm ring-1 ring-amber-200/30">
+                <Star className="h-4 w-4 text-amber-300 fill-amber-300" />
+                <span className="text-xs font-semibold uppercase tracking-wider text-amber-100">
                   Musicoterapeuta Profissional
                 </span>
               </div>
-              <h1 className="text-3xl md:text-4xl font-bold mb-1 tracking-tight">
+              <h1 className="text-3xl md:text-4xl font-bold mb-1 tracking-tight bg-gradient-to-r from-white via-amber-50 to-amber-200/90 bg-clip-text text-transparent">
                 {name || "Nome do Profissional"}
               </h1>
-              <p className="text-base md:text-lg text-white/85">
+              <p className="text-base md:text-lg text-white/75">
                 {specialty || "Especialidade em Musicoterapia"}
               </p>
             </div>
 
             <div className="flex flex-wrap gap-2 justify-center md:justify-start">
               {association && (
-                <Badge variant="secondary" className="bg-white/20 text-white border-white/30 hover:bg-white/30 backdrop-blur-sm">
+                <Badge variant="secondary" className="bg-white/10 text-white border-white/20 hover:bg-white/20 backdrop-blur-sm">
                   {association.split('(')[0].trim()}
                 </Badge>
               )}
-              <Badge variant="secondary" className="bg-emerald-400/25 text-white border-emerald-200/40 hover:bg-emerald-400/35 backdrop-blur-sm">
+              <Badge variant="secondary" className="bg-emerald-400/20 text-emerald-50 border-emerald-200/30 hover:bg-emerald-400/30 backdrop-blur-sm">
                 ✓ Verificado
               </Badge>
-              <Badge variant="secondary" className="bg-white/20 text-white border-white/30 hover:bg-white/30 backdrop-blur-sm">
+              <Badge variant="secondary" className="bg-amber-300/15 text-amber-100 border-amber-200/30 hover:bg-amber-300/25 backdrop-blur-sm">
                 Ativo
               </Badge>
             </div>
