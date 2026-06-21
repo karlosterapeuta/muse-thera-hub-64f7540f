@@ -76,6 +76,14 @@ export default function Processes() {
       accentColor: "rose",
       step: 7,
     },
+    {
+      title: "Plano Terapêutico Individual (PTI)",
+      description: "Plano terapêutico completo e individualizado de Musicoterapia, com IA e exportação em PDF",
+      icon: Stethoscope,
+      path: "/pti",
+      accentColor: "emerald",
+      step: 8,
+    },
   ];
 
   const colorMap: Record<string, {
