@@ -31,17 +31,29 @@ interface Vacancy {
 
 function buildMessage(v: Vacancy, period: Period): string {
   const lines = [
-    `${PERIOD_LABEL[period]}! 🎵 *Nova vaga para Musicoterapeutas*`,
+    "🎵✨ *MuseTera Vagas* ✨🎵",
+    "_Conectando musicoterapeutas às melhores oportunidades_",
     "",
-    `📌 *${v.title}*`,
+    `${PERIOD_LABEL[period]}, musicoterapeuta! 💜`,
+    "Encontramos uma nova oportunidade pra você:",
+    "",
+    "━━━━━━━━━━━━━━━",
+    `🎯 *${v.title}*`,
   ];
   if (v.company) lines.push(`🏢 ${v.company}`);
   if (v.location) lines.push(`📍 ${v.location}`);
-  lines.push("", `🔗 ${v.url}`);
-  if (v.source) lines.push(`_Fonte: ${v.source}_`);
-  lines.push("", "✅ Vaga verificada — MuseTera Vagas");
+  lines.push("━━━━━━━━━━━━━━━", "");
+  lines.push("👉 *Candidate-se aqui:*", `🔗 ${v.url}`);
+  if (v.source) lines.push("", `_Fonte: ${v.source}_`);
+  lines.push(
+    "",
+    "✅ Vaga verificada pela equipe MuseTera",
+    "🎶 _MuseTera — a plataforma completa do musicoterapeuta_",
+    "💜 Bons atendimentos e sucesso na sua jornada!",
+  );
   return lines.join("\n");
 }
+
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
