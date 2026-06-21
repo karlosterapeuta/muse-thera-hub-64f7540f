@@ -700,11 +700,21 @@ export default function Evaluation() {
     }));
 
     let success;
-    
-    if (editingEvaluationId) {
-      // Atualizar avaliação existente
+
+    // Avaliação já existente DESTE tipo para o paciente (cada período é exclusivo).
+    // Evita criar registros duplicados a cada clique em "Salvar".
+    const existingOfType = savedEvaluations.find(
+      (e) =>
+        (e.content?.evaluationType || e.type) === selectedEvaluation ||
+        getEvaluationTypeMeta(e.type).value === selectedEvaluation
+    );
+
+    const targetId = editingEvaluationId || existingOfType?.id || null;
+
+    if (targetId) {
+      // Atualizar avaliação existente (em edição ou do mesmo período)
       success = await updateEvaluation(
-        editingEvaluationId,
+        targetId,
         evaluationDate,
         selectedEvaluation,
         selections,
