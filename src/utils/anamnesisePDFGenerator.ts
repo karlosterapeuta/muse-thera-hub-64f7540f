@@ -424,9 +424,10 @@ export const generateProfessionalAnamnesePDF = async (
                       { id: 'physiotherapy', label: 'Fisioterapia' },
                       { id: 'equine_therapy', label: 'Equoterapia' },
                       { id: 'aba_therapy', label: 'Terapia ABA' },
-                      { id: 'nutritionist', label: 'Nutricionista' },
-                      { id: 'neurologist', label: 'Neurologista' },
-                      { id: 'psychiatrist', label: 'Psiquiatra' }
+                      { id: 'sensory_integration', label: 'Integração Sensorial' },
+                      { id: 'psychomotricity', label: 'Psicomotricidade' },
+                      { id: 'nutrition', label: 'Nutrição' },
+                      { id: 'music_therapy', label: 'Musicoterapia' }
                     ])}
                   </div>
                   ${renderTextField('Frequência das Terapias', 'therapy_frequency')}
