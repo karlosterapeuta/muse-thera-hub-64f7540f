@@ -1670,6 +1670,150 @@ export type Database = {
         }
         Relationships: []
       }
+      pti_plans: {
+        Row: {
+          content: Json
+          created_at: string
+          created_by: string | null
+          id: string
+          patient_id: string | null
+          plan_date: string
+          professional_id: string
+          progress: number
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content?: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          patient_id?: string | null
+          plan_date?: string
+          professional_id: string
+          progress?: number
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          patient_id?: string | null
+          plan_date?: string
+          professional_id?: string
+          progress?: number
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pti_plans_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pti_plans_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pti_reavaliacoes: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          professional_id: string
+          pti_id: string
+          report: Json
+          snapshot: Json
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          professional_id: string
+          pti_id: string
+          report?: Json
+          snapshot?: Json
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          professional_id?: string
+          pti_id?: string
+          report?: Json
+          snapshot?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pti_reavaliacoes_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pti_reavaliacoes_pti_id_fkey"
+            columns: ["pti_id"]
+            isOneToOne: false
+            referencedRelation: "pti_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pti_versions: {
+        Row: {
+          content: Json
+          created_at: string
+          created_by: string | null
+          id: string
+          professional_id: string
+          pti_id: string
+        }
+        Insert: {
+          content?: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          professional_id: string
+          pti_id: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          professional_id?: string
+          pti_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pti_versions_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pti_versions_pti_id_fkey"
+            columns: ["pti_id"]
+            isOneToOne: false
+            referencedRelation: "pti_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       public_profiles: {
         Row: {
           accepts_private: boolean
@@ -2782,6 +2926,7 @@ export type Database = {
       }
       generate_recurring_financial_records: { Args: never; Returns: undefined }
       get_creator_id: { Args: never; Returns: string }
+      get_professional_id: { Args: never; Returns: string }
       get_user_sessions_count: {
         Args: { target_user_id: string }
         Returns: number
