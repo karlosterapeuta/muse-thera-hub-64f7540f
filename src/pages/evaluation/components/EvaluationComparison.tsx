@@ -199,7 +199,8 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
           </ResponsiveContainer>
         </div>
         <p className="text-sm text-gray-500 dark:text-gray-400 text-center mt-4">
-          Selecione mais avaliações para comparar a evolução
+          Apenas a avaliação inicial foi realizada. O sistema aguardará a próxima
+          etapa (Progresso) para iniciar a comparação evolutiva.
         </p>
       </Card>
     );
