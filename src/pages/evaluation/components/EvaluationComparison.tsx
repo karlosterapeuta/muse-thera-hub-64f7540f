@@ -200,33 +200,60 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
 
   return (
     <div className="space-y-6">
-      {/* Radar Comparativo */}
+      {/* Comparação entre Avaliações: Inicial → Final */}
       <Card className="p-6 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/50 dark:to-indigo-950/50 border-0 shadow-xl">
-        <h3 className="text-lg font-bold text-purple-800 dark:text-purple-200 mb-4 text-center">
-          Comparação por Domínios
-        </h3>
+        <div className="flex flex-col items-center mb-4">
+          <h3 className="text-lg font-bold text-purple-800 dark:text-purple-200 text-center">
+            Comparação entre Avaliações
+          </h3>
+          <p className="text-sm text-purple-600/80 dark:text-purple-300/80 text-center">
+            Score Global da Avaliação Inicial até a Final
+          </p>
+          {stageData.length >= 2 && (
+            <Badge
+              className={`mt-2 ${getVariationColor(stageVariation)} flex items-center gap-1`}
+            >
+              {getVariationIcon(stageVariation)}
+              Evolução total: {stageVariation > 0 ? `+${stageVariation}%` : `${stageVariation}%`}
+            </Badge>
+          )}
+        </div>
         <div className="h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
-            <RadarChart data={radarData}>
-              <PolarGrid stroke="#e0e7ff" />
-              <PolarAngleAxis dataKey="domain" tick={{ fontSize: 11 }} />
-              <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fontSize: 10 }} />
-              {selectedEvaluations.map((evaluation, index) => (
-                <Radar
-                  key={evaluation.id}
-                  name={format(new Date(evaluation.date), "dd/MM/yyyy")}
-                  dataKey={`eval_${index}`}
-                  stroke={COMPARISON_COLORS[index]}
-                  fill={COMPARISON_COLORS[index]}
-                  fillOpacity={0.2}
-                  strokeWidth={2}
+            <BarChart data={stageData} margin={{ top: 30, right: 20, left: 0, bottom: 10 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" vertical={false} />
+              <XAxis dataKey="stage" tick={{ fontSize: 12, fontWeight: 600 }} />
+              <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} unit="%" />
+              <Tooltip
+                formatter={(value: number) => [`${value}%`, "Score Global"]}
+                labelFormatter={(label, payload) =>
+                  payload?.[0]?.payload
+                    ? `${payload[0].payload.label} • ${payload[0].payload.date}`
+                    : label
+                }
+                contentStyle={{
+                  backgroundColor: "white",
+                  border: "none",
+                  borderRadius: "12px",
+                  boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
+                }}
+              />
+              <Bar dataKey="score" radius={[8, 8, 0, 0]} barSize={56}>
+                {stageData.map((entry, index) => (
+                  <Cell key={index} fill={entry.color} />
+                ))}
+                <LabelList
+                  dataKey="score"
+                  position="top"
+                  formatter={(v: number) => `${v}%`}
+                  style={{ fontSize: 12, fontWeight: 700, fill: "#4338ca" }}
                 />
-              ))}
-              <Legend />
-            </RadarChart>
+              </Bar>
+            </BarChart>
           </ResponsiveContainer>
         </div>
       </Card>
+
 
       {/* Gráfico de Evolução Temporal */}
       <Card className="p-6 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/50 dark:to-teal-950/50 border-0 shadow-xl">
