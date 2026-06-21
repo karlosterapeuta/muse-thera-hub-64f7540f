@@ -1737,27 +1737,27 @@ export default function Evaluation() {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-            <TabsList className="grid w-full grid-cols-3 bg-background/80 backdrop-blur-sm p-1.5 rounded-2xl h-auto min-h-[4.5rem] border border-blue-200/50 dark:border-blue-800/50 shadow-lg">
+            <TabsList className="grid w-full grid-cols-3 bg-background/80 backdrop-blur-sm p-1 sm:p-1.5 rounded-2xl h-auto min-h-[3.5rem] sm:min-h-[4.5rem] border border-blue-200/50 dark:border-blue-800/50 shadow-lg">
               <TabsTrigger 
                 value="evaluation" 
-                className="rounded-xl text-sm sm:text-base md:text-lg font-bold px-3 py-3 gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-primary-foreground data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-blue-300/60 dark:data-[state=active]:ring-blue-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
+                className="rounded-xl flex flex-col sm:flex-row items-center justify-center text-[11px] sm:text-xs md:text-sm lg:text-base font-bold px-1.5 sm:px-3 py-2 sm:py-3 gap-1 sm:gap-2 leading-tight text-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-primary-foreground data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-blue-300/60 dark:data-[state=active]:ring-blue-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
               >
-                <ClipboardList className="h-5 w-5" />
-                Escala MuseTera
+                <ClipboardList className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
+                <span>Escala MuseTera</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="results" 
-                className="rounded-xl text-sm sm:text-base md:text-lg font-bold px-3 py-3 gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-primary-foreground data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-emerald-300/60 dark:data-[state=active]:ring-emerald-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
+                className="rounded-xl flex flex-col sm:flex-row items-center justify-center text-[11px] sm:text-xs md:text-sm lg:text-base font-bold px-1.5 sm:px-3 py-2 sm:py-3 gap-1 sm:gap-2 leading-tight text-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-primary-foreground data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-emerald-300/60 dark:data-[state=active]:ring-emerald-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
               >
-                <BarChart2 className="h-5 w-5" />
-                Resultados
+                <BarChart2 className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
+                <span>Resultados</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="comparison" 
-                className="rounded-xl text-sm sm:text-base md:text-lg font-bold px-3 py-3 gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-primary-foreground data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-purple-300/60 dark:data-[state=active]:ring-purple-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
+                className="rounded-xl flex flex-col sm:flex-row items-center justify-center text-[11px] sm:text-xs md:text-sm lg:text-base font-bold px-1.5 sm:px-3 py-2 sm:py-3 gap-1 sm:gap-2 leading-tight text-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-primary-foreground data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-purple-300/60 dark:data-[state=active]:ring-purple-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
               >
-                <TrendingUp className="h-5 w-5" />
-                Evolução do Paciente
+                <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
+                <span>Evolução do Paciente</span>
               </TabsTrigger>
             </TabsList>
 
