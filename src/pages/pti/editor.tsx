@@ -169,12 +169,12 @@ export default function PtiEditor() {
   const handleDownloadPDF = async () => {
     setDownloading(true);
     try {
-      let signature = professional?.digital_signature_url
+      const signature = (professional?.digital_signature_url
         ? await imageUrlToBase64(professional.digital_signature_url)
-        : "";
-      let stamp = professional?.digital_stamp_url
+        : "") || "";
+      const stamp = (professional?.digital_stamp_url
         ? await imageUrlToBase64(professional.digital_stamp_url)
-        : "";
+        : "") || "";
       await generateStaticPDF(
         <PtiPDF content={content} professional={professional} signature={signature} stamp={stamp} />,
         { filename: `PTI-${content.identificacao.nome || "plano"}.pdf` },
