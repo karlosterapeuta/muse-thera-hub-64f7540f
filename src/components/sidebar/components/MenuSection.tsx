@@ -153,8 +153,20 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
                   </span>
                 )}
 
+                {/* "Principal" badge for the highlighted Processes item */}
+                {isProcessesItem && !collapsed && (
+                  <span className={cn(
+                    "relative z-10 shrink-0 rounded-full px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wide shadow",
+                    isActive
+                      ? "bg-white/25 text-white"
+                      : "bg-gradient-to-r from-amber-500 to-orange-500 text-white"
+                  )}>
+                    Principal
+                  </span>
+                )}
+
                 {/* Arrow indicator on hover (non-active) */}
-                {!collapsed && !isActive && item.path !== "/vagas" && (
+                {!collapsed && !isActive && item.path !== "/vagas" && !isProcessesItem && (
                   <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/0 group-hover:text-muted-foreground/50 transition-all duration-200 group-hover:translate-x-0.5" />
                 )}
 
