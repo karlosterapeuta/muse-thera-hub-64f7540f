@@ -181,21 +181,13 @@ export default function PatientEvolutionPage() {
 
           {/* Comparação e Gráficos de Evolução */}
           <Card className="p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-xl">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-              <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                📊 Comparação e Evolução
-              </h2>
-              {canCompareInitialFinal && (
-                <Button
-                  onClick={handleCompareInitialFinal}
-                  className="gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:opacity-90"
-                  size="sm"
-                >
-                  <FileBarChart className="h-4 w-4" />
-                  Comparar Inicial → Final
-                </Button>
-              )}
-            </div>
+            <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1 flex items-center gap-2">
+              📊 Comparação: Avaliação Inicial → Final
+            </h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+              Comparação automática entre a primeira e a última avaliação. Você
+              pode ajustar as avaliações na lista acima.
+            </p>
             {hasEnoughForComparison ? (
               <EvaluationComparison
                 evaluations={evaluations}
