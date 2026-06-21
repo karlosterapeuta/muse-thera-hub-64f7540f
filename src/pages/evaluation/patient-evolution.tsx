@@ -5,13 +5,25 @@ import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, FileBarChart, User } from "lucide-react";
+import { ArrowLeft, FileBarChart, User, FileDown, Loader2, CheckCircle2 } from "lucide-react";
 import { SavedEvaluation } from "@/hooks/useEvaluationStorage";
 import { EvaluationHistory } from "./components/EvaluationHistory";
 import { EvaluationComparison } from "./components/EvaluationComparison";
 import { AreasAnalysis } from "./components/AreasAnalysis";
+import { EVALUATION_TYPES } from "@/utils/evaluationTypes";
+import { generateStaticPDF } from "@/utils/staticPDFGenerator";
+import { EvolutionReportPDF } from "@/components/EvolutionReportPDF";
+import React from "react";
 
 const MAX_COMPARISONS = 4;
+
+// As 4 etapas obrigatórias da jornada de avaliação
+const REQUIRED_TYPES = [
+  "avaliacao_inicial",
+  "avaliacao_progresso",
+  "avaliacao_periodica",
+  "avaliacao_final",
+];
 
 export default function PatientEvolutionPage() {
   const { patientId } = useParams<{ patientId: string }>();
