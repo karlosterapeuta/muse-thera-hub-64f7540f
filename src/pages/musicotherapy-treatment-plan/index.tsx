@@ -68,6 +68,7 @@ export default function MusicotherapyTreatmentPlanPage() {
   const { 
     planData, 
     updatePlanData, 
+    resetPlan,
     savePlan, 
     isSaving, 
     isLoading, 
