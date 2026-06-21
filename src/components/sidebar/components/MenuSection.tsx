@@ -61,10 +61,16 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
               cn(
                 "group relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 mx-2 overflow-hidden",
                 collapsed && "justify-center px-2",
-                isActive
+                isProcessesItem
+                  ? cn(
+                      "my-1 ring-1 ring-amber-400/40 shadow-lg shadow-amber-500/20 bg-gradient-to-r from-amber-500/20 via-orange-500/15 to-yellow-500/20 hover:shadow-xl hover:shadow-amber-500/30 hover:-translate-y-0.5",
+                      isActive
+                        ? "text-white ring-amber-300/60 shadow-amber-500/40 bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500"
+                        : "text-foreground"
+                    )
+                  : isActive
                   ? "text-white shadow-lg shadow-purple-600/20 bg-gradient-to-r from-primary/85 to-purple-600/85"
-                  : "text-foreground/50 hover:text-foreground hover:bg-white/5 hover:translate-x-0.5",
-                isProcessesItem && !isActive && "text-foreground/80 bg-white/5"
+                  : "text-foreground/50 hover:text-foreground hover:bg-white/5 hover:translate-x-0.5"
               )
             }
           >
@@ -75,10 +81,20 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
                   <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                 )}
 
+                {/* Continuous shimmer sweep for the highlighted Processes item */}
+                {isProcessesItem && (
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                )}
+
                 {/* Icon */}
-                {isProcessesItem && !isActive ? (
-                  <div className="relative shrink-0 p-1.5 -m-1.5 bg-yellow-500/10 rounded-lg">
-                    <item.icon size={16} className="text-yellow-500" />
+                {isProcessesItem ? (
+                  <div className={cn(
+                    "relative shrink-0 flex items-center justify-center w-8 h-8 rounded-lg shadow-md transition-transform duration-300 group-hover:scale-110",
+                    isActive
+                      ? "bg-white/20"
+                      : "bg-gradient-to-br from-amber-400 to-orange-500 shadow-amber-500/30"
+                  )}>
+                    <item.icon size={18} className={cn(isActive ? "text-white" : "text-white drop-shadow")} />
                   </div>
                 ) : (
                   <item.icon
@@ -103,11 +119,19 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
                       >
                         {item.text}
                       </span>
+                    ) : isProcessesItem ? (
+                      <span className={cn(
+                        "text-sm font-extrabold tracking-tight truncate",
+                        isActive
+                          ? "text-white"
+                          : "bg-gradient-to-r from-amber-600 via-orange-600 to-amber-500 dark:from-amber-300 dark:via-orange-300 dark:to-yellow-300 bg-clip-text text-transparent"
+                      )}>
+                        {item.text}
+                      </span>
                     ) : (
                       <span className={cn(
                         "text-sm font-medium truncate transition-colors duration-200",
-                        isActive && "font-semibold",
-                        isProcessesItem && !isActive && "font-semibold"
+                        isActive && "font-semibold"
                       )}>
                         {item.text}
                       </span>
