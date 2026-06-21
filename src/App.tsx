@@ -241,6 +241,7 @@ const App = () => {
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
+        </Suspense>
       </BrowserRouter>
       </TooltipProvider>
     </PWAInstallProvider>
