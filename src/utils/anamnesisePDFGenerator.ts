@@ -444,10 +444,11 @@ export const generateProfessionalAnamnesePDF = async (
                     ${renderCheckboxes([
                       { id: 'musical_education', label: 'Educação Musical Formal' },
                       { id: 'instrumental_practice', label: 'Prática Instrumental' },
+                      { id: 'choral_activities', label: 'Canto/Coral' },
                       { id: 'body_musical_expression', label: 'Expressão Corporal Musical' },
                       { id: 'vocal_expression', label: 'Expressão Vocal' },
-                      { id: 'choral_activities', label: 'Atividades Corais' },
-                      { id: 'no_musical_experience', label: 'Sem Experiência Musical' }
+                      { id: 'music_therapy_experience', label: 'Experiência em Musicoterapia' },
+                      { id: 'no_musical_experience', label: 'Sem Experiência Musical Formal' }
                     ])}
                   </div>
                   <div style="margin-bottom: 16px;">
