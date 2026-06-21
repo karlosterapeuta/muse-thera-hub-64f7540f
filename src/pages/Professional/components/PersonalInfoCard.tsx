@@ -16,10 +16,10 @@ interface PersonalInfoCardProps {
 
 export function PersonalInfoCard({ formData, setFormData, isEditing }: PersonalInfoCardProps) {
   return (
-    <Card className="group overflow-hidden border-border/60 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
-      <CardHeader className="pb-4 bg-gradient-to-r from-blue-500/10 to-transparent border-b border-border/40">
+    <Card className="group overflow-hidden rounded-2xl border border-white/10 bg-card/70 backdrop-blur-xl shadow-lg hover:shadow-2xl hover:shadow-indigo-500/10 hover:-translate-y-1 transition-all duration-300">
+      <CardHeader className="pb-4 bg-gradient-to-r from-indigo-500/10 via-blue-500/5 to-transparent border-b border-white/10">
         <CardTitle className="flex items-center gap-3 text-lg">
-          <span className="flex items-center justify-center h-9 w-9 rounded-xl bg-blue-500/15 text-blue-600 dark:text-blue-400 ring-1 ring-blue-500/20">
+          <span className="flex items-center justify-center h-9 w-9 rounded-xl bg-indigo-500/15 text-indigo-500 dark:text-indigo-300 ring-1 ring-indigo-400/30">
             <User className="h-5 w-5" />
           </span>
           Informações Pessoais
