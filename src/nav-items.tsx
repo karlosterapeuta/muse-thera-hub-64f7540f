@@ -28,6 +28,7 @@ import {
   Users2,
   UserCog,
   KeyRound,
+  Briefcase,
 } from "lucide-react";
 
 export const navItems = [
@@ -186,6 +187,13 @@ export const navItems = [
     title: "Códigos de Convite",
     to: "/invite-codes",
     icon: <KeyRound className="h-4 w-4" />,
+    variant: "ghost" as const,
+    adminOnly: true,
+  },
+  {
+    title: "Vagas Admin",
+    to: "/vagas/admin",
+    icon: <Briefcase className="h-4 w-4" />,
     variant: "ghost" as const,
     adminOnly: true,
   },
