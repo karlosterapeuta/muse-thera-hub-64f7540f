@@ -10,6 +10,7 @@ import {
   Heart,
   Sparkles,
   Zap,
+  Stethoscope,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -74,6 +75,14 @@ export default function Processes() {
       path: "/processes/devolutiva-tea",
       accentColor: "rose",
       step: 7,
+    },
+    {
+      title: "Plano Terapêutico Individual (PTI)",
+      description: "Plano terapêutico completo e individualizado de Musicoterapia, com IA e exportação em PDF",
+      icon: Stethoscope,
+      path: "/pti",
+      accentColor: "emerald",
+      step: 8,
     },
   ];
 
