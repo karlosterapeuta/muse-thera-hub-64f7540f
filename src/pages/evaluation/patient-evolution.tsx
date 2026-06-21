@@ -245,13 +245,60 @@ export default function PatientEvolutionPage() {
         <div className="space-y-6">
           {/* Histórico de Avaliações Salvas */}
           <Card className="p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-xl">
-            <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1 flex items-center gap-2">
-              📜 Avaliações Salvas
-            </h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-              Selecione 2 ou mais avaliações para comparar a evolução nos gráficos
-              abaixo.
-            </p>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
+              <div>
+                <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1 flex items-center gap-2">
+                  📜 Avaliações Salvas
+                </h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Selecione 2 ou mais avaliações para comparar a evolução nos gráficos
+                  abaixo.
+                </p>
+              </div>
+              <Button
+                onClick={handleExportReport}
+                disabled={!allFourCompleted || isExporting}
+                className="gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg shrink-0"
+              >
+                {isExporting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <FileDown className="h-4 w-4" />
+                )}
+                {isExporting ? "Gerando PDF..." : "Exportar Relatório PDF"}
+              </Button>
+            </div>
+
+            {/* Progresso das 4 avaliações obrigatórias */}
+            <div className="flex flex-wrap items-center gap-2 mb-4 p-3 rounded-xl bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-700">
+              {REQUIRED_TYPES.map((key) => {
+                const meta = EVALUATION_TYPES.find((t) => t.key === key)!;
+                const done = completedTypes.includes(key);
+                return (
+                  <div
+                    key={key}
+                    className={`flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full border ${
+                      done
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800"
+                        : "bg-white text-gray-400 border-gray-200 dark:bg-gray-800 dark:text-gray-500 dark:border-gray-700"
+                    }`}
+                  >
+                    {done ? (
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                    ) : (
+                      <span className="h-3.5 w-3.5 rounded-full border-2 border-current inline-block" />
+                    )}
+                    {meta.shortLabel}
+                  </div>
+                );
+              })}
+              <span className="text-xs text-gray-500 dark:text-gray-400 ml-auto">
+                {allFourCompleted
+                  ? "✅ Todas concluídas — relatório disponível"
+                  : `${completedTypes.length}/4 concluídas`}
+              </span>
+            </div>
+
             <EvaluationHistory
               evaluations={evaluations}
               isLoading={false}
