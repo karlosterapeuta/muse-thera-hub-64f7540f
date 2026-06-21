@@ -10,6 +10,7 @@ import {
   Heart,
   Sparkles,
   Zap,
+  Stethoscope,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
