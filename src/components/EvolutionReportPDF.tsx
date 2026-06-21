@@ -214,6 +214,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
   professional,
   signatureBase64,
   stampBase64,
+  logoBase64,
   reportCode,
 }) => {
   const domains =
