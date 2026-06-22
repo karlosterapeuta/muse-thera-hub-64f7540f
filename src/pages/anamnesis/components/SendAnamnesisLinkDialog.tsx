@@ -62,6 +62,7 @@ export function SendAnamnesisLinkDialog({
         token,
         professional_id: professionalId,
         patient_id: patientId,
+        expires_at: null,
       });
 
       if (error) throw error;
@@ -151,7 +152,7 @@ export function SendAnamnesisLinkDialog({
               </div>
 
               <p className="text-xs text-muted-foreground">
-                O link é válido por 14 dias e pode ser preenchido apenas uma vez.
+                O link não expira e pode ser preenchido apenas uma vez.
               </p>
             </div>
           )}
