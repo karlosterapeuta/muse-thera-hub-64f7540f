@@ -101,7 +101,8 @@ export function SendAnamnesisLinkDialog({
         variant="outline"
         onClick={handleOpen}
         disabled={disabled}
-        className="gap-2"
+        title={disabled ? "Selecione um paciente para gerar o link" : undefined}
+        className="gap-2 w-full sm:w-auto"
       >
         <Send className="h-4 w-4" />
         Enviar link para o responsável
