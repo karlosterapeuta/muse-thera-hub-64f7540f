@@ -62,7 +62,7 @@ export function SendAnamnesisLinkDialog({
         token,
         professional_id: professionalId,
         patient_id: patientId,
-        expires_at: null,
+        expires_at: "2099-12-31T23:59:59Z",
       });
 
       if (error) throw error;
