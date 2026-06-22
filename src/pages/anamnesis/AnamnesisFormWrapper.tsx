@@ -664,12 +664,13 @@ export default function AnamnesisFormWrapper({
                   onSelect={setSelectedPatient}
                   disabled={!!editPatientId}
                 />
-                {selectedPatient && professionalId && (
-                  <div className="flex justify-end border-t border-border pt-4">
+                {professionalId && (
+                  <div className="flex flex-col sm:flex-row sm:justify-end gap-2 border-t border-border pt-4">
                     <SendAnamnesisLinkDialog
                       professionalId={professionalId}
                       patientId={selectedPatient}
                       patientName={patients.find((p) => p.id === selectedPatient)?.name || "o paciente"}
+                      disabled={!selectedPatient}
                     />
                   </div>
                 )}
