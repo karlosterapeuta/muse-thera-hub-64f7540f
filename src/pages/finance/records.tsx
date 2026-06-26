@@ -904,34 +904,61 @@ export default function FinancialRecords() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {sortedRecords.map((record) => (
-                    <TableRow key={record.id} className="hover:bg-muted/20">
-                      <TableCell className="whitespace-nowrap">
+                  {sortedRecords.map((record) => {
+                    const rowStatus = record.session_status || 'scheduled';
+                    const rowTheme = {
+                      completed: {
+                        row: 'bg-emerald-50/70 hover:bg-emerald-100/70 dark:bg-emerald-950/40 dark:hover:bg-emerald-950/60 border-l-4 border-l-emerald-500',
+                        text: 'text-emerald-900 dark:text-emerald-100',
+                        muted: 'text-emerald-700/70 dark:text-emerald-300/70',
+                        amount: 'text-emerald-700 dark:text-emerald-300',
+                      },
+                      no_show: {
+                        row: 'bg-rose-50/70 hover:bg-rose-100/70 dark:bg-rose-950/40 dark:hover:bg-rose-950/60 border-l-4 border-l-rose-500',
+                        text: 'text-rose-900 dark:text-rose-100',
+                        muted: 'text-rose-700/70 dark:text-rose-300/70',
+                        amount: 'text-rose-700 dark:text-rose-300',
+                      },
+                      scheduled: {
+                        row: 'bg-blue-50/70 hover:bg-blue-100/70 dark:bg-blue-950/40 dark:hover:bg-blue-950/60 border-l-4 border-l-blue-500',
+                        text: 'text-blue-900 dark:text-blue-100',
+                        muted: 'text-blue-700/70 dark:text-blue-300/70',
+                        amount: 'text-blue-700 dark:text-blue-300',
+                      },
+                    }[rowStatus] || {
+                      row: 'bg-blue-50/70 hover:bg-blue-100/70 dark:bg-blue-950/40 dark:hover:bg-blue-950/60 border-l-4 border-l-blue-500',
+                      text: 'text-blue-900 dark:text-blue-100',
+                      muted: 'text-blue-700/70 dark:text-blue-300/70',
+                      amount: 'text-blue-700 dark:text-blue-300',
+                    };
+                    return (
+                    <TableRow key={record.id} className={`transition-colors ${rowTheme.row}`}>
+                      <TableCell className={`whitespace-nowrap ${rowTheme.text}`}>
                         {format(parseDateLocal(record.session_date), "dd/MM/yyyy")}
                       </TableCell>
                       {!isMobile && (
-                        <TableCell className="whitespace-nowrap">
+                        <TableCell className={`whitespace-nowrap ${rowTheme.muted}`}>
                           {getWeekdayLabel(record.description)}
                         </TableCell>
                       )}
                       <TableCell className="whitespace-nowrap">
-                        <div className="flex items-center font-medium">
+                        <div className={`flex items-center font-medium ${rowTheme.text}`}>
                           {getAppointmentTime(record.description)}
                         </div>
                       </TableCell>
                       {!isMobile && (
-                        <TableCell className="whitespace-nowrap">
+                        <TableCell className={`whitespace-nowrap ${rowTheme.muted}`}>
                           {getAppointmentDuration(record.description)}
                         </TableCell>
                       )}
-                      <TableCell>{record.clinic_name}</TableCell>
-                      <TableCell className="font-medium">
+                      <TableCell className={rowTheme.muted}>{record.clinic_name}</TableCell>
+                      <TableCell className={`font-medium ${rowTheme.text}`}>
                         <div className="flex items-center gap-2">
                           {record.patient_name}
                           <RecurringRecordIndicator record={record} />
                         </div>
                       </TableCell>
-                      <TableCell className="font-bold text-primary">
+                      <TableCell className={`font-bold ${rowTheme.amount}`}>
                         {formatCurrency(record.amount)}
                       </TableCell>
                       <TableCell>
@@ -1005,7 +1032,8 @@ export default function FinancialRecords() {
                         </div>
                       </TableCell>
                     </TableRow>
-                  ))}
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>
