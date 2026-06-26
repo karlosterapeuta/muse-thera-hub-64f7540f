@@ -1,11 +1,14 @@
 import { Button } from "@/components/ui/button";
-import { LogOut, Download, ExternalLink } from "lucide-react";
+import { LogOut, Download, ExternalLink, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { globalCacheManager } from "@/utils/cacheManager";
 import { useNavigate } from "react-router-dom";
 import { usePWAInstall } from "@/contexts/PWAInstallContext";
 import { Badge } from "@/components/ui/badge";
+import { forceClientUpdate } from "@/utils/forceUpdate";
+import { useState } from "react";
+import { toast } from "sonner";
 
 interface SidebarFooterProps {
   collapsed: boolean;
@@ -15,8 +18,23 @@ interface SidebarFooterProps {
 export function SidebarFooter({ collapsed, onNavigate }: SidebarFooterProps) {
   const { deferredPrompt, isStandalone } = usePWAInstall();
   const navigate = useNavigate();
-  
+  const [isUpdating, setIsUpdating] = useState(false);
+
   const canInstallNatively = !!deferredPrompt;
+
+  const handleForceUpdate = async () => {
+    if (isUpdating) return;
+    setIsUpdating(true);
+    toast.loading("Limpando cache e atualizando o sistema...", { id: "force-update" });
+    try {
+      globalCacheManager.performFullCleanup();
+      await forceClientUpdate();
+    } catch (error) {
+      console.error("Erro ao atualizar:", error);
+      toast.error("Erro ao atualizar. Tente novamente.", { id: "force-update" });
+      setIsUpdating(false);
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -74,6 +92,30 @@ export function SidebarFooter({ collapsed, onNavigate }: SidebarFooterProps) {
             )}
           </Button>
         )}
+
+        {/* Force Update / Clear Cache Button */}
+        <Button
+          variant="ghost"
+          className={cn(
+            "w-full h-11 rounded-xl transition-all duration-300 group text-blue-500 hover:text-blue-400 hover:bg-blue-500/10",
+            collapsed ? "justify-center px-2" : "justify-start gap-3 px-4"
+          )}
+          onClick={handleForceUpdate}
+          disabled={isUpdating}
+        >
+          <RefreshCw
+            size={18}
+            className={cn(
+              "shrink-0 opacity-80 group-hover:scale-110 transition-transform",
+              isUpdating && "animate-spin"
+            )}
+          />
+          {!collapsed && (
+            <span className="text-sm font-medium">
+              {isUpdating ? "Atualizando..." : "Limpar cache e atualizar"}
+            </span>
+          )}
+        </Button>
 
         {/* Logout Button */}
         <Button
