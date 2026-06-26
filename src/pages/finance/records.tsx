@@ -453,7 +453,7 @@ export default function FinancialRecords() {
         key={record.id} 
         className={`bg-card/90 border border-border/60 border-l-[3px] ${getCardStatusClasses(record.session_status)} rounded-lg p-2.5 shadow-sm mb-2 hover:shadow-md hover:border-border transition-all relative group`}
       >
-        <div className="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute top-1.5 right-1.5 transition-opacity">
           <RecurringRecordActions record={record} onEdit={handleEditRecord} onEditSeries={handleEditSeries} />
         </div>
         
@@ -507,7 +507,7 @@ export default function FinancialRecords() {
         key={record.id} 
         className={`${getCardStatusClasses(record.session_status)} border rounded-lg p-3 shadow-sm mb-2 hover:shadow-md transition-all relative group`}
       >
-        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute top-2 right-2 transition-opacity">
           <RecurringRecordActions record={record} onEdit={handleEditRecord} onEditSeries={handleEditSeries} />
         </div>
         
