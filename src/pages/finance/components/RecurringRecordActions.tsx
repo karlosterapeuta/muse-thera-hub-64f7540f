@@ -93,25 +93,30 @@ export function RecurringRecordActions({ record, onEdit, onEditSeries }: Recurri
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="h-7 px-2 gap-1 bg-primary text-primary-foreground hover:bg-primary/90 border-primary shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105"
-          >
-            {(() => {
-              const s = record.session_status || 'scheduled';
-              const Icon = s === 'completed' ? CheckCircleIcon : s === 'no_show' ? XCircleIcon : ClockIcon;
-              const label = s === 'completed' ? 'Concluída' : s === 'no_show' ? 'Faltou' : 'Agendada';
-              return (
-                <>
-                  <Icon className="h-3.5 w-3.5" />
-                  <span className="text-[11px] font-semibold">{label}</span>
-                  <MoreHorizontalIcon className="h-3.5 w-3.5 opacity-80" />
-                </>
-              );
-            })()}
-          </Button>
+          {(() => {
+            const s = record.session_status || 'scheduled';
+            const Icon = s === 'completed' ? CheckCircleIcon : s === 'no_show' ? XCircleIcon : ClockIcon;
+            const label = s === 'completed' ? 'Concluída' : s === 'no_show' ? 'Faltou' : 'Agendada';
+            const colorClass =
+              s === 'completed'
+                ? 'bg-emerald-600 hover:bg-emerald-700 border-emerald-600'
+                : s === 'no_show'
+                ? 'bg-rose-600 hover:bg-rose-700 border-rose-600'
+                : 'bg-blue-600 hover:bg-blue-700 border-blue-600';
+            return (
+              <Button
+                variant="outline"
+                size="sm"
+                className={`h-7 px-2 gap-1 text-white ${colorClass} shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105`}
+              >
+                <Icon className="h-3.5 w-3.5" />
+                <span className="text-[11px] font-semibold">{label}</span>
+                <MoreHorizontalIcon className="h-3.5 w-3.5 opacity-80" />
+              </Button>
+            );
+          })()}
         </DropdownMenuTrigger>
+
         <DropdownMenuContent align="end" className="w-[200px]">
           <DropdownMenuLabel>Status da Sessão</DropdownMenuLabel>
           <DropdownMenuSeparator />
