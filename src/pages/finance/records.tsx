@@ -54,7 +54,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ClinicForm } from "./components/ClinicForm";
 import { RecurringRecordIndicator } from "./components/RecurringRecordIndicator";
 import { RecurringRecordActions } from "./components/RecurringRecordActions";
-import { SessionStatusBadge } from "./components/SessionStatusBadge";
+
 import { FinancialStatCards } from "./components/FinancialStatCards";
 import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
 import { parseDateLocal } from "@/utils/dateUtils";
