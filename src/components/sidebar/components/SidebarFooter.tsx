@@ -18,8 +18,23 @@ interface SidebarFooterProps {
 export function SidebarFooter({ collapsed, onNavigate }: SidebarFooterProps) {
   const { deferredPrompt, isStandalone } = usePWAInstall();
   const navigate = useNavigate();
-  
+  const [isUpdating, setIsUpdating] = useState(false);
+
   const canInstallNatively = !!deferredPrompt;
+
+  const handleForceUpdate = async () => {
+    if (isUpdating) return;
+    setIsUpdating(true);
+    toast.loading("Limpando cache e atualizando o sistema...", { id: "force-update" });
+    try {
+      globalCacheManager.performFullCleanup();
+      await forceClientUpdate();
+    } catch (error) {
+      console.error("Erro ao atualizar:", error);
+      toast.error("Erro ao atualizar. Tente novamente.", { id: "force-update" });
+      setIsUpdating(false);
+    }
+  };
 
   const handleLogout = async () => {
     try {
