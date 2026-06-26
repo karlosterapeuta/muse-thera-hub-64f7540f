@@ -93,6 +93,30 @@ export function SidebarFooter({ collapsed, onNavigate }: SidebarFooterProps) {
           </Button>
         )}
 
+        {/* Force Update / Clear Cache Button */}
+        <Button
+          variant="ghost"
+          className={cn(
+            "w-full h-11 rounded-xl transition-all duration-300 group text-blue-500 hover:text-blue-400 hover:bg-blue-500/10",
+            collapsed ? "justify-center px-2" : "justify-start gap-3 px-4"
+          )}
+          onClick={handleForceUpdate}
+          disabled={isUpdating}
+        >
+          <RefreshCw
+            size={18}
+            className={cn(
+              "shrink-0 opacity-80 group-hover:scale-110 transition-transform",
+              isUpdating && "animate-spin"
+            )}
+          />
+          {!collapsed && (
+            <span className="text-sm font-medium">
+              {isUpdating ? "Atualizando..." : "Limpar cache e atualizar"}
+            </span>
+          )}
+        </Button>
+
         {/* Logout Button */}
         <Button
           variant="ghost"
