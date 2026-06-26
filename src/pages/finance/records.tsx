@@ -435,35 +435,58 @@ export default function FinancialRecords() {
   const renderAppointmentCard = (record: FinancialRecord) => {
     const time = getAppointmentTime(record.description);
     const duration = getAppointmentDuration(record.description);
-    
-    const getCardStatusClasses = (status?: string) => {
-      switch (status) {
-        case 'completed':
-          return 'border-l-emerald-500';
-        case 'no_show':
-          return 'border-l-rose-500';
-        case 'scheduled':
-        default:
-          return 'border-l-primary';
-      }
+
+    const status = record.session_status || 'scheduled';
+    const theme = {
+      completed: {
+        card: 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 border-l-[3px] border-l-emerald-500',
+        chip: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300',
+        primaryText: 'text-emerald-900 dark:text-emerald-100',
+        mutedText: 'text-emerald-700/70 dark:text-emerald-300/70',
+        amount: 'text-emerald-700 dark:text-emerald-300',
+        divider: 'border-emerald-300/60 dark:border-emerald-800/60',
+      },
+      no_show: {
+        card: 'bg-rose-50 dark:bg-rose-950/40 border-rose-300 dark:border-rose-800 border-l-[3px] border-l-rose-500',
+        chip: 'bg-rose-500/15 text-rose-700 dark:text-rose-300',
+        primaryText: 'text-rose-900 dark:text-rose-100',
+        mutedText: 'text-rose-700/70 dark:text-rose-300/70',
+        amount: 'text-rose-700 dark:text-rose-300',
+        divider: 'border-rose-300/60 dark:border-rose-800/60',
+      },
+      scheduled: {
+        card: 'bg-blue-50 dark:bg-blue-950/40 border-blue-300 dark:border-blue-800 border-l-[3px] border-l-blue-500',
+        chip: 'bg-blue-500/15 text-blue-700 dark:text-blue-300',
+        primaryText: 'text-blue-900 dark:text-blue-100',
+        mutedText: 'text-blue-700/70 dark:text-blue-300/70',
+        amount: 'text-blue-700 dark:text-blue-300',
+        divider: 'border-blue-300/60 dark:border-blue-800/60',
+      },
+    }[status] || {
+      card: 'bg-blue-50 dark:bg-blue-950/40 border-blue-300 dark:border-blue-800 border-l-[3px] border-l-blue-500',
+      chip: 'bg-blue-500/15 text-blue-700 dark:text-blue-300',
+      primaryText: 'text-blue-900 dark:text-blue-100',
+      mutedText: 'text-blue-700/70 dark:text-blue-300/70',
+      amount: 'text-blue-700 dark:text-blue-300',
+      divider: 'border-blue-300/60 dark:border-blue-800/60',
     };
-    
+
     return (
       <div 
         key={record.id} 
-        className={`bg-card/90 border border-border/60 border-l-[3px] ${getCardStatusClasses(record.session_status)} rounded-lg p-2.5 shadow-sm mb-2 hover:shadow-md hover:border-border transition-all relative group`}
+        className={`border ${theme.card} rounded-lg p-2.5 shadow-sm mb-2 hover:shadow-md transition-all relative group`}
       >
         <div className="absolute top-1.5 right-1.5 transition-opacity">
           <RecurringRecordActions record={record} onEdit={handleEditRecord} onEditSeries={handleEditSeries} />
         </div>
         
         <div className="flex items-center gap-1.5 mb-2">
-          <div className="flex items-center bg-primary/10 px-2 py-0.5 rounded-md text-primary text-xs font-semibold">
+          <div className={`flex items-center px-2 py-0.5 rounded-md text-xs font-semibold ${theme.chip}`}>
             <ClockIcon className="h-3 w-3 mr-1" />
             {time}
           </div>
           {duration && (
-            <div className="text-[10px] text-muted-foreground px-1.5 py-0.5 bg-muted rounded-md">
+            <div className={`text-[10px] px-1.5 py-0.5 rounded-md ${theme.chip}`}>
               {duration}
             </div>
           )}
@@ -473,17 +496,18 @@ export default function FinancialRecords() {
         </div>
         
         <div className="mt-1">
-          <div className="text-sm font-semibold text-foreground line-clamp-1">{record.patient_name || 'Sem paciente'}</div>
-          <div className="text-xs text-muted-foreground line-clamp-1">{record.clinic_name}</div>
+          <div className={`text-sm font-semibold line-clamp-1 ${theme.primaryText}`}>{record.patient_name || 'Sem paciente'}</div>
+          <div className={`text-xs line-clamp-1 ${theme.mutedText}`}>{record.clinic_name}</div>
         </div>
         
-        <div className="flex items-center justify-between mt-2 pt-2 border-t border-dashed border-border/70">
-          <div className="text-[11px] text-muted-foreground line-clamp-1">{getCleanDescription(record.description) || 'Sem descrição'}</div>
-          <div className="text-sm font-bold text-primary whitespace-nowrap">{formatCurrency(record.amount)}</div>
+        <div className={`flex items-center justify-between mt-2 pt-2 border-t border-dashed ${theme.divider}`}>
+          <div className={`text-[11px] line-clamp-1 ${theme.mutedText}`}>{getCleanDescription(record.description) || 'Sem descrição'}</div>
+          <div className={`text-sm font-bold whitespace-nowrap ${theme.amount}`}>{formatCurrency(record.amount)}</div>
         </div>
       </div>
     );
   };
+
   
   const renderSmartAppointmentCard = (record: FinancialRecord) => {
     const time = getAppointmentTime(record.description);
