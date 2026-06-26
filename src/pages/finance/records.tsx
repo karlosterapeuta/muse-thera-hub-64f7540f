@@ -467,8 +467,7 @@ export default function FinancialRecords() {
               {duration}
             </div>
           )}
-          <div className="ml-auto flex items-center gap-1.5">
-            <SessionStatusBadge status={record.session_status || 'scheduled'} />
+          <div className="ml-auto flex items-center gap-1.5 pr-24">
             <RecurringRecordIndicator record={record} />
           </div>
         </div>
@@ -516,13 +515,12 @@ export default function FinancialRecords() {
             <ClockIcon className="h-3.5 w-3.5 mr-1" />
             {time || "Sem horário"}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 pr-28">
             {duration && (
               <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
                 {duration}
               </div>
             )}
-            <SessionStatusBadge status={record.session_status || 'scheduled'} />
             <RecurringRecordIndicator record={record} />
           </div>
         </div>
