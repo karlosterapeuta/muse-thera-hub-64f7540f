@@ -1,11 +1,14 @@
 import { Button } from "@/components/ui/button";
-import { LogOut, Download, ExternalLink } from "lucide-react";
+import { LogOut, Download, ExternalLink, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { globalCacheManager } from "@/utils/cacheManager";
 import { useNavigate } from "react-router-dom";
 import { usePWAInstall } from "@/contexts/PWAInstallContext";
 import { Badge } from "@/components/ui/badge";
+import { forceClientUpdate } from "@/utils/forceUpdate";
+import { useState } from "react";
+import { toast } from "sonner";
 
 interface SidebarFooterProps {
   collapsed: boolean;
