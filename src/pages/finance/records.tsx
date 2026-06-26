@@ -1032,7 +1032,8 @@ export default function FinancialRecords() {
                         </div>
                       </TableCell>
                     </TableRow>
-                  ))}
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>
