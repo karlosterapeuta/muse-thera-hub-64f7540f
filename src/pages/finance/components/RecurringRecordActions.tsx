@@ -95,10 +95,21 @@ export function RecurringRecordActions({ record, onEdit, onEditSeries }: Recurri
         <DropdownMenuTrigger asChild>
           <Button 
             variant="outline" 
-            size="icon" 
-            className="h-9 w-9 bg-primary/10 hover:bg-primary hover:text-primary-foreground border-primary/30 hover:border-primary shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105"
+            size="sm" 
+            className="h-7 px-2 gap-1 bg-primary text-primary-foreground hover:bg-primary/90 border-primary shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105"
           >
-            <MoreHorizontalIcon className="h-5 w-5 font-bold" />
+            {(() => {
+              const s = record.session_status || 'scheduled';
+              const Icon = s === 'completed' ? CheckCircleIcon : s === 'no_show' ? XCircleIcon : ClockIcon;
+              const label = s === 'completed' ? 'Concluída' : s === 'no_show' ? 'Faltou' : 'Agendada';
+              return (
+                <>
+                  <Icon className="h-3.5 w-3.5" />
+                  <span className="text-[11px] font-semibold">{label}</span>
+                  <MoreHorizontalIcon className="h-3.5 w-3.5 opacity-80" />
+                </>
+              );
+            })()}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[200px]">

@@ -54,7 +54,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ClinicForm } from "./components/ClinicForm";
 import { RecurringRecordIndicator } from "./components/RecurringRecordIndicator";
 import { RecurringRecordActions } from "./components/RecurringRecordActions";
-import { SessionStatusBadge } from "./components/SessionStatusBadge";
+
 import { FinancialStatCards } from "./components/FinancialStatCards";
 import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
 import { parseDateLocal } from "@/utils/dateUtils";
@@ -453,7 +453,7 @@ export default function FinancialRecords() {
         key={record.id} 
         className={`bg-card/90 border border-border/60 border-l-[3px] ${getCardStatusClasses(record.session_status)} rounded-lg p-2.5 shadow-sm mb-2 hover:shadow-md hover:border-border transition-all relative group`}
       >
-        <div className="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute top-1.5 right-1.5 transition-opacity">
           <RecurringRecordActions record={record} onEdit={handleEditRecord} onEditSeries={handleEditSeries} />
         </div>
         
@@ -467,8 +467,7 @@ export default function FinancialRecords() {
               {duration}
             </div>
           )}
-          <div className="ml-auto flex items-center gap-1.5">
-            <SessionStatusBadge status={record.session_status || 'scheduled'} />
+          <div className="ml-auto flex items-center gap-1.5 pr-24">
             <RecurringRecordIndicator record={record} />
           </div>
         </div>
@@ -507,7 +506,7 @@ export default function FinancialRecords() {
         key={record.id} 
         className={`${getCardStatusClasses(record.session_status)} border rounded-lg p-3 shadow-sm mb-2 hover:shadow-md transition-all relative group`}
       >
-        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute top-2 right-2 transition-opacity">
           <RecurringRecordActions record={record} onEdit={handleEditRecord} onEditSeries={handleEditSeries} />
         </div>
         
@@ -516,13 +515,12 @@ export default function FinancialRecords() {
             <ClockIcon className="h-3.5 w-3.5 mr-1" />
             {time || "Sem horário"}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 pr-28">
             {duration && (
               <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
                 {duration}
               </div>
             )}
-            <SessionStatusBadge status={record.session_status || 'scheduled'} />
             <RecurringRecordIndicator record={record} />
           </div>
         </div>
