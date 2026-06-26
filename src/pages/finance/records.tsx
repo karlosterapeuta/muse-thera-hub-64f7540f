@@ -512,36 +512,63 @@ export default function FinancialRecords() {
   const renderSmartAppointmentCard = (record: FinancialRecord) => {
     const time = getAppointmentTime(record.description);
     const duration = getAppointmentDuration(record.description);
-    
-    const getCardStatusClasses = (status?: string) => {
-      switch (status) {
-        case 'completed':
-          return 'bg-card border-border/60 border-l-4 border-l-green-500';
-        case 'no_show':
-          return 'bg-card border-border/60 border-l-4 border-l-red-500';
-        case 'scheduled':
-        default:
-          return 'bg-card border-border/60 border-l-4 border-l-primary';
-      }
+
+    const status = record.session_status || 'scheduled';
+    const theme = {
+      completed: {
+        card: 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 border-l-4 border-l-emerald-500',
+        chip: 'bg-emerald-600 text-white',
+        soft: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300',
+        primaryText: 'text-emerald-900 dark:text-emerald-100',
+        mutedText: 'text-emerald-700/70 dark:text-emerald-300/70',
+        amount: 'text-emerald-700 dark:text-emerald-300',
+        divider: 'border-emerald-300/60 dark:border-emerald-800/60',
+      },
+      no_show: {
+        card: 'bg-rose-50 dark:bg-rose-950/40 border-rose-300 dark:border-rose-800 border-l-4 border-l-rose-500',
+        chip: 'bg-rose-600 text-white',
+        soft: 'bg-rose-500/15 text-rose-700 dark:text-rose-300',
+        primaryText: 'text-rose-900 dark:text-rose-100',
+        mutedText: 'text-rose-700/70 dark:text-rose-300/70',
+        amount: 'text-rose-700 dark:text-rose-300',
+        divider: 'border-rose-300/60 dark:border-rose-800/60',
+      },
+      scheduled: {
+        card: 'bg-blue-50 dark:bg-blue-950/40 border-blue-300 dark:border-blue-800 border-l-4 border-l-blue-500',
+        chip: 'bg-blue-600 text-white',
+        soft: 'bg-blue-500/15 text-blue-700 dark:text-blue-300',
+        primaryText: 'text-blue-900 dark:text-blue-100',
+        mutedText: 'text-blue-700/70 dark:text-blue-300/70',
+        amount: 'text-blue-700 dark:text-blue-300',
+        divider: 'border-blue-300/60 dark:border-blue-800/60',
+      },
+    }[status] || {
+      card: 'bg-blue-50 dark:bg-blue-950/40 border-blue-300 dark:border-blue-800 border-l-4 border-l-blue-500',
+      chip: 'bg-blue-600 text-white',
+      soft: 'bg-blue-500/15 text-blue-700 dark:text-blue-300',
+      primaryText: 'text-blue-900 dark:text-blue-100',
+      mutedText: 'text-blue-700/70 dark:text-blue-300/70',
+      amount: 'text-blue-700 dark:text-blue-300',
+      divider: 'border-blue-300/60 dark:border-blue-800/60',
     };
-    
+
     return (
       <div 
         key={record.id} 
-        className={`${getCardStatusClasses(record.session_status)} border rounded-lg p-3 shadow-sm mb-2 hover:shadow-md transition-all relative group`}
+        className={`border ${theme.card} rounded-lg p-3 shadow-sm mb-2 hover:shadow-md transition-all relative group`}
       >
         <div className="absolute top-2 right-2 transition-opacity">
           <RecurringRecordActions record={record} onEdit={handleEditRecord} onEditSeries={handleEditSeries} />
         </div>
         
         <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-medium">
+          <div className={`flex items-center px-3 py-1 rounded-full text-sm font-medium ${theme.chip}`}>
             <ClockIcon className="h-3.5 w-3.5 mr-1" />
             {time || "Sem horário"}
           </div>
           <div className="flex items-center gap-2 pr-28">
             {duration && (
-              <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
+              <div className={`text-xs px-2 py-1 rounded-full ${theme.soft}`}>
                 {duration}
               </div>
             )}
@@ -550,30 +577,31 @@ export default function FinancialRecords() {
         </div>
         
         <div className="space-y-1 mb-3">
-          <div className="font-semibold text-foreground line-clamp-1">
+          <div className={`font-semibold line-clamp-1 ${theme.primaryText}`}>
             {record.patient_name || 'Sem paciente'}
           </div>
-          <div className="text-sm text-muted-foreground line-clamp-1 flex items-center">
+          <div className={`text-sm line-clamp-1 flex items-center ${theme.mutedText}`}>
             <BuildingIcon className="h-3 w-3 mr-1" />
             {record.clinic_name}
           </div>
         </div>
         
         {getCleanDescription(record.description) && (
-          <div className="text-xs text-muted-foreground mb-2 line-clamp-2 bg-muted/50 p-2 rounded-md">
+          <div className={`text-xs mb-2 line-clamp-2 p-2 rounded-md ${theme.soft}`}>
             {getCleanDescription(record.description)}
           </div>
         )}
         
-        <div className="flex items-center justify-between pt-2 border-t border-border">
-          <div className="text-xs text-muted-foreground">
+        <div className={`flex items-center justify-between pt-2 border-t ${theme.divider}`}>
+          <div className={`text-xs ${theme.mutedText}`}>
             Dia da semana: {getWeekdayLabel(record.description) || format(parseDateLocal(record.session_date), "EEEE", { locale: ptBR })}
           </div>
-          <div className="font-bold text-primary text-lg">
+          <div className={`font-bold text-lg ${theme.amount}`}>
             {formatCurrency(record.amount)}
           </div>
         </div>
       </div>
+
     );
   };
   
