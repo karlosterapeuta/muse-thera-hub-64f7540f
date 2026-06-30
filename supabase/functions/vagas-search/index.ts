@@ -220,8 +220,10 @@ Responda APENAS um JSON array no formato [{"i":0,"music":true,"score":85}].\n\n$
     let skippedClass = 0;
     for (let i = 0; i < fresh.length; i++) {
       const c = fresh[i];
-      const cls = classifications[i] ?? { music: true, score: 50 };
-      if (!cls.music || cls.score < 40) {
+      // PREMIUM: require an explicit music-therapy classification (no optimistic default)
+      // and a high confidence score. Anything not clearly a real music-therapy job is dropped.
+      const cls = classifications[i] ?? { music: false, score: 0 };
+      if (!cls.music || cls.score < AUTO_APPROVE_MIN_SCORE) {
         skippedClass++;
         continue;
       }
