@@ -183,18 +183,20 @@ Deno.serve(async (req) => {
     const perPeriod: number = settings?.per_period ?? 2;
     const groupUrl: string | null = settings?.whatsapp_group_url ?? null;
 
-    // Avoid double-sending in the same period today.
-    const today = new Date().toISOString().slice(0, 10);
+    // Avoid the cron firing twice in quick succession (double-send guard).
+    // We only block if a dispatch already ran in the last 2 hours — this way a
+    // stray earlier send (manual test / leftover job) never blocks the daily
+    // scheduled 20:00 dispatch.
+    const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
     const { count: alreadySent } = await admin
       .from("job_vacancies")
       .select("id", { count: "exact", head: true })
       .eq("status", "sent")
-      .eq("sent_period", period)
-      .gte("sent_at", `${today}T00:00:00Z`);
+      .gte("sent_at", twoHoursAgo);
 
     if ((alreadySent ?? 0) >= perPeriod && !body.force) {
       return new Response(
-        JSON.stringify({ sent: 0, message: `Período ${period} já enviado hoje` }),
+        JSON.stringify({ sent: 0, message: `Já enviado nas últimas 2 horas` }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
