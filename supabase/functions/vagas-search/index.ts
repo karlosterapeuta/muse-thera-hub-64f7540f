@@ -230,6 +230,22 @@ Responda APENAS um JSON array no formato [{"i":0,"music":true,"score":85}].\n\n$
         continue;
       }
 
+      // Server-side safety net: hard-block excluded professions even if the AI
+      // misclassified them. Reject any vacancy whose title/description points to
+      // occupational therapy, speech therapy or psychology as the actual role.
+      const haystack = `${c.title} ${c.description}`.toLowerCase();
+      const EXCLUDED_ROLES = [
+        "terapia ocupacional", "terapeuta ocupacional", "fonoaudiolog", "fonoaudiólog",
+        "psicolog", "psicólog", "psicopedagog",
+      ];
+      const hasMusic = /musicoterap/.test(haystack);
+      const hasExcluded = EXCLUDED_ROLES.some((t) => haystack.includes(t));
+      if (hasExcluded && !hasMusic) {
+        skippedClass++;
+        continue;
+      }
+
+
       // Best-effort link health check. Many job boards block server-side
       // requests (403/999), so we never DROP a vacancy on a failed check —
       // we only record link_ok so the UI can flag it.
