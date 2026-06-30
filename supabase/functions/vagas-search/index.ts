@@ -146,10 +146,12 @@ Deno.serve(async (req) => {
     const prompt = `Você é um classificador PREMIUM e RIGOROSO de vagas de emprego para MUSICOTERAPEUTAS no Brasil. Para cada item, decida se é REALMENTE uma vaga de emprego ABERTA e VERDADEIRA exclusivamente para MUSICOTERAPEUTA / profissional de MUSICOTERAPIA.
 
 REGRAS RÍGIDAS:
-- music=true SOMENTE se o cargo for de musicoterapeuta/musicoterapia. NÃO aceite vagas de psicólogo, fonoaudiólogo, terapeuta ocupacional, professor de música, fisioterapeuta ou "área da saúde" genérica.
+- music=true SOMENTE se o cargo for EXCLUSIVAMENTE de musicoterapeuta/musicoterapia.
+- EXCLUSÃO AUTOMÁTICA (music=false, score=0) — rejeite SEMPRE, sem exceção, qualquer vaga cujo cargo seja ou inclua: TERAPIA OCUPACIONAL / terapeuta ocupacional / "T.O." / "TO", FONOAUDIOLOGIA / fonoaudiólogo(a) / "fono", PSICOLOGIA / psicólogo(a) / psicopedagogo(a). Mesmo que o texto mencione "musicoterapia" junto, se o cargo ofertado for um desses, é music=false.
+- Também NÃO aceite: fisioterapeuta, professor de música, educador musical, ABA terapeuta sem ser musicoterapia, ou "área da saúde / multidisciplinar" genérica.
 - music=false para: cursos, formações, eventos, congressos, notícias, artigos, posts genéricos, depoimentos, divulgação de serviços ou vagas que apenas mencionam musicoterapia sem ser o cargo.
-- score (0-100) = confiança de que é uma VAGA REAL e ATUAL de musicoterapeuta. Use score alto (>=80) apenas quando houver clara intenção de contratação (ex: "vaga", "contratando", "trabalhe conosco", "estamos contratando musicoterapeuta").
-- Vagas do Instagram de clínicas TEA/autismo contratando musicoterapeuta são bem-vindas, desde que sejam contratação real.
+- score (0-100) = confiança de que é uma VAGA REAL e ATUAL de musicoterapeuta. Use score alto (>=80) apenas quando houver clara intenção de contratação (ex: "vaga", "contratando", "trabalhe conosco", "estamos contratando musicoterapeuta"). Na MENOR dúvida entre musicoterapia e outra profissão (TO, fono, psicologia), classifique como music=false.
+- Vagas do Instagram de clínicas TEA/autismo contratando musicoterapeuta são bem-vindas, desde que o cargo seja especificamente musicoterapeuta.
 
 Responda APENAS um JSON array no formato [{"i":0,"music":true,"score":85}].\n\n${list}`;
 
