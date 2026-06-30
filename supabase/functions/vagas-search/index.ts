@@ -73,18 +73,20 @@ Deno.serve(async (req) => {
     // When auto_send is on, high-confidence vacancies are approved automatically
     // so they can be dispatched to the WhatsApp group without manual review.
     const autoSend: boolean = settings?.auto_send === true;
-    // Auto-approve any vacancy classified as music therapy (no manual review).
-    const AUTO_APPROVE_MIN_SCORE = 40;
+    // PREMIUM FILTER: only auto-approve high-confidence music-therapy vacancies.
+    const AUTO_APPROVE_MIN_SCORE = 70;
 
-    // --- 1. Search public job boards + Instagram (TEA clinics) via Firecrawl --
+    // --- 1. Search Instagram + job boards focused on REAL music-therapy jobs --
+    // Priority: Instagram (TEA/autism clinics) and genuine openings across ALL Brazil.
     const queries = [
-      `vaga emprego ${keywords[0]} Brasil`,
-      `${keywords[0]} contratação clínica hospital`,
-      // Instagram: TEA/autism clinics that post music-therapist openings
-      `site:instagram.com clínica TEA autismo vaga ${keywords[0]}`,
-      `site:instagram.com vaga ${keywords[0]} clínica autismo "trabalhe conosco"`,
-      `instagram clínica TEA contratando ${keywords[0]} vaga`,
+      `site:instagram.com vaga ${keywords[0]} clínica autismo TEA`,
+      `site:instagram.com "vaga" OR "trabalhe conosco" ${keywords[0]} clínica`,
+      `site:instagram.com contratando ${keywords[0]} Brasil`,
+      `instagram clínica TEA autismo contratando ${keywords[0]} vaga`,
+      `vaga emprego ${keywords[0]} clínica Brasil`,
+      `${keywords[0]} contratação clínica hospital reabilitação Brasil`,
     ];
+
 
     const candidates: Candidate[] = [];
     for (const q of queries) {
