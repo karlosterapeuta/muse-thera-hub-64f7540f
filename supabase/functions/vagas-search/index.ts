@@ -73,18 +73,20 @@ Deno.serve(async (req) => {
     // When auto_send is on, high-confidence vacancies are approved automatically
     // so they can be dispatched to the WhatsApp group without manual review.
     const autoSend: boolean = settings?.auto_send === true;
-    // Auto-approve any vacancy classified as music therapy (no manual review).
-    const AUTO_APPROVE_MIN_SCORE = 40;
+    // PREMIUM FILTER: only auto-approve high-confidence music-therapy vacancies.
+    const AUTO_APPROVE_MIN_SCORE = 70;
 
-    // --- 1. Search public job boards + Instagram (TEA clinics) via Firecrawl --
+    // --- 1. Search Instagram + job boards focused on REAL music-therapy jobs --
+    // Priority: Instagram (TEA/autism clinics) and genuine openings across ALL Brazil.
     const queries = [
-      `vaga emprego ${keywords[0]} Brasil`,
-      `${keywords[0]} contratação clínica hospital`,
-      // Instagram: TEA/autism clinics that post music-therapist openings
-      `site:instagram.com clínica TEA autismo vaga ${keywords[0]}`,
-      `site:instagram.com vaga ${keywords[0]} clínica autismo "trabalhe conosco"`,
-      `instagram clínica TEA contratando ${keywords[0]} vaga`,
+      `site:instagram.com vaga ${keywords[0]} clínica autismo TEA`,
+      `site:instagram.com "vaga" OR "trabalhe conosco" ${keywords[0]} clínica`,
+      `site:instagram.com contratando ${keywords[0]} Brasil`,
+      `instagram clínica TEA autismo contratando ${keywords[0]} vaga`,
+      `vaga emprego ${keywords[0]} clínica Brasil`,
+      `${keywords[0]} contratação clínica hospital reabilitação Brasil`,
     ];
+
 
     const candidates: Candidate[] = [];
     for (const q of queries) {
@@ -141,7 +143,15 @@ Deno.serve(async (req) => {
     const list = fresh
       .map((c, i) => `${i}. ${c.title} — ${c.description} (${c.url})`)
       .join("\n");
-    const prompt = `Você é um classificador de vagas de emprego. Para cada item abaixo, decida se é REALMENTE uma vaga de emprego aberta para MUSICOTERAPEUTA (não curso, não notícia, não artigo, não evento). Responda APENAS um JSON array no formato [{"i":0,"music":true,"score":85}], onde music indica se é vaga de musicoterapeuta e score (0-100) a confiança.\n\n${list}`;
+    const prompt = `Você é um classificador PREMIUM e RIGOROSO de vagas de emprego para MUSICOTERAPEUTAS no Brasil. Para cada item, decida se é REALMENTE uma vaga de emprego ABERTA e VERDADEIRA exclusivamente para MUSICOTERAPEUTA / profissional de MUSICOTERAPIA.
+
+REGRAS RÍGIDAS:
+- music=true SOMENTE se o cargo for de musicoterapeuta/musicoterapia. NÃO aceite vagas de psicólogo, fonoaudiólogo, terapeuta ocupacional, professor de música, fisioterapeuta ou "área da saúde" genérica.
+- music=false para: cursos, formações, eventos, congressos, notícias, artigos, posts genéricos, depoimentos, divulgação de serviços ou vagas que apenas mencionam musicoterapia sem ser o cargo.
+- score (0-100) = confiança de que é uma VAGA REAL e ATUAL de musicoterapeuta. Use score alto (>=80) apenas quando houver clara intenção de contratação (ex: "vaga", "contratando", "trabalhe conosco", "estamos contratando musicoterapeuta").
+- Vagas do Instagram de clínicas TEA/autismo contratando musicoterapeuta são bem-vindas, desde que sejam contratação real.
+
+Responda APENAS um JSON array no formato [{"i":0,"music":true,"score":85}].\n\n${list}`;
 
     function parseClassifications(text: string) {
       const match = text.match(/\[[\s\S]*\]/);
@@ -210,8 +220,10 @@ Deno.serve(async (req) => {
     let skippedClass = 0;
     for (let i = 0; i < fresh.length; i++) {
       const c = fresh[i];
-      const cls = classifications[i] ?? { music: true, score: 50 };
-      if (!cls.music || cls.score < 40) {
+      // PREMIUM: require an explicit music-therapy classification (no optimistic default)
+      // and a high confidence score. Anything not clearly a real music-therapy job is dropped.
+      const cls = classifications[i] ?? { music: false, score: 0 };
+      if (!cls.music || cls.score < AUTO_APPROVE_MIN_SCORE) {
         skippedClass++;
         continue;
       }
