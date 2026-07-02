@@ -4,6 +4,7 @@ import { Music, Maximize2, RotateCcw, Star, Heart, X, Smartphone } from "lucide-
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
+import { ResourceBackButton } from "@/components/ResourceBackButton";
 
 export default function ChromeMusicLab() {
   const [isLoading, setIsLoading] = useState(true);
