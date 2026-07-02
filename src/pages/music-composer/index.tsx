@@ -428,6 +428,9 @@ const MusicComposer = () => {
         ? 'bg-black text-white' 
         : 'bg-gray-100'
     }`} style={{ fontSize: accessibilitySettings.largeText ? '18px' : '14px' }}>
+      <div className="p-2">
+        <ResourceBackButton />
+      </div>
       
       {/* Top Toolbar */}
       <TopToolbar
