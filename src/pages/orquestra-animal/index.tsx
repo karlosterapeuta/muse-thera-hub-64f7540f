@@ -11,6 +11,7 @@ import { SectionFilter } from "./components/SectionFilter";
 import { InstrumentInfoCard } from "./components/InstrumentInfoCard";
 import { SequencerBar } from "./components/SequencerBar";
 import { QuizPanel } from "./components/QuizPanel";
+import { ResourceBackButton } from "@/components/ResourceBackButton";
 
 type Mode = "livre" | "compositor" | "quiz";
 
