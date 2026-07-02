@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { ResourceBackButton } from "@/components/ResourceBackButton";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Info, Play, Square, Volume2, VolumeX, Music } from "lucide-react";
