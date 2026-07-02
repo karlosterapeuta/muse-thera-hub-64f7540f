@@ -3,7 +3,7 @@ import { HelmetProvider } from 'react-helmet-async'
 import App from './App.tsx'
 import './index.css'
 import { registerSW } from 'virtual:pwa-register'
-import { checkVersionAndCleanup } from './utils/versionManager'
+import { checkVersionAndCleanup, startVersionPolling } from './utils/versionManager'
 
 // Set initial theme
 const theme = localStorage.getItem('theme') || 'dark';
@@ -12,6 +12,10 @@ document.documentElement.classList.add(theme);
 // Check version and clean caches before rendering
 checkVersionAndCleanup().then((needsReload) => {
   if (needsReload) return; // Page will reload, stop here
+
+  // Periodically verify if a newer build is deployed and auto-update
+  startVersionPolling();
+
 
   // Register Service Worker with auto-update
   const updateSW = registerSW({
