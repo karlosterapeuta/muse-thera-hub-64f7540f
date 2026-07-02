@@ -39,7 +39,7 @@ const Finance = lazy(() => import("./pages/finance"));
 const ScientificArticle = lazy(() => import("./pages/scientific-article"));
 const Activities = lazy(() => import("./pages/activities"));
 const MusicalBells = lazy(() => import("./pages/musical-bells"));
-const BellHero = lazy(() => import("./pages/bell-hero"));
+
 const TeaHero = lazy(() => import("./pages/tea-hero"));
 const Musicogram = lazy(() => import("./pages/musicogram"));
 const SprunKi = lazy(() => import("./pages/SprunKi"));
