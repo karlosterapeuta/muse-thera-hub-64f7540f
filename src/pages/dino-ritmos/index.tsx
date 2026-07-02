@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Settings, Sparkles, Star, Egg, Music2, Brain, Activity, Clock } from "lucide-react";
+import { ResourceBackButton } from "@/components/ResourceBackButton";
 import { DinoSettingsProvider, useDinoSettings, loadProgress, addTime, DinoProgress } from "./context/DinoSettings";
 import { ensureAudioReady, startAmbient, stopAmbient } from "./audio/dinoSounds";
 import { dinos } from "./data/dinos";
