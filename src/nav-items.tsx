@@ -6,7 +6,7 @@ import {
   Settings,
   UserCheck,
   Calendar,
-  Music,
+  
   Activity,
   Stethoscope,
   ClipboardList,
