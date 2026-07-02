@@ -193,7 +193,7 @@ const DOMAIN_ACTIVITIES: Record<string, Activity[]> = {
 const DOMAIN_GAMES: Record<string, Game[]> = {
   "Musical": [
     { name: "Guitar Hero", icon: "🎸", path: "/guitar-hero", benefit: "Desenvolve percepção rítmica e coordenação" },
-    { name: "Bell Hero", icon: "🔔", path: "/bell-hero", benefit: "Trabalha discriminação de alturas e sequenciamento" },
+    
     { name: "Musical Bells", icon: "🎵", path: "/musical-bells", benefit: "Estimula criação e exploração melódica" }
   ],
   "Psicossocial": [
