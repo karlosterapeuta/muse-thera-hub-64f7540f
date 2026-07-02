@@ -168,6 +168,7 @@ const categories: GameCategory[] = [
 const EXTERNAL_ACTIVITIES_URL = "https://image-replica-system.onrender.com/";
 
 const Resources = () => {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<GameCategory | "Todos">("Todos");
   const [showActivities, setShowActivities] = useState(false);
