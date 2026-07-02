@@ -421,6 +421,7 @@ const MusicalBells = () => {
 
   return (
     <div className="container mx-auto py-8 max-w-6xl">
+      <ResourceBackButton className="mb-4" />
       <div className="mb-8">
         <Card>
           <CardHeader className="pb-3">
