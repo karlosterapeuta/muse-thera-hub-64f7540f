@@ -13,6 +13,10 @@ document.documentElement.classList.add(theme);
 checkVersionAndCleanup().then((needsReload) => {
   if (needsReload) return; // Page will reload, stop here
 
+  // Periodically verify if a newer build is deployed and auto-update
+  startVersionPolling();
+
+
   // Register Service Worker with auto-update
   const updateSW = registerSW({
     immediate: true,
