@@ -3,7 +3,7 @@ import { HelmetProvider } from 'react-helmet-async'
 import App from './App.tsx'
 import './index.css'
 import { registerSW } from 'virtual:pwa-register'
-import { checkVersionAndCleanup } from './utils/versionManager'
+import { checkVersionAndCleanup, startVersionPolling } from './utils/versionManager'
 
 // Set initial theme
 const theme = localStorage.getItem('theme') || 'dark';
