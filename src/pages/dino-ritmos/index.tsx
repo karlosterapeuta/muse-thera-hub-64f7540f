@@ -94,13 +94,16 @@ function DinoRitmosInner() {
       <div className="container mx-auto px-4 py-6 relative z-10">
         {/* Top bar */}
         <div className="flex items-center justify-between mb-6">
-          <button
-            onClick={() => setScreen("home")}
-            className={`text-xl font-black ${calm ? "text-purple-200" : "text-purple-700"}`}
-            style={{ fontFamily: "'Fredoka', sans-serif" }}
-          >
-            🦖 Dino Ritmos
-          </button>
+          <div className="flex items-center gap-2">
+            <ResourceBackButton variant="outline" className="bg-white/80 dark:bg-slate-700" />
+            <button
+              onClick={() => setScreen("home")}
+              className={`text-xl font-black ${calm ? "text-purple-200" : "text-purple-700"}`}
+              style={{ fontFamily: "'Fredoka', sans-serif" }}
+            >
+              🦖 Dino Ritmos
+            </button>
+          </div>
 
           <div className="flex items-center gap-2">
             <Badge icon={<Star className="w-4 h-4 fill-yellow-400 text-yellow-500" />} value={progress.stars} />
