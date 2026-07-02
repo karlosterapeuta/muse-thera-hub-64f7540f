@@ -10,6 +10,7 @@ import { guitarHeroAudio } from './utils/guitarHeroAudio';
 import GuitarHeroUI from './components/GuitarHeroUI';
 import { YouTubeVideoModal } from './components/YouTubeVideoModal';
 import { getYouTubeId } from '@/utils/youtubeUtils';
+import { ResourceBackButton } from "@/components/ResourceBackButton";
 
 // Configuração das notas dos Boomwhackers
 const BOOMWHACKER_NOTES = [
