@@ -7,6 +7,7 @@ import {
   Sparkles, Search, Filter
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { ResourceBackButton } from "@/components/ResourceBackButton";
 import { Input } from "@/components/ui/input";
 
 import SpeechDetector from "@/components/fala-magica/SpeechDetector";
