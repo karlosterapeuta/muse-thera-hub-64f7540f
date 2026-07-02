@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { SongPDF } from "@/components/SongPDF";
 import html2pdf from "html2pdf.js";
 import { playNoteSound, stopAllAudio } from "@/utils/audioUtils";
+import { ResourceBackButton } from "@/components/ResourceBackButton";
 
 const notes = [
   { note: "C↓", label: "Dó↓", color: "#FF0000", colorName: "VERMELHO" },    // Red - Low Dó
