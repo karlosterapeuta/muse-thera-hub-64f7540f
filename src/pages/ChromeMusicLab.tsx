@@ -92,6 +92,7 @@ export default function ChromeMusicLab() {
           </div>
           
           <div className="flex gap-2">
+            <ResourceBackButton />
             <Button
               variant="outline"
               size={isMobile ? "sm" : "default"}
