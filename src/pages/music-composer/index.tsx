@@ -10,6 +10,7 @@ import MusicImporter from "./components/MusicImporter";
 import AccessibilityPanel from "./components/AccessibilityPanel";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ResourceBackButton } from "@/components/ResourceBackButton";
 
 interface Note {
   id: string;
