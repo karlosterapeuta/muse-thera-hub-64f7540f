@@ -7,6 +7,7 @@ import {
   Sparkles, Search, Filter
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { ResourceBackButton } from "@/components/ResourceBackButton";
 import { Input } from "@/components/ui/input";
 
 import SpeechDetector from "@/components/fala-magica/SpeechDetector";
@@ -300,6 +301,7 @@ export default function SongsPage() {
 
   return (
     <div className="container mx-auto py-6">
+      <ResourceBackButton className="mb-4" />
       <Card className="shadow-lg mb-6">
         <CardHeader className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
           <CardTitle className="text-3xl flex items-center">

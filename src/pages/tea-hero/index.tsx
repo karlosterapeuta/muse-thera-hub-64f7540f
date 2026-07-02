@@ -12,6 +12,7 @@ import { getAuthenticMusicalSequence } from "@/data/authenticMusicalSequences";
 import { TEA_MASTER_FREQUENCIES, validateSynchronization } from "@/constants/teaFrequencies";
 import { teaAudioEngine } from "@/utils/teaAudioEngine";
 import { teaHeroAudio } from "./utils/teaHeroAudioManager";
+import { ResourceBackButton } from "@/components/ResourceBackButton";
 
 const TeaHero = () => {
   const [selectedInstrument, setSelectedInstrument] = useState<"bell" | "xylophone" | "keyboard">("bell");
@@ -168,6 +169,7 @@ const TeaHero = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-500 via-purple-600 to-purple-900 text-white">
       <div className="container mx-auto px-4 py-8 space-y-6">
+        <ResourceBackButton variant="outline" className="border-white/30 text-white hover:bg-white/10 hover:text-white" />
         {/* MuseTera Header */}
         <div className="text-center space-y-4 mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
