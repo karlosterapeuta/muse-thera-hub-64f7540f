@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; to add the useNavigate hook for the back button functionality;
+import { Link, useNavigate } from "react-router-dom";
 import {
   RefreshCw,
   Maximize2,
