@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   RefreshCw,
   Maximize2,
@@ -168,6 +168,7 @@ const categories: GameCategory[] = [
 const EXTERNAL_ACTIVITIES_URL = "https://image-replica-system.onrender.com/";
 
 const Resources = () => {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<GameCategory | "Todos">("Todos");
   const [showActivities, setShowActivities] = useState(false);
@@ -284,6 +285,15 @@ const Resources = () => {
       <div className="relative px-4 sm:px-6 py-6 max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-start gap-3 mb-6">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate(-1)}
+            className="shrink-0 rounded-xl"
+            aria-label="Voltar"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/30 shrink-0">
             <Gamepad2 className="h-6 w-6" />
           </div>
