@@ -87,6 +87,7 @@ export default function SprunKi() {
           </div>
           
           <div className="flex gap-2">
+            <ResourceBackButton />
             <Button
               onClick={handleRefresh}
               variant="outline"
