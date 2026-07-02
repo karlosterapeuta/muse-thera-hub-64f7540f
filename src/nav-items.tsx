@@ -111,12 +111,6 @@ export const navItems = [
     variant: "ghost" as const,
   },
   {
-    title: "Bell Hero",
-    to: "/bell-hero",
-    icon: <Music className="h-4 w-4" />,
-    variant: "ghost" as const,
-  },
-  {
     title: "TEA Hero",
     to: "/tea-hero",
     icon: <TestTube className="h-4 w-4" />,
