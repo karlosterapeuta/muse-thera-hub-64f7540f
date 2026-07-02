@@ -7,7 +7,7 @@ import {
   ArrowLeft,
   Search,
   Bell,
-  Music,
+  
   Music2,
   Music4,
   Piano,
@@ -47,15 +47,6 @@ const games: GameItem[] = [
     gradient: "from-rose-500 to-orange-500",
     category: "Instrumentos",
     tags: ["TEA", "Cores"],
-  },
-  {
-    title: "Bell Hero",
-    description: "Jogo rítmico de sinos no estilo Guitar Hero, otimizado para TEA.",
-    to: "/bell-hero",
-    icon: Music,
-    gradient: "from-amber-500 to-yellow-500",
-    category: "Ritmo & Melodia",
-    tags: ["TEA", "Ritmo"],
   },
   {
     title: "TEA Hero",

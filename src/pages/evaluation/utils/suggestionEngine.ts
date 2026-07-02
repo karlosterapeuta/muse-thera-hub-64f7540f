@@ -193,7 +193,7 @@ const DOMAIN_ACTIVITIES: Record<string, Activity[]> = {
 const DOMAIN_GAMES: Record<string, Game[]> = {
   "Musical": [
     { name: "Guitar Hero", icon: "🎸", path: "/guitar-hero", benefit: "Desenvolve percepção rítmica e coordenação" },
-    { name: "Bell Hero", icon: "🔔", path: "/bell-hero", benefit: "Trabalha discriminação de alturas e sequenciamento" },
+    
     { name: "Musical Bells", icon: "🎵", path: "/musical-bells", benefit: "Estimula criação e exploração melódica" }
   ],
   "Psicossocial": [
@@ -205,8 +205,7 @@ const DOMAIN_GAMES: Record<string, Game[]> = {
     { name: "TEA Hero", icon: "🎯", path: "/tea-hero", benefit: "Trabalha sequenciamento e funções executivas" }
   ],
   "Sensório-Motor": [
-    { name: "Boomwhacker Hero", icon: "🥁", path: "/boomwhacker-hero", benefit: "Aprimora coordenação motora e integração bilateral" },
-    { name: "Bell Hero", icon: "🔔", path: "/bell-hero", benefit: "Desenvolve coordenação fina e timing motor" }
+    { name: "Boomwhacker Hero", icon: "🥁", path: "/boomwhacker-hero", benefit: "Aprimora coordenação motora e integração bilateral" }
   ],
   "Comunicativo-Interativo": [
     { name: "Musical Bells", icon: "🔔", path: "/musical-bells", benefit: "Estimula vocalização e expressão comunicativa" },

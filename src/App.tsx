@@ -39,7 +39,7 @@ const Finance = lazy(() => import("./pages/finance"));
 const ScientificArticle = lazy(() => import("./pages/scientific-article"));
 const Activities = lazy(() => import("./pages/activities"));
 const MusicalBells = lazy(() => import("./pages/musical-bells"));
-const BellHero = lazy(() => import("./pages/bell-hero"));
+
 const TeaHero = lazy(() => import("./pages/tea-hero"));
 const Musicogram = lazy(() => import("./pages/musicogram"));
 const SprunKi = lazy(() => import("./pages/SprunKi"));
@@ -216,7 +216,7 @@ const App = () => {
             <Route path="activities/favorites" element={<ActivityFavorites />} />
             <Route path="activities/category/:categoryId" element={<ActivityCategory />} />
             <Route path="musical-bells" element={<MusicalBells />} />
-            <Route path="bell-hero" element={<BellHero />} />
+            
             <Route path="tea-hero" element={<TeaHero />} />
             <Route path="musicogram" element={<Musicogram />} />
             <Route path="sprunki" element={<SprunKi />} />

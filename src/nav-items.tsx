@@ -6,7 +6,7 @@ import {
   Settings,
   UserCheck,
   Calendar,
-  Music,
+  
   Activity,
   Stethoscope,
   ClipboardList,
@@ -108,12 +108,6 @@ export const navItems = [
     title: "Sinos Musicais",
     to: "/musical-bells",
     icon: <Bell className="h-4 w-4" />,
-    variant: "ghost" as const,
-  },
-  {
-    title: "Bell Hero",
-    to: "/bell-hero",
-    icon: <Music className="h-4 w-4" />,
     variant: "ghost" as const,
   },
   {
