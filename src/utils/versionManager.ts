@@ -80,5 +80,73 @@ export async function checkVersionAndCleanup(): Promise<boolean> {
   return true; // Signal caller to stop rendering
 }
 
+/**
+ * Fetch the live index.html (bypassing cache) and extract a fingerprint
+ * of the deployed build: the set of hashed entry asset URLs. When a new
+ * build is deployed these filenames change, giving us a reliable signal.
+ */
+async function fetchDeployedFingerprint(): Promise<string | null> {
+  try {
+    const res = await fetch(`/index.html?_v=${Date.now()}`, {
+      cache: 'no-store',
+      headers: { 'Cache-Control': 'no-cache' },
+    });
+    if (!res.ok) return null;
+    const html = await res.text();
+    // Collect hashed asset references (js/css) which change every build
+    const matches = html.match(/(?:src|href)="([^"]*\/assets\/[^"]+\.(?:js|css))"/g);
+    if (!matches || matches.length === 0) return null;
+    return matches.sort().join('|');
+  } catch {
+    return null;
+  }
+}
+
+let currentFingerprint: string | null = null;
+let versionPollInterval: number | null = null;
+let isUpdating = false;
+
+async function checkForNewDeployment(): Promise<void> {
+  if (isUpdating || document.visibilityState !== 'visible') return;
+
+  const latest = await fetchDeployedFingerprint();
+  if (!latest) return;
+
+  // First successful read establishes the baseline
+  if (currentFingerprint === null) {
+    currentFingerprint = latest;
+    return;
+  }
+
+  // A change means a new build is live -> update automatically
+  if (latest !== currentFingerprint) {
+    isUpdating = true;
+    console.log('[VersionManager] Nova versão detectada em runtime, atualizando...');
+    await clearAllCaches();
+    localStorage.setItem(RELOAD_FLAG, 'true');
+    localStorage.setItem(VERSION_KEY, APP_VERSION);
+    window.location.reload();
+  }
+}
+
+/**
+ * Start periodic checks for new deployments. Automatically clears caches and
+ * reloads when a newer build is detected, without any user interaction.
+ */
+export function startVersionPolling(intervalMs = 60 * 1000): void {
+  if (versionPollInterval !== null) return;
+
+  // Establish baseline immediately
+  checkForNewDeployment();
+
+  versionPollInterval = window.setInterval(checkForNewDeployment, intervalMs);
+
+  // Also check whenever the tab regains focus / becomes visible
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') checkForNewDeployment();
+  });
+  window.addEventListener('focus', () => checkForNewDeployment());
+}
+
 // Type declaration for the global constant injected by Vite
 declare const __APP_VERSION__: string;
