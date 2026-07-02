@@ -216,7 +216,7 @@ const App = () => {
             <Route path="activities/favorites" element={<ActivityFavorites />} />
             <Route path="activities/category/:categoryId" element={<ActivityCategory />} />
             <Route path="musical-bells" element={<MusicalBells />} />
-            <Route path="bell-hero" element={<BellHero />} />
+            
             <Route path="tea-hero" element={<TeaHero />} />
             <Route path="musicogram" element={<Musicogram />} />
             <Route path="sprunki" element={<SprunKi />} />
