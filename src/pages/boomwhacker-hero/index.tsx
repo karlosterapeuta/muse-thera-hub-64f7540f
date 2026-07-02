@@ -229,7 +229,8 @@ const BoomwhackerHero: React.FC = () => {
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white">
         {/* Header */}
         <header className="fixed top-0 left-0 right-0 z-50 p-4 flex justify-between items-center bg-black bg-opacity-80 backdrop-blur-sm">
-          <div className="flex items-center">
+          <div className="flex items-center gap-3">
+            <ResourceBackButton variant="outline" className="border-white/30 text-white hover:bg-white/10 hover:text-white" />
             <h1 className="text-2xl font-bold text-orange-500" style={{ fontFamily: 'Pacifico, cursive' }}>
               🎵 Boomwhacker Hero
             </h1>
