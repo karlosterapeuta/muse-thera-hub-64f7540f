@@ -41,6 +41,10 @@ async function clearAllCaches(): Promise<void> {
     // 4. Clear sessionStorage
     sessionStorage.clear();
     console.log('[VersionManager] sessionStorage limpo');
+
+    // 5. Clear cookies (preserve Supabase auth cookies)
+    clearCookies();
+    console.log('[VersionManager] cookies limpos (auth preservada)');
   } catch (error) {
     console.error('[VersionManager] Erro ao limpar caches:', error);
   }
