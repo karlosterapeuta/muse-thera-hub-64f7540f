@@ -12,6 +12,7 @@ import { getAuthenticMusicalSequence } from "@/data/authenticMusicalSequences";
 import { TEA_MASTER_FREQUENCIES, validateSynchronization } from "@/constants/teaFrequencies";
 import { teaAudioEngine } from "@/utils/teaAudioEngine";
 import { teaHeroAudio } from "./utils/teaHeroAudioManager";
+import { ResourceBackButton } from "@/components/ResourceBackButton";
 
 const TeaHero = () => {
   const [selectedInstrument, setSelectedInstrument] = useState<"bell" | "xylophone" | "keyboard">("bell");
