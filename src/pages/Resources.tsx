@@ -49,15 +49,6 @@ const games: GameItem[] = [
     tags: ["TEA", "Cores"],
   },
   {
-    title: "Bell Hero",
-    description: "Jogo rítmico de sinos no estilo Guitar Hero, otimizado para TEA.",
-    to: "/bell-hero",
-    icon: Music,
-    gradient: "from-amber-500 to-yellow-500",
-    category: "Ritmo & Melodia",
-    tags: ["TEA", "Ritmo"],
-  },
-  {
     title: "TEA Hero",
     description: "Melodias 100% sincronizadas visual-auditivas validadas para TEA.",
     to: "/tea-hero",
