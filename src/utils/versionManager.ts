@@ -11,6 +11,31 @@ function shouldPreserveKey(key: string): boolean {
   return PRESERVED_PREFIXES.some(prefix => key.startsWith(prefix));
 }
 
+function clearCookies(): void {
+  try {
+    const cookies = document.cookie.split(';');
+    for (const cookie of cookies) {
+      const eqPos = cookie.indexOf('=');
+      const name = (eqPos > -1 ? cookie.substring(0, eqPos) : cookie).trim();
+      if (!name) continue;
+      // Preserve Supabase auth cookies (avoid forcing logout)
+      if (name.startsWith('sb-')) continue;
+
+      const paths = ['/', window.location.pathname];
+      const domains = ['', window.location.hostname, `.${window.location.hostname}`];
+      for (const path of paths) {
+        for (const domain of domains) {
+          document.cookie =
+            `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=${path}` +
+            (domain ? `;domain=${domain}` : '');
+        }
+      }
+    }
+  } catch (error) {
+    console.warn('[VersionManager] Falha ao limpar cookies:', error);
+  }
+}
+
 async function clearAllCaches(): Promise<void> {
   try {
     // 1. Clear Cache API (Service Worker caches)
@@ -41,6 +66,10 @@ async function clearAllCaches(): Promise<void> {
     // 4. Clear sessionStorage
     sessionStorage.clear();
     console.log('[VersionManager] sessionStorage limpo');
+
+    // 5. Clear cookies (preserve Supabase auth cookies)
+    clearCookies();
+    console.log('[VersionManager] cookies limpos (auth preservada)');
   } catch (error) {
     console.error('[VersionManager] Erro ao limpar caches:', error);
   }
