@@ -178,6 +178,7 @@ export default function BinauralFrequencies() {
 
   return (
     <div className="container mx-auto py-6 max-w-4xl">
+      <ResourceBackButton className="mb-4" />
       <div className="mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-primary mb-2">
           Frequências Binaurais Terapêuticas

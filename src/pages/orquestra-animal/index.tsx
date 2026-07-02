@@ -167,6 +167,7 @@ export default function OrquestraAnimal() {
       </div>
 
       <div className="container mx-auto px-3 sm:px-6 py-6 sm:py-8">
+        <ResourceBackButton className="mb-4" />
         {/* Header */}
         <div className="text-center mb-6">
           <h1
