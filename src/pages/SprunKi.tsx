@@ -4,6 +4,7 @@ import { RefreshCw, Maximize, X, Music, Star, Heart, Smartphone, AlertTriangle, 
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { ResourceBackButton } from "@/components/ResourceBackButton";
 
 export default function SprunKi() {
   const [isLoading, setIsLoading] = useState(true);
