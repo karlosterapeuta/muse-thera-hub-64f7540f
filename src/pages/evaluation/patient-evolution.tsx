@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, FileBarChart, User, FileDown, Loader2, CheckCircle2 } from "lucide-react";
 import { SavedEvaluation } from "@/hooks/useEvaluationStorage";
 import { EvaluationHistory } from "./components/EvaluationHistory";
+import { EvolutionTimeline } from "./components/EvolutionTimeline";
 import { EvaluationComparison } from "./components/EvaluationComparison";
 import { AreasAnalysis } from "./components/AreasAnalysis";
 import { EVALUATION_TYPES } from "@/utils/evaluationTypes";
