@@ -1546,9 +1546,9 @@ export default function Evaluation() {
           <div className="w-24 h-1 bg-gradient-to-r from-purple-500 to-blue-500 mx-auto mt-4 rounded-full"></div>
         </div>
         
-        <Card className="backdrop-blur-sm bg-background/80 border border-blue-200/60 dark:border-blue-800/60 shadow-2xl shadow-blue-500/10 p-6 sm:p-8 rounded-3xl animate-fade-in">
-          <div className="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-6 mb-8">
-            <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center">
+        <Card className="backdrop-blur-sm bg-background/80 border border-blue-200/60 dark:border-blue-800/60 shadow-2xl shadow-blue-500/10 p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl animate-fade-in">
+          <div className="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4 sm:gap-6 mb-6 sm:mb-8">
+            <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 items-stretch lg:items-center">
               <div className="p-1 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl">
                 <div className="bg-background rounded-xl p-4 shadow-sm">
                   <PatientSelect
