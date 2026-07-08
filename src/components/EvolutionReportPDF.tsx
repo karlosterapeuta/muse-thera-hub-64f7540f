@@ -446,7 +446,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
       </div>
 
       {/* Identificação: Paciente + Profissional */}
-      <div style={{ display: "flex", gap: 16, marginBottom: 22 }}>
+      <div data-pdf-section style={{ display: "flex", gap: 16, marginBottom: 22 }}>
         <div
           style={{
             flex: 1,
