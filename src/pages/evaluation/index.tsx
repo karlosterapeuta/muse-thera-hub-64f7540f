@@ -94,7 +94,7 @@ export default function Evaluation() {
   const [isGeneratingText, setIsGeneratingText] = useState(false);
   const [activeTab, setActiveTab] = useState(draft?.activeTab || "evaluation");
   const [selectedForComparison, setSelectedForComparison] = useState<string[]>([]);
-  const [editingEvaluationId, setEditingEvaluationId] = useState<string | null>(null);
+  const [editingEvaluationId, setEditingEvaluationId] = useState<string | null>(draft?.editingEvaluationId || null);
   const [evolutionPatientId, setEvolutionPatientId] = useState<string | null>(null);
   const [draftLoaded] = useState(!!draft);
   const [pdfPreviewOpen, setPdfPreviewOpen] = useState(false);
@@ -111,9 +111,10 @@ export default function Evaluation() {
       selections,
       observations,
       activeTab,
+      editingEvaluationId,
     };
     sessionStorage.setItem(EVAL_DRAFT_KEY, JSON.stringify(data));
-  }, [selectedPatient, selectedEvaluation, evaluationDate, selections, observations, activeTab]);
+  }, [selectedPatient, selectedEvaluation, evaluationDate, selections, observations, activeTab, editingEvaluationId]);
 
   const { generateBlankScalePDF } = useEvaluationPDF();
   
