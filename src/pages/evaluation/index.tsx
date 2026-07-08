@@ -1533,11 +1533,11 @@ export default function Evaluation() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="w-full px-0 py-3 sm:py-4 space-y-3 sm:space-y-4 animate-fade-in">
+      <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-3 sm:py-4 space-y-3 sm:space-y-4 animate-fade-in">
         <EvaluationLevelsHero />
         
         <div className="text-center mb-8 animate-fade-in px-2 sm:px-3">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4 animate-pulse-gentle">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4 animate-pulse-gentle">
             Escala MuseTera
           </h1>
           <p className="text-lg sm:text-xl text-muted-foreground font-medium">
@@ -1546,9 +1546,9 @@ export default function Evaluation() {
           <div className="w-24 h-1 bg-gradient-to-r from-purple-500 to-blue-500 mx-auto mt-4 rounded-full"></div>
         </div>
         
-        <Card className="backdrop-blur-sm bg-background/80 border border-blue-200/60 dark:border-blue-800/60 shadow-2xl shadow-blue-500/10 p-6 sm:p-8 rounded-3xl animate-fade-in">
-          <div className="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-6 mb-8">
-            <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center">
+        <Card className="backdrop-blur-sm bg-background/80 border border-blue-200/60 dark:border-blue-800/60 shadow-2xl shadow-blue-500/10 p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl animate-fade-in">
+          <div className="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4 sm:gap-6 mb-6 sm:mb-8">
+            <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 items-stretch lg:items-center">
               <div className="p-1 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl">
                 <div className="bg-background rounded-xl p-4 shadow-sm">
                   <PatientSelect
@@ -1579,7 +1579,7 @@ export default function Evaluation() {
                 <Button
                   variant={"outline"}
                   className={cn(
-                    "w-[220px] justify-start text-left font-normal border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all duration-300 text-foreground font-medium",
+                    "w-full sm:w-[220px] justify-start text-left font-normal border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all duration-300 text-foreground font-medium",
                     !evaluationDate && "text-muted-foreground"
                   )}
                 >
@@ -1601,7 +1601,7 @@ export default function Evaluation() {
               </div>
             </div>
             
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3">
               <Select
                 value={selectedEvaluation}
                 onValueChange={setSelectedEvaluation}
@@ -1634,7 +1634,7 @@ export default function Evaluation() {
                     <Button
                       onClick={handleGenerateEvaluationText}
                       disabled={isGeneratingText}
-                      className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-0 hover:from-blue-600 hover:to-cyan-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full sm:w-auto justify-center flex items-center gap-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-0 hover:from-blue-600 hover:to-cyan-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isGeneratingText ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -1655,7 +1655,7 @@ export default function Evaluation() {
                   <TooltipTrigger asChild>
                     <Button
                       onClick={handleGeneratePrintableScalePDF}
-                      className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                      className="w-full sm:w-auto justify-center flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
                     >
                       <FileDown className="h-4 w-4" />
                       Avaliacao Manual
@@ -1683,7 +1683,7 @@ export default function Evaluation() {
                         }
                       }}
                       disabled={!selectedPatient}
-                      className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-0 hover:from-purple-600 hover:to-indigo-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50"
+                      className="w-full sm:w-auto justify-center flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-0 hover:from-purple-600 hover:to-indigo-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50"
                     >
                       <FileText className="h-4 w-4" />
                       Baixar Gráfico
@@ -1701,7 +1701,7 @@ export default function Evaluation() {
                     <Button
                       onClick={handleSaveEvaluation}
                       disabled={isSaving || !selectedPatient}
-                      className={`flex items-center gap-2 text-white border-0 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 ${
+                      className={`w-full sm:w-auto justify-center flex items-center gap-2 text-white border-0 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 ${
                         editingEvaluationId 
                           ? "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
                           : "bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600"
@@ -1728,7 +1728,7 @@ export default function Evaluation() {
                 <Button
                   variant="outline"
                   onClick={handleCancelEdit}
-                  className="flex items-center gap-2 text-gray-600 border-gray-300 hover:bg-gray-100 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-800"
+                  className="w-full sm:w-auto justify-center flex items-center gap-2 text-gray-600 border-gray-300 hover:bg-gray-100 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-800"
                 >
                   <X className="h-4 w-4" />
                   Cancelar Edição
@@ -1887,7 +1887,7 @@ export default function Evaluation() {
                       
                       return (
                       <div key={subdomainIndex} className="mb-8 last:mb-0">
-                        <Card className={`border-l-4 ${colors.border} ${colors.bg} backdrop-blur-sm p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300`}>
+                        <Card className={`border-l-4 ${colors.border} ${colors.bg} backdrop-blur-sm p-3 sm:p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300`}>
                           <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-2">
                               <div className={`w-2 h-2 rounded-full ${colors.headerBg}`} />
@@ -2011,7 +2011,7 @@ export default function Evaluation() {
                 </div>
               )}
 
-              <Card className="border-0 shadow-2xl p-6 sm:p-8 rounded-3xl bg-background">
+              <Card className="border-0 shadow-2xl p-4 sm:p-8 rounded-3xl bg-background">
                 <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-center bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                   Resultados da Escala MuseTera
                 </h2>
@@ -2044,7 +2044,7 @@ export default function Evaluation() {
 
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
                   {/* Radar Chart */}
-                  <Card className="border border-border/50 shadow-lg p-6 rounded-2xl bg-card">
+                  <Card className="border border-border/50 shadow-lg p-3 sm:p-6 rounded-2xl bg-card">
                     <div className="flex items-center gap-3 mb-6">
                       <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-md">
                         <span className="text-white text-lg">📊</span>
@@ -2098,7 +2098,7 @@ export default function Evaluation() {
                   </Card>
 
                   {/* Donut Chart */}
-                  <Card className="border border-border/50 shadow-lg p-6 rounded-2xl bg-card">
+                  <Card className="border border-border/50 shadow-lg p-3 sm:p-6 rounded-2xl bg-card">
                     <div className="flex items-center gap-3 mb-6">
                       <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-md">
                         <span className="text-white text-lg">🎯</span>
@@ -2166,7 +2166,7 @@ export default function Evaluation() {
                 </div>
                 
                 {/* Bar Chart */}
-                <Card className="border border-border/50 shadow-lg p-6 rounded-2xl bg-card">
+                <Card className="border border-border/50 shadow-lg p-3 sm:p-6 rounded-2xl bg-card">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center shadow-md">
                       <span className="text-white text-lg">📈</span>
@@ -2281,7 +2281,7 @@ export default function Evaluation() {
             
             <TabsContent value="comparison" className="mt-8">
               {/* Header e Grid de Cards de Pacientes */}
-              <Card className="p-6 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-indigo-950/50 dark:via-purple-950/50 dark:to-pink-950/50 border-0 shadow-xl mb-6">
+              <Card className="p-4 sm:p-6 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-indigo-950/50 dark:via-purple-950/50 dark:to-pink-950/50 border-0 shadow-xl mb-6">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="h-12 w-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
                     <FileBarChart className="h-6 w-6 text-white" />
