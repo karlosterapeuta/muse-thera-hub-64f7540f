@@ -607,6 +607,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
         </div>
       </div>
 
+      <div data-pdf-section>
       <SectionTitle color="#4338ca">Levantamento de Dados</SectionTitle>
       <div style={{ display: "flex", gap: 10, marginBottom: 22 }}>
         {[
