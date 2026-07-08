@@ -1579,7 +1579,7 @@ export default function Evaluation() {
                 <Button
                   variant={"outline"}
                   className={cn(
-                    "w-[220px] justify-start text-left font-normal border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all duration-300 text-foreground font-medium",
+                    "w-full sm:w-[220px] justify-start text-left font-normal border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all duration-300 text-foreground font-medium",
                     !evaluationDate && "text-muted-foreground"
                   )}
                 >
