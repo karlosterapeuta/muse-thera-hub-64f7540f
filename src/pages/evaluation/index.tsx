@@ -111,9 +111,10 @@ export default function Evaluation() {
       selections,
       observations,
       activeTab,
+      editingEvaluationId,
     };
     sessionStorage.setItem(EVAL_DRAFT_KEY, JSON.stringify(data));
-  }, [selectedPatient, selectedEvaluation, evaluationDate, selections, observations, activeTab]);
+  }, [selectedPatient, selectedEvaluation, evaluationDate, selections, observations, activeTab, editingEvaluationId]);
 
   const { generateBlankScalePDF } = useEvaluationPDF();
   
