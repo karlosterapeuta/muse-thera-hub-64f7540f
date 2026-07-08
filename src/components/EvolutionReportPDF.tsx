@@ -696,7 +696,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
       </div>
 
       {/* Gráfico de evolução por domínio (Inicial vs Final) */}
-      <div style={{ marginTop: 22, marginBottom: 8 }}>
+      <div data-pdf-section style={{ marginTop: 22, marginBottom: 8 }}>
         <SectionTitle color="#7c3aed">Evolução por Domínio (Inicial → Final)</SectionTitle>
         <DomainVariationBars rows={variationRows} />
         <div style={{ display: "flex", gap: 16, justifyContent: "center", marginTop: 4, fontSize: 9, color: "#64748b" }}>
