@@ -147,9 +147,11 @@ export default function PatientEvolutionPage() {
         selections: content.selections || {},
         observations: content.observations || {},
         activeTab: "evaluation",
+        // Continua editando/avaliando o MESMO registro (retomar em outro momento)
+        editingEvaluationId: evaluation.id,
       };
       sessionStorage.setItem("musetera-eval-draft", JSON.stringify(draft));
-      toast.success("Avaliação carregada! Abrindo na Escala MuseTera...");
+      toast.success("Avaliação carregada! Você pode continuar avaliando de onde parou.");
       navigate("/evaluation");
     } catch (err) {
       console.error("Erro ao carregar avaliação:", err);
