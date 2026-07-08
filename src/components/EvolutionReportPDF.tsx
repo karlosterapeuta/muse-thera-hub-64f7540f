@@ -851,6 +851,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
 
       {/* Rodapé */}
       <div
+        data-pdf-section
         style={{
           marginTop: 26,
           paddingTop: 12,
