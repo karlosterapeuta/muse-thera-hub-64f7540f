@@ -503,6 +503,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
       </div>
 
       {/* Cards das avaliações */}
+      <div data-pdf-section>
       <SectionTitle>Resultados por Avaliação</SectionTitle>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 22 }}>
         {series.map((s, i) => (
