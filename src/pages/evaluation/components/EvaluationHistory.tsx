@@ -196,7 +196,7 @@ export function EvaluationHistory({
                         className="h-8 text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-950 dark:hover:bg-blue-900 dark:text-blue-300 dark:border-blue-800"
                       >
                         <FileText className="h-3 w-3 mr-1" />
-                        Carregar
+                        Editar Avaliação
                       </Button>
                       {onEditEvaluation && (
                         <Button
