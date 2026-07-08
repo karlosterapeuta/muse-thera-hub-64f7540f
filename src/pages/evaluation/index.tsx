@@ -1887,7 +1887,7 @@ export default function Evaluation() {
                       
                       return (
                       <div key={subdomainIndex} className="mb-8 last:mb-0">
-                        <Card className={`border-l-4 ${colors.border} ${colors.bg} backdrop-blur-sm p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300`}>
+                        <Card className={`border-l-4 ${colors.border} ${colors.bg} backdrop-blur-sm p-3 sm:p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300`}>
                           <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-2">
                               <div className={`w-2 h-2 rounded-full ${colors.headerBg}`} />
@@ -2011,7 +2011,7 @@ export default function Evaluation() {
                 </div>
               )}
 
-              <Card className="border-0 shadow-2xl p-6 sm:p-8 rounded-3xl bg-background">
+              <Card className="border-0 shadow-2xl p-4 sm:p-8 rounded-3xl bg-background">
                 <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-center bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                   Resultados da Escala MuseTera
                 </h2>
@@ -2044,7 +2044,7 @@ export default function Evaluation() {
 
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
                   {/* Radar Chart */}
-                  <Card className="border border-border/50 shadow-lg p-6 rounded-2xl bg-card">
+                  <Card className="border border-border/50 shadow-lg p-3 sm:p-6 rounded-2xl bg-card">
                     <div className="flex items-center gap-3 mb-6">
                       <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-md">
                         <span className="text-white text-lg">📊</span>
@@ -2098,7 +2098,7 @@ export default function Evaluation() {
                   </Card>
 
                   {/* Donut Chart */}
-                  <Card className="border border-border/50 shadow-lg p-6 rounded-2xl bg-card">
+                  <Card className="border border-border/50 shadow-lg p-3 sm:p-6 rounded-2xl bg-card">
                     <div className="flex items-center gap-3 mb-6">
                       <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-md">
                         <span className="text-white text-lg">🎯</span>
@@ -2166,7 +2166,7 @@ export default function Evaluation() {
                 </div>
                 
                 {/* Bar Chart */}
-                <Card className="border border-border/50 shadow-lg p-6 rounded-2xl bg-card">
+                <Card className="border border-border/50 shadow-lg p-3 sm:p-6 rounded-2xl bg-card">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center shadow-md">
                       <span className="text-white text-lg">📈</span>
@@ -2281,7 +2281,7 @@ export default function Evaluation() {
             
             <TabsContent value="comparison" className="mt-8">
               {/* Header e Grid de Cards de Pacientes */}
-              <Card className="p-6 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-indigo-950/50 dark:via-purple-950/50 dark:to-pink-950/50 border-0 shadow-xl mb-6">
+              <Card className="p-4 sm:p-6 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-indigo-950/50 dark:via-purple-950/50 dark:to-pink-950/50 border-0 shadow-xl mb-6">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="h-12 w-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
                     <FileBarChart className="h-6 w-6 text-white" />
