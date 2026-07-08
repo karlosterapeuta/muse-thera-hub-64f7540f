@@ -397,6 +397,9 @@ export default function PatientEvolutionPage() {
             )}
           </Card>
 
+          {/* Gráfico de Linha Temporal */}
+          <EvolutionTimeline evaluations={evaluations} patientName={patientName} />
+
           {/* Análise de Áreas */}
           <AreasAnalysis evaluations={evaluations} />
         </div>
