@@ -813,6 +813,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
 
       {/* Assinatura / Carimbo */}
       <div
+        data-pdf-section
         style={{
           marginTop: 36,
           display: "flex",
