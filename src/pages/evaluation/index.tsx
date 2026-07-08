@@ -1537,7 +1537,7 @@ export default function Evaluation() {
         <EvaluationLevelsHero />
         
         <div className="text-center mb-8 animate-fade-in px-2 sm:px-3">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4 animate-pulse-gentle">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4 animate-pulse-gentle">
             Escala MuseTera
           </h1>
           <p className="text-lg sm:text-xl text-muted-foreground font-medium">
