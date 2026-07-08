@@ -412,6 +412,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
     >
       {/* Cabeçalho */}
       <div
+        data-pdf-section
         style={{
           borderBottom: "3px solid #7c3aed",
           paddingBottom: 14,
@@ -445,7 +446,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
       </div>
 
       {/* Identificação: Paciente + Profissional */}
-      <div style={{ display: "flex", gap: 16, marginBottom: 22 }}>
+      <div data-pdf-section style={{ display: "flex", gap: 16, marginBottom: 22 }}>
         <div
           style={{
             flex: 1,
@@ -502,6 +503,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
       </div>
 
       {/* Cards das avaliações */}
+      <div data-pdf-section>
       <SectionTitle>Resultados por Avaliação</SectionTitle>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 22 }}>
         {series.map((s, i) => (
@@ -526,9 +528,12 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
           </div>
         ))}
       </div>
+      </div>
+
 
       {/* Score global e variação */}
       <div
+        data-pdf-section
         style={{
           display: "flex",
           alignItems: "center",
@@ -558,6 +563,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
       </div>
 
       {/* Veredito de evolução: houve ou não evolução entre as escalas? */}
+      <div data-pdf-section>
       <SectionTitle color={verdict.color}>Veredito da Evolução</SectionTitle>
       <div
         style={{
@@ -601,7 +607,10 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
           ))}
         </div>
       </div>
+      </div>
 
+
+      <div data-pdf-section>
       <SectionTitle color="#4338ca">Levantamento de Dados</SectionTitle>
       <div style={{ display: "flex", gap: 10, marginBottom: 22 }}>
         {[
@@ -630,10 +639,12 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
           </div>
         ))}
       </div>
+      </div>
+
 
       {/* Comparação detalhada entre etapas */}
       {analysis.transitions.length > 0 && (
-        <div style={{ marginBottom: 22 }}>
+        <div data-pdf-section style={{ marginBottom: 22 }}>
           <SectionTitle color="#0891b2">Comparação entre Etapas (Inicial → Final)</SectionTitle>
           <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #e2e8f0" }}>
             <thead>
@@ -669,7 +680,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
       )}
 
 
-      <div style={{ marginBottom: 8 }}>
+      <div data-pdf-section style={{ marginBottom: 8 }}>
         <SectionTitle>Comparação por Domínios</SectionTitle>
         <MultiRadar domains={domains} series={series} />
         <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center", marginTop: 6 }}>
@@ -685,13 +696,13 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
       </div>
 
       {/* Evolução temporal */}
-      <div style={{ marginTop: 22, marginBottom: 8 }}>
+      <div data-pdf-section style={{ marginTop: 22, marginBottom: 8 }}>
         <SectionTitle color="#047857">Evolução do Score Global</SectionTitle>
         <ScoreLine points={linePoints} />
       </div>
 
       {/* Gráfico de evolução por domínio (Inicial vs Final) */}
-      <div style={{ marginTop: 22, marginBottom: 8 }}>
+      <div data-pdf-section style={{ marginTop: 22, marginBottom: 8 }}>
         <SectionTitle color="#7c3aed">Evolução por Domínio (Inicial → Final)</SectionTitle>
         <DomainVariationBars rows={variationRows} />
         <div style={{ display: "flex", gap: 16, justifyContent: "center", marginTop: 4, fontSize: 9, color: "#64748b" }}>
@@ -708,7 +719,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
       </div>
 
 
-      <div style={{ marginTop: 22 }}>
+      <div data-pdf-section style={{ marginTop: 22 }}>
         <SectionTitle color="#1d4ed8">Análise Comparativa Detalhada</SectionTitle>
         <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #e2e8f0" }}>
           <thead>
@@ -754,7 +765,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
       </div>
 
       {/* Síntese clínica */}
-      <div style={{ marginTop: 22 }}>
+      <div data-pdf-section style={{ marginTop: 22 }}>
         <SectionTitle color="#9333ea">Síntese Clínica</SectionTitle>
         <div
           style={{
@@ -808,6 +819,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
 
       {/* Assinatura / Carimbo */}
       <div
+        data-pdf-section
         style={{
           marginTop: 36,
           display: "flex",
@@ -846,6 +858,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
 
       {/* Rodapé */}
       <div
+        data-pdf-section
         style={{
           marginTop: 26,
           paddingTop: 12,

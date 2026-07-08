@@ -11,7 +11,8 @@ import { EvaluationHistory } from "./components/EvaluationHistory";
 import { EvaluationComparison } from "./components/EvaluationComparison";
 import { AreasAnalysis } from "./components/AreasAnalysis";
 import { EVALUATION_TYPES } from "@/utils/evaluationTypes";
-import { generateStaticPDF } from "@/utils/staticPDFGenerator";
+import { generateSectionPdf } from "@/utils/sectionPdfGenerator";
+import { savePDFToStorage } from "@/utils/pdfStorageUtils";
 import { EvolutionReportPDF } from "@/components/EvolutionReportPDF";
 import { useProfessionalData } from "@/hooks/useProfessionalData";
 import { imageUrlToBase64 } from "@/utils/imageToBase64";
@@ -201,7 +202,11 @@ export default function PatientEvolutionPage() {
 
       const reportCode = `MT-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`;
 
-      const ok = await generateStaticPDF(
+      const filename = `Relatorio_Evolucao_${patientName.replace(/\s+/g, "_")}_${
+        new Date().toISOString().split("T")[0]
+      }.pdf`;
+
+      const blob = await generateSectionPdf(
         React.createElement(EvolutionReportPDF, {
           patientName,
           patientAge: ordered[0]?.patient_age,
@@ -222,15 +227,28 @@ export default function PatientEvolutionPage() {
           logoBase64,
           reportCode,
         }),
-        {
-          filename: `Relatorio_Evolucao_${patientName.replace(/\s+/g, "_")}_${
-            new Date().toISOString().split("T")[0]
-          }.pdf`,
-          waitTime: 2200,
-          quality: 3,
-        }
+        { filename, scale: 3 }
       );
-      if (ok) toast.success("Relatório de evolução gerado com sucesso!");
+
+      // Download local
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      // Cópia no sistema (não bloqueia o sucesso)
+      try {
+        await savePDFToStorage(blob, filename, "report");
+      } catch (e) {
+        console.warn("Falha ao salvar cópia do relatório no sistema:", e);
+      }
+
+      toast.success("Relatório de evolução gerado com sucesso!");
+
     } catch (err) {
       console.error("Erro ao gerar relatório de evolução:", err);
       toast.error("Erro ao gerar o relatório de evolução");
