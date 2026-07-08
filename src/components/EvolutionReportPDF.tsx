@@ -690,7 +690,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
       </div>
 
       {/* Evolução temporal */}
-      <div style={{ marginTop: 22, marginBottom: 8 }}>
+      <div data-pdf-section style={{ marginTop: 22, marginBottom: 8 }}>
         <SectionTitle color="#047857">Evolução do Score Global</SectionTitle>
         <ScoreLine points={linePoints} />
       </div>
