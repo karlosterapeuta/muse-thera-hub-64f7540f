@@ -1533,7 +1533,7 @@ export default function Evaluation() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="w-full px-0 py-3 sm:py-4 space-y-3 sm:space-y-4 animate-fade-in">
+      <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-3 sm:py-4 space-y-3 sm:space-y-4 animate-fade-in">
         <EvaluationLevelsHero />
         
         <div className="text-center mb-8 animate-fade-in px-2 sm:px-3">
