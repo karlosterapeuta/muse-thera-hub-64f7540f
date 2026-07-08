@@ -528,6 +528,8 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
           </div>
         ))}
       </div>
+      </div>
+
 
       {/* Score global e variação */}
       <div
