@@ -1701,7 +1701,7 @@ export default function Evaluation() {
                     <Button
                       onClick={handleSaveEvaluation}
                       disabled={isSaving || !selectedPatient}
-                      className={`flex items-center gap-2 text-white border-0 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 ${
+                      className={`w-full sm:w-auto justify-center flex items-center gap-2 text-white border-0 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 ${
                         editingEvaluationId 
                           ? "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
                           : "bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600"
