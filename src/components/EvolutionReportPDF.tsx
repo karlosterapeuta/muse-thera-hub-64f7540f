@@ -822,38 +822,87 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
         data-pdf-section
         style={{
           marginTop: 36,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "flex-end",
-          gap: 48,
+          borderRadius: 16,
+          overflow: "hidden",
+          border: "1px solid #99f6e4",
+          background: "linear-gradient(135deg, #f0fdfa 0%, #ffffff 55%, #ecfeff 100%)",
+          boxShadow: "0 8px 24px -12px rgba(13,148,136,0.35)",
         }}
       >
-        <div style={{ textAlign: "center", minWidth: 260 }}>
-          {signatureBase64 ? (
-            <img
-              src={signatureBase64}
-              alt="Assinatura"
-              style={{ maxHeight: 110, maxWidth: 300, objectFit: "contain", margin: "0 auto", ...crispImg }}
-            />
-          ) : (
-            <div style={{ height: 110 }} />
-          )}
-          <div style={{ borderTop: "1px solid #475569", paddingTop: 4, marginTop: 2 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#0f172a" }}>
-              {professionalName || "Profissional Responsável"}
+        {/* Barra decorativa superior */}
+        <div
+          style={{
+            height: 6,
+            background: "linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%)",
+          }}
+        />
+
+        <div style={{ padding: "22px 28px 18px" }}>
+          <div
+            style={{
+              fontSize: 10,
+              fontWeight: 700,
+              letterSpacing: 1.2,
+              textTransform: "uppercase",
+              color: "#0f766e",
+              textAlign: "center",
+              marginBottom: 18,
+            }}
+          >
+            Autenticação do Profissional Responsável
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "flex-end",
+              gap: 56,
+            }}
+          >
+            <div style={{ textAlign: "center", minWidth: 260 }}>
+              {signatureBase64 ? (
+                <img
+                  src={signatureBase64}
+                  alt="Assinatura"
+                  style={{ maxHeight: 120, maxWidth: 320, objectFit: "contain", margin: "0 auto", ...crispImg }}
+                />
+              ) : (
+                <div style={{ height: 120 }} />
+              )}
+              <div style={{ borderTop: "1.5px solid #0d9488", paddingTop: 6, marginTop: 4 }}>
+                <div style={{ fontSize: 11.5, fontWeight: 700, color: "#0f172a" }}>
+                  {professionalName || "Profissional Responsável"}
+                </div>
+                <div style={{ fontSize: 9, color: "#0f766e", fontWeight: 600 }}>
+                  {[professional?.specialty, professional?.register].filter(Boolean).join(" • ")}
+                </div>
+              </div>
             </div>
-            <div style={{ fontSize: 9, color: "#64748b" }}>
-              {[professional?.specialty, professional?.register].filter(Boolean).join(" • ")}
-            </div>
+            {stampBase64 ? (
+              <img
+                src={stampBase64}
+                alt="Carimbo"
+                style={{ maxHeight: 170, maxWidth: 250, objectFit: "contain", ...crispImg }}
+              />
+            ) : null}
           </div>
         </div>
-        {stampBase64 ? (
-          <img
-            src={stampBase64}
-            alt="Carimbo"
-            style={{ maxHeight: 160, maxWidth: 240, objectFit: "contain", ...crispImg }}
-          />
-        ) : null}
+
+        {/* Rodapé de verificação */}
+        <div
+          style={{
+            borderTop: "1px solid #99f6e4",
+            background: "linear-gradient(90deg, #f0fdfa, #ecfeff, #f0fdfa)",
+            padding: "8px 12px",
+            textAlign: "center",
+            fontSize: 9,
+            fontWeight: 600,
+            color: "#0f766e",
+          }}
+        >
+          ✓ Assinatura e Carimbo Digital Verificados — Sistema MuseTera
+        </div>
       </div>
 
       {/* Rodapé */}
