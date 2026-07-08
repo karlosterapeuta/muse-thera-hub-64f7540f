@@ -638,7 +638,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
 
       {/* Comparação detalhada entre etapas */}
       {analysis.transitions.length > 0 && (
-        <div style={{ marginBottom: 22 }}>
+        <div data-pdf-section style={{ marginBottom: 22 }}>
           <SectionTitle color="#0891b2">Comparação entre Etapas (Inicial → Final)</SectionTitle>
           <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #e2e8f0" }}>
             <thead>
