@@ -759,7 +759,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
       </div>
 
       {/* Síntese clínica */}
-      <div style={{ marginTop: 22 }}>
+      <div data-pdf-section style={{ marginTop: 22 }}>
         <SectionTitle color="#9333ea">Síntese Clínica</SectionTitle>
         <div
           style={{
