@@ -636,6 +636,8 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
           </div>
         ))}
       </div>
+      </div>
+
 
       {/* Comparação detalhada entre etapas */}
       {analysis.transitions.length > 0 && (
