@@ -1634,7 +1634,7 @@ export default function Evaluation() {
                     <Button
                       onClick={handleGenerateEvaluationText}
                       disabled={isGeneratingText}
-                      className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-0 hover:from-blue-600 hover:to-cyan-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full sm:w-auto justify-center flex items-center gap-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-0 hover:from-blue-600 hover:to-cyan-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isGeneratingText ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -1655,7 +1655,7 @@ export default function Evaluation() {
                   <TooltipTrigger asChild>
                     <Button
                       onClick={handleGeneratePrintableScalePDF}
-                      className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                      className="w-full sm:w-auto justify-center flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
                     >
                       <FileDown className="h-4 w-4" />
                       Avaliacao Manual
@@ -1683,7 +1683,7 @@ export default function Evaluation() {
                         }
                       }}
                       disabled={!selectedPatient}
-                      className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-0 hover:from-purple-600 hover:to-indigo-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50"
+                      className="w-full sm:w-auto justify-center flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-0 hover:from-purple-600 hover:to-indigo-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50"
                     >
                       <FileText className="h-4 w-4" />
                       Baixar Gráfico
@@ -1728,7 +1728,7 @@ export default function Evaluation() {
                 <Button
                   variant="outline"
                   onClick={handleCancelEdit}
-                  className="flex items-center gap-2 text-gray-600 border-gray-300 hover:bg-gray-100 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-800"
+                  className="w-full sm:w-auto justify-center flex items-center gap-2 text-gray-600 border-gray-300 hover:bg-gray-100 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-800"
                 >
                   <X className="h-4 w-4" />
                   Cancelar Edição
