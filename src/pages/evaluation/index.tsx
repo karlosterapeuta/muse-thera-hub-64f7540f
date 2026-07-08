@@ -1601,7 +1601,7 @@ export default function Evaluation() {
               </div>
             </div>
             
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3">
               <Select
                 value={selectedEvaluation}
                 onValueChange={setSelectedEvaluation}
