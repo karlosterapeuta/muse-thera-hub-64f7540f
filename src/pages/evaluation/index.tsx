@@ -1650,22 +1650,6 @@ export default function Evaluation() {
                 </TooltipComponent>
               </TooltipProvider>
 
-              <TooltipProvider>
-                <TooltipComponent>
-                  <TooltipTrigger asChild>
-                    <Button
-                      onClick={handleGeneratePrintableScalePDF}
-                      className="w-full sm:w-auto justify-center flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-                    >
-                      <FileDown className="h-4 w-4" />
-                      Avaliacao Manual
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent className="bg-gray-900 text-white border-0">
-                    <p>Baixa a escala para impressão e avaliação manual</p>
-                  </TooltipContent>
-                </TooltipComponent>
-              </TooltipProvider>
 
               <TooltipProvider>
                 <TooltipComponent>
