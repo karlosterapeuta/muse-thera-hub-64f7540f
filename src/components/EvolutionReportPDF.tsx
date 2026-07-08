@@ -901,7 +901,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
             color: "#0f766e",
           }}
         >
-          ✓ Assinatura e Carimbo Digital Verificados — Sistema MuseTera
+          Assinatura e Carimbo Digital Verificados — Sistema MuseTera
         </div>
       </div>
 
