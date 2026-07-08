@@ -713,7 +713,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
       </div>
 
 
-      <div style={{ marginTop: 22 }}>
+      <div data-pdf-section style={{ marginTop: 22 }}>
         <SectionTitle color="#1d4ed8">Análise Comparativa Detalhada</SectionTitle>
         <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #e2e8f0" }}>
           <thead>
