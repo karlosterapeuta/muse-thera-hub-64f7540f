@@ -412,6 +412,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
     >
       {/* Cabeçalho */}
       <div
+        data-pdf-section
         style={{
           borderBottom: "3px solid #7c3aed",
           paddingBottom: 14,
