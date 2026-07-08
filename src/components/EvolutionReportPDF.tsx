@@ -674,7 +674,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
       )}
 
 
-      <div style={{ marginBottom: 8 }}>
+      <div data-pdf-section style={{ marginBottom: 8 }}>
         <SectionTitle>Comparação por Domínios</SectionTitle>
         <MultiRadar domains={domains} series={series} />
         <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center", marginTop: 6 }}>
