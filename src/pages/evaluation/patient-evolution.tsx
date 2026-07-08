@@ -319,19 +319,29 @@ export default function PatientEvolutionPage() {
                   Selecione 2 ou mais avaliações para comparar a evolução nos gráficos
                   abaixo.
                 </p>
+                <p className="text-xs text-emerald-700 dark:text-emerald-400 mt-1 font-medium">
+                  📄 O relatório em PDF é uma comparação completa das 4 avaliações (Inicial → Progresso → Periódica → Final).
+                </p>
               </div>
-              <Button
-                onClick={handleExportReport}
-                disabled={!allFourCompleted || isExporting}
-                className="gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg shrink-0"
-              >
-                {isExporting ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <FileDown className="h-4 w-4" />
-                )}
-                {isExporting ? "Gerando PDF..." : "Exportar Relatório PDF"}
-              </Button>
+              <div className="flex flex-col items-stretch sm:items-end gap-1 shrink-0">
+                <Button
+                  onClick={handleExportReport}
+                  disabled={!allFourCompleted || isExporting}
+                  className="gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg"
+                >
+                  {isExporting ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <FileDown className="h-4 w-4" />
+                  )}
+                  {isExporting ? "Gerando PDF..." : "Exportar Comparação (4 avaliações) em PDF"}
+                </Button>
+                <span className="text-[11px] text-gray-500 dark:text-gray-400 text-center sm:text-right">
+                  {allFourCompleted
+                    ? "Compara as 4 avaliações em um único relatório"
+                    : "Conclua as 4 avaliações para liberar"}
+                </span>
+              </div>
             </div>
 
             {/* Progresso das 4 avaliações obrigatórias */}
