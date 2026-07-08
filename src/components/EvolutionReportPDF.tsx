@@ -563,6 +563,7 @@ export const EvolutionReportPDF: React.FC<EvolutionReportPDFProps> = ({
       </div>
 
       {/* Veredito de evolução: houve ou não evolução entre as escalas? */}
+      <div data-pdf-section>
       <SectionTitle color={verdict.color}>Veredito da Evolução</SectionTitle>
       <div
         style={{
