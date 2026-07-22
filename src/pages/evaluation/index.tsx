@@ -1378,14 +1378,26 @@ export default function Evaluation() {
     }
 
     setIsGeneratingText(true);
-    toast.loading("Analisando avaliação e gerando texto profissional com IA...");
+    const loadingId = toast.loading("Analisando avaliação e gerando texto profissional com IA...");
 
     try {
       // Organizar dados por categoria
       const { achievements, developmentAreas } = categorizeEvaluationData();
-      
-      // Chamar edge function
-      const { data, error } = await supabase.functions.invoke('generate-evaluation-text', {
+
+      // Disparar em paralelo: chamada da IA + download das imagens do profissional
+      const imagesPromise = Promise.all([
+        professionalData?.digital_signature_url
+          ? imageUrlToBase64(professionalData.digital_signature_url).catch(() => null)
+          : Promise.resolve(null),
+        professionalData?.digital_stamp_url
+          ? imageUrlToBase64(professionalData.digital_stamp_url).catch(() => null)
+          : Promise.resolve(null),
+        professionalData?.stamp_photo_url
+          ? imageUrlToBase64(professionalData.stamp_photo_url).catch(() => null)
+          : Promise.resolve(null),
+      ]);
+
+      const aiPromise = supabase.functions.invoke('generate-evaluation-text', {
         body: {
           patientName: selectedPatientData?.name,
           patientAge: calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age,
@@ -1397,6 +1409,11 @@ export default function Evaluation() {
         }
       });
 
+      const [{ data, error }, [signatureBase64, stampBase64, photoBase64]] = await Promise.all([
+        aiPromise,
+        imagesPromise,
+      ]);
+
       if (error) {
         console.error('Edge function error:', error);
         throw error;
@@ -1406,25 +1423,7 @@ export default function Evaluation() {
         throw new Error('Resposta inválida da IA');
       }
 
-      toast.dismiss();
-      toast.loading("Gerando PDF do relatório...");
-
-      // Converter URLs para Base64
-      let signatureBase64: string | null = null;
-      let stampBase64: string | null = null;
-      let photoBase64: string | null = null;
-
-      if (professionalData?.digital_signature_url) {
-        signatureBase64 = await imageUrlToBase64(professionalData.digital_signature_url);
-      }
-
-      if (professionalData?.digital_stamp_url) {
-        stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
-      }
-
-      if (professionalData?.stamp_photo_url) {
-        photoBase64 = await imageUrlToBase64(professionalData.stamp_photo_url);
-      }
+      toast.loading("Gerando PDF do relatório...", { id: loadingId });
 
       // Gerar PDF com o texto retornado
       const pdfContent = (
@@ -1448,8 +1447,9 @@ export default function Evaluation() {
       );
 
       const filename = `texto-avaliacao-${selectedPatientData?.name || 'paciente'}.pdf`;
-      const blob = await generateSectionPdf(pdfContent, { filename, scale: 2 });
+      const blob = await generateSectionPdf(pdfContent, { filename, scale: 1.5 });
 
+      // Download imediato — não bloquear no upload ao Storage
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -1459,11 +1459,11 @@ export default function Evaluation() {
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
 
-      try { await savePDFToStorage(blob, filename, "evaluation"); } catch(e) { console.warn(e); }
+      toast.success("Texto de Avaliação gerado com sucesso!", { id: loadingId });
 
-      
-      toast.dismiss();
-      toast.success("Texto de Avaliação gerado com sucesso!");
+      // Upload em background (fire-and-forget)
+      savePDFToStorage(blob, filename, "evaluation").catch((e) => console.warn(e));
+
     } catch (error: any) {
       console.error("Erro ao gerar texto:", error);
       toast.dismiss();
