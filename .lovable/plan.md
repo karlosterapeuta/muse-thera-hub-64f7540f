@@ -1,38 +1,34 @@
-## Objetivo
-Acelerar o download do PDF do botão "Baixar Avaliação" (função `handleGenerateEvaluationText` em `src/pages/evaluation/index.tsx`), que hoje leva vários segundos devido a etapas sequenciais e captura de imagens em alta resolução.
+## Problema
 
-## Onde está o gargalo
+Nas fotos enviadas, o PDF baixado em "Baixar Avaliação" (relatório de texto gerado por IA em `EvaluationTextPDF.tsx`) mostra:
+- Texto ultrapassando a margem direita (última letra cortada).
+- Palavras longas (ex.: nome do paciente, e-mail profissional) forçando overflow horizontal.
+- Rodapé com foto/carimbo empurrando conteúdo para fora quando o nome/registro é longo.
 
-1. **Downloads sequenciais de imagens** (assinatura, carimbo, foto): 3 fetches `imageUrlToBase64` executados um após o outro.
-2. **`html2canvas` em `scale: 2`** para cada seção `[data-pdf-section]` — a maior parte do tempo é aqui.
-3. **`savePDFToStorage` bloqueando o toast de sucesso** antes de o usuário perceber o download.
-4. **Delays fixos e etapas encadeadas** (chamada IA → download imagens → render off-screen → captura → upload).
+## Causa
 
-## O que fazer
+O `EvaluationTextPDF` foi desenhado com padding no container externo (14mm), mas o `generateSectionPdf` captura cada bloco `[data-pdf-section]` **individualmente** e desenha em 190mm no PDF. Como os blocos internos não respeitam esse padding interno (não têm padding próprio, e alguns usam `gridTemplateColumns: 1fr 1fr` ou larguras fixas de 280px para o carimbo), o conteúdo pode:
+1. Estourar horizontalmente dentro da seção capturada (scrollWidth > largura útil).
+2. Ficar colado nas bordas do PDF (o padding externo é ignorado no recorte por seção).
+3. Quebrar palavras longas de forma incorreta (`wordBreak: break-word` aplicado só no container pai).
 
-### 1. Paralelizar as imagens do profissional
-Trocar os três `await imageUrlToBase64(...)` sequenciais por um único `Promise.all([...])`. Ganho: até ~2/3 do tempo dessa etapa.
+## Solução — só ajustes em `src/components/EvaluationTextPDF.tsx`
 
-### 2. Iniciar o pré-carregamento das imagens **em paralelo com a chamada da IA**
-Disparar `Promise.all` das imagens antes/junto com `supabase.functions.invoke('generate-evaluation-text', ...)` e só dar `await` depois — a rede da IA e a rede das imagens rodam simultaneamente.
+Reorganizar o componente para que **cada seção** (`[data-pdf-section]`) tenha:
+- **Largura fixa própria** = 182mm (210mm − 2×14mm), evitando qualquer overflow horizontal na captura.
+- `boxSizing: border-box`, `overflowWrap: anywhere` e `hyphens: auto` em todos os blocos de texto para tratar palavras/emails longos.
+- Trocar os grids `1fr 1fr` do cabeçalho de dados do paciente e do rodapé por layout com `minmax(0, 1fr)` (permite encolher) ou flex responsivo, evitando estouro quando um dos lados tem conteúdo longo.
+- Reduzir o carimbo (280×280 → 220×220) e o card de assinatura para caberem lado-a-lado dentro de 182mm sem transbordar.
+- Padronizar `padding: 0` no container externo (o padding será interno em cada seção), garantindo que o recorte por seção mantenha respiro visual idêntico ao preview.
+- Aplicar `word-break: normal` + `overflow-wrap: anywhere` + `hyphens: auto` (regras seguras) nos elementos `<p>`, `<h1..h4>`, `<li>`, `<strong>` e nos textos dentro do rodapé (nome, e-mail, telefone, registro).
+- Garantir `max-width: 100%` em `<img>` (foto do profissional) para nunca puxar largura mínima do grid.
 
-### 3. Reduzir o custo de captura no `generateSectionPdf`
-Chamar `generateSectionPdf(pdfContent, { filename, scale: 1.5 })` em vez de `scale: 2`. `scale: 2` gera bitmaps 4× maiores (CPU + memória + `toDataURL` mais lentos). `1.5` mantém nitidez suficiente para texto em A4 e corta ~40% do tempo de captura. (Escala do gerador continua parametrizável.)
+## Verificação
 
-### 4. Paralelizar as capturas de seção dentro do `generateSectionPdf`
-Hoje o `for … of sections` faz `await html2canvas` uma seção por vez. Passar para `Promise.all(sections.map(sec => html2canvas(sec, ...)))` e depois iterar os canvases já prontos para montar o PDF. As seções são independentes (mesmo DOM off-screen), então podem ser capturadas em paralelo. Ganho grande em relatórios com várias seções.
+Após ajuste:
+- Gerar o PDF de exemplo com um paciente de nome longo e um e-mail extenso e conferir visualmente (converter para imagens com pdftoppm) que:
+  - Nenhum texto encosta ou passa da borda direita.
+  - Todas as seções ocupam exatamente a mesma largura no PDF.
+  - Cabeçalho, rodapé de assinatura e carimbo ficam alinhados dentro da caixa.
 
-### 5. Não bloquear o download no upload para o Storage
-Fazer o `a.click()` primeiro (usuário já vê o arquivo baixando), fechar o toast de sucesso, e só então disparar `savePDFToStorage(...)` sem `await` (fire-and-forget com `.catch(console.warn)`). O usuário percebe o PDF pronto imediatamente.
-
-### 6. Ajustes menores
-- Remover `toast.loading` intermediário duplicado (usar um único toast atualizado por `id`).
-- Não recomprimir imagens que já são pequenas: manter `image/jpeg` a `0.92` (ok).
-
-## Arquivos a alterar
-
-- `src/pages/evaluation/index.tsx` — refatorar `handleGenerateEvaluationText` (paralelizar imagens + IA, `scale: 1.5`, upload não-bloqueante).
-- `src/utils/sectionPdfGenerator.ts` — capturar seções em paralelo com `Promise.all` e depois montar o PDF em ordem.
-
-## Resultado esperado
-Redução perceptível (estimativa: 40–60%) no tempo entre clicar em "Baixar Avaliação" e ver o PDF baixando, sem mudar visualmente o resultado final.
+Nenhum outro arquivo precisa mudar — o gerador (`generateSectionPdf`) já pagina corretamente; o problema estava no template.
