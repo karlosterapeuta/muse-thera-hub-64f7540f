@@ -1,82 +1,38 @@
-# Plano Terapêutico Individual (PTI) — Musicoterapia
+## Objetivo
+Acelerar o download do PDF do botão "Baixar Avaliação" (função `handleGenerateEvaluationText` em `src/pages/evaluation/index.tsx`), que hoje leva vários segundos devido a etapas sequenciais e captura de imagens em alta resolução.
 
-A new, self-contained clinical module added to **Processos Musicoterapêuticos**, reusing the app's existing patterns (cosmic UI, professional signature/stamp, html2canvas PDF, Lovable AI) while introducing a richer, structured 18-section plan.
+## Onde está o gargalo
 
-## Scope & approach
+1. **Downloads sequenciais de imagens** (assinatura, carimbo, foto): 3 fetches `imageUrlToBase64` executados um após o outro.
+2. **`html2canvas` em `scale: 2`** para cada seção `[data-pdf-section]` — a maior parte do tempo é aqui.
+3. **`savePDFToStorage` bloqueando o toast de sucesso** antes de o usuário perceber o download.
+4. **Delays fixos e etapas encadeadas** (chamada IA → download imagens → render off-screen → captura → upload).
 
-This is a large module. To ship it reliably and let you review along the way, I'll build it in phases. Phase 1 delivers a fully usable PTI (data model, card, editor, save, PDF). Later phases add AI, reavaliação and the dashboard.
+## O que fazer
 
-The PTI is structurally different from the current `treatment_plans` (checkbox grids, scored scales 1–5, objetivos/metas as arrays of objects). So it gets its **own table** with a single structured `content` JSONB column — flexible, versionable, and easy to extend without constant migrations.
+### 1. Paralelizar as imagens do profissional
+Trocar os três `await imageUrlToBase64(...)` sequenciais por um único `Promise.all([...])`. Ganho: até ~2/3 do tempo dessa etapa.
 
-## Data model (Phase 1 migration)
+### 2. Iniciar o pré-carregamento das imagens **em paralelo com a chamada da IA**
+Disparar `Promise.all` das imagens antes/junto com `supabase.functions.invoke('generate-evaluation-text', ...)` e só dar `await` depois — a rede da IA e a rede das imagens rodam simultaneamente.
 
-New table `public.pti_plans`:
-- `id`, `professional_id`, `patient_id`, `title`, `status` (rascunho/ativo/concluído), `plan_date`
-- `content` JSONB — the entire 18-section structure
-- `progress` int (0–100), `created_at`, `updated_at`, `created_by`
-- RLS: a professional sees/edits only their own rows (`professional_id` via `professionals.user_id = auth.uid()`); admin full access. GRANTs to `authenticated` + `service_role`.
+### 3. Reduzir o custo de captura no `generateSectionPdf`
+Chamar `generateSectionPdf(pdfContent, { filename, scale: 1.5 })` em vez de `scale: 2`. `scale: 2` gera bitmaps 4× maiores (CPU + memória + `toDataURL` mais lentos). `1.5` mantém nitidez suficiente para texto em A4 e corta ~40% do tempo de captura. (Escala do gerador continua parametrizável.)
 
-New table `public.pti_reavaliacoes`:
-- `id`, `pti_id` (FK), `professional_id`, `snapshot` JSONB (scores + objetivos at that date), `report` JSONB (AI comparison output), `created_at`.
+### 4. Paralelizar as capturas de seção dentro do `generateSectionPdf`
+Hoje o `for … of sections` faz `await html2canvas` uma seção por vez. Passar para `Promise.all(sections.map(sec => html2canvas(sec, ...)))` e depois iterar os canvases já prontos para montar o PDF. As seções são independentes (mesmo DOM off-screen), então podem ser capturadas em paralelo. Ganho grande em relatórios com várias seções.
 
-Version history reuses the same approach: each save can append to `pti_versions` (`id`, `pti_id`, `content`, `created_at`, `created_by`) for the audit/version diff requirement.
+### 5. Não bloquear o download no upload para o Storage
+Fazer o `a.click()` primeiro (usuário já vê o arquivo baixando), fechar o toast de sucesso, e só então disparar `savePDFToStorage(...)` sem `await` (fire-and-forget com `.catch(console.warn)`). O usuário percebe o PDF pronto imediatamente.
 
-## UI structure
+### 6. Ajustes menores
+- Remover `toast.loading` intermediário duplicado (usar um único toast atualizado por `id`).
+- Não recomprimir imagens que já são pequenas: manter `image/jpeg` a `0.92` (ok).
 
-1. **Card in `src/pages/processes.tsx`** — "Plano Terapêutico Individual (PTI)" with a clinical icon (ClipboardList/HeartPulse), routed to `/pti`.
-2. **`/pti` (list/dashboard)** — indicators (total, ativos, em reavaliação, objetivos concluídos, metas alcançadas), evolution chart, filters (paciente/diagnóstico/período), and actions: Novo Plano, Planos Salvos, Reavaliações, Histórico.
-3. **`/pti/novo` and `/pti/:id`** — the editor.
-4. **`/pti/:id/reavaliacao`** — reavaliação flow.
+## Arquivos a alterar
 
-## Editor (18 sections, Accordion + progress bar)
+- `src/pages/evaluation/index.tsx` — refatorar `handleGenerateEvaluationText` (paralelizar imagens + IA, `scale: 1.5`, upload não-bloqueante).
+- `src/utils/sectionPdfGenerator.ts` — capturar seções em paralelo com `Promise.all` e depois montar o PDF em ordem.
 
-Collapsible accordion sections with auto-save and a top progress bar:
-1. Identificação (auto-fill nome, idade, nascimento, sexo, responsável, telefone, diagnóstico, CID, DSM, data, profissional, CBO)
-2. Queixa Principal (textarea + IA)
-3. Histórico Clínico (sub-campos: desenvolvimento, escolaridade, comunicação, terapias anteriores, histórico/preferências musicais, hiper/hipossensibilidades)
-4. Avaliação Musicoterapêutica — checkbox grids + observações for Comunicação, Socialização, Cognição, Sensorial, Musicalidade
-5. Potencialidades (textarea + IA)
-6. Dificuldades (textarea + IA)
-7. Objetivo Geral (textarea + IA)
-8. Objetivos Específicos (repeatable: descrição, prazo, prioridade, área)
-9. Metas Terapêuticas (repeatable: descrição, indicador, % esperado, prazo, critério de sucesso)
-10. Estratégias Musicoterapêuticas (multi-select library + add custom)
-11. Recursos Utilizados (multi-select + outros)
-12. Frequência (sessões / duração / atendimento)
-13. Critérios de Evolução (8 áreas, escala 1–5, chart in reavaliações)
-14. Critérios para Alta (textarea + IA)
-15. Plano Familiar (textarea + IA)
-16. Integração Multiprofissional (multi-select + observações)
-17. Fundamentação Técnica (textarea pre-filled with standard text + IA)
-18. Assinatura (auto: nome, CBO, assinatura digital, carimbo, data)
-
-## Integration / auto-fill
-
-On patient select, prefill from `patients`, `anamnesis`, `assessments`/evaluation, and latest `treatment_plans`/evoluções where fields exist (diagnóstico, objetivos anteriores, histórico). All fields remain editable.
-
-## AI (Phase 2)
-
-Edge function `pti-ai-assist` (Lovable AI, `google/gemini-3-flash-preview`) with a `section` parameter. Each section's "✨ Gerar com IA" sends patient context (anamnese, avaliação, evoluções, diagnóstico, idade, objetivos antigos, histórico) and returns an **editable suggestion** shown in a dialog — never auto-replacing the professional's text.
-
-## Reavaliação inteligente (Phase 3)
-
-"📈 Gerar Reavaliação" snapshots current scores/objetivos, compares against the previous plan via AI, and produces a report: objetivos atingidos / parciais / não atingidos / novos, plus sugestões clínicas, with a comparison chart (recharts radar/bar).
-
-## PDF export
-
-Reuse the html2canvas A4 pattern (`generateStaticPDF`) and professional identity (logo, assinatura, carimbo) per existing memory constraints. Buttons: Exportar PDF, Imprimir, Compartilhar.
-
-## Phasing
-
-- **Phase 1** — Migration, Processos card, `/pti` list + dashboard shell, full 18-section editor with auto-save and PDF export. (Usable end-to-end.)
-- **Phase 2** — AI assist edge function + "Gerar com IA" across sections; templates/biblioteca reutilizável of objetivos & estratégias.
-- **Phase 3** — Reavaliação inteligente, evolution charts, version history/audit, duplicar plano, reavaliação reminders.
-
-## Technical notes
-
-- Stack: React + JSONB content model keeps the schema stable as sections evolve.
-- Charts via existing `recharts`.
-- New code under `src/pages/pti/**`, `src/components/pti/**`, `src/hooks/usePti*.ts`, `supabase/functions/pti-ai-assist`.
-- `src/integrations/supabase/types.ts` regenerates automatically after the migration.
-
-I'll start with Phase 1 once you approve. Want me to proceed with all three phases sequentially, or stop after Phase 1 for review?
+## Resultado esperado
+Redução perceptível (estimativa: 40–60%) no tempo entre clicar em "Baixar Avaliação" e ver o PDF baixando, sem mudar visualmente o resultado final.

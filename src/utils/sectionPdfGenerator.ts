@@ -29,7 +29,7 @@ export async function generateSectionPdf(
   element: ReactElement,
   options: SectionPdfOptions
 ): Promise<Blob> {
-  const { filename, scale = 2 } = options;
+  const { filename, scale = 1.5 } = options;
   const { root, ready, cleanup } = renderForPdf(element);
   await ready;
   try {
@@ -48,33 +48,35 @@ export async function generateSectionPdf(
       compress: true,
     });
 
+    // Capturar todas as seções em paralelo
+    const canvases = await Promise.all(
+      sections.map((sec) =>
+        html2canvas(sec, {
+          scale,
+          backgroundColor: '#ffffff',
+          useCORS: true,
+          allowTaint: true,
+          logging: false,
+          windowWidth: sec.scrollWidth,
+        })
+      )
+    );
+
     let currentY = MARGIN_MM;
     let isFirstOnPage = true;
 
-    for (const sec of sections) {
-      const canvas = await html2canvas(sec, {
-        scale,
-        backgroundColor: '#ffffff',
-        useCORS: true,
-        allowTaint: true,
-        logging: false,
-        windowWidth: sec.scrollWidth,
-      });
-
+    for (const canvas of canvases) {
       const heightMM = (canvas.height * CONTENT_W_MM) / canvas.width;
       const spaceLeft = A4_H_MM - MARGIN_MM - currentY;
 
-      // Se não couber e já tem algo na página, abre nova página
       if (!isFirstOnPage && heightMM > spaceLeft) {
         pdf.addPage();
         currentY = MARGIN_MM;
         isFirstOnPage = true;
       }
 
-      const imgData = canvas.toDataURL('image/jpeg', 0.92);
+      const imgData = canvas.toDataURL('image/jpeg', 0.9);
 
-      // Caso extremo: a seção sozinha é maior que a página inteira
-      // → escala para caber em uma página
       const maxHeight = A4_H_MM - MARGIN_MM * 2;
       let drawW = CONTENT_W_MM;
       let drawH = heightMM;
