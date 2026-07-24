@@ -1675,7 +1675,7 @@ export default function Evaluation() {
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent className="bg-gray-900 text-white border-0">
-                    <p>Gera texto profissional com análise dos parâmetros marcados via IA</p>
+                    <p>Gera relatório profissional com análise dos parâmetros marcados</p>
                   </TooltipContent>
                 </TooltipComponent>
               </TooltipProvider>
