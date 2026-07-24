@@ -1385,7 +1385,7 @@ export default function Evaluation() {
       );
 
       const filename = `texto-avaliacao-${patient.name || 'paciente'}-${format(new Date(evaluation.date), 'yyyy-MM-dd')}.pdf`;
-      const blob = await generateSectionPdf(pdfContent, { filename, scale: 1.15 });
+      const blob = await generateSectionPdf(pdfContent, { filename, scale: 1.0 });
 
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
