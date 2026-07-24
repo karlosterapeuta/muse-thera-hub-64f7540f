@@ -1481,7 +1481,7 @@ export default function Evaluation() {
       );
 
       const filename = `texto-avaliacao-${selectedPatientData?.name || 'paciente'}.pdf`;
-      const blob = await generateSectionPdf(pdfContent, { filename, scale: 1.15 });
+      const blob = await generateSectionPdf(pdfContent, { filename, scale: 1.0 });
 
       // Download imediato — não bloquear no upload ao Storage
       const url = URL.createObjectURL(blob);
