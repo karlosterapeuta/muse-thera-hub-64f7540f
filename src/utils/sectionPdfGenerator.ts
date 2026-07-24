@@ -99,7 +99,7 @@ export async function generateSectionPdf(
 
       if (canvas.width === 0 || canvas.height === 0) continue;
 
-      const imgData = canvas.toDataURL('image/jpeg', 0.84);
+      const imgData = canvas.toDataURL('image/jpeg', 0.78);
 
       const maxHeight = A4_H_MM - MARGIN_MM * 2;
       let drawW = CONTENT_W_MM;
