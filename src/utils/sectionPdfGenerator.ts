@@ -49,7 +49,7 @@ export async function generateSectionPdf(
   element: ReactElement,
   options: SectionPdfOptions
 ): Promise<Blob> {
-  const { scale = 1.15 } = options;
+  const { scale = 1.05 } = options;
   const { root, ready, cleanup } = renderForPdf(element);
   await ready;
   try {
