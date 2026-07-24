@@ -71,7 +71,7 @@ export async function generateSectionPdf(
     // Captura com concorrência baixa: mais estável em celular/tablet e evita estouro de memória.
     const canvases = await mapWithConcurrency(
       sections,
-      2,
+      4,
       async (sec) =>
         html2canvas(sec, {
           scale,
@@ -80,7 +80,7 @@ export async function generateSectionPdf(
           allowTaint: true,
           logging: false,
           windowWidth: Math.max(sec.scrollWidth, sec.offsetWidth, 720),
-          imageTimeout: 5000,
+          imageTimeout: 4000,
         })
     );
 
