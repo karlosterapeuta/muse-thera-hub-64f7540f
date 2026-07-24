@@ -49,7 +49,7 @@ export async function generateSectionPdf(
   element: ReactElement,
   options: SectionPdfOptions
 ): Promise<Blob> {
-  const { scale = 1.15 } = options;
+  const { scale = 1.05 } = options;
   const { root, ready, cleanup } = renderForPdf(element);
   await ready;
   try {
@@ -71,7 +71,7 @@ export async function generateSectionPdf(
     // Captura com concorrência baixa: mais estável em celular/tablet e evita estouro de memória.
     const canvases = await mapWithConcurrency(
       sections,
-      2,
+      4,
       async (sec) =>
         html2canvas(sec, {
           scale,
@@ -80,7 +80,7 @@ export async function generateSectionPdf(
           allowTaint: true,
           logging: false,
           windowWidth: Math.max(sec.scrollWidth, sec.offsetWidth, 720),
-          imageTimeout: 5000,
+          imageTimeout: 4000,
         })
     );
 
@@ -99,7 +99,7 @@ export async function generateSectionPdf(
 
       if (canvas.width === 0 || canvas.height === 0) continue;
 
-      const imgData = canvas.toDataURL('image/jpeg', 0.84);
+      const imgData = canvas.toDataURL('image/jpeg', 0.78);
 
       const maxHeight = A4_H_MM - MARGIN_MM * 2;
       let drawW = CONTENT_W_MM;

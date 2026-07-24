@@ -970,15 +970,13 @@ export default function Evaluation() {
     try {
       loadingToast = toast.loading("Gerando PDF de Gráficos...");
 
-      let professionalPhotoBase64: string | undefined;
-      let digitalStampBase64: string | undefined;
       const photoUrl = professionalData?.stamp_photo_url || professionalData?.avatar_url;
-      if (photoUrl) {
-        try { professionalPhotoBase64 = await imageUrlToBase64(photoUrl); } catch (e) { console.warn(e); }
-      }
-      if (professionalData?.digital_stamp_url) {
-        try { digitalStampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url); } catch (e) { console.warn(e); }
-      }
+      const [professionalPhotoBase64, digitalStampBase64] = await Promise.all([
+        photoUrl ? imageUrlToBase64(photoUrl).catch(() => undefined) : Promise.resolve(undefined),
+        professionalData?.digital_stamp_url
+          ? imageUrlToBase64(professionalData.digital_stamp_url).catch(() => undefined)
+          : Promise.resolve(undefined),
+      ]);
 
       const savedContent = (evaluation.content as any) || {};
       const savedSelections: Record<string, string> = savedContent.selections || {};
@@ -1008,8 +1006,6 @@ export default function Evaluation() {
       );
 
       const patientName = evaluation.patient_name || "Paciente";
-      // Usa a data escolhida pelo usuário no calendário (estado atual);
-      // se não houver, cai no fallback da data salva na avaliação.
       const evalDate = evaluationDate instanceof Date && !isNaN(evaluationDate.getTime())
         ? evaluationDate
         : new Date(evaluation.date);
@@ -1034,15 +1030,23 @@ export default function Evaluation() {
           digitalStampBase64={digitalStampBase64}
           evaluationType={evaluation.type || savedContent.evaluationType}
         />,
-        { filename }
+        { filename, scale: 1.05 }
       );
 
-      setPdfPreviewBlob(blob);
-      setPdfPreviewFilename(filename);
-      setPdfPreviewOpen(true);
-      try { await savePDFToStorage(blob, filename, "evaluation"); } catch (e) { console.warn(e); }
+      // Download imediato — sem preview
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
 
-      toast.success("Pré-visualização pronta. Revise as páginas e clique em Baixar PDF.", { id: loadingToast });
+      // Upload em background (fire-and-forget)
+      savePDFToStorage(blob, filename, "evaluation").catch((e) => console.warn(e));
+
+      toast.success("Gráfico baixado com sucesso!", { id: loadingToast });
     } catch (error) {
       console.error("Erro ao gerar PDF de gráficos:", error);
       toast.error("Erro ao gerar PDF. Por favor, tente novamente.", { id: loadingToast });
@@ -1381,7 +1385,7 @@ export default function Evaluation() {
       );
 
       const filename = `texto-avaliacao-${patient.name || 'paciente'}-${format(new Date(evaluation.date), 'yyyy-MM-dd')}.pdf`;
-      const blob = await generateSectionPdf(pdfContent, { filename, scale: 1.15 });
+      const blob = await generateSectionPdf(pdfContent, { filename, scale: 1.0 });
 
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -1477,7 +1481,7 @@ export default function Evaluation() {
       );
 
       const filename = `texto-avaliacao-${selectedPatientData?.name || 'paciente'}.pdf`;
-      const blob = await generateSectionPdf(pdfContent, { filename, scale: 1.15 });
+      const blob = await generateSectionPdf(pdfContent, { filename, scale: 1.0 });
 
       // Download imediato — não bloquear no upload ao Storage
       const url = URL.createObjectURL(blob);
