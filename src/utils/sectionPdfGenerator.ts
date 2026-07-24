@@ -14,6 +14,26 @@ interface SectionPdfOptions {
   scale?: number;
 }
 
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  limit: number,
+  mapper: (item: T, index: number) => Promise<R>
+): Promise<R[]> {
+  const results: R[] = [];
+  let nextIndex = 0;
+
+  const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (nextIndex < items.length) {
+      const currentIndex = nextIndex;
+      nextIndex += 1;
+      results[currentIndex] = await mapper(items[currentIndex], currentIndex);
+    }
+  });
+
+  await Promise.all(workers);
+  return results;
+}
+
 /**
  * Renderiza um componente React off-screen, captura cada bloco
  * `[data-pdf-section]` como imagem e monta um PDF A4 paginando por seção.
@@ -29,7 +49,7 @@ export async function generateSectionPdf(
   element: ReactElement,
   options: SectionPdfOptions
 ): Promise<Blob> {
-  const { filename, scale = 1.5 } = options;
+  const { scale = 1.15 } = options;
   const { root, ready, cleanup } = renderForPdf(element);
   await ready;
   try {
@@ -48,18 +68,20 @@ export async function generateSectionPdf(
       compress: true,
     });
 
-    // Capturar todas as seções em paralelo
-    const canvases = await Promise.all(
-      sections.map((sec) =>
+    // Captura com concorrência baixa: mais estável em celular/tablet e evita estouro de memória.
+    const canvases = await mapWithConcurrency(
+      sections,
+      2,
+      async (sec) =>
         html2canvas(sec, {
           scale,
           backgroundColor: '#ffffff',
           useCORS: true,
           allowTaint: true,
           logging: false,
-          windowWidth: sec.scrollWidth,
+          windowWidth: Math.max(sec.scrollWidth, sec.offsetWidth, 720),
+          imageTimeout: 5000,
         })
-      )
     );
 
     let currentY = MARGIN_MM;
@@ -75,7 +97,9 @@ export async function generateSectionPdf(
         isFirstOnPage = true;
       }
 
-      const imgData = canvas.toDataURL('image/jpeg', 0.9);
+      if (canvas.width === 0 || canvas.height === 0) continue;
+
+      const imgData = canvas.toDataURL('image/jpeg', 0.84);
 
       const maxHeight = A4_H_MM - MARGIN_MM * 2;
       let drawW = CONTENT_W_MM;
