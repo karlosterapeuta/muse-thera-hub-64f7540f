@@ -1177,6 +1177,79 @@ export default function Evaluation() {
     return { achievements, developmentAreas };
   };
 
+  const buildEvaluationReportContent = ({
+    patientName,
+    patientAge,
+    evaluationDateLabel,
+    achievements,
+    developmentAreas,
+    score,
+  }: {
+    patientName: string;
+    patientAge: number | null | undefined;
+    evaluationDateLabel: string;
+    achievements: any[];
+    developmentAreas: any[];
+    score: { percentage: number; evaluatedDomains: number; totalDomains: number; evaluatedParameters: number };
+  }) => {
+    const groupByDomain = (items: any[]) =>
+      items.reduce<Record<string, any[]>>((acc, item) => {
+        const domain = item.domain || 'Domínio avaliado';
+        acc[domain] = [...(acc[domain] || []), item];
+        return acc;
+      }, {});
+
+    const describeItems = (items: any[]) =>
+      items
+        .slice(0, 6)
+        .map((item) => `${item.parameter} (${item.score}%)`)
+        .join('; ');
+
+    const achievementDomains = Object.entries(groupByDomain(achievements)).map(([domain, items]) => ({
+      dominio: domain,
+      analise: `Foram observados ${items.length} indicadores em nível funcional neste domínio, com destaque para ${describeItems(items)}. Esses achados apontam recursos terapêuticos preservados que podem ser utilizados como base para ampliar engajamento, responsividade musical, comunicação e autonomia no processo musicoterapêutico.`,
+    }));
+
+    const developmentDomains = Object.entries(groupByDomain(developmentAreas)).map(([domain, items]) => ({
+      dominio: domain,
+      analise: `Foram identificados ${items.length} indicadores que requerem acompanhamento sistemático neste domínio, especialmente ${describeItems(items)}. Recomenda-se intervenção gradual, com mediação musical estruturada, repetição terapêutica, adaptação de recursos e registro contínuo da resposta do paciente.`,
+    }));
+
+    const completionText = score.evaluatedParameters > 0
+      ? `${score.evaluatedParameters} parâmetros foram avaliados em ${score.evaluatedDomains} de ${score.totalDomains} domínios.`
+      : 'A avaliação ainda possui poucos parâmetros preenchidos.';
+
+    return {
+      sintese_geral: `A avaliação musicoterapêutica de ${patientName}${patientAge ? `, ${patientAge} anos` : ''}, realizada em ${evaluationDateLabel}, apresentou pontuação global de ${score.percentage}%. ${completionText} O resultado deve ser interpretado como um retrato clínico-funcional do momento avaliado, considerando responsividade musical, participação, comunicação, regulação emocional, integração sensório-motora e desempenho cognitivo durante atividades musicais estruturadas.`,
+      conquistas: {
+        introducao: achievementDomains.length > 0
+          ? 'As conquistas abaixo representam habilidades já observadas e recursos clínicos que podem sustentar o planejamento terapêutico.'
+          : 'Ainda não foram identificados indicadores suficientes em nível moderado, consistente ou excepcional nesta avaliação.',
+        por_dominio: achievementDomains,
+      },
+      areas_desenvolvimento: {
+        introducao: developmentDomains.length > 0
+          ? 'As áreas a desenvolver indicam prioridades para intervenção e monitoramento nas próximas sessões.'
+          : 'Não foram identificadas áreas prioritárias com pontuação abaixo de 60% entre os parâmetros preenchidos.',
+        por_dominio: developmentDomains,
+      },
+      recomendacoes: [
+        'Manter registro sistemático das respostas do paciente em cada sessão, comparando os indicadores avaliados ao longo do tempo.',
+        'Utilizar atividades musicais estruturadas com objetivos claros, alternando experiências receptivas, recriativas, improvisacionais e composicionais conforme a necessidade clínica.',
+        'Priorizar os domínios com menor pontuação, iniciando por tarefas musicais simples, previsíveis e com progressão gradual de complexidade.',
+        'Valorizar os recursos já preservados como via de acesso para comunicação, vínculo terapêutico, autorregulação e participação ativa.',
+        'Reavaliar periodicamente para acompanhar evolução, ajustar objetivos terapêuticos e documentar evidências de progresso.',
+      ],
+      objetivos: [
+        { dominio: 'Musical', objetivo: 'Ampliar a responsividade musical por meio de atividades rítmicas, vocais e instrumentais adequadas ao perfil do paciente.' },
+        { dominio: 'Psicossocial', objetivo: 'Fortalecer engajamento, vínculo terapêutico e participação compartilhada em experiências musicais.' },
+        { dominio: 'Cognitivo', objetivo: 'Estimular atenção, memória, antecipação e organização sequencial por meio de estruturas musicais previsíveis.' },
+        { dominio: 'Sensório-Motor', objetivo: 'Favorecer integração auditivo-motora, coordenação e modulação sensorial com instrumentos e movimento corporal.' },
+        { dominio: 'Comunicativo', objetivo: 'Promover intenção comunicativa, expressão vocal/corporal e turnos de interação musical.' },
+      ],
+    };
+  };
+
   // Função para categorizar dados de uma avaliação SALVA
   const categorizeEvaluationDataFromSaved = (evaluation: SavedEvaluation) => {
     const achievements: any[] = [];
@@ -1247,7 +1320,7 @@ export default function Evaluation() {
     }
 
     setIsGeneratingText(true);
-    toast.loading("Analisando avaliação e gerando texto profissional com IA...");
+    const loadingId = toast.loading("Preparando avaliação para download...");
 
     try {
       // Categorizar dados da avaliação SALVA
@@ -1262,63 +1335,38 @@ export default function Evaluation() {
         evaluatedParameters: rawOverallScore.evaluatedParameters || 0
       };
       
-      // Preparar domainScores da avaliação salva
-      const savedDomainScores = evaluation.content?.domainScores?.map((d: any) => ({
-        name: d.domain?.replace("Domínio ", "") || "Domínio",
-        value: d.score || 0,
-        fullMark: 100
-      })) || [];
-      
-      // Chamar edge function com IA
-      const { data, error } = await supabase.functions.invoke('generate-evaluation-text', {
-        body: {
-          patientName: patient.name,
-          patientAge: calculateAgeFromBirthDate(patient.birth_date) ?? patient.age,
-          evaluationDate: format(new Date(evaluation.date), 'dd/MM/yyyy'),
-          achievements,
-          developmentAreas,
-          overallScore: savedOverallScore,
-          evaluatedDomains: savedDomainScores
-        }
+      const evaluationDateLabel = format(new Date(evaluation.date), 'dd/MM/yyyy');
+      const reportContent = buildEvaluationReportContent({
+        patientName: patient.name || 'Paciente',
+        patientAge: calculateAgeFromBirthDate(patient.birth_date) ?? patient.age,
+        evaluationDateLabel,
+        achievements,
+        developmentAreas,
+        score: savedOverallScore,
       });
 
-      if (error) {
-        console.error('Edge function error:', error);
-        throw error;
-      }
+      toast.loading("Gerando PDF do relatório...", { id: loadingId });
 
-      if (!data || !data.content) {
-        throw new Error('Resposta inválida da IA');
-      }
-
-      toast.dismiss();
-      toast.loading("Gerando PDF do relatório...");
-
-      // Converter URLs para Base64
-      let signatureBase64: string | null = null;
-      let stampBase64: string | null = null;
-      let photoBase64: string | null = null;
-
-      if (professionalData?.digital_signature_url) {
-        signatureBase64 = await imageUrlToBase64(professionalData.digital_signature_url);
-      }
-
-      if (professionalData?.digital_stamp_url) {
-        stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
-      }
-
-      if (professionalData?.stamp_photo_url) {
-        photoBase64 = await imageUrlToBase64(professionalData.stamp_photo_url);
-      }
+      const [signatureBase64, stampBase64, photoBase64] = await Promise.all([
+        professionalData?.digital_signature_url
+          ? imageUrlToBase64(professionalData.digital_signature_url).catch(() => null)
+          : Promise.resolve(null),
+        professionalData?.digital_stamp_url
+          ? imageUrlToBase64(professionalData.digital_stamp_url).catch(() => null)
+          : Promise.resolve(null),
+        professionalData?.stamp_photo_url
+          ? imageUrlToBase64(professionalData.stamp_photo_url).catch(() => null)
+          : Promise.resolve(null),
+      ]);
 
       // Gerar PDF com o texto retornado
       const pdfContent = (
         <div id="evaluation-text-pdf-content" style={{ display: 'block' }}>
           <EvaluationTextPDF
-            content={data.content}
+            content={reportContent}
             patientName={patient.name || 'Paciente'}
             patientAge={calculateAgeFromBirthDate(patient.birth_date) ?? patient.age ?? null}
-            evaluationDate={format(new Date(evaluation.date), 'dd/MM/yyyy')}
+            evaluationDate={evaluationDateLabel}
             professionalName={professionalData?.name || 'Profissional'}
             professionalRegister={professionalData?.register || undefined}
             digitalSignatureUrl={signatureBase64 || undefined}
@@ -1333,7 +1381,7 @@ export default function Evaluation() {
       );
 
       const filename = `texto-avaliacao-${patient.name || 'paciente'}-${format(new Date(evaluation.date), 'yyyy-MM-dd')}.pdf`;
-      const blob = await generateSectionPdf(pdfContent, { filename, scale: 2 });
+      const blob = await generateSectionPdf(pdfContent, { filename, scale: 1.15 });
 
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -1344,21 +1392,19 @@ export default function Evaluation() {
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
 
-      try { await savePDFToStorage(blob, filename, "evaluation"); } catch(e) { console.warn(e); }
+      savePDFToStorage(blob, filename, "evaluation").catch((e) => console.warn(e));
 
-      
-      toast.dismiss();
-      toast.success("Texto de Avaliação gerado com sucesso!");
+      toast.success("Avaliação baixada com sucesso!", { id: loadingId });
     } catch (error: any) {
       console.error("Erro ao gerar texto:", error);
       toast.dismiss();
       
       if (error.message?.includes('429') || error.status === 429) {
-        toast.error("Limite de requisições excedido. Aguarde alguns instantes e tente novamente.");
+        toast.error("Limite de requisições excedido. Aguarde alguns instantes e tente novamente.", { id: loadingId });
       } else if (error.message?.includes('402') || error.status === 402) {
-        toast.error("Créditos insuficientes. Adicione créditos à sua conta.");
+        toast.error("Créditos insuficientes. Adicione créditos à sua conta.", { id: loadingId });
       } else {
-        toast.error("Erro ao gerar texto. Tente novamente em alguns instantes.");
+        toast.error("Erro ao baixar avaliação. Tente novamente em alguns instantes.", { id: loadingId });
       }
     } finally {
       setIsGeneratingText(false);
@@ -1378,13 +1424,21 @@ export default function Evaluation() {
     }
 
     setIsGeneratingText(true);
-    const loadingId = toast.loading("Analisando avaliação e gerando texto profissional com IA...");
+    const loadingId = toast.loading("Preparando avaliação para download...");
 
     try {
       // Organizar dados por categoria
       const { achievements, developmentAreas } = categorizeEvaluationData();
 
-      // Disparar em paralelo: chamada da IA + download das imagens do profissional
+      const reportContent = buildEvaluationReportContent({
+        patientName: selectedPatientData?.name || 'Paciente',
+        patientAge: calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age,
+        evaluationDateLabel: format(evaluationDate, 'dd/MM/yyyy'),
+        achievements,
+        developmentAreas,
+        score: overallScore,
+      });
+
       const imagesPromise = Promise.all([
         professionalData?.digital_signature_url
           ? imageUrlToBase64(professionalData.digital_signature_url).catch(() => null)
@@ -1397,31 +1451,7 @@ export default function Evaluation() {
           : Promise.resolve(null),
       ]);
 
-      const aiPromise = supabase.functions.invoke('generate-evaluation-text', {
-        body: {
-          patientName: selectedPatientData?.name,
-          patientAge: calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age,
-          evaluationDate: format(evaluationDate, 'dd/MM/yyyy'),
-          achievements,
-          developmentAreas,
-          overallScore,
-          evaluatedDomains: domainScores
-        }
-      });
-
-      const [{ data, error }, [signatureBase64, stampBase64, photoBase64]] = await Promise.all([
-        aiPromise,
-        imagesPromise,
-      ]);
-
-      if (error) {
-        console.error('Edge function error:', error);
-        throw error;
-      }
-
-      if (!data || !data.content) {
-        throw new Error('Resposta inválida da IA');
-      }
+      const [signatureBase64, stampBase64, photoBase64] = await imagesPromise;
 
       toast.loading("Gerando PDF do relatório...", { id: loadingId });
 
@@ -1429,7 +1459,7 @@ export default function Evaluation() {
       const pdfContent = (
         <div id="evaluation-text-pdf-content" style={{ display: 'block' }}>
           <EvaluationTextPDF
-            content={data.content}
+            content={reportContent}
             patientName={selectedPatientData?.name || 'Paciente'}
             patientAge={calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age ?? null}
             evaluationDate={format(evaluationDate, 'dd/MM/yyyy')}
@@ -1447,7 +1477,7 @@ export default function Evaluation() {
       );
 
       const filename = `texto-avaliacao-${selectedPatientData?.name || 'paciente'}.pdf`;
-      const blob = await generateSectionPdf(pdfContent, { filename, scale: 1.5 });
+      const blob = await generateSectionPdf(pdfContent, { filename, scale: 1.15 });
 
       // Download imediato — não bloquear no upload ao Storage
       const url = URL.createObjectURL(blob);
@@ -1459,7 +1489,7 @@ export default function Evaluation() {
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
 
-      toast.success("Texto de Avaliação gerado com sucesso!", { id: loadingId });
+      toast.success("Avaliação baixada com sucesso!", { id: loadingId });
 
       // Upload em background (fire-and-forget)
       savePDFToStorage(blob, filename, "evaluation").catch((e) => console.warn(e));
@@ -1473,7 +1503,7 @@ export default function Evaluation() {
       } else if (error.message?.includes('402') || error.status === 402) {
         toast.error("Créditos insuficientes. Adicione créditos à sua conta.");
       } else {
-        toast.error("Erro ao gerar texto. Tente novamente em alguns instantes.");
+        toast.error("Erro ao baixar avaliação. Tente novamente em alguns instantes.");
       }
     } finally {
       setIsGeneratingText(false);
@@ -1645,7 +1675,7 @@ export default function Evaluation() {
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent className="bg-gray-900 text-white border-0">
-                    <p>Gera texto profissional com análise dos parâmetros marcados via IA</p>
+                    <p>Gera relatório profissional com análise dos parâmetros marcados</p>
                   </TooltipContent>
                 </TooltipComponent>
               </TooltipProvider>
