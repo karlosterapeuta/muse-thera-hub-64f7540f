@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { loadProgress, resetProgress } from "../context/DinoSettings";
+import { loadProgress, resetProgress, progressToCsv } from "../context/DinoSettings";
 import { dinos } from "../data/dinos";
 import { Star, Egg, Brain, Music2, Activity, Clock } from "lucide-react";
 
 const MODE_LABELS: Record<string, string> = {
   free: "Modo Livre",
   imitate: "Imitar o Ritmo",
+  dance: "Dança dos Dinos",
   discover: "Descobrir o Som",
   speech: "Comunicação",
   story: "História Musical",
@@ -69,6 +70,22 @@ export function TherapistPanel({ onClose }: { onClose: () => void }) {
         {p.lastSession && (
           <p className="text-xs text-slate-500 mb-3">Última sessão: {new Date(p.lastSession).toLocaleString("pt-BR")}</p>
         )}
+
+        <button
+          onClick={() => {
+            const csv = progressToCsv(p);
+            const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `dino-ritmos-relatorio-${new Date().toISOString().slice(0, 10)}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+          }}
+          className="w-full py-2 mb-2 rounded-xl bg-emerald-100 text-emerald-800 font-semibold hover:bg-emerald-200"
+        >
+          ⬇️ Exportar relatório (CSV)
+        </button>
 
         <button
           onClick={() => { resetProgress(); setP(loadProgress()); }}

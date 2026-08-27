@@ -183,6 +183,15 @@ export function ImitateMode() {
         )}
       </AnimatePresence>
 
+      {phase === "playing" && (
+        <button
+          onClick={() => showSequence(sequence)}
+          className="mt-6 px-5 py-2.5 rounded-full bg-white/80 dark:bg-slate-700 text-purple-700 dark:text-purple-200 font-bold shadow"
+        >
+          🔁 Ouvir a sequência de novo
+        </button>
+      )}
+
       {phase === "watching" && (
         <p className="mt-6 text-sm font-semibold text-purple-500 animate-pulse">Observando a sequência...</p>
       )}
