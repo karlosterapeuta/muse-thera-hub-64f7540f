@@ -1,12 +1,14 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 import { dinos, Dino } from "../../data/dinos";
 import { DinoCard } from "../DinoCard";
-import { playDino } from "../../audio/dinoSounds";
-import { trackInteraction } from "../../context/DinoSettings";
+import { playDino, vibrate } from "../../audio/dinoSounds";
+import { trackInteraction, useDinoSettings } from "../../context/DinoSettings";
 
 interface RecordedNote { dino: Dino; at: number }
 
 export function FreeMode() {
+  const { settings } = useDinoSettings();
+  const [loop, setLoop] = useState(false);
   const [recording, setRecording] = useState(false);
   const [notes, setNotes] = useState<RecordedNote[]>([]);
   const [playing, setPlaying] = useState(false);
@@ -22,6 +24,7 @@ export function FreeMode() {
 
   const tap = (d: Dino) => {
     playDino(d);
+    if (settings.vibration) vibrate(18);
     setActiveId(d.id);
     window.setTimeout(() => setActiveId((id) => (id === d.id ? null : id)), 220);
     trackInteraction(d.id, "free", 1);
@@ -52,15 +55,25 @@ export function FreeMode() {
       }, n.at);
       timers.current.push(t);
     });
-    const end = window.setTimeout(() => setPlaying(false), (notes[notes.length - 1]?.at ?? 0) + 600);
+    const total = (notes[notes.length - 1]?.at ?? 0) + 600;
+    const end = window.setTimeout(() => {
+      setPlaying(false);
+      if (loopRef.current) window.setTimeout(() => playbackRef.current?.(), 400);
+    }, total);
     timers.current.push(end);
   };
+
+  const loopRef = useRef(loop);
+  useEffect(() => { loopRef.current = loop; }, [loop]);
+  const playbackRef = useRef<() => void>();
+  useEffect(() => { playbackRef.current = playback; });
 
   const clear = () => {
     clearTimers();
     setNotes([]);
     setRecording(false);
     setPlaying(false);
+    setLoop(false);
   };
 
   return (
@@ -93,6 +106,12 @@ export function FreeMode() {
           className="px-4 py-2 rounded-full bg-slate-400 text-white font-bold text-sm shadow disabled:opacity-40"
         >
           🗑️ Limpar
+        </button>
+        <button
+          onClick={() => setLoop((l) => !l)}
+          className={`px-4 py-2 rounded-full font-bold text-sm shadow ${loop ? "bg-sky-500 text-white" : "bg-white/80 dark:bg-slate-700 text-sky-600"}`}
+        >
+          🔁 Repetir {loop ? "ligado" : "desligado"}
         </button>
         {notes.length > 0 && (
           <span className="px-3 py-1.5 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-200 text-sm font-bold">

@@ -109,3 +109,37 @@ export function addTime(seconds: number) {
 export function resetProgress() {
   saveProgress(DEFAULT_PROGRESS);
 }
+
+// ---- Best scores per mode (persisted) ----
+const BEST_KEY = "dino-ritmos:best";
+
+export function loadBest(mode: string): number {
+  try {
+    const raw = localStorage.getItem(BEST_KEY);
+    const all = raw ? (JSON.parse(raw) as Record<string, number>) : {};
+    return all[mode] ?? 0;
+  } catch { return 0; }
+}
+
+export function saveBest(mode: string, value: number) {
+  try {
+    const raw = localStorage.getItem(BEST_KEY);
+    const all = raw ? (JSON.parse(raw) as Record<string, number>) : {};
+    if ((all[mode] ?? 0) >= value) return;
+    all[mode] = value;
+    localStorage.setItem(BEST_KEY, JSON.stringify(all));
+  } catch { /* noop */ }
+}
+
+/** CSV report of the current session data, for the therapist. */
+export function progressToCsv(p: DinoProgress): string {
+  const rows: string[][] = [["metrica", "chave", "valor"]];
+  rows.push(["resumo", "estrelas", String(p.stars)]);
+  rows.push(["resumo", "ovos", String(p.eggs)]);
+  rows.push(["resumo", "interacoes", String(p.interactions)]);
+  rows.push(["resumo", "tempo_segundos", String(p.totalSeconds)]);
+  rows.push(["resumo", "ultima_sessao", p.lastSession ?? ""]);
+  Object.entries(p.byDino).forEach(([k, v]) => rows.push(["por_dino", k, String(v)]));
+  Object.entries(p.byMode).forEach(([k, v]) => rows.push(["por_modo", k, String(v)]));
+  return rows.map((r) => r.map((c) => `"${c.replace(/"/g, '""')}"`).join(",")).join("\n");
+}

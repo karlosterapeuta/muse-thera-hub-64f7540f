@@ -2,8 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { dinos, Dino } from "../../data/dinos";
 import { DinoCard } from "../DinoCard";
-import { playDino } from "../../audio/dinoSounds";
-import { trackInteraction, useDinoSettings } from "../../context/DinoSettings";
+import { playDino, playSuccess, playError, vibrate } from "../../audio/dinoSounds";
+import { trackInteraction, useDinoSettings, loadBest, saveBest } from "../../context/DinoSettings";
 
 type Phase = "idle" | "watching" | "playing" | "success" | "fail";
 
@@ -17,7 +17,7 @@ export function ImitateMode() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [userIndex, setUserIndex] = useState(0);
   const [level, setLevel] = useState(1);
-  const [best, setBest] = useState(0);
+  const [best, setBest] = useState(() => loadBest("imitate"));
   const [lives, setLives] = useState(3);
   const [feedback, setFeedback] = useState("Toque em ▶️ para começar!");
   const timers = useRef<number[]>([]);
@@ -71,7 +71,11 @@ export function ImitateMode() {
       const next = [...prev, BOARD[Math.floor(Math.random() * BOARD.length)].id];
       setSequence(next);
       setLevel(next.length);
-      setBest((b) => Math.max(b, next.length));
+      setBest((b) => {
+        const nb = Math.max(b, next.length);
+        saveBest("imitate", nb);
+        return nb;
+      });
       showSequence(next);
     },
     [showSequence],
@@ -90,6 +94,8 @@ export function ImitateMode() {
         // Completed this round
         setPhase("success");
         setFeedback("⭐ Muito bem! Próximo nível!");
+        playSuccess();
+        if (settings.vibration) vibrate([20, 40, 20]);
         trackInteraction(dino.id, "imitate", 2, sequence.length >= 4 ? 1 : 0);
         const t = window.setTimeout(() => nextLevel(sequence), 1300);
         timers.current.push(t);
@@ -100,6 +106,8 @@ export function ImitateMode() {
       // Wrong tap
       const left = lives - 1;
       setLives(left);
+      playError();
+      if (settings.vibration) vibrate(60);
       trackInteraction(dino.id, "imitate");
       if (left <= 0) {
         setPhase("fail");
@@ -174,6 +182,15 @@ export function ImitateMode() {
           </motion.button>
         )}
       </AnimatePresence>
+
+      {phase === "playing" && (
+        <button
+          onClick={() => showSequence(sequence)}
+          className="mt-6 px-5 py-2.5 rounded-full bg-white/80 dark:bg-slate-700 text-purple-700 dark:text-purple-200 font-bold shadow"
+        >
+          🔁 Ouvir a sequência de novo
+        </button>
+      )}
 
       {phase === "watching" && (
         <p className="mt-6 text-sm font-semibold text-purple-500 animate-pulse">Observando a sequência...</p>

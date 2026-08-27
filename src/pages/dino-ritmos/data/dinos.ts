@@ -130,4 +130,4 @@ export const dinos: Dino[] = [
   },
 ];
 
-export const SYLLABLES = ["PA", "MA", "LA", "BA"] as const;
+export const SYLLABLES = ["PA", "MA", "LA", "BA", "TA", "DA", "NA", "GA"] as const;

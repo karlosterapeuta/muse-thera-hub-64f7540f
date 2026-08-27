@@ -11,13 +11,21 @@ function dbFromUnit(v: number) {
   return Math.max(-60, 20 * Math.log10(v));
 }
 
+export function isAudioReady() {
+  return started && Tone.getContext().state === "running";
+}
+
 export async function ensureAudioReady(volume = 0.7) {
   if (!started) {
     await Tone.start();
     masterVol = new Tone.Volume(dbFromUnit(volume)).toDestination();
     started = true;
-  } else if (masterVol) {
-    masterVol.volume.value = dbFromUnit(volume);
+  } else {
+    // Browsers can suspend the context (tab change, iOS lock) — resume it.
+    if (Tone.getContext().state !== "running") {
+      try { await Tone.start(); } catch { /* noop */ }
+    }
+    if (masterVol) masterVol.volume.value = dbFromUnit(volume);
   }
 }
 
@@ -75,16 +83,16 @@ function getInstrument(kind: DinoInstrument) {
   return node;
 }
 
-export function playDino(dino: Dino, opts?: { duration?: string | number; noteOverride?: string }) {
+export function playDino(dino: Dino, opts?: { duration?: string | number; noteOverride?: string; time?: number }) {
   if (!started) return; // gesture not yet granted
   const inst: any = getInstrument(dino.instrument);
   const duration = opts?.duration ?? "8n";
   const note = opts?.noteOverride ?? dino.note;
   try {
     if (inst instanceof Tone.MetalSynth) {
-      inst.triggerAttackRelease(duration, undefined);
+      inst.triggerAttackRelease(duration, opts?.time);
     } else if (inst.triggerAttackRelease) {
-      inst.triggerAttackRelease(note, duration);
+      inst.triggerAttackRelease(note, duration, opts?.time);
     }
   } catch (e) {
     console.warn("[DinoRitmos] sound failed", e);
@@ -106,8 +114,49 @@ export function playRhythm(dino: Dino, pattern: number[] = [0, 0.4, 0.8, 1.2]) {
   });
 }
 
+/** Short reward arpeggio played when the child succeeds. */
+let cueSynth: Tone.PolySynth | null = null;
+function getCueSynth() {
+  if (!cueSynth) {
+    cueSynth = new Tone.PolySynth(Tone.Synth, {
+      oscillator: { type: "triangle" },
+      envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.4 },
+      volume: -6,
+    }).connect(out());
+  }
+  return cueSynth;
+}
+
+export function playSuccess() {
+  if (!started) return;
+  const s = getCueSynth();
+  const now = Tone.now();
+  ["C5", "E5", "G5", "C6"].forEach((n, i) => {
+    try { s.triggerAttackRelease(n, "16n", now + i * 0.09); } catch { /* noop */ }
+  });
+}
+
+export function playError() {
+  if (!started) return;
+  const s = getCueSynth();
+  const now = Tone.now();
+  try {
+    s.triggerAttackRelease("A3", "8n", now);
+    s.triggerAttackRelease("F3", "4n", now + 0.14);
+  } catch { /* noop */ }
+}
+
+/** Gentle haptic feedback (only when supported and enabled in settings). */
+export function vibrate(pattern: number | number[] = 25) {
+  try {
+    if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+      navigator.vibrate(pattern as any);
+    }
+  } catch { /* noop */ }
+}
+
 // Soft ambient pad
-let ambient: { synth: Tone.PolySynth; loop: Tone.Loop } | null = null;
+let ambient: { synth: Tone.PolySynth; reverb: Tone.Reverb; loop: Tone.Loop } | null = null;
 export function startAmbient() {
   if (!started || ambient) return;
   const reverb = new Tone.Reverb({ decay: 6, wet: 0.5 }).connect(out());
@@ -132,15 +181,17 @@ export function startAmbient() {
     }
   }, "2n");
   loop.start(0);
-  Tone.Transport.start();
-  ambient = { synth, loop };
+  Tone.getTransport().start();
+  ambient = { synth, reverb, loop };
 }
 
 export function stopAmbient() {
   if (!ambient) return;
   ambient.loop.stop();
+  ambient.loop.dispose();
   ambient.synth.dispose();
-  Tone.Transport.stop();
+  ambient.reverb.dispose();
+  Tone.getTransport().stop();
   ambient = null;
 }
 
