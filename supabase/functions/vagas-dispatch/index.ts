@@ -146,9 +146,34 @@ Deno.serve(async (req) => {
 
 
 
-
+    // Diagnostic: inspect Evolution instances / connection state.
+    if (body.action === "debug_instances") {
+      let raw = "";
+      let status = 0;
+      try {
+        const resp = await fetch(`${evoUrlBase}/instance/fetchInstances`, {
+          headers: { apikey: evoApiKey ?? "" },
+        });
+        status = resp.status;
+        raw = (await resp.text()).slice(0, 2000);
+      } catch (e) {
+        raw = String(e);
+      }
+      return new Response(
+        JSON.stringify({
+          url_configured: !!evoUrlBase,
+          key_configured: !!evoApiKey,
+          configured_instance: configuredInstance ?? null,
+          resolved_instance: evoInstanceName,
+          fetch_status: status,
+          raw,
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
     // Action: list WhatsApp groups so the admin can pick the right group JID.
+
     if (body.action === "list_groups") {
       if (!evoUrlBase || !evoApiKey || !evoInstanceName) {
         return new Response(JSON.stringify({ error: "Evolution não configurado" }), {
