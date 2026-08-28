@@ -1,6 +1,6 @@
 // Sends approved music-therapy vacancies to the WhatsApp group.
-// Scheduled 3x/day (morning/afternoon/evening), 2 vacancies each by default.
-// Delivery goes through an outbound WhatsApp endpoint (WHATSAPP_OUTBOUND_URL).
+// Scheduled once daily at 20:00 America/Sao_Paulo, 2 vacancies by default.
+// Delivery goes through the Evolution API.
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
@@ -110,39 +110,56 @@ Deno.serve(async (req) => {
     // 1) instance whose connected number matches the desired sender (last 8 digits)
     // 2) the configured instance name if it exists
     // 3) any connected instance
-    async function resolveInstance(): Promise<string | null> {
+    async function resolveInstance(): Promise<{
+      instance: string | null;
+      apiStatus: number | null;
+      apiError: string | null;
+    }> {
       if (!evoUrlBase || !evoApiKey) return null;
       try {
         const resp = await fetch(`${evoUrlBase}/instance/fetchInstances`, {
           headers: { apikey: evoApiKey },
         });
-        if (!resp.ok) return configuredInstance ?? null;
+        if (!resp.ok) {
+          const detail = (await resp.text()).slice(0, 500);
+          return {
+            instance: null,
+            apiStatus: resp.status,
+            apiError: detail,
+          };
+        }
         const list = (await resp.json()) as Array<{
           name?: string;
           connectionStatus?: string;
           ownerJid?: string;
         }>;
-        if (!Array.isArray(list) || list.length === 0) return configuredInstance ?? null;
+        if (!Array.isArray(list) || list.length === 0) {
+          return { instance: null, apiStatus: resp.status, apiError: "Nenhuma instância encontrada" };
+        }
 
         if (senderTail) {
           const byNumber = list.find((i) => {
             const jidDigits = (i.ownerJid ?? "").replace(/\D/g, "");
             return jidDigits.slice(-8) === senderTail;
           });
-          if (byNumber?.name) return byNumber.name;
+          if (byNumber?.name) return { instance: byNumber.name, apiStatus: resp.status, apiError: null };
         }
 
         const byName = configuredInstance && list.find((i) => i.name === configuredInstance);
-        if (byName) return byName.name!;
+        if (byName?.name) return { instance: byName.name, apiStatus: resp.status, apiError: null };
 
         const open = list.find((i) => i.connectionStatus === "open");
-        return (open?.name ?? list[0]?.name) ?? configuredInstance ?? null;
-      } catch {
-        return configuredInstance ?? null;
+        const fallback = open?.name ?? list[0]?.name ?? null;
+        return { instance: fallback, apiStatus: resp.status, apiError: null };
+      } catch (error) {
+        return { instance: null, apiStatus: null, apiError: String(error) };
       }
     }
 
-    const evoInstanceName = await resolveInstance();
+    const instanceResolution = evoUrlBase && evoApiKey
+      ? await resolveInstance()
+      : { instance: null, apiStatus: null, apiError: "Evolution API não configurada" };
+    const evoInstanceName = instanceResolution.instance;
 
 
 
@@ -169,6 +186,27 @@ Deno.serve(async (req) => {
           raw,
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    if (!evoUrlBase || !evoApiKey || !evoInstanceName) {
+      const status = instanceResolution.apiStatus === 401 || instanceResolution.apiStatus === 403
+        ? 503
+        : 502;
+      console.error("Evolution unavailable", {
+        apiStatus: instanceResolution.apiStatus,
+        detail: instanceResolution.apiError,
+      });
+      return new Response(
+        JSON.stringify({
+          error: "WhatsApp indisponível",
+          message: instanceResolution.apiStatus === 401 || instanceResolution.apiStatus === 403
+            ? "A Evolution API recusou a chave configurada. Atualize EVOLUTION_API_KEY."
+            : "Não foi possível localizar uma instância conectada na Evolution API.",
+          evolution_status: instanceResolution.apiStatus,
+          sent: 0,
+        }),
+        { status, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
