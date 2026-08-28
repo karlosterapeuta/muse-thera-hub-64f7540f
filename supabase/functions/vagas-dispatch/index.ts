@@ -115,7 +115,9 @@ Deno.serve(async (req) => {
       apiStatus: number | null;
       apiError: string | null;
     }> {
-      if (!evoUrlBase || !evoApiKey) return null;
+      if (!evoUrlBase || !evoApiKey) {
+        return { instance: null, apiStatus: null, apiError: "Evolution API não configurada" };
+      }
       try {
         const resp = await fetch(`${evoUrlBase}/instance/fetchInstances`, {
           headers: { apikey: evoApiKey },
