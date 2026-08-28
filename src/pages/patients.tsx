@@ -359,14 +359,14 @@ export default function PatientsPage() {
 
         {/* Modals com Style Clean */}
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <DialogContent className="sm:max-w-[500px] rounded-3xl border-none shadow-2xl p-0 overflow-hidden">
-            <div className="bg-primary/5 p-6 border-b border-primary/10">
-              <DialogTitle className="text-2xl font-bold text-primary">Novo Paciente</DialogTitle>
-              <DialogDescription className="mt-1">
+          <DialogContent className="w-[calc(100vw-1.5rem)] max-w-[95vw] sm:max-w-[540px] md:max-w-[640px] lg:max-w-[720px] rounded-3xl border-none shadow-2xl p-0 overflow-hidden">
+            <div className="bg-primary/5 p-4 sm:p-6 border-b border-primary/10">
+              <DialogTitle className="text-xl sm:text-2xl font-bold text-primary">Novo Paciente</DialogTitle>
+              <DialogDescription className="mt-1 text-sm sm:text-base">
                 Insira os dados básicos para iniciar o acompanhamento.
               </DialogDescription>
             </div>
-            <div className="p-6">
+            <div className="p-4 sm:p-6 max-h-[80vh] sm:max-h-[85vh] overflow-y-auto custom-scrollbar">
               <AddPatientDialog loadPatients={loadPatients} closeModal={() => setIsAddDialogOpen(false)}/>
             </div>
           </DialogContent>

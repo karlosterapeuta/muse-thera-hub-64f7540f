@@ -65,12 +65,12 @@ export function PatientPhotoUpload({ onPhotoUploaded, currentPhotoUrl }: Patient
   };
 
   return (
-    <div className="flex flex-col items-center gap-4 p-4 border rounded-xl bg-muted/30">
-      <div className="relative w-32 h-32 rounded-full overflow-hidden bg-muted flex items-center justify-center border-2 border-primary/20">
+    <div className="flex flex-col items-center gap-3 sm:gap-4 p-3 sm:p-4 border rounded-xl sm:rounded-2xl bg-muted/30">
+      <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden bg-muted flex items-center justify-center border-2 border-primary/20">
         {previewUrl ? (
           <img src={previewUrl} alt="Paciente" className="w-full h-full object-cover" />
         ) : (
-          <div className="text-muted-foreground text-xs text-center px-2">Sem foto</div>
+          <div className="text-muted-foreground text-xs sm:text-sm text-center px-2">Sem foto</div>
         )}
         {isUploading && (
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
@@ -79,11 +79,23 @@ export function PatientPhotoUpload({ onPhotoUploaded, currentPhotoUrl }: Patient
         )}
       </div>
 
-      <div className="flex gap-2">
-        <Button type="button" size="sm" variant="outline" onClick={() => cameraInputRef.current?.click()}>
+      <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+        <Button 
+          type="button" 
+          size="sm" 
+          variant="outline" 
+          onClick={() => cameraInputRef.current?.click()}
+          className="w-full sm:w-auto h-10 sm:h-9 text-sm rounded-lg"
+        >
           <Camera className="h-4 w-4 mr-2" /> Tirar Foto
         </Button>
-        <Button type="button" size="sm" variant="outline" onClick={() => fileInputRef.current?.click()}>
+        <Button 
+          type="button" 
+          size="sm" 
+          variant="outline" 
+          onClick={() => fileInputRef.current?.click()}
+          className="w-full sm:w-auto h-10 sm:h-9 text-sm rounded-lg"
+        >
           <Upload className="h-4 w-4 mr-2" /> Upload
         </Button>
         
