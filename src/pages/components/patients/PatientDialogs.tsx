@@ -302,71 +302,93 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <PatientPhotoUpload onPhotoUploaded={setPhotoUrl} currentPhotoUrl={photoUrl} />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nome</FormLabel>
-              <FormControl>
-                <Input placeholder="Nome do paciente" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="birth_date"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Data de Nascimento</FormLabel>
-              <FormControl>
-                <Input 
-                  type="date" 
-                  placeholder="Data de nascimento do paciente" 
-                  {...field} 
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="responsible"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Responsável</FormLabel>
-              <FormControl>
-                <Input placeholder="Nome do responsável" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="contact"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Contato</FormLabel>
-              <FormControl>
-                <Input placeholder="(99) 99999-9999" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <DialogFooter>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Salvando..." : "Salvar Alterações"}
-          </Button>
-        </DialogFooter>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem className="space-y-1.5 sm:space-y-2">
+                  <FormLabel className="text-sm sm:text-base font-medium">Nome</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="Nome do paciente" 
+                      className="h-11 sm:h-12 text-base rounded-xl"
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs sm:text-sm" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="birth_date"
+              render={({ field }) => (
+                <FormItem className="space-y-1.5 sm:space-y-2">
+                  <FormLabel className="text-sm sm:text-base font-medium">Data de Nascimento</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="date" 
+                      placeholder="Data de nascimento do paciente" 
+                      className="h-11 sm:h-12 text-base rounded-xl"
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs sm:text-sm" />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+            <FormField
+              control={form.control}
+              name="responsible"
+              render={({ field }) => (
+                <FormItem className="space-y-1.5 sm:space-y-2">
+                  <FormLabel className="text-sm sm:text-base font-medium">Responsável</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="Nome do responsável" 
+                      className="h-11 sm:h-12 text-base rounded-xl"
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs sm:text-sm" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="contact"
+              render={({ field }) => (
+                <FormItem className="space-y-1.5 sm:space-y-2">
+                  <FormLabel className="text-sm sm:text-base font-medium">Contato</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="(99) 99999-9999" 
+                      className="h-11 sm:h-12 text-base rounded-xl"
+                      inputMode="tel"
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs sm:text-sm" />
+                </FormItem>
+              )}
+            />
+          </div>
+          <DialogFooter className="flex-col sm:flex-row gap-3 sm:gap-2 pt-2 sm:pt-4">
+            <Button 
+              type="submit" 
+              disabled={isSubmitting}
+              className="w-full sm:w-auto h-11 sm:h-12 px-6 sm:px-8 text-base rounded-xl"
+            >
+              {isSubmitting ? "Salvando..." : "Salvar Alterações"}
+            </Button>
+          </DialogFooter>
         </form>
       </Form>
     </div>
