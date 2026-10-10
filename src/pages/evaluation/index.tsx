@@ -1573,7 +1573,7 @@ export default function Evaluation() {
 
       const pdfBlob = await generateSectionPdf(combinedContent, {
         filename: `${filenameBase}.pdf`,
-        scale: 1.0,
+        scale: 2.0,
       });
 
       if (isWord) {
