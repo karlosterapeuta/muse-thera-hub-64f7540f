@@ -36,6 +36,8 @@ interface EvaluationTextPDFProps {
   professionalPhone?: string;
   professionalSpecialty?: string;
   professionalPhotoUrl?: string;
+  /** Oculta o bloco visual de assinatura/carimbo quando o relatório é unificado. */
+  suppressProfessionalFooter?: boolean;
   overallScore: {
     percentage: number;
     evaluatedDomains: number;
@@ -83,6 +85,7 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
   professionalPhone,
   professionalSpecialty,
   professionalPhotoUrl,
+  suppressProfessionalFooter = false,
   overallScore,
 }) => {
   return (
@@ -439,6 +442,7 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
           }}
         />
 
+        {!suppressProfessionalFooter && (
         <div style={{ padding: '20px' }}>
           <div
             style={{
@@ -717,6 +721,7 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
             </div>
           </div>
         </div>
+        )}
       </div>
     </div>
   );
