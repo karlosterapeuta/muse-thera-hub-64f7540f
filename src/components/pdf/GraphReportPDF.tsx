@@ -944,6 +944,7 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
                   style={{ maxWidth: 140, maxHeight: 70, marginBottom: 6 }}
                 />
               )}
+              <img src="/lovable-uploads/musetera-logo-new.png" alt="MuseTera" crossOrigin="anonymous" style={{ display: 'block', width: 86, maxHeight: 48, objectFit: 'contain', margin: '0 auto 5px auto' }} />
               <div style={{ fontWeight: 700, color: '#0f172a' }}>
                 MuseTera · Plataforma de Musicoterapia
               </div>
