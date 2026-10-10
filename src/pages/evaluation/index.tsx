@@ -1835,99 +1835,88 @@ export default function Evaluation() {
                 </SelectContent>
 
               </Select>
+              <div className="w-full min-w-0 space-y-3">
+                <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <h3 className="text-sm font-semibold text-foreground">Exportar avaliação</h3>
+                    <p className="text-xs text-muted-foreground">Escolha o formato e o conteúdo que deseja baixar.</p>
+                  </div>
+                  <span className="text-xs text-muted-foreground">PDF para compartilhar · Word para guardar</span>
+                </div>
 
-              <TooltipProvider>
-                <TooltipComponent>
-                  <TooltipTrigger asChild>
-                    <Button
-                      onClick={handleGenerateEvaluationText}
-                      disabled={isGeneratingText}
-                      className="w-full sm:w-auto justify-center flex items-center gap-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-0 hover:from-blue-600 hover:to-cyan-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isGeneratingText ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <FileText className="h-4 w-4" />
-                      )}
-                      Baixar Avaliação
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent className="bg-gray-900 text-white border-0">
-                    <p>Gera relatório profissional com análise dos parâmetros marcados</p>
-                  </TooltipContent>
-                </TooltipComponent>
-              </TooltipProvider>
+                <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
+                  <div className="min-w-0 rounded-xl border border-border bg-card p-3 sm:p-4">
+                    <div className="mb-3 flex items-start gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                        <FileText className="h-5 w-5" />
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="text-sm font-semibold text-foreground">Relatório de avaliação</h4>
+                        <p className="text-xs leading-relaxed text-muted-foreground">Análise clínica, parâmetros e informações da avaliação.</p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                      <Button
+                        onClick={handleGenerateEvaluationText}
+                        disabled={isGeneratingText || isGeneratingWord || !selectedPatient || overallScore.evaluatedParameters === 0}
+                        className="w-full justify-center gap-2 bg-blue-600 text-white hover:bg-blue-700"
+                      >
+                        {isGeneratingText ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileText className="h-4 w-4" />}
+                        Baixar PDF
+                      </Button>
+                      <Button
+                        onClick={handleDownloadEvaluationWord}
+                        disabled={isGeneratingWord || isGeneratingText || !selectedPatient || overallScore.evaluatedParameters === 0}
+                        variant="outline"
+                        className="w-full justify-center gap-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950"
+                      >
+                        {isGeneratingWord ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />}
+                        Baixar Word
+                      </Button>
+                    </div>
+                  </div>
 
-              <TooltipProvider>
-                <TooltipComponent>
-                  <TooltipTrigger asChild>
-                    <Button
-                      onClick={handleDownloadEvaluationWord}
-                      disabled={isGeneratingWord || isGeneratingText || !selectedPatient || overallScore.evaluatedParameters === 0}
-                      variant="outline"
-                      className="w-full sm:w-auto justify-center flex items-center gap-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950"
-                    >
-                      {isGeneratingWord ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <FileDown className="h-4 w-4" />
-                      )}
-                      Avaliação Word
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent className="bg-gray-900 text-white border-0">
-                    <p>Baixa a avaliação em Word com logo, cores, seções e identidade visual MuseTera</p>
-                  </TooltipContent>
-                </TooltipComponent>
-              </TooltipProvider>
-
-
-              <TooltipProvider>
-                <TooltipComponent>
-                  <TooltipTrigger asChild>
-                    <Button
-                      onClick={() => {
-                        const patientEvaluations = selectedPatient 
-                          ? allEvaluations.filter(e => e.patient_id === selectedPatient)
-                          : savedEvaluations;
-                        
-                        if (patientEvaluations.length > 0) {
-                          handleGenerateParametersPDFFromSaved(patientEvaluations[0], patientEvaluations);
-                        } else {
-                          toast.error("Nenhuma avaliação salva encontrada para este paciente. Salve a avaliação primeiro.");
-                        }
-                      }}
-                      disabled={!selectedPatient}
-                      className="w-full sm:w-auto justify-center flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-0 hover:from-purple-600 hover:to-indigo-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50"
-                    >
-                      <FileText className="h-4 w-4" />
-                      Baixar Gráfico
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent className="bg-gray-900 text-white border-0">
-                    <p>Gera relatório completo com análise e recomendações</p>
-                  </TooltipContent>
-                </TooltipComponent>
-              </TooltipProvider>
-
-              <TooltipProvider>
-                <TooltipComponent>
-                  <TooltipTrigger asChild>
-                    <Button
-                      onClick={handleDownloadGraphWord}
-                      disabled={isGeneratingWord || !selectedPatient || overallScore.evaluatedParameters === 0}
-                      variant="outline"
-                      className="w-full sm:w-auto justify-center flex items-center gap-2 border-indigo-600 text-indigo-700 hover:bg-indigo-50 dark:hover:bg-indigo-950"
-                    >
-                      {isGeneratingWord ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileBarChart className="h-4 w-4" />}
-                      Gráficos Word
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent className="bg-gray-900 text-white border-0">
-                    <p>Baixa gráficos e indicadores em Word, com cores e identidade visual MuseTera</p>
-                  </TooltipContent>
-                </TooltipComponent>
-              </TooltipProvider>
+                  <div className="min-w-0 rounded-xl border border-border bg-card p-3 sm:p-4">
+                    <div className="mb-3 flex items-start gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300">
+                        <FileBarChart className="h-5 w-5" />
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="text-sm font-semibold text-foreground">Gráficos e indicadores</h4>
+                        <p className="text-xs leading-relaxed text-muted-foreground">Visualização gráfica dos resultados e dos domínios avaliados.</p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                      <Button
+                        onClick={() => {
+                          const patientEvaluations = selectedPatient
+                            ? allEvaluations.filter(e => e.patient_id === selectedPatient)
+                            : savedEvaluations;
+                          if (patientEvaluations.length > 0) {
+                            handleGenerateParametersPDFFromSaved(patientEvaluations[0], patientEvaluations);
+                          } else {
+                            toast.error("Nenhuma avaliação salva encontrada para este paciente. Salve a avaliação primeiro.");
+                          }
+                        }}
+                        disabled={!selectedPatient}
+                        className="w-full justify-center gap-2 bg-violet-600 text-white hover:bg-violet-700"
+                      >
+                        <FileBarChart className="h-4 w-4" />
+                        Baixar PDF
+                      </Button>
+                      <Button
+                        onClick={handleDownloadGraphWord}
+                        disabled={isGeneratingWord || !selectedPatient || overallScore.evaluatedParameters === 0}
+                        variant="outline"
+                        className="w-full justify-center gap-2 border-violet-600 text-violet-700 hover:bg-violet-50 dark:text-violet-400 dark:hover:bg-violet-950"
+                      >
+                        {isGeneratingWord ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />}
+                        Baixar Word
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               <TooltipProvider>
                 <TooltipComponent>
