@@ -112,6 +112,12 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
           paddingBottom: '15px',
         }}
       >
+        <img
+          src="/lovable-uploads/musetera-logo-new.png"
+          alt="MuseTera"
+          crossOrigin="anonymous"
+          style={{ width: '54px', height: 'auto', maxHeight: '54px', objectFit: 'contain', display: 'block', margin: '0 auto 8px auto' }}
+        />
         <h1
           style={{
             ...textBlock,
