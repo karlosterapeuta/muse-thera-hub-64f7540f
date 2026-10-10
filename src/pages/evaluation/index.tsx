@@ -1879,11 +1879,11 @@ export default function Evaluation() {
                       ) : (
                         <FileDown className="h-4 w-4" />
                       )}
-                      Baixar Word
+                      Avaliação Word
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent className="bg-gray-900 text-white border-0">
-                    <p>Baixa o relatório de avaliação em formato Word editável (.docx)</p>
+                    <p>Baixa a avaliação em Word com logo, cores, seções e identidade visual MuseTera</p>
                   </TooltipContent>
                 </TooltipComponent>
               </TooltipProvider>
@@ -1913,6 +1913,25 @@ export default function Evaluation() {
                   </TooltipTrigger>
                   <TooltipContent className="bg-gray-900 text-white border-0">
                     <p>Gera relatório completo com análise e recomendações</p>
+                  </TooltipContent>
+                </TooltipComponent>
+              </TooltipProvider>
+
+              <TooltipProvider>
+                <TooltipComponent>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={handleDownloadGraphWord}
+                      disabled={isGeneratingWord || !selectedPatient || overallScore.evaluatedParameters === 0}
+                      variant="outline"
+                      className="w-full sm:w-auto justify-center flex items-center gap-2 border-indigo-600 text-indigo-700 hover:bg-indigo-50 dark:hover:bg-indigo-950"
+                    >
+                      {isGeneratingWord ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileBarChart className="h-4 w-4" />}
+                      Gráficos Word
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-gray-900 text-white border-0">
+                    <p>Baixa gráficos e indicadores em Word, com cores e identidade visual MuseTera</p>
                   </TooltipContent>
                 </TooltipComponent>
               </TooltipProvider>
