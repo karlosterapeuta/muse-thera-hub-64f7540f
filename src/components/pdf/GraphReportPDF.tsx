@@ -900,7 +900,6 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
       })}
 
       {!suppressProfessionalFooter && (
-        {/* ============= RODAPÉ ============= */}
         <section data-pdf-section style={sectionWrap}>
           <div
             style={{
