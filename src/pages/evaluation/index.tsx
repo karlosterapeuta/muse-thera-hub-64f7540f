@@ -63,7 +63,7 @@ import { EvolutionTimeline } from "./components/EvolutionTimeline";
 import { AreasAnalysis } from "./components/AreasAnalysis";
 import { TherapeuticSuggestions } from "./components/TherapeuticSuggestions";
 import { getEvaluationTypeMeta } from "@/utils/evaluationTypes";
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, ImageRun } from "docx";
+import { Document, Packer, Paragraph, AlignmentType, ImageRun } from "docx";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 
@@ -77,33 +77,6 @@ interface Patient {
 }
 
 const EVAL_DRAFT_KEY = 'musetera-eval-draft';
-
-// Converte SVGs de gráficos em PNGs compatíveis com Word, preservando cores e desenhos.
-const svgToPngBytes = async (svg: string, width: number, height: number): Promise<Uint8Array> => {
-  const svgBlob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
-  const svgUrl = URL.createObjectURL(svgBlob);
-  try {
-    const image = new Image();
-    image.src = svgUrl;
-    await new Promise<void>((resolve, reject) => {
-      image.onload = () => resolve();
-      image.onerror = () => reject(new Error("Não foi possível renderizar o gráfico."));
-    });
-    const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
-    const context = canvas.getContext("2d");
-    if (!context) throw new Error("Canvas indisponível para gerar o gráfico.");
-    context.drawImage(image, 0, 0, width, height);
-    const pngBlob = await new Promise<Blob>((resolve, reject) => {
-      canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("Falha ao criar imagem do gráfico.")), "image/png");
-    });
-    return new Uint8Array(await pngBlob.arrayBuffer());
-  } finally {
-    URL.revokeObjectURL(svgUrl);
-  }
-};
-
 
 // Converts every page of the exact PDF into a full-page image in a Word document.
 const downloadPdfAsWordPages = async (pdfBlob: Blob, title: string, filename: string) => {
