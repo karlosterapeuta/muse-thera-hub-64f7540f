@@ -63,6 +63,7 @@ import { EvolutionTimeline } from "./components/EvolutionTimeline";
 import { AreasAnalysis } from "./components/AreasAnalysis";
 import { TherapeuticSuggestions } from "./components/TherapeuticSuggestions";
 import { getEvaluationTypeMeta } from "@/utils/evaluationTypes";
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } from "docx";
 
 interface Patient {
   id: string;
@@ -92,6 +93,7 @@ export default function Evaluation() {
   const [observations, setObservations] = useState<Record<string, string>>(draft?.observations || {});
   const [isLoading, setIsLoading] = useState(true);
   const [isGeneratingText, setIsGeneratingText] = useState(false);
+  const [isGeneratingWord, setIsGeneratingWord] = useState(false);
   const [activeTab, setActiveTab] = useState(draft?.activeTab || "evaluation");
   const [selectedForComparison, setSelectedForComparison] = useState<string[]>([]);
   const [editingEvaluationId, setEditingEvaluationId] = useState<string | null>(draft?.editingEvaluationId || null);
@@ -1415,6 +1417,185 @@ export default function Evaluation() {
     }
   };
 
+  const handleDownloadEvaluationWord = async () => {
+    if (!selectedPatient) {
+      toast.error("Selecione um paciente primeiro");
+      return;
+    }
+
+    if (overallScore.evaluatedParameters === 0) {
+      toast.error("Avalie pelo menos alguns parâmetros primeiro");
+      return;
+    }
+
+    setIsGeneratingWord(true);
+    const loadingId = toast.loading("Preparando documento Word...");
+
+    try {
+      const { achievements, developmentAreas } = categorizeEvaluationData();
+      const patientName = selectedPatientData?.name || "Paciente";
+      const patientAge = calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age;
+      const evaluationDateLabel = format(evaluationDate, "dd/MM/yyyy");
+      const reportContent = buildEvaluationReportContent({
+        patientName,
+        patientAge,
+        evaluationDateLabel,
+        achievements,
+        developmentAreas,
+        score: overallScore,
+      });
+
+      const children: Paragraph[] = [];
+      children.push(new Paragraph({
+        text: "RELATÓRIO DE AVALIAÇÃO MUSICOTERAPÊUTICA",
+        heading: HeadingLevel.TITLE,
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 320 },
+      }));
+
+      children.push(new Paragraph({
+        children: [
+          new TextRun({ text: "Paciente: ", bold: true }),
+          new TextRun(patientName),
+        ],
+        spacing: { after: 100 },
+      }));
+      if (patientAge != null) {
+        children.push(new Paragraph({
+          children: [
+            new TextRun({ text: "Idade: ", bold: true }),
+            new TextRun(String(patientAge) + " anos"),
+          ],
+          spacing: { after: 100 },
+        }));
+      }
+      children.push(new Paragraph({
+        children: [
+          new TextRun({ text: "Data da avaliação: ", bold: true }),
+          new TextRun(evaluationDateLabel),
+        ],
+        spacing: { after: 100 },
+      }));
+      children.push(new Paragraph({
+        children: [
+          new TextRun({ text: "Pontuação global: ", bold: true }),
+          new TextRun(String(overallScore.percentage) + "%"),
+        ],
+        spacing: { after: 240 },
+      }));
+
+      children.push(new Paragraph({
+        text: "1. Síntese geral",
+        heading: HeadingLevel.HEADING_1,
+        spacing: { before: 180, after: 120 },
+      }));
+      children.push(new Paragraph({ text: reportContent.sintese_geral, spacing: { after: 180 } }));
+
+      children.push(new Paragraph({
+        text: "2. Conquistas e recursos observados",
+        heading: HeadingLevel.HEADING_1,
+        spacing: { before: 180, after: 120 },
+      }));
+      children.push(new Paragraph({ text: reportContent.conquistas.introducao, spacing: { after: 120 } }));
+      for (const item of reportContent.conquistas.por_dominio) {
+        children.push(new Paragraph({ text: item.dominio, heading: HeadingLevel.HEADING_2, spacing: { before: 100, after: 80 } }));
+        children.push(new Paragraph({ text: item.analise, spacing: { after: 120 } }));
+      }
+
+      children.push(new Paragraph({
+        text: "3. Áreas a desenvolver",
+        heading: HeadingLevel.HEADING_1,
+        spacing: { before: 180, after: 120 },
+      }));
+      children.push(new Paragraph({ text: reportContent.areas_desenvolvimento.introducao, spacing: { after: 120 } }));
+      for (const item of reportContent.areas_desenvolvimento.por_dominio) {
+        children.push(new Paragraph({ text: item.dominio, heading: HeadingLevel.HEADING_2, spacing: { before: 100, after: 80 } }));
+        children.push(new Paragraph({ text: item.analise, spacing: { after: 120 } }));
+      }
+
+      children.push(new Paragraph({
+        text: "4. Recomendações terapêuticas",
+        heading: HeadingLevel.HEADING_1,
+        spacing: { before: 180, after: 120 },
+      }));
+      for (const recommendation of reportContent.recomendacoes) {
+        children.push(new Paragraph({ text: recommendation, bullet: { level: 0 }, spacing: { after: 80 } }));
+      }
+
+      children.push(new Paragraph({
+        text: "5. Objetivos terapêuticos sugeridos",
+        heading: HeadingLevel.HEADING_1,
+        spacing: { before: 180, after: 120 },
+      }));
+      for (const objective of reportContent.objetivos) {
+        children.push(new Paragraph({
+          children: [
+            new TextRun({ text: objective.dominio + ": ", bold: true }),
+            new TextRun(objective.objetivo),
+          ],
+          bullet: { level: 0 },
+          spacing: { after: 80 },
+        }));
+      }
+
+      children.push(new Paragraph({ text: "", spacing: { before: 240 } }));
+      children.push(new Paragraph({
+        children: [
+          new TextRun({ text: "Profissional: ", bold: true }),
+          new TextRun(professionalData?.name || "Profissional"),
+        ],
+        spacing: { after: 80 },
+      }));
+      if (professionalData?.specialty) {
+        children.push(new Paragraph({
+          children: [
+            new TextRun({ text: "Especialidade: ", bold: true }),
+            new TextRun(professionalData.specialty),
+          ],
+          spacing: { after: 80 },
+        }));
+      }
+      if (professionalData?.register) {
+        children.push(new Paragraph({
+          children: [
+            new TextRun({ text: "Registro profissional: ", bold: true }),
+            new TextRun(professionalData.register),
+          ],
+          spacing: { after: 80 },
+        }));
+      }
+      children.push(new Paragraph({
+        text: "Documento gerado pelo sistema MuseTera.",
+        spacing: { before: 200 },
+      }));
+
+      const document = new Document({
+        sections: [{ properties: {}, children }],
+      });
+      const blob = await Packer.toBlob(document);
+      const safePatientName = patientName
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-zA-Z0-9_-]+/g, "_");
+      const filename = "avaliacao-musicoterapeutica-" + safePatientName + "-" + format(evaluationDate, "yyyy-MM-dd") + ".docx";
+      const url = URL.createObjectURL(blob);
+      const anchor = window.document.createElement("a");
+      anchor.href = url;
+      anchor.download = filename;
+      window.document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+      toast.success("Documento Word baixado com sucesso!", { id: loadingId });
+    } catch (error) {
+      console.error("Erro ao gerar documento Word da avaliação:", error);
+      toast.error("Não foi possível gerar o documento Word. Tente novamente.", { id: loadingId });
+    } finally {
+      setIsGeneratingWord(false);
+    }
+  };
+
   const handleGenerateEvaluationText = async () => {
     if (!selectedPatient) {
       toast.error("Selecione um paciente primeiro");
@@ -1680,6 +1861,29 @@ export default function Evaluation() {
                   </TooltipTrigger>
                   <TooltipContent className="bg-gray-900 text-white border-0">
                     <p>Gera relatório profissional com análise dos parâmetros marcados</p>
+                  </TooltipContent>
+                </TooltipComponent>
+              </TooltipProvider>
+
+              <TooltipProvider>
+                <TooltipComponent>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={handleDownloadEvaluationWord}
+                      disabled={isGeneratingWord || isGeneratingText || !selectedPatient || overallScore.evaluatedParameters === 0}
+                      variant="outline"
+                      className="w-full sm:w-auto justify-center flex items-center gap-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950"
+                    >
+                      {isGeneratingWord ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <FileDown className="h-4 w-4" />
+                      )}
+                      Baixar Word
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-gray-900 text-white border-0">
+                    <p>Baixa o relatório de avaliação em formato Word editável (.docx)</p>
                   </TooltipContent>
                 </TooltipComponent>
               </TooltipProvider>
