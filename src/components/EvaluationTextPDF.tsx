@@ -36,7 +36,6 @@ interface EvaluationTextPDFProps {
   professionalPhone?: string;
   professionalSpecialty?: string;
   professionalPhotoUrl?: string;
-  suppressProfessionalFooter?: boolean;
   overallScore: {
     percentage: number;
     evaluatedDomains: number;
@@ -84,7 +83,6 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
   professionalPhone,
   professionalSpecialty,
   professionalPhotoUrl,
-  suppressProfessionalFooter = false,
   overallScore,
 }) => {
   return (
@@ -422,7 +420,6 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
         </section>
       )}
 
-      {!suppressProfessionalFooter && (
       <div
         data-pdf-section
         style={{
@@ -721,7 +718,6 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
           </div>
         </div>
       </div>
-      )}
     </div>
   );
 };
