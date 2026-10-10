@@ -937,6 +937,7 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
               </div>
             </div>
             <div style={{ textAlign: 'right', fontSize: 9, color: '#64748b' }}>
+              {professionalData?.digital_signature_url && <img src={professionalData.digital_signature_url} alt="Assinatura do profissional" crossOrigin="anonymous" style={{ display: 'block', maxWidth: 160, maxHeight: 48, objectFit: 'contain', margin: '0 auto 8px auto' }} />}
               {digitalStampBase64 && (
                 <img
                   src={digitalStampBase64}
