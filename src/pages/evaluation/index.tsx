@@ -1488,33 +1488,58 @@ export default function Evaluation() {
     }
   };
 
-  const handleDownloadEvaluationWord = async () => {
-    if (!selectedPatient) { toast.error("Selecione um paciente primeiro"); return; }
-    if (overallScore.evaluatedParameters === 0) { toast.error("Avalie pelo menos alguns parâmetros primeiro"); return; }
-    setIsGeneratingWord(true);
-    const loadingId = toast.loading("Preservando todas as páginas do PDF no Word...");
+  const handleDownloadCombinedReport = async (formatType: "pdf" | "word") => {
+    if (!selectedPatient) {
+      toast.error("Selecione um paciente primeiro");
+      return;
+    }
+    if (overallScore.evaluatedParameters === 0) {
+      toast.error("Avalie pelo menos alguns parâmetros primeiro");
+      return;
+    }
+
+    const isWord = formatType === "word";
+    if (isWord) setIsGeneratingWord(true);
+    else setIsGeneratingText(true);
+
+    const patientName = selectedPatientData?.name || "Paciente";
+    const patientAge = calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age ?? null;
+    const dateLabel = format(evaluationDate, "dd/MM/yyyy");
+    const filenameBase = `relatorio-musicoterapeutico-musetera-${safeDocxFileName(patientName)}-${format(evaluationDate, "yyyy-MM-dd")}`;
+    const loadingId = toast.loading(isWord
+      ? "Montando relatório completo e preparando o Word..."
+      : "Montando relatório completo em PDF...");
+
     try {
       const { achievements, developmentAreas } = categorizeEvaluationData();
-      const patientName = selectedPatientData?.name || "Paciente";
-      const patientAge = calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age ?? null;
-      const evaluationDateLabel = format(evaluationDate, "dd/MM/yyyy");
       const reportContent = buildEvaluationReportContent({
-        patientName, patientAge, evaluationDateLabel, achievements, developmentAreas, score: overallScore,
+        patientName,
+        patientAge,
+        evaluationDateLabel: dateLabel,
+        achievements,
+        developmentAreas,
+        score: overallScore,
       });
 
       const [signatureBase64, stampBase64, photoBase64] = await Promise.all([
-        professionalData?.digital_signature_url ? imageUrlToBase64(professionalData.digital_signature_url).catch(() => null) : Promise.resolve(null),
-        professionalData?.digital_stamp_url ? imageUrlToBase64(professionalData.digital_stamp_url).catch(() => null) : Promise.resolve(null),
-        professionalData?.stamp_photo_url ? imageUrlToBase64(professionalData.stamp_photo_url).catch(() => null) : Promise.resolve(null),
+        professionalData?.digital_signature_url
+          ? imageUrlToBase64(professionalData.digital_signature_url).catch(() => null)
+          : Promise.resolve(null),
+        professionalData?.digital_stamp_url
+          ? imageUrlToBase64(professionalData.digital_stamp_url).catch(() => null)
+          : Promise.resolve(null),
+        (professionalData?.stamp_photo_url || professionalData?.avatar_url)
+          ? imageUrlToBase64((professionalData?.stamp_photo_url || professionalData?.avatar_url)!).catch(() => null)
+          : Promise.resolve(null),
       ]);
 
-      const pdfContent = (
-        <div id="evaluation-text-pdf-content" style={{ display: "block" }}>
+      const combinedContent = (
+        <div style={{ display: "block", backgroundColor: "#ffffff" }}>
           <EvaluationTextPDF
             content={reportContent}
             patientName={patientName}
             patientAge={patientAge}
-            evaluationDate={evaluationDateLabel}
+            evaluationDate={dateLabel}
             professionalName={professionalData?.name || "Profissional"}
             professionalRegister={professionalData?.register || undefined}
             digitalSignatureUrl={signatureBase64 || undefined}
@@ -1525,168 +1550,65 @@ export default function Evaluation() {
             professionalPhotoUrl={photoBase64 || undefined}
             overallScore={overallScore}
           />
-        </div>
-      );
-      const pdfBlob = await generateSectionPdf(pdfContent, {
-        filename: `texto-avaliacao-${safeDocxFileName(patientName)}.pdf`,
-        scale: 1.0,
-      });
-      await downloadPdfAsWordPages(
-        pdfBlob,
-        `Relatório de avaliação musicoterapêutica - ${patientName}`,
-        `avaliacao-musicoterapeutica-${safeDocxFileName(patientName)}-${format(evaluationDate, "yyyy-MM-dd")}.docx`,
-      );
-      toast.success("Word criado com todas as páginas do PDF preservadas como imagens.", { id: loadingId });
-    } catch (error) {
-      console.error("Erro ao gerar Word da avaliação a partir do PDF:", error);
-      toast.error("Não foi possível gerar o Word da avaliação. Tente novamente.", { id: loadingId });
-    } finally {
-      setIsGeneratingWord(false);
-    }
-  };
-
-  const handleDownloadGraphWord = async () => {
-    if (!selectedPatient) { toast.error("Selecione um paciente primeiro"); return; }
-    if (overallScore.evaluatedParameters === 0) { toast.error("Avalie pelo menos alguns parâmetros primeiro"); return; }
-    setIsGeneratingWord(true);
-    const loadingId = toast.loading("Preservando todas as páginas dos gráficos no Word...");
-    try {
-      const patientName = selectedPatientData?.name || "Paciente";
-      const patientAge = calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age ?? null;
-      const photoUrl = professionalData?.stamp_photo_url || professionalData?.avatar_url;
-      const [professionalPhotoBase64, digitalStampBase64] = await Promise.all([
-        photoUrl ? imageUrlToBase64(photoUrl).catch(() => undefined) : Promise.resolve(undefined),
-        professionalData?.digital_stamp_url ? imageUrlToBase64(professionalData.digital_stamp_url).catch(() => undefined) : Promise.resolve(undefined),
-      ]);
-      const pdfBlob = await generateSectionPdf(
-        <GraphReportPDF
-          patientName={patientName}
-          patientAge={patientAge}
-          professionalData={professionalData}
-          evaluationDate={evaluationDate}
-          selections={selections}
-          evaluationDomains={evaluationDomains}
-          categoryData={subdomainScores}
-          pieData={pieData}
-          radarData={domainScores}
-          overallScore={overallScore}
-          professionalPhotoBase64={professionalPhotoBase64}
-          digitalStampBase64={digitalStampBase64}
-        />,
-        { filename: `graficos-${safeDocxFileName(patientName)}-${format(evaluationDate, "yyyy-MM-dd")}.pdf`, scale: 1.05 },
-      );
-      await downloadPdfAsWordPages(
-        pdfBlob,
-        `Gráficos da avaliação musicoterapêutica - ${patientName}`,
-        `graficos-musetera-${safeDocxFileName(patientName)}-${format(evaluationDate, "yyyy-MM-dd")}.docx`,
-      );
-      toast.success("Word criado com todas as páginas dos gráficos preservadas como imagens.", { id: loadingId });
-    } catch (error) {
-      console.error("Erro ao gerar Word dos gráficos a partir do PDF:", error);
-      toast.error("Não foi possível gerar o Word dos gráficos. Tente novamente.", { id: loadingId });
-    } finally {
-      setIsGeneratingWord(false);
-    }
-  };
-
-  const handleGenerateEvaluationText = async () => {
-    if (!selectedPatient) {
-      toast.error("Selecione um paciente primeiro");
-      return;
-    }
-    
-    // Verificar se há parâmetros avaliados
-    if (overallScore.evaluatedParameters === 0) {
-      toast.error("Avalie pelo menos alguns parâmetros primeiro");
-      return;
-    }
-
-    setIsGeneratingText(true);
-    const loadingId = toast.loading("Preparando avaliação para download...");
-
-    try {
-      // Organizar dados por categoria
-      const { achievements, developmentAreas } = categorizeEvaluationData();
-
-      const reportContent = buildEvaluationReportContent({
-        patientName: selectedPatientData?.name || 'Paciente',
-        patientAge: calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age,
-        evaluationDateLabel: format(evaluationDate, 'dd/MM/yyyy'),
-        achievements,
-        developmentAreas,
-        score: overallScore,
-      });
-
-      const imagesPromise = Promise.all([
-        professionalData?.digital_signature_url
-          ? imageUrlToBase64(professionalData.digital_signature_url).catch(() => null)
-          : Promise.resolve(null),
-        professionalData?.digital_stamp_url
-          ? imageUrlToBase64(professionalData.digital_stamp_url).catch(() => null)
-          : Promise.resolve(null),
-        professionalData?.stamp_photo_url
-          ? imageUrlToBase64(professionalData.stamp_photo_url).catch(() => null)
-          : Promise.resolve(null),
-      ]);
-
-      const [signatureBase64, stampBase64, photoBase64] = await imagesPromise;
-
-      toast.loading("Gerando PDF do relatório...", { id: loadingId });
-
-      // Gerar PDF com o texto retornado
-      const pdfContent = (
-        <div id="evaluation-text-pdf-content" style={{ display: 'block' }}>
-          <EvaluationTextPDF
-            content={reportContent}
-            patientName={selectedPatientData?.name || 'Paciente'}
-            patientAge={calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age ?? null}
-            evaluationDate={format(evaluationDate, 'dd/MM/yyyy')}
-            professionalName={professionalData?.name || 'Profissional'}
-            professionalRegister={professionalData?.register || undefined}
-            digitalSignatureUrl={signatureBase64 || undefined}
-            digitalStampUrl={stampBase64 || undefined}
-            professionalEmail={professionalData?.email || undefined}
-            professionalPhone={professionalData?.phone || undefined}
-            professionalSpecialty={professionalData?.specialty || undefined}
-            professionalPhotoUrl={photoBase64 || undefined}
+          <GraphReportPDF
+            patientName={patientName}
+            patientAge={patientAge}
+            professionalData={professionalData}
+            evaluationDate={evaluationDate}
+            selections={selections}
+            evaluationDomains={evaluationDomains}
+            categoryData={subdomainScores}
+            pieData={pieData}
+            radarData={domainScores}
             overallScore={overallScore}
+            professionalPhotoBase64={photoBase64 || undefined}
+            digitalStampBase64={stampBase64 || undefined}
+            evaluationType={selectedEvaluation}
+            suppressDocumentHeader
+            suppressProfessionalFooter
           />
         </div>
       );
 
-      const filename = `texto-avaliacao-${selectedPatientData?.name || 'paciente'}.pdf`;
-      const blob = await generateSectionPdf(pdfContent, { filename, scale: 1.0 });
+      const pdfBlob = await generateSectionPdf(combinedContent, {
+        filename: `${filenameBase}.pdf`,
+        scale: 1.0,
+      });
 
-      // Download imediato — não bloquear no upload ao Storage
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-
-      toast.success("Avaliação baixada com sucesso!", { id: loadingId });
-
-      // Upload em background (fire-and-forget)
-      savePDFToStorage(blob, filename, "evaluation").catch((e) => console.warn(e));
-
-    } catch (error: any) {
-      console.error("Erro ao gerar texto:", error);
-      toast.dismiss();
-      
-      if (error.message?.includes('429') || error.status === 429) {
-        toast.error("Limite de requisições excedido. Aguarde alguns instantes e tente novamente.");
-      } else if (error.message?.includes('402') || error.status === 402) {
-        toast.error("Créditos insuficientes. Adicione créditos à sua conta.");
+      if (isWord) {
+        await downloadPdfAsWordPages(
+          pdfBlob,
+          `Relatório completo de avaliação musicoterapêutica - ${patientName}`,
+          `${filenameBase}.docx`,
+        );
       } else {
-        toast.error("Erro ao baixar avaliação. Tente novamente em alguns instantes.");
+        const url = URL.createObjectURL(pdfBlob);
+        const anchor = window.document.createElement("a");
+        anchor.href = url;
+        anchor.download = `${filenameBase}.pdf`;
+        window.document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        window.setTimeout(() => URL.revokeObjectURL(url), 1500);
+        savePDFToStorage(pdfBlob, `${filenameBase}.pdf`, "evaluation").catch((error) => console.warn(error));
       }
+
+      toast.success(isWord
+        ? "Relatório completo exportado para Word."
+        : "Relatório completo exportado para PDF.", { id: loadingId });
+    } catch (error) {
+      console.error("Erro ao gerar relatório musicoterapêutico completo:", error);
+      toast.error(isWord
+        ? "Não foi possível gerar o Word. Tente novamente."
+        : "Não foi possível gerar o PDF. Tente novamente.", { id: loadingId });
     } finally {
-      setIsGeneratingText(false);
+      if (isWord) setIsGeneratingWord(false);
+      else setIsGeneratingText(false);
     }
   };
+
+  const handleGenerateEvaluationText = async () => handleDownloadCombinedReport("pdf");
+
 
   const getScoreLabel = (score: number) => {
     // Mapeia diretamente os valores corretos
@@ -1835,86 +1757,34 @@ export default function Evaluation() {
                 </SelectContent>
 
               </Select>
-              <div className="w-full min-w-0 space-y-3">
-                <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+              <div className="w-full min-w-0 space-y-3 rounded-xl border border-border bg-card p-4 sm:p-5">
+                <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <h3 className="text-sm font-semibold text-foreground">Exportar avaliação</h3>
-                    <p className="text-xs text-muted-foreground">Escolha o formato e o conteúdo que deseja baixar.</p>
+                    <h3 className="text-sm font-semibold text-foreground">Relatório completo de avaliação</h3>
+                    <p className="text-xs leading-relaxed text-muted-foreground">
+                      Texto clínico, parâmetros, gráficos e identificação profissional em um único documento.
+                    </p>
                   </div>
-                  <span className="text-xs text-muted-foreground">PDF para compartilhar · Word para guardar</span>
+                  <span className="text-xs text-muted-foreground">Escolha o formato de saída</span>
                 </div>
-
-                <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
-                  <div className="min-w-0 rounded-xl border border-border bg-card p-3 sm:p-4">
-                    <div className="mb-3 flex items-start gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
-                        <FileText className="h-5 w-5" />
-                      </div>
-                      <div className="min-w-0">
-                        <h4 className="text-sm font-semibold text-foreground">Relatório de avaliação</h4>
-                        <p className="text-xs leading-relaxed text-muted-foreground">Análise clínica, parâmetros e informações da avaliação.</p>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                      <Button
-                        onClick={handleGenerateEvaluationText}
-                        disabled={isGeneratingText || isGeneratingWord || !selectedPatient || overallScore.evaluatedParameters === 0}
-                        className="w-full justify-center gap-2 bg-blue-600 text-white hover:bg-blue-700"
-                      >
-                        {isGeneratingText ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileText className="h-4 w-4" />}
-                        Baixar PDF
-                      </Button>
-                      <Button
-                        onClick={handleDownloadEvaluationWord}
-                        disabled={isGeneratingWord || isGeneratingText || !selectedPatient || overallScore.evaluatedParameters === 0}
-                        variant="outline"
-                        className="w-full justify-center gap-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950"
-                      >
-                        {isGeneratingWord ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />}
-                        Baixar Word
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="min-w-0 rounded-xl border border-border bg-card p-3 sm:p-4">
-                    <div className="mb-3 flex items-start gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300">
-                        <FileBarChart className="h-5 w-5" />
-                      </div>
-                      <div className="min-w-0">
-                        <h4 className="text-sm font-semibold text-foreground">Gráficos e indicadores</h4>
-                        <p className="text-xs leading-relaxed text-muted-foreground">Visualização gráfica dos resultados e dos domínios avaliados.</p>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                      <Button
-                        onClick={() => {
-                          const patientEvaluations = selectedPatient
-                            ? allEvaluations.filter(e => e.patient_id === selectedPatient)
-                            : savedEvaluations;
-                          if (patientEvaluations.length > 0) {
-                            handleGenerateParametersPDFFromSaved(patientEvaluations[0], patientEvaluations);
-                          } else {
-                            toast.error("Nenhuma avaliação salva encontrada para este paciente. Salve a avaliação primeiro.");
-                          }
-                        }}
-                        disabled={!selectedPatient}
-                        className="w-full justify-center gap-2 bg-violet-600 text-white hover:bg-violet-700"
-                      >
-                        <FileBarChart className="h-4 w-4" />
-                        Baixar PDF
-                      </Button>
-                      <Button
-                        onClick={handleDownloadGraphWord}
-                        disabled={isGeneratingWord || !selectedPatient || overallScore.evaluatedParameters === 0}
-                        variant="outline"
-                        className="w-full justify-center gap-2 border-violet-600 text-violet-700 hover:bg-violet-50 dark:text-violet-400 dark:hover:bg-violet-950"
-                      >
-                        {isGeneratingWord ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />}
-                        Baixar Word
-                      </Button>
-                    </div>
-                  </div>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <Button
+                    onClick={() => handleDownloadCombinedReport("pdf")}
+                    disabled={isGeneratingText || isGeneratingWord || !selectedPatient || overallScore.evaluatedParameters === 0}
+                    className="w-full justify-center gap-2 bg-blue-600 text-white hover:bg-blue-700"
+                  >
+                    {isGeneratingText ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileText className="h-4 w-4" />}
+                    Baixar relatório em PDF
+                  </Button>
+                  <Button
+                    onClick={() => handleDownloadCombinedReport("word")}
+                    disabled={isGeneratingWord || isGeneratingText || !selectedPatient || overallScore.evaluatedParameters === 0}
+                    variant="outline"
+                    className="w-full justify-center gap-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950"
+                  >
+                    {isGeneratingWord ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />}
+                    Baixar relatório em Word
+                  </Button>
                 </div>
               </div>
 
