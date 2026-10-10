@@ -37,6 +37,7 @@ interface GraphReportPDFProps {
   };
   professionalPhotoBase64?: string;
   digitalStampBase64?: string;
+  digitalSignatureBase64?: string;
   /** período/tipo da avaliação (chave, valor do seletor ou label) */
   evaluationType?: string;
   /** Oculta a identificação inicial quando incorporado ao relatório unificado. */
@@ -107,6 +108,7 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
   overallScore,
   professionalPhotoBase64,
   digitalStampBase64,
+  digitalSignatureBase64,
   evaluationType,
   suppressDocumentHeader = false,
   suppressProfessionalFooter = false,
@@ -900,57 +902,22 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
       })}
 
       {!suppressProfessionalFooter && (
-        <section data-pdf-section style={sectionWrap}>
-          <div
-            style={{
-              borderTop: '2px solid #0f172a',
-              paddingTop: 10,
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'flex-end',
-              gap: 14,
-            }}
-          >
-            <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end' }}>
-              {professionalPhotoBase64 && (
-                <img
-                  src={professionalPhotoBase64}
-                  alt="Profissional"
-                  style={{
-                    width: 54,
-                    height: 54,
-                    borderRadius: '50%',
-                    objectFit: 'cover',
-                    border: '2px solid #e2e8f0',
-                  }}
-                />
-              )}
-              <div style={{ fontSize: 9, color: '#475569', lineHeight: 1.55 }}>
-                <div style={{ fontWeight: 800, color: '#0f172a', fontSize: 11 }}>
-                  {professionalData?.name || 'Musicoterapeuta'}
-                </div>
-                {professionalData?.email && <div>{professionalData.email}</div>}
-                <div style={{ marginTop: 4, fontStyle: 'italic', color: '#64748b' }}>
-                  Documento clínico — confidencial conforme normas profissionais
-                  vigentes.
-                </div>
-              </div>
+        <section data-pdf-section style={{ ...sectionWrap, breakInside: 'avoid', pageBreakInside: 'avoid', marginTop: 24 }}>
+          <div style={{ borderTop: '2px solid #0f172a', paddingTop: 18, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: '#0f172a', fontWeight: 800 }}>
+              {professionalData?.name || 'Musicoterapeuta'}
             </div>
-            <div style={{ textAlign: 'right', fontSize: 9, color: '#64748b' }}>
-              {professionalData?.digital_signature_url && <img src={professionalData.digital_signature_url} alt="Assinatura do profissional" crossOrigin="anonymous" style={{ display: 'block', maxWidth: 160, maxHeight: 48, objectFit: 'contain', margin: '0 auto 8px auto' }} />}
-              {digitalStampBase64 && (
-                <img
-                  src={digitalStampBase64}
-                  alt="Carimbo digital"
-                  style={{ maxWidth: 140, maxHeight: 70, marginBottom: 6 }}
-                />
-              )}
-              <img src="/lovable-uploads/musetera-logo-new.png" alt="MuseTera" crossOrigin="anonymous" style={{ display: 'block', width: 86, maxHeight: 48, objectFit: 'contain', margin: '0 auto 5px auto' }} />
-              <div style={{ fontWeight: 700, color: '#0f172a' }}>
-                MuseTera · Plataforma de Musicoterapia
-              </div>
-              <div>Gerado em {issuedAt}</div>
+            {professionalData?.email && <div style={{ fontSize: 9, color: '#475569', marginTop: -8 }}>{professionalData.email}</div>}
+            {digitalSignatureBase64 && (
+              <img src={digitalSignatureBase64} alt="Assinatura digital do profissional" style={{ display: 'block', width: 230, maxWidth: '80%', maxHeight: 110, objectFit: 'contain', objectPosition: 'center', margin: '2px auto', imageRendering: 'high-quality' }} />
+            )}
+            {digitalStampBase64 && (
+              <img src={digitalStampBase64} alt="Carimbo profissional" style={{ display: 'block', width: 220, maxWidth: '80%', maxHeight: 140, objectFit: 'contain', objectPosition: 'center', margin: '0 auto', imageRendering: 'high-quality' }} />
+            )}
+            <div style={{ fontSize: 9, color: '#64748b', lineHeight: 1.5 }}>
+              Documento clínico — confidencial conforme normas profissionais vigentes.
             </div>
+            <div style={{ fontSize: 8, color: '#64748b' }}>Gerado em {issuedAt}</div>
           </div>
         </section>
       )}
