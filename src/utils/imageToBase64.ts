@@ -1,5 +1,5 @@
 const IMAGE_FETCH_TIMEOUT_MS = 5500;
-const MAX_IMAGE_DIMENSION = 900;
+const MAX_IMAGE_DIMENSION = 2400;
 
 const blobToOptimizedDataUrl = (blob: Blob): Promise<string | null> =>
   new Promise((resolve) => {
@@ -14,7 +14,7 @@ const blobToOptimizedDataUrl = (blob: Blob): Promise<string | null> =>
       const ctx = canvas.getContext('2d');
       ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
       URL.revokeObjectURL(objectUrl);
-      resolve(canvas.toDataURL('image/jpeg', 0.82));
+      resolve(canvas.toDataURL('image/png'));
     };
 
     img.onerror = () => {
@@ -83,7 +83,7 @@ const imageUrlToBase64ViaCanvas = (url: string): Promise<string | null> => {
       canvas.height = Math.max(1, Math.round(img.naturalHeight * ratio));
       const ctx = canvas.getContext('2d');
       ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+      const dataUrl = canvas.toDataURL('image/png');
       window.clearTimeout(timeoutId);
       console.log('✅ Base64 via Canvas gerado:', dataUrl.length);
       resolve(dataUrl);

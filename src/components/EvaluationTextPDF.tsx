@@ -36,6 +36,8 @@ interface EvaluationTextPDFProps {
   professionalPhone?: string;
   professionalSpecialty?: string;
   professionalPhotoUrl?: string;
+  /** Oculta o bloco visual de assinatura/carimbo quando o relatório é unificado. */
+  suppressProfessionalFooter?: boolean;
   overallScore: {
     percentage: number;
     evaluatedDomains: number;
@@ -83,6 +85,7 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
   professionalPhone,
   professionalSpecialty,
   professionalPhotoUrl,
+  suppressProfessionalFooter = false,
   overallScore,
 }) => {
   return (
@@ -112,6 +115,7 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
           paddingBottom: '15px',
         }}
       >
+
         <h1
           style={{
             ...textBlock,
@@ -209,6 +213,7 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
 
       {/* Conquistas Identificadas */}
       {content.conquistas && content.conquistas.por_dominio && content.conquistas.por_dominio.length > 0 && (
+        <div>
         <section data-pdf-section style={sectionBase}>
           <h3
             style={{
@@ -238,7 +243,7 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
             </p>
           )}
 
-          {content.conquistas.por_dominio.map((item, index) => (
+          {content.conquistas.por_dominio.slice(0, 1).map((item, index) => (
             <div
               key={index}
               style={{
@@ -272,6 +277,15 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
             </div>
           ))}
         </section>
+          {content.conquistas.por_dominio.slice(1).map((item, index) => (
+            <section data-pdf-section key={index + 1} style={sectionBase}>
+              <div style={{ ...textBlock, marginBottom: '20px', paddingLeft: '15px', borderLeft: '4px solid #10b981' }}>
+                <h4 style={{ ...textBlock, fontSize: '12pt', fontWeight: 'bold', color: '#059669', marginBottom: '10px' }}>{item.dominio}</h4>
+                <p style={{ ...textBlock, textAlign: 'justify', marginBottom: '10px', lineHeight: '1.8' }}>{item.analise}</p>
+              </div>
+            </section>
+          ))}
+        </div>
       )}
 
       {/* Áreas Prioritárias para Desenvolvimento */}
@@ -414,7 +428,6 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
         </section>
       )}
 
-      {/* Rodapé Profissional */}
       <div
         data-pdf-section
         style={{
@@ -434,6 +447,7 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
           }}
         />
 
+        {!suppressProfessionalFooter && (
         <div style={{ padding: '20px' }}>
           <div
             style={{
@@ -712,6 +726,7 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
             </div>
           </div>
         </div>
+        )}
       </div>
     </div>
   );
