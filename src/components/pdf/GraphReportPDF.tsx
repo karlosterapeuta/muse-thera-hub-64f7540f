@@ -909,10 +909,10 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
             </div>
             {professionalData?.email && <div style={{ fontSize: 9, color: '#475569', marginTop: -8 }}>{professionalData.email}</div>}
             {digitalSignatureBase64 && (
-              <img src={digitalSignatureBase64} alt="Assinatura digital do profissional" style={{ display: 'block', width: 230, maxWidth: '80%', maxHeight: 110, objectFit: 'contain', objectPosition: 'center', margin: '2px auto', imageRendering: 'high-quality' }} />
+              <img src={digitalSignatureBase64} alt="Assinatura digital do profissional" style={{ display: 'block', width: 'auto', height: 'auto', maxWidth: 150, maxHeight: 70, objectFit: 'contain', objectPosition: 'center', margin: '2px auto', imageRendering: 'high-quality' }} />
             )}
             {digitalStampBase64 && (
-              <img src={digitalStampBase64} alt="Carimbo profissional" style={{ display: 'block', width: 220, maxWidth: '80%', maxHeight: 140, objectFit: 'contain', objectPosition: 'center', margin: '0 auto', imageRendering: 'high-quality' }} />
+              <img src={digitalStampBase64} alt="Carimbo profissional" style={{ display: 'block', width: 'auto', height: 'auto', maxWidth: 100, maxHeight: 75, objectFit: 'contain', objectPosition: 'center', margin: '0 auto', imageRendering: 'high-quality' }} />
             )}
             <div style={{ fontSize: 9, color: '#64748b', lineHeight: 1.5 }}>
               Documento clínico — confidencial conforme normas profissionais vigentes.
