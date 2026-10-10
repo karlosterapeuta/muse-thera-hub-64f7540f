@@ -276,6 +276,7 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
               >
                 {item.analise}
               </p>
+            </div>
             </section>
           ))}
         </div>
