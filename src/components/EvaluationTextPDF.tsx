@@ -243,9 +243,7 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
             </p>
           )}
 
-        </section>
-          {content.conquistas.por_dominio.map((item, index) => (
-            <section data-pdf-section key={index} style={sectionBase}>
+          {content.conquistas.por_dominio.slice(0, 1).map((item, index) => (
             <div
               key={index}
               style={{
@@ -277,6 +275,14 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
                 {item.analise}
               </p>
             </div>
+          ))}
+        </section>
+          {content.conquistas.por_dominio.slice(1).map((item, index) => (
+            <section data-pdf-section key={index + 1} style={sectionBase}>
+              <div style={{ ...textBlock, marginBottom: '20px', paddingLeft: '15px', borderLeft: '4px solid #10b981' }}>
+                <h4 style={{ ...textBlock, fontSize: '12pt', fontWeight: 'bold', color: '#059669', marginBottom: '10px' }}>{item.dominio}</h4>
+                <p style={{ ...textBlock, textAlign: 'justify', marginBottom: '10px', lineHeight: '1.8' }}>{item.analise}</p>
+              </div>
             </section>
           ))}
         </div>
