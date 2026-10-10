@@ -1566,7 +1566,6 @@ export default function Evaluation() {
             digitalStampBase64={stampBase64 || undefined}
             evaluationType={selectedEvaluation}
             suppressDocumentHeader
-            suppressProfessionalFooter
           />
         </div>
       );
