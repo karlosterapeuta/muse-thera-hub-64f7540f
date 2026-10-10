@@ -64,6 +64,10 @@ import { AreasAnalysis } from "./components/AreasAnalysis";
 import { TherapeuticSuggestions } from "./components/TherapeuticSuggestions";
 import { getEvaluationTypeMeta } from "@/utils/evaluationTypes";
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, ImageRun } from "docx";
+import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
+import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+
+GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
 interface Patient {
   id: string;
@@ -97,6 +101,68 @@ const svgToPngBytes = async (svg: string, width: number, height: number): Promis
     return new Uint8Array(await pngBlob.arrayBuffer());
   } finally {
     URL.revokeObjectURL(svgUrl);
+  }
+};
+
+
+// Converts every page of the exact PDF into a full-page image in a Word document.
+const downloadPdfAsWordPages = async (pdfBlob: Blob, title: string, filename: string) => {
+  const pdfBytes = new Uint8Array(await pdfBlob.arrayBuffer());
+  const pdf = await getDocument({ data: pdfBytes }).promise;
+  const children: Paragraph[] = [];
+
+  try {
+    for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+      const page = await pdf.getPage(pageNumber);
+      const viewport = page.getViewport({ scale: 1.8 });
+      const canvas = window.document.createElement("canvas");
+      canvas.width = Math.ceil(viewport.width);
+      canvas.height = Math.ceil(viewport.height);
+      const context = canvas.getContext("2d");
+      if (!context) throw new Error("Não foi possível preparar a imagem da página do PDF.");
+
+      await page.render({ canvasContext: context, viewport }).promise;
+      const dataUrl = canvas.toDataURL("image/png");
+      const base64 = dataUrl.split(",")[1];
+      const binary = window.atob(base64);
+      const imageBytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i += 1) imageBytes[i] = binary.charCodeAt(i);
+
+      const imageWidth = 780;
+      const imageHeight = Math.round(imageWidth * viewport.height / viewport.width);
+      children.push(new Paragraph({
+        children: [new ImageRun({ data: imageBytes, transformation: { width: imageWidth, height: imageHeight } })],
+        alignment: AlignmentType.CENTER,
+        pageBreakBefore: pageNumber > 1,
+        spacing: { before: 0, after: 0, line: 240 },
+      }));
+      page.cleanup();
+    }
+
+    const doc = new Document({
+      creator: "MuseTera",
+      title,
+      sections: [{
+        properties: {
+          page: {
+            size: { width: 11906, height: 16838 },
+            margin: { top: 7, right: 7, bottom: 7, left: 7, header: 0, footer: 0 },
+          },
+        },
+        children,
+      }],
+    });
+    const wordBlob = await Packer.toBlob(doc);
+    const url = URL.createObjectURL(wordBlob);
+    const anchor = window.document.createElement("a");
+    anchor.href = url;
+    anchor.download = filename;
+    window.document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1500);
+  } finally {
+    await pdf.destroy();
   }
 };
 
@@ -1453,123 +1519,101 @@ export default function Evaluation() {
     if (!selectedPatient) { toast.error("Selecione um paciente primeiro"); return; }
     if (overallScore.evaluatedParameters === 0) { toast.error("Avalie pelo menos alguns parâmetros primeiro"); return; }
     setIsGeneratingWord(true);
-    const loadingId = toast.loading("Montando relatório Word com identidade visual...");
+    const loadingId = toast.loading("Preservando todas as páginas do PDF no Word...");
     try {
       const { achievements, developmentAreas } = categorizeEvaluationData();
       const patientName = selectedPatientData?.name || "Paciente";
-      const patientAge = calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age;
+      const patientAge = calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age ?? null;
       const evaluationDateLabel = format(evaluationDate, "dd/MM/yyyy");
-      const reportContent = buildEvaluationReportContent({ patientName, patientAge, evaluationDateLabel, achievements, developmentAreas, score: overallScore });
-      const children: Paragraph[] = [];
-      let logoBytes: Uint8Array | undefined;
-      try {
-        const response = await fetch("/lovable-uploads/musetera-logo-new.png");
-        if (response.ok) logoBytes = new Uint8Array(await response.arrayBuffer());
-      } catch (e) { console.warn("Não foi possível carregar o logo MuseTera:", e); }
-      if (logoBytes) children.push(new Paragraph({ children: [new ImageRun({ data: logoBytes, transformation: { width: 54, height: 54 } })], alignment: AlignmentType.CENTER, spacing: { after: 60 } }));
-      children.push(new Paragraph({ children: [new TextRun({ text: "MuseTera", bold: true, color: "5145CD", size: 36 })], alignment: AlignmentType.CENTER, spacing: { after: 40 } }));
-      children.push(new Paragraph({ children: [new TextRun({ text: "SISTEMA ESPECIALIZADO EM AVALIAÇÃO MUSICOTERAPÊUTICA", color: "64748B", size: 16, bold: true })], alignment: AlignmentType.CENTER, spacing: { after: 180 } }));
-      children.push(new Paragraph({ children: [new TextRun({ text: "RELATÓRIO DE AVALIAÇÃO", bold: true, color: "FFFFFF", size: 30 })], alignment: AlignmentType.CENTER, shading: { fill: "5145CD", color: "5145CD", type: "clear" }, spacing: { before: 80, after: 160 } }));
-      children.push(new Paragraph({ children: [new TextRun({ text: patientName, bold: true, color: "312E81", size: 26 })], alignment: AlignmentType.CENTER, spacing: { after: 100 } }));
-      const metaRuns: TextRun[] = [new TextRun({ text: "Data: ", bold: true, color: "475569" }), new TextRun({ text: evaluationDateLabel, color: "1E293B" })];
-      if (patientAge != null) metaRuns.push(new TextRun({ text: "     Idade: ", bold: true, color: "475569" }), new TextRun({ text: `${patientAge} anos`, color: "1E293B" }));
-      children.push(new Paragraph({ children: metaRuns, alignment: AlignmentType.CENTER, spacing: { after: 180 } }));
-      children.push(new Paragraph({ children: [new TextRun({ text: `${overallScore.percentage}%  •  PONTUAÇÃO GLOBAL`, bold: true, color: "FFFFFF", size: 28 })], alignment: AlignmentType.CENTER, shading: { fill: overallScore.percentage >= 60 ? "059669" : overallScore.percentage >= 40 ? "D97706" : "DC2626", color: "FFFFFF", type: "clear" }, spacing: { before: 80, after: 200 } }));
-      const addSection = (title: string, number: string) => children.push(new Paragraph({ children: [new TextRun({ text: `${number}. ${title}`, bold: true, color: "FFFFFF", size: 22 })], shading: { fill: "5145CD", color: "5145CD", type: "clear" }, spacing: { before: 220, after: 120 } }));
-      addSection("Síntese geral", "1");
-      children.push(new Paragraph({ text: reportContent.sintese_geral, spacing: { after: 160 } }));
-      addSection("Conquistas e recursos observados", "2");
-      children.push(new Paragraph({ text: reportContent.conquistas.introducao, spacing: { after: 100 } }));
-      for (const item of reportContent.conquistas.por_dominio) {
-        children.push(new Paragraph({ children: [new TextRun({ text: item.dominio, bold: true, color: "059669", size: 21 })], spacing: { before: 100, after: 60 } }));
-        children.push(new Paragraph({ text: item.analise, spacing: { after: 120 } }));
-      }
-      addSection("Áreas a desenvolver", "3");
-      children.push(new Paragraph({ text: reportContent.areas_desenvolvimento.introducao, spacing: { after: 100 } }));
-      for (const item of reportContent.areas_desenvolvimento.por_dominio) {
-        children.push(new Paragraph({ children: [new TextRun({ text: item.dominio, bold: true, color: "D97706", size: 21 })], spacing: { before: 100, after: 60 } }));
-        children.push(new Paragraph({ text: item.analise, spacing: { after: 120 } }));
-      }
-      addSection("Recomendações terapêuticas", "4");
-      for (const item of reportContent.recomendacoes) children.push(new Paragraph({ children: [new TextRun({ text: "•  ", bold: true, color: "5145CD" }), new TextRun(item)], spacing: { after: 80 } }));
-      addSection("Objetivos terapêuticos sugeridos", "5");
-      for (const item of reportContent.objetivos) children.push(new Paragraph({ children: [new TextRun({ text: item.dominio + ": ", bold: true, color: "5145CD" }), new TextRun(item.objetivo)], spacing: { after: 80 } }));
-      addSection("Identificação profissional", "6");
-      children.push(new Paragraph({ children: [new TextRun({ text: "Profissional: ", bold: true }), new TextRun(professionalData?.name || "Profissional")], spacing: { after: 80 } }));
-      if (professionalData?.specialty) children.push(new Paragraph({ children: [new TextRun({ text: "Especialidade: ", bold: true }), new TextRun(professionalData.specialty)], spacing: { after: 80 } }));
-      if (professionalData?.register) children.push(new Paragraph({ children: [new TextRun({ text: "Registro profissional: ", bold: true }), new TextRun(professionalData.register)], spacing: { after: 80 } }));
-      children.push(new Paragraph({ children: [new TextRun({ text: "Documento gerado pelo sistema MuseTera.", color: "64748B", italics: true, size: 16 })], alignment: AlignmentType.CENTER, spacing: { before: 220 } }));
-      const doc = new Document({ creator: "MuseTera", title: `Relatório de avaliação musicoterapêutica - ${patientName}`, sections: [{ properties: {}, children }] });
-      const blob = await Packer.toBlob(doc);
-      const filename = `avaliacao-musicoterapeutica-${safeDocxFileName(patientName)}-${format(evaluationDate, "yyyy-MM-dd")}.docx`;
-      const url = URL.createObjectURL(blob); const anchor = window.document.createElement("a"); anchor.href = url; anchor.download = filename;
-      window.document.body.appendChild(anchor); anchor.click(); anchor.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
-      toast.success("Relatório Word com identidade visual baixado!", { id: loadingId });
+      const reportContent = buildEvaluationReportContent({
+        patientName, patientAge, evaluationDateLabel, achievements, developmentAreas, score: overallScore,
+      });
+
+      const [signatureBase64, stampBase64, photoBase64] = await Promise.all([
+        professionalData?.digital_signature_url ? imageUrlToBase64(professionalData.digital_signature_url).catch(() => null) : Promise.resolve(null),
+        professionalData?.digital_stamp_url ? imageUrlToBase64(professionalData.digital_stamp_url).catch(() => null) : Promise.resolve(null),
+        professionalData?.stamp_photo_url ? imageUrlToBase64(professionalData.stamp_photo_url).catch(() => null) : Promise.resolve(null),
+      ]);
+
+      const pdfContent = (
+        <div id="evaluation-text-pdf-content" style={{ display: "block" }}>
+          <EvaluationTextPDF
+            content={reportContent}
+            patientName={patientName}
+            patientAge={patientAge}
+            evaluationDate={evaluationDateLabel}
+            professionalName={professionalData?.name || "Profissional"}
+            professionalRegister={professionalData?.register || undefined}
+            digitalSignatureUrl={signatureBase64 || undefined}
+            digitalStampUrl={stampBase64 || undefined}
+            professionalEmail={professionalData?.email || undefined}
+            professionalPhone={professionalData?.phone || undefined}
+            professionalSpecialty={professionalData?.specialty || undefined}
+            professionalPhotoUrl={photoBase64 || undefined}
+            overallScore={overallScore}
+          />
+        </div>
+      );
+      const pdfBlob = await generateSectionPdf(pdfContent, {
+        filename: `texto-avaliacao-${safeDocxFileName(patientName)}.pdf`,
+        scale: 1.0,
+      });
+      await downloadPdfAsWordPages(
+        pdfBlob,
+        `Relatório de avaliação musicoterapêutica - ${patientName}`,
+        `avaliacao-musicoterapeutica-${safeDocxFileName(patientName)}-${format(evaluationDate, "yyyy-MM-dd")}.docx`,
+      );
+      toast.success("Word criado com todas as páginas do PDF preservadas como imagens.", { id: loadingId });
     } catch (error) {
-      console.error("Erro ao gerar documento Word da avaliação:", error);
-      toast.error("Não foi possível gerar o documento Word. Tente novamente.", { id: loadingId });
-    } finally { setIsGeneratingWord(false); }
+      console.error("Erro ao gerar Word da avaliação a partir do PDF:", error);
+      toast.error("Não foi possível gerar o Word da avaliação. Tente novamente.", { id: loadingId });
+    } finally {
+      setIsGeneratingWord(false);
+    }
   };
 
   const handleDownloadGraphWord = async () => {
     if (!selectedPatient) { toast.error("Selecione um paciente primeiro"); return; }
     if (overallScore.evaluatedParameters === 0) { toast.error("Avalie pelo menos alguns parâmetros primeiro"); return; }
     setIsGeneratingWord(true);
-    const loadingId = toast.loading("Montando relatório de gráficos para Word...");
+    const loadingId = toast.loading("Preservando todas as páginas dos gráficos no Word...");
     try {
       const patientName = selectedPatientData?.name || "Paciente";
-      const patientAge = calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age;
-      let logoBytes: Uint8Array | undefined;
-      try { const response = await fetch("/lovable-uploads/musetera-logo-new.png"); if (response.ok) logoBytes = new Uint8Array(await response.arrayBuffer()); } catch (e) { console.warn(e); }
-      const domainColors: Record<string, string> = { Musical: "#6366f1", Psicossocial: "#10b981", Cognitivo: "#f59e0b", "Sensório-Motor": "#ef4444", "Comunicativo-Interativo": "#06b6d4" };
-      const safeLabel = (value: unknown) => String(value || "").replace(/[&<>"]/g, "").slice(0, 28);
-      const visibleSubs = subdomainScores.slice(0, 12);
-      const barRows = visibleSubs.map((item, i) => {
-        const y = 34 + i * 34; const color = domainColors[item.domain] || "#6366f1"; const value = Math.max(0, Math.min(100, Number(item.value) || 0));
-        return `<text x="8" y="${y}" font-size="12" fill="#334155">${safeLabel(item.name)}</text><rect x="230" y="${y-14}" width="250" height="16" rx="5" fill="#E2E8F0"/><rect x="230" y="${y-14}" width="${value*2.5}" height="16" rx="5" fill="${color}"/><text x="490" y="${y}" font-size="12" font-weight="700" fill="${color}">${Math.round(value)}%</text>`;
-      }).join("");
-      const barH = Math.max(100, 48 + visibleSubs.length * 34);
-      const barSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="540" height="${barH}" viewBox="0 0 540 ${barH}"><rect width="100%" height="100%" rx="12" fill="#FFFFFF"/>${barRows}</svg>`;
-      const domainRows = domainScores.map((item, i) => {
-        const color = domainColors[item.name] || "#5145CD"; const value = Math.max(0, Math.min(100, Number(item.value) || 0)); const y = 30 + i*42;
-        return `<text x="8" y="${y}" font-size="13" fill="#334155">${safeLabel(item.name)}</text><rect x="220" y="${y-14}" width="250" height="18" rx="6" fill="#E2E8F0"/><rect x="220" y="${y-14}" width="${value*2.5}" height="18" rx="6" fill="${color}"/><text x="482" y="${y}" font-size="13" font-weight="700" fill="${color}">${Math.round(value)}%</text>`;
-      }).join("");
-      const domainH = Math.max(90, 38 + domainScores.length * 42);
-      const domainSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="540" height="${domainH}" viewBox="0 0 540 ${domainH}"><rect width="100%" height="100%" rx="12" fill="#FFFFFF"/>${domainRows}</svg>`;
-      const [barImage, domainImage] = await Promise.all([svgToPngBytes(barSvg, 1080, barH*2), svgToPngBytes(domainSvg, 1080, domainH*2)]);
-      const children: Paragraph[] = [];
-      if (logoBytes) children.push(new Paragraph({ children: [new ImageRun({ data: logoBytes, transformation: { width: 54, height: 54 } })], alignment: AlignmentType.CENTER, spacing: { after: 60 } }));
-      children.push(new Paragraph({ children: [new TextRun({ text: "MuseTera", bold: true, color: "5145CD", size: 36 })], alignment: AlignmentType.CENTER, spacing: { after: 40 } }));
-      children.push(new Paragraph({ children: [new TextRun({ text: "RELATÓRIO DE PARÂMETROS E GRÁFICOS", bold: true, color: "FFFFFF", size: 28 })], alignment: AlignmentType.CENTER, shading: { fill: "5145CD", color: "5145CD", type: "clear" }, spacing: { before: 80, after: 180 } }));
-      children.push(new Paragraph({ children: [new TextRun({ text: patientName, bold: true, color: "312E81", size: 26 })], alignment: AlignmentType.CENTER, spacing: { after: 100 } }));
-      const meta: TextRun[] = [new TextRun({ text: "Data da avaliação: ", bold: true, color: "475569" }), new TextRun(format(evaluationDate, "dd/MM/yyyy"))];
-      if (patientAge != null) meta.push(new TextRun({ text: "     Idade: ", bold: true, color: "475569" }), new TextRun(`${patientAge} anos`));
-      children.push(new Paragraph({ children: meta, alignment: AlignmentType.CENTER, spacing: { after: 180 } }));
-      children.push(new Paragraph({ children: [new TextRun({ text: `${overallScore.percentage}%  •  Pontuação global`, bold: true, color: "FFFFFF", size: 26 })], alignment: AlignmentType.CENTER, shading: { fill: overallScore.percentage >= 60 ? "059669" : overallScore.percentage >= 40 ? "D97706" : "DC2626", color: "FFFFFF", type: "clear" }, spacing: { before: 80, after: 200 } }));
-      const section = (n: string, title: string) => children.push(new Paragraph({ children: [new TextRun({ text: `${n}. ${title}`, bold: true, color: "FFFFFF", size: 22 })], shading: { fill: "5145CD", color: "5145CD", type: "clear" }, spacing: { before: 220, after: 120 } }));
-      section("1", "Perfil por domínio");
-      children.push(new Paragraph({ children: [new ImageRun({ data: domainImage, transformation: { width: 500, height: Math.round(domainH*500/540) } })], alignment: AlignmentType.CENTER, spacing: { after: 160 } }));
-      section("2", "Análise por subdomínios");
-      children.push(new Paragraph({ children: [new ImageRun({ data: barImage, transformation: { width: 500, height: Math.round(barH*500/540) } })], alignment: AlignmentType.CENTER, spacing: { after: 160 } }));
-      section("3", "Indicadores da avaliação");
-      children.push(new Paragraph({ children: [new TextRun({ text: "Domínios avaliados: ", bold: true }), new TextRun(`${overallScore.evaluatedDomains} de ${overallScore.totalDomains}`)] }));
-      children.push(new Paragraph({ children: [new TextRun({ text: "Parâmetros avaliados: ", bold: true }), new TextRun(`${overallScore.evaluatedParameters} de ${overallScore.totalParameters}`)] }));
-      children.push(new Paragraph({ children: [new TextRun({ text: "Pontuação bruta: ", bold: true }), new TextRun(`${overallScore.raw} de ${overallScore.max}`)] }));
-      section("4", "Identificação profissional");
-      children.push(new Paragraph({ children: [new TextRun({ text: "Profissional: ", bold: true }), new TextRun(professionalData?.name || "Profissional")] }));
-      if (professionalData?.specialty) children.push(new Paragraph({ children: [new TextRun({ text: "Especialidade: ", bold: true }), new TextRun(professionalData.specialty)] }));
-      if (professionalData?.register) children.push(new Paragraph({ children: [new TextRun({ text: "Registro profissional: ", bold: true }), new TextRun(professionalData.register)] }));
-      children.push(new Paragraph({ children: [new TextRun({ text: "Documento gerado pelo sistema MuseTera.", color: "64748B", italics: true, size: 16 })], alignment: AlignmentType.CENTER, spacing: { before: 220 } }));
-      const doc = new Document({ creator: "MuseTera", title: `Gráficos da avaliação - ${patientName}`, sections: [{ properties: {}, children }] });
-      const blob = await Packer.toBlob(doc);
-      const filename = `graficos-musetera-${safeDocxFileName(patientName)}-${format(evaluationDate, "yyyy-MM-dd")}.docx`;
-      const url = URL.createObjectURL(blob); const anchor = window.document.createElement("a"); anchor.href = url; anchor.download = filename;
-      window.document.body.appendChild(anchor); anchor.click(); anchor.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
-      toast.success("Relatório de gráficos Word baixado!", { id: loadingId });
+      const patientAge = calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age ?? null;
+      const photoUrl = professionalData?.stamp_photo_url || professionalData?.avatar_url;
+      const [professionalPhotoBase64, digitalStampBase64] = await Promise.all([
+        photoUrl ? imageUrlToBase64(photoUrl).catch(() => undefined) : Promise.resolve(undefined),
+        professionalData?.digital_stamp_url ? imageUrlToBase64(professionalData.digital_stamp_url).catch(() => undefined) : Promise.resolve(undefined),
+      ]);
+      const pdfBlob = await generateSectionPdf(
+        <GraphReportPDF
+          patientName={patientName}
+          patientAge={patientAge}
+          professionalData={professionalData}
+          evaluationDate={evaluationDate}
+          selections={selections}
+          evaluationDomains={evaluationDomains}
+          categoryData={subdomainScores}
+          pieData={pieData}
+          radarData={domainScores}
+          overallScore={overallScore}
+          professionalPhotoBase64={professionalPhotoBase64}
+          digitalStampBase64={digitalStampBase64}
+        />,
+        { filename: `graficos-${safeDocxFileName(patientName)}-${format(evaluationDate, "yyyy-MM-dd")}.pdf`, scale: 1.05 },
+      );
+      await downloadPdfAsWordPages(
+        pdfBlob,
+        `Gráficos da avaliação musicoterapêutica - ${patientName}`,
+        `graficos-musetera-${safeDocxFileName(patientName)}-${format(evaluationDate, "yyyy-MM-dd")}.docx`,
+      );
+      toast.success("Word criado com todas as páginas dos gráficos preservadas como imagens.", { id: loadingId });
     } catch (error) {
-      console.error("Erro ao gerar Word dos gráficos:", error);
+      console.error("Erro ao gerar Word dos gráficos a partir do PDF:", error);
       toast.error("Não foi possível gerar o Word dos gráficos. Tente novamente.", { id: loadingId });
-    } finally { setIsGeneratingWord(false); }
+    } finally {
+      setIsGeneratingWord(false);
+    }
   };
 
   const handleGenerateEvaluationText = async () => {
