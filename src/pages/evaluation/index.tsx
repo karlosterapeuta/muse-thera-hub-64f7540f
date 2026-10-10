@@ -1769,7 +1769,7 @@ export default function Evaluation() {
                 </div>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <Button
-                    onClick={() => handleDownloadCombinedReport("pdf")}
+                    onClick={handleGenerateEvaluationText}
                     disabled={isGeneratingText || isGeneratingWord || !selectedPatient || overallScore.evaluatedParameters === 0}
                     className="w-full justify-center gap-2 bg-blue-600 text-white hover:bg-blue-700"
                   >
