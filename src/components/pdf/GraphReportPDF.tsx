@@ -39,6 +39,10 @@ interface GraphReportPDFProps {
   digitalStampBase64?: string;
   /** período/tipo da avaliação (chave, valor do seletor ou label) */
   evaluationType?: string;
+  /** Oculta a identificação inicial quando incorporado ao relatório unificado. */
+  suppressDocumentHeader?: boolean;
+  /** Evita duplicar assinatura/carimbo quando o relatório textual já inclui o rodapé profissional. */
+  suppressProfessionalFooter?: boolean;
 }
 
 const DOMAIN_COLORS: Record<string, string> = {
@@ -104,6 +108,8 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
   professionalPhotoBase64,
   digitalStampBase64,
   evaluationType,
+  suppressDocumentHeader = false,
+  suppressProfessionalFooter = false,
 }) => {
   const typeMeta = getEvaluationTypeMeta(evaluationType);
   const formattedDate = format(evaluationDate, "dd 'de' MMMM 'de' yyyy", {
@@ -153,6 +159,8 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
     >
       {/* ============= SEÇÃO 1: CAPA + IDENTIFICAÇÃO + SÍNTESE ============= */}
       <section data-pdf-section style={sectionWrap}>
+        {!suppressDocumentHeader && (
+          <>
         {/* Header */}
         <div
           style={{
@@ -272,6 +280,9 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
             </div>
           ))}
         </div>
+
+          </>
+        )}
 
         {/* Síntese executiva */}
         <div style={titleBar}>Síntese Executiva</div>
@@ -888,58 +899,60 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
         );
       })}
 
-      {/* ============= RODAPÉ ============= */}
-      <section data-pdf-section style={sectionWrap}>
-        <div
-          style={{
-            borderTop: '2px solid #0f172a',
-            paddingTop: 10,
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-end',
-            gap: 14,
-          }}
-        >
-          <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end' }}>
-            {professionalPhotoBase64 && (
-              <img
-                src={professionalPhotoBase64}
-                alt="Profissional"
-                style={{
-                  width: 54,
-                  height: 54,
-                  borderRadius: '50%',
-                  objectFit: 'cover',
-                  border: '2px solid #e2e8f0',
-                }}
-              />
-            )}
-            <div style={{ fontSize: 9, color: '#475569', lineHeight: 1.55 }}>
-              <div style={{ fontWeight: 800, color: '#0f172a', fontSize: 11 }}>
-                {professionalData?.name || 'Musicoterapeuta'}
-              </div>
-              {professionalData?.email && <div>{professionalData.email}</div>}
-              <div style={{ marginTop: 4, fontStyle: 'italic', color: '#64748b' }}>
-                Documento clínico — confidencial conforme normas profissionais
-                vigentes.
+      {!suppressProfessionalFooter && (
+        {/* ============= RODAPÉ ============= */}
+        <section data-pdf-section style={sectionWrap}>
+          <div
+            style={{
+              borderTop: '2px solid #0f172a',
+              paddingTop: 10,
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'flex-end',
+              gap: 14,
+            }}
+          >
+            <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end' }}>
+              {professionalPhotoBase64 && (
+                <img
+                  src={professionalPhotoBase64}
+                  alt="Profissional"
+                  style={{
+                    width: 54,
+                    height: 54,
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    border: '2px solid #e2e8f0',
+                  }}
+                />
+              )}
+              <div style={{ fontSize: 9, color: '#475569', lineHeight: 1.55 }}>
+                <div style={{ fontWeight: 800, color: '#0f172a', fontSize: 11 }}>
+                  {professionalData?.name || 'Musicoterapeuta'}
+                </div>
+                {professionalData?.email && <div>{professionalData.email}</div>}
+                <div style={{ marginTop: 4, fontStyle: 'italic', color: '#64748b' }}>
+                  Documento clínico — confidencial conforme normas profissionais
+                  vigentes.
+                </div>
               </div>
             </div>
-          </div>
-          <div style={{ textAlign: 'right', fontSize: 9, color: '#64748b' }}>
-            {digitalStampBase64 && (
-              <img
-                src={digitalStampBase64}
-                alt="Carimbo digital"
-                style={{ maxWidth: 140, maxHeight: 70, marginBottom: 6 }}
-              />
-            )}
-            <div style={{ fontWeight: 700, color: '#0f172a' }}>
-              MuseTera · Plataforma de Musicoterapia
+            <div style={{ textAlign: 'right', fontSize: 9, color: '#64748b' }}>
+              {digitalStampBase64 && (
+                <img
+                  src={digitalStampBase64}
+                  alt="Carimbo digital"
+                  style={{ maxWidth: 140, maxHeight: 70, marginBottom: 6 }}
+                />
+              )}
+              <div style={{ fontWeight: 700, color: '#0f172a' }}>
+                MuseTera · Plataforma de Musicoterapia
+              </div>
+              <div>Gerado em {issuedAt}</div>
             </div>
-            <div>Gerado em {issuedAt}</div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 };
