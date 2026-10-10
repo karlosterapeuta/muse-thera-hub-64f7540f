@@ -49,7 +49,7 @@ export async function generateSectionPdf(
   element: ReactElement,
   options: SectionPdfOptions
 ): Promise<Blob> {
-  const { scale = 1.05 } = options;
+  const { scale = 2 } = options;
   const { root, ready, cleanup } = renderForPdf(element);
   await ready;
   try {
@@ -99,7 +99,7 @@ export async function generateSectionPdf(
 
       if (canvas.width === 0 || canvas.height === 0) continue;
 
-      const imgData = canvas.toDataURL('image/jpeg', 0.78);
+      const imgData = canvas.toDataURL('image/png');
 
       const maxHeight = A4_H_MM - MARGIN_MM * 2;
       let drawW = CONTENT_W_MM;
@@ -110,7 +110,7 @@ export async function generateSectionPdf(
         drawW = CONTENT_W_MM * ratio;
       }
 
-      pdf.addImage(imgData, 'JPEG', MARGIN_MM, currentY, drawW, drawH);
+      pdf.addImage(imgData, 'PNG', MARGIN_MM, currentY, drawW, drawH);
       currentY += drawH + GAP_MM;
       isFirstOnPage = false;
     }
