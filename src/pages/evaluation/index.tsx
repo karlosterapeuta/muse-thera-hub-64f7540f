@@ -1564,6 +1564,7 @@ export default function Evaluation() {
             overallScore={overallScore}
             professionalPhotoBase64={photoBase64 || undefined}
             digitalStampBase64={stampBase64 || undefined}
+            digitalSignatureBase64={signatureBase64 || undefined}
             evaluationType={selectedEvaluation}
             suppressDocumentHeader
           />
