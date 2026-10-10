@@ -1548,6 +1548,7 @@ export default function Evaluation() {
             professionalPhone={professionalData?.phone || undefined}
             professionalSpecialty={professionalData?.specialty || undefined}
             professionalPhotoUrl={photoBase64 || undefined}
+            suppressProfessionalFooter
             overallScore={overallScore}
           />
           <GraphReportPDF
