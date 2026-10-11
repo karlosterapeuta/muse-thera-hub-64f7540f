@@ -16,6 +16,7 @@ import { useMusicoterapiaReport } from '@/hooks/useMusicoterapiaReport';
 import { musicoterapiaTemplate, scaleFieldIds } from '@/data/musicoterapiaTemplate';
 import { getSelectedMusicoterapiaObjectives, musicoterapiaObjectiveCategories } from '@/data/musicoterapiaObjectives';
 import { getSelectedMusicoterapiaApproaches } from '@/data/musicoterapiaApproaches';
+import { getRecordedApproachResults, summarizeApproachResult } from '@/data/musicoterapiaApproachResults';
 import { savePDFToStorage } from '@/utils/pdfStorageUtils';
 import { useReportData } from '../report/hooks/useReportData';
 import html2pdf from 'html2pdf.js';
@@ -108,6 +109,7 @@ export default function MusicoterapiaPage() {
     const fields = reportDataForPDF.fieldValues || {};
     const selectedGoals = getSelectedMusicoterapiaObjectives(fields.therapeutic_objective_ids);
     const selectedApproaches = getSelectedMusicoterapiaApproaches(fields.musicoterapia_approach_ids);
+    const recordedResults = getRecordedApproachResults(fields.musicoterapia_approach_ids, fields.approach_results);
     // Manter informações de relatórios anteriores sem repetir a antiga Etapa 05 nos novos.
     const isLegacyReport = selectedApproaches.length === 0;
     const currentDate = new Date().toLocaleDateString('pt-BR');
