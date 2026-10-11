@@ -540,6 +540,13 @@ export default function MusicoterapiaPage() {
             </div>
           ` : '';
 
+          // Os nove passos do formulário novo já contêm todos os campos
+          // indispensáveis. Evitar Sumário Executivo e identificação duplicada
+          // ao fim do documento. Preservar a listagem ampla apenas em versões antigas.
+          if (!isLegacyReport) {
+            return renderMusicoterapiaReferencesPdf(fields.musicoterapia_reference_ids, escapeHtml);
+          }
+
           return `
             ${execSummary}
             ${renderSection('Identificação Clínica', ['evaluation_period','diagnosis_source','cid_code','support_level','comorbidities','current_medications','mother_name','father_name','family_relationship','diagnosis_date','clinical_details','medication_schedule','medication_effects','calming_strategies','family_support_network','treatment_start_date','session_count','session_frequency','session_duration'])}
