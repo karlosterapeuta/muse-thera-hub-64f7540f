@@ -12,6 +12,7 @@ import { getSelectedMusicoterapiaApproaches } from '@/data/musicoterapiaApproach
 import { MusicoterapiaApproachResultsSummary } from './MusicoterapiaApproachResultsSummary';
 import { MusicoterapiaObjectiveFlowSummary } from './MusicoterapiaObjectiveFlowSummary';
 import { MusicoterapiaReferralSummary } from './MusicoterapiaReferralSummary';
+import { MusicoterapiaReferenceSummary } from './MusicoterapiaReferenceSummary';
 
 interface MusicoterapiaPreviewProps {
   reportData: ReportData;
@@ -424,6 +425,8 @@ export function MusicoterapiaPreview({ reportData, professionalData }: Musicoter
         </Card>
       )}
 
+      <MusicoterapiaReferenceSummary referenceIds={reportData.fieldValues?.musicoterapia_reference_ids} />
+
       {/* ===== Seções Clínicas Expandidas ===== */}
       {reportSections.map((section) => {
         // Evitar reapresentar técnicas/metodologias legadas quando a Etapa 03
@@ -439,6 +442,8 @@ export function MusicoterapiaPreview({ reportData, professionalData }: Musicoter
         ];
         const hiddenLegacyApproachFields = [
           'theoretical_framework', 'assessment_tools_used', 'session_setting', 'session_structure',
+          'references_cited', 'next_objectives_short', 'next_objectives_medium', 'next_objectives_long',
+          'proposed_interventions', 'expected_outcomes', 'revaluation_date',
           'improvisation_use', 'receptive_techniques', 'recreative_techniques',
           'compositional_techniques', 'tempo_dynamics_used', 'vocal_work'
         ];
