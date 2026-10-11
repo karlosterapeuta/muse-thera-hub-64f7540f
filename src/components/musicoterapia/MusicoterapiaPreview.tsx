@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import type { ReportData } from '@/data/musicoterapiaTemplate';
 import { musicoterapiaTemplate, reportSections, scaleFieldIds } from '@/data/musicoterapiaTemplate';
-import { getSelectedMusicoterapiaObjectives } from '@/data/musicoterapiaObjectives';
+import { getSelectedMusicoterapiaObjectives, musicoterapiaObjectiveCategories } from '@/data/musicoterapiaObjectives';
 
 interface MusicoterapiaPreviewProps {
   reportData: ReportData;
@@ -150,12 +150,21 @@ export function MusicoterapiaPreview({ reportData, professionalData }: Musicoter
           </CardHeader>
           <CardContent className="space-y-3">
             <p className="text-xs text-muted-foreground">Seleção de objetivos para intervenção; não representa habilidades adquiridas.</p>
-            {selectedObjectives.map((item) => (
-              <div key={item.id} className="rounded-lg border border-primary/15 p-3">
-                <p className="font-semibold">{item.icon} {item.title}</p>
-                <p className="text-sm text-muted-foreground leading-relaxed mt-1">{item.objective}</p>
-              </div>
-            ))}
+            {musicoterapiaObjectiveCategories.map((category) => {
+              const group = selectedObjectives.filter((item) => item.category === category.id);
+              if (!group.length) return null;
+              return (
+                <section key={category.id} className="space-y-2">
+                  <h4 className="font-semibold text-primary text-sm">{category.icon} {category.title}</h4>
+                  {group.map((item) => (
+                    <div key={item.id} className="rounded-lg border border-primary/15 p-3">
+                      <p className="font-semibold">{item.icon} {item.title}</p>
+                      <p className="text-sm text-muted-foreground leading-relaxed mt-1">{item.objective}</p>
+                    </div>
+                  ))}
+                </section>
+              );
+            })}
           </CardContent>
         </Card>
       )}
