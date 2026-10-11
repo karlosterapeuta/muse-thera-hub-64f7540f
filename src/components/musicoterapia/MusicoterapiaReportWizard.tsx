@@ -30,7 +30,7 @@ const STEPS = [
     title: '1. Identificação do Paciente',
     description: 'Dados do paciente e do profissional',
     icon: Target,
-    fields: ['patient_name', 'patient_age', 'patient_diagnosis', 'cid_code', 'support_level', 'comorbidities', 'current_medications', 'treatment_start_date', 'session_count', 'session_frequency', 'session_duration', 'professional_name', 'professional_registry', 'session_date']
+    fields: ['patient_name', 'patient_age', 'patient_diagnosis', 'evaluation_period', 'diagnosis_source', 'cid_code', 'support_level', 'comorbidities', 'current_medications', 'treatment_start_date', 'session_count', 'session_frequency', 'session_duration', 'professional_name', 'professional_registry', 'session_date']
   },
   {
     id: 'referral',
@@ -65,7 +65,7 @@ const STEPS = [
     title: '6. Resultados Observados',
     description: 'Metas atingidas e indicadores',
     icon: Brain,
-    fields: ['goals_achieved', 'goals_in_progress', 'quantitative_indicators', 'treatment_summary']
+    fields: ['goals_achieved', 'goals_in_progress', 'baseline_observation', 'current_observation', 'measurement_method', 'assistance_level', 'observation_context', 'report_limitations', 'quantitative_indicators', 'treatment_summary']
   },
   {
     id: 'pending_intervention',
@@ -110,7 +110,7 @@ const STEP_HINTS: Record<string, { icon: React.ElementType; title: string; descr
   therapeutic_objectives: { icon: Target, title: 'Objetivos terapêuticos', description: 'Descreva metas claras, mensuráveis e individualizadas. Quanto mais específicas, mais sólido o relatório.' },
   methodology: { icon: Music, title: 'Metodologia musicoterapêutica', description: 'Detalhe a abordagem teórica, técnicas (receptivas, recriativas, improvisacionais, compositivas) e procedimentos utilizados.' },
   clinical_evolution: { icon: Heart, title: 'Evolução clínica', description: 'Registre os progressos por domínio: comunicação, interação social, regulação emocional, cognição, motricidade e respostas musicais.' },
-  observed_results: { icon: Brain, title: 'Resultados observados', description: 'Sintetize as metas atingidas e os indicadores objetivos de progresso no período avaliado.' },
+  observed_results: { icon: Brain, title: 'Resultados observados', description: 'Compare linha de base e avaliação atual; documente medidas, ajuda, contexto, limitações e resultados verificáveis.' },
   pending_intervention: { icon: Target, title: 'Aspectos a intervir', description: 'Liste os pontos que ainda necessitam de intervenção e os sinais a monitorar.' },
   prognosis: { icon: Target, title: 'Prognóstico terapêutico', description: 'Estruture objetivos de curto, médio e longo prazo, com prognóstico e data de reavaliação.' },
   recommendations: { icon: Home, title: 'Recomendações', description: 'Oriente família, escola e equipe interdisciplinar com recomendações práticas.' },
