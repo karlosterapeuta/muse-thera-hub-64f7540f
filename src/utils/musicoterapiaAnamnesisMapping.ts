@@ -59,7 +59,9 @@ export function mapAnamnesisToMusicoterapia(anamnesis: PatientAnamnesis): Mapped
     if (normalized) fieldValues[key] = normalized;
   }
 
-  const patientDiagnosis = text(anamnesis.diagnosis_details);
+  // Na Etapa 01, o campo "Diagnóstico" deve refletir exatamente o CID
+  // informado na Anamnese, sem transformá-lo automaticamente em laudo.
+  const patientDiagnosis = text(anamnesis.cid_code);
   const patientGuardian = text(anamnesis.legal_guardian);
 
   return {
