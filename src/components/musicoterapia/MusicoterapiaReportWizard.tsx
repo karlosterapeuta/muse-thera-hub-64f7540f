@@ -18,6 +18,8 @@ interface MusicoterapiaReportWizardProps {
   isGeneratingWithAI: boolean;
   patients: any[];
   onSaveReport: () => void;
+  onExportPDF: (logoUrl?: string | null) => Promise<void>;
+  isExporting: boolean;
   isSaving: boolean;
   professionalData?: any;
 }
@@ -686,6 +688,8 @@ export function MusicoterapiaReportWizard({
   isGeneratingWithAI,
   patients,
   onSaveReport,
+  onExportPDF,
+  isExporting,
   isSaving,
   professionalData
 }: MusicoterapiaReportWizardProps) {
@@ -789,13 +793,7 @@ export function MusicoterapiaReportWizard({
     return missingFields.length === 0;
   };
 
-  const handleAIGeneration = async () => {
-    const observations = Object.entries(reportData.fieldValues || {})
-      .map(([key, value]) => `${key}: ${value}`)
-      .join('\n');
-    
-    return await onGenerateWithAI(observations || 'Sessão de musicoterapia para TEA');
-  };
+
 
   const renderStepFields = () => {
     // Se for a primeira etapa (Informações Básicas), renderizar o componente especializado
@@ -818,8 +816,8 @@ export function MusicoterapiaReportWizard({
         <div className="dark">
           <FinalReviewSection
             reportData={reportData}
-            onOrganizeWithAI={handleAIGeneration}
-            isGeneratingWithAI={isGeneratingWithAI}
+            onExportPDF={onExportPDF}
+            isExporting={isExporting}
             onSaveReport={onSaveReport}
             isSaving={isSaving}
             professionalData={professionalData}
