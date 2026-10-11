@@ -396,7 +396,6 @@ export const scaleFieldIds = [
 
 export const reportSections: ReportSection[] = [
   { id: 'clinical_identification', title: 'Identificação Clínica', fieldIds: ['evaluation_period','diagnosis_source','cid_code','support_level','comorbidities','current_medications','treatment_start_date','session_count','session_frequency','session_duration'] },
-  { id: 'referral_details', title: 'Motivo do Encaminhamento', fieldIds: ['referral_source','referral_reason'] },
   { id: 'iso_identity', title: 'Identidade Sonora (ISO de Benenzon)', fieldIds: ['iso_gestational','iso_universal','iso_cultural','iso_complementary','iso_group','sound_preferences','musical_repertoire_favorites'] },
   { id: 'sensory_profile', title: 'Avaliação Sensório-Musical', fieldIds: ['auditory_processing','sound_tolerance','vestibular_response_music','tactile_instrument_response','proprioceptive_response','sensory_seeking_vs_avoiding','sensory_profile_notes'] },
   { id: 'imtap_domains', title: 'Indicadores Musicoterapêuticos - Pontuações Observacionais', fieldIds: ['domain_musicality','domain_communication_verbal','domain_communication_nonverbal','domain_social_interaction','domain_emotional','domain_cognitive','domain_motor_gross','domain_motor_fine','domain_sensory_integration','domain_autonomy','domain_evidences'] },
