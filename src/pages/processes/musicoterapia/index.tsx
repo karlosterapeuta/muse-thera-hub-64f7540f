@@ -274,8 +274,9 @@ export default function MusicoterapiaPage() {
             row('Nome completo', reportDataForPDF.patientName),
             row('Data de nascimento', formatDateBR(reportDataForPDF.patientBirthDate)),
             row('Idade', reportDataForPDF.patientAge),
-            row('Diagnóstico clínico', reportDataForPDF.patientDiagnosis),
-            row('CID', fields.cid_code),
+            row('Diagnóstico / CID informado', fields.cid_code || reportDataForPDF.patientDiagnosis),
+            ...(fields.cid_code && reportDataForPDF.patientDiagnosis && String(fields.cid_code).trim() !== String(reportDataForPDF.patientDiagnosis).trim()
+              ? [row('Informação diagnóstica adicional', reportDataForPDF.patientDiagnosis)] : []),
             row('Responsável', reportDataForPDF.patientGuardian),
             row('Início dos atendimentos', formatDateBR(fields.treatment_start_date)),
             row('Período avaliado', fields.evaluation_period),
@@ -289,19 +290,22 @@ export default function MusicoterapiaPage() {
             row('Data do relatório', reportDataForPDF.sessionDate || currentDate),
           ].filter(Boolean).join('');
           return `
-        <div class="section-block" style="margin-bottom: 25px; padding: 16px; background: #f0fdfa; border-radius: 8px; page-break-inside: avoid;">
-          <h2 style="color: #0d9488; margin: 0 0 12px 0; font-size: 15px; border-bottom: 2px solid #14b8a6; padding-bottom: 6px;">1. Identificação do Paciente</h2>
-          <div style="display: flex; gap: 20px;">
-            <div style="flex: 1; font-size: 12px;">
-              ${patientRows || '<p style="margin: 4px 0;">Não informado</p>'}
+        <div class="pdf-identity section-block">
+          <h2>01  ·  Identificação do paciente</h2>
+          <div class="pdf-identity-grid">
+            <div>
+              ${patientRows || '<p>Não informado</p>'}
             </div>
-            <div style="flex: 1; font-size: 12px; border-left: 1px solid #99f6e4; padding-left: 16px;">
-              <h3 style="color: #0d9488; margin: 0 0 8px 0; font-size: 13px;">Profissional Responsável</h3>
+            <div>
+              <h3 style="color: #0d9488; margin: 0 0 8px 0; font-size: 11px;">Profissional responsável</h3>
               ${proRows || '<p style="margin: 4px 0;">Não informado</p>'}
             </div>
           </div>
         </div>`;
         })()}
+
+        <!-- Painel visual: somente resultados documentados pelo profissional -->
+        ${renderMusicoterapiaPdfVisuals(fields)}
 
         <!-- Objetivos planejados: jamais indicar como resultados adquiridos -->
         ${selectedGoals.length > 0 ? `
