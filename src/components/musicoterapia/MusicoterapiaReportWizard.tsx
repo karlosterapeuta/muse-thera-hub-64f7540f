@@ -18,6 +18,8 @@ interface MusicoterapiaReportWizardProps {
   isGeneratingWithAI: boolean;
   patients: any[];
   onSaveReport: () => void;
+  logoUrl: string | null;
+  onLogoChange: (logoUrl: string | null) => void;
   onExportPDF: (logoUrl?: string | null) => Promise<void>;
   isExporting: boolean;
   isSaving: boolean;
@@ -688,6 +690,8 @@ export function MusicoterapiaReportWizard({
   isGeneratingWithAI,
   patients,
   onSaveReport,
+  logoUrl,
+  onLogoChange,
   onExportPDF,
   isExporting,
   isSaving,
@@ -816,6 +820,8 @@ export function MusicoterapiaReportWizard({
         <div className="dark">
           <FinalReviewSection
             reportData={reportData}
+            logoUrl={logoUrl}
+            onLogoChange={onLogoChange}
             onExportPDF={onExportPDF}
             isExporting={isExporting}
             onSaveReport={onSaveReport}
