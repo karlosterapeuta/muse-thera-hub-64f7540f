@@ -522,7 +522,7 @@ export default function MusicoterapiaPage() {
             ${renderSection('Matriz de Evidências Musicoterapêuticas', ['baseline_observation','current_observation','measurement_method','assistance_level','observation_context','report_limitations'])}
             ${isLegacyReport ? renderSection('Evolução Clínica Detalhada', ['evolution_compared_baseline','goals_achieved','goals_in_progress','goals_not_achieved','quantitative_indicators']) : renderSection('Síntese dos Resultados', ['goals_achieved','goals_in_progress','quantitative_indicators'])}
             ${isLegacyReport ? renderSection('Plano Terapêutico Futuro', ['next_objectives_short','next_objectives_medium','next_objectives_long','proposed_interventions','expected_outcomes','revaluation_date']) : ''}
-            ${renderSection('Orientações Ampliadas', isLegacyReport ? ['school_recommendations','interdisciplinary_team_notes','playlist_recommended','red_flags_to_monitor'] : ['school_recommendations','interdisciplinary_team_notes','playlist_recommended'])}
+            ${isLegacyReport ? renderSection('Orientações Ampliadas', ['school_recommendations','interdisciplinary_team_notes','playlist_recommended','red_flags_to_monitor']) : ''}
             ${scalesTable}
             ${(() => {
               const tf = selectedApproaches.length === 0 ? (fields.theoretical_framework || '').toString().trim() : '';
