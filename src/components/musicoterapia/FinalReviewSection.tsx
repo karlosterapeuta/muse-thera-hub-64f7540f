@@ -111,6 +111,7 @@ export function FinalReviewSection({
     const fields = reportData.fieldValues || {};
     const selectedObjectives = getSelectedMusicoterapiaObjectives(fields.therapeutic_objective_ids);
     const selectedApproaches = getSelectedMusicoterapiaApproaches(fields.musicoterapia_approach_ids);
+    const isLegacyReport = selectedApproaches.length === 0;
     const complementaryObjectives = Array.isArray(fields.therapeutic_objectives)
       ? fields.therapeutic_objectives.filter((value: unknown) => String(value ?? '').trim())
       : String(fields.therapeutic_objectives ?? '').trim()
@@ -255,7 +256,7 @@ export function FinalReviewSection({
             </Card>
           )}
 
-          {fields.session_activities && Array.isArray(fields.session_activities) && fields.session_activities.length > 0 && (
+          {isLegacyReport && fields.session_activities && Array.isArray(fields.session_activities) && fields.session_activities.length > 0 && (
             <Card className="shadow-sm">
               <CardHeader className="bg-gradient-to-r from-[#c9a84c]/20 to-[#c9a84c]/10 rounded-t-lg">
                 <CardTitle className="flex items-center gap-2 text-[#c9a84c] text-sm sm:text-base">
@@ -276,7 +277,7 @@ export function FinalReviewSection({
             </Card>
           )}
 
-          {fields.patient_evolution && Array.isArray(fields.patient_evolution) && fields.patient_evolution.length > 0 && (
+          {isLegacyReport && fields.patient_evolution && Array.isArray(fields.patient_evolution) && fields.patient_evolution.length > 0 && (
             <Card className="shadow-sm">
               <CardHeader className="bg-gradient-to-r from-[#c9a84c]/20 to-[#c9a84c]/10 rounded-t-lg">
                 <CardTitle className="flex items-center gap-2 text-[#c9a84c] text-sm sm:text-base">
