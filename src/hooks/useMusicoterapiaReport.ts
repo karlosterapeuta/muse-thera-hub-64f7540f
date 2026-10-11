@@ -75,7 +75,7 @@ export function useMusicoterapiaReport() {
         
         Object.entries(data.organizedContent).forEach(([key, value]) => {
           // Objetivos selecionados são decisões do profissional: a IA não pode alterá-los.
-          if (key === 'therapeutic_objective_ids' || key === 'musicoterapia_approach_ids' || key === 'approach_results' || key === 'objective_outcomes') return;
+          if (key === 'therapeutic_objective_ids' || key === 'musicoterapia_approach_ids' || key === 'approach_results' || key === 'objective_outcomes' || key === 'musicoterapia_reference_ids') return;
           // Não acrescentar ao prontuário campos não enviados pelo profissional.
           if (!Object.prototype.hasOwnProperty.call(reportData.fieldValues || {}, key)) return;
           // Manter campos que já são arrays como arrays
@@ -103,7 +103,7 @@ export function useMusicoterapiaReport() {
         return newFieldValues;
       } else if (data.fallbackContent) {
         // IA indisponível: usar os dados originais sem alterar a estrutura
-        const { therapeutic_objective_ids: _unusedObjectiveIds, musicoterapia_approach_ids: _unusedApproachIds, approach_results: _unusedApproachResults, objective_outcomes: _unusedObjectiveOutcomes, ...fallbackFields } = data.fallbackContent || {};
+        const { therapeutic_objective_ids: _unusedObjectiveIds, musicoterapia_approach_ids: _unusedApproachIds, approach_results: _unusedApproachResults, objective_outcomes: _unusedObjectiveOutcomes, musicoterapia_reference_ids: _unusedReferenceIds, ...fallbackFields } = data.fallbackContent || {};
         const newFieldValues = { ...reportData.fieldValues, ...fallbackFields };
 
         updateReportData({
