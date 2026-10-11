@@ -331,7 +331,8 @@ export async function exportMusicoterapiaNativePdf(
     write(recommendation,margin,usable,9.8,DARK,false,2.5);
   }
 
-  const conclusion = getMusicoterapiaFinalConsiderations(fields);
+  // As demandas já foram apresentadas na seção anterior; não repeti-las na conclusão.
+  const conclusion = getMusicoterapiaFinalConsiderations(fields, { includePending: false });
   if (conclusion.paragraphs.length) {
     header('Considerações finais', 12);
     for (const paragraph of conclusion.paragraphs) write(paragraph,margin,usable,9.8,DARK,false,2.5);
