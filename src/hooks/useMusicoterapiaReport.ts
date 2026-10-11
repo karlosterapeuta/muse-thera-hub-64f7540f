@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { musicoterapiaTemplate, type ReportData } from '@/data/musicoterapiaTemplate';
 import { getMusicoterapiaQualityWarnings } from '@/utils/musicoterapiaQuality';
+import { getSelectedMusicoterapiaObjectives } from '@/data/musicoterapiaObjectives';
 import { useProfessionalData } from '@/hooks/useProfessionalData';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -161,9 +162,18 @@ export function useMusicoterapiaReport() {
              (typeof value === 'string' && value.trim() === '');
     });
 
+    const objectiveSelection = getSelectedMusicoterapiaObjectives(reportData.fieldValues?.therapeutic_objective_ids);
+    const otherObjectives = reportData.fieldValues?.therapeutic_objectives;
+    const hasOtherObjectives = Array.isArray(otherObjectives)
+      ? otherObjectives.some((item) => String(item ?? '').trim().length > 0)
+      : String(otherObjectives ?? '').trim().length > 0;
+
     const allErrors = [
       ...basicErrors,
-      ...missingFields.map(field => field.label)
+      ...missingFields.map(field => field.label),
+      ...(!objectiveSelection.length && !hasOtherObjectives
+        ? ['Selecione pelo menos um objetivo terapêutico ou descreva um objetivo complementar']
+        : [])
     ];
 
 
