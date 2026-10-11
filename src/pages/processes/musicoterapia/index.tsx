@@ -216,14 +216,22 @@ export default function MusicoterapiaPage() {
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
 
-    const narrativeBlock = (narrative && narrative.length > 0) ? `
+    // A Etapa 08 é a conclusão oficial dos relatórios estruturados.
+    // Evitar uma segunda conclusão/prognóstico gerados pela narrativa de IA.
+    const narrativeSections = (narrative || []).filter((section) => {
+      if (isLegacyReport) return true;
+      const normalizedTitle = String(section.title || '')
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      return !/(consideracoes finais|conclusao|prognostico)/.test(normalizedTitle);
+    });
+    const narrativeBlock = narrativeSections.length > 0 ? `
       <div class="section-block" style="margin-bottom: 25px; border: 2px solid #14b8a6; border-radius: 10px; overflow: hidden; background: #ffffff; page-break-inside: auto;">
         <div style="background: linear-gradient(135deg, #0d9488 0%, #14b8a6 60%, #06b6d4 100%); color: white; padding: 12px 16px;">
           <h2 style="margin: 0; font-size: 16px; font-weight: 700; letter-spacing: 0.3px;">Relatório de Evolução Musicoterapêutica</h2>
           
         </div>
         <div style="padding: 16px 18px;">
-          ${narrative.map((sec) => `
+          ${narrativeSections.map((sec) => `
             <div style="margin-bottom: 16px; page-break-inside: avoid;">
               <h3 style="color: #0d9488; margin: 0 0 6px 0; font-size: 13px; border-bottom: 1px solid #99f6e4; padding-bottom: 4px;">${escapeHtml(sec.title)}</h3>
               ${String(sec.content).split(/\n{2,}/).map((p) => p.trim()).filter(Boolean).map((p) =>
