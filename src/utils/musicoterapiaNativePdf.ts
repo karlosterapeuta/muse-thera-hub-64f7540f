@@ -64,7 +64,7 @@ export async function exportMusicoterapiaNativePdf(
   const margin = 14;
   const right = 196;
   const usable = right - margin;
-  const lastY = 276;
+  const lastY = 277;
   let y = 18;
 
   const newPage = () => { pdf.addPage(); y = 17; };
@@ -103,9 +103,9 @@ export async function exportMusicoterapiaNativePdf(
     }
     y += gapAfter;
   };
-  const header = (title: string, minContent = 25) => {
+  const header = (title: string, minContent = 18) => {
     // O título e o início da seção devem caber na mesma página.
-    ensure(15 + Math.max(25, minContent));
+    ensure(15 + Math.max(12, minContent));
     pdf.setFillColor(...GREEN);
     pdf.roundedRect(margin, y, 3, 7, 1, 1, 'F');
     setFace(12.1, true, GREEN);
@@ -114,7 +114,7 @@ export async function exportMusicoterapiaNativePdf(
     pdf.setDrawColor(...BORDER);
     pdf.setLineWidth(0.25);
     pdf.line(margin, y, right, y);
-    y += 5.5;
+    y += 4;
   };
   const item = (lead: string, explanation = '') => {
     const content = explanation ? lead + ': ' + explanation : lead;
@@ -250,7 +250,7 @@ export async function exportMusicoterapiaNativePdf(
   ) => {
     pdf.setFillColor(250,252,252);
     pdf.setDrawColor(211,232,229);
-    pdf.roundedRect(x,top,width,55,2,2,'FD');
+    pdf.roundedRect(x,top,width,43,2,2,'FD');
     setFace(9.5,true,GREEN);
     pdf.text(title,x+4,top+7);
     const shown = statuses.filter(status=>status.value>0);
@@ -260,7 +260,7 @@ export async function exportMusicoterapiaNativePdf(
       return;
     }
     const barWidth = width * 0.32;
-    const rowH = Math.min(8.1, 39 / shown.length);
+    const rowH = Math.min(7.2, 29 / shown.length);
     shown.forEach((status,i)=>{
       const base = top + 12 + i * rowH;
       setFace(8,false,DARK);
@@ -276,8 +276,8 @@ export async function exportMusicoterapiaNativePdf(
   };
 
   if (outcomes.length || recorded.length) {
-    header('Painel de resultados observados', 84);
-    ensure(68);
+    header('Painel de resultados observados', 67);
+    ensure(64);
     const done = outcomes.filter(x=>x.status !== 'not_assessed').length;
     const cards = [
       [String(done) + '/' + String(objectives.length),'Objetivos avaliados'],
@@ -288,13 +288,13 @@ export async function exportMusicoterapiaNativePdf(
     cards.forEach(([value,label],i)=>{
       const x=margin+i*(cardW+5);
       pdf.setFillColor(...PALE);
-      pdf.roundedRect(x,y,cardW,14,2,2,'F');
+      pdf.roundedRect(x,y,cardW,13,2,2,'F');
       setFace(12,true,GREEN);
       pdf.text(value,x+4,y+6);
       setFace(7.5,false,MUTED);
-      pdf.text(label,x+4,y+11);
+      pdf.text(label,x+4,y+10.5);
     });
-    y += 18;
+    y += 16;
     const halfW=(usable-5)/2;
     const objectiveBars: ClinicalCount[] = [
       {name:'Alcançados',value:outcomes.filter(x=>x.status==='achieved').length,color:[15,118,110]},
@@ -314,20 +314,20 @@ export async function exportMusicoterapiaNativePdf(
     ];
     drawCountChart(margin,y,halfW,'Situação dos objetivos',objectiveBars,outcomes.length);
     drawCountChart(margin+halfW+5,y,halfW,'Respostas às abordagens',methodBars,recorded.length);
-    y += 59;
+    y += 46;
     write('Distribuição dos registros do profissional; não é escala clínica nem prova de eficácia ou causalidade.',margin,usable,8.25,MUTED,false,0);
   }
 
   if (recorded.length) {
-    header('Resultados por abordagem', 12);
+    header('Resultados por abordagem', 13);
     for (const {approach,result} of recorded) item(approach.title,summarizeApproachResult(result));
   }
   if (outcomes.length) {
-    header('Resultados por objetivo', 12);
+    header('Resultados por objetivo', 13);
     for (const {objective,status} of outcomes) item(objective.title,getObjectiveOutcomeLabel(status));
   }
   if (needs.length) {
-    header('Aspectos que continuam em intervenção', 12);
+    header('Aspectos que continuam em intervenção', 13);
     for (const {objective,status} of needs) item(objective.title,getObjectiveOutcomeLabel(status));
   }
 
@@ -355,27 +355,29 @@ export async function exportMusicoterapiaNativePdf(
     }
     if (!fallbackParts.length) fallbackParts.push('Os registros disponíveis são insuficientes para uma análise dissertativa individualizada. O profissional deverá complementar observações clínicas e respostas sonoro-musicais.');
   }
-  header('Análise Clínica Musicoterapêutica', 12);
-  for (const paragraph of (narrativeParagraphs.length ? narrativeParagraphs : fallbackParts)) {
-    write(paragraph, margin, usable, 9.8, DARK, false, 3);
-  }
+  const clinicalParagraphs = narrativeParagraphs.length ? narrativeParagraphs : fallbackParts;
+  header('Análise Clínica Musicoterapêutica', 24);
+  // Prosa clínica em blocos legíveis, mantendo títulos com o primeiro parágrafo.
+  clinicalParagraphs.forEach((paragraph, index) => {
+    write(paragraph, margin + 1, usable - 2, 9.65, DARK, false, index === clinicalParagraphs.length - 1 ? 2 : 3.5);
+  });
 
   const recommendation = clean(fields.recommendations);
   if (recommendation) {
-    header('Recomendações', 12);
+    header('Recomendações', 17);
     write(recommendation,margin,usable,9.8,DARK,false,2.5);
   }
 
   // As demandas já foram apresentadas na seção anterior; não repeti-las na conclusão.
   const conclusion = getMusicoterapiaFinalConsiderations(fields, { includePending: false });
   if (conclusion.paragraphs.length) {
-    header('Considerações finais', 12);
+    header('Considerações finais', 17);
     for (const paragraph of conclusion.paragraphs) write(paragraph,margin,usable,9.8,DARK,false,2.5);
   }
 
   const refs = getSelectedMusicoterapiaReferences(fields.musicoterapia_reference_ids);
   if (refs.length) {
-    header('Referências bibliográficas', 12);
+    header('Referências bibliográficas', 14);
     refs.forEach((r,i)=>write(String(i+1)+'. '+r.bibliography,margin+2,usable-2,9.15,DARK,false,3));
   }
 
@@ -401,7 +403,8 @@ export async function exportMusicoterapiaNativePdf(
     (images.photo || images.stamp) ? 48 : 37,
     24 + wrappedDetails.length * 4.3
   );
-  ensure(signatureHeight + 6);
+  // Evitar assinatura órfã ou colocada junto do último parágrafo.
+  ensure(signatureHeight + 9);
   y += 3;
   pdf.setFillColor(248,252,251);
   pdf.setDrawColor(...BORDER);
