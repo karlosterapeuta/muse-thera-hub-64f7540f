@@ -11,7 +11,6 @@ import {
   getRecordedApproachResults, summarizeApproachResult
 } from '@/data/musicoterapiaApproachResults';
 import { getSelectedMusicoterapiaReferences } from '@/data/musicoterapiaReferences';
-import { getMusicoterapiaFinalConsiderations } from '@/utils/musicoterapiaFinalConsiderations';
 import { formatMusicoterapiaPdfDate, diagnosesHaveSameCid } from '@/utils/musicoterapiaPdfPatientContext';
 
 type Inputs = {
@@ -46,6 +45,8 @@ export async function exportMusicoterapiaNativePdf(
   filename: string,
   narrative?: { title: string; content: string }[] | null
 ): Promise<Blob> {
+  // Compatibilidade com chamadas antigas; a narrativa não auditada não é impressa.
+  void narrative;
   const pdf = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
