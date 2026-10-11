@@ -60,50 +60,43 @@ const STEPS = [
     fields: [] // Somente o catálogo das 10 abordagens
   },
   {
-    id: 'clinical_evolution',
-    title: '5. Evolução Clínica',
-    description: 'Progressos por domínios do desenvolvimento',
-    icon: Heart,
-    fields: ['session_activities', 'domain_communication_verbal', 'domain_communication_nonverbal', 'domain_social_interaction', 'joint_attention', 'eye_contact_quality', 'domain_emotional', 'self_regulation_strategies', 'domain_sensory_integration', 'domain_cognitive', 'domain_motor_gross', 'domain_motor_fine', 'domain_musicality', 'vocalizations_observed', 'verbal_output_during_music', 'echolalia_musical', 'aac_use', 'pragmatic_skills', 'patient_evolution', 'evolution_compared_baseline']
-  },
-  {
     id: 'observed_results',
-    title: '6. Resultados Observados',
+    title: '5. Resultados Observados',
     description: 'Metas atingidas e indicadores',
     icon: Brain,
     fields: ['goals_achieved', 'goals_in_progress', 'baseline_observation', 'current_observation', 'measurement_method', 'assistance_level', 'observation_context', 'report_limitations', 'quantitative_indicators', 'treatment_summary']
   },
   {
     id: 'pending_intervention',
-    title: '7. Aspectos a Intervir',
+    title: '6. Aspectos a Intervir',
     description: 'Pontos que ainda necessitam de intervenção',
     icon: Target,
     fields: ['goals_not_achieved', 'red_flags_to_monitor']
   },
   {
     id: 'prognosis',
-    title: '8. Prognóstico Terapêutico',
+    title: '7. Prognóstico Terapêutico',
     description: 'Objetivos futuros e prognóstico',
     icon: Target,
     fields: ['next_objectives_short', 'next_objectives_medium', 'next_objectives_long', 'proposed_interventions', 'expected_outcomes', 'revaluation_date']
   },
   {
     id: 'recommendations',
-    title: '9. Recomendações',
+    title: '8. Recomendações',
     description: 'Família, escola e equipe',
     icon: Home,
     fields: ['recommendations', 'home_activities', 'family_guidance', 'school_recommendations', 'interdisciplinary_team_notes', 'playlist_recommended']
   },
   {
     id: 'final_considerations',
-    title: '10. Considerações Finais',
+    title: '9. Considerações Finais',
     description: 'Síntese conclusiva',
     icon: Sparkles,
     fields: ['final_considerations', 'conclusion', 'complementary_observations', 'additional_notes']
   },
   {
     id: 'final_review',
-    title: '11. Assinatura',
+    title: '10. Assinatura',
     description: 'Assinatura e finalização',
     icon: Check,
     fields: ['signature', 'review_notes']
@@ -115,7 +108,6 @@ const STEP_HINTS: Record<string, { icon: React.ElementType; title: string; descr
   referral: { icon: ClipboardList, title: 'Motivo do encaminhamento', description: 'Descreva quem encaminhou e a razão clínica que originou o início dos atendimentos.' },
   therapeutic_objectives: { icon: Target, title: 'Objetivos terapêuticos', description: 'Selecione os objetivos que a musicoterapia irá estimular; defina metas observáveis e individualizadas, respeitando as características do paciente.' },
   methodology: { icon: Music, title: 'Abordagem Musicoterapêutica', description: 'Selecione os referenciais e modos de intervenção efetivamente previstos ou utilizados. Métodos especializados exigem capacitação apropriada.' },
-  clinical_evolution: { icon: Heart, title: 'Evolução clínica', description: 'Registre os progressos por domínio: comunicação, interação social, regulação emocional, cognição, motricidade e respostas musicais.' },
   observed_results: { icon: Brain, title: 'Resultados observados', description: 'Compare linha de base e avaliação atual; documente medidas, ajuda, contexto, limitações e resultados verificáveis.' },
   pending_intervention: { icon: Target, title: 'Aspectos a intervir', description: 'Liste os pontos que ainda necessitam de intervenção e os sinais a monitorar.' },
   prognosis: { icon: Target, title: 'Prognóstico terapêutico', description: 'Estruture objetivos de curto, médio e longo prazo, com prognóstico e data de reavaliação.' },
@@ -944,7 +936,7 @@ export function MusicoterapiaReportWizard({
             Relatório MuseTera TEA
           </h1>
           <p className="text-gray-400 max-w-xl mx-auto text-sm sm:text-base lg:text-lg font-light leading-relaxed px-2">
-            Estrutura premium para documentação de avaliação, objetivos, técnicas e evolução clínica em musicoterapia.
+            Estrutura profissional para documentação de objetivos, abordagens, resultados e recomendações em musicoterapia.
           </p>
         </div>
 
