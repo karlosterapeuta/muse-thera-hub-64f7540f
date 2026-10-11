@@ -806,37 +806,18 @@ export default function MusicoterapiaPage() {
         toast({ variant: 'destructive', title: 'Logo não carregada', description: 'O PDF será gerado sem a logo personalizada.' });
       }
 
-      // Create temporary HTML element
-      const tempDiv = document.createElement('div');
-      tempDiv.style.fontFamily = 'Arial, sans-serif';
-      tempDiv.style.color = '#000';
-      tempDiv.style.backgroundColor = '#fff';
-      tempDiv.innerHTML = generatePDFContent(currentReportData, photoBase64, stampBase64, logoBase64, narrative);
-
-      
-      document.body.appendChild(tempDiv);
-
-      // PDF configuration
-      const opt = {
-        margin: [10, 10],
-        filename: `Relatorio_Musicoterapia_${(reportData.patientName || 'paciente').replace(/[^\p{L}\p{N}_-]+/gu, '_')}_${new Date().toISOString().split('T')[0]}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['css', 'legacy'], avoid: '.section-block' }
-      };
-
-      // Generate and download PDF
-      const pdfInstance = html2pdf().set(opt).from(tempDiv);
-      await pdfInstance.save();
+      // Um único exportador A4, com margens, gráficos, quebras e páginas numeradas.
+      const filename = `Relatorio_Musicoterapia_${(reportData.patientName || 'paciente').replace(/[^\p{L}\p{N}_-]+/gu, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+      const blob = await exportMusicoterapiaHtmlPdf(
+        generatePDFContent(currentReportData, photoBase64, stampBase64, logoBase64, narrative),
+        filename
+      );
       let savedPath: string | null = null;
       try {
-        const blob = await pdfInstance.outputPdf('blob');
-        savedPath = await savePDFToStorage(blob, opt.filename, 'report');
+        savedPath = await savePDFToStorage(blob, filename, 'report');
       } catch {
-        // Falha de arquivo não deve ser confundida com falha no download.
+        // Download bem-sucedido; informar falha apenas no arquivamento.
       }
-      document.body.removeChild(tempDiv);
       toast({
         title: savedPath ? 'PDF baixado e arquivado' : 'PDF baixado; arquivamento pendente',
         description: savedPath
