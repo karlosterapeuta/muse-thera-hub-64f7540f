@@ -39,69 +39,62 @@ const STEPS = [
   {
     id: 'basic_info',
     title: '1. Identificação do Paciente',
-    description: 'Dados do paciente e do profissional',
+    description: 'Dados do paciente, profissional e motivo do encaminhamento',
     icon: Target,
-    fields: ['patient_name', 'patient_age', 'patient_diagnosis', 'evaluation_period', 'diagnosis_source', 'cid_code', 'support_level', 'comorbidities', 'current_medications', 'treatment_start_date', 'session_count', 'session_frequency', 'session_duration', 'professional_name', 'professional_registry', 'session_date']
-  },
-  {
-    id: 'referral',
-    title: '2. Motivo do Encaminhamento',
-    description: 'Origem e justificativa do encaminhamento',
-    icon: ClipboardList,
-    fields: ['referral_source', 'referral_reason']
+    fields: ['patient_name', 'patient_age', 'patient_diagnosis', 'evaluation_period', 'diagnosis_source', 'cid_code', 'support_level', 'comorbidities', 'current_medications', 'treatment_start_date', 'session_count', 'session_frequency', 'session_duration', 'professional_name', 'professional_registry', 'session_date', 'referral_source', 'referral_reason']
   },
   {
     id: 'therapeutic_objectives',
-    title: '3. Objetivos Terapêuticos',
+    title: '2. Objetivos Terapêuticos',
     description: 'Seleção de objetivos a desenvolver e planejamento individualizado',
     icon: Target,
     fields: [] // Nesta etapa, usar somente o catálogo de 27 objetivos selecionáveis
   },
   {
     id: 'methodology',
-    title: '4. Abordagem Musicoterapêutica',
+    title: '3. Abordagem Musicoterapêutica',
     description: 'Selecione uma ou mais abordagens adotadas no acompanhamento',
     icon: Music,
     fields: [] // Somente o catálogo das 10 abordagens
   },
   {
     id: 'observed_results',
-    title: '5. Resultados Observados',
-    description: 'Respostas às abordagens da Etapa 04 e evolução dos objetivos da Etapa 03',
+    title: '4. Resultados Observados',
+    description: 'Respostas às abordagens da Etapa 03 e evolução dos objetivos da Etapa 02',
     icon: Brain,
     fields: [] // Preenchimento rápido, vinculado às abordagens realmente selecionadas
   },
   {
     id: 'pending_intervention',
-    title: '6. Aspectos a Intervir',
-    description: 'Demandas geradas a partir dos resultados informados na Etapa 05',
+    title: '5. Aspectos a Intervir',
+    description: 'Demandas geradas a partir dos resultados informados na Etapa 04',
     icon: Target,
     fields: [] // Exibição automática de objetivos ainda em desenvolvimento
   },
   {
     id: 'prognosis',
-    title: '7. Prognóstico Terapêutico',
+    title: '6. Prognóstico Terapêutico',
     description: 'Objetivos futuros e prognóstico',
     icon: Target,
     fields: ['next_objectives_short', 'next_objectives_medium', 'next_objectives_long', 'proposed_interventions', 'expected_outcomes', 'revaluation_date']
   },
   {
     id: 'recommendations',
-    title: '8. Recomendações',
+    title: '7. Recomendações',
     description: 'Família, escola e equipe',
     icon: Home,
     fields: ['recommendations', 'home_activities', 'family_guidance', 'school_recommendations', 'interdisciplinary_team_notes', 'playlist_recommended']
   },
   {
     id: 'final_considerations',
-    title: '9. Considerações Finais',
+    title: '8. Considerações Finais',
     description: 'Síntese conclusiva',
     icon: Sparkles,
     fields: ['final_considerations', 'conclusion', 'complementary_observations', 'additional_notes']
   },
   {
     id: 'final_review',
-    title: '10. Assinatura',
+    title: '9. Assinatura',
     description: 'Assinatura e finalização',
     icon: Check,
     fields: ['signature', 'review_notes']
@@ -109,12 +102,11 @@ const STEPS = [
 ];
 
 const STEP_HINTS: Record<string, { icon: React.ElementType; title: string; description: string }> = {
-  basic_info: { icon: Info, title: 'Identificação do paciente', description: 'Confirme dados do paciente e do profissional. Esses dados aparecem no cabeçalho do relatório final.' },
-  referral: { icon: ClipboardList, title: 'Motivo do encaminhamento', description: 'Descreva quem encaminhou e a razão clínica que originou o início dos atendimentos.' },
+  basic_info: { icon: Info, title: 'Identificação e encaminhamento', description: 'Confirme os dados do paciente e do profissional e, quando disponíveis, informe a origem e o motivo do encaminhamento.' },
   therapeutic_objectives: { icon: Target, title: 'Objetivos terapêuticos', description: 'Selecione os objetivos que a musicoterapia irá estimular; defina metas observáveis e individualizadas, respeitando as características do paciente.' },
   methodology: { icon: Music, title: 'Abordagem Musicoterapêutica', description: 'Selecione os referenciais e modos de intervenção efetivamente previstos ou utilizados. Métodos especializados exigem capacitação apropriada.' },
-  observed_results: { icon: Brain, title: 'Resultados por abordagem e objetivo', description: 'Registre a resposta às abordagens e a evolução de cada objetivo. A Etapa 06 será atualizada automaticamente.' },
-  pending_intervention: { icon: Target, title: 'Aspectos a intervir', description: 'Veja automaticamente as demandas que precisam continuar, conforme os objetivos e resultados informados.' },
+  observed_results: { icon: Brain, title: 'Resultados por abordagem e objetivo', description: 'Registre a resposta às abordagens e a evolução de cada objetivo. A Etapa 05 será atualizada automaticamente.' },
+  pending_intervention: { icon: Target, title: 'Aspectos a intervir', description: 'Veja as demandas que precisam continuar, calculadas a partir dos resultados da Etapa 04.' },
   prognosis: { icon: Target, title: 'Prognóstico terapêutico', description: 'Estruture objetivos de curto, médio e longo prazo, com prognóstico e data de reavaliação.' },
   recommendations: { icon: Home, title: 'Recomendações', description: 'Oriente família, escola e equipe interdisciplinar com recomendações práticas.' },
   final_considerations: { icon: Sparkles, title: 'Considerações finais', description: 'Sintetize a evolução global e a indicação de continuidade do acompanhamento.' },
@@ -705,7 +697,7 @@ export function MusicoterapiaReportWizard({
       );
     }
 
-    // A Etapa 04 mostra exclusivamente as dez abordagens solicitadas,
+    // A Etapa 03 mostra exclusivamente as dez abordagens solicitadas,
     // sem os formulários, buscas ou modelos de metodologia legados.
     if (currentStepData.id === 'methodology') {
       return (
@@ -718,7 +710,7 @@ export function MusicoterapiaReportWizard({
       );
     }
 
-    // A Etapa 05 mostra somente as abordagens selecionadas na Etapa 04.
+    // A Etapa 04 mostra somente as abordagens selecionadas na Etapa 03.
     // Os antigos campos extensos e os modelos de respostas prontas não são exibidos.
     if (currentStepData.id === 'observed_results') {
       return (
