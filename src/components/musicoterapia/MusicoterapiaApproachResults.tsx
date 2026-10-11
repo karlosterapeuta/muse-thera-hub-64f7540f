@@ -49,7 +49,7 @@ export function MusicoterapiaApproachResults({ selectedApproachIds, value, onCha
           <p className="text-xs text-[#f0d78c] mt-2" aria-live="polite">{recorded.length} de {approaches.length} registradas</p>
         </div>
       </div>
-      {!approaches.length && <p className="text-amber-300 text-sm">Selecione uma abordagem na Etapa 04.</p>}
+      {!approaches.length && <p className="text-amber-300 text-sm">Selecione uma abordagem na Etapa 03.</p>}
       {approaches.map((approach, i) => {
         const result = recorded.find(item => item.approach.id === approach.id)?.result;
         return (
