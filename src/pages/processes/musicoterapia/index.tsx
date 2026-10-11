@@ -25,6 +25,7 @@ import html2pdf from 'html2pdf.js';
 import { imageUrlToBase64 } from '@/utils/imageToBase64';
 import { DeleteReportDialog } from '../reports/components/DeleteReportDialog';
 import { formatAgeString } from '@/utils/dateUtils';
+import { mapAnamnesisToMusicoterapia } from '@/utils/musicoterapiaAnamnesisMapping';
 
 export default function MusicoterapiaPage() {
   const [searchParams] = useSearchParams();
@@ -59,6 +60,9 @@ export default function MusicoterapiaPage() {
 
   const { patients, isLoadingPatients, userId } = useReportData();
   const [professionalId, setProfessionalId] = useState<string | null>(null);
+  const [anamnesisStatus, setAnamnesisStatus] = useState<'idle' | 'loading' | 'loaded' | 'empty' | 'error'>('idle');
+  const anamnesisRequestRef = React.useRef(0);
+  const autoSelectedQueryRef = React.useRef<string | null>(null);
 
   React.useEffect(() => {
     async function fetchProfessionalId() {
@@ -82,24 +86,108 @@ export default function MusicoterapiaPage() {
     fetchProfessionalId();
   }, [userId]);
 
-  React.useEffect(() => {
-    if (patientIdFromQuery && patients.length > 0) {
-      const selectedPatient = patients.find(p => p.id === patientIdFromQuery);
-      if (selectedPatient) {
-        // Calcular idade usando utilitário centralizado
-        const age = formatAgeString((selectedPatient as any).birth_date, (selectedPatient as any).age);
-
-        updateReportData({
-          selectedPatientId: patientIdFromQuery,
-          patientName: selectedPatient.name,
-          patientAge: age,
-          patientBirthDate: (selectedPatient as any).birth_date || '',
-          patientGuardian: (selectedPatient as any).responsible || '',
-          patientDiagnosis: 'TEA - Transtorno do Espectro Autista'
-        });
-      }
+  // Ao trocar de paciente, limpar o rascunho clínico anterior antes de importar
+  // dados da anamnese. A última consulta é a única autorizada a atualizar o estado.
+  const selectPatientWithAnamnesis = React.useCallback(async (patientId: string) => {
+    const requestId = ++anamnesisRequestRef.current;
+    if (!patientId || patientId === 'manual') {
+      updateReportData({
+        selectedPatientId: '',
+        patientName: '',
+        patientAge: '',
+        patientBirthDate: '',
+        patientGuardian: '',
+        patientDiagnosis: '',
+        fieldValues: {}
+      });
+      setAnamnesisStatus('idle');
+      setSourceReportId(null);
+      return;
     }
-  }, [patientIdFromQuery, patients, updateReportData]);
+
+    const patient = patients.find((item) => item.id === patientId);
+    if (!patient) return;
+
+    // Uma nova seleção começa um novo relatório. Não reaproveitar objetivos,
+    // evoluções ou qualquer outro dado pertencente ao paciente anterior.
+    updateReportData({
+      selectedPatientId: patientId,
+      patientName: patient.name,
+      patientAge: formatAgeString(patient.birth_date, patient.age),
+      patientBirthDate: patient.birth_date || '',
+      patientGuardian: patient.responsible || '',
+      patientDiagnosis: '',
+      fieldValues: {},
+      additionalObservations: ''
+    });
+    setSourceReportId(null);
+    setAnamnesisStatus('loading');
+
+    if (!userId) {
+      if (requestId === anamnesisRequestRef.current) setAnamnesisStatus('error');
+      return;
+    }
+
+    try {
+      // A anamnese pertence ao mesmo paciente e ao profissional autenticado.
+      // O banco deve aplicar suas políticas de acesso (RLS) normalmente.
+      const { data, error } = await supabase
+        .from('anamnesis')
+        .select('*')
+        .eq('patient_id', patientId)
+        .eq('professional_id', userId)
+        .order('updated_at', { ascending: false, nullsFirst: false })
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (requestId !== anamnesisRequestRef.current) return;
+      if (error) throw error;
+
+      if (!data) {
+        setAnamnesisStatus('empty');
+        return;
+      }
+
+      const mapped = mapAnamnesisToMusicoterapia(data);
+      updateReportData((previous) => {
+        if (previous.selectedPatientId !== patientId) return {};
+        // Os valores já digitados enquanto a consulta estava em andamento
+        // têm prioridade, evitando substituições silenciosas.
+        const available = Object.fromEntries(
+          Object.entries(mapped.fieldValues).filter(([key]) => {
+            const current = previous.fieldValues?.[key];
+            return current === undefined || current === null || current === '';
+          })
+        );
+        return {
+          ...(!previous.patientGuardian?.trim() && mapped.patientGuardian
+            ? { patientGuardian: mapped.patientGuardian } : {}),
+          ...(!previous.patientDiagnosis?.trim() && mapped.patientDiagnosis
+            ? { patientDiagnosis: mapped.patientDiagnosis } : {}),
+          fieldValues: { ...previous.fieldValues, ...available }
+        };
+      });
+      setAnamnesisStatus('loaded');
+    } catch {
+      if (requestId !== anamnesisRequestRef.current) return;
+      // Nunca registrar ou exibir o conteúdo da anamnese no console.
+      setAnamnesisStatus('error');
+      toast({
+        variant: 'destructive',
+        title: 'Anamnese não carregada',
+        description: 'O paciente foi selecionado, mas não foi possível carregar a anamnese. Você pode preencher os dados manualmente.'
+      });
+    }
+  }, [patients, userId, updateReportData, toast]);
+
+  React.useEffect(() => {
+    if (!patientIdFromQuery || patients.length === 0 || !userId) return;
+    if (autoSelectedQueryRef.current === patientIdFromQuery) return;
+    if (!patients.some((patient) => patient.id === patientIdFromQuery)) return;
+    autoSelectedQueryRef.current = patientIdFromQuery;
+    void selectPatientWithAnamnesis(patientIdFromQuery);
+  }, [patientIdFromQuery, patients, userId, selectPatientWithAnamnesis]);
 
   const generatePDFContent = (
     reportDataForPDF: any, 
