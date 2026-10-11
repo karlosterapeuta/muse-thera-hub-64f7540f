@@ -114,7 +114,7 @@ export default function MusicoterapiaPage() {
         .replace(/>/g, '&gt;');
 
     const narrativeBlock = (narrative && narrative.length > 0) ? `
-      <div class="section-block" style="margin-bottom: 25px; border: 2px solid #14b8a6; border-radius: 10px; overflow: hidden; background: #ffffff; page-break-inside: auto;">
+      <div class="clinical-narrative" style="margin-bottom: 25px; border: 2px solid #14b8a6; border-radius: 10px; overflow: hidden; background: #ffffff; page-break-inside: auto;">
         <div style="background: linear-gradient(135deg, #0d9488 0%, #14b8a6 60%, #06b6d4 100%); color: white; padding: 12px 16px;">
           <h2 style="margin: 0; font-size: 16px; font-weight: 700; letter-spacing: 0.3px;">Relatório de Evolução Musicoterapêutica</h2>
           
@@ -724,7 +724,7 @@ export default function MusicoterapiaPage() {
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['css', 'legacy'], avoid: '.section-block' }
+        pagebreak: { mode: ['css', 'legacy'], avoid: ['.section-block', 'h2', 'h3'] }
       };
 
       // Generate and download PDF
