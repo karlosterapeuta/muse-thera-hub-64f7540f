@@ -778,32 +778,25 @@ export default function MusicoterapiaPage() {
 
     setIsExporting(true);
     try {
-      // 1. Organizar com IA antes de exportar
-      toast({
-        title: "Iniciando IA",
-        description: "Analisando as respostas e gerando o relatório clínico narrativo...",
-      });
-      
-      const organizedFields = await generateWithAI();
-      
-      // Criamos uma versão local dos dados para o PDF
-      const currentReportData = {
-        ...reportData,
-        fieldValues: organizedFields || reportData.fieldValues
-      };
+      // Relatórios estruturados usam as informações documentadas nas nove etapas.
+      // Não gerar uma segunda narrativa de IA que repete dados ou sugere
+      // conclusões não comprovadas. O fluxo antigo é mantido em registros legados.
+      const isStructuredReport =
+        getSelectedMusicoterapiaApproaches(reportData.fieldValues?.musicoterapia_approach_ids).length > 0;
+      let currentReportData = { ...reportData };
+      let narrative: { title: string; content: string }[] | null = null;
 
-      // 2. Gerar relatório narrativo clínico com IA
-      const narrative = await generateNarrative(currentReportData);
-      if (narrative && narrative.length > 0) {
+      if (!isStructuredReport) {
         toast({
-          title: "Relatório narrativo gerado",
-          description: "A IA produziu uma análise clínica personalizada para o paciente.",
+          title: 'Preparando relatório legado',
+          description: 'Organizando a narrativa clínica registrada no modelo anterior.'
         });
-      } else {
-        toast({
-          title: "PDF gerado sem narrativa de IA",
-          description: "Não foi possível gerar o texto narrativo agora; o relatório usará os dados estruturados.",
-        });
+        const organizedFields = await generateWithAI();
+        currentReportData = {
+          ...reportData,
+          fieldValues: organizedFields || reportData.fieldValues
+        };
+        narrative = await generateNarrative(currentReportData);
       }
 
       // Convert images to Base64
