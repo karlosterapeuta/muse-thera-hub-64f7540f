@@ -162,6 +162,7 @@ export default function MusicoterapiaPage() {
             row('Responsável', reportDataForPDF.patientGuardian),
             row('Início dos atendimentos', formatDateBR(fields.treatment_start_date)),
             row('Período avaliado', fields.evaluation_period),
+            row('Fonte do diagnóstico informado', fields.diagnosis_source),
             row('Frequência dos atendimentos', fields.session_frequency),
           ].filter(Boolean).join('');
           const proRows = [
@@ -360,12 +361,13 @@ export default function MusicoterapiaPage() {
 
           return `
             ${execSummary}
-            ${renderSection('Identificação Clínica', ['cid_code','support_level','comorbidities','current_medications','referral_source','treatment_start_date','session_count','session_frequency','session_duration'])}
+            ${renderSection('Identificação Clínica', ['evaluation_period','diagnosis_source','cid_code','support_level','comorbidities','current_medications','referral_source','treatment_start_date','session_count','session_frequency','session_duration'])}
             ${renderSection('Identidade Sonora (ISO de Benenzon)', ['iso_gestational','iso_universal','iso_cultural','iso_complementary','iso_group','sound_preferences','musical_repertoire_favorites'])}
             ${renderSection('Avaliação Sensório-Musical', ['auditory_processing','sound_tolerance','vestibular_response_music','tactile_instrument_response','proprioceptive_response','sensory_seeking_vs_avoiding','sensory_profile_notes'])}
-            ${renderSection('Avaliação Clínica - Domínios - Escala MuseTera', ['domain_musicality','domain_communication_verbal','domain_communication_nonverbal','domain_social_interaction','domain_emotional','domain_cognitive','domain_motor_gross','domain_motor_fine','domain_sensory_integration','domain_autonomy','domain_evidences'])}
+            ${renderSection('Indicadores Musicoterapêuticos - Pontuações Observacionais', ['domain_musicality','domain_communication_verbal','domain_communication_nonverbal','domain_social_interaction','domain_emotional','domain_cognitive','domain_motor_gross','domain_motor_fine','domain_sensory_integration','domain_autonomy','domain_evidences'])}
             ${renderSection('Detalhamento Clínico da Sessão', ['session_setting','session_structure','improvisation_use','receptive_techniques','recreative_techniques','compositional_techniques','tempo_dynamics_used','vocal_work'])}
             ${renderSection('Comunicação e Linguagem', ['vocalizations_observed','verbal_output_during_music','echolalia_musical','aac_use','pragmatic_skills'])}
+            ${renderSection('Matriz de Evidências Musicoterapêuticas', ['baseline_observation','current_observation','measurement_method','assistance_level','observation_context','report_limitations'])}
             ${renderSection('Evolução Clínica Detalhada', ['evolution_compared_baseline','goals_achieved','goals_in_progress','goals_not_achieved','quantitative_indicators'])}
             ${renderSection('Plano Terapêutico Futuro', ['next_objectives_short','next_objectives_medium','next_objectives_long','proposed_interventions','expected_outcomes','revaluation_date'])}
             ${renderSection('Orientações Ampliadas', ['school_recommendations','interdisciplinary_team_notes','playlist_recommended','red_flags_to_monitor'])}
