@@ -20,6 +20,7 @@ import { getRecordedApproachResults } from '@/data/musicoterapiaApproachResults'
 import { renderRecordedResultsPdf } from '@/utils/renderRecordedResultsPdf';
 import { renderObjectiveFlowPdf } from '@/utils/renderObjectiveFlowPdf';
 import { renderMusicoterapiaReferencesPdf } from '@/utils/renderMusicoterapiaReferencesPdf';
+import { renderMusicoterapiaFinalConsiderationsPdf } from '@/utils/renderMusicoterapiaFinalConsiderationsPdf';
 import { getSelectedMusicoterapiaReferences } from '@/data/musicoterapiaReferences';
 import { savePDFToStorage } from '@/utils/pdfStorageUtils';
 import { useReportData } from '../report/hooks/useReportData';
@@ -407,7 +408,7 @@ export default function MusicoterapiaPage() {
           </div>
         ` : ''}
 
-        ${fields.conclusion && fields.conclusion.length > 0 ? `
+        ${isLegacyReport && fields.conclusion && fields.conclusion.length > 0 ? `
           <div class="section-block" style="margin-bottom: 20px; page-break-inside: avoid; page-break-before: auto;">
             <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Conclusao</h3>
             ${Array.isArray(fields.conclusion) ? `
@@ -417,6 +418,8 @@ export default function MusicoterapiaPage() {
             ` : `<p style="margin: 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;" >${escapeHtml(String(fields.conclusion))}</p>`}
           </div>
         ` : ''}
+
+        ${!isLegacyReport ? renderMusicoterapiaFinalConsiderationsPdf(fields, escapeHtml) : ''}
 
         ${(() => {
           // ===== SEÇÕES CLÍNICAS EXPANDIDAS =====
