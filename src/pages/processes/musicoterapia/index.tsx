@@ -214,7 +214,7 @@ export default function MusicoterapiaPage() {
         ` : ''}
 
         <!-- Report Sections (dados complementares) -->
-        ${fields.therapeutic_objectives && fields.therapeutic_objectives.length > 0 ? `
+        ${selectedGoals.length === 0 && fields.therapeutic_objectives && fields.therapeutic_objectives.length > 0 ? `
           <div class="section-block" style="margin-bottom: 20px; page-break-inside: avoid; page-break-before: auto;">
             <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Objetivos Complementares</h3>
             ${Array.isArray(fields.therapeutic_objectives) ? `
@@ -225,7 +225,7 @@ export default function MusicoterapiaPage() {
           </div>
         ` : ''}
 
-        ${fields.specific_goals && String(fields.specific_goals).trim() ? `
+        ${selectedGoals.length === 0 && fields.specific_goals && String(fields.specific_goals).trim() ? `
           <div class="section-block" style="margin-bottom: 20px; page-break-inside: auto;">
             <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Metas Específicas Individualizadas</h3>
             <p style="margin: 0; white-space: pre-wrap; overflow-wrap: break-word; font-size: 11px; line-height: 1.6;">${escapeHtml(Array.isArray(fields.specific_goals) ? fields.specific_goals.join('\\n') : String(fields.specific_goals))}</p>
