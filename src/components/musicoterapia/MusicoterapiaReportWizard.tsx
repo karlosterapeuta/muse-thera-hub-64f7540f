@@ -85,9 +85,9 @@ const STEPS = [
   {
     id: 'recommendations',
     title: '7. Recomendações',
-    description: 'Família, escola e equipe',
+    description: 'Orientações objetivas para a continuidade do acompanhamento',
     icon: Home,
-    fields: ['recommendations', 'home_activities', 'family_guidance', 'school_recommendations', 'interdisciplinary_team_notes', 'playlist_recommended']
+    fields: ['recommendations'] // Apenas o campo principal, sem cartões extras
   },
   {
     id: 'final_considerations',
@@ -112,7 +112,7 @@ const STEP_HINTS: Record<string, { icon: React.ElementType; title: string; descr
   observed_results: { icon: Brain, title: 'Resultados por abordagem e objetivo', description: 'Registre a resposta às abordagens e a evolução de cada objetivo. A Etapa 05 será atualizada automaticamente.' },
   pending_intervention: { icon: Target, title: 'Aspectos a intervir', description: 'Veja as demandas que precisam continuar, calculadas a partir dos resultados da Etapa 04.' },
   references: { icon: BookOpen, title: 'Referências bibliográficas', description: 'Selecione apenas obras coerentes com as abordagens e efetivamente utilizadas no embasamento clínico.' },
-  recommendations: { icon: Home, title: 'Recomendações', description: 'Oriente família, escola e equipe interdisciplinar com recomendações práticas.' },
+  recommendations: { icon: Home, title: 'Recomendações', description: 'Registre apenas orientações essenciais, específicas para o paciente e coerentes com os resultados das etapas anteriores.' },
   final_considerations: { icon: Sparkles, title: 'Considerações finais', description: 'Sintetize a evolução global e a indicação de continuidade do acompanhamento.' },
   final_review: { icon: Check, title: 'Assinatura', description: 'Revise o relatório, organize com IA se desejar, assine e finalize.' },
 };
