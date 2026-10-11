@@ -16,7 +16,8 @@ import { useMusicoterapiaReport } from '@/hooks/useMusicoterapiaReport';
 import { musicoterapiaTemplate, scaleFieldIds } from '@/data/musicoterapiaTemplate';
 import { getSelectedMusicoterapiaObjectives, musicoterapiaObjectiveCategories } from '@/data/musicoterapiaObjectives';
 import { getSelectedMusicoterapiaApproaches } from '@/data/musicoterapiaApproaches';
-import { getRecordedApproachResults, summarizeApproachResult } from '@/data/musicoterapiaApproachResults';
+import { getRecordedApproachResults } from '@/data/musicoterapiaApproachResults';
+import { renderRecordedResultsPdf } from '@/utils/renderRecordedResultsPdf';
 import { savePDFToStorage } from '@/utils/pdfStorageUtils';
 import { useReportData } from '../report/hooks/useReportData';
 import html2pdf from 'html2pdf.js';
@@ -236,6 +237,8 @@ export default function MusicoterapiaPage() {
             </ol>
           </div>
         ` : ''}
+
+        ${recordedResults.length ? renderRecordedResultsPdf(recordedResults, escapeHtml) : ''}
 
         <!-- Report Sections (dados complementares) -->
         ${selectedGoals.length === 0 && fields.therapeutic_objectives && fields.therapeutic_objectives.length > 0 ? `
