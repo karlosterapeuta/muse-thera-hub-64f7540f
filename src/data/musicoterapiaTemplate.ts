@@ -98,11 +98,11 @@ export const musicoterapiaTemplate: ReportTemplate = {
     {
       id: 'therapeutic_objectives',
       type: 'textarea',
-      label: 'Objetivos Terapêuticos',
-      description: 'Objetivos específicos através da música',
-      placeholder: 'Ex: Desenvolver comunicação não-verbal através da expressão musical, promover autorregulação emocional com atividades rítmicas, estimular interação social em dinâmicas musicais...',
-      required: true,
-      guidance: 'Objetivos que utilizam a música como ferramenta terapêutica principal'
+      label: 'Objetivos complementares (texto livre)',
+      description: 'Objetivos adicionais não contemplados pelas 12 opções de seleção',
+      placeholder: 'Descreva aqui outras necessidades individuais que serão estimuladas por meio da musicoterapia...',
+      required: false,
+      guidance: 'Opcional: acrescente objetivos individualizados. Selecione os objetivos principais nos cartões acima; nenhum objetivo será considerado alcançado automaticamente.'
     },
     {
       id: 'specific_goals',
