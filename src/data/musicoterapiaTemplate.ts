@@ -119,7 +119,7 @@ export const musicoterapiaTemplate: ReportTemplate = {
       label: 'Descrição das Sessões/Atividades Realizadas',
       description: 'Atividades musicoterapêuticas implementadas',
       placeholder: 'Ex: Exploração livre de instrumentos de percussão, atividades de imitação rítmica, canto de canções funcionais para rotinas...',
-      required: true,
+      required: false,
       guidance: 'Descreva técnicas e instrumentos musicais específicos utilizados'
     },
     {
