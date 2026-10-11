@@ -21,6 +21,7 @@ import { renderRecordedResultsPdf } from '@/utils/renderRecordedResultsPdf';
 import { renderObjectiveFlowPdf } from '@/utils/renderObjectiveFlowPdf';
 import { renderMusicoterapiaReferencesPdf } from '@/utils/renderMusicoterapiaReferencesPdf';
 import { renderMusicoterapiaFinalConsiderationsPdf } from '@/utils/renderMusicoterapiaFinalConsiderationsPdf';
+import { renderMusicoterapiaSignaturePdf } from '@/utils/renderMusicoterapiaSignaturePdf';
 import { getSelectedMusicoterapiaReferences } from '@/data/musicoterapiaReferences';
 import { savePDFToStorage } from '@/utils/pdfStorageUtils';
 import { useReportData } from '../report/hooks/useReportData';
@@ -590,84 +591,18 @@ export default function MusicoterapiaPage() {
           `;
         })()}
 
-        <!-- FOOTER TEAL -->
-        <div class="section-block" style="margin-top: 25px; border: 2px solid #14b8a6; border-radius: 10px; overflow: hidden; background: #ffffff; page-break-inside: avoid; page-break-before: auto;">
-          <div style="height: 4px; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%);"></div>
-          
-          <div style="padding: 16px;">
-            <div style="display: flex; gap: 16px; align-items: start;">
-            
-              <!-- Card de Assinatura (Esquerda) -->
-              <div style="flex: 1; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 1px solid #14b8a6; border-radius: 8px; overflow: hidden;">
-                <div style="height: 4px; background: linear-gradient(to right, #0d9488, #14b8a6, #06b6d4);"></div>
-                
-                <div style="padding: 12px;">
-                  <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-                    ${photoBase64 ? `
-                      <div style="width: 48px; height: 48px; border-radius: 50%; overflow: hidden; border: 2px solid #14b8a6; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-                        <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
-                      </div>
-                    ` : ''}
-                    <div style="text-align: center;">
-                      <div style="font-size: 9px; font-weight: bold; color: #0f766e; margin-bottom: 6px; line-height: 1.3; word-wrap: break-word; overflow-wrap: break-word;">${escapeHtml(professionalData?.name || 'Profissional')}</div>
-                      <div style="display: inline-flex; align-items: center; gap: 3px; background: #ccfbf1; border: 1px solid #5eead4; border-radius: 10px; padding: 3px 7px; margin-bottom: 8px;">
-                        <span style="color: #0f766e; font-size: 7px;">&#9835;</span>
-                        <span style="font-size: 7px; font-weight: 600; color: #0f766e;">${escapeHtml(professionalData?.specialty || 'Musicoterapeuta')}</span>
-                      </div>
-                      <div style="font-size: 7px; color: #374151; line-height: 1.8;">
-                        ${professionalData?.register ? `<div><strong style="color: #0f766e;">Registro:</strong> ${escapeHtml(professionalData.register)}</div>` : ''}
-                        ${professionalData?.email ? `<div style="word-wrap: break-word; overflow-wrap: break-word;"><strong style="color: #0f766e;">Email:</strong> ${escapeHtml(professionalData.email)}</div>` : ''}
-                        ${professionalData?.phone ? `<div><strong style="color: #0f766e;">Telefone:</strong> ${escapeHtml(professionalData.phone)}</div>` : ''}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div style="border-top: 1px solid #5eead4; background: linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa); padding: 7px;">
-                  <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
-                    <span style="color: #0d9488; font-size: 8px;">&#10004;</span>
-                    <span style="font-size: 6px; font-weight: 600; color: #0f766e;">Identificação do profissional responsável</span>
-                    <span style="color: #0d9488; font-size: 7px;">&#9835;</span>
-                    <span style="font-size: 6px; color: #6b7280;">Sistema MuseTera</span>
-                  </div>
-                </div>
-              </div>
+        <!-- Identificacao e carimbo cadastrado: sem selos artificiais -->
+        ${renderMusicoterapiaSignaturePdf({
+          name: reportDataForPDF.professionalName || professionalData?.name,
+          register: reportDataForPDF.professionalRegistry || professionalData?.register,
+          specialty: reportDataForPDF.professionalSpecialty || professionalData?.specialty,
+          date: reportDataForPDF.sessionDate || currentDate,
+          email: professionalData?.email,
+          phone: professionalData?.phone,
+          portrait: photoBase64,
+          stamp: stampBase64
+        }, escapeHtml)}
 
-              <!-- Carimbo Circular (Direita) -->
-              <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
-                ${stampBase64 || photoBase64 ? `
-                  <div style="width: 140px; height: 140px; position: relative; display: flex; align-items: center; justify-content: center;">
-                    <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 2px dashed #14b8a6; opacity: 0.3;"></div>
-                    <div style="position: absolute; width: 92%; height: 92%; border-radius: 50%; border: 1px solid #14b8a6; opacity: 0.5;"></div>
-                    <div style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 3px solid #0d9488; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px; box-shadow: 0 4px 12px rgba(20,184,166,0.25);">
-                      ${photoBase64 ? `
-                        <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; border: 2px solid #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.1); margin-bottom: 5px;">
-                          <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
-                        </div>
-                      ` : ''}
-                      <div style="font-size: 7px; font-weight: bold; color: #0f766e; text-align: center; margin-bottom: 3px; max-width: 90px; line-height: 1.3; word-wrap: break-word; overflow-wrap: break-word;">${escapeHtml(professionalData?.name || 'Profissional')}</div>
-                      <div style="width: 30px; height: 1px; background: linear-gradient(to right, transparent, #14b8a6, transparent); margin-bottom: 3px;"></div>
-                      <div style="display: inline-flex; align-items: center; gap: 2px; background: #ccfbf1; border: 1px solid #5eead4; border-radius: 8px; padding: 2px 5px; margin-bottom: 2px;">
-                        <span style="font-size: 5px; color: #0f766e;">&#9835;</span>
-                        <span style="font-size: 5px; font-weight: 600; color: #0f766e; text-transform: uppercase; letter-spacing: 0.3px;">${escapeHtml(professionalData?.specialty || 'Musicoterapeuta')}</span>
-                      </div>
-                      ${professionalData?.register ? `<div style="font-size: 6px; color: #374151; font-weight: 600;">${escapeHtml(professionalData.register)}</div>` : ''}
-                    </div>
-                  </div>
-                  <div style="margin-top: 6px; background: linear-gradient(135deg, #0d9488, #0891b2); color: white; padding: 4px 9px; border-radius: 10px; display: inline-flex; align-items: center; gap: 3px; box-shadow: 0 2px 6px rgba(13,148,136,0.3);">
-                    <span style="font-size: 6px;">&#10004;</span>
-                    <span style="font-size: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;">Documento gerado no MuseTera</span>
-                    <span style="font-size: 6px;">&#9835;</span>
-                  </div>
-                ` : `
-                  <div style="width: 120px; height: 120px; border: 2px dashed #14b8a6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 7px; color: #6b7280; background: #f0fdfa;">
-                    Carimbo Digital
-                  </div>
-                `}
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     `;
   };
