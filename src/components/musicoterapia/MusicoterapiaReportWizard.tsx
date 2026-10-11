@@ -19,6 +19,7 @@ import { getSelectedMusicoterapiaReferences } from '@/data/musicoterapiaReferenc
 import { MusicoterapiaApproachResults } from './MusicoterapiaApproachResults';
 import { MusicoterapiaObjectiveOutcomes } from './MusicoterapiaObjectiveOutcomes';
 import { MusicoterapiaPendingInterventions } from './MusicoterapiaPendingInterventions';
+import { MusicoterapiaFinalConsiderations } from './MusicoterapiaFinalConsiderations';
 import { getObjectiveOutcomesValidationIssues } from '@/data/musicoterapiaObjectiveOutcomes';
 import { getApproachResultsValidationIssues } from '@/data/musicoterapiaApproachResults';
 
@@ -92,9 +93,9 @@ const STEPS = [
   {
     id: 'final_considerations',
     title: '8. Considerações Finais',
-    description: 'Síntese conclusiva',
+    description: 'Síntese objetiva dos resultados e demandas ainda em acompanhamento',
     icon: Sparkles,
-    fields: ['final_considerations', 'conclusion', 'complementary_observations', 'additional_notes']
+    fields: [] // Síntese derivada das Etapas 04–05 e nota opcional do profissional
   },
   {
     id: 'final_review',
@@ -113,7 +114,7 @@ const STEP_HINTS: Record<string, { icon: React.ElementType; title: string; descr
   pending_intervention: { icon: Target, title: 'Aspectos a intervir', description: 'Veja as demandas que precisam continuar, calculadas a partir dos resultados da Etapa 04.' },
   references: { icon: BookOpen, title: 'Referências bibliográficas', description: 'Selecione apenas obras coerentes com as abordagens e efetivamente utilizadas no embasamento clínico.' },
   recommendations: { icon: Home, title: 'Recomendações', description: 'Registre apenas orientações essenciais, específicas para o paciente e coerentes com os resultados das etapas anteriores.' },
-  final_considerations: { icon: Sparkles, title: 'Considerações finais', description: 'Sintetize a evolução global e a indicação de continuidade do acompanhamento.' },
+  final_considerations: { icon: Sparkles, title: 'Síntese clínica', description: 'Revise a síntese baseada nos resultados registrados e acrescente somente o que ainda não conste no relatório.' },
   final_review: { icon: Check, title: 'Assinatura', description: 'Revise o relatório, organize com IA se desejar, assine e finalize.' },
 };
 
@@ -711,6 +712,17 @@ export function MusicoterapiaReportWizard({
             selectedObjectiveIds={reportData.fieldValues?.therapeutic_objective_ids}
             selectedApproachIds={reportData.fieldValues?.musicoterapia_approach_ids}
             objectiveOutcomes={reportData.fieldValues?.objective_outcomes}
+          />
+        </div>
+      );
+    }
+
+    if (currentStepData.id === 'final_considerations') {
+      return (
+        <div className="dark">
+          <MusicoterapiaFinalConsiderations
+            fields={reportData.fieldValues}
+            onChange={(note) => handleFieldUpdate('final_considerations', note)}
           />
         </div>
       );
