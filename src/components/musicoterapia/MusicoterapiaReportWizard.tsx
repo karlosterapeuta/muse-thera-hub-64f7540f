@@ -662,6 +662,8 @@ export function MusicoterapiaReportWizard({
   };
 
   const canProceed = () => {
+    // Aguardar a consulta à Anamnese antes de avançar para outras etapas.
+    if (currentStep === 0 && anamnesisStatus === 'loading') return false;
     const missingFields = validateCurrentStep();
     return missingFields.length === 0;
   };
@@ -1067,7 +1069,9 @@ export function MusicoterapiaReportWizard({
 
             {!canProceed() && (
               <p className="text-xs text-destructive text-center">
-                Preencha os campos obrigatórios para continuar
+                {currentStep === 0 && anamnesisStatus === 'loading'
+                  ? 'Aguarde: buscando os dados da Anamnese...'
+                  : 'Preencha os campos obrigatórios para continuar'}
               </p>
             )}
           </div>
