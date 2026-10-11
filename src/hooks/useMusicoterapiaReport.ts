@@ -64,6 +64,10 @@ export function useMusicoterapiaReport() {
         const organizedFields: Record<string, any> = {};
         
         Object.entries(data.organizedContent).forEach(([key, value]) => {
+          // Objetivos selecionados são decisões do profissional: a IA não pode alterá-los.
+          if (key === 'therapeutic_objective_ids') return;
+          // Não acrescentar ao prontuário campos não enviados pelo profissional.
+          if (!Object.prototype.hasOwnProperty.call(reportData.fieldValues || {}, key)) return;
           // Manter campos que já são arrays como arrays
           if (Array.isArray(reportData.fieldValues?.[key])) {
             organizedFields[key] = Array.isArray(value) ? value : [value];
@@ -124,8 +128,23 @@ export function useMusicoterapiaReport() {
       : reportData;
 
     try {
+      const selectedObjectives = getSelectedMusicoterapiaObjectives(payload.fieldValues?.therapeutic_objective_ids);
+      // Enviar os objetivos por extenso apenas como contexto da narrativa, sem
+      // gravar texto gerado automaticamente ou tratar objetivos como conquistas.
+      const narrativePayload = {
+        ...payload,
+        fieldValues: {
+          ...payload.fieldValues,
+          ...(selectedObjectives.length > 0 ? {
+            therapeutic_objectives_selected_descriptions: selectedObjectives.map(
+              (objective) => `${objective.title}: ${objective.objective}`
+            ),
+            therapeutic_objectives_selection_note: 'Estes são objetivos planejados para estimulação, não resultados observados nem habilidades comprovadas.'
+          } : {})
+        }
+      };
       const { data, error } = await supabase.functions.invoke('generate-tea-narrative', {
-        body: { reportData: payload }
+        body: { reportData: narrativePayload }
       });
 
       if (error) {
