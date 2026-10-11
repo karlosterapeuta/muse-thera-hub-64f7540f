@@ -31,8 +31,8 @@ export function MusicoterapiaApproachResults({ selectedApproachIds, value, onCha
   const issues = getApproachResultsValidationIssues(selectedApproachIds, data);
 
   const update = (id: string, patch: Partial<ApproachResultEntry>) => {
-    const previous = data[id] || { status: 'insufficient_data', indicators: [], note: '' };
-    const next = { ...previous, ...patch };
+    const previous: ApproachResultEntry = data[id] || { status: 'insufficient_data', indicators: [], note: '' };
+    const next: ApproachResultEntry = { ...previous, ...patch };
     if (next.status === 'not_applied') { next.indicators = []; next.note = ''; }
     onChange({ ...data, [id]: next });
   };
