@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertCircle, ArrowRight, CheckCircle2, ClipboardList } from 'lucide-react';
+import { AlertCircle, CheckCircle2, ClipboardList } from 'lucide-react';
 import { getSelectedMusicoterapiaObjectives } from '@/data/musicoterapiaObjectives';
 import { getSelectedMusicoterapiaApproaches } from '@/data/musicoterapiaApproaches';
 import {
@@ -64,10 +64,7 @@ export function MusicoterapiaPendingInterventions({
               <div className="min-w-0 flex-1">
                 <p className="font-semibold text-gray-100 text-sm">{objective.title}</p>
                 <p className="text-xs text-amber-200 mt-1">Resultado informado: {getObjectiveOutcomeLabel(status)}</p>
-                <p className="text-xs text-gray-300 mt-2 leading-relaxed">
-                  <ArrowRight className="h-3.5 w-3.5 inline-block mr-1" />
-                  Manter o objetivo no planejamento, com reavaliação das estratégias conforme os próximos registros.
-                </p>
+
               </div>
             </div>
           ))}
