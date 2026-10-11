@@ -230,7 +230,7 @@ export default function MusicoterapiaPage() {
     // O modelo estruturado de nove etapas é a fonte única do relatório novo.
     // Textos narrativos antigos são preservados somente em relatórios legados.
     // Não repetir narrativas IA com capítulos duplicados ou inferências sem suporte.
-    const narrativeSections = isLegacyReport ? (narrative || []) : [];
+    const narrativeSections = narrative || [];
     const narrativeBlock = narrativeSections.length > 0 ? `
       <div class="section-block" style="margin-bottom: 25px; border: 2px solid #14b8a6; border-radius: 10px; overflow: hidden; background: #ffffff; page-break-inside: auto;">
         <div style="background: linear-gradient(135deg, #0d9488 0%, #14b8a6 60%, #06b6d4 100%); color: white; padding: 12px 16px;">
@@ -781,25 +781,17 @@ export default function MusicoterapiaPage() {
 
     setIsExporting(true);
     try {
-      // Relatórios estruturados usam as informações documentadas nas nove etapas.
-      // Não gerar uma segunda narrativa de IA que repete dados ou sugere
-      // conclusões não comprovadas. O fluxo antigo é mantido em registros legados.
       const isStructuredReport =
         getSelectedMusicoterapiaApproaches(reportData.fieldValues?.musicoterapia_approach_ids).length > 0;
-      let currentReportData = { ...reportData };
-      let narrative: { title: string; content: string }[] | null = null;
-
-      if (!isStructuredReport) {
+      const currentReportData = { ...reportData };
+      // A narrativa também é obrigatória para o modelo estruturado mais recente.
+      // Se a função remota não responder, os registros continuam acessíveis para conferência.
+      const narrative = await generateNarrative(currentReportData);
+      if (!narrative?.length) {
         toast({
-          title: 'Preparando relatório legado',
-          description: 'Organizando a narrativa clínica registrada no modelo anterior.'
+          title: 'Análise clínica automática indisponível',
+          description: 'Será incluída uma síntese fiel aos resultados registrados, sem criar observações clínicas.',
         });
-        const organizedFields = await generateWithAI();
-        currentReportData = {
-          ...reportData,
-          fieldValues: organizedFields || reportData.fieldValues
-        };
-        narrative = await generateNarrative(currentReportData);
       }
 
       // Convert images to Base64
@@ -826,7 +818,8 @@ export default function MusicoterapiaPage() {
             currentReportData,
             professionalData,
             { logo: logoBase64, photo: photoBase64, stamp: stampBase64 },
-            filename
+            filename,
+            narrative
           )
         : await exportMusicoterapiaHtmlPdf(
             generatePDFContent(currentReportData, photoBase64, stampBase64, logoBase64, narrative),
