@@ -116,7 +116,7 @@ export default function MusicoterapiaPage() {
     const narrativeBlock = (narrative && narrative.length > 0) ? `
       <div class="clinical-narrative" style="margin-bottom: 25px; border: 2px solid #14b8a6; border-radius: 10px; overflow: hidden; background: #ffffff; page-break-inside: auto;">
         <div style="background: linear-gradient(135deg, #0d9488 0%, #14b8a6 60%, #06b6d4 100%); color: white; padding: 12px 16px;">
-          <h2 style="margin: 0; font-size: 16px; font-weight: 700; letter-spacing: 0.3px;">Relatório de Evolução Musicoterapêutica</h2>
+          <h2 style="margin: 0; font-size: 16px; font-weight: 700; letter-spacing: 0.3px;">Análise Clínica Musicoterapêutica</h2>
           
         </div>
         <div style="padding: 16px 18px;">
@@ -186,8 +186,6 @@ export default function MusicoterapiaPage() {
         </div>`;
         })()}
 
-        <!-- AI Clinical Narrative -->
-        ${narrativeBlock}
 
         <!-- Report Sections (dados complementares) -->
         ${(!narrative?.length && fields.therapeutic_objectives && fields.therapeutic_objectives.length > 0) ? `
@@ -370,6 +368,7 @@ export default function MusicoterapiaPage() {
             ${renderSection('Plano Terapêutico Futuro', ['next_objectives_short','next_objectives_medium','next_objectives_long','proposed_interventions','expected_outcomes','revaluation_date'])}
             ${renderSection('Orientações Ampliadas', ['school_recommendations','interdisciplinary_team_notes','playlist_recommended','red_flags_to_monitor'])}
             ${scalesTable}
+            ${narrativeBlock}
             ${(() => {
               const tf = (fields.theoretical_framework || '').toString().trim();
               const at = (fields.assessment_tools_used || '').toString().trim();
