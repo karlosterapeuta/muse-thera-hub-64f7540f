@@ -271,6 +271,16 @@ export const musicoterapiaTemplate: ReportTemplate = {
     { id: 'comorbidities', type: 'textarea', label: 'Comorbidades', description: 'Diagnósticos associados', placeholder: 'Ex: TDAH, deficiência intelectual leve, TPS, ansiedade, epilepsia...', required: false, guidance: 'Liste comorbidades relevantes ao plano terapêutico' },
     { id: 'current_medications', type: 'textarea', label: 'Medicações em Uso', description: 'Tratamento medicamentoso atual', placeholder: 'Ex: Risperidona 1mg/dia, Metilfenidato 20mg pela manhã...', required: false, guidance: 'Inclua nome, dose e horário das medicações' },
     { id: 'referral_source', type: 'text', label: 'Encaminhamento', description: 'Quem encaminhou o paciente', placeholder: 'Ex: Neuropediatra Dra. Maria Silva', required: false, guidance: 'Profissional ou instância que encaminhou ao serviço' },
+    { id: 'mother_name', type: 'text', label: 'Nome da Mãe', required: false, guidance: 'Registro proveniente da anamnese, sujeito à revisão do profissional.' },
+    { id: 'father_name', type: 'text', label: 'Nome do Pai', required: false, guidance: 'Registro proveniente da anamnese, sujeito à revisão do profissional.' },
+    { id: 'legal_guardian', type: 'text', label: 'Responsável Legal (Anamnese)', required: false, guidance: 'Registro proveniente da anamnese, sujeito à revisão do profissional.' },
+    { id: 'family_relationship', type: 'text', label: 'Vínculo Familiar', required: false, guidance: 'Registro proveniente da anamnese, sujeito à revisão do profissional.' },
+    { id: 'diagnosis_date', type: 'text', label: 'Data do Diagnóstico Informada', required: false, guidance: 'Registro proveniente da anamnese, sujeito à revisão do profissional.' },
+    { id: 'clinical_details', type: 'textarea', label: 'Informações Clínicas Complementares', required: false, guidance: 'Registro proveniente da anamnese, sujeito à revisão do profissional.' },
+    { id: 'medication_schedule', type: 'textarea', label: 'Horário das Medicações Informado', required: false, guidance: 'Registro proveniente da anamnese, sujeito à revisão do profissional.' },
+    { id: 'medication_effects', type: 'textarea', label: 'Efeitos Relatados de Medicações', required: false, guidance: 'Registro proveniente da anamnese, sujeito à revisão do profissional.' },
+    { id: 'calming_strategies', type: 'textarea', label: 'Estratégias de Regulação Informadas', required: false, guidance: 'Registro proveniente da anamnese, sujeito à revisão do profissional.' },
+    { id: 'family_support_network', type: 'textarea', label: 'Rede de Apoio Familiar', required: false, guidance: 'Registro proveniente da anamnese, sujeito à revisão do profissional.' },
     { id: 'treatment_start_date', type: 'text', label: 'Início do Tratamento', description: 'Data de início das sessões', placeholder: 'DD/MM/AAAA', required: false, guidance: 'Data da primeira sessão de musicoterapia' },
     { id: 'session_count', type: 'text', label: 'Nº de Sessões Realizadas', description: 'Total de sessões até o momento', placeholder: 'Ex: 24', required: false, guidance: 'Quantidade total de sessões realizadas' },
     { id: 'session_frequency', type: 'select', label: 'Frequência das Sessões', description: 'Periodicidade do atendimento', required: false, options: ['Semanal', 'Bissemanal', 'Quinzenal', 'Mensal', 'Outra'], guidance: 'Frequência das sessões no plano atual' },
@@ -395,7 +405,7 @@ export const scaleFieldIds = [
 ];
 
 export const reportSections: ReportSection[] = [
-  { id: 'clinical_identification', title: 'Identificação Clínica', fieldIds: ['evaluation_period','diagnosis_source','cid_code','support_level','comorbidities','current_medications','treatment_start_date','session_count','session_frequency','session_duration'] },
+  { id: 'clinical_identification', title: 'Identificação Clínica', fieldIds: ['evaluation_period','diagnosis_source','cid_code','support_level','comorbidities','current_medications','mother_name','father_name','family_relationship','diagnosis_date','clinical_details','medication_schedule','medication_effects','calming_strategies','family_support_network','treatment_start_date','session_count','session_frequency','session_duration'] },
   { id: 'iso_identity', title: 'Identidade Sonora (ISO de Benenzon)', fieldIds: ['iso_gestational','iso_universal','iso_cultural','iso_complementary','iso_group','sound_preferences','musical_repertoire_favorites'] },
   { id: 'sensory_profile', title: 'Avaliação Sensório-Musical', fieldIds: ['auditory_processing','sound_tolerance','vestibular_response_music','tactile_instrument_response','proprioceptive_response','sensory_seeking_vs_avoiding','sensory_profile_notes'] },
   { id: 'imtap_domains', title: 'Indicadores Musicoterapêuticos - Pontuações Observacionais', fieldIds: ['domain_musicality','domain_communication_verbal','domain_communication_nonverbal','domain_social_interaction','domain_emotional','domain_cognitive','domain_motor_gross','domain_motor_fine','domain_sensory_integration','domain_autonomy','domain_evidences'] },
