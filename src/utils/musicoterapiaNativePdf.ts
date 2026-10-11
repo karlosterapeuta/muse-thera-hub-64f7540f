@@ -369,7 +369,7 @@ export async function exportMusicoterapiaNativePdf(
   }
   if (recorded.length) {
     const descriptions = recorded.map(({approach,result}) => {
-      const observations = summarizeApproachResult(result).replace(/\\s*\\.+\\s*$/u, '').trim();
+      const observations = summarizeApproachResult(result).replace(/\s*\.+\s*$/u, '').trim();
       return clean(approach.title) + ' foi registrada como ' + observations;
     });
     clinicalParagraphs.push(
@@ -383,26 +383,70 @@ export async function exportMusicoterapiaNativePdf(
   clinicalParagraphs.push(
     'Para reavaliações futuras, é pertinente documentar as respostas observáveis, as condições das atividades, o apoio oferecido e a frequência dos comportamentos, permitindo comparações fundamentadas entre os atendimentos.'
   );
+  // Evitar iniciar a análise no fim de uma página sem espaço para desenvolvimento.
+  const clinicalSize = 9.65;
+  const estimatedClinicalHeights = clinicalParagraphs.map(paragraph => {
+    setFace(clinicalSize);
+    return (pdf.splitTextToSize(clean(paragraph), usable - 2) as string[]).length * textHeight(clinicalSize) + 3.2;
+  });
+  const totalClinicalHeight = estimatedClinicalHeights.reduce((sum, h) => sum + h, 0);
+  const availableClinicalHeight = lastY - y - 15;
+  // Preferir manter a análise na mesma página se couber em uma página nova.
+  if (totalClinicalHeight > availableClinicalHeight && totalClinicalHeight <= lastY - 35) newPage();
   header('Análise Clínica Musicoterapêutica', 23);
-  clinicalParagraphs.forEach((paragraph, index) =>
-    write(paragraph, margin + 1, usable - 2, 9.65, DARK, false, index === clinicalParagraphs.length - 1 ? 2 : 3.2)
-  );
+  clinicalParagraphs.forEach((paragraph, index) => {
+    // Nunca deixar o começo de um parágrafo clínico órfão no rodapé.
+    const paragraphHeight = estimatedClinicalHeights[index];
+    if (paragraphHeight <= lastY - 30) ensure(paragraphHeight);
+    write(paragraph, margin + 1, usable - 2, clinicalSize, DARK, false,
+      index === clinicalParagraphs.length - 1 ? 2 : 3.2);
+  });
 
-  // Preservar orientação redigida pelo musicoterapeuta; caso não haja conteúdo
-  // individualizado, oferecer recomendações derivadas das classificações reais.
-  header('Recomendações', 16);
-  const recommendation = clean(fields.recommendations);
-  if (recommendation && !/^manter o acompanhamento musicoterap[eê]utico e reavaliar os objetivos periodicamente\\.?$/i.test(recommendation)) {
-    write(recommendation, margin, usable, 9.7, DARK, false, 2.5);
-  } else {
-    const recommendations: string[] = [];
-    if (difficulty.length) recommendations.push('Priorizar o registro das condições de participação e do apoio necessário nos objetivos de ' + names(difficulty) + '.');
-    if (unchanged.length) recommendations.push('Reavaliar as estratégias propostas para ' + names(unchanged) + ', registrando respostas observáveis antes de concluir sobre eventuais mudanças.');
-    if (progressing.length) recommendations.push('Acompanhar os objetivos classificados como em evolução em ' + names(progressing) + ', com observações periódicas comparáveis.');
-    if (recorded.some(x => x.result.indicators.length || x.result.note.trim())) recommendations.push('Considerar as respostas musicais efetivamente registradas ao planejar repertórios e experiências posteriores.');
-    if (!recommendations.length) recommendations.push('Manter o acompanhamento musicoterapêutico e registrar os resultados das intervenções para orientar reavaliações periódicas.');
-    recommendations.forEach(text => write(text,margin,usable,9.7,DARK,false,2.5));
+  // Recomendações clinicamente individualizadas, baseadas estritamente nas
+  // classificações e nas respostas efetivamente documentadas. Nenhuma frase
+  // descreve um procedimento como já executado sem constar no registro.
+  const manualRecommendation = clean(fields.recommendations);
+  const genericRecommendation = /^manter\s+o\s+acompanhamento\s+musicoterap[eê]utico\s+e\s+reavaliar\s+os\s+objetivos\s+periodicamente\s*\.?$/iu;
+  const hasManualRecommendation = Boolean(manualRecommendation && !genericRecommendation.test(manualRecommendation));
+  const recommendations: string[] = [];
+  if (difficulty.length) {
+    recommendations.push('Para os objetivos classificados com dificuldade (' + names(difficulty) +
+      '), recomenda-se rever a adequação das propostas sonoro-musicais, documentando o tipo de resposta apresentado, os apoios oferecidos e as condições de participação.');
   }
+  if (unchanged.length) {
+    recommendations.push('Nos objetivos sem avanço observado (' + names(unchanged) +
+      '), recomenda-se reavaliar o planejamento e registrar indicadores observáveis em atendimentos sucessivos; essa classificação não pressupõe incapacidade nem ausência definitiva de resposta.');
+  }
+  if (progressing.length) {
+    recommendations.push('Quanto aos objetivos classificados como em evolução (' + names(progressing) +
+      '), sugere-se acompanhar a frequência, o contexto e o nível de apoio das respostas, para qualificar a avaliação longitudinal sem presumir habilidades específicas.');
+  }
+  if (achieved.length) {
+    recommendations.push('Para os objetivos classificados como alcançados (' + names(achieved) +
+      '), recomenda-se documentar as condições em que ocorreram as respostas, antes de considerar generalização para outros contextos.');
+  }
+  const meaningfulRecorded = recorded.filter(x => x.result.indicators.length > 0 || x.result.note.trim().length > 0);
+  if (meaningfulRecorded.length) {
+    recommendations.push('Na seleção de experiências e repertórios futuros, considerar as respostas musicais registradas em ' +
+      meaningfulRecorded.map(x => clean(x.approach.title)).join(', ') +
+      ', verificando novamente a participação e as preferências observadas.');
+  }
+  if (assessed.length || recorded.length) {
+    recommendations.push('Realizar reavaliações periódicas com registros descritivos comparáveis, respeitando as necessidades individuais e evitando conclusões causais sem evidências.');
+  }
+  if (!recommendations.length && !hasManualRecommendation) {
+    recommendations.push('Manter o acompanhamento musicoterapêutico e ampliar os registros observacionais para fundamentar objetivos e condutas futuras.');
+  }
+  header('Recomendações individualizadas', 18);
+  if (hasManualRecommendation) {
+    write('Orientações do musicoterapeuta:', margin, usable, 9.6, GREEN, true, 1.5);
+    write(manualRecommendation, margin, usable, 9.7, DARK, false, 3);
+  }
+  // Recomendações automáticas complementam, mas nunca substituem,
+  // as orientações individuais preenchidas pelo profissional.
+  recommendations.forEach((recommendation, index) => {
+    item(String(index + 1), recommendation);
+  });
 
   header('Considerações finais', 16);
   const closing = assessed.length
