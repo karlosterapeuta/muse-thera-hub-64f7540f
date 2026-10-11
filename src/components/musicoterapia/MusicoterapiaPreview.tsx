@@ -426,7 +426,7 @@ export function MusicoterapiaPreview({ reportData, professionalData }: Musicoter
 
       {/* ===== Seções Clínicas Expandidas ===== */}
       {reportSections.map((section) => {
-        // Evitar reapresentar técnicas/metodologias legadas quando a Etapa 04
+        // Evitar reapresentar técnicas/metodologias legadas quando a Etapa 03
         // já possui a seleção estruturada. Dados antigos continuam preservados.
         const hiddenRemovedStepFields = [
           'session_activities', 'patient_evolution', 'evolution_compared_baseline',
