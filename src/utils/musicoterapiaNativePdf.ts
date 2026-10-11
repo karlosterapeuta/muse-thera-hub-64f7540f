@@ -340,7 +340,7 @@ export async function exportMusicoterapiaNativePdf(
   const refs = getSelectedMusicoterapiaReferences(fields.musicoterapia_reference_ids);
   if (refs.length) {
     header('Referências bibliográficas', 12);
-    refs.forEach((r,i)=>item(String(i+1)+'.',r.bibliography));
+    refs.forEach((r,i)=>write(String(i+1)+'. '+r.bibliography,margin+2,usable-2,9.15,DARK,false,3));
   }
 
   // Bloco de identificação: foto e carimbo verdadeiros, todos os rótulos
