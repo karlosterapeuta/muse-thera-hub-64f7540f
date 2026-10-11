@@ -32,6 +32,7 @@ import { getSelectedMusicoterapiaReferences } from '@/data/musicoterapiaReferenc
 import { savePDFToStorage } from '@/utils/pdfStorageUtils';
 import { useReportData } from '../report/hooks/useReportData';
 import { exportMusicoterapiaHtmlPdf } from '@/utils/musicoterapiaPdfExport';
+import { exportMusicoterapiaNativePdf } from '@/utils/musicoterapiaNativePdf';
 import { renderMusicoterapiaPdfVisuals, renderMusicoterapiaPdfHeaderArt } from '@/utils/musicoterapiaPdfVisuals';
 import { imageUrlToBase64 } from '@/utils/imageToBase64';
 import { DeleteReportDialog } from '../reports/components/DeleteReportDialog';
@@ -698,7 +699,9 @@ export default function MusicoterapiaPage() {
           patient_info: {
             name: reportData.patientName || reportData.fieldValues?.patient_name,
             age: reportData.patientAge || reportData.fieldValues?.patient_age,
-            diagnosis: reportData.patientDiagnosis || reportData.fieldValues?.patient_diagnosis
+            diagnosis: reportData.patientDiagnosis || reportData.fieldValues?.patient_diagnosis,
+            birth_date: reportData.patientBirthDate || '',
+            guardian: reportData.patientGuardian || ''
           },
           professional_info: {
             name: reportData.professionalName || professionalData?.name,
@@ -818,10 +821,17 @@ export default function MusicoterapiaPage() {
 
       // Um único exportador A4, com margens, gráficos, quebras e páginas numeradas.
       const filename = `Relatorio_Musicoterapia_${(reportData.patientName || 'paciente').replace(/[^\p{L}\p{N}_-]+/gu, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
-      const blob = await exportMusicoterapiaHtmlPdf(
-        generatePDFContent(currentReportData, photoBase64, stampBase64, logoBase64, narrative),
-        filename
-      );
+      const blob = isStructuredReport
+        ? await exportMusicoterapiaNativePdf(
+            currentReportData,
+            professionalData,
+            { logo: logoBase64, photo: photoBase64, stamp: stampBase64 },
+            filename
+          )
+        : await exportMusicoterapiaHtmlPdf(
+            generatePDFContent(currentReportData, photoBase64, stampBase64, logoBase64, narrative),
+            filename
+          );
       let savedPath: string | null = null;
       try {
         savedPath = await savePDFToStorage(blob, filename, 'report');
@@ -922,6 +932,8 @@ export default function MusicoterapiaPage() {
         patientName: fieldValues.patient_name || report.content?.patient_info?.name || '',
         patientAge: fieldValues.patient_age || report.content?.patient_info?.age || '',
         patientDiagnosis: fieldValues.patient_diagnosis || report.content?.patient_info?.diagnosis || '',
+        patientBirthDate: fieldValues.patient_birth_date || report.content?.patient_info?.birth_date || '',
+        patientGuardian: fieldValues.patient_guardian || report.content?.patient_info?.guardian || '',
         professionalName: fieldValues.professional_name || professionalData?.name || '',
         professionalRegistry: fieldValues.professional_registry || professionalData?.register || professionalData?.license_number || '',
         professionalSpecialty: fieldValues.professional_specialty || professionalData?.specialty || 'Musicoterapia',
@@ -947,10 +959,18 @@ export default function MusicoterapiaPage() {
 
       // Mesmo template e paginação usados no relatório recém-gerado.
       const filename = `Relatorio_Musicoterapia_${(reportDataForPDF.patientName || 'paciente').replace(/[^\p{L}\p{N}_-]+/gu, '_')}_${new Date(report.created_at).toISOString().split('T')[0]}.pdf`;
-      const blob = await exportMusicoterapiaHtmlPdf(
-        generatePDFContent(reportDataForPDF, photoBase64, stampBase64, savedLogoBase64),
-        filename
-      );
+      const isStructuredReport = getSelectedMusicoterapiaApproaches(fieldValues.musicoterapia_approach_ids).length > 0;
+      const blob = isStructuredReport
+        ? await exportMusicoterapiaNativePdf(
+            reportDataForPDF,
+            professionalData,
+            { logo: savedLogoBase64, photo: photoBase64, stamp: stampBase64 },
+            filename
+          )
+        : await exportMusicoterapiaHtmlPdf(
+            generatePDFContent(reportDataForPDF, photoBase64, stampBase64, savedLogoBase64),
+            filename
+          );
       let savedPath: string | null = null;
       try {
         savedPath = await savePDFToStorage(blob, filename, 'report');
