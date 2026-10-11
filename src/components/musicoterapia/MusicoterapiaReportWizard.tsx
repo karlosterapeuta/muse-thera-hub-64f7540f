@@ -747,7 +747,7 @@ export function MusicoterapiaReportWizard({
               <HintIcon className="h-5 w-5 text-[#f0d78c]" />
             </div>
             <div className="space-y-1">
-              <div className="text-[10px] uppercase tracking-[0.2em] text-[#c9a84c] font-bold">Dica clínica</div>
+              <div className="text-[10px] uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400 font-bold">Dica clínica</div>
               <h3 className="text-base text-[#f0d78c] font-semibold" style={{ fontFamily: "'Instrument Serif', serif" }}>
                 {hint.title}
               </h3>
@@ -806,7 +806,7 @@ export function MusicoterapiaReportWizard({
                         </div>
                       )}
                     </div>
-                    <p className="text-xs text-gray-500 font-light leading-relaxed">{opt.description}</p>
+                    <p className="text-xs text-muted-foreground font-normal leading-relaxed">{opt.description}</p>
                   </button>
                 );
               })}
@@ -866,133 +866,86 @@ export function MusicoterapiaReportWizard({
   const StepIcon = currentStepData.icon;
 
   return (
-    <div className={`${showQuickFill ? 'max-w-6xl' : 'max-w-3xl'} mx-auto space-y-8 sm:space-y-12 lg:space-y-16 px-3 sm:px-4 lg:px-0 transition-[max-width] duration-300`} style={{ fontFamily: "'Work Sans', sans-serif" }}>
-      {/* Editorial Hero — Monolithic noir & gold */}
-      <header className="flex flex-col items-center text-center space-y-4 sm:space-y-6 lg:space-y-8 pt-2">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#c9a84c]/30 bg-[#c9a84c]/5 text-[#f0d78c] text-[9px] sm:text-[10px] font-bold tracking-[0.2em] uppercase">
-          Protocolo Clínico · TEA
-        </div>
-
-        <div className="space-y-2 sm:space-y-3 lg:space-y-4">
-          <h1
-            className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl text-[#f0d78c] leading-[1.05] px-2"
-            style={{ fontFamily: "'Instrument Serif', serif" }}
-          >
-            Relatório MuseTera TEA
-          </h1>
-          <p className="text-gray-400 max-w-xl mx-auto text-sm sm:text-base lg:text-lg font-light leading-relaxed px-2">
-            Estrutura profissional para documentação de objetivos, abordagens, resultados e recomendações em musicoterapia.
-          </p>
-        </div>
-
-        {/* Progresso editorial */}
-        <div className="w-full max-w-md pt-2">
-          <div className="flex justify-between items-center mb-2 text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold">
-            <span>Progresso</span>
-            <span className="text-[#c9a84c]">{Math.round(progress)}%</span>
+    <div className={`${showQuickFill ? 'max-w-6xl' : 'max-w-3xl'} mx-auto space-y-5 sm:space-y-6 lg:space-y-7 px-3 sm:px-4 lg:px-0 transition-[max-width] duration-300`} style={{ fontFamily: "'Work Sans', sans-serif" }}>
+      {/* Clinical workspace: compact heading, readable progress and direct step navigation */}
+      <header className="relative overflow-hidden rounded-2xl border border-teal-800/25 bg-gradient-to-br from-[#0f302f] via-[#164845] to-[#155e58] p-5 sm:p-7 lg:p-8 shadow-lg">
+        <div className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full border-[32px] border-white/5" />
+        <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="space-y-3">
+            <div className="inline-flex items-center gap-2 rounded-full border border-teal-200/25 bg-white/10 px-3 py-1 text-[11px] font-semibold tracking-wide text-teal-50">
+              <Music className="h-3.5 w-3.5" />
+              MUSETERA · DOCUMENTAÇÃO CLÍNICA
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl lg:text-4xl">
+              Relatório Musicoterapêutico
+            </h1>
+            <p className="max-w-2xl text-sm leading-relaxed text-teal-50/85">
+              Registre os achados do atendimento, acompanhe os objetivos e revise as evidências antes da emissão do documento.
+            </p>
           </div>
-          <div className="h-[2px] bg-white/5 overflow-hidden rounded-full">
-            <div
-              className="h-full bg-gradient-to-r from-[#c9a84c] to-[#f0d78c] transition-all duration-500"
-              style={{ width: `${progress}%` }}
-            />
+          <div className="w-full rounded-xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm lg:w-64">
+            <div className="mb-2 flex items-center justify-between text-xs font-medium text-teal-50">
+              <span>Etapa {currentStep + 1} de {STEPS.length}</span>
+              <span>{Math.round(progress)}%</span>
+            </div>
+            <div className="h-2 overflow-hidden rounded-full bg-black/20" role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100} aria-label="Progresso do relatório">
+              <div className="h-full rounded-full bg-teal-200 transition-all duration-300" style={{ width: `${progress}%` }} />
+            </div>
+            <p className="mt-2 text-xs text-teal-50/75">Preenchimento e revisão clínica</p>
           </div>
         </div>
       </header>
 
-      {/* Stepper Indicator — horizontal numbered */}
-      {/* Stepper Indicator — compact on mobile, full on desktop */}
-      <nav className="relative px-1 sm:px-2">
-        {/* Mobile: compact pill view */}
-        <div className="lg:hidden space-y-3">
-          <div className="flex items-center justify-between gap-3">
-            <button
-              type="button"
-              onClick={handlePrevStep}
-              disabled={currentStep === 0}
-              aria-label="Etapa anterior"
-              className="h-9 w-9 rounded-full bg-[#1a1a1a] border border-white/10 text-[#f0d78c] disabled:opacity-30 flex items-center justify-center shrink-0"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-            <div className="flex-1 min-w-0 text-center">
-              <div className="text-[9px] uppercase tracking-[0.2em] text-[#c9a84c] font-bold">
-                Etapa {currentStep + 1} de {STEPS.length}
-              </div>
-              <div className="text-sm text-[#f0d78c] font-semibold truncate" style={{ fontFamily: "'Instrument Serif', serif" }}>
-                {currentStepData.title.replace(/^\d+\.\s*/, '')}
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={handleNextStep}
-              disabled={currentStep === STEPS.length - 1 || !canProceed()}
-              aria-label="Próxima etapa"
-              className="h-9 w-9 rounded-full bg-[#c9a84c] text-[#0d0d0d] disabled:opacity-30 flex items-center justify-center shrink-0"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
+      {/* All steps remain directly accessible on desktop; mobile uses a scrollable row */}
+      <nav aria-label="Etapas do relatório" className="rounded-2xl border border-border/70 bg-card p-3 shadow-sm sm:p-4">
+        <div className="flex items-center justify-between gap-3 pb-3">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-teal-600 dark:text-teal-400">Organização do documento</p>
+            <p className="text-sm text-muted-foreground">Selecione uma etapa para consultar ou revisar as informações.</p>
           </div>
-          <div className="flex items-center justify-center gap-1.5">
-            {STEPS.map((step, index) => {
-              const isCompleted = index < currentStep;
-              const isCurrent = index === currentStep;
-              return (
-                <button
-                  key={step.id}
-                  type="button"
-                  onClick={() => { setCurrentStep(index); scrollToStepContent(); }}
-                  aria-label={`Ir para ${step.title}`}
-                  className={`h-1.5 rounded-full transition-all ${
-                    isCurrent ? 'w-6 bg-[#c9a84c]' : isCompleted ? 'w-3 bg-[#c9a84c]/60' : 'w-3 bg-white/15'
-                  }`}
-                />
-              );
-            })}
+          <div className="hidden shrink-0 items-center gap-2 rounded-lg bg-muted px-3 py-2 text-xs font-medium text-foreground sm:flex">
+            <Check className="h-4 w-4 text-teal-600" />
+            {currentStep + 1}/{STEPS.length}
           </div>
         </div>
-
-        {/* Desktop: full stepper */}
-        <div className="hidden lg:block relative">
-          <div className="absolute top-5 left-0 w-full h-[1px] bg-white/5" />
-          <ul className="relative flex justify-between">
-            {STEPS.map((step, index) => {
-              const isCompleted = index < currentStep;
-              const isCurrent = index === currentStep;
-              return (
-                <li key={step.id} className="flex flex-col items-center gap-3 flex-1 min-w-0">
-                  <button
-                    type="button"
-                    onClick={() => setCurrentStep(index)}
-                    className={`h-10 w-10 rounded-full flex items-center justify-center text-xs font-black ring-8 ring-[#0d0d0d] transition-all
-                      ${isCurrent
-                        ? 'bg-[#c9a84c] text-[#0d0d0d] shadow-[0_0_24px_rgba(201,168,76,0.35)] scale-110'
-                        : isCompleted
-                          ? 'bg-[#1a1a1a] border border-[#c9a84c]/60 text-[#f0d78c]'
-                          : 'bg-[#1a1a1a] border border-white/15 text-white/60 hover:border-[#c9a84c]/40'
-                      }`}
-                  >
-                    {isCompleted ? <Check className="h-4 w-4" /> : String(index + 1).padStart(2, '0')}
-                  </button>
-                  <span
-                    className={`text-[9px] uppercase tracking-widest font-bold text-center transition-colors px-1 leading-tight
-                      ${isCurrent ? 'text-[#c9a84c]' : isCompleted ? 'text-[#f0d78c]/70' : 'text-gray-500'}`}
-                    style={{ fontFamily: "'Work Sans'" }}
-                  >
-                    {step.title.replace(/^\d+\.\s*/, '').split(' ').slice(0, 2).join(' ')}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
+        <div className="flex gap-2 overflow-x-auto pb-2 lg:grid lg:grid-cols-4 lg:overflow-visible xl:grid-cols-5">
+          {STEPS.map((step, index) => {
+            const active = currentStep === index;
+            const complete = index < currentStep;
+            const Icon = step.icon;
+            return (
+              <button
+                key={step.id}
+                type="button"
+                onClick={() => { setCurrentStep(index); scrollToStepContent(); }}
+                aria-current={active ? 'step' : undefined}
+                aria-label={`Etapa ${index + 1}: ${step.title.replace(/^\\d+\\.\\s*/, '')}`}
+                className={`flex min-w-[162px] items-center gap-2 rounded-xl border px-3 py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 lg:min-w-0 ${
+                  active
+                    ? 'border-teal-500 bg-teal-50 text-teal-950 shadow-sm dark:bg-teal-950/40 dark:text-teal-100'
+                    : 'border-border/70 bg-background text-foreground hover:border-teal-400 hover:bg-accent/50'
+                }`}
+              >
+                <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
+                  active ? 'bg-teal-700 text-white' : complete ? 'bg-teal-100 text-teal-800 dark:bg-teal-900/60 dark:text-teal-100' : 'bg-muted text-muted-foreground'
+                }`}>
+                  {complete ? <Check className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-[10px] font-medium opacity-70">ETAPA {String(index + 1).padStart(2, '0')}</span>
+                  <span className="block text-xs font-semibold leading-tight">{step.title.replace(/^\\d+\\.\\s*/, '')}</span>
+                </span>
+              </button>
+            );
+          })}
         </div>
       </nav>
 
       {/* Main Wizard Card — Monolithic */}
       <div ref={stepContentRef} className={`grid grid-cols-1 gap-6 ${showQuickFill ? 'lg:grid-cols-4' : ''}`}>
-        <section className={`${showQuickFill ? 'lg:col-span-3' : ''} bg-[#1a1a1a] rounded-2xl sm:rounded-[2rem] lg:rounded-[2.5rem] border border-white/5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden relative`}>
+        <section className={`${showQuickFill ? 'lg:col-span-3' : ''} bg-card rounded-2xl border border-border/70 shadow-lg overflow-hidden relative`}>
           {/* Premium accent light */}
-          <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#c9a84c]/10 blur-[100px] rounded-full pointer-events-none" />
+          <div className="absolute -top-24 -right-24 w-64 h-64 bg-teal-500/5 blur-[100px] rounded-full pointer-events-none" />
 
           <div className="p-4 sm:p-8 lg:p-12 space-y-6 sm:space-y-8 lg:space-y-10 relative z-10">
             <div className="space-y-2">
@@ -1001,7 +954,7 @@ export function MusicoterapiaReportWizard({
                 Etapa {String(currentStep + 1).padStart(2, '0')} de {String(STEPS.length).padStart(2, '0')}
               </div>
               <h2
-                className="text-2xl sm:text-3xl lg:text-4xl text-[#f0d78c] leading-tight"
+                className="text-2xl sm:text-3xl lg:text-4xl text-foreground leading-tight"
                 style={{ fontFamily: "'Instrument Serif', serif" }}
               >
                 {currentStepData.title.replace(/^\d+\.\s*/, '')}
@@ -1013,7 +966,7 @@ export function MusicoterapiaReportWizard({
               {renderStepFields()}
             </div>
 
-            <footer className="pt-6 sm:pt-8 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between border-t border-white/5 gap-4 sm:gap-6">
+            <footer className="pt-6 sm:pt-8 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between border-t border-border/60 gap-4 sm:gap-6">
               <div className="hidden sm:flex items-center gap-3">
                 <div className="w-2 h-2 rounded-full bg-[#c9a84c] animate-pulse" />
                 <span className="text-[10px] text-gray-500 uppercase tracking-widest font-medium">
@@ -1026,7 +979,7 @@ export function MusicoterapiaReportWizard({
                   variant="ghost"
                   onClick={handlePrevStep}
                   disabled={currentStep === 0}
-                  className="text-gray-400 hover:text-[#f0d78c] hover:bg-white/5 px-3 sm:px-4"
+                  className="text-muted-foreground hover:text-foreground hover:bg-muted px-3 sm:px-4"
                 >
                   <ChevronLeft className="h-4 w-4 sm:mr-2" />
                   <span className="hidden sm:inline">Anterior</span>
