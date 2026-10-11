@@ -1,6 +1,7 @@
 import type { ReportData } from '@/data/musicoterapiaTemplate';
 import { scaleFieldIds } from '@/data/musicoterapiaTemplate';
 import { getSelectedMusicoterapiaApproaches } from '@/data/musicoterapiaApproaches';
+import { getRecordedApproachResults } from '@/data/musicoterapiaApproachResults';
 
 /**
  * Avisos de revisão técnico-clínica, não uma validação científica ou diagnóstica.
