@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import type { ReportData } from '@/data/musicoterapiaTemplate';
 import { getMusicoterapiaQualityWarnings } from '@/utils/musicoterapiaQuality';
+import { getSelectedMusicoterapiaObjectives } from '@/data/musicoterapiaObjectives';
 
 interface FinalReviewSectionProps {
   reportData: Partial<ReportData>;
@@ -107,6 +108,12 @@ export function FinalReviewSection({
 
   const renderPreviewContent = () => {
     const fields = reportData.fieldValues || {};
+    const selectedObjectives = getSelectedMusicoterapiaObjectives(fields.therapeutic_objective_ids);
+    const complementaryObjectives = Array.isArray(fields.therapeutic_objectives)
+      ? fields.therapeutic_objectives.filter((value: unknown) => String(value ?? '').trim())
+      : String(fields.therapeutic_objectives ?? '').trim()
+        ? [String(fields.therapeutic_objectives)]
+        : [];
 
     return (
       <div className="max-w-4xl mx-auto bg-white">
@@ -176,17 +183,34 @@ export function FinalReviewSection({
             </Card>
           </div>
 
-          {fields.therapeutic_objectives && Array.isArray(fields.therapeutic_objectives) && fields.therapeutic_objectives.length > 0 && (
+          {selectedObjectives.length > 0 && (
+            <Card className="border border-[#c9a84c]/30">
+              <CardHeader>
+                <CardTitle className="text-[#c9a84c]">Objetivos a estimular ou desenvolver</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <p className="text-xs text-muted-foreground">Objetivos planejados; não representam conquistas já observadas.</p>
+                {selectedObjectives.map((objective) => (
+                  <div key={objective.id} className="rounded-lg border border-[#c9a84c]/20 p-3 bg-[#c9a84c]/5">
+                    <p className="font-semibold text-sm">{objective.icon} {objective.title}</p>
+                    <p className="text-sm mt-1 leading-relaxed">{objective.objective}</p>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
+
+          {complementaryObjectives.length > 0 && (
             <Card className="shadow-sm">
               <CardHeader className="bg-gradient-to-r from-[#c9a84c]/20 to-[#c9a84c]/10 rounded-t-lg">
                 <CardTitle className="flex items-center gap-2 text-[#c9a84c] text-sm sm:text-base">
                   <div className="w-6 h-6 sm:w-8 sm:h-8 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-xs">O</div>
-                  Objetivos Terapeuticos
+                  Objetivos complementares
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-4 text-sm">
                 <div className="space-y-2 sm:space-y-3">
-                  {fields.therapeutic_objectives.map((objective: string, index: number) => (
+                  {complementaryObjectives.map((objective: string, index: number) => (
                     <div key={index} className="flex items-start gap-3 p-2 sm:p-3 bg-[#c9a84c]/10 rounded-lg border border-[#c9a84c]/20">
                       <div className="w-5 h-5 sm:w-6 sm:h-6 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-[#c9a84c] font-bold text-[10px] sm:text-xs mt-0.5 flex-shrink-0">{index + 1}</div>
                       <p className="text-foreground leading-relaxed flex-1">{objective}</p>
