@@ -29,6 +29,8 @@ export default function MusicoterapiaPage() {
   const [viewMode, setViewMode] = useState<'create' | 'list'>('create');
   const [isSaving, setIsSaving] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [reportLogoUrl, setReportLogoUrl] = useState<string | null>(null);
+  const [sourceReportId, setSourceReportId] = useState<string | null>(null);
   const [reports, setReports] = useState<any[]>([]);
   const [isLoadingReports, setIsLoadingReports] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -582,7 +584,8 @@ export default function MusicoterapiaPage() {
             specialty: reportData.professionalSpecialty || 'Musicoterapia'
           },
           session_date: reportData.sessionDate,
-          signature: reportData.signature
+          signature: reportData.signature,
+          ...(sourceReportId ? { based_on_report_id: sourceReportId } : {})
         }
       };
 
@@ -618,9 +621,10 @@ export default function MusicoterapiaPage() {
       // Dados clínicos não devem ser registrados no console em produção.
 
       toast({
-        title: "Sucesso!",
-        description: "Relatório de musicoterapia salvo com sucesso.",
+        title: 'Sucesso!',
+        description: sourceReportId ? 'Nova versão salva; o relatório original foi preservado.' : 'Relatório de musicoterapia salvo com sucesso.',
       });
+      setSourceReportId(null);
 
       loadReports();
     } catch (error) {
@@ -690,8 +694,9 @@ export default function MusicoterapiaPage() {
         stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
       }
       // A logo personalizada também é convertida para imagem segura antes de incorporar ao PDF.
-      const logoBase64 = logoUrl ? await imageUrlToBase64(logoUrl) : null;
-      if (logoUrl && !logoBase64) {
+      const selectedLogoUrl = logoUrl ?? reportLogoUrl;
+      const logoBase64 = selectedLogoUrl ? await imageUrlToBase64(selectedLogoUrl) : null;
+      if (selectedLogoUrl && !logoBase64) {
         toast({ variant: 'destructive', title: 'Logo não carregada', description: 'O PDF será gerado sem a logo personalizada.' });
       }
 
@@ -779,6 +784,8 @@ export default function MusicoterapiaPage() {
   };
 
   const handleEditReport = (report: any) => {
+    // Cria uma nova versão, preservando o documento histórico original.
+    setSourceReportId(report.id);
     // Carregar dados do relatório no wizard
     updateReportData({
       selectedPatientId: report.patient_id || '',
@@ -1033,6 +1040,8 @@ export default function MusicoterapiaPage() {
                 isGeneratingWithAI={isGeneratingWithAI}
                 onExportPDF={handleExportPDF}
                 isExporting={isExporting}
+                logoUrl={reportLogoUrl}
+                onLogoChange={setReportLogoUrl}
                 patients={patients}
                 onSaveReport={handleSaveReport}
                 isSaving={isSaving}
@@ -1115,7 +1124,7 @@ export default function MusicoterapiaPage() {
                 <span>Relatórios de Musicoterapia Salvos</span>
               </CardTitle>
               <CardDescription>
-                Visualize, edite e gerencie seus relatórios salvos
+                Visualize, crie novas versões e gerencie seus relatórios salvos
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -1196,7 +1205,7 @@ export default function MusicoterapiaPage() {
                           className="text-xs sm:text-sm"
                         >
                           <Edit className="h-4 w-4 mr-1" />
-                          Editar
+                          Nova versão
                         </Button>
                         <Button
                           variant="outline"
