@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import type { ReportData } from '@/data/musicoterapiaTemplate';
 import { getMusicoterapiaQualityWarnings } from '@/utils/musicoterapiaQuality';
 import { getSelectedMusicoterapiaObjectives, musicoterapiaObjectiveCategories } from '@/data/musicoterapiaObjectives';
+import { getSelectedMusicoterapiaApproaches } from '@/data/musicoterapiaApproaches';
 
 interface FinalReviewSectionProps {
   reportData: Partial<ReportData>;
@@ -109,6 +110,7 @@ export function FinalReviewSection({
   const renderPreviewContent = () => {
     const fields = reportData.fieldValues || {};
     const selectedObjectives = getSelectedMusicoterapiaObjectives(fields.therapeutic_objective_ids);
+    const selectedApproaches = getSelectedMusicoterapiaApproaches(fields.musicoterapia_approach_ids);
     const complementaryObjectives = Array.isArray(fields.therapeutic_objectives)
       ? fields.therapeutic_objectives.filter((value: unknown) => String(value ?? '').trim())
       : String(fields.therapeutic_objectives ?? '').trim()
@@ -226,6 +228,29 @@ export function FinalReviewSection({
                     </div>
                   ))}
                 </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {selectedApproaches.length > 0 && (
+            <Card className="border border-[#c9a84c]/30">
+              <CardHeader>
+                <CardTitle className="text-[#c9a84c]">Abordagem Musicoterapêutica</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <p className="text-xs text-muted-foreground">
+                  Abordagens selecionadas pelo profissional. A escolha não comprova aplicação ou resultados.
+                </p>
+                {selectedApproaches.map((approach) => (
+                  <div key={approach.id} className="rounded-lg border border-[#c9a84c]/20 p-3 bg-[#c9a84c]/5 space-y-1">
+                    <p className="font-semibold text-sm">{approach.title}</p>
+                    <p className="text-sm leading-relaxed">{approach.description}</p>
+                    <p className="text-sm leading-relaxed"><strong>Objetivos possíveis:</strong> {approach.goals}</p>
+                    {approach.clinicalNote && (
+                      <p className="text-xs text-muted-foreground">Nota clínica: {approach.clinicalNote}</p>
+                    )}
+                  </div>
+                ))}
               </CardContent>
             </Card>
           )}
