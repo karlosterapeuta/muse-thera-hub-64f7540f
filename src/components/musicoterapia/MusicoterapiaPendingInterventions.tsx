@@ -72,7 +72,7 @@ export function MusicoterapiaPendingInterventions({
             </div>
           ))}
         </div>
-      ) : missing === 0 && (
+      ) : missing === 0 && notAssessed.length === 0 && completed.length === objectives.length && (
         <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 flex items-start gap-2 text-sm text-emerald-200">
           <CheckCircle2 className="h-5 w-5 shrink-0" />
           Nenhuma demanda pendente foi identificada a partir dos objetivos classificados como
