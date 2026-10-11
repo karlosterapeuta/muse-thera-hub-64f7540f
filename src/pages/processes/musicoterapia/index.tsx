@@ -636,7 +636,7 @@ export default function MusicoterapiaPage() {
     }
   };
 
-  const handleExportPDF = async () => {
+  const handleExportPDF = async (logoUrl?: string | null): Promise<void> => {
     const validation = validateReport();
     if (!validation.isValid) {
       toast({
@@ -687,13 +687,18 @@ export default function MusicoterapiaPage() {
       if (professionalData?.digital_stamp_url) {
         stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
       }
+      // A logo personalizada também é convertida para imagem segura antes de incorporar ao PDF.
+      const logoBase64 = logoUrl ? await imageUrlToBase64(logoUrl) : null;
+      if (logoUrl && !logoBase64) {
+        toast({ variant: 'destructive', title: 'Logo não carregada', description: 'O PDF será gerado sem a logo personalizada.' });
+      }
 
       // Create temporary HTML element
       const tempDiv = document.createElement('div');
       tempDiv.style.fontFamily = 'Arial, sans-serif';
       tempDiv.style.color = '#000';
       tempDiv.style.backgroundColor = '#fff';
-      tempDiv.innerHTML = generatePDFContent(currentReportData, photoBase64, stampBase64, null, narrative);
+      tempDiv.innerHTML = generatePDFContent(currentReportData, photoBase64, stampBase64, logoBase64, narrative);
 
       
       document.body.appendChild(tempDiv);
@@ -701,7 +706,7 @@ export default function MusicoterapiaPage() {
       // PDF configuration
       const opt = {
         margin: [10, 10],
-        filename: `Relatorio_Musicoterapia_${reportData.patientName}_${new Date().toISOString().split('T')[0]}.pdf`,
+        filename: `Relatorio_Musicoterapia_${(reportData.patientName || 'paciente').replace(/[^\p{L}\p{N}_-]+/gu, '_')}_${new Date().toISOString().split('T')[0]}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
@@ -711,13 +716,20 @@ export default function MusicoterapiaPage() {
       // Generate and download PDF
       const pdfInstance = html2pdf().set(opt).from(tempDiv);
       await pdfInstance.save();
-      try { const blob = await pdfInstance.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "report"); } catch(e) { console.warn("PDF não salvo no storage:", e); }
-      
+      let savedPath: string | null = null;
+      try {
+        const blob = await pdfInstance.outputPdf('blob');
+        savedPath = await savePDFToStorage(blob, opt.filename, 'report');
+      } catch {
+        // Falha de arquivo não deve ser confundida com falha no download.
+      }
       document.body.removeChild(tempDiv);
-
       toast({
-        title: "PDF gerado!",
-        description: "Relatório exportado em PDF com sucesso.",
+        title: savedPath ? 'PDF baixado e arquivado' : 'PDF baixado; arquivamento pendente',
+        description: savedPath
+          ? 'Relatório baixado e cópia salva no MuseTera.'
+          : 'O PDF foi baixado, mas não foi possível salvar uma cópia no MuseTera.',
+        variant: savedPath ? 'default' : 'destructive',
       });
     } catch (error) {
       console.error('Erro ao gerar PDF:', error);
@@ -740,6 +752,7 @@ export default function MusicoterapiaPage() {
         .from('reports')
         .select(`
           id,
+          patient_id,
           type,
           created_at,
           content,
@@ -766,7 +779,7 @@ export default function MusicoterapiaPage() {
   const handleEditReport = (report: any) => {
     // Carregar dados do relatório no wizard
     updateReportData({
-      selectedPatientId: report.content?.patient_info?.name || '',
+      selectedPatientId: report.patient_id || '',
       patientName: report.content?.patient_info?.name || '',
       patientAge: report.content?.patient_info?.age || '',
       patientDiagnosis: report.content?.patient_info?.diagnosis || '',
@@ -804,27 +817,10 @@ export default function MusicoterapiaPage() {
         professionalRegistry: fieldValues.professional_registry || professionalData?.register || professionalData?.license_number || '',
         professionalSpecialty: fieldValues.professional_specialty || professionalData?.specialty || 'Musicoterapia',
         sessionDate: fieldValues.session_date || report.content?.session_date || '',
-        fieldValues: {
-          therapeutic_objectives: fieldValues.therapeutic_objectives || [],
-          musical_techniques: fieldValues.musical_techniques || [],
-          instruments_used: fieldValues.instruments_used || [],
-          session_activities: fieldValues.session_activities || [],
-          patient_evolution: fieldValues.patient_evolution || [],
-          communication_scale: fieldValues.communication_scale || 1,
-          social_interaction_scale: fieldValues.social_interaction_scale || 1,
-          emotional_expression_scale: fieldValues.emotional_expression_scale || 1,
-          motor_coordination_scale: fieldValues.motor_coordination_scale || 1,
-          attention_focus_scale: fieldValues.attention_focus_scale || 1,
-          sensory_responses: fieldValues.sensory_responses || [],
-          recommendations: fieldValues.recommendations || [],
-          home_activities: fieldValues.home_activities || [],
-          conclusion: fieldValues.conclusion || [],
-          digital_signature: fieldValues.digital_signature || '',
-          digital_stamp: fieldValues.digital_stamp || '',
-          logo_url: fieldValues.logo_url || ''
-        },
+        // Preservar todos os campos do relatório salvo, inclusive os novos indicadores clínicos.
+        fieldValues: { ...fieldValues },
         additionalObservations: fieldValues.additional_observations || report.content?.additional_observations || '',
-        signature: fieldValues.digital_signature || professionalData?.name || ''
+        signature: report.content?.signature || fieldValues.digital_signature || professionalData?.name || ''
       };
 
       // 2. Convert images to Base64
@@ -860,13 +856,20 @@ export default function MusicoterapiaPage() {
       // 5. Generate and download PDF
       const pdfInstance2 = html2pdf().set(opt).from(tempDiv);
       await pdfInstance2.save();
-      try { const blob = await pdfInstance2.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "report"); } catch(e) { console.warn("PDF não salvo no storage:", e); }
-      
+      let savedPath: string | null = null;
+      try {
+        const blob = await pdfInstance2.outputPdf('blob');
+        savedPath = await savePDFToStorage(blob, opt.filename, 'report');
+      } catch {
+        // O download já foi realizado; uma falha de arquivamento é informada separadamente.
+      }
       document.body.removeChild(tempDiv);
-      
       toast({
-        title: "PDF gerado com sucesso!",
-        description: "O relatório foi baixado automaticamente.",
+        title: savedPath ? 'PDF baixado e arquivado' : 'PDF baixado; arquivamento pendente',
+        description: savedPath
+          ? 'O relatório foi baixado e salvo no MuseTera.'
+          : 'O arquivo foi baixado, mas a cópia não foi salva no MuseTera.',
+        variant: savedPath ? 'default' : 'destructive',
       });
 
     } catch (error) {
@@ -985,7 +988,7 @@ export default function MusicoterapiaPage() {
                   </div>
                 </div>
                 <Button
-                  onClick={handleExportPDF}
+                  onClick={() => void handleExportPDF()}
                   disabled={isExporting}
                   className="bg-gradient-to-br from-primary to-amber-500 hover:opacity-90 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200 font-semibold"
                 >
@@ -1026,6 +1029,8 @@ export default function MusicoterapiaPage() {
                 onUpdateData={updateReportData}
                 onGenerateWithAI={generateWithAI}
                 isGeneratingWithAI={isGeneratingWithAI}
+                onExportPDF={handleExportPDF}
+                isExporting={isExporting}
                 patients={patients}
                 onSaveReport={handleSaveReport}
                 isSaving={isSaving}
@@ -1076,7 +1081,7 @@ export default function MusicoterapiaPage() {
                   </div>
                 </div>
                 <Button
-                  onClick={handleExportPDF}
+                  onClick={() => void handleExportPDF()}
                   disabled={isExporting}
                   className="bg-gradient-to-br from-primary to-amber-500 hover:opacity-90 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200 font-semibold"
                 >
