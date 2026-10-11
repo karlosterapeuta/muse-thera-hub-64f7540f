@@ -8,7 +8,7 @@ import {
 } from '@/data/musicoterapiaObjectiveOutcomes';
 
 /**
- * Etapa 06 derivada das classificações feitas na Etapa 05.
+ * Etapa 05 derivada das classificações feitas na Etapa 04.
  * A associação entre uma abordagem e o resultado de cada objetivo não é inferida.
  */
 interface Props {
@@ -35,12 +35,12 @@ export function MusicoterapiaPendingInterventions({
         <div>
           <h3 className="font-semibold text-[#f0d78c]">Demandas que precisam continuar em intervenção</h3>
           <p className="text-sm text-gray-300 mt-1">
-            Esta etapa é preenchida automaticamente conforme os objetivos escolhidos na Etapa 03
-            e suas respostas registradas na Etapa 05. Não há textos prontos para selecionar.
+            Esta etapa é preenchida automaticamente conforme os objetivos escolhidos na Etapa 02
+            e suas respostas registradas na Etapa 04. Não há textos prontos para selecionar.
           </p>
           {approaches.length > 0 && (
             <p className="text-xs text-gray-400 mt-2">
-              Abordagens selecionadas na Etapa 04: {approaches.map(item => item.title).join('; ')}.
+              Abordagens selecionadas na Etapa 03: {approaches.map(item => item.title).join('; ')}.
             </p>
           )}
         </div>
@@ -49,7 +49,7 @@ export function MusicoterapiaPendingInterventions({
       {missing > 0 && (
         <div role="status" className="rounded-xl border border-amber-500/35 bg-amber-500/10 p-3 text-sm text-amber-200">
           <AlertCircle className="h-4 w-4 inline-block mr-2" />
-          Ainda há {missing} objetivo{missing === 1 ? '' : 's'} sem avaliação registrada. Volte à Etapa 05 para completar.
+          Ainda há {missing} objetivo{missing === 1 ? '' : 's'} sem avaliação registrada. Volte à Etapa 04 para completar.
         </div>
       )}
 
