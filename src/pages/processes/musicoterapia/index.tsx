@@ -784,15 +784,9 @@ export default function MusicoterapiaPage() {
       const isStructuredReport =
         getSelectedMusicoterapiaApproaches(reportData.fieldValues?.musicoterapia_approach_ids).length > 0;
       const currentReportData = { ...reportData };
-      // A narrativa também é obrigatória para o modelo estruturado mais recente.
-      // Se a função remota não responder, os registros continuam acessíveis para conferência.
-      const narrative = await generateNarrative(currentReportData);
-      if (!narrative?.length) {
-        toast({
-          title: 'Análise clínica automática indisponível',
-          description: 'Será incluída uma síntese fiel aos resultados registrados, sem criar observações clínicas.',
-        });
-      }
+      // No relatório estruturado a análise é montada de forma auditável no
+      // exportador nativo. O legado preserva sua integração anterior com IA.
+      const narrative = isStructuredReport ? null : await generateNarrative(currentReportData);
 
       // Convert images to Base64
       let photoBase64: string | null = null;
