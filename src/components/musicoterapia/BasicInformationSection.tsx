@@ -2,7 +2,7 @@ import React from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar, CalendarIcon, User, ClipboardList } from 'lucide-react';
+import { Calendar, CalendarIcon, User, ClipboardList, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -11,7 +11,6 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import type { ReportData } from '@/data/musicoterapiaTemplate';
-import { formatAgeString } from '@/utils/dateUtils';
 
 type Patient = {
   id: string;
@@ -26,9 +25,14 @@ interface BasicInformationSectionProps {
   professionalData?: any;
   patients?: Patient[];
   isLoadingPatients?: boolean;
+  onSelectPatient: (patientId: string) => void;
+  anamnesisStatus: 'idle' | 'loading' | 'loaded' | 'empty' | 'error';
 }
 
-export function BasicInformationSection({ reportData, onUpdateData, professionalData, patients = [], isLoadingPatients = false }: BasicInformationSectionProps) {
+export function BasicInformationSection({
+  reportData, onUpdateData, professionalData, patients = [], isLoadingPatients = false,
+  onSelectPatient, anamnesisStatus
+}: BasicInformationSectionProps) {
   const handleFieldChange = (field: string, value: string) => {
     if (field.startsWith('fieldValues.')) {
       const fieldId = field.replace('fieldValues.', '');
@@ -49,31 +53,10 @@ export function BasicInformationSection({ reportData, onUpdateData, professional
     }
   };
 
-  const handlePatientSelect = (value: string) => {
-    if (value === 'manual') {
-      // Reset para entrada manual
-      onUpdateData({
-        selectedPatientId: '',
-        patientName: '',
-        patientAge: '',
-        patientDiagnosis: ''
-      });
-    } else {
-      // Selecionar paciente existente
-      const selectedPatient = patients.find(p => p.id === value);
-      if (selectedPatient) {
-        // Calcular idade usando utilitário centralizado
-        const age = formatAgeString(selectedPatient.birth_date, selectedPatient.age);
-
-        onUpdateData({
-          selectedPatientId: value,
-          patientName: selectedPatient.name,
-          patientAge: age,
-          patientDiagnosis: 'TEA - Transtorno do Espectro Autista'
-        });
-      }
-    }
+  const handlePatientSelect = (patientId: string) => {
+    onSelectPatient(patientId);
   };
+
 
   const sessionDate = reportData.sessionDate ? new Date(reportData.sessionDate) : undefined;
   const hasPatients = Array.isArray(patients) && patients.length > 0;
@@ -173,6 +156,18 @@ export function BasicInformationSection({ reportData, onUpdateData, professional
           />
         </div>
 
+        {/* Responsável legal: prioriza os registros do paciente e da Anamnese. */}
+        <div className="space-y-2">
+          <Label htmlFor="patient_guardian" className="text-sm font-medium">Responsável legal</Label>
+          <Input
+            id="patient_guardian"
+            placeholder="Nome do responsável, quando disponível"
+            value={reportData.patientGuardian || ''}
+            onChange={(event) => handleFieldChange('patientGuardian', event.target.value)}
+            className="w-full"
+          />
+        </div>
+
         {/* Data da Sessão */}
         <div className="space-y-2">
           <Label className="text-sm font-medium">
@@ -236,6 +231,34 @@ export function BasicInformationSection({ reportData, onUpdateData, professional
         </div>
       </div>
 
+      {reportData.selectedPatientId && (
+        <div role="status" aria-live="polite" className="rounded-lg border border-border/60 bg-muted/30 px-4 py-3 text-sm">
+          {anamnesisStatus === 'loading' && (
+            <span className="flex gap-2 items-center text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin shrink-0" />
+              Carregando os dados da Anamnese deste paciente...
+            </span>
+          )}
+          {anamnesisStatus === 'loaded' && (
+            <span className="flex gap-2 items-center text-emerald-600 dark:text-emerald-300">
+              <CheckCircle2 className="h-4 w-4 shrink-0" />
+              Dados da Anamnese importados automaticamente. Confira as informações abaixo.
+            </span>
+          )}
+          {anamnesisStatus === 'empty' && (
+            <span className="text-muted-foreground">
+              Não há Anamnese cadastrada para este paciente. Preencha apenas as informações disponíveis.
+            </span>
+          )}
+          {anamnesisStatus === 'error' && (
+            <span className="flex gap-2 items-center text-amber-600 dark:text-amber-300">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              Não foi possível consultar a Anamnese. Os campos continuam disponíveis para preenchimento manual.
+            </span>
+          )}
+        </div>
+      )}
+
       {/* O motivo do encaminhamento integra a identificação, sem etapa adicional. */}
       <section aria-labelledby="referral-heading" className="rounded-xl border border-[#c9a84c]/25 bg-[#c9a84c]/[0.04] p-4 sm:p-5 space-y-4">
         <div className="flex items-start gap-3">
@@ -273,6 +296,54 @@ export function BasicInformationSection({ reportData, onUpdateData, professional
           />
         </div>
       </section>
+
+      {/* Outros campos de identificação clínica já documentados na Anamnese.
+          Recolhidos por padrão para manter a Etapa 01 rápida e enxuta. */}
+      <details className="group rounded-xl border border-border/60 bg-muted/20 p-4">
+        <summary className="cursor-pointer font-semibold text-sm text-foreground select-none">
+          Informações clínicas e familiares da Anamnese (opcional)
+        </summary>
+        <p className="text-xs text-muted-foreground mt-2 mb-4">
+          Campos recuperados quando disponíveis. Confira, complete ou atualize apenas o necessário
+          para a identificação clínica deste relatório.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {([
+            ['mother_name', 'Nome da mãe', false],
+            ['father_name', 'Nome do pai', false],
+            ['family_relationship', 'Vínculo do responsável', false],
+            ['cid_code', 'CID informado', false],
+            ['support_level', 'Nível de suporte informado', false],
+            ['diagnosis_date', 'Data do diagnóstico', false],
+            ['current_medications', 'Medicação atual', true],
+            ['clinical_details', 'Informações clínicas complementares', true],
+            ['medication_schedule', 'Horários da medicação', true],
+            ['medication_effects', 'Efeitos relatados da medicação', true],
+            ['calming_strategies', 'Estratégias de regulação', true],
+            ['family_support_network', 'Rede de apoio familiar', true]
+          ] as const).map(([fieldId, label, isMultiline]) => (
+            <div key={fieldId} className={isMultiline ? 'space-y-2 md:col-span-2' : 'space-y-2'}>
+              <Label htmlFor={fieldId} className="text-sm font-medium">{label}</Label>
+              {isMultiline ? (
+                <Textarea
+                  id={fieldId}
+                  rows={2}
+                  value={String(reportData.fieldValues?.[fieldId] ?? '')}
+                  onChange={(event) => handleFieldChange(`fieldValues.${fieldId}`, event.target.value)}
+                  className="w-full resize-y"
+                />
+              ) : (
+                <Input
+                  id={fieldId}
+                  value={String(reportData.fieldValues?.[fieldId] ?? '')}
+                  onChange={(event) => handleFieldChange(`fieldValues.${fieldId}`, event.target.value)}
+                  className="w-full"
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      </details>
     </div>
   );
 }
