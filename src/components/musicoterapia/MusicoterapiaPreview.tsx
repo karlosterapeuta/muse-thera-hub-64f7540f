@@ -11,6 +11,7 @@ import { getSelectedMusicoterapiaObjectives, musicoterapiaObjectiveCategories } 
 import { getSelectedMusicoterapiaApproaches } from '@/data/musicoterapiaApproaches';
 import { MusicoterapiaApproachResultsSummary } from './MusicoterapiaApproachResultsSummary';
 import { MusicoterapiaObjectiveFlowSummary } from './MusicoterapiaObjectiveFlowSummary';
+import { MusicoterapiaFinalConsiderationsSummary } from './MusicoterapiaFinalConsiderationsSummary';
 import { MusicoterapiaReferralSummary } from './MusicoterapiaReferralSummary';
 import { MusicoterapiaReferenceSummary } from './MusicoterapiaReferenceSummary';
 
@@ -393,8 +394,8 @@ export function MusicoterapiaPreview({ reportData, professionalData }: Musicoter
         </Card>
       )}
 
-      {/* Conclusion */}
-      {reportData.fieldValues?.conclusion && (
+      {/* Conclusão dos relatórios históricos; a Etapa 08 usa outra síntese. */}
+      {isLegacyReport && reportData.fieldValues?.conclusion && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
@@ -408,6 +409,10 @@ export function MusicoterapiaPreview({ reportData, professionalData }: Musicoter
             </p>
           </CardContent>
         </Card>
+      )}
+
+      {!isLegacyReport && (
+        <MusicoterapiaFinalConsiderationsSummary fields={reportData.fieldValues} />
       )}
 
       {/* Additional Observations */}
