@@ -10,6 +10,8 @@ import { MusicoterapiaQuickFill } from './MusicoterapiaQuickFill';
 import { FinalReviewSection } from './FinalReviewSection';
 import { BasicInformationSection } from './BasicInformationSection';
 import { MusicoterapiaGuidance } from './MusicoterapiaGuidance';
+import { MusicoterapiaObjectiveSelector } from './MusicoterapiaObjectiveSelector';
+import { getSelectedMusicoterapiaObjectives } from '@/data/musicoterapiaObjectives';
 
 interface MusicoterapiaReportWizardProps {
   reportData: Partial<ReportData>;
@@ -44,7 +46,7 @@ const STEPS = [
   {
     id: 'therapeutic_objectives',
     title: '3. Objetivos Terapêuticos',
-    description: 'Metas e planejamento',
+    description: 'Seleção de objetivos a desenvolver e planejamento individualizado',
     icon: Target,
     fields: ['therapeutic_objectives', 'specific_goals']
   },
@@ -109,7 +111,7 @@ const STEPS = [
 const STEP_HINTS: Record<string, { icon: React.ElementType; title: string; description: string }> = {
   basic_info: { icon: Info, title: 'Identificação do paciente', description: 'Confirme dados do paciente e do profissional. Esses dados aparecem no cabeçalho do relatório final.' },
   referral: { icon: ClipboardList, title: 'Motivo do encaminhamento', description: 'Descreva quem encaminhou e a razão clínica que originou o início dos atendimentos.' },
-  therapeutic_objectives: { icon: Target, title: 'Objetivos terapêuticos', description: 'Descreva metas claras, mensuráveis e individualizadas. Quanto mais específicas, mais sólido o relatório.' },
+  therapeutic_objectives: { icon: Target, title: 'Objetivos terapêuticos', description: 'Selecione os objetivos que a musicoterapia irá estimular; defina metas observáveis e individualizadas, respeitando as características do paciente.' },
   methodology: { icon: Music, title: 'Metodologia musicoterapêutica', description: 'Detalhe a abordagem teórica, técnicas (receptivas, recriativas, improvisacionais, compositivas) e procedimentos utilizados.' },
   clinical_evolution: { icon: Heart, title: 'Evolução clínica', description: 'Registre os progressos por domínio: comunicação, interação social, regulação emocional, cognição, motricidade e respostas musicais.' },
   observed_results: { icon: Brain, title: 'Resultados observados', description: 'Compare linha de base e avaliação atual; documente medidas, ajuda, contexto, limitações e resultados verificáveis.' },
@@ -779,6 +781,18 @@ export function MusicoterapiaReportWizard({
       return missingFields;
     }
 
+    // Os 12 objetivos estruturados e os objetivos complementares são alternativas válidas.
+    if (currentStepData.id === 'therapeutic_objectives') {
+      const selected = getSelectedMusicoterapiaObjectives(reportData.fieldValues?.therapeutic_objective_ids);
+      const otherObjectives = reportData.fieldValues?.therapeutic_objectives;
+      const hasOther = Array.isArray(otherObjectives)
+        ? otherObjectives.some((value) => String(value ?? '').trim().length > 0)
+        : String(otherObjectives ?? '').trim().length > 0;
+      return selected.length > 0 || hasOther
+        ? []
+        : [{ id: 'therapeutic_objective_ids', label: 'Selecione um objetivo ou descreva um objetivo complementar' }];
+    }
+
     // Validação padrão para outras etapas
     const requiredFields = musicoterapiaTemplate.fields.filter(field => 
       field.required && currentStepData.fields.includes(field.id)
@@ -858,6 +872,13 @@ export function MusicoterapiaReportWizard({
               <p className="text-sm text-gray-400 font-light leading-relaxed">{hint.description}</p>
             </div>
           </div>
+        )}
+
+        {currentStepData.id === 'therapeutic_objectives' && (
+          <MusicoterapiaObjectiveSelector
+            selectedIds={getSelectedMusicoterapiaObjectives(reportData.fieldValues?.therapeutic_objective_ids).map((item) => item.id)}
+            onChange={(ids) => handleFieldUpdate('therapeutic_objective_ids', ids)}
+          />
         )}
 
         {/* Templates profissionais (noir/gold) */}
