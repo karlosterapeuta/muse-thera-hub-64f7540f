@@ -39,10 +39,10 @@ export function renderObjectiveFlowPdf(
     : '';
 
   return '<div class="section-block" style="margin-bottom:18px;">'
-    + '<h3 style="color:#0d9488;border-bottom:2px solid #14b8a6;padding-bottom:8px;font-size:14px;">Resultados por Objetivo — Etapa 05</h3>'
+    + '<h3 style="color:#0d9488;border-bottom:2px solid #14b8a6;padding-bottom:8px;font-size:14px;">Resultados por Objetivo — Etapa 04</h3>'
     + '<ul style="font-size:11px;padding-left:18px;margin:8px 0;">' + rows + '</ul></div>'
     + '<div class="section-block" style="margin-bottom:18px;">'
-    + '<h3 style="color:#0d9488;border-bottom:2px solid #14b8a6;padding-bottom:8px;font-size:14px;">Aspectos a Intervir — Etapa 06</h3>'
+    + '<h3 style="color:#0d9488;border-bottom:2px solid #14b8a6;padding-bottom:8px;font-size:14px;">Aspectos a Intervir — Etapa 05</h3>'
     + (pending.length
       ? '<p style="font-size:10px;color:#64748b;">Demandas para continuidade derivadas das respostas clínicas por objetivo.</p>'
         + '<ul style="font-size:11px;padding-left:18px;margin:8px 0;">' + pendingRows + '</ul>'
