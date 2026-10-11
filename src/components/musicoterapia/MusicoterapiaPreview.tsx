@@ -8,6 +8,7 @@ import { ptBR } from 'date-fns/locale';
 import type { ReportData } from '@/data/musicoterapiaTemplate';
 import { musicoterapiaTemplate, reportSections, scaleFieldIds } from '@/data/musicoterapiaTemplate';
 import { getSelectedMusicoterapiaObjectives, musicoterapiaObjectiveCategories } from '@/data/musicoterapiaObjectives';
+import { getSelectedMusicoterapiaApproaches } from '@/data/musicoterapiaApproaches';
 
 interface MusicoterapiaPreviewProps {
   reportData: ReportData;
@@ -16,6 +17,7 @@ interface MusicoterapiaPreviewProps {
 
 export function MusicoterapiaPreview({ reportData, professionalData }: MusicoterapiaPreviewProps) {
   const selectedObjectives = getSelectedMusicoterapiaObjectives(reportData.fieldValues?.therapeutic_objective_ids);
+  const selectedApproaches = getSelectedMusicoterapiaApproaches(reportData.fieldValues?.musicoterapia_approach_ids);
   const formatDate = (date: string | Date) => {
     if (!date) return 'Data não informada';
     const dateObj = typeof date === 'string' ? new Date(date) : date;
@@ -206,6 +208,32 @@ export function MusicoterapiaPreview({ reportData, professionalData }: Musicoter
         </Card>
       )}
 
+      {selectedApproaches.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Music className="h-5 w-5 text-primary" />
+              <span>Abordagem Musicoterapêutica</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Abordagens selecionadas pelo profissional; a seleção não é evidência de aplicação ou resultado.
+            </p>
+            {selectedApproaches.map((approach) => (
+              <div key={approach.id} className="rounded-lg border border-primary/15 p-3 space-y-1">
+                <p className="font-semibold">{approach.title}</p>
+                <p className="text-sm text-muted-foreground">{approach.description}</p>
+                <p className="text-sm"><strong>Objetivos possíveis:</strong> {approach.goals}</p>
+                {approach.clinicalNote && (
+                  <p className="text-xs text-muted-foreground">Nota clínica: {approach.clinicalNote}</p>
+                )}
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
       {/* Instruments and Techniques */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
@@ -389,7 +417,17 @@ export function MusicoterapiaPreview({ reportData, professionalData }: Musicoter
 
       {/* ===== Seções Clínicas Expandidas ===== */}
       {reportSections.map((section) => {
-        const filledFields = section.fieldIds
+        // Evitar reapresentar técnicas/metodologias legadas quando a Etapa 04
+        // já possui a seleção estruturada. Dados antigos continuam preservados.
+        const hiddenLegacyApproachFields = [
+          'theoretical_framework', 'assessment_tools_used', 'session_setting', 'session_structure',
+          'improvisation_use', 'receptive_techniques', 'recreative_techniques',
+          'compositional_techniques', 'tempo_dynamics_used', 'vocal_work'
+        ];
+        const visibleFields = selectedApproaches.length > 0
+          ? section.fieldIds.filter((id) => !hiddenLegacyApproachFields.includes(id))
+          : section.fieldIds;
+        const filledFields = visibleFields
           .map((id) => {
             const value = reportData.fieldValues?.[id];
             if (value === undefined || value === null || value === '') return null;
