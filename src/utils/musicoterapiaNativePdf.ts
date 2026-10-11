@@ -43,7 +43,8 @@ export async function exportMusicoterapiaNativePdf(
   report: any,
   professional: any,
   images: Inputs,
-  filename: string
+  filename: string,
+  narrative?: { title: string; content: string }[] | null
 ): Promise<Blob> {
   const pdf = new jsPDF({
     orientation: 'portrait',
@@ -328,6 +329,29 @@ export async function exportMusicoterapiaNativePdf(
   if (needs.length) {
     header('Aspectos que continuam em intervenção', 12);
     for (const {objective,status} of needs) item(objective.title,getObjectiveOutcomeLabel(status));
+  }
+
+  // Narrativa integrada ao exportador nativo do relatório estruturado.
+  // Conteúdo longo flui pelas páginas através de write(), preservando gráficos.
+  const narrativeParagraphs = (narrative || [])
+    .filter(section => section && typeof section.content === 'string')
+    .flatMap(section => section.content.split(/\\n\\s*\\n/).map(p => clean(p)).filter(Boolean));
+  const fallbackParts: string[] = [];
+  if (!narrativeParagraphs.length) {
+    if (recorded.length) {
+      fallbackParts.push('Nas experiências musicoterapêuticas registradas, ' +
+        recorded.map(({approach,result}) => clean(approach.title) + ': ' + clean(summarizeApproachResult(result))).join('; ') + '.');
+    }
+    if (outcomes.length) {
+      fallbackParts.push('A avaliação dos objetivos terapêuticos documentou ' +
+        outcomes.map(({objective,status}) => clean(objective.title) + ': ' + clean(getObjectiveOutcomeLabel(status))).join('; ') +
+        '. Essas classificações refletem os registros profissionais e não constituem, isoladamente, medida de eficácia clínica.');
+    }
+    if (!fallbackParts.length) fallbackParts.push('Os registros disponíveis são insuficientes para uma análise dissertativa individualizada. O profissional deverá complementar observações clínicas e respostas sonoro-musicais.');
+  }
+  header('Análise Clínica Musicoterapêutica', 12);
+  for (const paragraph of (narrativeParagraphs.length ? narrativeParagraphs : fallbackParts)) {
+    write(paragraph, margin, usable, 9.8, DARK, false, 3);
   }
 
   const recommendation = clean(fields.recommendations);
