@@ -251,7 +251,7 @@ export async function exportMusicoterapiaNativePdf(
   ) => {
     pdf.setFillColor(250,252,252);
     pdf.setDrawColor(211,232,229);
-    pdf.roundedRect(x,top,width,43,2,2,'FD');
+    pdf.roundedRect(x,top,width,39,2,2,'FD');
     setFace(9.5,true,GREEN);
     pdf.text(title,x+4,top+7);
     const shown = statuses.filter(status=>status.value>0);
@@ -261,7 +261,7 @@ export async function exportMusicoterapiaNativePdf(
       return;
     }
     const barWidth = width * 0.32;
-    const rowH = Math.min(7.2, 29 / shown.length);
+    const rowH = Math.min(6.6, 26 / shown.length);
     shown.forEach((status,i)=>{
       const base = top + 12 + i * rowH;
       setFace(8,false,DARK);
@@ -277,8 +277,8 @@ export async function exportMusicoterapiaNativePdf(
   };
 
   if (outcomes.length || recorded.length) {
-    header('Painel de resultados observados', 67);
-    ensure(64);
+    header('Painel de resultados observados', 62);
+    ensure(59);
     const done = outcomes.filter(x=>x.status !== 'not_assessed').length;
     const cards = [
       [String(done) + '/' + String(objectives.length),'Objetivos avaliados'],
@@ -315,7 +315,7 @@ export async function exportMusicoterapiaNativePdf(
     ];
     drawCountChart(margin,y,halfW,'Situação dos objetivos',objectiveBars,outcomes.length);
     drawCountChart(margin+halfW+5,y,halfW,'Respostas às abordagens',methodBars,recorded.length);
-    y += 46;
+    y += 42;
     write('Distribuição dos registros do profissional; não é escala clínica nem prova de eficácia ou causalidade.',margin,usable,8.25,MUTED,false,0);
   }
 
@@ -327,72 +327,88 @@ export async function exportMusicoterapiaNativePdf(
     header('Resultados por objetivo', 13);
     for (const {objective,status} of outcomes) item(objective.title,getObjectiveOutcomeLabel(status));
   }
+  // Síntese de prioridades, sem repetir o quadro de resultados por objetivo.
   if (needs.length) {
-    header('Aspectos que continuam em intervenção', 13);
-    for (const {objective,status} of needs) item(objective.title,getObjectiveOutcomeLabel(status));
+    const difficulty = needs.filter(x => x.status === 'difficulty').map(x => clean(x.objective.title));
+    const unchanged = needs.filter(x => x.status === 'no_progress').map(x => clean(x.objective.title));
+    const progressing = needs.filter(x => x.status === 'progressing').map(x => clean(x.objective.title));
+    header('Prioridades de acompanhamento', 17);
+    if (difficulty.length) write('Atenção às dificuldades registradas em ' + difficulty.join(', ') + '.',margin,usable,9.5,DARK,false,2);
+    if (unchanged.length) write('Manter observação e reavaliar os objetivos classificados como sem avanço observado: ' + unchanged.join(', ') + '.',margin,usable,9.5,DARK,false,2);
+    if (progressing.length) write('Acompanhar a continuidade dos objetivos classificados como em evolução: ' + progressing.join(', ') + '.',margin,usable,9.5,DARK,false,2);
   }
 
-  // A narrativa do PDF deve ser auditável e restrita às informações estruturadas
-  // fornecidas pelo profissional. O texto de IA não é inserido diretamente: pode
-  // conter habilidades, prognósticos e procedimentos não presentes nos registros.
-  // O parâmetro narrative permanece por compatibilidade de assinatura.
+  // Narrativa determinística ancorada exclusivamente em observações e classificações
+  // informadas. Planejamento não é confundido com habilidade adquirida.
+  const assessed = outcomes.filter(x => x.status !== 'not_assessed');
+  const difficulty = assessed.filter(x => x.status === 'difficulty');
+  const unchanged = assessed.filter(x => x.status === 'no_progress');
+  const progressing = assessed.filter(x => x.status === 'progressing');
+  const achieved = assessed.filter(x => x.status === 'achieved');
+  const plural = (n: number, single: string, many: string) => n === 1 ? single : many;
+  const names = (values: typeof outcomes) => values.map(x => clean(x.objective.title)).join(', ');
   const clinicalParagraphs: string[] = [];
-  const outcomeDescriptions = outcomes.filter(({status}) => status !== 'not_assessed')
-    .map(({objective,status}) => clean(objective.title) + ' — ' + clean(getObjectiveOutcomeLabel(status)));
-  const approachDescriptions = recorded.map(({approach,result}) =>
-    clean(approach.title) + ': ' + clean(summarizeApproachResult(result)));
 
   if (objectives.length) {
     clinicalParagraphs.push(
-      'O planejamento musicoterapêutico documentado contempla ' +
-      objectives.map(objective => clean(objective.title)).join('; ') +
-      '. A seleção desses objetivos expressa metas terapêuticas, não comprova por si só a execução de tarefas ou a aquisição de habilidades.'
+      'O acompanhamento musicoterapêutico contempla objetivos relacionados a ' +
+      objectives.map(o => clean(o.title)).join(', ') +
+      '. Essas áreas orientam o planejamento clínico e não representam, isoladamente, habilidades demonstradas pelo paciente.'
     );
   }
-  if (approachDescriptions.length) {
+  const statusObservations: string[] = [];
+  if (difficulty.length) statusObservations.push('foram registradas dificuldades em ' + names(difficulty));
+  if (unchanged.length) statusObservations.push('não houve avanço observado nos objetivos de ' + names(unchanged));
+  if (progressing.length) statusObservations.push('foram classificados como em evolução os objetivos de ' + names(progressing));
+  if (achieved.length) statusObservations.push('foram classificados como alcançados os objetivos de ' + names(achieved));
+  if (statusObservations.length) {
     clinicalParagraphs.push(
-      'Quanto às abordagens e respostas registradas pelo profissional: ' +
-      approachDescriptions.join('; ') +
-      '. Essas informações descrevem as classificações e observações lançadas no acompanhamento, sem permitir inferir efeitos adicionais não documentados.'
+      'Na avaliação realizada pelo profissional, ' + statusObservations.join('; ') +
+      '. Essas classificações descrevem o registro disponível, sem permitir conclusões sobre causas, ausência de capacidade ou mudanças ao longo do tempo sem avaliações comparáveis.'
+    );
+  }
+  if (recorded.length) {
+    const descriptions = recorded.map(({approach,result}) => {
+      const observations = summarizeApproachResult(result).replace(/\\s*\\.+\\s*$/u, '').trim();
+      return clean(approach.title) + ' foi registrada como ' + observations;
+    });
+    clinicalParagraphs.push(
+      'Quanto às experiências musicais documentadas, ' + descriptions.join('; ') +
+      '. As respostas informadas podem orientar a seleção das próximas experiências, mas não comprovam, por si só, avanços em outros domínios.'
     );
   } else if (approaches.length) {
-    clinicalParagraphs.push(
-      'Foram selecionadas as abordagens ' + approaches.map(a => clean(a.title)).join('; ') +
-      ', porém não constam resultados específicos associados a elas no registro disponível.'
-    );
+    clinicalParagraphs.push('Foram selecionadas abordagens musicoterapêuticas, porém ainda não constam respostas específicas documentadas para interpretação clínica.');
   }
-  if (outcomeDescriptions.length) {
-    clinicalParagraphs.push(
-      'Na avaliação dos objetivos, o profissional registrou: ' +
-      outcomeDescriptions.join('; ') +
-      '. As classificações devem ser interpretadas como registros descritivos do período, sem comparação temporal ou medida de eficácia na ausência de observações equivalentes em datas distintas.'
-    );
-  }
-  if (!clinicalParagraphs.length) {
-    clinicalParagraphs.push('Os dados clínicos registrados são insuficientes para uma análise individualizada. É necessário complementar as observações do acompanhamento.');
-  }
+  if (!clinicalParagraphs.length) clinicalParagraphs.push('Não há registros suficientes para uma análise clínica individualizada neste documento.');
   clinicalParagraphs.push(
-    'Para aprofundar a avaliação, recomenda-se registrar as respostas observáveis, as condições de realização das atividades, o apoio necessário e as alterações verificadas em avaliações posteriores.'
+    'Para reavaliações futuras, é pertinente documentar as respostas observáveis, as condições das atividades, o apoio oferecido e a frequência dos comportamentos, permitindo comparações fundamentadas entre os atendimentos.'
   );
   header('Análise Clínica Musicoterapêutica', 23);
-  clinicalParagraphs.slice(0, 4).forEach((paragraph, index) => {
-    write(paragraph, margin + 1, usable - 2, 9.65, DARK, false, index === clinicalParagraphs.length - 1 ? 2 : 3.2);
-  });
+  clinicalParagraphs.forEach((paragraph, index) =>
+    write(paragraph, margin + 1, usable - 2, 9.65, DARK, false, index === clinicalParagraphs.length - 1 ? 2 : 3.2)
+  );
 
-  // Recomendações e fechamento são concisos e não repetem a análise narrativa.
-  const recommendation = clean(fields.recommendations);
+  // Preservar orientação redigida pelo musicoterapeuta; caso não haja conteúdo
+  // individualizado, oferecer recomendações derivadas das classificações reais.
   header('Recomendações', 16);
-  if (recommendation) {
+  const recommendation = clean(fields.recommendations);
+  if (recommendation && !/^manter o acompanhamento musicoterap[eê]utico e reavaliar os objetivos periodicamente\\.?$/i.test(recommendation)) {
     write(recommendation, margin, usable, 9.7, DARK, false, 2.5);
   } else {
-    write('Manter o acompanhamento musicoterapêutico com reavaliação dos objetivos registrados e documentação das respostas observáveis e dos níveis de apoio necessários.', margin, usable, 9.7, DARK, false, 2.5);
+    const recommendations: string[] = [];
+    if (difficulty.length) recommendations.push('Priorizar o registro das condições de participação e do apoio necessário nos objetivos de ' + names(difficulty) + '.');
+    if (unchanged.length) recommendations.push('Reavaliar as estratégias propostas para ' + names(unchanged) + ', registrando respostas observáveis antes de concluir sobre eventuais mudanças.');
+    if (progressing.length) recommendations.push('Acompanhar os objetivos classificados como em evolução em ' + names(progressing) + ', com observações periódicas comparáveis.');
+    if (recorded.some(x => x.result.indicators.length || x.result.note.trim())) recommendations.push('Considerar as respostas musicais efetivamente registradas ao planejar repertórios e experiências posteriores.');
+    if (!recommendations.length) recommendations.push('Manter o acompanhamento musicoterapêutico e registrar os resultados das intervenções para orientar reavaliações periódicas.');
+    recommendations.forEach(text => write(text,margin,usable,9.7,DARK,false,2.5));
   }
 
   header('Considerações finais', 16);
-  const observedCount = outcomes.filter(({status}) => status !== 'not_assessed').length;
-  const closing = observedCount
-    ? 'Este documento sintetiza ' + observedCount + ' objetivo(s) com classificação registrada pelo profissional. A interpretação deve considerar os limites dos dados disponíveis; a evolução longitudinal depende de registros comparáveis em diferentes momentos.'
-    : 'Este documento reflete as informações disponíveis no registro. A ausência de classificações documentadas limita conclusões sobre os resultados terapêuticos.';
+  const closing = assessed.length
+    ? 'O relatório reúne classificações de ' + assessed.length + ' ' + plural(assessed.length,'objetivo terapêutico','objetivos terapêuticos') +
+      ' e as respostas musicoterapêuticas documentadas. Os resultados referem-se ao período registrado e devem ser reavaliados com observações clínicas comparáveis.'
+    : 'Os registros disponíveis não permitem caracterizar resultados por objetivo. Recomenda-se completar as observações antes de produzir conclusões clínicas.';
   write(closing, margin, usable, 9.7, DARK, false, 2.5);
 
   const refs = getSelectedMusicoterapiaReferences(fields.musicoterapia_reference_ids);
