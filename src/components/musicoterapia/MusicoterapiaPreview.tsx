@@ -11,6 +11,7 @@ import { getSelectedMusicoterapiaObjectives, musicoterapiaObjectiveCategories } 
 import { getSelectedMusicoterapiaApproaches } from '@/data/musicoterapiaApproaches';
 import { MusicoterapiaApproachResultsSummary } from './MusicoterapiaApproachResultsSummary';
 import { MusicoterapiaObjectiveFlowSummary } from './MusicoterapiaObjectiveFlowSummary';
+import { MusicoterapiaReferralSummary } from './MusicoterapiaReferralSummary';
 
 interface MusicoterapiaPreviewProps {
   reportData: ReportData;
@@ -143,6 +144,8 @@ export function MusicoterapiaPreview({ reportData, professionalData }: Musicoter
           </CardContent>
         </Card>
       </div>
+
+      <MusicoterapiaReferralSummary source={reportData.fieldValues?.referral_source} reason={reportData.fieldValues?.referral_reason} />
 
       {/* Objetivos planejados, não resultados adquiridos */}
       {selectedObjectives.length > 0 && (
