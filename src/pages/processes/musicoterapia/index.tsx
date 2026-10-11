@@ -14,6 +14,7 @@ import { MusicoterapiaReportWizard } from '@/components/musicoterapia/Musicotera
 import { MusicoterapiaPreview } from '@/components/musicoterapia/MusicoterapiaPreview';
 import { useMusicoterapiaReport } from '@/hooks/useMusicoterapiaReport';
 import { musicoterapiaTemplate, scaleFieldIds } from '@/data/musicoterapiaTemplate';
+import { getSelectedMusicoterapiaObjectives } from '@/data/musicoterapiaObjectives';
 import { savePDFToStorage } from '@/utils/pdfStorageUtils';
 import { useReportData } from '../report/hooks/useReportData';
 import html2pdf from 'html2pdf.js';
@@ -104,6 +105,7 @@ export default function MusicoterapiaPage() {
     narrative?: { title: string; content: string }[] | null
   ) => {
     const fields = reportDataForPDF.fieldValues || {};
+    const selectedGoals = getSelectedMusicoterapiaObjectives(fields.therapeutic_objective_ids);
     const currentDate = new Date().toLocaleDateString('pt-BR');
 
     const escapeHtml = (s: string) =>
@@ -191,15 +193,33 @@ export default function MusicoterapiaPage() {
         <!-- AI Clinical Narrative -->
         ${narrativeBlock}
 
+        <!-- Objetivos planejados: jamais indicar como resultados adquiridos -->
+        ${selectedGoals.length > 0 ? `
+          <div class="section-block" style="margin-bottom: 20px; page-break-inside: auto;">
+            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Objetivos Terapêuticos Priorizados</h3>
+            <p style="margin: 0 0 10px; font-size: 10px; color: #64748b;">Habilidades que serão estimuladas ou desenvolvidas ao longo do acompanhamento musicoterapêutico. A seleção não implica aquisição da habilidade.</p>
+            <ol style="margin: 0; padding-left: 20px; font-size: 11px;">
+              ${selectedGoals.map((goal) => `<li style="margin: 0 0 9px; line-height: 1.6; page-break-inside: avoid;"><strong style="color: #0f766e;">${escapeHtml(goal.title)}:</strong> ${escapeHtml(goal.objective)}</li>`).join('')}
+            </ol>
+          </div>
+        ` : ''}
+
         <!-- Report Sections (dados complementares) -->
         ${fields.therapeutic_objectives && fields.therapeutic_objectives.length > 0 ? `
           <div class="section-block" style="margin-bottom: 20px; page-break-inside: avoid; page-break-before: auto;">
-            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Objetivos Terapeuticos</h3>
+            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Objetivos Complementares</h3>
             ${Array.isArray(fields.therapeutic_objectives) ? `
               <ul style="margin: 0; padding-left: 20px;">
                 ${fields.therapeutic_objectives.map((obj: string) => `<li style="margin: 6px 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;" >${escapeHtml(String(obj))}</li>`).join('')}
               </ul>
             ` : `<p style="margin: 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;" >${escapeHtml(String(fields.therapeutic_objectives))}</p>`}
+          </div>
+        ` : ''}
+
+        ${fields.specific_goals && String(fields.specific_goals).trim() ? `
+          <div class="section-block" style="margin-bottom: 20px; page-break-inside: auto;">
+            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Metas Específicas Individualizadas</h3>
+            <p style="margin: 0; white-space: pre-wrap; overflow-wrap: break-word; font-size: 11px; line-height: 1.6;">${escapeHtml(Array.isArray(fields.specific_goals) ? fields.specific_goals.join('\\n') : String(fields.specific_goals))}</p>
           </div>
         ` : ''}
 
