@@ -14,6 +14,8 @@ import { MusicoterapiaObjectiveSelector } from './MusicoterapiaObjectiveSelector
 import { getSelectedMusicoterapiaObjectives } from '@/data/musicoterapiaObjectives';
 import { getSelectedMusicoterapiaApproaches } from '@/data/musicoterapiaApproaches';
 import { MusicoterapiaApproachSelector } from './MusicoterapiaApproachSelector';
+import { MusicoterapiaReferenceSelector } from './MusicoterapiaReferenceSelector';
+import { getSelectedMusicoterapiaReferences } from '@/data/musicoterapiaReferences';
 import { MusicoterapiaApproachResults } from './MusicoterapiaApproachResults';
 import { MusicoterapiaObjectiveOutcomes } from './MusicoterapiaObjectiveOutcomes';
 import { MusicoterapiaPendingInterventions } from './MusicoterapiaPendingInterventions';
@@ -74,11 +76,11 @@ const STEPS = [
     fields: [] // Exibição automática de objetivos ainda em desenvolvimento
   },
   {
-    id: 'prognosis',
-    title: '6. Prognóstico Terapêutico',
-    description: 'Objetivos futuros e prognóstico',
-    icon: Target,
-    fields: ['next_objectives_short', 'next_objectives_medium', 'next_objectives_long', 'proposed_interventions', 'expected_outcomes', 'revaluation_date']
+    id: 'references',
+    title: '6. Referência',
+    description: 'Escolha autores e obras para fundamentar o relatório',
+    icon: BookOpen,
+    fields: [] // Somente seis referências bibliográficas selecionáveis
   },
   {
     id: 'recommendations',
@@ -109,7 +111,7 @@ const STEP_HINTS: Record<string, { icon: React.ElementType; title: string; descr
   methodology: { icon: Music, title: 'Abordagem Musicoterapêutica', description: 'Selecione os referenciais e modos de intervenção efetivamente previstos ou utilizados. Métodos especializados exigem capacitação apropriada.' },
   observed_results: { icon: Brain, title: 'Resultados por abordagem e objetivo', description: 'Registre a resposta às abordagens e a evolução de cada objetivo. A Etapa 05 será atualizada automaticamente.' },
   pending_intervention: { icon: Target, title: 'Aspectos a intervir', description: 'Veja as demandas que precisam continuar, calculadas a partir dos resultados da Etapa 04.' },
-  prognosis: { icon: Target, title: 'Prognóstico terapêutico', description: 'Estruture objetivos de curto, médio e longo prazo, com prognóstico e data de reavaliação.' },
+  references: { icon: BookOpen, title: 'Referências bibliográficas', description: 'Selecione apenas obras coerentes com as abordagens e efetivamente utilizadas no embasamento clínico.' },
   recommendations: { icon: Home, title: 'Recomendações', description: 'Oriente família, escola e equipe interdisciplinar com recomendações práticas.' },
   final_considerations: { icon: Sparkles, title: 'Considerações finais', description: 'Sintetize a evolução global e a indicação de continuidade do acompanhamento.' },
   final_review: { icon: Check, title: 'Assinatura', description: 'Revise o relatório, organize com IA se desejar, assine e finalize.' },
@@ -467,57 +469,8 @@ const STEP_TEMPLATES: Record<string, TemplateOption[]> = {
         references_cited: 'Stige, B. (2002). Culture-Centered Music Therapy. Barcelona Publishers. Stige, B.; Aaro, L. E. (2012). Invitation to Community Music Therapy. Routledge. Pavlicevic, M.; Ansdell, G. (2004). Community Music Therapy. Jessica Kingsley. APA (2022). DSM-5-TR.'
       }
     }
-  ],
-  prognosis: [
-    {
-      id: 'prognosis_favorable',
-      label: 'Prognóstico favorável',
-      description: 'Boa resposta terapêutica e perspectiva de evolução consistente.',
-      values: {
-        next_objectives_short: 'Curto prazo (1-3 meses): Ampliar repertório de canções funcionais; consolidar troca de turnos musicais; aumentar o tempo de atenção compartilhada.',
-        next_objectives_medium: 'Médio prazo (3-6 meses): Desenvolver autorregulação por meio de improvisações estruturadas; estimular comunicação intencional via instrumentos.',
-        next_objectives_long: 'Longo prazo (6-12 meses): Promover a generalização das habilidades musicais para os contextos familiar e escolar.',
-        proposed_interventions: 'Manutenção das intervenções receptivas, recriativas e improvisacionais, com foco em ISO de Benenzon e adaptações sensoriais individualizadas.',
-        expected_outcomes: 'Espera-se evolução consistente nas dimensões comunicativa, socioemocional e sensório-motora, com generalização para contextos do cotidiano. Prognóstico favorável.'
-      }
-    },
-    {
-      id: 'prognosis_reserved',
-      label: 'Prognóstico reservado',
-      description: 'Evolução possível, dependente de continuidade e suporte.',
-      values: {
-        next_objectives_short: 'Curto prazo (1-3 meses): Fortalecer o vínculo terapêutico; ampliar a tolerância ao setting; consolidar rotinas sonoras previsíveis.',
-        next_objectives_medium: 'Médio prazo (3-6 meses): Desenvolver gradualmente a atenção compartilhada e a comunicação intencional, respeitando o ritmo do paciente.',
-        next_objectives_long: 'Longo prazo (6-12 meses): Buscar a consolidação de ganhos básicos, com reavaliação contínua dos objetivos conforme a evolução clínica.',
-        proposed_interventions: 'Intervenções predominantemente receptivas e exploratórias, com estruturação altamente previsível e adaptações sensoriais constantes.',
-        expected_outcomes: 'Prognóstico reservado: a evolução é possível, porém gradual, e fortemente dependente da continuidade do tratamento e do suporte familiar e interdisciplinar.'
-      }
-    },
-    {
-      id: 'prognosis_discharge',
-      label: 'Preparação para alta',
-      description: 'Ganhos consolidados, com vistas à alta terapêutica gradual.',
-      values: {
-        next_objectives_short: 'Curto prazo (1-3 meses): Estimular a autonomia na escolha de atividades musicais; consolidar a autorregulação por meio da música.',
-        next_objectives_medium: 'Médio prazo (3-6 meses): Promover a participação em atividades musicais grupais; transferir estratégias para o cotidiano.',
-        next_objectives_long: 'Longo prazo (6-12 meses): Preparar a alta terapêutica gradual, com orientações de continuidade musical em ambiente familiar e/ou escolar.',
-        proposed_interventions: 'Intervenções improvisacionais e compositivas centradas na autonomia do paciente, com orientação familiar e interdisciplinar para sustentação dos ganhos.',
-        expected_outcomes: 'Espera-se que o paciente utilize a música como recurso autorregulatório e comunicativo de forma autônoma e generalizada, sustentando os ganhos após a alta.'
-      }
-    },
-    {
-      id: 'prognosis_unfavorable',
-      label: 'Prognóstico desfavorável / a reavaliar',
-      description: 'Baixa resposta no período; necessita revisão do plano.',
-      values: {
-        next_objectives_short: 'Curto prazo (1-3 meses): Reestruturar o setting e as estratégias de abordagem; priorizar o restabelecimento do vínculo terapêutico e a tolerância mínima às atividades; reduzir demandas e ampliar adaptações sensoriais.',
-        next_objectives_medium: 'Médio prazo (3-6 meses): Investigar e tratar fatores intervenientes (clínicos, sensoriais, emocionais, contextuais); reavaliar a indicação e a frequência dos atendimentos em conjunto com a equipe interdisciplinar.',
-        next_objectives_long: 'Longo prazo (6-12 meses): Redefinir objetivos terapêuticos a partir de nova avaliação, considerando o ritmo individual do paciente e a necessidade de suporte intensivo e articulado.',
-        proposed_interventions: 'Intervenções predominantemente receptivas e de baixa demanda, com estruturação altamente previsível, adaptações sensoriais constantes e revisão contínua do plano terapêutico em articulação interdisciplinar.',
-        expected_outcomes: 'Prognóstico reservado a desfavorável no momento: a evolução depende da identificação e do manejo dos fatores que limitaram a resposta terapêutica, bem como da continuidade do tratamento com plano revisado e suporte familiar e interdisciplinar consistente.'
-      }
-    }
   ]
+
 };
 
 export function MusicoterapiaReportWizard({ 
@@ -700,6 +653,18 @@ export function MusicoterapiaReportWizard({
             onSaveReport={onSaveReport}
             isSaving={isSaving}
             professionalData={professionalData}
+          />
+        </div>
+      );
+    }
+
+    if (currentStepData.id === 'references') {
+      return (
+        <div className="dark">
+          <MusicoterapiaReferenceSelector
+            selectedIds={getSelectedMusicoterapiaReferences(reportData.fieldValues?.musicoterapia_reference_ids).map((item) => item.id)}
+            selectedApproachIds={getSelectedMusicoterapiaApproaches(reportData.fieldValues?.musicoterapia_approach_ids).map((item) => item.id)}
+            onChange={(ids) => handleFieldUpdate('musicoterapia_reference_ids', ids)}
           />
         </div>
       );
