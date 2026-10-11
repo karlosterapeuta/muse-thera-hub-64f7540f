@@ -10,6 +10,7 @@ import type { ReportData } from '@/data/musicoterapiaTemplate';
 import { getMusicoterapiaQualityWarnings } from '@/utils/musicoterapiaQuality';
 import { getSelectedMusicoterapiaObjectives, musicoterapiaObjectiveCategories } from '@/data/musicoterapiaObjectives';
 import { getSelectedMusicoterapiaApproaches } from '@/data/musicoterapiaApproaches';
+import { MusicoterapiaApproachResultsSummary } from './MusicoterapiaApproachResultsSummary';
 
 interface FinalReviewSectionProps {
   reportData: Partial<ReportData>;
@@ -255,6 +256,8 @@ export function FinalReviewSection({
               </CardContent>
             </Card>
           )}
+
+          <MusicoterapiaApproachResultsSummary approachIds={fields.musicoterapia_approach_ids} results={fields.approach_results} />
 
           {isLegacyReport && fields.session_activities && Array.isArray(fields.session_activities) && fields.session_activities.length > 0 && (
             <Card className="shadow-sm">
