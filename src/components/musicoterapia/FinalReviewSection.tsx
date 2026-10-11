@@ -368,7 +368,7 @@ export function FinalReviewSection({
 
   const filledFieldsCount = Object.keys(reportData.fieldValues || {}).length;
   const clinicalWarnings = getMusicoterapiaQualityWarnings(reportData);
-  const totalSteps = 11;
+  const totalSteps = 9;
 
   return (
     <div className="space-y-4 sm:space-y-6">
