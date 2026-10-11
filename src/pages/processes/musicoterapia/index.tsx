@@ -22,6 +22,7 @@ import { renderObjectiveFlowPdf } from '@/utils/renderObjectiveFlowPdf';
 import { renderMusicoterapiaReferencesPdf } from '@/utils/renderMusicoterapiaReferencesPdf';
 import { renderMusicoterapiaFinalConsiderationsPdf } from '@/utils/renderMusicoterapiaFinalConsiderationsPdf';
 import { renderMusicoterapiaSignaturePdf } from '@/utils/renderMusicoterapiaSignaturePdf';
+import { splitMusicoterapiaPdfParagraphs } from '@/utils/musicoterapiaPdfParagraphs';
 import { getSelectedMusicoterapiaReferences } from '@/data/musicoterapiaReferences';
 import { savePDFToStorage } from '@/utils/pdfStorageUtils';
 import { useReportData } from '../report/hooks/useReportData';
@@ -236,7 +237,7 @@ export default function MusicoterapiaPage() {
           ${narrativeSections.map((sec) => `
             <div style="margin-bottom: 16px; page-break-inside: avoid;">
               <h3 style="color: #0d9488; margin: 0 0 6px 0; font-size: 13px; border-bottom: 1px solid #99f6e4; padding-bottom: 4px;">${escapeHtml(sec.title)}</h3>
-              ${String(sec.content).split(/\n{2,}/).map((p) => p.trim()).filter(Boolean).map((p) =>
+              ${splitMusicoterapiaPdfParagraphs(sec.content).map((p) =>
                 `<p style="margin: 0 0 8px 0; font-size: 11.5px; line-height: 1.7; text-align: justify; color: #1f2937; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${escapeHtml(p)}</p>`
               ).join('')}
             </div>
