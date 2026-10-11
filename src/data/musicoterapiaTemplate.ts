@@ -202,15 +202,15 @@ export const musicoterapiaTemplate: ReportTemplate = {
       placeholder: 'Ex.: Manter as sessões e reavaliar os objetivos ainda em desenvolvimento.',
       required: true
     },
-    // Conclusão (Etapa 6)
+    // Campo legado: preservado para leitura de relatórios anteriores, mas
+    // substituído pela síntese da Etapa 08 nos relatórios estruturados.
     {
       id: 'conclusion',
       type: 'textarea',
-      label: 'Conclusão',
-      description: 'Síntese do impacto musical terapêutico',
-      placeholder: 'Ex: A musicoterapia tem se mostrado uma ferramenta eficaz para o desenvolvimento comunicativo e emocional...',
-      required: true,
-      guidance: 'Resumo do papel da música no desenvolvimento do paciente'
+      label: 'Conclusão (registro anterior)',
+      description: 'Texto de relatórios anteriores.',
+      placeholder: 'Conclusão do relatório anterior',
+      required: false
     },
     {
       id: 'treatment_summary',
@@ -362,7 +362,7 @@ export const musicoterapiaTemplate: ReportTemplate = {
     { id: 'referral_reason', type: 'textarea', label: 'Motivo do Encaminhamento', description: 'Razão clínica do encaminhamento para musicoterapia', placeholder: 'Ex: Paciente encaminhado para musicoterapia visando o desenvolvimento da comunicação, interação social e autorregulação emocional, conforme indicação da equipe multiprofissional...', required: false, guidance: 'Descreva o motivo, queixa principal e expectativas que originaram o encaminhamento' },
     { id: 'home_activities', type: 'textarea', label: 'Atividades para Casa', description: 'Sugestões de atividades musicais para o ambiente familiar', placeholder: 'Ex: Realizar momentos diários de canto compartilhado; explorar instrumentos de percussão durante a rotina...', required: false, guidance: 'Atividades musicais práticas para os responsáveis aplicarem em casa' },
     { id: 'family_guidance', type: 'textarea', label: 'Orientações à Família', description: 'Recomendações para os responsáveis', placeholder: 'Ex: Manter rotinas musicais previsíveis; valorizar as iniciativas de comunicação do paciente...', required: false, guidance: 'Orientações práticas para apoiar o desenvolvimento em casa' },
-    { id: 'final_considerations', type: 'textarea', label: 'Considerações Finais', description: 'Síntese conclusiva do período avaliado', placeholder: 'Ex: O paciente apresentou evolução significativa durante o período avaliado, especialmente nos aspectos relacionados à interação social, comunicação e autorregulação emocional. As intervenções musicoterapêuticas mostraram-se efetivas, sendo indicada a continuidade do acompanhamento...', required: false, guidance: 'Resumo final destacando a evolução global e a indicação de continuidade' },
+    { id: 'final_considerations', type: 'textarea', label: 'Observação conclusiva', description: 'Complemento opcional à síntese automática dos resultados.', placeholder: 'Acrescente apenas informações clínicas relevantes não contempladas nas etapas anteriores.', required: false },
 
     // ===== PLANO TERAPÊUTICO FUTURO =====
     { id: 'next_objectives_short', type: 'textarea', label: 'Objetivos de Curto Prazo (1-3 meses)', description: 'Próximos objetivos imediatos', placeholder: 'Ex: Ampliar repertório de canções funcionais; introduzir improvisação em modo pentatônico...', required: false, guidance: 'Objetivos para os próximos 1-3 meses' },
