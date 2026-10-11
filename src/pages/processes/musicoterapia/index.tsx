@@ -674,8 +674,8 @@ export default function MusicoterapiaPage() {
         });
       } else {
         toast({
-          title: "PDF gerado sem narrativa de IA",
-          description: "Não foi possível gerar o texto narrativo agora; o relatório usará os dados estruturados.",
+          title: "Narrativa de IA indisponível",
+          description: "Revise os dados estruturados antes da exportação.",
         });
       }
 
@@ -732,7 +732,8 @@ export default function MusicoterapiaPage() {
       await pdfInstance.save();
       try { const blob = await pdfInstance.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "report"); } catch(e) { console.warn("PDF não salvo no storage:", e); }
       
-      tempDiv.remove();\n      tempDiv = null;
+      tempDiv.remove();
+      tempDiv = null;
 
       toast({
         title: "PDF gerado!",
@@ -746,6 +747,7 @@ export default function MusicoterapiaPage() {
         description: "Não foi possível gerar o PDF.",
       });
     } finally {
+      tempDiv?.remove();
       setIsExporting(false);
     }
   };
