@@ -19,6 +19,8 @@ import { getSelectedMusicoterapiaApproaches } from '@/data/musicoterapiaApproach
 import { getRecordedApproachResults } from '@/data/musicoterapiaApproachResults';
 import { renderRecordedResultsPdf } from '@/utils/renderRecordedResultsPdf';
 import { renderObjectiveFlowPdf } from '@/utils/renderObjectiveFlowPdf';
+import { renderMusicoterapiaReferencesPdf } from '@/utils/renderMusicoterapiaReferencesPdf';
+import { getSelectedMusicoterapiaReferences } from '@/data/musicoterapiaReferences';
 import { savePDFToStorage } from '@/utils/pdfStorageUtils';
 import { useReportData } from '../report/hooks/useReportData';
 import html2pdf from 'html2pdf.js';
@@ -199,6 +201,7 @@ export default function MusicoterapiaPage() {
     const fields = reportDataForPDF.fieldValues || {};
     const selectedGoals = getSelectedMusicoterapiaObjectives(fields.therapeutic_objective_ids);
     const selectedApproaches = getSelectedMusicoterapiaApproaches(fields.musicoterapia_approach_ids);
+    const selectedReferences = getSelectedMusicoterapiaReferences(fields.musicoterapia_reference_ids);
     const recordedResults = getRecordedApproachResults(fields.musicoterapia_approach_ids, fields.approach_results);
     // Manter informações de relatórios anteriores sem repetir a antiga Etapa 04 nos novos.
     const isLegacyReport = selectedApproaches.length === 0;
@@ -518,13 +521,13 @@ export default function MusicoterapiaPage() {
             ${isLegacyReport ? renderSection('Comunicação e Linguagem', ['vocalizations_observed','verbal_output_during_music','echolalia_musical','aac_use','pragmatic_skills']) : ''}
             ${renderSection('Matriz de Evidências Musicoterapêuticas', ['baseline_observation','current_observation','measurement_method','assistance_level','observation_context','report_limitations'])}
             ${isLegacyReport ? renderSection('Evolução Clínica Detalhada', ['evolution_compared_baseline','goals_achieved','goals_in_progress','goals_not_achieved','quantitative_indicators']) : renderSection('Síntese dos Resultados', ['goals_achieved','goals_in_progress','quantitative_indicators'])}
-            ${renderSection('Plano Terapêutico Futuro', ['next_objectives_short','next_objectives_medium','next_objectives_long','proposed_interventions','expected_outcomes','revaluation_date'])}
+            ${isLegacyReport ? renderSection('Plano Terapêutico Futuro', ['next_objectives_short','next_objectives_medium','next_objectives_long','proposed_interventions','expected_outcomes','revaluation_date']) : ''}
             ${renderSection('Orientações Ampliadas', isLegacyReport ? ['school_recommendations','interdisciplinary_team_notes','playlist_recommended','red_flags_to_monitor'] : ['school_recommendations','interdisciplinary_team_notes','playlist_recommended'])}
             ${scalesTable}
             ${(() => {
               const tf = selectedApproaches.length === 0 ? (fields.theoretical_framework || '').toString().trim() : '';
               const at = selectedApproaches.length === 0 ? (fields.assessment_tools_used || '').toString().trim() : '';
-              const rc = (fields.references_cited || '').toString().trim();
+              const rc = selectedReferences.length > 0 ? '' : (fields.references_cited || '').toString().trim();
               if (!tf && !at && !rc) return '';
               const formatList = (txt: string) => {
                 const items = txt.split(/\n+/).map(s => s.replace(/^[-•\d.\)\s]+/, '').trim()).filter(Boolean);
@@ -563,6 +566,7 @@ export default function MusicoterapiaPage() {
                 </div>
               `;
             })()}
+            ${renderMusicoterapiaReferencesPdf(fields.musicoterapia_reference_ids, escapeHtml)}
           `;
         })()}
 
