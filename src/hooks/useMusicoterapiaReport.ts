@@ -4,6 +4,7 @@ import { musicoterapiaTemplate, type ReportData } from '@/data/musicoterapiaTemp
 import { getMusicoterapiaQualityWarnings } from '@/utils/musicoterapiaQuality';
 import { getSelectedMusicoterapiaObjectives } from '@/data/musicoterapiaObjectives';
 import { getSelectedMusicoterapiaApproaches } from '@/data/musicoterapiaApproaches';
+import { getRecordedApproachResults, getApproachResultsValidationIssues, summarizeApproachResult } from '@/data/musicoterapiaApproachResults';
 import { useProfessionalData } from '@/hooks/useProfessionalData';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -66,7 +67,7 @@ export function useMusicoterapiaReport() {
         
         Object.entries(data.organizedContent).forEach(([key, value]) => {
           // Objetivos selecionados são decisões do profissional: a IA não pode alterá-los.
-          if (key === 'therapeutic_objective_ids' || key === 'musicoterapia_approach_ids') return;
+          if (key === 'therapeutic_objective_ids' || key === 'musicoterapia_approach_ids' || key === 'approach_results') return;
           // Não acrescentar ao prontuário campos não enviados pelo profissional.
           if (!Object.prototype.hasOwnProperty.call(reportData.fieldValues || {}, key)) return;
           // Manter campos que já são arrays como arrays
@@ -94,7 +95,7 @@ export function useMusicoterapiaReport() {
         return newFieldValues;
       } else if (data.fallbackContent) {
         // IA indisponível: usar os dados originais sem alterar a estrutura
-        const { therapeutic_objective_ids: _unusedObjectiveIds, musicoterapia_approach_ids: _unusedApproachIds, ...fallbackFields } = data.fallbackContent || {};
+        const { therapeutic_objective_ids: _unusedObjectiveIds, musicoterapia_approach_ids: _unusedApproachIds, approach_results: _unusedApproachResults, ...fallbackFields } = data.fallbackContent || {};
         const newFieldValues = { ...reportData.fieldValues, ...fallbackFields };
 
         updateReportData({
@@ -132,6 +133,7 @@ export function useMusicoterapiaReport() {
     try {
       const selectedObjectives = getSelectedMusicoterapiaObjectives(payload.fieldValues?.therapeutic_objective_ids);
       const selectedApproaches = getSelectedMusicoterapiaApproaches(payload.fieldValues?.musicoterapia_approach_ids);
+      const recordedResults = getRecordedApproachResults(payload.fieldValues?.musicoterapia_approach_ids, payload.fieldValues?.approach_results);
       // Enviar os objetivos por extenso apenas como contexto da narrativa, sem
       // gravar texto gerado automaticamente ou tratar objetivos como conquistas.
       const narrativePayload = {
@@ -204,7 +206,8 @@ export function useMusicoterapiaReport() {
         : []),
       ...(approachSelection.length === 0
         ? ['Selecione pelo menos uma abordagem musicoterapêutica da Etapa 04']
-        : [])
+        : []),
+      ...getApproachResultsValidationIssues(reportData.fieldValues?.musicoterapia_approach_ids, reportData.fieldValues?.approach_results)
     ];
 
 
