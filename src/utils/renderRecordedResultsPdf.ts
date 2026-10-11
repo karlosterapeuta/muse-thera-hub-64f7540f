@@ -1,5 +1,5 @@
-import { summarizeApproachResult } from '@/data/musicoterapiaApproachResults';
-import type { RecordedApproachResult } from '@/data/musicoterapiaApproachResults';
+import { summarizeApproachResult, getRecordedApproachResults } from '@/data/musicoterapiaApproachResults';
+type RecordedApproachResult = ReturnType<typeof getRecordedApproachResults>[number];
 
 /** Layout compacto, derivado somente dos resultados informados pelo profissional. */
 export function renderRecordedResultsPdf(
