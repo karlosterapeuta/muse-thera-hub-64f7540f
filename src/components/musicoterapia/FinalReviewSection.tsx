@@ -131,8 +131,8 @@ export function FinalReviewSection({
           </div>
           <div className="relative z-10">
             <h1 className="text-2xl sm:text-3xl font-bold mb-2">Relatorio MuseTera TEA</h1>
-            <p className="text-[#c9a84c] text-base sm:text-lg">Musicoterapia para Transtorno do Espectro Autista</p>
-            <div className="mt-4 text-xs sm:text-sm text-[#c9a84c]/80">
+            <p className="text-teal-600 dark:text-teal-300 text-base sm:text-lg">Musicoterapia para Transtorno do Espectro Autista</p>
+            <div className="mt-4 text-xs sm:text-sm text-teal-600 dark:text-teal-300/80">
               Gerado em {new Date().toLocaleDateString('pt-BR')} as {new Date().toLocaleTimeString('pt-BR')}
             </div>
           </div>
@@ -142,7 +142,7 @@ export function FinalReviewSection({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <Card className="border-l-4 border-l-[#c9a84c] shadow-sm">
               <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-[#c9a84c] text-base sm:text-lg">
+                <CardTitle className="flex items-center gap-2 text-teal-600 dark:text-teal-300 text-base sm:text-lg">
                   <div className="w-8 h-8 bg-[#c9a84c]/20 rounded-full flex items-center justify-center text-sm">
                     P
                   </div>
@@ -167,7 +167,7 @@ export function FinalReviewSection({
 
             <Card className="border-l-4 border-l-[#c9a84c] shadow-sm">
               <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-[#c9a84c] text-base sm:text-lg">
+                <CardTitle className="flex items-center gap-2 text-teal-600 dark:text-teal-300 text-base sm:text-lg">
                   <div className="w-8 h-8 bg-[#c9a84c]/20 rounded-full flex items-center justify-center text-sm">
                     M
                   </div>
@@ -196,7 +196,7 @@ export function FinalReviewSection({
           {selectedObjectives.length > 0 && (
             <Card className="border border-[#c9a84c]/30">
               <CardHeader>
-                <CardTitle className="text-[#c9a84c]">Objetivos a estimular ou desenvolver</CardTitle>
+                <CardTitle className="text-teal-600 dark:text-teal-300">Objetivos a estimular ou desenvolver</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <p className="text-xs text-muted-foreground">Objetivos planejados; não representam conquistas já observadas.</p>
@@ -205,7 +205,7 @@ export function FinalReviewSection({
                   if (!group.length) return null;
                   return (
                     <section key={category.id} className="space-y-2">
-                      <h4 className="text-sm font-semibold text-[#c9a84c]">{category.icon} {category.title}</h4>
+                      <h4 className="text-sm font-semibold text-teal-600 dark:text-teal-300">{category.icon} {category.title}</h4>
                       {group.map((objective) => (
                         <div key={objective.id} className="rounded-lg border border-[#c9a84c]/20 p-3 bg-[#c9a84c]/5">
                           <p className="font-semibold text-sm">{objective.icon} {objective.title}</p>
@@ -222,7 +222,7 @@ export function FinalReviewSection({
           {selectedObjectives.length === 0 && complementaryObjectives.length > 0 && (
             <Card className="shadow-sm">
               <CardHeader className="bg-gradient-to-r from-[#c9a84c]/20 to-[#c9a84c]/10 rounded-t-lg">
-                <CardTitle className="flex items-center gap-2 text-[#c9a84c] text-sm sm:text-base">
+                <CardTitle className="flex items-center gap-2 text-teal-600 dark:text-teal-300 text-sm sm:text-base">
                   <div className="w-6 h-6 sm:w-8 sm:h-8 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-xs">O</div>
                   Objetivos complementares
                 </CardTitle>
@@ -231,7 +231,7 @@ export function FinalReviewSection({
                 <div className="space-y-2 sm:space-y-3">
                   {complementaryObjectives.map((objective: string, index: number) => (
                     <div key={index} className="flex items-start gap-3 p-2 sm:p-3 bg-[#c9a84c]/10 rounded-lg border border-[#c9a84c]/20">
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-[#c9a84c] font-bold text-[10px] sm:text-xs mt-0.5 flex-shrink-0">{index + 1}</div>
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-teal-600 dark:text-teal-300 font-bold text-[10px] sm:text-xs mt-0.5 flex-shrink-0">{index + 1}</div>
                       <p className="text-foreground leading-relaxed flex-1">{objective}</p>
                     </div>
                   ))}
@@ -243,7 +243,7 @@ export function FinalReviewSection({
           {selectedApproaches.length > 0 && (
             <Card className="border border-[#c9a84c]/30">
               <CardHeader>
-                <CardTitle className="text-[#c9a84c]">Abordagem Musicoterapêutica</CardTitle>
+                <CardTitle className="text-teal-600 dark:text-teal-300">Abordagem Musicoterapêutica</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <p className="text-xs text-muted-foreground">
@@ -270,7 +270,7 @@ export function FinalReviewSection({
           {isLegacyReport && fields.session_activities && Array.isArray(fields.session_activities) && fields.session_activities.length > 0 && (
             <Card className="shadow-sm">
               <CardHeader className="bg-gradient-to-r from-[#c9a84c]/20 to-[#c9a84c]/10 rounded-t-lg">
-                <CardTitle className="flex items-center gap-2 text-[#c9a84c] text-sm sm:text-base">
+                <CardTitle className="flex items-center gap-2 text-teal-600 dark:text-teal-300 text-sm sm:text-base">
                   <div className="w-6 h-6 sm:w-8 sm:h-8 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-xs">A</div>
                   Atividades Realizadas
                 </CardTitle>
@@ -279,7 +279,7 @@ export function FinalReviewSection({
                 <div className="space-y-2 sm:space-y-3">
                   {fields.session_activities.map((activity: string, index: number) => (
                     <div key={index} className="flex items-start gap-3 p-2 sm:p-3 bg-[#c9a84c]/10 rounded-lg border border-[#c9a84c]/20">
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-[#c9a84c] font-bold text-[10px] sm:text-xs mt-1 flex-shrink-1">-</div>
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-teal-600 dark:text-teal-300 font-bold text-[10px] sm:text-xs mt-1 flex-shrink-1">-</div>
                       <p className="text-foreground leading-relaxed flex-1">{activity}</p>
                     </div>
                   ))}
@@ -291,7 +291,7 @@ export function FinalReviewSection({
           {isLegacyReport && fields.patient_evolution && Array.isArray(fields.patient_evolution) && fields.patient_evolution.length > 0 && (
             <Card className="shadow-sm">
               <CardHeader className="bg-gradient-to-r from-[#c9a84c]/20 to-[#c9a84c]/10 rounded-t-lg">
-                <CardTitle className="flex items-center gap-2 text-[#c9a84c] text-sm sm:text-base">
+                <CardTitle className="flex items-center gap-2 text-teal-600 dark:text-teal-300 text-sm sm:text-base">
                   <div className="w-6 h-6 sm:w-8 sm:h-8 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-xs">E</div>
                   Evolucao do Paciente
                 </CardTitle>
@@ -300,7 +300,7 @@ export function FinalReviewSection({
                 <div className="space-y-2 sm:space-y-3">
                   {fields.patient_evolution.map((evolution: string, index: number) => (
                     <div key={index} className="flex items-start gap-3 p-2 sm:p-3 bg-[#c9a84c]/10 rounded-lg border border-[#c9a84c]/20">
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-[#c9a84c] font-bold text-[10px] sm:text-xs mt-1 flex-shrink-0">ok</div>
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-teal-600 dark:text-teal-300 font-bold text-[10px] sm:text-xs mt-1 flex-shrink-0">ok</div>
                       <p className="text-foreground leading-relaxed flex-1">{evolution}</p>
                     </div>
                   ))}
@@ -312,7 +312,7 @@ export function FinalReviewSection({
           {fields.recommendations && Array.isArray(fields.recommendations) && fields.recommendations.length > 0 && (
             <Card className="shadow-sm">
               <CardHeader className="bg-gradient-to-r from-[#c9a84c]/20 to-[#c9a84c]/10 rounded-t-lg">
-                <CardTitle className="flex items-center gap-2 text-[#c9a84c] text-sm sm:text-base">
+                <CardTitle className="flex items-center gap-2 text-teal-600 dark:text-teal-300 text-sm sm:text-base">
                   <div className="w-6 h-6 sm:w-8 sm:h-8 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-xs">R</div>
                   Recomendacoes
                 </CardTitle>
@@ -321,7 +321,7 @@ export function FinalReviewSection({
                 <div className="space-y-2 sm:space-y-3">
                   {fields.recommendations.map((recommendation: string, index: number) => (
                     <div key={index} className="flex items-start gap-3 p-2 sm:p-3 bg-[#c9a84c]/10 rounded-lg border border-[#c9a84c]/20">
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-[#c9a84c] font-bold text-[10px] sm:text-xs mt-1 flex-shrink-1">&gt;</div>
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-teal-600 dark:text-teal-300 font-bold text-[10px] sm:text-xs mt-1 flex-shrink-1">&gt;</div>
                       <p className="text-foreground leading-relaxed flex-1">{recommendation}</p>
                     </div>
                   ))}
@@ -333,7 +333,7 @@ export function FinalReviewSection({
           {isLegacyReport && fields.conclusion && Array.isArray(fields.conclusion) && fields.conclusion.length > 0 && (
             <Card className="shadow-sm">
               <CardHeader className="bg-gradient-to-r from-[#c9a84c]/20 to-[#c9a84c]/10 rounded-t-lg">
-                <CardTitle className="flex items-center gap-2 text-[#c9a84c] text-sm sm:text-base">
+                <CardTitle className="flex items-center gap-2 text-teal-600 dark:text-teal-300 text-sm sm:text-base">
                   <div className="w-6 h-6 sm:w-8 sm:h-8 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-xs">C</div>
                   Conclusao
                 </CardTitle>
@@ -342,7 +342,7 @@ export function FinalReviewSection({
                 <div className="space-y-2 sm:space-y-3">
                   {fields.conclusion.map((conclusion: string, index: number) => (
                     <div key={index} className="flex items-start gap-3 p-2 sm:p-3 bg-[#c9a84c]/10 rounded-lg border border-[#c9a84c]/20">
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-[#c9a84c] font-bold text-[10px] sm:text-xs mt-1 flex-shrink-0">*</div>
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-teal-600 dark:text-teal-300 font-bold text-[10px] sm:text-xs mt-1 flex-shrink-0">*</div>
                       <p className="text-foreground leading-relaxed flex-1">{conclusion}</p>
                     </div>
                   ))}
@@ -379,16 +379,16 @@ export function FinalReviewSection({
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* Info Banner */}
-      <div className="rounded-2xl border border-[#c9a84c]/30 bg-[#0d0d0d]/40 p-4 sm:p-5">
+      {/* Clinical review overview */}
+      <div className="rounded-2xl border border-teal-700/25 bg-teal-50/70 p-4 sm:p-6 dark:bg-teal-950/25">
         <div className="flex items-start gap-3">
-          <div className="p-2 rounded-xl bg-[#c9a84c]/15 border border-[#c9a84c]/30 flex-shrink-1">
-            <Info className="h-4 w-4 sm:h-5 sm:w-5 text-[#c9a84c]" />
+          <div className="p-2 rounded-xl bg-teal-700/10 border border-teal-700/20 flex-shrink-0">
+            <Info className="h-4 w-4 sm:h-5 sm:w-5 text-teal-600 dark:text-teal-300" />
           </div>
           <div className="min-w-1">
-            <p className="font-medium text-sm sm:text-base text-[#c9a84c]">Revisao Final</p>
+            <p className="font-medium text-sm sm:text-base text-teal-800 dark:text-teal-200">Revisão e emissão</p>
             <p className="text-xs sm:text-sm text-muted-foreground mt-1 leading-relaxed">
-              Personalize, visualize e exporte seu relatorio profissional. Verifique todos os dados antes de finalizar.
+              Confira a identificação, os objetivos, os resultados observados e os limites da análise clínica antes de emitir o documento.
             </p>
           </div>
         </div>
@@ -404,37 +404,52 @@ export function FinalReviewSection({
         </div>
       )}
 
+      <div className="grid gap-3 rounded-2xl border border-border/70 bg-card p-4 shadow-sm sm:grid-cols-3 sm:p-5">
+        <div className="flex items-start gap-2.5">
+          <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-teal-600" />
+          <div><p className="text-sm font-semibold">Dados clínicos</p><p className="mt-1 text-xs leading-relaxed text-muted-foreground">Confirme as respostas registradas pelo profissional e os objetivos selecionados.</p></div>
+        </div>
+        <div className="flex items-start gap-2.5">
+          <Eye className="mt-0.5 h-5 w-5 shrink-0 text-teal-600" />
+          <div><p className="text-sm font-semibold">Análise por IA</p><p className="mt-1 text-xs leading-relaxed text-muted-foreground">A redação é um rascunho clínico. Não aceite avanços ou prognósticos sem evidência registrada.</p></div>
+        </div>
+        <div className="flex items-start gap-2.5">
+          <Download className="mt-0.5 h-5 w-5 shrink-0 text-teal-600" />
+          <div><p className="text-sm font-semibold">Documento final</p><p className="mt-1 text-xs leading-relaxed text-muted-foreground">Revise a identificação e confira o PDF baixado antes de compartilhar.</p></div>
+        </div>
+      </div>
+
       {/* Stats Summary */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
         <StatCard
           label="Campos Preenchidos"
           value={filledFieldsCount.toString()}
-          icon={<FileText className="h-4 w-4 text-[#c9a84c]" />}
+          icon={<FileText className="h-4 w-4 text-teal-600 dark:text-teal-300" />}
         />
         <StatCard
           label="Dados do Paciente"
           value={reportData.patientName ? 'OK' : '---'}
-          icon={<CheckCircle className="h-4 w-4 text-[#c9a84c]" />}
+          icon={<CheckCircle className="h-4 w-4 text-teal-600 dark:text-teal-300" />}
         />
         <StatCard
           label="Dados do Profissional"
           value={reportData.professionalName ? 'OK' : '---'}
-          icon={<CheckCircle className="h-4 w-4 text-[#c9a84c]" />}
+          icon={<CheckCircle className="h-4 w-4 text-teal-600 dark:text-teal-300" />}
         />
         <StatCard
           label="Data da Sessao"
           value={reportData.sessionDate ? new Date(reportData.sessionDate).toLocaleDateString('pt-BR') : '---'}
-          icon={<FileText className="h-4 w-4 text-[#c9a84c]" />}
+          icon={<FileText className="h-4 w-4 text-teal-600 dark:text-teal-300" />}
         />
       </div>
 
       {/* Action Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
         {/* Upload Logo */}
-        <div className="rounded-2xl border border-white/5 bg-[#0d0d0d]/30 hover:border-[#c9a84c]/30 hover:bg-[#0d0d0d]/50 transition-all p-4 sm:p-5 flex flex-col">
+        <div className="rounded-2xl border border-border/70 bg-card hover:border-teal-600/40 hover:shadow-md transition-all p-4 sm:p-5 flex flex-col">
           <div className="flex items-start gap-3 mb-4">
-            <div className="p-2.5 rounded-xl bg-[#c9a84c]/15 border border-[#c9a84c]/30 flex-shrink-0">
-              <Image className="h-5 w-5 text-[#c9a84c]" />
+            <div className="p-2.5 rounded-xl bg-teal-600/10 border border-teal-600/20 flex-shrink-0">
+              <Image className="h-5 w-5 text-teal-600 dark:text-teal-300" />
             </div>
             <div>
               <h3 className="text-sm sm:text-base font-semibold text-foreground">Upload de Logo</h3>
@@ -459,7 +474,7 @@ export function FinalReviewSection({
                     <X className="h-3 w-3" />
                   </Button>
                 </div>
-                <p className="text-xs text-[#c9a84c] font-medium">Logo carregada!</p>
+                <p className="text-xs text-teal-600 dark:text-teal-300 font-medium">Logo carregada!</p>
               </div>
             ) : (
               <>
@@ -472,7 +487,7 @@ export function FinalReviewSection({
                 />
                 <Button
                   variant="outline"
-                  className="w-full border-[#c9a84c]/30 hover:bg-[#c9a84c]/10 hover:text-[#c9a84c] text-xs sm:text-sm"
+                  className="w-full border-[#c9a84c]/30 hover:bg-[#c9a84c]/10 hover:text-teal-600 dark:text-teal-300 text-xs sm:text-sm"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploadingLogo}
                 >
@@ -494,10 +509,10 @@ export function FinalReviewSection({
         </div>
 
         {/* Visualizar */}
-        <div className="rounded-2xl border border-white/5 bg-[#0d0d0d]/30 hover:border-[#c9a84c]/30 hover:bg-[#0d0d0d]/50 transition-all p-4 sm:p-5 flex flex-col">
+        <div className="rounded-2xl border border-border/70 bg-card hover:border-teal-600/40 hover:shadow-md transition-all p-4 sm:p-5 flex flex-col">
           <div className="flex items-start gap-3 mb-4">
-            <div className="p-2.5 rounded-xl bg-[#c9a84c]/15 border border-[#c9a84c]/30 flex-shrink-0">
-              <Eye className="h-5 w-5 text-[#c9a84c]" />
+            <div className="p-2.5 rounded-xl bg-teal-600/10 border border-teal-600/20 flex-shrink-0">
+              <Eye className="h-5 w-5 text-teal-600 dark:text-teal-300" />
             </div>
             <div>
               <h3 className="text-sm sm:text-base font-semibold text-foreground">Visualizar Relatorio</h3>
@@ -507,7 +522,7 @@ export function FinalReviewSection({
           <div className="flex-1 flex flex-col justify-end">
             <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
               <DialogTrigger asChild>
-                <Button variant="outline" className="w-full border-[#c9a84c]/30 hover:bg-[#c9a84c]/10 hover:text-[#c9a84c] text-xs sm:text-sm">
+                <Button variant="outline" className="w-full border-[#c9a84c]/30 hover:bg-[#c9a84c]/10 hover:text-teal-600 dark:text-teal-300 text-xs sm:text-sm">
                   <Eye className="h-4 w-4 mr-2" />
                   Previa
                 </Button>
@@ -529,10 +544,10 @@ export function FinalReviewSection({
 
 
         {/* Exportação pelo gerador principal: o mesmo PDF da página de relatórios */}
-        <div className="rounded-2xl border border-white/5 bg-[#0d0d0d]/30 hover:border-[#c9a84c]/30 transition-all p-4 sm:p-5 flex flex-col">
+        <div className="rounded-2xl border border-border/70 bg-card hover:border-teal-600/40 hover:shadow-md transition-all p-4 sm:p-5 flex flex-col">
           <div className="flex items-start gap-3 mb-4">
-            <div className="p-2.5 rounded-xl bg-[#c9a84c]/15 border border-[#c9a84c]/30">
-              <Download className="h-5 w-5 text-[#c9a84c]" />
+            <div className="p-2.5 rounded-xl bg-teal-600/10 border border-teal-600/20">
+              <Download className="h-5 w-5 text-teal-600 dark:text-teal-300" />
             </div>
             <div>
               <h3 className="text-sm sm:text-base font-semibold text-foreground">Exportar PDF</h3>
@@ -541,7 +556,7 @@ export function FinalReviewSection({
           </div>
           <div className="flex-1 flex flex-col justify-end">
             <Button onClick={() => void onExportPDF(logoUrl)} disabled={isExporting || isUploadingLogo}
-              className="w-full bg-[#0d0d0d] border border-[#c9a84c]/40 hover:bg-[#c9a84c]/10 text-[#c9a84c] text-xs sm:text-sm">
+              className="w-full bg-teal-700 text-white hover:bg-teal-800 text-xs sm:text-sm">
               {isExporting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
               {isExporting ? 'Gerando...' : 'Baixar PDF'}
             </Button>
@@ -549,10 +564,10 @@ export function FinalReviewSection({
         </div>
 
         {/* Salvar */}
-        <div className="rounded-2xl border border-white/5 bg-[#0d0d0d]/30 hover:border-[#c9a84c]/30 hover:bg-[#0d0d0d]/50 transition-all p-4 sm:p-5 flex flex-col">
+        <div className="rounded-2xl border border-border/70 bg-card hover:border-teal-600/40 hover:shadow-md transition-all p-4 sm:p-5 flex flex-col">
           <div className="flex items-start gap-3 mb-4">
-            <div className="p-2.5 rounded-xl bg-[#c9a84c]/15 border border-[#c9a84c]/30 flex-shrink-0">
-              <Save className="h-5 w-5 text-[#c9a84c]" />
+            <div className="p-2.5 rounded-xl bg-teal-600/10 border border-teal-600/20 flex-shrink-0">
+              <Save className="h-5 w-5 text-teal-600 dark:text-teal-300" />
             </div>
             <div>
               <h3 className="text-sm sm:text-base font-semibold text-foreground">Salvar Relatorio</h3>
@@ -563,7 +578,7 @@ export function FinalReviewSection({
             <Button
               onClick={onSaveReport}
               disabled={isSaving}
-              className="w-full bg-[#0d0d0d] border border-[#c9a84c]/40 hover:bg-[#c9a84c]/10 text-[#c9a84c] text-xs sm:text-sm"
+              className="w-full bg-teal-700 text-white hover:bg-teal-800 text-xs sm:text-sm"
             >
               {isSaving ? (
                 <>
@@ -586,15 +601,15 @@ export function FinalReviewSection({
       <div className="rounded-2xl border border-[#c9a84c]/30 bg-gradient-to-br from-[#c9a84c]/10 to-transparent p-4 sm:p-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-[#c9a84c]/15 border border-[#c9a84c]/30">
-              <CheckCircle className="h-5 w-5 text-[#c9a84c]" />
+            <div className="p-2 rounded-xl bg-teal-600/10 border border-teal-600/20">
+              <CheckCircle className="h-5 w-5 text-teal-600 dark:text-teal-300" />
             </div>
             <div>
-              <p className="text-sm sm:text-base font-semibold text-[#c9a84c]">Relatorio Concluido</p>
+              <p className="text-sm sm:text-base font-semibold text-teal-600 dark:text-teal-300">Relatorio Concluido</p>
               <p className="text-xs sm:text-sm text-muted-foreground">Revise os dados e os avisos clínicos antes de exportar.</p>
             </div>
           </div>
-          <ChevronRight className="h-5 w-5 text-[#c9a84c] hidden sm:block" />
+          <ChevronRight className="h-5 w-5 text-teal-600 dark:text-teal-300 hidden sm:block" />
         </div>
       </div>
     </div>
@@ -607,7 +622,7 @@ function StatCard({ label, value, icon }: { label: string; value: string; icon: 
       <div className="flex items-center justify-center mb-2">
         {icon}
       </div>
-      <div className="text-lg sm:text-2xl font-bold text-[#c9a84c] mb-1">{value}</div>
+      <div className="text-lg sm:text-2xl font-bold text-teal-600 dark:text-teal-300 mb-1">{value}</div>
       <div className="text-[10px] sm:text-xs font-medium text-muted-foreground">{label}</div>
     </div>
   );
