@@ -36,8 +36,15 @@ export function useMusicoterapiaReport() {
     }
   }, [professionalData]);
 
-  const updateReportData = useCallback((updates: Partial<ReportData>) => {
-    setReportData(prev => ({ ...prev, ...updates }));
+  // Aceita atualização atômica para impedir que uma consulta assíncrona
+  // substitua edições já feitas em outro campo ou dados de outro paciente.
+  const updateReportData = useCallback((
+    updates: Partial<ReportData> | ((prev: Partial<ReportData>) => Partial<ReportData>)
+  ) => {
+    setReportData(prev => ({
+      ...prev,
+      ...(typeof updates === 'function' ? updates(prev) : updates)
+    }));
   }, []);
 
   const generateWithAI = useCallback(async () => {
