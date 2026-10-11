@@ -691,6 +691,7 @@ export default function MusicoterapiaPage() {
           },
           session_date: reportData.sessionDate,
           signature: reportData.signature,
+          logo_url: reportLogoUrl || null,
           ...(sourceReportId ? { based_on_report_id: sourceReportId } : {})
         }
       };
@@ -875,6 +876,7 @@ export default function MusicoterapiaPage() {
     setAnamnesisStatus('idle');
     // Cria uma nova versão, preservando o documento histórico original.
     setSourceReportId(report.id);
+    setReportLogoUrl(report.content?.logo_url || null);
     // Carregar dados do relatório no wizard
     updateReportData({
       selectedPatientId: report.patient_id || '',
@@ -931,11 +933,13 @@ export default function MusicoterapiaPage() {
       if (professionalData?.digital_stamp_url) {
         stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
       }
+      const savedLogoUrl = typeof report.content?.logo_url === 'string' ? report.content.logo_url : null;
+      const savedLogoBase64 = savedLogoUrl ? await imageUrlToBase64(savedLogoUrl) : null;
 
       // Mesmo template e paginação usados no relatório recém-gerado.
       const filename = `Relatorio_Musicoterapia_${(reportDataForPDF.patientName || 'paciente').replace(/[^\p{L}\p{N}_-]+/gu, '_')}_${new Date(report.created_at).toISOString().split('T')[0]}.pdf`;
       const blob = await exportMusicoterapiaHtmlPdf(
-        generatePDFContent(reportDataForPDF, photoBase64, stampBase64),
+        generatePDFContent(reportDataForPDF, photoBase64, stampBase64, savedLogoBase64),
         filename
       );
       let savedPath: string | null = null;
