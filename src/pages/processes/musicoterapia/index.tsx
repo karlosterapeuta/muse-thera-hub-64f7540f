@@ -1031,7 +1031,7 @@ export default function MusicoterapiaPage() {
         <div className="flex flex-col gap-2 sm:hidden">
           <Button
             onClick={() => setViewMode(viewMode === 'create' ? 'list' : 'create')}
-            className="w-full h-12 font-semibold border-0 bg-gradient-to-br from-primary to-amber-500 text-white shadow-lg hover:opacity-90 transition-all duration-300"
+            className="w-full h-12 font-semibold border-0 bg-teal-700 hover:bg-teal-800 text-white shadow-sm hover:opacity-90 transition-all duration-300"
           >
             {viewMode === 'create' ? (
               <>
@@ -1073,30 +1073,30 @@ export default function MusicoterapiaPage() {
       {viewMode === 'create' ? (
         <>
           {/* Export PDF Card */}
-          <Card className="relative overflow-hidden border border-border/60 bg-card/60 backdrop-blur-xl shadow-lg rounded-2xl">
-            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary via-amber-500 to-primary" />
+          <Card className="relative overflow-hidden border border-teal-700/20 bg-card shadow-sm rounded-2xl">
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-teal-500 via-teal-700 to-teal-900" />
             <CardContent className="p-5 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div className="flex items-center gap-4">
                   <div className="relative flex-shrink-0">
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary to-amber-500 blur-lg opacity-40" />
-                    <div className="relative flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-amber-500 shadow-md">
+                    <div className="absolute inset-0 bg-teal-600/20 blur-lg opacity-30" />
+                    <div className="relative flex items-center justify-center w-12 h-12 rounded-xl bg-teal-700 shadow-sm">
                       <Download className="h-6 w-6 text-white" />
                     </div>
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
-                      Gerar Relatório Final
+                      Relatório clínico · emissão e exportação
                     </h3>
                     <p className="text-sm text-muted-foreground">
-                      Exporta os registros clínicos em PDF profissional, com texto selecionável e gráficos.
+                      Depois da revisão clínica, exporte um PDF pesquisável com os resultados, gráficos e a análise dissertativa.
                     </p>
                   </div>
                 </div>
                 <Button
                   onClick={() => void handleExportPDF()}
                   disabled={isExporting}
-                  className="bg-gradient-to-br from-primary to-amber-500 hover:opacity-90 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200 font-semibold"
+                  className="bg-teal-700 hover:bg-teal-800 text-white border-0 shadow-sm transition-colors font-semibold"
                 >
                   {isExporting ? (
                     <>
@@ -1117,12 +1117,12 @@ export default function MusicoterapiaPage() {
           {/* Main Content */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 lg:space-y-6">
             <TabsList className="grid w-full grid-cols-2 h-11 sm:h-12 p-1 bg-card/60 backdrop-blur-xl border border-border/60 rounded-xl">
-              <TabsTrigger value="wizard" className="flex items-center gap-2 text-sm sm:text-base rounded-lg data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary data-[state=active]:to-amber-500 data-[state=active]:text-white data-[state=active]:shadow-md">
+              <TabsTrigger value="wizard" className="flex items-center gap-2 text-sm sm:text-base rounded-lg data-[state=active]:bg-teal-700 data-[state=active]:text-white data-[state=active]:shadow-md">
                 <Wand2 className="h-4 w-4" />
                 <span className="hidden sm:inline">Assistente de Criação</span>
                 <span className="sm:hidden">Assistente</span>
               </TabsTrigger>
-              <TabsTrigger value="preview" className="flex items-center gap-2 text-sm sm:text-base rounded-lg data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary data-[state=active]:to-amber-500 data-[state=active]:text-white data-[state=active]:shadow-md">
+              <TabsTrigger value="preview" className="flex items-center gap-2 text-sm sm:text-base rounded-lg data-[state=active]:bg-teal-700 data-[state=active]:text-white data-[state=active]:shadow-md">
                 <FileText className="h-4 w-4" />
                 <span className="hidden sm:inline">Visualização</span>
                 <span className="sm:hidden">Preview</span>
@@ -1193,7 +1193,7 @@ export default function MusicoterapiaPage() {
                 <Button
                   onClick={() => void handleExportPDF()}
                   disabled={isExporting}
-                  className="bg-gradient-to-br from-primary to-amber-500 hover:opacity-90 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200 font-semibold"
+                  className="bg-teal-700 hover:bg-teal-800 text-white border-0 shadow-sm transition-colors font-semibold"
                 >
                   {isExporting ? (
                     <>
