@@ -14,6 +14,8 @@ import { MusicoterapiaObjectiveSelector } from './MusicoterapiaObjectiveSelector
 import { getSelectedMusicoterapiaObjectives } from '@/data/musicoterapiaObjectives';
 import { getSelectedMusicoterapiaApproaches } from '@/data/musicoterapiaApproaches';
 import { MusicoterapiaApproachSelector } from './MusicoterapiaApproachSelector';
+import { MusicoterapiaApproachResults } from './MusicoterapiaApproachResults';
+import { getApproachResultsValidationIssues } from '@/data/musicoterapiaApproachResults';
 
 interface MusicoterapiaReportWizardProps {
   reportData: Partial<ReportData>;
@@ -62,9 +64,9 @@ const STEPS = [
   {
     id: 'observed_results',
     title: '5. Resultados Observados',
-    description: 'Metas atingidas e indicadores',
+    description: 'Respostas do paciente às abordagens selecionadas na Etapa 04',
     icon: Brain,
-    fields: ['goals_achieved', 'goals_in_progress', 'baseline_observation', 'current_observation', 'measurement_method', 'assistance_level', 'observation_context', 'report_limitations', 'quantitative_indicators', 'treatment_summary']
+    fields: [] // Preenchimento rápido, vinculado às abordagens realmente selecionadas
   },
   {
     id: 'pending_intervention',
@@ -108,7 +110,7 @@ const STEP_HINTS: Record<string, { icon: React.ElementType; title: string; descr
   referral: { icon: ClipboardList, title: 'Motivo do encaminhamento', description: 'Descreva quem encaminhou e a razão clínica que originou o início dos atendimentos.' },
   therapeutic_objectives: { icon: Target, title: 'Objetivos terapêuticos', description: 'Selecione os objetivos que a musicoterapia irá estimular; defina metas observáveis e individualizadas, respeitando as características do paciente.' },
   methodology: { icon: Music, title: 'Abordagem Musicoterapêutica', description: 'Selecione os referenciais e modos de intervenção efetivamente previstos ou utilizados. Métodos especializados exigem capacitação apropriada.' },
-  observed_results: { icon: Brain, title: 'Resultados observados', description: 'Compare linha de base e avaliação atual; documente medidas, ajuda, contexto, limitações e resultados verificáveis.' },
+  observed_results: { icon: Brain, title: 'Resultados por abordagem', description: 'Para cada abordagem da Etapa 04, registre com um toque a resposta observada; adicione exemplos apenas quando necessário.' },
   pending_intervention: { icon: Target, title: 'Aspectos a intervir', description: 'Liste os pontos que ainda necessitam de intervenção e os sinais a monitorar.' },
   prognosis: { icon: Target, title: 'Prognóstico terapêutico', description: 'Estruture objetivos de curto, médio e longo prazo, com prognóstico e data de reavaliação.' },
   recommendations: { icon: Home, title: 'Recomendações', description: 'Oriente família, escola e equipe interdisciplinar com recomendações práticas.' },
@@ -469,52 +471,6 @@ const STEP_TEMPLATES: Record<string, TemplateOption[]> = {
       }
     }
   ],
-  observed_results: [
-    {
-      id: 'results_positive',
-      label: 'Evolução positiva',
-      description: 'Paciente alcançou a maioria das metas com ganhos consistentes.',
-      values: {
-        goals_achieved: 'A maioria das metas terapêuticas propostas foi alcançada com sucesso, com destaque para a ampliação da comunicação (verbal e/ou não-verbal), maior tempo de atenção compartilhada e melhora na autorregulação emocional durante as atividades musicais.',
-        goals_in_progress: 'Algumas metas encontram-se em fase de consolidação, evoluindo de forma consistente sessão a sessão, com tendência clara de generalização para contextos familiar e escolar.',
-        quantitative_indicators: 'Os indicadores quantitativos da Escala MuseTera demonstraram evolução ascendente em todos os domínios avaliados, com ganhos mais expressivos nas dimensões comunicativa e socioemocional.',
-        treatment_summary: 'O período terapêutico caracterizou-se por evolução clínica favorável e consistente. O paciente respondeu positivamente às intervenções musicoterapêuticas, demonstrando engajamento progressivo, ampliação de repertório de habilidades e ganhos generalizáveis ao cotidiano.'
-      }
-    },
-    {
-      id: 'results_partial',
-      label: 'Evolução parcial',
-      description: 'Ganhos importantes, com metas ainda em desenvolvimento.',
-      values: {
-        goals_achieved: 'Parte das metas terapêuticas foi alcançada, com ganhos pontuais em comunicação não-verbal, tolerância ao setting e participação em atividades musicais estruturadas.',
-        goals_in_progress: 'Diversas metas permanecem em desenvolvimento, exigindo continuidade do processo terapêutico para consolidação. Observa-se evolução gradual, ainda dependente de mediação e apoio estruturado.',
-        quantitative_indicators: 'Os indicadores quantitativos da Escala MuseTera apontam evolução moderada, com avanços em domínios específicos e estabilidade em outros, indicando necessidade de manutenção do plano terapêutico.',
-        treatment_summary: 'O período terapêutico apresentou evolução parcial, com avanços relevantes em áreas específicas e metas ainda em processo de consolidação. Recomenda-se continuidade do tratamento para potencializar os ganhos observados.'
-      }
-    },
-    {
-      id: 'results_limited',
-      label: 'Evolução limitada / inicial',
-      description: 'Fase inicial ou ganhos discretos, vínculo em construção.',
-      values: {
-        goals_achieved: 'Nesta fase inicial, observam-se ganhos discretos, especialmente relacionados ao estabelecimento do vínculo terapêutico e à tolerância progressiva ao ambiente sonoro-musical.',
-        goals_in_progress: 'A maior parte das metas permanece em estágio inicial de desenvolvimento, demandando tempo, constância e adaptações sensoriais para que se efetivem ganhos mais consistentes.',
-        quantitative_indicators: 'Os indicadores quantitativos da Escala MuseTera mantêm-se em patamares iniciais, refletindo o caráter recente do processo terapêutico e a importância da continuidade para evolução mensurável.',
-        treatment_summary: 'O período avaliado corresponde a uma fase inicial do processo terapêutico, marcada pela construção do vínculo e pela adaptação ao setting. Os ganhos, ainda discretos, sinalizam abertura para evolução com a continuidade do tratamento.'
-      }
-    },
-    {
-      id: 'results_unfavorable',
-      label: 'Resposta abaixo do esperado',
-      description: 'Paciente não respondeu bem às intervenções no período.',
-      values: {
-        goals_achieved: 'No período avaliado, as metas terapêuticas propostas não foram alcançadas conforme o esperado, observando-se respostas inconsistentes às intervenções musicoterapêuticas e dificuldade de engajamento sustentado nas atividades.',
-        goals_in_progress: 'A maioria das metas permanece sem evolução significativa, exigindo revisão do plano terapêutico, das estratégias adotadas e das adaptações sensoriais e ambientais oferecidas.',
-        quantitative_indicators: 'Os indicadores quantitativos da Escala MuseTera mantiveram-se estáveis ou apresentaram pouca variação, refletindo a baixa resposta às intervenções no período avaliado.',
-        treatment_summary: 'O período terapêutico caracterizou-se por resposta abaixo do esperado, com baixo engajamento e ganhos pouco expressivos. Recomenda-se reavaliação do plano terapêutico, investigação de fatores intervenientes (clínicos, sensoriais, contextuais) e eventual articulação interdisciplinar.'
-      }
-    }
-  ],
   pending_intervention: [
     {
       id: 'pending_communication',
@@ -717,6 +673,13 @@ export function MusicoterapiaReportWizard({
         : [{ id: 'musicoterapia_approach_ids', label: 'Selecione pelo menos uma abordagem musicoterapêutica' }];
     }
 
+    if (currentStepData.id === 'observed_results') {
+      return getApproachResultsValidationIssues(
+        reportData.fieldValues?.musicoterapia_approach_ids,
+        reportData.fieldValues?.approach_results
+      ).map((message, index) => ({ id: `approach_result_${index}`, label: message }));
+    }
+
     // Validação padrão para outras etapas
     const requiredFields = musicoterapiaTemplate.fields.filter(field => 
       field.required && currentStepData.fields.includes(field.id)
@@ -778,6 +741,20 @@ export function MusicoterapiaReportWizard({
           <MusicoterapiaApproachSelector
             selectedIds={getSelectedMusicoterapiaApproaches(reportData.fieldValues?.musicoterapia_approach_ids).map((item) => item.id)}
             onChange={(ids) => handleFieldUpdate('musicoterapia_approach_ids', ids)}
+          />
+        </div>
+      );
+    }
+
+    // A Etapa 05 mostra somente as abordagens selecionadas na Etapa 04.
+    // Os antigos campos extensos e os modelos de respostas prontas não são exibidos.
+    if (currentStepData.id === 'observed_results') {
+      return (
+        <div className="dark">
+          <MusicoterapiaApproachResults
+            selectedApproachIds={getSelectedMusicoterapiaApproaches(reportData.fieldValues?.musicoterapia_approach_ids).map((item) => item.id)}
+            value={reportData.fieldValues?.approach_results}
+            onChange={(results) => handleFieldUpdate('approach_results', results)}
           />
         </div>
       );
