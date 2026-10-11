@@ -69,6 +69,11 @@ serve(async (req) => {
       "As secoes geradas sao RASCUNHOS e exigem revisao e aprovacao do musicoterapeuta antes da emissao.",
       "Retorne APENAS JSON valido no formato { \"sections\": [{ \"title\": \"string\", \"content\": \"string\" }] }.",
       "Use os seguintes titulos, nesta ordem, APENAS quando houver fundamento documental: 'Motivo do Encaminhamento'; 'Objetivos Terapêuticos'; 'Procedimentos e Abordagens Registrados'; 'Análise Clínica Musicoterapêutica'; 'Resultados Observados'; 'Recomendações'; 'Considerações Finais'.",
+      "Uma classificacao 'Em evolucao' nao demonstra por si so que a habilidade foi executada, nem melhora de frequencia, autonomia ou consistencia. Escreva somente que o profissional classificou assim; nao invente imitacao de sons ou de melodias.",
+      "Uma abordagem selecionada nao comprova sua aplicacao detalhada nem seus beneficios teoricos. 'Compartilhou lembrancas' nao demonstra melhora de memoria, afetividade, linguagem ou cognicao.",
+      "PROIBIDO afirmar progresso notavel, evolucao consistente, prognostico favoravel, efeitos garantidos, melhoria significativa, estrategias realizadas nao registradas ou colaboracao com escola/familia nao comprovada.",
+      "Descricoes padrao dos objetivos e abordagens sao planejamento e contexto, NAO evidencias de resultados observados.",
+      "Gere SOMENTE uma secao intitulada 'Análise Clínica Musicoterapêutica' com 3 a 5 paragrafos objetivos: contexto e objetivo, abordagem e resposta registrada, classificacoes e limites, e indicacoes prudentes. Nao produza recomendacoes ou consideracoes finais como secoes, pois o PDF ja as contem.",
       "A secao 'Análise Clínica Musicoterapêutica' e central: conecte observacoes, procedimentos aplicados e respostas, sem inventar comparacoes.",
       "Em 'Resultados Observados', apresente claramente dificuldades, registros em observacao e eventuais avancos apenas se registrados.",
       "Em 'Considerações Finais', sintetize os limites dos dados e a necessidade de reavaliacao, sem repetir contagens ou atribuir resultados nao demonstrados."
