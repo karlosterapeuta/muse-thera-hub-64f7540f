@@ -281,11 +281,11 @@ export function FinalReviewSection({
             <div className="bg-gradient-to-r from-[#0d0d0d]/5 to-[#0d0d0d]/10 p-4 sm:p-6 rounded-lg">
               <div className="text-center">
                 <p className="text-base sm:text-lg font-semibold text-foreground mb-2">
-                  <strong>Assinatura Digital:</strong> {reportData.signature || reportData.professionalName || 'Nao informado'}
+                  <strong>Identificação profissional:</strong> {reportData.signature || reportData.professionalName || 'Nao informado'}
                 </p>
                 <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-muted-foreground">
                   <div className="w-2 h-2 bg-[#c9a84c] rounded-full"></div>
-                  <span>Documento verificado e assinado digitalmente</span>
+                  <span>Documento emitido pelo MuseTera; assinatura eletrônica não verificada</span>
                 </div>
               </div>
             </div>
@@ -296,7 +296,7 @@ export function FinalReviewSection({
   };
 
   const filledFieldsCount = Object.keys(reportData.fieldValues || {}).length;
-  const totalSteps = 10;
+  const totalSteps = 11;
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -412,7 +412,7 @@ export function FinalReviewSection({
             </div>
             <div>
               <h3 className="text-sm sm:text-base font-semibold text-foreground">Visualizar Relatorio</h3>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Veja como ficara o relatorio final</p>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Confira os dados resumidos antes de gerar o PDF</p>
             </div>
           </div>
           <div className="flex-1 flex flex-col justify-end">
@@ -427,7 +427,7 @@ export function FinalReviewSection({
                 <DialogHeader className="p-4 sm:p-6 pb-0">
                   <DialogTitle className="text-sm sm:text-base">Previa do Relatorio de Musicoterapia</DialogTitle>
                   <DialogDescription className="text-xs sm:text-sm">
-                    Visualizacao completa do relatorio antes da exportacao
+                    Prévia resumida; o PDF final contém também as demais seções clínicas
                   </DialogDescription>
                 </DialogHeader>
                 <ScrollArea className="max-h-[70vh] p-4 sm:p-6 pt-2">
@@ -502,7 +502,7 @@ export function FinalReviewSection({
             </div>
             <div>
               <p className="text-sm sm:text-base font-semibold text-[#c9a84c]">Relatorio Concluido</p>
-              <p className="text-xs sm:text-sm text-muted-foreground">Pronto para exportar!</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Revise os dados e os avisos clínicos antes de exportar.</p>
             </div>
           </div>
           <ChevronRight className="h-5 w-5 text-[#c9a84c] hidden sm:block" />
