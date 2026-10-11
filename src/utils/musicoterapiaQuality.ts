@@ -25,6 +25,15 @@ export function getMusicoterapiaQualityWarnings(report: Partial<ReportData>): st
   if (hasValue(report.patientDiagnosis || fields.patient_diagnosis || fields.cid_code) && !hasValue(fields.diagnosis_source)) {
     warnings.push('Indique a fonte do diagnóstico informado; o relatório musicoterapêutico não confirma o diagnóstico de TEA.');
   }
+  if (getSelectedMusicoterapiaApproaches(fields.musicoterapia_approach_ids).length) {
+    const entries = getRecordedApproachResults(fields.musicoterapia_approach_ids, fields.approach_results);
+    if (!entries.length) warnings.push('Registre as respostas às abordagens na Etapa 05.');
+    if (entries.some(({result}) => result.status === 'progress' && !result.note.trim())) {
+      warnings.push('Se registrar progresso, acrescente uma comparação observável quando possível.');
+    }
+    return warnings;
+  }
+
   if (!hasValue(fields.baseline_observation) && !hasValue(fields.evolution_compared_baseline)) {
     warnings.push('Registre a linha de base ou explique a impossibilidade de comparação com a avaliação inicial.');
   }
