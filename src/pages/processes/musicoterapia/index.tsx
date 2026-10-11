@@ -21,6 +21,32 @@ import { imageUrlToBase64 } from '@/utils/imageToBase64';
 import { DeleteReportDialog } from '../reports/components/DeleteReportDialog';
 import { formatAgeString } from '@/utils/dateUtils';
 
+// Texto de contingência auditável: a exportação não depende exclusivamente da disponibilidade da IA.
+function clinicalNarrativeFallback(report: any): { title: string; content: string }[] {
+  const fields = report?.fieldValues || {};
+  const str = (value: unknown) => Array.isArray(value)
+    ? value.map(String).filter(Boolean).join('; ')
+    : typeof value === 'string' ? value.trim() : '';
+  const objectives = str(fields.therapeutic_objectives || fields.specific_goals);
+  const procedures = [
+    str(fields.session_activities), str(fields.musical_techniques),
+    str(fields.instruments_used), str(fields.recreative_techniques),
+    str(fields.receptive_techniques), str(fields.improvisation_use),
+  ].filter(Boolean);
+  const observations = [
+    str(fields.patient_evolution), str(fields.treatment_summary),
+    str(fields.domain_evidences), str(fields.goals_achieved),
+    str(fields.goals_in_progress), str(fields.goals_not_achieved),
+    str(report?.additionalObservations),
+  ].filter(Boolean);
+  const paragraphs: string[] = [];
+  if (objectives) paragraphs.push('Os objetivos musicoterapêuticos registrados para o período abrangem: ' + objectives + '.');
+  if (procedures.length) paragraphs.push('No processo de intervenção, o profissional registrou as seguintes experiências e recursos sonoro-musicais: ' + procedures.join('; ') + '.');
+  if (observations.length) paragraphs.push('No que se refere às respostas e ao estado clínico documentado, os registros apontam: ' + observations.join(' ') + ' A interpretação deve considerar o contexto das sessões e as condições em que as respostas foram observadas.');
+  if (!paragraphs.length) paragraphs.push('Não há registros descritivos suficientes para uma análise clínica dissertativa individualizada. Recomenda-se documentar procedimentos aplicados, respostas sonoro-musicais observadas e resultados por objetivo antes da emissão definitiva.');
+  return [{ title: 'Análise Clínica Musicoterapêutica', content: paragraphs.join('\\n\\n') }];
+}
+
 export default function MusicoterapiaPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -29,6 +55,9 @@ export default function MusicoterapiaPage() {
   const [viewMode, setViewMode] = useState<'create' | 'list'>('create');
   const [isSaving, setIsSaving] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [draftNarrative, setDraftNarrative] = useState<{ title: string; content: string }[]>([]);
+  const [draftReportData, setDraftReportData] = useState<any>(null);
   const [reports, setReports] = useState<any[]>([]);
   const [isLoadingReports, setIsLoadingReports] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -111,9 +140,9 @@ export default function MusicoterapiaPage() {
         .replace(/>/g, '&gt;');
 
     const narrativeBlock = (narrative && narrative.length > 0) ? `
-      <div class="section-block" style="margin-bottom: 25px; border: 2px solid #14b8a6; border-radius: 10px; overflow: hidden; background: #ffffff; page-break-inside: auto;">
+      <div class="clinical-narrative" style="margin-bottom: 25px; border: 2px solid #14b8a6; border-radius: 10px; overflow: hidden; background: #ffffff; page-break-inside: auto;">
         <div style="background: linear-gradient(135deg, #0d9488 0%, #14b8a6 60%, #06b6d4 100%); color: white; padding: 12px 16px;">
-          <h2 style="margin: 0; font-size: 16px; font-weight: 700; letter-spacing: 0.3px;">Relatório de Evolução Musicoterapêutica</h2>
+          <h2 style="margin: 0; font-size: 16px; font-weight: 700; letter-spacing: 0.3px;">Análise Clínica Musicoterapêutica</h2>
           
         </div>
         <div style="padding: 16px 18px;">
@@ -121,7 +150,7 @@ export default function MusicoterapiaPage() {
             <div style="margin-bottom: 16px; page-break-inside: avoid;">
               <h3 style="color: #0d9488; margin: 0 0 6px 0; font-size: 13px; border-bottom: 1px solid #99f6e4; padding-bottom: 4px;">${escapeHtml(sec.title)}</h3>
               ${String(sec.content).split(/\n{2,}/).map((p) => p.trim()).filter(Boolean).map((p) =>
-                `<p style="margin: 0 0 8px 0; font-size: 11.5px; line-height: 1.7; text-align: justify; color: #1f2937; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${escapeHtml(p)}</p>`
+                `<p style="margin: 0 0 8px 0; font-size: 11.5px; line-height: 1.7; orphans: 3; widows: 3; text-align: justify; color: #1f2937; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${escapeHtml(p)}</p>`
               ).join('')}
             </div>
           `).join('')}
@@ -183,11 +212,9 @@ export default function MusicoterapiaPage() {
         </div>`;
         })()}
 
-        <!-- AI Clinical Narrative -->
-        ${narrativeBlock}
 
         <!-- Report Sections (dados complementares) -->
-        ${fields.therapeutic_objectives && fields.therapeutic_objectives.length > 0 ? `
+        ${(!narrative?.length && fields.therapeutic_objectives && fields.therapeutic_objectives.length > 0) ? `
           <div class="section-block" style="margin-bottom: 20px; page-break-inside: avoid; page-break-before: auto;">
             <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Objetivos Terapeuticos</h3>
             ${Array.isArray(fields.therapeutic_objectives) ? `
@@ -242,7 +269,7 @@ export default function MusicoterapiaPage() {
           </div>
         ` : ''}
 
-        ${fields.recommendations && fields.recommendations.length > 0 ? `
+        ${(!narrative?.length && fields.recommendations && fields.recommendations.length > 0) ? `
           <div class="section-block" style="margin-bottom: 20px; page-break-inside: avoid; page-break-before: auto;">
             <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Recomendacoes</h3>
             ${Array.isArray(fields.recommendations) ? `
@@ -253,7 +280,7 @@ export default function MusicoterapiaPage() {
           </div>
         ` : ''}
 
-        ${fields.conclusion && fields.conclusion.length > 0 ? `
+        ${(!narrative?.length && fields.conclusion && fields.conclusion.length > 0) ? `
           <div class="section-block" style="margin-bottom: 20px; page-break-inside: avoid; page-break-before: auto;">
             <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Conclusao</h3>
             ${Array.isArray(fields.conclusion) ? `
@@ -367,6 +394,7 @@ export default function MusicoterapiaPage() {
             ${renderSection('Plano Terapêutico Futuro', ['next_objectives_short','next_objectives_medium','next_objectives_long','proposed_interventions','expected_outcomes','revaluation_date'])}
             ${renderSection('Orientações Ampliadas', ['school_recommendations','interdisciplinary_team_notes','playlist_recommended','red_flags_to_monitor'])}
             ${scalesTable}
+            ${narrativeBlock}
             ${(() => {
               const tf = (fields.theoretical_framework || '').toString().trim();
               const at = (fields.assessment_tools_used || '').toString().trim();
@@ -671,11 +699,28 @@ export default function MusicoterapiaPage() {
         });
       } else {
         toast({
-          title: "PDF gerado sem narrativa de IA",
-          description: "Não foi possível gerar o texto narrativo agora; o relatório usará os dados estruturados.",
+          title: "Narrativa de IA indisponível",
+          description: "Revise os dados estruturados antes da exportação.",
         });
       }
 
+      // Revisão clínica obrigatória antes de emitir o documento.
+      setDraftReportData(currentReportData);
+      setDraftNarrative(narrative?.length ? narrative : clinicalNarrativeFallback(currentReportData));
+      setReviewOpen(true);
+    } catch (error) {
+      console.error('Erro ao preparar relatório:', error);
+      toast({ variant: 'destructive', title: 'Erro', description: 'Não foi possível preparar a revisão clínica.' });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleConfirmExportPDF = async () => {
+    if (!draftReportData) return;
+    setIsExporting(true);
+    let tempDiv: HTMLDivElement | null = null;
+    try {
       // Convert images to Base64
       let photoBase64: string | null = null;
       let stampBase64: string | null = null;
@@ -688,11 +733,11 @@ export default function MusicoterapiaPage() {
       }
 
       // Create temporary HTML element
-      const tempDiv = document.createElement('div');
+      tempDiv = document.createElement('div');
       tempDiv.style.fontFamily = 'Arial, sans-serif';
       tempDiv.style.color = '#000';
       tempDiv.style.backgroundColor = '#fff';
-      tempDiv.innerHTML = generatePDFContent(currentReportData, photoBase64, stampBase64, null, narrative);
+      tempDiv.innerHTML = generatePDFContent(draftReportData, photoBase64, stampBase64, null, draftNarrative);
 
       
       document.body.appendChild(tempDiv);
@@ -700,11 +745,11 @@ export default function MusicoterapiaPage() {
       // PDF configuration
       const opt = {
         margin: [10, 10],
-        filename: `Relatorio_Musicoterapia_${reportData.patientName}_${new Date().toISOString().split('T')[0]}.pdf`,
+        filename: `Relatorio_Musicoterapia_${String(draftReportData.patientName || "Paciente").replace(/[^a-zA-Z0-9_-]/g, "_")}_${new Date().toISOString().split('T')[0]}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['css', 'legacy'], avoid: '.section-block' }
+        pagebreak: { mode: ['css', 'legacy'], avoid: ['.section-block', 'h2', 'h3'] }
       };
 
       // Generate and download PDF
@@ -712,11 +757,12 @@ export default function MusicoterapiaPage() {
       await pdfInstance.save();
       try { const blob = await pdfInstance.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "report"); } catch(e) { console.warn("PDF não salvo no storage:", e); }
       
-      document.body.removeChild(tempDiv);
+      tempDiv.remove();
+      tempDiv = null;
 
       toast({
         title: "PDF gerado!",
-        description: "Relatório exportado em PDF com sucesso.",
+        description: "Relatório revisado e exportado em PDF.",
       });
     } catch (error) {
       console.error('Erro ao gerar PDF:', error);
@@ -726,6 +772,7 @@ export default function MusicoterapiaPage() {
         description: "Não foi possível gerar o PDF.",
       });
     } finally {
+      tempDiv?.remove();
       setIsExporting(false);
     }
   };
@@ -899,6 +946,39 @@ export default function MusicoterapiaPage() {
 
   return (
     <div className="relative min-h-screen">
+      <Dialog open={reviewOpen} onOpenChange={setReviewOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Revisão clínica obrigatória</DialogTitle>
+            <DialogDescription>
+              Confira e edite a narrativa gerada por IA antes de emitir o relatório.
+              Somente registros realmente observados e aplicados devem permanecer no documento.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {draftNarrative.length === 0 ? (
+              <p className="text-sm text-amber-700">A IA não produziu uma narrativa. O PDF conterá apenas os dados estruturados registrados pelo profissional.</p>
+            ) : draftNarrative.map((section, index) => (
+              <div key={index} className="space-y-2">
+                <label className="font-semibold text-sm">{section.title}</label>
+                <textarea
+                  className="w-full min-h-36 rounded-md border border-input bg-background p-3 text-sm leading-relaxed"
+                  aria-label={`Revisar ${section.title}`}
+                  value={section.content}
+                  onChange={(event) => setDraftNarrative(prev => prev.map((item, i) =>
+                    i === index ? { ...item, content: event.target.value } : item))}
+                />
+              </div>
+            ))}
+          </div>
+          <div className="flex flex-wrap justify-end gap-2 pt-3 border-t">
+            <Button variant="outline" disabled={isExporting} onClick={() => setReviewOpen(false)}>Voltar e revisar dados</Button>
+            <Button disabled={isExporting} onClick={handleConfirmExportPDF}>
+              {isExporting ? 'Gerando PDF...' : 'Aprovar texto e baixar PDF'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
       {/* Ambient cosmic background */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
