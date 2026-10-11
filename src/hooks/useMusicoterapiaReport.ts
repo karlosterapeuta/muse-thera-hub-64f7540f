@@ -39,7 +39,7 @@ export function useMusicoterapiaReport() {
     setIsGeneratingWithAI(true);
     
     try {
-      console.log('Iniciando organização com IA...', reportData);
+
       
       const { data, error } = await supabase.functions.invoke('organize-musicoterapia-report', {
         body: { reportData }
@@ -55,7 +55,7 @@ export function useMusicoterapiaReport() {
         return reportData.fieldValues;
       }
 
-      console.log('Resposta da edge function:', data);
+
 
       if (data.success && data.organizedContent) {
         // Converter texto organizado em arrays se necessário
@@ -144,12 +144,13 @@ export function useMusicoterapiaReport() {
   }, [reportData]);
 
   const validateReport = useCallback(() => {
-    console.log('Validando relatório...', reportData);
+
     
     // Validar campos básicos
     const basicErrors = [];
     if (!reportData.selectedPatientId) basicErrors.push('Paciente deve ser selecionado');
     if (!professionalData?.id) basicErrors.push('Dados do profissional não encontrados');
+    if (!reportData.professionalName?.trim()) basicErrors.push('Nome do profissional deve ser informado');
     
     // Validar campos obrigatórios do template
     const requiredFields = musicoterapiaTemplate.fields.filter(field => field.required);
@@ -164,7 +165,7 @@ export function useMusicoterapiaReport() {
       ...missingFields.map(field => field.label)
     ];
 
-    console.log('Campos obrigatórios faltando:', allErrors);
+
 
     return {
       isValid: allErrors.length === 0,
