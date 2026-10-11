@@ -1,6 +1,10 @@
 import React from 'react';
-import { Check, ClipboardList, Target } from 'lucide-react';
-import { musicoterapiaObjectives } from '@/data/musicoterapiaObjectives';
+import { Check, ChevronDown, ClipboardList, Target } from 'lucide-react';
+import {
+  musicoterapiaObjectives,
+  musicoterapiaObjectiveCategories,
+  type MusicoterapiaObjectiveCategoryId
+} from '@/data/musicoterapiaObjectives';
 
 interface MusicoterapiaObjectiveSelectorProps {
   selectedIds: string[];
@@ -16,6 +20,17 @@ export function MusicoterapiaObjectiveSelector({
   onChange
 }: MusicoterapiaObjectiveSelectorProps) {
   const selectedSet = new Set(selectedIds);
+  const [expandedCategories, setExpandedCategories] = React.useState<Set<MusicoterapiaObjectiveCategoryId>>(
+    () => new Set(musicoterapiaObjectiveCategories.map((category) => category.id))
+  );
+  const toggleCategory = (categoryId: MusicoterapiaObjectiveCategoryId) => {
+    setExpandedCategories((current) => {
+      const next = new Set(current);
+      if (next.has(categoryId)) next.delete(categoryId);
+      else next.add(categoryId);
+      return next;
+    });
+  };
 
   const toggleObjective = (id: string) => {
     const nextIds = selectedSet.has(id)
@@ -44,43 +59,73 @@ export function MusicoterapiaObjectiveSelector({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {musicoterapiaObjectives.map((item) => {
-          const checked = selectedSet.has(item.id);
+      <div className="space-y-5">
+        {musicoterapiaObjectiveCategories.map((category) => {
+          const objectives = musicoterapiaObjectives.filter((objective) => objective.category === category.id);
+          const selectedCount = objectives.filter((objective) => selectedSet.has(objective.id)).length;
+          const expanded = expandedCategories.has(category.id);
           return (
-            <button
-              key={item.id}
-              type="button"
-              aria-pressed={checked}
-              aria-label={`${item.title}: ${checked ? 'remover objetivo' : 'selecionar objetivo'}`}
-              onClick={() => toggleObjective(item.id)}
-              className={`text-left rounded-xl border p-4 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f0d78c] ${checked
-                ? 'border-[#c9a84c] bg-[#c9a84c]/15 shadow-sm'
-                : 'border-white/15 bg-[#161616] hover:border-[#c9a84c]/60 hover:bg-[#c9a84c]/[0.07]'
-              }`}
-            >
-              <span className="flex items-center gap-3">
-                <span className="text-2xl" aria-hidden="true">{item.icon}</span>
-                <span className="flex-1 text-sm sm:text-base font-semibold text-[#f0d78c]">{item.title}</span>
-                <span className={`shrink-0 flex h-6 w-6 items-center justify-center rounded-md border ${checked
-                  ? 'bg-[#c9a84c] border-[#c9a84c] text-[#0d0d0d]'
-                  : 'border-white/30 text-transparent'
-                }`}>
-                  <Check className="h-4 w-4" />
+            <section key={category.id} className="overflow-hidden rounded-xl border border-white/15 bg-[#0d0d0d]/35">
+              <button
+                type="button"
+                aria-expanded={expanded}
+                aria-controls={`objetivos-grupo-${category.id}`}
+                onClick={() => toggleCategory(category.id)}
+                className="w-full flex items-center gap-3 px-4 sm:px-5 py-4 text-left hover:bg-[#c9a84c]/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#f0d78c]"
+              >
+                <span className="text-2xl" aria-hidden="true">{category.icon}</span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm sm:text-base font-bold text-[#f0d78c]">{category.title}</span>
+                  <span className="block mt-1 text-xs text-gray-400">{category.description}</span>
                 </span>
-              </span>
-              <span className="block text-xs text-gray-300 mt-3 leading-relaxed">{item.objective}</span>
-              {checked && (
-                <span className="block mt-3 pt-3 border-t border-[#c9a84c]/25 space-y-2">
-                  <span className="block text-[11px] text-gray-300">
-                    <strong className="text-[#f0d78c]">Recursos possíveis:</strong> {item.resources}
-                  </span>
-                  <span className="block text-[11px] text-gray-300">
-                    <strong className="text-[#f0d78c]">Como acompanhar:</strong> {item.indicator}
-                  </span>
+                <span className="shrink-0 text-[11px] font-semibold text-[#c9a84c]">
+                  {selectedCount}/{objectives.length}
                 </span>
+                <ChevronDown className={`h-4 w-4 shrink-0 text-[#c9a84c] transition-transform ${expanded ? 'rotate-180' : ''}`} />
+              </button>
+              {expanded && (
+                <div id={`objetivos-grupo-${category.id}`} className="grid grid-cols-1 sm:grid-cols-2 gap-3 px-3 sm:px-4 pb-4">
+                  {objectives.map((item) => {
+                    const checked = selectedSet.has(item.id);
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        aria-pressed={checked}
+                        aria-label={`${item.title}: ${checked ? 'remover objetivo' : 'selecionar objetivo'}`}
+                        onClick={() => toggleObjective(item.id)}
+                        className={`text-left rounded-xl border p-4 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f0d78c] ${checked
+                          ? 'border-[#c9a84c] bg-[#c9a84c]/15 shadow-sm'
+                          : 'border-white/15 bg-[#161616] hover:border-[#c9a84c]/60 hover:bg-[#c9a84c]/[0.07]'
+                        }`}
+                      >
+                        <span className="flex items-center gap-3">
+                          <span className="text-2xl" aria-hidden="true">{item.icon}</span>
+                          <span className="flex-1 text-sm sm:text-base font-semibold text-[#f0d78c]">{item.title}</span>
+                          <span className={`shrink-0 flex h-6 w-6 items-center justify-center rounded-md border ${checked
+                            ? 'bg-[#c9a84c] border-[#c9a84c] text-[#0d0d0d]'
+                            : 'border-white/30 text-transparent'
+                          }`}>
+                            <Check className="h-4 w-4" />
+                          </span>
+                        </span>
+                        <span className="block text-xs text-gray-300 mt-3 leading-relaxed">{item.objective}</span>
+                        {checked && (
+                          <span className="block mt-3 pt-3 border-t border-[#c9a84c]/25 space-y-2">
+                            <span className="block text-[11px] text-gray-300">
+                              <strong className="text-[#f0d78c]">Recursos possíveis:</strong> {item.resources}
+                            </span>
+                            <span className="block text-[11px] text-gray-300">
+                              <strong className="text-[#f0d78c]">Como acompanhar:</strong> {item.indicator}
+                            </span>
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
               )}
-            </button>
+            </section>
           );
         })}
       </div>
