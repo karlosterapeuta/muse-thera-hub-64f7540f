@@ -7,6 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import type { ReportData } from '@/data/musicoterapiaTemplate';
+import { getMusicoterapiaQualityWarnings } from '@/utils/musicoterapiaQuality';
 
 interface FinalReviewSectionProps {
   reportData: Partial<ReportData>;
@@ -296,6 +297,7 @@ export function FinalReviewSection({
   };
 
   const filledFieldsCount = Object.keys(reportData.fieldValues || {}).length;
+  const clinicalWarnings = getMusicoterapiaQualityWarnings(reportData);
   const totalSteps = 11;
 
   return (
@@ -314,6 +316,16 @@ export function FinalReviewSection({
           </div>
         </div>
       </div>
+
+      {clinicalWarnings.length > 0 && (
+        <div role="status" className="rounded-xl border border-amber-400/40 bg-amber-500/10 p-4 space-y-2">
+          <p className="font-semibold text-sm text-amber-500">Revisão técnico-clínica: {clinicalWarnings.length} pontos de atenção</p>
+          <p className="text-xs text-muted-foreground">Avisos orientativos. Confirme observações, medidas e fontes antes de finalizar. Não são diagnóstico automático nem impedem relatórios anteriores.</p>
+          <ul className="list-disc pl-5 space-y-1 text-xs sm:text-sm text-foreground">
+            {clinicalWarnings.map((warning) => <li key={warning}>{warning}</li>)}
+          </ul>
+        </div>
+      )}
 
       {/* Stats Summary */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
