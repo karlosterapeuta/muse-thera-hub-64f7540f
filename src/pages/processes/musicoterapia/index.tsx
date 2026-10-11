@@ -527,7 +527,7 @@ export default function MusicoterapiaPage() {
             ${(() => {
               const tf = selectedApproaches.length === 0 ? (fields.theoretical_framework || '').toString().trim() : '';
               const at = selectedApproaches.length === 0 ? (fields.assessment_tools_used || '').toString().trim() : '';
-              const rc = selectedReferences.length > 0 ? '' : (fields.references_cited || '').toString().trim();
+              const rc = isLegacyReport && selectedReferences.length === 0 ? (fields.references_cited || '').toString().trim() : '';
               if (!tf && !at && !rc) return '';
               const formatList = (txt: string) => {
                 const items = txt.split(/\n+/).map(s => s.replace(/^[-•\d.\)\s]+/, '').trim()).filter(Boolean);
