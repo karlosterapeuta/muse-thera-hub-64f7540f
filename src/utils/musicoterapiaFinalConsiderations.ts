@@ -41,7 +41,7 @@ export function getMusicoterapiaFinalConsiderations(
       counts.difficulty ? `${counts.difficulty} com dificuldade` : ''
     ].filter(Boolean);
     paragraphs.push(
-      `Conforme os registros do profissional, entre os ${evaluated.length} objetivo${evaluated.length === 1 ? '' : 's'} avaliado${evaluated.length === 1 ? '' : 's'} no período, ${summaries.join(', ')}.`
+      `No período documentado, as classificações de ${evaluated.length} objetivo${evaluated.length === 1 ? '' : 's'} avaliado${evaluated.length === 1 ? '' : 's'} foram: ${summaries.join(', ')}.`
     );
   }
 
@@ -54,7 +54,7 @@ export function getMusicoterapiaFinalConsiderations(
 
   if (notAssessedCount > 0) {
     paragraphs.push(
-      `${notAssessedCount} objetivo${notAssessedCount === 1 ? '' : 's'} permaneceu${notAssessedCount === 1 ? '' : 'ram'} sem avaliação no período; não ${notAssessedCount === 1 ? 'deve' : 'devem'} ser interpretado${notAssessedCount === 1 ? '' : 's'} como dificuldade ou ausência de progresso.`
+      `${notAssessedCount} objetivo${notAssessedCount === 1 ? '' : 's'} ${notAssessedCount === 1 ? 'permaneceu' : 'permaneceram'} sem avaliação no período; não ${notAssessedCount === 1 ? 'deve' : 'devem'} ser interpretado${notAssessedCount === 1 ? '' : 's'} como dificuldade ou ausência de progresso.`
     );
   }
 
