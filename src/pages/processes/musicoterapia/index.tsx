@@ -931,6 +931,8 @@ export default function MusicoterapiaPage() {
   };
 
   const handleEditReport = (report: any) => {
+    anamnesisRequestRef.current += 1;
+    setAnamnesisStatus('idle');
     // Cria uma nova versão, preservando o documento histórico original.
     setSourceReportId(report.id);
     // Carregar dados do relatório no wizard
@@ -1190,6 +1192,8 @@ export default function MusicoterapiaPage() {
                 logoUrl={reportLogoUrl}
                 onLogoChange={setReportLogoUrl}
                 patients={patients}
+                onSelectPatient={(patientId) => void selectPatientWithAnamnesis(patientId)}
+                anamnesisStatus={anamnesisStatus}
                 onSaveReport={handleSaveReport}
                 isSaving={isSaving}
                 professionalData={professionalData}
