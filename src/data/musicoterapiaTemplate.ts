@@ -197,11 +197,10 @@ export const musicoterapiaTemplate: ReportTemplate = {
     {
       id: 'recommendations',
       type: 'textarea',
-      label: 'Encaminhamentos e Recomendações',
-      description: 'Continuidade musical terapêutica',
-      placeholder: 'Ex: Continuidade das sessões semanais com expansão do repertório instrumental...',
-      required: true,
-      guidance: 'Inclua sugestões de continuidade e uso da música no cotidiano'
+      label: 'Recomendações',
+      description: 'Orientações essenciais para continuidade do acompanhamento.',
+      placeholder: 'Ex.: Manter as sessões e reavaliar os objetivos ainda em desenvolvimento.',
+      required: true
     },
     // Conclusão (Etapa 6)
     {
