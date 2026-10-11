@@ -12,6 +12,8 @@ import { getMusicoterapiaQualityWarnings } from '@/utils/musicoterapiaQuality';
 interface FinalReviewSectionProps {
   reportData: Partial<ReportData>;
   onSaveReport: () => void;
+  logoUrl: string | null;
+  onLogoChange: (logoUrl: string | null) => void;
   onExportPDF: (logoUrl?: string | null) => Promise<void>;
   isExporting: boolean;
   isSaving: boolean;
@@ -21,6 +23,8 @@ interface FinalReviewSectionProps {
 export function FinalReviewSection({
   reportData,
   onSaveReport,
+  logoUrl,
+  onLogoChange,
   onExportPDF,
   isExporting,
   isSaving,
@@ -28,7 +32,6 @@ export function FinalReviewSection({
 }: FinalReviewSectionProps) {
   const { toast } = useToast();
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -72,7 +75,7 @@ export function FinalReviewSection({
         .from('report-logos')
         .getPublicUrl(fileName);
 
-      setLogoUrl(publicUrl);
+      onLogoChange(publicUrl);
 
       toast({
         title: "Logo enviada com sucesso!",
@@ -92,7 +95,7 @@ export function FinalReviewSection({
   };
 
   const removeLogo = () => {
-    setLogoUrl(null);
+    onLogoChange(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
