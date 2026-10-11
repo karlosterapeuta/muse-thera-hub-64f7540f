@@ -247,11 +247,11 @@ export const musicoterapiaTemplate: ReportTemplate = {
     {
       id: 'signature',
       type: 'text',
-      label: 'Assinatura Digital',
-      description: 'Assinatura do profissional responsável',
+      label: 'Identificação do Profissional',
+      description: 'Nome do profissional responsável; não substitui assinatura eletrônica verificável',
       placeholder: 'Nome completo do profissional',
       required: false,
-      guidance: 'Digite seu nome completo como assinatura digital do relatório'
+      guidance: 'Digite seu nome completo para identificação. Assinatura criptográfica requer mecanismo próprio de verificação'
     },
     {
       id: 'review_notes',
@@ -264,8 +264,10 @@ export const musicoterapiaTemplate: ReportTemplate = {
     },
 
     // ===== IDENTIFICAÇÃO CLÍNICA AMPLIADA =====
+    { id: 'evaluation_period', type: 'text', label: 'Período Avaliado', description: 'Intervalo da observação clínica', placeholder: 'Ex: 01/03/2026 a 30/06/2026', required: false, guidance: 'Indique as datas inicial e final do período que este documento descreve' },
+    { id: 'diagnosis_source', type: 'text', label: 'Fonte da Informação Diagnóstica', description: 'Documento ou profissional que informou o diagnóstico', placeholder: 'Ex: Relatório médico de 15/02/2026, apresentado pela família', required: false, guidance: 'Registre a origem do diagnóstico informado; não atribua ou confirme diagnósticos médicos neste relatório' },
     { id: 'cid_code', type: 'text', label: 'CID-11 / DSM-5-TR', description: 'Classificação diagnóstica', placeholder: 'Ex: 6A02.0 (CID-11) / 299.00 (DSM-5-TR)', required: false, guidance: 'CID-11 6A02 ou equivalente DSM-5-TR para TEA' },
-    { id: 'support_level', type: 'select', label: 'Nível de Suporte', description: 'Nível de suporte segundo DSM-5-TR', required: false, options: ['Nível 1 - Exigindo apoio', 'Nível 2 - Exigindo apoio substancial', 'Nível 3 - Exigindo apoio muito substancial'], guidance: 'Classifique conforme intensidade de suporte necessário' },
+    { id: 'support_level', type: 'select', label: 'Nível de Suporte', description: 'Nível de suporte segundo DSM-5-TR', required: false, options: ['Nível 1 - Exigindo apoio', 'Nível 2 - Exigindo apoio substancial', 'Nível 3 - Exigindo apoio muito substancial'], guidance: 'Registre o nível de suporte apenas quando constar em documentação diagnóstica apresentada. Não atribua nível com base apenas na observação musicoterapêutica' },
     { id: 'comorbidities', type: 'textarea', label: 'Comorbidades', description: 'Diagnósticos associados', placeholder: 'Ex: TDAH, deficiência intelectual leve, TPS, ansiedade, epilepsia...', required: false, guidance: 'Liste comorbidades relevantes ao plano terapêutico' },
     { id: 'current_medications', type: 'textarea', label: 'Medicações em Uso', description: 'Tratamento medicamentoso atual', placeholder: 'Ex: Risperidona 1mg/dia, Metilfenidato 20mg pela manhã...', required: false, guidance: 'Inclua nome, dose e horário das medicações' },
     { id: 'referral_source', type: 'text', label: 'Encaminhamento', description: 'Quem encaminhou o paciente', placeholder: 'Ex: Neuropediatra Dra. Maria Silva', required: false, guidance: 'Profissional ou instância que encaminhou ao serviço' },
@@ -293,7 +295,7 @@ export const musicoterapiaTemplate: ReportTemplate = {
     { id: 'sensory_profile_notes', type: 'textarea', label: 'Síntese do Perfil Sensorial', description: 'Observações qualitativas', placeholder: 'Ex: Paciente apresenta hipersensibilidade auditiva a sons agudos, buscando sons graves e vibrações táteis...', required: false, guidance: 'Síntese integrada do perfil sensorial observado' },
 
     // ===== AVALIAÇÃO IMTAP - DOMÍNIOS CLÍNICOS =====
-    { id: 'domain_musicality', type: 'scale', label: 'Musicalidade Geral', description: 'Ritmo, melodia, dinâmica (1-10)', required: false, options: ['1','2','3','4','5','6','7','8','9','10'], guidance: 'Avalie capacidade musical global (IMTAP)' },
+    { id: 'domain_musicality', type: 'scale', label: 'Musicalidade Geral', description: 'Ritmo, melodia, dinâmica (1-10)', required: false, options: ['1','2','3','4','5','6','7','8','9','10'], guidance: 'Registre sua observação e a evidência clínica correspondente; não classifique como pontuação IMTAP sem aplicação formal do instrumento' },
     { id: 'domain_communication_verbal', type: 'scale', label: 'Comunicação Verbal Musical', description: 'Verbalização durante a música (1-10)', required: false, options: ['1','2','3','4','5','6','7','8','9','10'], guidance: '1 = Sem verbalização, 10 = Comunicação verbal fluida' },
     { id: 'domain_communication_nonverbal', type: 'scale', label: 'Comunicação Não-Verbal', description: 'Gestos, mímica e expressões (1-10)', required: false, options: ['1','2','3','4','5','6','7','8','9','10'], guidance: 'Comunicação gestual e expressiva durante atividades musicais' },
     { id: 'domain_social_interaction', type: 'scale', label: 'Interação Social Musical', description: 'Engajamento social via música (1-10)', required: false, options: ['1','2','3','4','5','6','7','8','9','10'], guidance: 'Reciprocidade e iniciativa social em contexto musical' },
@@ -303,7 +305,7 @@ export const musicoterapiaTemplate: ReportTemplate = {
     { id: 'domain_motor_fine', type: 'scale', label: 'Motricidade Fina', description: 'Manuseio instrumental (1-10)', required: false, options: ['1','2','3','4','5','6','7','8','9','10'], guidance: 'Precisão no manuseio de instrumentos musicais' },
     { id: 'domain_sensory_integration', type: 'scale', label: 'Integração Sensorial', description: 'Integração multissensorial (1-10)', required: false, options: ['1','2','3','4','5','6','7','8','9','10'], guidance: 'Capacidade de integrar estímulos auditivos, visuais, táteis e proprioceptivos' },
     { id: 'domain_autonomy', type: 'scale', label: 'Autonomia Musical', description: 'Iniciativa e escolha musical (1-10)', required: false, options: ['1','2','3','4','5','6','7','8','9','10'], guidance: 'Capacidade de fazer escolhas musicais independentes' },
-    { id: 'domain_evidences', type: 'textarea', label: 'Evidências Clínicas dos Domínios', description: 'Observações que sustentam as escalas', placeholder: 'Ex: Domínio musicalidade: mantém pulso por 4 compassos consecutivos em compasso 4/4. Domínio social: iniciou 3 trocas musicais espontâneas...', required: false, guidance: 'Evidências observacionais que justificam as pontuações dos domínios IMTAP' },
+    { id: 'domain_evidences', type: 'textarea', label: 'Evidências Clínicas dos Domínios', description: 'Observações que sustentam as escalas', placeholder: 'Ex: Domínio musicalidade: mantém pulso por 4 compassos consecutivos em compasso 4/4. Domínio social: iniciou 3 trocas musicais espontâneas...', required: false, guidance: 'Registre exemplos observacionais para fundamentar as pontuações. Os indicadores do MuseTera não devem ser confundidos com aplicação formal do IMTAP' },
 
     // ===== SESSÃO ESTRUTURADA - EXPANSÃO =====
     { id: 'session_setting', type: 'select', label: 'Setting Terapêutico', description: 'Configuração do atendimento', required: false, options: ['Individual', 'Dupla', 'Grupo pequeno (3-5)', 'Grupo (6+)', 'Familiar', 'Tele-musicoterapia'], guidance: 'Modalidade do setting clínico utilizado' },
@@ -331,6 +333,14 @@ export const musicoterapiaTemplate: ReportTemplate = {
     { id: 'echolalia_musical', type: 'textarea', label: 'Ecolalia Musical', description: 'Repetições musicais observadas', placeholder: 'Ex: Ecolalia diferida funcional de trecho da música-tema da sessão; ecolalia imediata melódica de frases curtas...', required: false, guidance: 'Distinga ecolalia funcional/comunicativa de não-funcional' },
     { id: 'aac_use', type: 'textarea', label: 'Uso de CAA', description: 'Comunicação aumentativa e alternativa', placeholder: 'Ex: Utiliza PECS com figuras de instrumentos musicais para fazer pedidos; pranchas com canções favoritas...', required: false, guidance: 'CAA integrada ao setting musicoterapêutico' },
     { id: 'pragmatic_skills', type: 'textarea', label: 'Habilidades Pragmáticas', description: 'Funcionalidade comunicativa musical', placeholder: 'Ex: Demonstra função de pedir (instrumento favorito), comentar (apontar para som), recusar (afastar instrumento)...', required: false, guidance: 'Funções pragmáticas comunicativas mobilizadas pela música' },
+
+    // ===== MATRIZ DE EVIDÊNCIAS MUSICOTERAPÊUTICAS =====
+    { id: 'baseline_observation', type: 'textarea', label: 'Linha de Base', description: 'Comportamento antes do período ou início do acompanhamento', placeholder: 'Ex: Em 10 oportunidades comparáveis, iniciou 2 alternâncias musicais; com pistas gestuais', required: false, guidance: 'Descreva comportamento observável, denominador, ajuda recebida e data. Não invente valores quando não houver linha de base' },
+    { id: 'current_observation', type: 'textarea', label: 'Indicadores Atuais', description: 'Observações mensuráveis do período', placeholder: 'Ex: Em 10 oportunidades, iniciou 7 alternâncias musicais; sob as mesmas condições', required: false, guidance: 'Registre frequência, número de oportunidades, duração ou latência sem extrapolar para outros contextos' },
+    { id: 'measurement_method', type: 'textarea', label: 'Método de Registro e Comparabilidade', description: 'Como os dados foram registrados e comparados', placeholder: 'Ex: Registro por amostragem de eventos em 3 sessões de 45 minutos, com mesmo repertório e instruções', required: false, guidance: 'Informe número de sessões, critérios de medida, fonte dos dados e diferenças entre as condições de observação' },
+    { id: 'assistance_level', type: 'textarea', label: 'Nível de Mediação/Ajuda', description: 'Apoio necessário durante a resposta', placeholder: 'Ex: Linha de base: modelo físico parcial; atual: pistas gestuais e tempo de espera', required: false, guidance: 'Relate o grau de mediação e sua mudança; respostas com ajudas diferentes não são diretamente equivalentes' },
+    { id: 'observation_context', type: 'textarea', label: 'Contexto e Atividade Musical', description: 'Instrumentos, setting e recursos empregados', placeholder: 'Ex: Turnos de improvisação em tambor, atendimento individual, sala silenciosa', required: false, guidance: 'Descreva atividade, instrumento, estímulos relevantes e adaptações sensoriais' },
+    { id: 'report_limitations', type: 'textarea', label: 'Limitações da Avaliação', description: 'Fatores que limitam a interpretação', placeholder: 'Ex: Ausência de linha de base formal, faltas, observação em sessão única, mudança de setting', required: false, guidance: 'Indique explicitamente as limitações dos registros, ou declare que não foram identificadas limitações relevantes' },
 
     // ===== EVOLUÇÃO CLÍNICA - EXPANSÃO =====
     { id: 'evolution_compared_baseline', type: 'textarea', label: 'Comparativo com Linha de Base', description: 'Evolução em relação à avaliação inicial', placeholder: 'Ex: Em relação à avaliação inicial (jan/2025), houve evolução de 3→7 na escala de interação social musical...', required: false, guidance: 'Compare quantitativamente com avaliação inicial' },
@@ -385,12 +395,13 @@ export const scaleFieldIds = [
 ];
 
 export const reportSections: ReportSection[] = [
-  { id: 'clinical_identification', title: 'Identificação Clínica', fieldIds: ['cid_code','support_level','comorbidities','current_medications','referral_source','treatment_start_date','session_count','session_frequency','session_duration'] },
+  { id: 'clinical_identification', title: 'Identificação Clínica', fieldIds: ['evaluation_period','diagnosis_source','cid_code','support_level','comorbidities','current_medications','referral_source','treatment_start_date','session_count','session_frequency','session_duration'] },
   { id: 'iso_identity', title: 'Identidade Sonora (ISO de Benenzon)', fieldIds: ['iso_gestational','iso_universal','iso_cultural','iso_complementary','iso_group','sound_preferences','musical_repertoire_favorites'] },
   { id: 'sensory_profile', title: 'Avaliação Sensório-Musical', fieldIds: ['auditory_processing','sound_tolerance','vestibular_response_music','tactile_instrument_response','proprioceptive_response','sensory_seeking_vs_avoiding','sensory_profile_notes'] },
-  { id: 'imtap_domains', title: 'Avaliação Clínica - Domínios - Escala MuseTera', fieldIds: ['domain_musicality','domain_communication_verbal','domain_communication_nonverbal','domain_social_interaction','domain_emotional','domain_cognitive','domain_motor_gross','domain_motor_fine','domain_sensory_integration','domain_autonomy','domain_evidences'] },
+  { id: 'imtap_domains', title: 'Indicadores Musicoterapêuticos - Pontuações Observacionais', fieldIds: ['domain_musicality','domain_communication_verbal','domain_communication_nonverbal','domain_social_interaction','domain_emotional','domain_cognitive','domain_motor_gross','domain_motor_fine','domain_sensory_integration','domain_autonomy','domain_evidences'] },
   { id: 'session_details', title: 'Detalhamento Clínico da Sessão', fieldIds: ['session_setting','session_structure','improvisation_use','receptive_techniques','recreative_techniques','compositional_techniques','tempo_dynamics_used','vocal_work'] },
   { id: 'communication_language', title: 'Comunicação e Linguagem', fieldIds: ['vocalizations_observed','verbal_output_during_music','echolalia_musical','aac_use','pragmatic_skills'] },
+  { id: 'clinical_evidence', title: 'Matriz de Evidências Musicoterapêuticas', fieldIds: ['baseline_observation','current_observation','measurement_method','assistance_level','observation_context','report_limitations'] },
   { id: 'evolution_detailed', title: 'Evolução Clínica Detalhada', fieldIds: ['evolution_compared_baseline','goals_achieved','goals_in_progress','goals_not_achieved','quantitative_indicators'] },
   { id: 'future_plan', title: 'Plano Terapêutico Futuro', fieldIds: ['next_objectives_short','next_objectives_medium','next_objectives_long','proposed_interventions','expected_outcomes','revaluation_date'] },
   { id: 'extended_guidance', title: 'Orientações Ampliadas', fieldIds: ['school_recommendations','interdisciplinary_team_notes','playlist_recommended','red_flags_to_monitor'] },
