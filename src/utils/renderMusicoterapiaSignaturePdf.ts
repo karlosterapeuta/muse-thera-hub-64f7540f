@@ -32,7 +32,7 @@ export function renderMusicoterapiaSignaturePdf(
         style="display:block;max-width:114px;max-height:92px;object-fit:contain;margin:0 auto 3px;"/>
       <small style="font-size:8px;color:#64748b;">Carimbo cadastrado</small>
     </div>` : '';
-  return `<section class="section-block" style="margin:22px 0 0;border:1px solid #d6e8e7;border-radius:9px;overflow:hidden;page-break-inside:auto;">
+  return `<section class="section-block pdf-signature-block pdf-keep" style="margin:16px 0 0;border:1px solid #d6e8e7;border-radius:9px;page-break-inside:avoid;break-inside:avoid;">
     <div style="border-top:3px solid #0f766e;padding:13px 16px;">
       <h3 style="color:#0f766e;font-size:12px;margin:0 0 11px;padding-bottom:6px;border-bottom:1px solid #c5e7df;">
         Identificação do profissional responsável
