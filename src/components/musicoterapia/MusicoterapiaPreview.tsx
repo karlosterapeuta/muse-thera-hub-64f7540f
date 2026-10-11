@@ -10,6 +10,7 @@ import { musicoterapiaTemplate, reportSections, scaleFieldIds } from '@/data/mus
 import { getSelectedMusicoterapiaObjectives, musicoterapiaObjectiveCategories } from '@/data/musicoterapiaObjectives';
 import { getSelectedMusicoterapiaApproaches } from '@/data/musicoterapiaApproaches';
 import { MusicoterapiaApproachResultsSummary } from './MusicoterapiaApproachResultsSummary';
+import { MusicoterapiaObjectiveFlowSummary } from './MusicoterapiaObjectiveFlowSummary';
 
 interface MusicoterapiaPreviewProps {
   reportData: ReportData;
@@ -237,6 +238,7 @@ export function MusicoterapiaPreview({ reportData, professionalData }: Musicoter
       )}
 
       <MusicoterapiaApproachResultsSummary approachIds={reportData.fieldValues?.musicoterapia_approach_ids} results={reportData.fieldValues?.approach_results} />
+      <MusicoterapiaObjectiveFlowSummary objectiveIds={reportData.fieldValues?.therapeutic_objective_ids} outcomes={reportData.fieldValues?.objective_outcomes} />
 
       {/* Instruments and Techniques */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
