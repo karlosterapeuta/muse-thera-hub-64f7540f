@@ -146,6 +146,7 @@ export function useMusicoterapiaReport() {
             ),
             therapeutic_objectives_selection_note: 'Estes são objetivos planejados para estimulação, não resultados observados nem habilidades comprovadas.'
           } : {}),
+          ...(recordedResults.length > 0 ? { observed_results_by_approach: recordedResults.map(({ approach, result }) => ({ approach: approach.title, response: summarizeApproachResult(result) })) } : {}),
           ...(selectedApproaches.length > 0 ? {
             musicoterapia_approaches_selected_descriptions: selectedApproaches.map(
               (approach) => `${approach.title}: ${approach.description} Objetivos possíveis: ${approach.goals}`
