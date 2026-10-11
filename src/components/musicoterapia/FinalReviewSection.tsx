@@ -209,7 +209,7 @@ export function FinalReviewSection({
             </Card>
           )}
 
-          {complementaryObjectives.length > 0 && (
+          {selectedObjectives.length === 0 && complementaryObjectives.length > 0 && (
             <Card className="shadow-sm">
               <CardHeader className="bg-gradient-to-r from-[#c9a84c]/20 to-[#c9a84c]/10 rounded-t-lg">
                 <CardTitle className="flex items-center gap-2 text-[#c9a84c] text-sm sm:text-base">
