@@ -12,7 +12,7 @@ export const museteraPdfStyles = `
   .pdf-document { width: 186mm; max-width: 186mm; margin: 0; padding: 0; background: #fff; color: #233349; font-family: Arial, Helvetica, sans-serif; font-size: 11px; line-height: 1.55; }
   .pdf-document .section-block { page-break-inside: auto !important; break-inside: auto !important; max-width: 100%; }
   .pdf-document p, .pdf-document li, .pdf-document h2, .pdf-document h3, .pdf-document h4 {
-    overflow-wrap: anywhere; word-wrap: break-word; hyphens: auto;
+    overflow-wrap: break-word; word-break: normal; hyphens: manual;
     page-break-inside: avoid; break-inside: avoid;
   }
   .pdf-document p { orphans: 3; widows: 3; }
@@ -20,7 +20,19 @@ export const museteraPdfStyles = `
   .pdf-document ul, .pdf-document ol { padding-left: 18px; margin: 8px 0 12px; }
   .pdf-document .pdf-keep { page-break-inside: avoid !important; break-inside: avoid !important; }
   .pdf-document img, .pdf-document svg { max-width: 100%; object-fit: contain; }
-  .pdf-document h2, .pdf-document h3, .pdf-document h4 { page-break-after: avoid; break-after: avoid; }
+  .pdf-document h2, .pdf-document h3, .pdf-document h4 { page-break-after: avoid !important; break-after: avoid !important; }
+  .pdf-document .pdf-heading-group { page-break-inside: avoid !important; break-inside: avoid !important; margin-bottom: 6px; }
+  .pdf-document .pdf-heading-group > h3 { border-bottom: 1px solid #99f6e4; padding: 0 0 7px; margin: 0 0 8px; color: #0f766e; font-size: 13px; }
+  .pdf-document .section-block.pdf-signature-block { page-break-inside: avoid !important; break-inside: avoid !important; }
+  .pdf-document .pdf-signature-block > div { break-inside: avoid !important; page-break-inside: avoid !important; }
+  .pdf-document .pdf-referral { padding: 0 0 10px; page-break-inside: avoid; break-inside: avoid; }
+  .pdf-document .pdf-referral > h3 { color: #0f766e; font-size: 12px; border-bottom: 1px solid #99f6e4; padding-bottom: 5px; margin: 8px 0; }
+  .pdf-document .pdf-referral > p { font-size: 10px; line-height: 1.55; margin: 4px 0 7px; white-space: pre-wrap; }
+  .pdf-document .pdf-context-grid { display: flex; flex-wrap: wrap; gap: 8px 15px; padding: 12px 14px; border-radius: 7px; border: 1px solid #e2e8f0; background: #f8fafc; }
+  .pdf-document .pdf-context-item { flex: 1 1 42%; min-width: 0; overflow-wrap: break-word; font-size: 9.5px; }
+  .pdf-document .pdf-context-item strong { display: block; color: #0f766e; }
+  .pdf-document .pdf-context-item span { display: block; color: #334155; }
+  .pdf-document .pdf-patient-context { margin: 8px 0 14px; }
   .pdf-document h3 { letter-spacing: .05px; }
   .pdf-document strong { font-weight: 700; }
   .pdf-document .pdf-masthead {
@@ -88,8 +100,34 @@ export async function exportMusicoterapiaHtmlPdf(
   // Corrige as regras "avoid" herdadas dos relatórios antigos: as seções
   // grandes precisam ser divisíveis; parágrafos e cartões continuam protegidos.
   element.querySelectorAll<HTMLElement>('.section-block').forEach(section => {
+    // A assinatura (inclusive aviso) é pequena e deve ficar toda na mesma
+    // página; outras seções podem ultrapassar uma folha sem cortar conteúdo.
+    if (section.classList.contains('pdf-signature-block')) {
+      section.style.pageBreakInside = 'avoid';
+      section.style.breakInside = 'avoid';
+      return;
+    }
     section.style.pageBreakInside = 'auto';
     section.style.breakInside = 'auto';
+
+    // html2pdf não respeita consistentemente "break-after: avoid" no H3
+    // isolado. Agrupar o título com uma introdução curta e, quando couber,
+    // o primeiro item (ou a lista inteira, se pequena).
+    const heading = section.querySelector<HTMLElement>(':scope > h3');
+    if (!heading) return;
+    const introduction = heading.nextElementSibling as HTMLElement | null;
+    const group = document.createElement('div');
+    group.className = 'pdf-heading-group pdf-keep';
+    section.insertBefore(group, heading);
+    group.appendChild(heading);
+    if (introduction?.tagName === 'P' && (introduction.textContent?.length || 0) <= 350) {
+      group.appendChild(introduction);
+    }
+    const next = group.nextElementSibling as HTMLElement | null;
+    if (next && (next.tagName === 'OL' || next.tagName === 'UL') &&
+        next.children.length === 1 && (next.textContent?.length || 0) <= 640) {
+      group.appendChild(next);
+    }
   });
   document.body.appendChild(element);
   try {
