@@ -12,6 +12,7 @@ import { getSelectedMusicoterapiaObjectives, musicoterapiaObjectiveCategories } 
 import { getSelectedMusicoterapiaApproaches } from '@/data/musicoterapiaApproaches';
 import { MusicoterapiaApproachResultsSummary } from './MusicoterapiaApproachResultsSummary';
 import { MusicoterapiaObjectiveFlowSummary } from './MusicoterapiaObjectiveFlowSummary';
+import { MusicoterapiaFinalConsiderationsSummary } from './MusicoterapiaFinalConsiderationsSummary';
 import { MusicoterapiaReferralSummary } from './MusicoterapiaReferralSummary';
 import { MusicoterapiaReferenceSummary } from './MusicoterapiaReferenceSummary';
 
@@ -329,7 +330,7 @@ export function FinalReviewSection({
             </Card>
           )}
 
-          {fields.conclusion && Array.isArray(fields.conclusion) && fields.conclusion.length > 0 && (
+          {isLegacyReport && fields.conclusion && Array.isArray(fields.conclusion) && fields.conclusion.length > 0 && (
             <Card className="shadow-sm">
               <CardHeader className="bg-gradient-to-r from-[#c9a84c]/20 to-[#c9a84c]/10 rounded-t-lg">
                 <CardTitle className="flex items-center gap-2 text-[#c9a84c] text-sm sm:text-base">
@@ -348,6 +349,10 @@ export function FinalReviewSection({
                 </div>
               </CardContent>
             </Card>
+          )}
+
+          {!isLegacyReport && (
+            <MusicoterapiaFinalConsiderationsSummary fields={fields} />
           )}
 
           <div className="border-t-2 border-[#c9a84c]/30 pt-4 sm:pt-6 mt-6 sm:mt-8">
