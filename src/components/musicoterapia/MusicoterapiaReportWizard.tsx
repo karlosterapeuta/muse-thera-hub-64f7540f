@@ -26,6 +26,8 @@ interface MusicoterapiaReportWizardProps {
   onGenerateWithAI: (keyPoints: string) => Promise<any>;
   isGeneratingWithAI: boolean;
   patients: any[];
+  onSelectPatient: (patientId: string) => void;
+  anamnesisStatus: 'idle' | 'loading' | 'loaded' | 'empty' | 'error';
   onSaveReport: () => void;
   logoUrl: string | null;
   onLogoChange: (logoUrl: string | null) => void;
@@ -524,6 +526,8 @@ export function MusicoterapiaReportWizard({
   onGenerateWithAI, 
   isGeneratingWithAI,
   patients,
+  onSelectPatient,
+  anamnesisStatus,
   onSaveReport,
   logoUrl,
   onLogoChange,
@@ -674,6 +678,8 @@ export function MusicoterapiaReportWizard({
             onUpdateData={onUpdateData}
             professionalData={professionalData}
             patients={patients}
+            onSelectPatient={onSelectPatient}
+            anamnesisStatus={anamnesisStatus}
           />
         </div>
       );
