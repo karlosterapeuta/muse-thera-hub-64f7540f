@@ -102,8 +102,9 @@ export async function exportMusicoterapiaNativePdf(
     }
     y += gapAfter;
   };
-  const header = (title: string, minContent = 14) => {
-    ensure(12 + minContent);
+  const header = (title: string, minContent = 25) => {
+    // O título e o início da seção devem caber na mesma página.
+    ensure(15 + Math.max(25, minContent));
     pdf.setFillColor(...GREEN);
     pdf.roundedRect(margin, y, 3, 7, 1, 1, 'F');
     setFace(12.1, true, GREEN);
@@ -219,7 +220,11 @@ export async function exportMusicoterapiaNativePdf(
       const chosen = objectives.filter(x => x.category === category.id);
       if (!chosen.length) continue;
       setFace(9.5, true, GREEN);
-      ensure(8);
+      const firstGoal = chosen[0];
+      const firstGoalText = clean(firstGoal.title + ': ' + firstGoal.objective);
+      const firstGoalLines: string[] = pdf.splitTextToSize(firstGoalText, usable - 9);
+      // Impede que o título da categoria fique isolado da primeira meta.
+      ensure(8 + Math.min(80, firstGoalLines.length * textHeight(9.75) + 3));
       pdf.text(clean(category.title), margin + 1, y + 3.4);
       y += 7;
       for (const objective of chosen) item(objective.title, objective.objective);
@@ -228,7 +233,7 @@ export async function exportMusicoterapiaNativePdf(
 
   const approaches = getSelectedMusicoterapiaApproaches(fields.musicoterapia_approach_ids);
   if (approaches.length) {
-    header('Abordagem musicoterapêutica', 15);
+    header('Abordagem musicoterapêutica', 32);
     for (const approach of approaches) {
       item(approach.title, approach.description);
     }
@@ -270,7 +275,7 @@ export async function exportMusicoterapiaNativePdf(
   };
 
   if (outcomes.length || recorded.length) {
-    header('Painel de resultados observados', 69);
+    header('Painel de resultados observados', 84);
     ensure(68);
     const done = outcomes.filter(x=>x.status !== 'not_assessed').length;
     const cards = [
