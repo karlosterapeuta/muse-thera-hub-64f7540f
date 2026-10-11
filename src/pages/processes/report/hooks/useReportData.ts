@@ -8,6 +8,7 @@ type Patient = {
   name: string;
   birth_date?: string;
   age?: number;
+  responsible?: string | null;
 };
 
 export function useReportData() {
@@ -74,7 +75,7 @@ export function useReportData() {
         
         const { data, error } = await supabase
           .from("patients")
-          .select("id, name, birth_date, age")
+          .select("id, name, birth_date, age, responsible")
           .eq("professional_id", user.id)
           .order("name");
 
