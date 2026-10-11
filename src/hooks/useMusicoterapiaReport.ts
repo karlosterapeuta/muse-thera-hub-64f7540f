@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { musicoterapiaTemplate, type ReportData } from '@/data/musicoterapiaTemplate';
+import { getMusicoterapiaQualityWarnings } from '@/utils/musicoterapiaQuality';
 import { useProfessionalData } from '@/hooks/useProfessionalData';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -169,7 +170,8 @@ export function useMusicoterapiaReport() {
 
     return {
       isValid: allErrors.length === 0,
-      missingFields: allErrors
+      missingFields: allErrors,
+      clinicalWarnings: getMusicoterapiaQualityWarnings(reportData)
     };
   }, [reportData, professionalData]);
 
