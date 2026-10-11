@@ -108,6 +108,8 @@ export default function MusicoterapiaPage() {
     const fields = reportDataForPDF.fieldValues || {};
     const selectedGoals = getSelectedMusicoterapiaObjectives(fields.therapeutic_objective_ids);
     const selectedApproaches = getSelectedMusicoterapiaApproaches(fields.musicoterapia_approach_ids);
+    // Manter informações de relatórios anteriores sem repetir a antiga Etapa 05 nos novos.
+    const isLegacyReport = selectedApproaches.length === 0;
     const currentDate = new Date().toLocaleDateString('pt-BR');
 
     const escapeHtml = (s: string) =>
@@ -274,7 +276,7 @@ export default function MusicoterapiaPage() {
           </div>
         ` : ''}
 
-        ${fields.session_activities && fields.session_activities.length > 0 ? `
+        ${isLegacyReport && fields.session_activities && fields.session_activities.length > 0 ? `
           <div class="section-block" style="margin-bottom: 20px; page-break-inside: avoid; page-break-before: auto;">
             <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Atividades da Sessao</h3>
             ${Array.isArray(fields.session_activities) ? `
@@ -285,7 +287,7 @@ export default function MusicoterapiaPage() {
           </div>
         ` : ''}
 
-        ${fields.patient_evolution && fields.patient_evolution.length > 0 ? `
+        ${isLegacyReport && fields.patient_evolution && fields.patient_evolution.length > 0 ? `
           <div class="section-block" style="margin-bottom: 20px; page-break-inside: avoid; page-break-before: auto;">
             <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Evolucao do Paciente</h3>
             ${Array.isArray(fields.patient_evolution) ? `
@@ -415,11 +417,11 @@ export default function MusicoterapiaPage() {
             ${renderSection('Identificação Clínica', ['evaluation_period','diagnosis_source','cid_code','support_level','comorbidities','current_medications','referral_source','treatment_start_date','session_count','session_frequency','session_duration'])}
             ${renderSection('Identidade Sonora (ISO de Benenzon)', ['iso_gestational','iso_universal','iso_cultural','iso_complementary','iso_group','sound_preferences','musical_repertoire_favorites'])}
             ${renderSection('Avaliação Sensório-Musical', ['auditory_processing','sound_tolerance','vestibular_response_music','tactile_instrument_response','proprioceptive_response','sensory_seeking_vs_avoiding','sensory_profile_notes'])}
-            ${renderSection('Indicadores Musicoterapêuticos - Pontuações Observacionais', ['domain_musicality','domain_communication_verbal','domain_communication_nonverbal','domain_social_interaction','domain_emotional','domain_cognitive','domain_motor_gross','domain_motor_fine','domain_sensory_integration','domain_autonomy','domain_evidences'])}
+            ${isLegacyReport ? renderSection('Indicadores Musicoterapêuticos - Pontuações Observacionais', ['domain_musicality','domain_communication_verbal','domain_communication_nonverbal','domain_social_interaction','domain_emotional','domain_cognitive','domain_motor_gross','domain_motor_fine','domain_sensory_integration','domain_autonomy','domain_evidences']) : ''}
             ${selectedApproaches.length === 0 ? renderSection('Detalhamento Clínico da Sessão', ['session_setting','session_structure','improvisation_use','receptive_techniques','recreative_techniques','compositional_techniques','tempo_dynamics_used','vocal_work']) : ''}
-            ${renderSection('Comunicação e Linguagem', ['vocalizations_observed','verbal_output_during_music','echolalia_musical','aac_use','pragmatic_skills'])}
+            ${isLegacyReport ? renderSection('Comunicação e Linguagem', ['vocalizations_observed','verbal_output_during_music','echolalia_musical','aac_use','pragmatic_skills']) : ''}
             ${renderSection('Matriz de Evidências Musicoterapêuticas', ['baseline_observation','current_observation','measurement_method','assistance_level','observation_context','report_limitations'])}
-            ${renderSection('Evolução Clínica Detalhada', ['evolution_compared_baseline','goals_achieved','goals_in_progress','goals_not_achieved','quantitative_indicators'])}
+            ${isLegacyReport ? renderSection('Evolução Clínica Detalhada', ['evolution_compared_baseline','goals_achieved','goals_in_progress','goals_not_achieved','quantitative_indicators']) : renderSection('Síntese dos Resultados', ['goals_achieved','goals_in_progress','goals_not_achieved','quantitative_indicators'])}
             ${renderSection('Plano Terapêutico Futuro', ['next_objectives_short','next_objectives_medium','next_objectives_long','proposed_interventions','expected_outcomes','revaluation_date'])}
             ${renderSection('Orientações Ampliadas', ['school_recommendations','interdisciplinary_team_notes','playlist_recommended','red_flags_to_monitor'])}
             ${scalesTable}
