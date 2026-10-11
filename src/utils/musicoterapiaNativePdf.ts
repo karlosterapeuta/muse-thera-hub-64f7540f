@@ -335,7 +335,7 @@ export async function exportMusicoterapiaNativePdf(
   // Conteúdo longo flui pelas páginas através de write(), preservando gráficos.
   const narrativeParagraphs = (narrative || [])
     .filter(section => section && typeof section.content === 'string')
-    .flatMap(section => section.content.split(/\\n\\s*\\n/).map(p => clean(p)).filter(Boolean));
+    .flatMap(section => section.content.split(/\n\s*\n/).map(p => clean(p)).filter(Boolean));
   const fallbackParts: string[] = [];
   if (!narrativeParagraphs.length) {
     if (recorded.length) {
