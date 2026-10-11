@@ -136,7 +136,7 @@ export default function MusicoterapiaPage() {
       <div style="font-family: Arial, sans-serif; color: #000; background-color: #fff; width: 210mm; min-height: 297mm; padding: 20mm; margin: 0 auto; font-size: 12px; line-height: 1.6; box-sizing: border-box;">
         <!-- Header -->
         <div style="text-align: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #14b8a6; page-break-inside: avoid;">
-          ${logoUrl ? `<img src="${logoUrl}" alt="Logo" style="max-width: 150px; margin-bottom: 15px;" />` : ''}
+          ${logoUrl ? `<img src="${escapeHtml(logoUrl)}" alt="Logo" style="max-width: 150px; margin-bottom: 15px;" />` : ''}
           <h1 style="color: #0d9488; margin: 0; font-size: 24px;">Relatorio MuseTera TEA</h1>
           <p style="color: #666; margin: 5px 0 0 0; font-size: 13px;">Musicoterapia para Transtorno do Espectro Autista</p>
         </div>
@@ -151,7 +151,7 @@ export default function MusicoterapiaPage() {
           };
           const row = (label: string, value: any) =>
             value && String(value).trim()
-              ? `<p style="margin: 4px 0;"><strong>${escapeHtml(label)}:</strong> ${String(value)}</p>`
+              ? `<p style="margin: 4px 0;"><strong>${escapeHtml(label)}:</strong> ${escapeHtml(String(value))}</p>`
               : '';
           const patientRows = [
             row('Nome completo', reportDataForPDF.patientName),
@@ -194,9 +194,9 @@ export default function MusicoterapiaPage() {
             <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Objetivos Terapeuticos</h3>
             ${Array.isArray(fields.therapeutic_objectives) ? `
               <ul style="margin: 0; padding-left: 20px;">
-                ${fields.therapeutic_objectives.map((obj: string) => `<li style="margin: 6px 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${obj}</li>`).join('')}
+                ${fields.therapeutic_objectives.map((obj: string) => `<li style="margin: 6px 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;" >${escapeHtml(String(obj))}</li>`).join('')}
               </ul>
-            ` : `<p style="margin: 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${fields.therapeutic_objectives}</p>`}
+            ` : `<p style="margin: 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;" >${escapeHtml(String(fields.therapeutic_objectives))}</p>`}
           </div>
         ` : ''}
 
@@ -205,9 +205,9 @@ export default function MusicoterapiaPage() {
             <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Tecnicas Musicais Utilizadas</h3>
             ${Array.isArray(fields.musical_techniques) ? `
               <ul style="margin: 0; padding-left: 20px;">
-                ${fields.musical_techniques.map((tech: string) => `<li style="margin: 6px 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${tech}</li>`).join('')}
+                ${fields.musical_techniques.map((tech: string) => `<li style="margin: 6px 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;" >${escapeHtml(String(tech))}</li>`).join('')}
               </ul>
-            ` : `<p style="margin: 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${fields.musical_techniques}</p>`}
+            ` : `<p style="margin: 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;" >${escapeHtml(String(fields.musical_techniques))}</p>`}
           </div>
         ` : ''}
 
@@ -216,9 +216,9 @@ export default function MusicoterapiaPage() {
             <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Instrumentos Utilizados</h3>
             ${Array.isArray(fields.instruments_used) ? `
               <ul style="margin: 0; padding-left: 20px;">
-                ${fields.instruments_used.map((inst: string) => `<li style="margin: 6px 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${inst}</li>`).join('')}
+                ${fields.instruments_used.map((inst: string) => `<li style="margin: 6px 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;" >${escapeHtml(String(inst))}</li>`).join('')}
               </ul>
-            ` : `<p style="margin: 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${fields.instruments_used}</p>`}
+            ` : `<p style="margin: 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;" >${escapeHtml(String(fields.instruments_used))}</p>`}
           </div>
         ` : ''}
 
@@ -227,9 +227,9 @@ export default function MusicoterapiaPage() {
             <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Atividades da Sessao</h3>
             ${Array.isArray(fields.session_activities) ? `
               <ul style="margin: 0; padding-left: 20px;">
-                ${fields.session_activities.map((act: string) => `<li style="margin: 6px 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${act}</li>`).join('')}
+                ${fields.session_activities.map((act: string) => `<li style="margin: 6px 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;" >${escapeHtml(String(act))}</li>`).join('')}
               </ul>
-            ` : `<p style="margin: 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${fields.session_activities}</p>`}
+            ` : `<p style="margin: 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;" >${escapeHtml(String(fields.session_activities))}</p>`}
           </div>
         ` : ''}
 
@@ -238,9 +238,9 @@ export default function MusicoterapiaPage() {
             <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Evolucao do Paciente</h3>
             ${Array.isArray(fields.patient_evolution) ? `
               <ul style="margin: 0; padding-left: 20px;">
-                ${fields.patient_evolution.map((evol: string) => `<li style="margin: 6px 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${evol}</li>`).join('')}
+                ${fields.patient_evolution.map((evol: string) => `<li style="margin: 6px 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;" >${escapeHtml(String(evol))}</li>`).join('')}
               </ul>
-            ` : `<p style="margin: 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${fields.patient_evolution}</p>`}
+            ` : `<p style="margin: 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;" >${escapeHtml(String(fields.patient_evolution))}</p>`}
           </div>
         ` : ''}
 
@@ -249,9 +249,9 @@ export default function MusicoterapiaPage() {
             <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Recomendacoes</h3>
             ${Array.isArray(fields.recommendations) ? `
               <ul style="margin: 0; padding-left: 20px;">
-                ${fields.recommendations.map((rec: string) => `<li style="margin: 6px 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${rec}</li>`).join('')}
+                ${fields.recommendations.map((rec: string) => `<li style="margin: 6px 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;" >${escapeHtml(String(rec))}</li>`).join('')}
               </ul>
-            ` : `<p style="margin: 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${fields.recommendations}</p>`}
+            ` : `<p style="margin: 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;" >${escapeHtml(String(fields.recommendations))}</p>`}
           </div>
         ` : ''}
 
@@ -260,9 +260,9 @@ export default function MusicoterapiaPage() {
             <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Conclusao</h3>
             ${Array.isArray(fields.conclusion) ? `
               <ul style="margin: 0; padding-left: 20px;">
-                ${fields.conclusion.map((conc: string) => `<li style="margin: 6px 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${conc}</li>`).join('')}
+                ${fields.conclusion.map((conc: string) => `<li style="margin: 6px 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;" >${escapeHtml(String(conc))}</li>`).join('')}
               </ul>
-            ` : `<p style="margin: 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">${fields.conclusion}</p>`}
+            ` : `<p style="margin: 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;" >${escapeHtml(String(fields.conclusion))}</p>`}
           </div>
         ` : ''}
 
@@ -317,18 +317,18 @@ export default function MusicoterapiaPage() {
 
           const scalesTable = filledScales.length > 0 ? `
             <div class="section-block" style="margin-bottom: 20px; page-break-inside: avoid;">
-              <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Resumo Quantitativo - Escalas Clínicas</h3>
+              <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Indicadores observacionais registrados (1 a 10)</h3>
               <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
                 <thead>
                   <tr style="background: #f0fdfa;">
                     <th style="text-align: left; padding: 6px; border: 1px solid #99f6e4; color: #0f766e;">Domínio / Indicador</th>
                     <th style="text-align: center; padding: 6px; border: 1px solid #99f6e4; color: #0f766e; width: 80px;">Pontuação</th>
-                    <th style="text-align: center; padding: 6px; border: 1px solid #99f6e4; color: #0f766e; width: 90px;">Classificação</th>
+                    <th style="text-align: center; padding: 6px; border: 1px solid #99f6e4; color: #0f766e; width: 90px;">Faixa</th>
                   </tr>
                 </thead>
                 <tbody>
                   ${filledScales.map((s) => {
-                    const cls = s.value >= 8 ? 'Excelente' : s.value >= 6 ? 'Adequado' : s.value >= 4 ? 'Em desenvolvimento' : 'Necessita suporte';
+                    const cls = s.value >= 8 ? '8–10' : s.value >= 6 ? '6–7' : s.value >= 4 ? '4–5' : '1–3';
                     const color = s.value >= 8 ? '#10b981' : s.value >= 6 ? '#f59e0b' : s.value >= 4 ? '#f97316' : '#ef4444';
                     return `<tr>
                       <td style="padding: 6px; border: 1px solid #e5e7eb;">${escapeHtml(s.label)}</td>
@@ -338,16 +338,17 @@ export default function MusicoterapiaPage() {
                   }).join('')}
                 </tbody>
               </table>
+              <p style="margin: 8px 0 0; color: #64748b; font-size: 9px;">Pontuações de acompanhamento clínico informadas pelo profissional; não representam, isoladamente, diagnóstico ou escala psicométrica validada.</p>
             </div>
           ` : '';
 
           // Sumário executivo
           const execItems: string[] = [];
-          if (fields.cid_code) execItems.push(`<strong>Diagnóstico:</strong> ${fields.cid_code}`);
-          if (fields.support_level) execItems.push(`<strong>Nível de Suporte:</strong> ${fields.support_level}`);
-          if (fields.session_count) execItems.push(`<strong>Sessões realizadas:</strong> ${fields.session_count}`);
-          if (fields.session_frequency) execItems.push(`<strong>Frequência:</strong> ${fields.session_frequency}`);
-          if (fields.revaluation_date) execItems.push(`<strong>Próxima reavaliação:</strong> ${fields.revaluation_date}`);
+          if (fields.cid_code) execItems.push(`<strong>Classificação diagnóstica informada:</strong> ${escapeHtml(String(fields.cid_code))}`);
+          if (fields.support_level) execItems.push(`<strong>Nível de Suporte:</strong> ${escapeHtml(String(fields.support_level))}`);
+          if (fields.session_count) execItems.push(`<strong>Sessões realizadas:</strong> ${escapeHtml(String(fields.session_count))}`);
+          if (fields.session_frequency) execItems.push(`<strong>Frequência:</strong> ${escapeHtml(String(fields.session_frequency))}`);
+          if (fields.revaluation_date) execItems.push(`<strong>Próxima reavaliação:</strong> ${escapeHtml(String(fields.revaluation_date))}`);
           const execSummary = execItems.length > 0 ? `
             <div class="section-block" style="margin-bottom: 20px; padding: 12px 16px; background: linear-gradient(135deg, #f0fdfa, #ecfeff); border-left: 4px solid #0d9488; border-radius: 6px; page-break-inside: avoid;">
               <h3 style="color: #0d9488; margin: 0 0 8px 0; font-size: 13px;">Sumário Executivo</h3>
@@ -376,8 +377,8 @@ export default function MusicoterapiaPage() {
               if (!tf && !at && !rc) return '';
               const formatList = (txt: string) => {
                 const items = txt.split(/\n+/).map(s => s.replace(/^[-•\d.\)\s]+/, '').trim()).filter(Boolean);
-                if (items.length <= 1) return `<p style="margin: 0; white-space: pre-wrap; font-size: 11px; line-height: 1.6; color: #1f2937;">${txt}</p>`;
-                return `<ul style="margin: 0; padding-left: 18px; font-size: 11px; line-height: 1.7; color: #1f2937;">${items.map(i => `<li style="margin: 4px 0;">${i}</li>`).join('')}</ul>`;
+                if (items.length <= 1) return `<p style="margin: 0; white-space: pre-wrap; font-size: 11px; line-height: 1.6; color: #1f2937;">${escapeHtml(txt)}</p>`;
+                return `<ul style="margin: 0; padding-left: 18px; font-size: 11px; line-height: 1.7; color: #1f2937;">${items.map(i => `<li style="margin: 4px 0;">${escapeHtml(i)}</li>`).join('')}</ul>`;
               };
               return `
                 <div class="section-block" style="margin-bottom: 20px; page-break-inside: avoid; border: 2px solid #14b8a6; border-radius: 10px; overflow: hidden; background: #ffffff;">
@@ -405,7 +406,7 @@ export default function MusicoterapiaPage() {
                       </div>
                     ` : ''}
                     <div style="margin-top: 12px; padding-top: 10px; border-top: 1px dashed #cbd5e1; font-size: 9px; color: #64748b; text-align: center; font-style: italic;">
-                      Documento elaborado segundo diretrizes da WFMT (World Federation of Music Therapy), DSM-5-TR e CID-11
+                      Referências e instrumentos informados pelo profissional. A avaliação musicoterapêutica não substitui o diagnóstico clínico.
                     </div>
                   </div>
                 </div>
@@ -433,15 +434,15 @@ export default function MusicoterapiaPage() {
                       </div>
                     ` : ''}
                     <div style="text-align: center;">
-                      <div style="font-size: 9px; font-weight: bold; color: #0f766e; margin-bottom: 6px; line-height: 1.3; word-wrap: break-word; overflow-wrap: break-word;">${professionalData?.name || 'Profissional'}</div>
+                      <div style="font-size: 9px; font-weight: bold; color: #0f766e; margin-bottom: 6px; line-height: 1.3; word-wrap: break-word; overflow-wrap: break-word;">${escapeHtml(professionalData?.name || 'Profissional')}</div>
                       <div style="display: inline-flex; align-items: center; gap: 3px; background: #ccfbf1; border: 1px solid #5eead4; border-radius: 10px; padding: 3px 7px; margin-bottom: 8px;">
                         <span style="color: #0f766e; font-size: 7px;">&#9835;</span>
-                        <span style="font-size: 7px; font-weight: 600; color: #0f766e;">${professionalData?.specialty || 'Musicoterapeuta'}</span>
+                        <span style="font-size: 7px; font-weight: 600; color: #0f766e;">${escapeHtml(professionalData?.specialty || 'Musicoterapeuta')}</span>
                       </div>
                       <div style="font-size: 7px; color: #374151; line-height: 1.8;">
-                        ${professionalData?.register ? `<div><strong style="color: #0f766e;">Registro:</strong> ${professionalData.register}</div>` : ''}
-                        ${professionalData?.email ? `<div style="word-wrap: break-word; overflow-wrap: break-word;"><strong style="color: #0f766e;">Email:</strong> ${professionalData.email}</div>` : ''}
-                        ${professionalData?.phone ? `<div><strong style="color: #0f766e;">Telefone:</strong> ${professionalData.phone}</div>` : ''}
+                        ${professionalData?.register ? `<div><strong style="color: #0f766e;">Registro:</strong> ${escapeHtml(professionalData.register)}</div>` : ''}
+                        ${professionalData?.email ? `<div style="word-wrap: break-word; overflow-wrap: break-word;"><strong style="color: #0f766e;">Email:</strong> ${escapeHtml(professionalData.email)}</div>` : ''}
+                        ${professionalData?.phone ? `<div><strong style="color: #0f766e;">Telefone:</strong> ${escapeHtml(professionalData.phone)}</div>` : ''}
                       </div>
                     </div>
                   </div>
@@ -450,7 +451,7 @@ export default function MusicoterapiaPage() {
                 <div style="border-top: 1px solid #5eead4; background: linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa); padding: 7px;">
                   <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
                     <span style="color: #0d9488; font-size: 8px;">&#10004;</span>
-                    <span style="font-size: 6px; font-weight: 600; color: #0f766e;">Assinatura Digital Verificada</span>
+                    <span style="font-size: 6px; font-weight: 600; color: #0f766e;">Identificação do profissional responsável</span>
                     <span style="color: #0d9488; font-size: 7px;">&#9835;</span>
                     <span style="font-size: 6px; color: #6b7280;">Sistema MuseTera</span>
                   </div>
@@ -469,18 +470,18 @@ export default function MusicoterapiaPage() {
                           <img src="${photoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
                         </div>
                       ` : ''}
-                      <div style="font-size: 7px; font-weight: bold; color: #0f766e; text-align: center; margin-bottom: 3px; max-width: 90px; line-height: 1.3; word-wrap: break-word; overflow-wrap: break-word;">${professionalData?.name || 'Profissional'}</div>
+                      <div style="font-size: 7px; font-weight: bold; color: #0f766e; text-align: center; margin-bottom: 3px; max-width: 90px; line-height: 1.3; word-wrap: break-word; overflow-wrap: break-word;">${escapeHtml(professionalData?.name || 'Profissional')}</div>
                       <div style="width: 30px; height: 1px; background: linear-gradient(to right, transparent, #14b8a6, transparent); margin-bottom: 3px;"></div>
                       <div style="display: inline-flex; align-items: center; gap: 2px; background: #ccfbf1; border: 1px solid #5eead4; border-radius: 8px; padding: 2px 5px; margin-bottom: 2px;">
                         <span style="font-size: 5px; color: #0f766e;">&#9835;</span>
-                        <span style="font-size: 5px; font-weight: 600; color: #0f766e; text-transform: uppercase; letter-spacing: 0.3px;">${professionalData?.specialty || 'Musicoterapeuta'}</span>
+                        <span style="font-size: 5px; font-weight: 600; color: #0f766e; text-transform: uppercase; letter-spacing: 0.3px;">${escapeHtml(professionalData?.specialty || 'Musicoterapeuta')}</span>
                       </div>
-                      ${professionalData?.register ? `<div style="font-size: 6px; color: #374151; font-weight: 600;">${professionalData.register}</div>` : ''}
+                      ${professionalData?.register ? `<div style="font-size: 6px; color: #374151; font-weight: 600;">${escapeHtml(professionalData.register)}</div>` : ''}
                     </div>
                   </div>
                   <div style="margin-top: 6px; background: linear-gradient(135deg, #0d9488, #0891b2); color: white; padding: 4px 9px; border-radius: 10px; display: inline-flex; align-items: center; gap: 3px; box-shadow: 0 2px 6px rgba(13,148,136,0.3);">
                     <span style="font-size: 6px;">&#10004;</span>
-                    <span style="font-size: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;">MuseTera Verified</span>
+                    <span style="font-size: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;">Documento gerado no MuseTera</span>
                     <span style="font-size: 6px;">&#9835;</span>
                   </div>
                 ` : `
@@ -621,9 +622,7 @@ export default function MusicoterapiaPage() {
 
       loadReports();
     } catch (error) {
-      console.error('=== Erro no salvamento ===');
-      console.error('Erro:', error);
-      console.error('Stack:', error instanceof Error ? error.stack : 'N/A');
+      console.error('Erro ao salvar relatório (detalhes omitidos para proteger dados clínicos)');
       
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       
