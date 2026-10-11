@@ -8,7 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import type { ReportData } from '@/data/musicoterapiaTemplate';
 import { getMusicoterapiaQualityWarnings } from '@/utils/musicoterapiaQuality';
-import { getSelectedMusicoterapiaObjectives } from '@/data/musicoterapiaObjectives';
+import { getSelectedMusicoterapiaObjectives, musicoterapiaObjectiveCategories } from '@/data/musicoterapiaObjectives';
 
 interface FinalReviewSectionProps {
   reportData: Partial<ReportData>;
@@ -190,12 +190,21 @@ export function FinalReviewSection({
               </CardHeader>
               <CardContent className="space-y-3">
                 <p className="text-xs text-muted-foreground">Objetivos planejados; não representam conquistas já observadas.</p>
-                {selectedObjectives.map((objective) => (
-                  <div key={objective.id} className="rounded-lg border border-[#c9a84c]/20 p-3 bg-[#c9a84c]/5">
-                    <p className="font-semibold text-sm">{objective.icon} {objective.title}</p>
-                    <p className="text-sm mt-1 leading-relaxed">{objective.objective}</p>
-                  </div>
-                ))}
+                {musicoterapiaObjectiveCategories.map((category) => {
+                  const group = selectedObjectives.filter((objective) => objective.category === category.id);
+                  if (!group.length) return null;
+                  return (
+                    <section key={category.id} className="space-y-2">
+                      <h4 className="text-sm font-semibold text-[#c9a84c]">{category.icon} {category.title}</h4>
+                      {group.map((objective) => (
+                        <div key={objective.id} className="rounded-lg border border-[#c9a84c]/20 p-3 bg-[#c9a84c]/5">
+                          <p className="font-semibold text-sm">{objective.icon} {objective.title}</p>
+                          <p className="text-sm mt-1 leading-relaxed">{objective.objective}</p>
+                        </div>
+                      ))}
+                    </section>
+                  );
+                })}
               </CardContent>
             </Card>
           )}
