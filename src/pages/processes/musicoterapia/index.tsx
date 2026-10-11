@@ -23,6 +23,11 @@ import { renderMusicoterapiaReferencesPdf } from '@/utils/renderMusicoterapiaRef
 import { renderMusicoterapiaFinalConsiderationsPdf } from '@/utils/renderMusicoterapiaFinalConsiderationsPdf';
 import { renderMusicoterapiaSignaturePdf } from '@/utils/renderMusicoterapiaSignaturePdf';
 import { splitMusicoterapiaPdfParagraphs } from '@/utils/musicoterapiaPdfParagraphs';
+import {
+  renderMusicoterapiaPdfPatientContext,
+  formatMusicoterapiaPdfDate,
+  diagnosesHaveSameCid
+} from '@/utils/musicoterapiaPdfPatientContext';
 import { getSelectedMusicoterapiaReferences } from '@/data/musicoterapiaReferences';
 import { savePDFToStorage } from '@/utils/pdfStorageUtils';
 import { useReportData } from '../report/hooks/useReportData';
@@ -221,12 +226,10 @@ export default function MusicoterapiaPage() {
 
     // A Etapa 08 é a conclusão oficial dos relatórios estruturados.
     // Evitar uma segunda conclusão/prognóstico gerados pela narrativa de IA.
-    const narrativeSections = (narrative || []).filter((section) => {
-      if (isLegacyReport) return true;
-      const normalizedTitle = String(section.title || '')
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-      return !/(consideracoes finais|conclusao|prognostico)/.test(normalizedTitle);
-    });
+    // O modelo estruturado de nove etapas é a fonte única do relatório novo.
+    // Textos narrativos antigos são preservados somente em relatórios legados.
+    // Não repetir narrativas IA com capítulos duplicados ou inferências sem suporte.
+    const narrativeSections = isLegacyReport ? (narrative || []) : [];
     const narrativeBlock = narrativeSections.length > 0 ? `
       <div class="section-block" style="margin-bottom: 25px; border: 2px solid #14b8a6; border-radius: 10px; overflow: hidden; background: #ffffff; page-break-inside: auto;">
         <div style="background: linear-gradient(135deg, #0d9488 0%, #14b8a6 60%, #06b6d4 100%); color: white; padding: 12px 16px;">
@@ -277,7 +280,9 @@ export default function MusicoterapiaPage() {
             row('Data de nascimento', formatDateBR(reportDataForPDF.patientBirthDate)),
             row('Idade', reportDataForPDF.patientAge),
             row('Diagnóstico / CID informado', fields.cid_code || reportDataForPDF.patientDiagnosis),
-            ...(fields.cid_code && reportDataForPDF.patientDiagnosis && String(fields.cid_code).trim() !== String(reportDataForPDF.patientDiagnosis).trim()
+            ...(fields.cid_code && reportDataForPDF.patientDiagnosis &&
+                String(fields.cid_code).trim() !== String(reportDataForPDF.patientDiagnosis).trim() &&
+                !diagnosesHaveSameCid(fields.cid_code, reportDataForPDF.patientDiagnosis)
               ? [row('Informação diagnóstica adicional', reportDataForPDF.patientDiagnosis)] : []),
             row('Responsável', reportDataForPDF.patientGuardian),
             row('Início dos atendimentos', formatDateBR(fields.treatment_start_date)),
@@ -289,7 +294,7 @@ export default function MusicoterapiaPage() {
             row('Musicoterapeuta', reportDataForPDF.professionalName || professionalData?.name),
             row('Registro profissional', reportDataForPDF.professionalRegistry || professionalData?.register),
             row('Especialidade', reportDataForPDF.professionalSpecialty || professionalData?.specialty),
-            row('Data do relatório', reportDataForPDF.sessionDate || currentDate),
+            row('Data do relatório', formatMusicoterapiaPdfDate(reportDataForPDF.sessionDate) || currentDate),
           ].filter(Boolean).join('');
           return `
         <div class="pdf-identity section-block">
@@ -306,8 +311,8 @@ export default function MusicoterapiaPage() {
         </div>`;
         })()}
 
-        <!-- Painel visual: somente resultados documentados pelo profissional -->
-        ${renderMusicoterapiaPdfVisuals(fields)}
+        <!-- Contexto e motivo do encaminhamento junto à identificação, sem repetir no final -->
+        ${!isLegacyReport ? renderMusicoterapiaPdfPatientContext(fields, escapeHtml) : ''}
 
         <!-- Objetivos planejados: jamais indicar como resultados adquiridos -->
         ${selectedGoals.length > 0 ? `
@@ -346,6 +351,9 @@ export default function MusicoterapiaPage() {
             </ol>
           </div>
         ` : ''}
+
+        <!-- Painel visual: distribuição dos resultados após objetivos e abordagem -->
+        ${renderMusicoterapiaPdfVisuals(fields)}
 
         ${recordedResults.length ? renderRecordedResultsPdf(recordedResults, escapeHtml) : ''}
         ${renderObjectiveFlowPdf(fields.therapeutic_objective_ids, fields.objective_outcomes, escapeHtml)}
@@ -597,7 +605,7 @@ export default function MusicoterapiaPage() {
           name: reportDataForPDF.professionalName || professionalData?.name,
           register: reportDataForPDF.professionalRegistry || professionalData?.register,
           specialty: reportDataForPDF.professionalSpecialty || professionalData?.specialty,
-          date: reportDataForPDF.sessionDate || currentDate,
+          date: formatMusicoterapiaPdfDate(reportDataForPDF.sessionDate) || currentDate,
           email: professionalData?.email,
           phone: professionalData?.phone,
           portrait: photoBase64,
