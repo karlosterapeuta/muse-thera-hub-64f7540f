@@ -112,7 +112,7 @@ export default function MusicoterapiaPage() {
     const selectedGoals = getSelectedMusicoterapiaObjectives(fields.therapeutic_objective_ids);
     const selectedApproaches = getSelectedMusicoterapiaApproaches(fields.musicoterapia_approach_ids);
     const recordedResults = getRecordedApproachResults(fields.musicoterapia_approach_ids, fields.approach_results);
-    // Manter informações de relatórios anteriores sem repetir a antiga Etapa 05 nos novos.
+    // Manter informações de relatórios anteriores sem repetir a antiga Etapa 04 nos novos.
     const isLegacyReport = selectedApproaches.length === 0;
     const currentDate = new Date().toLocaleDateString('pt-BR');
 
@@ -221,7 +221,7 @@ export default function MusicoterapiaPage() {
           </div>
         ` : ''}
 
-        <!-- Abordagem Musicoterapêutica: seleção efetiva do profissional na Etapa 04 -->
+        <!-- Abordagem Musicoterapêutica: seleção efetiva do profissional na Etapa 03 -->
         ${selectedApproaches.length > 0 ? `
           <div class="section-block" style="margin-bottom: 20px; page-break-inside: auto;">
             <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Abordagem Musicoterapêutica</h3>
