@@ -15,6 +15,7 @@ import { MusicoterapiaPreview } from '@/components/musicoterapia/MusicoterapiaPr
 import { useMusicoterapiaReport } from '@/hooks/useMusicoterapiaReport';
 import { musicoterapiaTemplate, scaleFieldIds } from '@/data/musicoterapiaTemplate';
 import { getSelectedMusicoterapiaObjectives, musicoterapiaObjectiveCategories } from '@/data/musicoterapiaObjectives';
+import { getSelectedMusicoterapiaApproaches } from '@/data/musicoterapiaApproaches';
 import { savePDFToStorage } from '@/utils/pdfStorageUtils';
 import { useReportData } from '../report/hooks/useReportData';
 import html2pdf from 'html2pdf.js';
@@ -106,6 +107,7 @@ export default function MusicoterapiaPage() {
   ) => {
     const fields = reportDataForPDF.fieldValues || {};
     const selectedGoals = getSelectedMusicoterapiaObjectives(fields.therapeutic_objective_ids);
+    const selectedApproaches = getSelectedMusicoterapiaApproaches(fields.musicoterapia_approach_ids);
     const currentDate = new Date().toLocaleDateString('pt-BR');
 
     const escapeHtml = (s: string) =>
@@ -210,6 +212,24 @@ export default function MusicoterapiaPage() {
                 </div>
               `;
             }).join('')}
+          </div>
+        ` : ''}
+
+        <!-- Abordagem Musicoterapêutica: seleção efetiva do profissional na Etapa 04 -->
+        ${selectedApproaches.length > 0 ? `
+          <div class="section-block" style="margin-bottom: 20px; page-break-inside: auto;">
+            <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">Abordagem Musicoterapêutica</h3>
+            <p style="margin: 0 0 10px; font-size: 10px; color: #64748b;">Abordagens indicadas pelo profissional no planejamento ou condução da musicoterapia. A seleção não equivale a comprovação de aplicação, formação ou resultado clínico.</p>
+            <ol style="margin: 0; padding-left: 20px; font-size: 11px; line-height: 1.65;">
+              ${selectedApproaches.map((approach) => `
+                <li style="margin: 0 0 12px; page-break-inside: avoid; overflow-wrap: break-word;">
+                  <strong style="color: #0f766e;">${escapeHtml(approach.title)}</strong>
+                  <div>${escapeHtml(approach.description)}</div>
+                  <div><strong>Objetivos possíveis:</strong> ${escapeHtml(approach.goals)}</div>
+                  ${approach.clinicalNote ? `<div style="color: #64748b; font-size: 10px;"><strong>Nota clínica:</strong> ${escapeHtml(approach.clinicalNote)}</div>` : ''}
+                </li>
+              `).join('')}
+            </ol>
           </div>
         ` : ''}
 
@@ -396,7 +416,7 @@ export default function MusicoterapiaPage() {
             ${renderSection('Identidade Sonora (ISO de Benenzon)', ['iso_gestational','iso_universal','iso_cultural','iso_complementary','iso_group','sound_preferences','musical_repertoire_favorites'])}
             ${renderSection('Avaliação Sensório-Musical', ['auditory_processing','sound_tolerance','vestibular_response_music','tactile_instrument_response','proprioceptive_response','sensory_seeking_vs_avoiding','sensory_profile_notes'])}
             ${renderSection('Indicadores Musicoterapêuticos - Pontuações Observacionais', ['domain_musicality','domain_communication_verbal','domain_communication_nonverbal','domain_social_interaction','domain_emotional','domain_cognitive','domain_motor_gross','domain_motor_fine','domain_sensory_integration','domain_autonomy','domain_evidences'])}
-            ${renderSection('Detalhamento Clínico da Sessão', ['session_setting','session_structure','improvisation_use','receptive_techniques','recreative_techniques','compositional_techniques','tempo_dynamics_used','vocal_work'])}
+            ${selectedApproaches.length === 0 ? renderSection('Detalhamento Clínico da Sessão', ['session_setting','session_structure','improvisation_use','receptive_techniques','recreative_techniques','compositional_techniques','tempo_dynamics_used','vocal_work']) : ''}
             ${renderSection('Comunicação e Linguagem', ['vocalizations_observed','verbal_output_during_music','echolalia_musical','aac_use','pragmatic_skills'])}
             ${renderSection('Matriz de Evidências Musicoterapêuticas', ['baseline_observation','current_observation','measurement_method','assistance_level','observation_context','report_limitations'])}
             ${renderSection('Evolução Clínica Detalhada', ['evolution_compared_baseline','goals_achieved','goals_in_progress','goals_not_achieved','quantitative_indicators'])}
@@ -404,8 +424,8 @@ export default function MusicoterapiaPage() {
             ${renderSection('Orientações Ampliadas', ['school_recommendations','interdisciplinary_team_notes','playlist_recommended','red_flags_to_monitor'])}
             ${scalesTable}
             ${(() => {
-              const tf = (fields.theoretical_framework || '').toString().trim();
-              const at = (fields.assessment_tools_used || '').toString().trim();
+              const tf = selectedApproaches.length === 0 ? (fields.theoretical_framework || '').toString().trim() : '';
+              const at = selectedApproaches.length === 0 ? (fields.assessment_tools_used || '').toString().trim() : '';
               const rc = (fields.references_cited || '').toString().trim();
               if (!tf && !at && !rc) return '';
               const formatList = (txt: string) => {
