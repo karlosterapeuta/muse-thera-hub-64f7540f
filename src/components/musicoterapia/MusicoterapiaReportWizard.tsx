@@ -15,6 +15,9 @@ import { getSelectedMusicoterapiaObjectives } from '@/data/musicoterapiaObjectiv
 import { getSelectedMusicoterapiaApproaches } from '@/data/musicoterapiaApproaches';
 import { MusicoterapiaApproachSelector } from './MusicoterapiaApproachSelector';
 import { MusicoterapiaApproachResults } from './MusicoterapiaApproachResults';
+import { MusicoterapiaObjectiveOutcomes } from './MusicoterapiaObjectiveOutcomes';
+import { MusicoterapiaPendingInterventions } from './MusicoterapiaPendingInterventions';
+import { getObjectiveOutcomesValidationIssues } from '@/data/musicoterapiaObjectiveOutcomes';
 import { getApproachResultsValidationIssues } from '@/data/musicoterapiaApproachResults';
 
 interface MusicoterapiaReportWizardProps {
@@ -64,16 +67,16 @@ const STEPS = [
   {
     id: 'observed_results',
     title: '5. Resultados Observados',
-    description: 'Respostas do paciente às abordagens selecionadas na Etapa 04',
+    description: 'Respostas às abordagens da Etapa 04 e evolução dos objetivos da Etapa 03',
     icon: Brain,
     fields: [] // Preenchimento rápido, vinculado às abordagens realmente selecionadas
   },
   {
     id: 'pending_intervention',
     title: '6. Aspectos a Intervir',
-    description: 'Pontos que ainda necessitam de intervenção',
+    description: 'Demandas geradas a partir dos resultados informados na Etapa 05',
     icon: Target,
-    fields: ['goals_not_achieved', 'red_flags_to_monitor']
+    fields: [] // Exibição automática de objetivos ainda em desenvolvimento
   },
   {
     id: 'prognosis',
@@ -110,8 +113,8 @@ const STEP_HINTS: Record<string, { icon: React.ElementType; title: string; descr
   referral: { icon: ClipboardList, title: 'Motivo do encaminhamento', description: 'Descreva quem encaminhou e a razão clínica que originou o início dos atendimentos.' },
   therapeutic_objectives: { icon: Target, title: 'Objetivos terapêuticos', description: 'Selecione os objetivos que a musicoterapia irá estimular; defina metas observáveis e individualizadas, respeitando as características do paciente.' },
   methodology: { icon: Music, title: 'Abordagem Musicoterapêutica', description: 'Selecione os referenciais e modos de intervenção efetivamente previstos ou utilizados. Métodos especializados exigem capacitação apropriada.' },
-  observed_results: { icon: Brain, title: 'Resultados por abordagem', description: 'Para cada abordagem da Etapa 04, registre com um toque a resposta observada; adicione exemplos apenas quando necessário.' },
-  pending_intervention: { icon: Target, title: 'Aspectos a intervir', description: 'Liste os pontos que ainda necessitam de intervenção e os sinais a monitorar.' },
+  observed_results: { icon: Brain, title: 'Resultados por abordagem e objetivo', description: 'Registre a resposta às abordagens e a evolução de cada objetivo. A Etapa 06 será atualizada automaticamente.' },
+  pending_intervention: { icon: Target, title: 'Aspectos a intervir', description: 'Veja automaticamente as demandas que precisam continuar, conforme os objetivos e resultados informados.' },
   prognosis: { icon: Target, title: 'Prognóstico terapêutico', description: 'Estruture objetivos de curto, médio e longo prazo, com prognóstico e data de reavaliação.' },
   recommendations: { icon: Home, title: 'Recomendações', description: 'Oriente família, escola e equipe interdisciplinar com recomendações práticas.' },
   final_considerations: { icon: Sparkles, title: 'Considerações finais', description: 'Sintetize a evolução global e a indicação de continuidade do acompanhamento.' },
@@ -471,44 +474,6 @@ const STEP_TEMPLATES: Record<string, TemplateOption[]> = {
       }
     }
   ],
-  pending_intervention: [
-    {
-      id: 'pending_communication',
-      label: 'Foco em comunicação',
-      description: 'Aspectos comunicativos ainda a desenvolver.',
-      values: {
-        goals_not_achieved: 'As metas relacionadas à comunicação verbal expressiva e ao uso funcional da linguagem em contextos sociais ainda não foram plenamente alcançadas, permanecendo como prioridade para a próxima etapa terapêutica.',
-        red_flags_to_monitor: 'Recomenda-se monitorar a frequência de comportamentos repetitivos e estereotipias, bem como possíveis sinais de sobrecarga sensorial durante as atividades musicais.'
-      }
-    },
-    {
-      id: 'pending_social_regulation',
-      label: 'Foco em interação e regulação',
-      description: 'Interação social e autorregulação a fortalecer.',
-      values: {
-        goals_not_achieved: 'As metas voltadas à interação social recíproca, à atenção compartilhada sustentada e à autorregulação emocional em situações de frustração ainda requerem maior consolidação.',
-        red_flags_to_monitor: 'Atenção a episódios de desregulação emocional, dificuldade em transições e variações na qualidade do contato visual, que devem ser acompanhados ao longo do processo.'
-      }
-    },
-    {
-      id: 'pending_sensory',
-      label: 'Foco sensório-motor',
-      description: 'Integração sensorial e aspectos motores a evoluir.',
-      values: {
-        goals_not_achieved: 'As metas relacionadas à integração sensorial, à coordenação motora e à tolerância a diferentes estímulos sonoros e texturas instrumentais ainda estão em desenvolvimento.',
-        red_flags_to_monitor: 'Monitorar respostas de defesa sensorial (auditiva, tátil), bem como sinais de hipo ou hiper-reatividade que possam interferir na participação nas atividades.'
-      }
-    },
-    {
-      id: 'pending_low_response',
-      label: 'Resposta global limitada',
-      description: 'Paciente com baixo engajamento e dificuldades amplas.',
-      values: {
-        goals_not_achieved: 'A maior parte das metas terapêuticas não foi alcançada no período, observando-se baixo engajamento global, dificuldade de adesão ao setting e respostas inconsistentes às diferentes propostas musicais. Recomenda-se revisão do plano terapêutico e das estratégias de abordagem.',
-        red_flags_to_monitor: 'Atenção a sinais de sobrecarga sensorial persistente, recusa frequente das atividades, aumento de comportamentos de esquiva ou desregulação, e possíveis fatores clínicos ou contextuais que estejam interferindo na resposta terapêutica, com indicação de articulação interdisciplinar.'
-      }
-    }
-  ],
   prognosis: [
     {
       id: 'prognosis_favorable',
@@ -674,10 +639,17 @@ export function MusicoterapiaReportWizard({
     }
 
     if (currentStepData.id === 'observed_results') {
-      return getApproachResultsValidationIssues(
-        reportData.fieldValues?.musicoterapia_approach_ids,
-        reportData.fieldValues?.approach_results
-      ).map((message, index) => ({ id: `approach_result_${index}`, label: message }));
+      const issues = [
+        ...getApproachResultsValidationIssues(
+          reportData.fieldValues?.musicoterapia_approach_ids,
+          reportData.fieldValues?.approach_results
+        ),
+        ...getObjectiveOutcomesValidationIssues(
+          reportData.fieldValues?.therapeutic_objective_ids,
+          reportData.fieldValues?.objective_outcomes
+        )
+      ];
+      return issues.map((message, index) => ({ id: `result_${index}`, label: message }));
     }
 
     // Validação padrão para outras etapas
@@ -751,10 +723,29 @@ export function MusicoterapiaReportWizard({
     if (currentStepData.id === 'observed_results') {
       return (
         <div className="dark">
-          <MusicoterapiaApproachResults
-            selectedApproachIds={getSelectedMusicoterapiaApproaches(reportData.fieldValues?.musicoterapia_approach_ids).map((item) => item.id)}
-            value={reportData.fieldValues?.approach_results}
-            onChange={(results) => handleFieldUpdate('approach_results', results)}
+          <div className="space-y-6">
+            <MusicoterapiaApproachResults
+              selectedApproachIds={getSelectedMusicoterapiaApproaches(reportData.fieldValues?.musicoterapia_approach_ids).map((item) => item.id)}
+              value={reportData.fieldValues?.approach_results}
+              onChange={(results) => handleFieldUpdate('approach_results', results)}
+            />
+            <MusicoterapiaObjectiveOutcomes
+              selectedIds={getSelectedMusicoterapiaObjectives(reportData.fieldValues?.therapeutic_objective_ids).map((item) => item.id)}
+              value={reportData.fieldValues?.objective_outcomes}
+              onChange={(outcomes) => handleFieldUpdate('objective_outcomes', outcomes)}
+            />
+          </div>
+        </div>
+      );
+    }
+
+    if (currentStepData.id === 'pending_intervention') {
+      return (
+        <div className="dark">
+          <MusicoterapiaPendingInterventions
+            selectedObjectiveIds={reportData.fieldValues?.therapeutic_objective_ids}
+            selectedApproachIds={reportData.fieldValues?.musicoterapia_approach_ids}
+            objectiveOutcomes={reportData.fieldValues?.objective_outcomes}
           />
         </div>
       );
