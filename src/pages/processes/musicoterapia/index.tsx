@@ -21,6 +21,32 @@ import { imageUrlToBase64 } from '@/utils/imageToBase64';
 import { DeleteReportDialog } from '../reports/components/DeleteReportDialog';
 import { formatAgeString } from '@/utils/dateUtils';
 
+// Texto de contingência auditável: a exportação não depende exclusivamente da disponibilidade da IA.
+function clinicalNarrativeFallback(report: any): { title: string; content: string }[] {
+  const fields = report?.fieldValues || {};
+  const str = (value: unknown) => Array.isArray(value)
+    ? value.map(String).filter(Boolean).join('; ')
+    : typeof value === 'string' ? value.trim() : '';
+  const objectives = str(fields.therapeutic_objectives || fields.specific_goals);
+  const procedures = [
+    str(fields.session_activities), str(fields.musical_techniques),
+    str(fields.instruments_used), str(fields.recreative_techniques),
+    str(fields.receptive_techniques), str(fields.improvisation_use),
+  ].filter(Boolean);
+  const observations = [
+    str(fields.patient_evolution), str(fields.treatment_summary),
+    str(fields.domain_evidences), str(fields.goals_achieved),
+    str(fields.goals_in_progress), str(fields.goals_not_achieved),
+    str(report?.additionalObservations),
+  ].filter(Boolean);
+  const paragraphs: string[] = [];
+  if (objectives) paragraphs.push('Os objetivos musicoterapêuticos registrados para o período abrangem: ' + objectives + '.');
+  if (procedures.length) paragraphs.push('No processo de intervenção, o profissional registrou as seguintes experiências e recursos sonoro-musicais: ' + procedures.join('; ') + '.');
+  if (observations.length) paragraphs.push('No que se refere às respostas e ao estado clínico documentado, os registros apontam: ' + observations.join(' ') + ' A interpretação deve considerar o contexto das sessões e as condições em que as respostas foram observadas.');
+  if (!paragraphs.length) paragraphs.push('Não há registros descritivos suficientes para uma análise clínica dissertativa individualizada. Recomenda-se documentar procedimentos aplicados, respostas sonoro-musicais observadas e resultados por objetivo antes da emissão definitiva.');
+  return [{ title: 'Análise Clínica Musicoterapêutica', content: paragraphs.join('\\n\\n') }];
+}
+
 export default function MusicoterapiaPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -680,7 +706,7 @@ export default function MusicoterapiaPage() {
 
       // Revisão clínica obrigatória antes de emitir o documento.
       setDraftReportData(currentReportData);
-      setDraftNarrative(narrative || []);
+      setDraftNarrative(narrative?.length ? narrative : clinicalNarrativeFallback(currentReportData));
       setReviewOpen(true);
     } catch (error) {
       console.error('Erro ao preparar relatório:', error);
