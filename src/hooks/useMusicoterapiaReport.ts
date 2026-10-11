@@ -181,17 +181,16 @@ export function useMusicoterapiaReport() {
              (typeof value === 'string' && value.trim() === '');
     });
 
+    // O catálogo aprovado de 27 objetivos é a única opção de seleção na etapa.
+    // Os textos antigos ficam preservados para consulta histórica, mas não
+    // substituem a seleção em novos documentos ou novas versões.
     const objectiveSelection = getSelectedMusicoterapiaObjectives(reportData.fieldValues?.therapeutic_objective_ids);
-    const otherObjectives = reportData.fieldValues?.therapeutic_objectives;
-    const hasOtherObjectives = Array.isArray(otherObjectives)
-      ? otherObjectives.some((item) => String(item ?? '').trim().length > 0)
-      : String(otherObjectives ?? '').trim().length > 0;
 
     const allErrors = [
       ...basicErrors,
       ...missingFields.map(field => field.label),
-      ...(!objectiveSelection.length && !hasOtherObjectives
-        ? ['Selecione pelo menos um objetivo terapêutico ou descreva um objetivo complementar']
+      ...(objectiveSelection.length === 0
+        ? ['Selecione pelo menos um dos 27 objetivos terapêuticos']
         : [])
     ];
 
