@@ -20,10 +20,10 @@ export function MusicoterapiaObjectiveOutcomes({ selectedIds, value, onChange }:
   return (
     <section className="space-y-3 rounded-2xl border border-[#c9a84c]/30 bg-[#121212] p-4 sm:p-5">
       <div>
-        <h3 className="font-semibold text-[#f0d78c]">Evolução dos objetivos da Etapa 03</h3>
+        <h3 className="font-semibold text-[#f0d78c]">Evolução dos objetivos da Etapa 02</h3>
         <p className="text-sm text-gray-300 mt-1">
           Marque a situação de cada objetivo. Os que estiverem evoluindo, sem avanço ou com dificuldade
-          aparecerão automaticamente na Etapa 06.
+          aparecerão automaticamente na Etapa 05.
         </p>
         <p className="text-xs text-[#c9a84c] mt-2" aria-live="polite">{completed} de {selected.length} objetivos registrados</p>
       </div>
