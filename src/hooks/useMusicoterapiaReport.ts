@@ -5,6 +5,7 @@ import { getMusicoterapiaQualityWarnings } from '@/utils/musicoterapiaQuality';
 import { getSelectedMusicoterapiaObjectives } from '@/data/musicoterapiaObjectives';
 import { getSelectedMusicoterapiaApproaches } from '@/data/musicoterapiaApproaches';
 import { getRecordedApproachResults, getApproachResultsValidationIssues, summarizeApproachResult } from '@/data/musicoterapiaApproachResults';
+import { getObjectiveOutcomes, getPendingObjectiveInterventions, getObjectiveOutcomesValidationIssues, getObjectiveOutcomeLabel } from '@/data/musicoterapiaObjectiveOutcomes';
 import { useProfessionalData } from '@/hooks/useProfessionalData';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -67,7 +68,7 @@ export function useMusicoterapiaReport() {
         
         Object.entries(data.organizedContent).forEach(([key, value]) => {
           // Objetivos selecionados são decisões do profissional: a IA não pode alterá-los.
-          if (key === 'therapeutic_objective_ids' || key === 'musicoterapia_approach_ids' || key === 'approach_results') return;
+          if (key === 'therapeutic_objective_ids' || key === 'musicoterapia_approach_ids' || key === 'approach_results' || key === 'objective_outcomes') return;
           // Não acrescentar ao prontuário campos não enviados pelo profissional.
           if (!Object.prototype.hasOwnProperty.call(reportData.fieldValues || {}, key)) return;
           // Manter campos que já são arrays como arrays
@@ -95,7 +96,7 @@ export function useMusicoterapiaReport() {
         return newFieldValues;
       } else if (data.fallbackContent) {
         // IA indisponível: usar os dados originais sem alterar a estrutura
-        const { therapeutic_objective_ids: _unusedObjectiveIds, musicoterapia_approach_ids: _unusedApproachIds, approach_results: _unusedApproachResults, ...fallbackFields } = data.fallbackContent || {};
+        const { therapeutic_objective_ids: _unusedObjectiveIds, musicoterapia_approach_ids: _unusedApproachIds, approach_results: _unusedApproachResults, objective_outcomes: _unusedObjectiveOutcomes, ...fallbackFields } = data.fallbackContent || {};
         const newFieldValues = { ...reportData.fieldValues, ...fallbackFields };
 
         updateReportData({
@@ -134,6 +135,8 @@ export function useMusicoterapiaReport() {
       const selectedObjectives = getSelectedMusicoterapiaObjectives(payload.fieldValues?.therapeutic_objective_ids);
       const selectedApproaches = getSelectedMusicoterapiaApproaches(payload.fieldValues?.musicoterapia_approach_ids);
       const recordedResults = getRecordedApproachResults(payload.fieldValues?.musicoterapia_approach_ids, payload.fieldValues?.approach_results);
+      const objectiveOutcomes = getObjectiveOutcomes(payload.fieldValues?.therapeutic_objective_ids, payload.fieldValues?.objective_outcomes);
+      const pendingObjectives = getPendingObjectiveInterventions(payload.fieldValues?.therapeutic_objective_ids, payload.fieldValues?.objective_outcomes);
       // Enviar os objetivos por extenso apenas como contexto da narrativa, sem
       // gravar texto gerado automaticamente ou tratar objetivos como conquistas.
       const narrativePayload = {
@@ -145,6 +148,17 @@ export function useMusicoterapiaReport() {
               (objective) => `${objective.title}: ${objective.objective}`
             ),
             therapeutic_objectives_selection_note: 'Estes são objetivos planejados para estimulação, não resultados observados nem habilidades comprovadas.'
+          } : {}),
+          ...(objectiveOutcomes.length > 0 ? {
+            observed_results_by_objective: objectiveOutcomes.map(({objective,status}) => ({
+              objetivo: objective.title,
+              situacao_registrada: getObjectiveOutcomeLabel(status)
+            })),
+            intervention_needs_derived_from_objectives: pendingObjectives.map(({objective,status}) => ({
+              objetivo: objective.title,
+              resultado: getObjectiveOutcomeLabel(status)
+            })),
+            clinical_interpretation_note: 'As necessidades foram derivadas das classificações por objetivo feitas pelo profissional; não concluir causalidade ou progresso fora do que foi informado.'
           } : {}),
           ...(recordedResults.length > 0 ? { observed_results_by_approach: recordedResults.map(({ approach, result }) => ({ approach: approach.title, response: summarizeApproachResult(result) })) } : {}),
           ...(selectedApproaches.length > 0 ? {
@@ -208,7 +222,8 @@ export function useMusicoterapiaReport() {
       ...(approachSelection.length === 0
         ? ['Selecione pelo menos uma abordagem musicoterapêutica da Etapa 04']
         : []),
-      ...getApproachResultsValidationIssues(reportData.fieldValues?.musicoterapia_approach_ids, reportData.fieldValues?.approach_results)
+      ...getApproachResultsValidationIssues(reportData.fieldValues?.musicoterapia_approach_ids, reportData.fieldValues?.approach_results),
+      ...getObjectiveOutcomesValidationIssues(reportData.fieldValues?.therapeutic_objective_ids, reportData.fieldValues?.objective_outcomes)
     ];
 
 
