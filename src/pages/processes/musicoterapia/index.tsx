@@ -108,7 +108,9 @@ export default function MusicoterapiaPage() {
       String(s)
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
 
     const narrativeBlock = (narrative && narrative.length > 0) ? `
       <div class="section-block" style="margin-bottom: 25px; border: 2px solid #14b8a6; border-radius: 10px; overflow: hidden; background: #ffffff; page-break-inside: auto;">
@@ -149,7 +151,7 @@ export default function MusicoterapiaPage() {
           };
           const row = (label: string, value: any) =>
             value && String(value).trim()
-              ? `<p style="margin: 4px 0;"><strong>${label}:</strong> ${String(value)}</p>`
+              ? `<p style="margin: 4px 0;"><strong>${escapeHtml(label)}:</strong> ${String(value)}</p>`
               : '';
           const patientRows = [
             row('Nome completo', reportDataForPDF.patientName),
@@ -278,7 +280,7 @@ export default function MusicoterapiaPage() {
               const color = n >= 8 ? '#10b981' : n >= 6 ? '#f59e0b' : n >= 4 ? '#f97316' : '#ef4444';
               return `<div style="margin: 8px 0;">
                 <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px;">
-                  <strong style="color: #0f766e;">${label}</strong>
+                  <strong style="color: #0f766e;">${escapeHtml(label)}</strong>
                   <span style="font-weight: bold; color: ${color};">${n}/10</span>
                 </div>
                 <div style="background: #e5e7eb; border-radius: 6px; height: 8px; overflow: hidden;">
@@ -290,7 +292,7 @@ export default function MusicoterapiaPage() {
             if (!text.trim()) return '';
             return `<div style="margin: 8px 0;">
               <strong style="color: #0f766e; font-size: 11px;">${label}:</strong>
-              <p style="margin: 3px 0 0 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; font-size: 11px;">${text}</p>
+              <p style="margin: 3px 0 0 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; font-size: 11px;">${escapeHtml(text)}</p>
             </div>`;
           };
 
@@ -298,7 +300,7 @@ export default function MusicoterapiaPage() {
             const content = ids.map(renderField).join('');
             if (!content.trim()) return '';
             return `<div class="section-block" style="margin-bottom: 20px; page-break-inside: avoid;">
-              <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">${title}</h3>
+              <h3 style="color: #0d9488; border-bottom: 2px solid #14b8a6; padding-bottom: 8px; margin-bottom: 12px; font-size: 14px;">${escapeHtml(title)}</h3>
               ${content}
             </div>`;
           };
@@ -329,7 +331,7 @@ export default function MusicoterapiaPage() {
                     const cls = s.value >= 8 ? 'Excelente' : s.value >= 6 ? 'Adequado' : s.value >= 4 ? 'Em desenvolvimento' : 'Necessita suporte';
                     const color = s.value >= 8 ? '#10b981' : s.value >= 6 ? '#f59e0b' : s.value >= 4 ? '#f97316' : '#ef4444';
                     return `<tr>
-                      <td style="padding: 6px; border: 1px solid #e5e7eb;">${s.label}</td>
+                      <td style="padding: 6px; border: 1px solid #e5e7eb;">${escapeHtml(s.label)}</td>
                       <td style="padding: 6px; border: 1px solid #e5e7eb; text-align: center; font-weight: bold; color: ${color};">${s.value}/10</td>
                       <td style="padding: 6px; border: 1px solid #e5e7eb; text-align: center; color: ${color};">${cls}</td>
                     </tr>`;
@@ -495,10 +497,10 @@ export default function MusicoterapiaPage() {
   };
 
   const handleSaveReport = async () => {
-    console.log('=== Iniciando salvamento do relatório ===');
-    console.log('Professional ID:', professionalId);
-    console.log('Report Data:', reportData);
-    console.log('Professional Data:', professionalData);
+      // Dados clínicos não devem ser registrados no console em produção.
+      // Dados clínicos não devem ser registrados no console em produção.
+      // Dados clínicos não devem ser registrados no console em produção.
+      // Dados clínicos não devem ser registrados no console em produção.
     
     // Validação aprimorada
     if (!professionalId) {
@@ -581,7 +583,7 @@ export default function MusicoterapiaPage() {
         }
       };
 
-      console.log('Payload final do relatório:', JSON.stringify(reportPayload, null, 2));
+      // Dados clínicos não devem ser registrados no console em produção.
 
       const { data, error } = await supabase
         .from('reports')
@@ -610,7 +612,7 @@ export default function MusicoterapiaPage() {
         throw new Error(`Erro no banco de dados: ${error.message}`);
       }
 
-      console.log('Relatório salvo com sucesso:', data);
+      // Dados clínicos não devem ser registrados no console em produção.
 
       toast({
         title: "Sucesso!",
