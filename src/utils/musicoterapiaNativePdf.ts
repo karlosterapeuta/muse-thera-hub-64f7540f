@@ -343,34 +343,44 @@ export async function exportMusicoterapiaNativePdf(
     refs.forEach((r,i)=>item(String(i+1)+'.',r.bibliography));
   }
 
-  // Manter nome, imagem e aviso do carimbo juntos; nunca gerar selo fictício.
-  const signatureHeight = (images.photo || images.stamp) ? 49 : 39;
-  ensure(signatureHeight + 3);
+  // Bloco de identificação: foto e carimbo verdadeiros, todos os rótulos
+  // legíveis e sem truncamento de telefone ou e-mail; não isolar o aviso final.
+  const detailsX = images.photo ? margin + 30 : margin + 5;
+  const availableTextWidth = images.stamp ? right - 42 - detailsX : right - detailsX - 7;
+  const reportDate = formatMusicoterapiaPdfDate(report.sessionDate) || new Date().toLocaleDateString('pt-BR');
+  const signatureRows: Array<[string, unknown]> = [
+    ['Profissional', report.professionalName || professional?.name],
+    ['Especialidade', report.professionalSpecialty || professional?.specialty || 'Musicoterapia'],
+    ['Registro informado', report.professionalRegistry || professional?.register],
+    ['E-mail', professional?.email],
+    ['Telefone', professional?.phone],
+    ['Emissão', reportDate]
+  ].filter(([, value]) => Boolean(clean(value)));
+  setFace(8.1, false, DARK);
+  const wrappedDetails: string[] = [];
+  for (const [label, value] of signatureRows) {
+    wrappedDetails.push(...(pdf.splitTextToSize(clean(label) + ': ' + clean(value), availableTextWidth) as string[]));
+  }
+  const signatureHeight = Math.max(
+    (images.photo || images.stamp) ? 48 : 37,
+    24 + wrappedDetails.length * 4.3
+  );
+  ensure(signatureHeight + 6);
   y += 3;
   pdf.setFillColor(248,252,251);
   pdf.setDrawColor(...BORDER);
-  pdf.roundedRect(margin,y,usable,signatureHeight,2,2,'FD');
+  pdf.roundedRect(margin, y, usable, signatureHeight, 2, 2, 'FD');
   setFace(10,true,GREEN);
-  pdf.text('Identificação do profissional responsável',margin+5,y+7);
-  const imageStart = y+12;
-  if (images.photo) addImage(images.photo,margin+5,imageStart,21,22);
-  if (images.stamp) addImage(images.stamp,right-37,imageStart,29,25);
-  const detailsX = images.photo ? margin+30 : margin+5;
-  const date = formatMusicoterapiaPdfDate(report.sessionDate) || new Date().toLocaleDateString('pt-BR');
-  const rows = [
-    ['Profissional',report.professionalName || professional?.name],
-    ['Especialidade',report.professionalSpecialty || professional?.specialty || 'Musicoterapia'],
-    ['Registro informado',report.professionalRegistry || professional?.register],
-    ['Emissão',date]
-  ].filter(([,v])=>Boolean(clean(v)));
-  rows.forEach(([key,value],i)=>{
-    const pos = imageStart + 3 + i*4.7;
-    setFace(8.3,i===0,DARK);
-    const maxW = images.stamp ? (right-42-detailsX) : right-detailsX-7;
-    const line = clean(key) + ': ' + clean(value);
-    const wrapped: string[] = pdf.splitTextToSize(line,maxW);
-    pdf.text(wrapped.slice(0,1),detailsX,pos);
-  });
+  pdf.text('Identificação do profissional responsável', margin+5, y+7);
+  const photoTop=y+12;
+  if (images.photo) addImage(images.photo, margin+5, photoTop, 21,22);
+  if (images.stamp) addImage(images.stamp, right-37, photoTop, 29,25);
+  let lineY=photoTop+3;
+  for (const line of wrappedDetails) {
+    setFace(8.1,false,DARK);
+    pdf.text(line, detailsX, lineY);
+    lineY += 4.3;
+  }
   setFace(7.1,false,MUTED);
   pdf.text('Carimbo cadastrado, quando presente, não substitui a verificação da assinatura.',margin+5,y+signatureHeight-5);
   y += signatureHeight+1;
