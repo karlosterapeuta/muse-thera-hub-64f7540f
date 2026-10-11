@@ -1093,10 +1093,10 @@ export default function MusicoterapiaPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
-                      Gerar Relatório Final (IA)
+                      Gerar Relatório Final
                     </h3>
                     <p className="text-sm text-muted-foreground">
-                      Organiza seus dados automaticamente e gera o PDF final.
+                      Exporta os registros clínicos em PDF profissional, com texto selecionável e gráficos.
                     </p>
                   </div>
                 </div>
@@ -1108,12 +1108,12 @@ export default function MusicoterapiaPage() {
                   {isExporting ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                      Processando com IA...
+                      Gerando PDF...
                     </>
                   ) : (
                     <>
                       <Download className="h-4 w-4 mr-2" />
-                      Exportar PDF com IA
+                      Exportar PDF profissional
                     </>
                   )}
                 </Button>
