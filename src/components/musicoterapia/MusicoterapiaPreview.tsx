@@ -7,6 +7,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import type { ReportData } from '@/data/musicoterapiaTemplate';
 import { musicoterapiaTemplate, reportSections, scaleFieldIds } from '@/data/musicoterapiaTemplate';
+import { getSelectedMusicoterapiaObjectives } from '@/data/musicoterapiaObjectives';
 
 interface MusicoterapiaPreviewProps {
   reportData: ReportData;
@@ -14,6 +15,7 @@ interface MusicoterapiaPreviewProps {
 }
 
 export function MusicoterapiaPreview({ reportData, professionalData }: MusicoterapiaPreviewProps) {
+  const selectedObjectives = getSelectedMusicoterapiaObjectives(reportData.fieldValues?.therapeutic_objective_ids);
   const formatDate = (date: string | Date) => {
     if (!date) return 'Data não informada';
     const dateObj = typeof date === 'string' ? new Date(date) : date;
@@ -137,18 +139,59 @@ export function MusicoterapiaPreview({ reportData, professionalData }: Musicoter
         </Card>
       </div>
 
+      {/* Objetivos planejados, não resultados adquiridos */}
+      {selectedObjectives.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Target className="h-5 w-5 text-primary" />
+              <span>Objetivos a estimular ou desenvolver</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-xs text-muted-foreground">Seleção de objetivos para intervenção; não representa habilidades adquiridas.</p>
+            {selectedObjectives.map((item) => (
+              <div key={item.id} className="rounded-lg border border-primary/15 p-3">
+                <p className="font-semibold">{item.icon} {item.title}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed mt-1">{item.objective}</p>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
       {/* Therapeutic Objectives */}
       {reportData.fieldValues?.therapeutic_objectives && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Target className="h-5 w-5 text-primary" />
-              <span>Objetivos Terapêuticos</span>
+              <span>Objetivos complementares</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm leading-relaxed whitespace-pre-wrap">
-              {reportData.fieldValues.therapeutic_objectives}
+              {Array.isArray(reportData.fieldValues.therapeutic_objectives)
+                ? reportData.fieldValues.therapeutic_objectives.join('\n')
+                : String(reportData.fieldValues.therapeutic_objectives)}
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
+      {reportData.fieldValues?.specific_goals && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Target className="h-5 w-5 text-primary" />
+              <span>Metas específicas</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="whitespace-pre-wrap text-sm">
+              {Array.isArray(reportData.fieldValues.specific_goals)
+                ? reportData.fieldValues.specific_goals.join('\n')
+                : String(reportData.fieldValues.specific_goals)}
             </p>
           </CardContent>
         </Card>
