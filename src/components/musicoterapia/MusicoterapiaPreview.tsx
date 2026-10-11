@@ -427,6 +427,7 @@ export function MusicoterapiaPreview({ reportData, professionalData }: Musicoter
         // já possui a seleção estruturada. Dados antigos continuam preservados.
         const hiddenRemovedStepFields = [
           'session_activities', 'patient_evolution', 'evolution_compared_baseline',
+          'goals_not_achieved', 'red_flags_to_monitor',
           'domain_communication_verbal', 'domain_communication_nonverbal', 'domain_social_interaction',
           'joint_attention', 'eye_contact_quality', 'domain_emotional', 'self_regulation_strategies',
           'domain_sensory_integration', 'domain_cognitive', 'domain_motor_gross',
