@@ -333,9 +333,15 @@ export async function exportMusicoterapiaNativePdf(
 
   // Narrativa integrada ao exportador nativo do relatório estruturado.
   // Conteúdo longo flui pelas páginas através de write(), preservando gráficos.
-  const narrativeParagraphs = (narrative || [])
+  const rawNarrative = (narrative || [])
     .filter(section => section && typeof section.content === 'string')
     .flatMap(section => section.content.split(/\n\s*\n/).map(p => clean(p)).filter(Boolean));
+  // Regra de seguranca: rejeitar narrativa claramente extrapolada.
+  // A classificação do objetivo nao basta para afirmar habilidade alcançada.
+  const unsupportedCertainty = /progresso not[aá]vel|evolu[cç][aã]o consistente|progn[oó]stico favor[aá]vel|garantir[aã]o? (?:a )?otimiza[cç][aã]o|melhora significativa|tem demonstrado progresso|melhora na (?:sua )?capacidade|tem evolu[ií]do na capacidade/i;
+  const narrativeParagraphs = rawNarrative.some(p => unsupportedCertainty.test(p))
+    ? []
+    : rawNarrative;
   const fallbackParts: string[] = [];
   if (!narrativeParagraphs.length) {
     if (recorded.length) {
