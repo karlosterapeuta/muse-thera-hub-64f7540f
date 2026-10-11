@@ -220,7 +220,7 @@ export function useMusicoterapiaReport() {
         ? ['Selecione pelo menos um dos 27 objetivos terapêuticos']
         : []),
       ...(approachSelection.length === 0
-        ? ['Selecione pelo menos uma abordagem musicoterapêutica da Etapa 04']
+        ? ['Selecione pelo menos uma abordagem musicoterapêutica da Etapa 03']
         : []),
       ...getApproachResultsValidationIssues(reportData.fieldValues?.musicoterapia_approach_ids, reportData.fieldValues?.approach_results),
       ...getObjectiveOutcomesValidationIssues(reportData.fieldValues?.therapeutic_objective_ids, reportData.fieldValues?.objective_outcomes)
