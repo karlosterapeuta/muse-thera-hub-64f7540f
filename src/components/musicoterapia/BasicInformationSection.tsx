@@ -297,53 +297,7 @@ export function BasicInformationSection({
         </div>
       </section>
 
-      {/* Outros campos de identificação clínica já documentados na Anamnese.
-          Recolhidos por padrão para manter a Etapa 01 rápida e enxuta. */}
-      <details className="group rounded-xl border border-border/60 bg-muted/20 p-4">
-        <summary className="cursor-pointer font-semibold text-sm text-foreground select-none">
-          Informações clínicas e familiares da Anamnese (opcional)
-        </summary>
-        <p className="text-xs text-muted-foreground mt-2 mb-4">
-          Campos recuperados quando disponíveis. Confira, complete ou atualize apenas o necessário
-          para a identificação clínica deste relatório.
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {([
-            ['mother_name', 'Nome da mãe', false],
-            ['father_name', 'Nome do pai', false],
-            ['family_relationship', 'Vínculo do responsável', false],
-            ['cid_code', 'CID informado', false],
-            ['support_level', 'Nível de suporte informado', false],
-            ['diagnosis_date', 'Data do diagnóstico', false],
-            ['current_medications', 'Medicação atual', true],
-            ['clinical_details', 'Informações clínicas complementares', true],
-            ['medication_schedule', 'Horários da medicação', true],
-            ['medication_effects', 'Efeitos relatados da medicação', true],
-            ['calming_strategies', 'Estratégias de regulação', true],
-            ['family_support_network', 'Rede de apoio familiar', true]
-          ] as const).map(([fieldId, label, isMultiline]) => (
-            <div key={fieldId} className={isMultiline ? 'space-y-2 md:col-span-2' : 'space-y-2'}>
-              <Label htmlFor={fieldId} className="text-sm font-medium">{label}</Label>
-              {isMultiline ? (
-                <Textarea
-                  id={fieldId}
-                  rows={2}
-                  value={String(reportData.fieldValues?.[fieldId] ?? '')}
-                  onChange={(event) => handleFieldChange(`fieldValues.${fieldId}`, event.target.value)}
-                  className="w-full resize-y"
-                />
-              ) : (
-                <Input
-                  id={fieldId}
-                  value={String(reportData.fieldValues?.[fieldId] ?? '')}
-                  onChange={(event) => handleFieldChange(`fieldValues.${fieldId}`, event.target.value)}
-                  className="w-full"
-                />
-              )}
-            </div>
-          ))}
-        </div>
-      </details>
+
     </div>
   );
 }
