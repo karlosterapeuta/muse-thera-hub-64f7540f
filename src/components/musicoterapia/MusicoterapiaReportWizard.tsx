@@ -728,8 +728,8 @@ export function MusicoterapiaReportWizard({
 
     return (
       <div className="dark space-y-8">
-        {/* Step hint banner */}
-        {hint && (
+        {/* Evitar orientações redundantes na Etapa 07, que agora tem só um campo. */}
+        {hint && currentStepData.id !== 'recommendations' && (
           <div className="relative overflow-hidden rounded-2xl border border-[#c9a84c]/20 bg-gradient-to-br from-[#c9a84c]/[0.06] via-transparent to-transparent p-5 flex gap-4">
             <div className="shrink-0 h-10 w-10 rounded-xl bg-[#c9a84c]/10 border border-[#c9a84c]/30 flex items-center justify-center">
               <HintIcon className="h-5 w-5 text-[#f0d78c]" />
