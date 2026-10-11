@@ -48,7 +48,7 @@ const STEPS = [
     title: '3. Objetivos Terapêuticos',
     description: 'Seleção de objetivos a desenvolver e planejamento individualizado',
     icon: Target,
-    fields: ['therapeutic_objectives', 'specific_goals']
+    fields: [] // Nesta etapa, usar somente o catálogo de 27 objetivos selecionáveis
   },
   {
     id: 'methodology',
@@ -781,16 +781,13 @@ export function MusicoterapiaReportWizard({
       return missingFields;
     }
 
-    // Os 12 objetivos estruturados e os objetivos complementares são alternativas válidas.
+    // Objetivos novos devem ser escolhidos exclusivamente no catálogo aprovado.
+    // Conteúdo legado permanece nos relatórios antigos, mas não é oferecido aqui.
     if (currentStepData.id === 'therapeutic_objectives') {
       const selected = getSelectedMusicoterapiaObjectives(reportData.fieldValues?.therapeutic_objective_ids);
-      const otherObjectives = reportData.fieldValues?.therapeutic_objectives;
-      const hasOther = Array.isArray(otherObjectives)
-        ? otherObjectives.some((value) => String(value ?? '').trim().length > 0)
-        : String(otherObjectives ?? '').trim().length > 0;
-      return selected.length > 0 || hasOther
+      return selected.length > 0
         ? []
-        : [{ id: 'therapeutic_objective_ids', label: 'Selecione um objetivo ou descreva um objetivo complementar' }];
+        : [{ id: 'therapeutic_objective_ids', label: 'Selecione pelo menos um dos 27 objetivos terapêuticos' }];
     }
 
     // Validação padrão para outras etapas
