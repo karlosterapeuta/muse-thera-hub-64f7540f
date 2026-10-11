@@ -170,7 +170,7 @@ export function MusicoterapiaPreview({ reportData, professionalData }: Musicoter
       )}
 
       {/* Therapeutic Objectives */}
-      {reportData.fieldValues?.therapeutic_objectives && (
+      {selectedObjectives.length === 0 && reportData.fieldValues?.therapeutic_objectives && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
@@ -188,7 +188,7 @@ export function MusicoterapiaPreview({ reportData, professionalData }: Musicoter
         </Card>
       )}
 
-      {reportData.fieldValues?.specific_goals && (
+      {selectedObjectives.length === 0 && reportData.fieldValues?.specific_goals && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
