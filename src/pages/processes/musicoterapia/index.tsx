@@ -247,12 +247,16 @@ export default function MusicoterapiaPage() {
     
     return `
       <div class="pdf-document" style="width: 186mm; max-width: 186mm; margin: 0; padding: 0; background: #fff; box-sizing: border-box;">
-        <!-- Header -->
-        <div style="text-align: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #14b8a6; page-break-inside: avoid;">
-          ${logoUrl ? `<img src="${escapeHtml(logoUrl)}" alt="Logo" style="max-width: 150px; margin-bottom: 15px;" />` : ''}
-          <h1 style="color: #0d9488; margin: 0; font-size: 24px;">Relatorio MuseTera TEA</h1>
-          <p style="color: #666; margin: 5px 0 0 0; font-size: 13px;">Musicoterapia para Transtorno do Espectro Autista</p>
-        </div>
+        <!-- Identidade editorial MuseTera: ilustracao vetorial, sem dados clinicos. -->
+        <header class="pdf-masthead pdf-keep">
+          <div class="pdf-masthead-copy">
+            ${logoUrl ? `<img class="pdf-document-logo" src="${escapeHtml(logoUrl)}" alt="Logotipo profissional" />` : ''}
+            <span class="pdf-kicker">MUSETERA  /  DOCUMENTAÇÃO CLÍNICA</span>
+            <h1>Relatório de Musicoterapia</h1>
+            <p>Acompanhamento musicoterapêutico individualizado</p>
+          </div>
+          ${renderMusicoterapiaPdfHeaderArt()}
+        </header>
 
         ${(() => {
           const formatDateBR = (d: any) => {
