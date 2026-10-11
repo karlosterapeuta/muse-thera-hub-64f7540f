@@ -368,14 +368,16 @@ export function MusicoterapiaPreview({ reportData, professionalData }: Musicoter
           </CardHeader>
           <CardContent>
             <p className="text-sm leading-relaxed whitespace-pre-wrap">
-              {reportData.fieldValues.recommendations}
+              {Array.isArray(reportData.fieldValues.recommendations)
+                ? reportData.fieldValues.recommendations.filter((item: unknown) => typeof item === 'string').join('\n')
+                : String(reportData.fieldValues.recommendations)}
             </p>
           </CardContent>
         </Card>
       )}
 
       {/* Home Activities */}
-      {reportData.fieldValues?.home_activities && (
+      {isLegacyReport && reportData.fieldValues?.home_activities && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
@@ -444,6 +446,8 @@ export function MusicoterapiaPreview({ reportData, professionalData }: Musicoter
           'theoretical_framework', 'assessment_tools_used', 'session_setting', 'session_structure',
           'references_cited', 'next_objectives_short', 'next_objectives_medium', 'next_objectives_long',
           'proposed_interventions', 'expected_outcomes', 'revaluation_date',
+          'home_activities', 'family_guidance', 'school_recommendations',
+          'interdisciplinary_team_notes', 'playlist_recommended',
           'improvisation_use', 'receptive_techniques', 'recreative_techniques',
           'compositional_techniques', 'tempo_dynamics_used', 'vocal_work'
         ];
