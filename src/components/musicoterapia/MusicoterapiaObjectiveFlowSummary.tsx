@@ -44,7 +44,7 @@ export function MusicoterapiaObjectiveFlowSummary({ objectiveIds, outcomes }: Pr
               ))}
             </ul>
           ) : (
-            <p className="text-sm text-muted-foreground">Nenhuma demanda de continuidade identificada nos resultados informados.</p>
+            <p className="text-sm text-muted-foreground">Nenhuma demanda de continuidade identificada nos objetivos avaliados; os não avaliados exigem acompanhamento.</p>
           )}
           {notAssessed.length > 0 && (
             <p className="text-xs text-muted-foreground mt-2">
