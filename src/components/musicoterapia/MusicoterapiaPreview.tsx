@@ -18,6 +18,7 @@ interface MusicoterapiaPreviewProps {
 export function MusicoterapiaPreview({ reportData, professionalData }: MusicoterapiaPreviewProps) {
   const selectedObjectives = getSelectedMusicoterapiaObjectives(reportData.fieldValues?.therapeutic_objective_ids);
   const selectedApproaches = getSelectedMusicoterapiaApproaches(reportData.fieldValues?.musicoterapia_approach_ids);
+  const isLegacyReport = selectedApproaches.length === 0;
   const formatDate = (date: string | Date) => {
     if (!date) return 'Data não informada';
     const dateObj = typeof date === 'string' ? new Date(date) : date;
@@ -297,7 +298,7 @@ export function MusicoterapiaPreview({ reportData, professionalData }: Musicoter
       </div>
 
       {/* Session Activities */}
-      {reportData.fieldValues?.session_activities && (
+      {isLegacyReport && reportData.fieldValues?.session_activities && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
@@ -314,7 +315,7 @@ export function MusicoterapiaPreview({ reportData, professionalData }: Musicoter
       )}
 
       {/* Patient Evolution */}
-      {reportData.fieldValues?.patient_evolution && (
+      {isLegacyReport && reportData.fieldValues?.patient_evolution && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
@@ -419,13 +420,21 @@ export function MusicoterapiaPreview({ reportData, professionalData }: Musicoter
       {reportSections.map((section) => {
         // Evitar reapresentar técnicas/metodologias legadas quando a Etapa 04
         // já possui a seleção estruturada. Dados antigos continuam preservados.
+        const hiddenRemovedStepFields = [
+          'session_activities', 'patient_evolution', 'evolution_compared_baseline',
+          'domain_communication_verbal', 'domain_communication_nonverbal', 'domain_social_interaction',
+          'joint_attention', 'eye_contact_quality', 'domain_emotional', 'self_regulation_strategies',
+          'domain_sensory_integration', 'domain_cognitive', 'domain_motor_gross',
+          'domain_motor_fine', 'domain_musicality', 'vocalizations_observed',
+          'verbal_output_during_music', 'echolalia_musical', 'aac_use', 'pragmatic_skills'
+        ];
         const hiddenLegacyApproachFields = [
           'theoretical_framework', 'assessment_tools_used', 'session_setting', 'session_structure',
           'improvisation_use', 'receptive_techniques', 'recreative_techniques',
           'compositional_techniques', 'tempo_dynamics_used', 'vocal_work'
         ];
         const visibleFields = selectedApproaches.length > 0
-          ? section.fieldIds.filter((id) => !hiddenLegacyApproachFields.includes(id))
+          ? section.fieldIds.filter((id) => !hiddenLegacyApproachFields.includes(id) && !hiddenRemovedStepFields.includes(id))
           : section.fieldIds;
         const filledFields = visibleFields
           .map((id) => {
