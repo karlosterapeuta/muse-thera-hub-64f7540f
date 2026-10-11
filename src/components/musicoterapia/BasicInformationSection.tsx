@@ -1,7 +1,8 @@
 import React from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Calendar, CalendarIcon, User } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { Calendar, CalendarIcon, User, ClipboardList } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -234,6 +235,44 @@ export function BasicInformationSection({ reportData, onUpdateData, professional
           />
         </div>
       </div>
+
+      {/* O motivo do encaminhamento integra a identificação, sem etapa adicional. */}
+      <section aria-labelledby="referral-heading" className="rounded-xl border border-[#c9a84c]/25 bg-[#c9a84c]/[0.04] p-4 sm:p-5 space-y-4">
+        <div className="flex items-start gap-3">
+          <ClipboardList className="h-5 w-5 text-[#c9a84c] shrink-0 mt-0.5" />
+          <div>
+            <h3 id="referral-heading" className="font-semibold text-foreground">Motivo do Encaminhamento</h3>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+              Informe a origem e o motivo do acompanhamento musicoterapêutico, quando disponíveis.
+            </p>
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="referral_source" className="text-sm font-medium">
+            Quem encaminhou o paciente? <span className="text-xs text-muted-foreground">(opcional)</span>
+          </Label>
+          <Input
+            id="referral_source"
+            placeholder="Ex.: Neuropediatra, escola, família ou equipe interdisciplinar"
+            value={String(reportData.fieldValues?.referral_source ?? '')}
+            onChange={(event) => handleFieldChange('fieldValues.referral_source', event.target.value)}
+            className="w-full"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="referral_reason" className="text-sm font-medium">
+            Motivo do encaminhamento <span className="text-xs text-muted-foreground">(opcional)</span>
+          </Label>
+          <Textarea
+            id="referral_reason"
+            rows={3}
+            placeholder="Ex.: Necessidade de estimular comunicação, atenção e interação social por meio de atividades musicais."
+            value={String(reportData.fieldValues?.referral_reason ?? '')}
+            onChange={(event) => handleFieldChange('fieldValues.referral_reason', event.target.value)}
+            className="w-full resize-y"
+          />
+        </div>
+      </section>
     </div>
   );
 }
