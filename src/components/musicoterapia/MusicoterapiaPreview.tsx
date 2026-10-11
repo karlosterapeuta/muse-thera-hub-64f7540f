@@ -9,6 +9,7 @@ import type { ReportData } from '@/data/musicoterapiaTemplate';
 import { musicoterapiaTemplate, reportSections, scaleFieldIds } from '@/data/musicoterapiaTemplate';
 import { getSelectedMusicoterapiaObjectives, musicoterapiaObjectiveCategories } from '@/data/musicoterapiaObjectives';
 import { getSelectedMusicoterapiaApproaches } from '@/data/musicoterapiaApproaches';
+import { MusicoterapiaApproachResultsSummary } from './MusicoterapiaApproachResultsSummary';
 
 interface MusicoterapiaPreviewProps {
   reportData: ReportData;
@@ -234,6 +235,8 @@ export function MusicoterapiaPreview({ reportData, professionalData }: Musicoter
           </CardContent>
         </Card>
       )}
+
+      <MusicoterapiaApproachResultsSummary approachIds={reportData.fieldValues?.musicoterapia_approach_ids} results={reportData.fieldValues?.approach_results} />
 
       {/* Instruments and Techniques */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
