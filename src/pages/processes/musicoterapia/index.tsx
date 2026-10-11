@@ -509,7 +509,7 @@ export default function MusicoterapiaPage() {
 
           return `
             ${execSummary}
-            ${renderSection('Identificação Clínica', ['evaluation_period','diagnosis_source','cid_code','support_level','comorbidities','current_medications','treatment_start_date','session_count','session_frequency','session_duration'])}
+            ${renderSection('Identificação Clínica', ['evaluation_period','diagnosis_source','cid_code','support_level','comorbidities','current_medications','mother_name','father_name','family_relationship','diagnosis_date','clinical_details','medication_schedule','medication_effects','calming_strategies','family_support_network','treatment_start_date','session_count','session_frequency','session_duration'])}
             ${renderSection('Motivo do Encaminhamento', ['referral_source','referral_reason'])}
             ${renderSection('Identidade Sonora (ISO de Benenzon)', ['iso_gestational','iso_universal','iso_cultural','iso_complementary','iso_group','sound_preferences','musical_repertoire_favorites'])}
             ${renderSection('Avaliação Sensório-Musical', ['auditory_processing','sound_tolerance','vestibular_response_music','tactile_instrument_response','proprioceptive_response','sensory_seeking_vs_avoiding','sensory_profile_notes'])}
