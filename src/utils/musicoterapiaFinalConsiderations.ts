@@ -15,7 +15,8 @@ export interface MusicoterapiaFinalConsiderations {
 }
 
 export function getMusicoterapiaFinalConsiderations(
-  rawFields: Record<string, unknown> | null | undefined
+  rawFields: Record<string, unknown> | null | undefined,
+  options: { includePending?: boolean } = {}
 ): MusicoterapiaFinalConsiderations {
   const fields = rawFields || {};
   const selected = getSelectedMusicoterapiaObjectives(fields.therapeutic_objective_ids);
@@ -45,7 +46,7 @@ export function getMusicoterapiaFinalConsiderations(
     );
   }
 
-  if (pending.length > 0) {
+  if (pending.length > 0 && options.includePending !== false) {
     const shortList = pending.slice(0, 3).map(({ objective }) => objective.title).join('; ');
     const remaining = pending.length - Math.min(pending.length, 3);
     const suffix = remaining ? `; além de ${remaining} outra${remaining === 1 ? '' : 's'} demanda${remaining === 1 ? '' : 's'}` : '';
