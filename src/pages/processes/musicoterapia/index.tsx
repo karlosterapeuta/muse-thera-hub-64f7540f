@@ -24,7 +24,8 @@ import { renderMusicoterapiaFinalConsiderationsPdf } from '@/utils/renderMusicot
 import { getSelectedMusicoterapiaReferences } from '@/data/musicoterapiaReferences';
 import { savePDFToStorage } from '@/utils/pdfStorageUtils';
 import { useReportData } from '../report/hooks/useReportData';
-import html2pdf from 'html2pdf.js';
+import { exportMusicoterapiaHtmlPdf } from '@/utils/musicoterapiaPdfExport';
+import { renderMusicoterapiaPdfVisuals, renderMusicoterapiaPdfHeaderArt } from '@/utils/musicoterapiaPdfVisuals';
 import { imageUrlToBase64 } from '@/utils/imageToBase64';
 import { DeleteReportDialog } from '../reports/components/DeleteReportDialog';
 import { formatAgeString } from '@/utils/dateUtils';
@@ -245,7 +246,7 @@ export default function MusicoterapiaPage() {
 
     
     return `
-      <div style="font-family: Arial, sans-serif; color: #000; background-color: #fff; width: 210mm; min-height: 297mm; padding: 20mm; margin: 0 auto; font-size: 12px; line-height: 1.6; box-sizing: border-box;">
+      <div class="pdf-document" style="width: 186mm; max-width: 186mm; margin: 0; padding: 0; background: #fff; box-sizing: border-box;">
         <!-- Header -->
         <div style="text-align: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #14b8a6; page-break-inside: avoid;">
           ${logoUrl ? `<img src="${escapeHtml(logoUrl)}" alt="Logo" style="max-width: 150px; margin-bottom: 15px;" />` : ''}
@@ -298,9 +299,6 @@ export default function MusicoterapiaPage() {
         </div>`;
         })()}
 
-        <!-- AI Clinical Narrative -->
-        ${narrativeBlock}
-
         <!-- Objetivos planejados: jamais indicar como resultados adquiridos -->
         ${selectedGoals.length > 0 ? `
           <div class="section-block" style="margin-bottom: 20px; page-break-inside: auto;">
@@ -341,6 +339,9 @@ export default function MusicoterapiaPage() {
 
         ${recordedResults.length ? renderRecordedResultsPdf(recordedResults, escapeHtml) : ''}
         ${renderObjectiveFlowPdf(fields.therapeutic_objective_ids, fields.objective_outcomes, escapeHtml)}
+
+        <!-- Análise narrativa complementar, após os resultados estruturados -->
+        ${narrativeBlock}
 
         <!-- Report Sections (dados complementares) -->
         ${selectedGoals.length === 0 && fields.therapeutic_objectives && fields.therapeutic_objectives.length > 0 ? `
