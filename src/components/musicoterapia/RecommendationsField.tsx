@@ -60,12 +60,12 @@ export function RecommendationsField({ value = [], onChange }: RecommendationsFi
         onChange={(event) => updateText(event.target.value)}
         rows={6}
         placeholder="Ex.: Manter sessões de musicoterapia. Reavaliar a atenção e a concentração após o próximo período de acompanhamento."
-        className="bg-[#101a2e] border-white/15 text-gray-100 placeholder:text-gray-400 resize-y min-h-[120px]"
+        className="bg-[#101a2e] border-border/70 text-foreground placeholder:text-muted-foreground resize-y min-h-[120px]"
       />
 
       <div className="space-y-2">
-        <p className="flex items-center gap-2 text-xs text-gray-400">
-          <Lightbulb className="h-3.5 w-3.5 text-[#c9a84c]" />
+        <p className="flex items-center gap-2 text-xs text-muted-foreground">
+          <Lightbulb className="h-3.5 w-3.5 text-teal-700 dark:text-teal-300" />
           Sugestões rápidas (exemplos editáveis; inclua apenas os pertinentes)
         </p>
         <div className="flex flex-wrap gap-2">
@@ -77,11 +77,11 @@ export function RecommendationsField({ value = [], onChange }: RecommendationsFi
                 key={suggestion}
                 aria-pressed={selected}
                 onClick={() => addSuggestion(suggestion)}
-                className={`rounded-lg border px-3 py-2 text-xs text-left leading-relaxed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f0d78c] ${selected
-                  ? 'border-[#c9a84c] bg-[#c9a84c]/15 text-[#f0d78c]'
-                  : 'border-white/15 text-gray-300 hover:border-[#c9a84c]/50'}`}
+                className={`rounded-lg border px-3 py-2 text-xs text-left leading-relaxed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${selected
+                  ? 'border-teal-600 bg-teal-600/15 text-teal-800 dark:text-teal-200'
+                  : 'border-border/70 text-foreground/80 hover:border-teal-600/50'}`}
               >
-                {selected && <Check className="inline h-3.5 w-3.5 mr-1 text-[#f0d78c]" />}
+                {selected && <Check className="inline h-3.5 w-3.5 mr-1 text-teal-800 dark:text-teal-200" />}
                 {suggestion}
               </button>
             );
