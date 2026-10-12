@@ -171,17 +171,17 @@ function LayoutContent({ children }: LayoutProps) {
         {/* Universal Header com design moderno */}
         <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-card/60 backdrop-blur-xl shadow-2xl" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
           {/* Cosmic gradient overlay */}
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-amber-400/5" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-teal-500/5" />
           {/* Top gradient line */}
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
           {/* Ambient blobs */}
           <div className="pointer-events-none absolute -top-16 -left-16 h-48 w-48 rounded-full bg-primary/10 blur-3xl" />
-          <div className="pointer-events-none absolute -top-16 right-1/4 h-48 w-48 rounded-full bg-amber-400/10 blur-3xl" />
+          <div className="pointer-events-none absolute -top-16 right-1/4 h-48 w-48 rounded-full bg-teal-500/10 blur-3xl" />
 
           <div className="relative flex h-20 items-center justify-between px-6 sm:px-8 gap-6">
             {/* Left: Trigger + Logo + Breadcrumbs */}
             <div className="flex items-center gap-4 flex-1 min-w-0">
-              <SidebarTrigger className="h-10 w-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-primary to-amber-500 text-white hover:opacity-90 hover:scale-105 shadow-lg transition-all duration-200" />
+              <SidebarTrigger className="h-10 w-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-teal-700 to-teal-800 text-white hover:opacity-90 hover:scale-105 shadow-lg transition-all duration-200" />
               
               <HeaderLogo />
               
