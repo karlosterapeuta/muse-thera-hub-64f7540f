@@ -37,7 +37,7 @@ export function MusicoterapiaFinalConsiderations({ fields, onChange }: Props) {
           </div>
         </div>
 
-        <div className="mt-4 rounded-xl border border-border/60 bg-[#111111]/70 p-4 space-y-3" aria-live="polite">
+        <div className="mt-4 rounded-xl border border-border/60 bg-muted/40 p-4 space-y-3" aria-live="polite">
           {summary.paragraphs.length ? (
             summary.paragraphs.map((paragraph, index) => (
               <p key={index} className="text-sm text-foreground leading-relaxed whitespace-pre-wrap break-words">
@@ -63,14 +63,14 @@ export function MusicoterapiaFinalConsiderations({ fields, onChange }: Props) {
           value={note}
           onChange={(event) => onChange(event.target.value)}
           placeholder="Acrescente somente algo clinicamente relevante que ainda não esteja registrado nas etapas anteriores."
-          className="w-full min-h-[90px] resize-y bg-[#101a2e] border-border/70 text-foreground placeholder:text-muted-foreground"
+          className="w-full min-h-[90px] resize-y bg-background border-border/70 text-foreground placeholder:text-muted-foreground"
         />
         <p className="text-xs text-muted-foreground">
           Não é necessário repetir objetivos, abordagens ou recomendações. {note.length}/1500 caracteres
         </p>
       </div>
 
-      <div className="flex items-start gap-2 rounded-lg border border-border/60 bg-[#111111]/60 p-3 text-xs text-muted-foreground leading-relaxed">
+      <div className="flex items-start gap-2 rounded-lg border border-border/60 bg-muted/40 p-3 text-xs text-muted-foreground leading-relaxed">
         <Info className="h-4 w-4 shrink-0 text-teal-700 dark:text-teal-300 mt-0.5" />
         <p>
           Os resultados refletem somente as classificações informadas pelo profissional.
