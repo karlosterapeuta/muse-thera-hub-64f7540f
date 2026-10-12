@@ -17,7 +17,6 @@ import {
   Key,
   ClipboardList,
   Stamp,
-  GraduationCap,
   Database,
   LayoutDashboard,
   Bot,
@@ -45,10 +44,7 @@ export const musicalGamesMenuItems: any[] = [];
 
 export const toolsMenuItems = [
   { icon: Bot, text: "🤖 Assistente IA", path: "/ai-assistant", gradient: "from-violet-500 to-purple-600", isNew: true },
-  { icon: Music2, text: "🎺 Orquestra Animal", path: "/orquestra-animal", gradient: "from-orange-500 to-pink-600", isNew: true },
-  { icon: Music2, text: "🦖 Dino Ritmos", path: "/dino-ritmos", gradient: "from-purple-500 to-pink-500", isNew: true },
   { icon: Waves, text: "🧠 Frequências Binaurais", path: "/binaural-frequencies", gradient: "from-green-500 to-emerald-600" },
-  { icon: GraduationCap, text: "Curso Flix", path: "/courses", gradient: "from-red-600 to-red-700", isNew: true, isNetflixStyle: true },
   { icon: Magnet, text: "💼 Vagas", path: "/vagas", gradient: "from-cyan-500 to-blue-600", isNew: true },
 ];
 
@@ -58,10 +54,6 @@ export const managementMenuItems = [
 
 export const resourcesMenuItems = [
   { icon: FolderOpen, text: "📁 Recursos", path: "/resources", gradient: "from-amber-500 to-orange-600", isNew: true },
-];
-
-export const communityMenuItems = [
-  { icon: UsersRound, text: "🌐 Comunidade MuseTera", path: "https://comunidade.musetera.com.br/", gradient: "from-indigo-500 to-blue-600", isNew: true, external: true },
 ];
 
 export const getAdminMenuItems = (userEmail: string | null, isAdmin: boolean | undefined) => {
