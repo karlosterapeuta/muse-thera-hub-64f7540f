@@ -37,7 +37,7 @@ export function MusicoterapiaObjectiveOutcomes({ selectedIds, value, onChange }:
                 <button key={option.id} type="button" aria-pressed={active}
                   onClick={() => onChange({ ...source, [item.id]: option.id })}
                   className={`px-3 py-2 rounded-lg border text-xs font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${active
-                    ? 'bg-teal-700 text-[#101010] border-teal-600'
+                    ? 'bg-teal-700 text-white border-teal-600'
                     : 'bg-background text-foreground/90 border-border/70 hover:border-teal-600/60'
                   }`}>
                   {option.label}
