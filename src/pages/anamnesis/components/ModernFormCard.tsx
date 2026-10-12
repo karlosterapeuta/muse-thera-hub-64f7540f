@@ -13,24 +13,21 @@ interface ModernFormCardProps {
 export function ModernFormCard({ 
   title, 
   icon: Icon, 
-  gradient, 
+  gradient,
   children, 
   className = "" 
 }: ModernFormCardProps) {
+  // Compatibilidade com chamadas existentes: a identidade visual passa a ser única.
+  void gradient;
   return (
-    <Card className={`relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 ${className}`}>
-      {/* Gradient border */}
-      <div className={`absolute inset-0 bg-gradient-to-r ${gradient} p-[1px] rounded-lg`}>
-        <div className="h-full w-full bg-gray-900 rounded-lg" />
-      </div>
-      
+    <Card className={`relative overflow-hidden rounded-xl border border-teal-700/20 bg-card shadow-sm transition-shadow hover:shadow-md ${className}`}>
       <div className="relative z-10">
         <CardHeader className="pb-4">
           <CardTitle className="flex items-center gap-3 text-xl">
-            <div className={`p-2 bg-gradient-to-r ${gradient} rounded-lg`}>
+            <div className="rounded-lg bg-teal-700 p-2">
               <Icon className="h-5 w-5 text-white" />
             </div>
-            <span className="text-white font-semibold">
+            <span className="font-semibold text-foreground">
               {title}
             </span>
           </CardTitle>
