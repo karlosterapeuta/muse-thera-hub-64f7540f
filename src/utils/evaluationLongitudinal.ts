@@ -20,7 +20,7 @@ export function reportCoverage(selections?: Record<string,string>, allKeys?: str
 export function compareMatchedAssessments(first: StoredAssessment, last: StoredAssessment) {
   const a = first.content?.selections || {};
   const b = last.content?.selections || {};
-  const shared = Object.keys(a).filter(key => levelScore(a[key]) !== null && levelScore(b[key]) !== null);
+  const shared = Object.keys(a).filter(key => Object.prototype.hasOwnProperty.call(b, key) && levelScore(a[key]) !== null && levelScore(b[key]) !== null);
   const firstSummary = summarizeParameters(shared.map(key => a[key]));
   const lastSummary = summarizeParameters(shared.map(key => b[key]));
   const firstTotal = Object.keys(a).filter(key => levelScore(a[key]) !== null).length;
@@ -29,8 +29,9 @@ export function compareMatchedAssessments(first: StoredAssessment, last: StoredA
     sharedCount: shared.length, firstTotal, lastTotal,
     firstMean: shared.length ? firstSummary.percentage : null,
     lastMean: shared.length ? lastSummary.percentage : null,
-    change: shared.length ? lastSummary.percentage - firstSummary.percentage : null,
+    change: shared.length ? Math.round((lastSummary.percentage - firstSummary.percentage) * 100) / 100 : null,
     comparable: shared.length > 0,
+    coverageRatio: Math.round(100 * shared.length / Math.max(1, firstTotal, lastTotal)),
     firstVersion: first.content?.scoringVersion || "não registrada",
     lastVersion: last.content?.scoringVersion || "não registrada",
     versionWarning: !first.content?.scoringVersion || !last.content?.scoringVersion || first.content.scoringVersion !== last.content.scoringVersion,
