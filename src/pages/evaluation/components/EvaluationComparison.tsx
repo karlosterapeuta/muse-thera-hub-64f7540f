@@ -1,4 +1,5 @@
 import { compareMatchedAssessments } from "@/utils/evaluationLongitudinal";
+import { summarizeParameters, levelScore } from "@/utils/museteraScoring";
 import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -140,6 +141,20 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
     });
   }, [selectedEvaluations]);
 
+  // Pontos comparáveis: apenas indicadores pontuados em todas as sessões selecionadas.
+  const commonKeys = selectedEvaluations.length >= 2
+    ? Object.keys(selectedEvaluations[0]?.content?.selections || {}).filter(key =>
+        selectedEvaluations.every(evaluation =>
+          levelScore(evaluation.content?.selections?.[key]) !== null
+        ))
+    : [];
+  const comparableStageData = selectedEvaluations.map((evaluation) => ({
+    date: format(new Date(evaluation.date), "dd/MM/yy", { locale: ptBR }),
+    score: commonKeys.length
+      ? summarizeParameters(commonKeys.map(key => evaluation.content?.selections?.[key])).percentage
+      : null,
+  }));
+
   const matchedComparison = selectedEvaluations.length >= 2
     ? compareMatchedAssessments(selectedEvaluations[0], selectedEvaluations[selectedEvaluations.length - 1])
     : null;
@@ -223,6 +238,23 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
           {matchedComparison.versionWarning && <p className="mt-2 font-medium text-amber-800 dark:text-amber-200">Versão de pontuação não registrada ou diferente em pelo menos uma avaliação. Interprete a comparação com cautela.</p>}
         </Card>
       )}
+      <Card className="border border-teal-300 bg-card p-4 dark:border-teal-700">
+        <h3 className="text-base font-bold text-foreground">Série longitudinal com conjunto fixo</h3>
+        {commonKeys.length ? (
+          <>
+            <p className="mt-2 text-sm text-foreground/85">As {selectedEvaluations.length} sessões selecionadas compartilham <strong>{commonKeys.length}</strong> indicadores pontuados. Somente esses indicadores entram na série abaixo.</p>
+            <div className="mt-3 flex flex-wrap gap-3">
+              {comparableStageData.map((item, idx) => (
+                <div key={selectedEvaluations[idx].id} className="rounded-lg border border-teal-200 px-3 py-2 text-sm dark:border-teal-800">
+                  <span className="block text-foreground/80">{item.date}</span>
+                  <strong>{item.score}%</strong>
+                </div>
+              ))}
+            </div>
+            <p className="mt-2 text-xs text-foreground/75">As diferenças são descritivas e não comprovam eficácia ou mudança clinicamente significativa.</p>
+          </>
+        ) : <p className="mt-2 text-sm text-amber-800 dark:text-amber-200">Não há indicadores pontuados em todas as sessões escolhidas. Não calcule evolução comparável.</p>}
+      </Card>
       {/* Comparação entre Avaliações: Inicial → Final */}
       <Card className="p-6 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/50 dark:to-indigo-950/50 border-0 shadow-xl">
         <div className="flex flex-col items-center mb-4">
@@ -230,14 +262,14 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
             Comparação entre Avaliações
           </h3>
           <p className="text-sm text-purple-600/80 dark:text-purple-300/80 text-center">
-            Score Global da Avaliação Inicial até a Final
+            Médias brutas armazenadas (podem conter indicadores diferentes)
           </p>
           {stageData.length >= 2 && (
             <Badge
               className={`mt-2 ${getVariationColor(stageVariation)} flex items-center gap-1`}
             >
               {getVariationIcon(stageVariation)}
-              Diferença bruta (não ajustada): {stageVariation > 0 ? `+${stageVariation}%` : `${stageVariation}%`}
+              Diferença entre médias brutas (não ajustadas): {stageVariation > 0 ? `+${stageVariation} p.p.` : `${stageVariation} p.p.`}
             </Badge>
           )}
         </div>
