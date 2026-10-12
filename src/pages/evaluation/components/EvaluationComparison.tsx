@@ -512,14 +512,14 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
                   {row.scores.map((score, index) => (
                     <TableCell key={index} className="text-center">
                       <span className="font-semibold text-gray-700 dark:text-gray-300">
-                        {score}%
+                        {score === null ? "Sem dados" : `${score}%`}
                       </span>
                     </TableCell>
                   ))}
                   <TableCell className="text-center">
-                    <Badge className={`${getVariationColor(row.variation)} flex items-center gap-1 justify-center`}>
-                      {getVariationIcon(row.variation)}
-                      {row.variation > 0 ? `+${row.variation}%` : `${row.variation}%`}
+                    <Badge className={`${getVariationColor(row.variation ?? 0)} flex items-center gap-1 justify-center`}>
+                      {getVariationIcon(row.variation ?? 0)}
+                      {row.variation === null ? "Não comparável" : row.variation > 0 ? `+${row.variation} p.p.` : `${row.variation} p.p.`}
                     </Badge>
                   </TableCell>
                 </TableRow>
