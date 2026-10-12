@@ -14,9 +14,9 @@ export function MusicoterapiaReferralSummary({ source, reason }: MusicoterapiaRe
   if (!referralSource && !referralReason) return null;
 
   return (
-    <Card className="border border-[#c9a84c]/25">
+    <Card className="border border-teal-600/25">
       <CardHeader>
-        <CardTitle className="text-base text-[#c9a84c]">Motivo do Encaminhamento</CardTitle>
+        <CardTitle className="text-base text-teal-700 dark:text-teal-300">Motivo do Encaminhamento</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3 text-sm">
         {referralSource && (
