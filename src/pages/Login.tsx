@@ -254,13 +254,13 @@ export default function Login() {
   };
 
   return (
-    <main className="relative min-h-screen overflow-x-hidden bg-[#060c20] text-white">
+    <main className="relative min-h-[100dvh] overflow-x-clip bg-[#060c20] text-white">
       <StarfieldBackground />
       <CosmicAmbientMusic />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#061429]/90 via-[#07172d]/65 to-[#0b2034]/85" aria-hidden="true" />
       <div className="pointer-events-none absolute -left-32 top-1/4 h-80 w-80 rounded-full bg-teal-500/10 blur-3xl" aria-hidden="true" />
-      <div className="relative z-10 mx-auto grid min-h-screen w-full max-w-[1440px] items-center gap-8 px-4 py-8 sm:px-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(380px,0.92fr)] lg:gap-12 lg:px-12 xl:px-20">
-        <section className="mx-auto hidden w-full max-w-xl lg:block" aria-label="Conheça o MuseTera">
+      <div className="relative z-10 mx-auto grid min-h-[100dvh] w-full max-w-[1440px] min-w-0 grid-cols-1 items-center gap-5 px-3 py-5 sm:gap-6 sm:px-6 sm:py-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-8 lg:px-8 xl:gap-12 xl:px-16">
+        <section className="mx-auto hidden w-full min-w-0 max-w-xl lg:block" aria-label="Conheça o MuseTera">
           <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-teal-300/25 bg-teal-300/10 px-4 py-2 text-sm font-medium text-teal-100">
             <Music2 className="h-4 w-4" aria-hidden="true" />
             Tecnologia para a musicoterapia
@@ -288,10 +288,10 @@ export default function Login() {
           </div>
           <p className="mt-8 text-sm text-slate-300">MuseTera · Anamnese, avaliação, plano terapêutico, intervenção e relatórios.</p>
         </section>
-        <section className="mx-auto w-full max-w-[520px]" aria-label="Acesso à plataforma MuseTera">
-          <div className="mb-5 text-center lg:hidden">
+        <section className="mx-auto w-full min-w-0 max-w-[520px]" aria-label="Acesso à plataforma MuseTera">
+          <div className="mb-3 text-center sm:mb-5 lg:hidden">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-300">Gestão em musicoterapia</p>
-            <h1 className="mt-2 text-2xl font-bold text-white">Sua prática clínica, mais organizada.</h1>
+            <h1 className="mt-2 text-xl font-bold leading-snug text-white sm:text-2xl">Sua prática clínica, mais organizada.</h1>
             <p className="mt-2 text-sm text-slate-200">Anamnese, avaliação, evolução e relatórios em um só lugar.</p>
           </div>
           {renderForm()}
