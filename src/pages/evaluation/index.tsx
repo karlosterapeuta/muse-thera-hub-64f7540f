@@ -669,6 +669,10 @@ export default function Evaluation() {
   const domainScores = getDomainAverages();
   const subdomainScores = getSubdomainData();
   const overallScore = calculateOverallScore();
+  const isPartialEvaluation = overallScore.pendingParameters > 0 || overallScore.evaluatedDomains < evaluationDomains.length;
+  const hasScoredParameters = overallScore.evaluatedParameters > 0;
+  const missingDomains = evaluationDomains.filter(domain => !isDomainEvaluated(domain)).map(domain => domain.title);
+
   const pieData = [
     { name: "Desenvolvido", value: overallScore.percentage },
     { name: "A desenvolver", value: 100 - overallScore.percentage },
@@ -1843,7 +1847,7 @@ export default function Evaluation() {
                     <p className="text-2xl font-bold text-teal-600 dark:text-teal-400">
                       {calculateOverallScore().percentage}%
                     </p>
-                    <p className="text-sm text-teal-700 dark:text-teal-300">Pontuação Média</p>
+                    <p className="text-sm text-teal-700 dark:text-teal-300">Média dos itens pontuados</p>
                     <p className="text-xs text-teal-600 dark:text-teal-400">escala MuseTera</p>
                   </div>
                 </div>
@@ -2075,14 +2079,22 @@ export default function Evaluation() {
 
             <TabsContent value="results" className="space-y-8 mt-8">
               {/* Informações sobre Avaliação Parcial */}
-              {getEvaluatedDomainsCount() < evaluationDomains.length && (
+              {isPartialEvaluation && (
                 <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-lg p-4 mb-6">
                   <h3 className="text-lg font-semibold text-amber-800 dark:text-amber-200 mb-2">⚡ Avaliação Parcial Detectada</h3>
                   <p className="text-amber-700 dark:text-amber-300 text-sm mb-2">
-                    Esta é uma avaliação parcial onde nem todos os domínios foram pontuados. 
-                    Os resultados refletem apenas os domínios efetivamente avaliados.
+                    Esta avaliação está incompleta: a média representa somente os indicadores pontuados e não deve ser interpretada como desempenho global conclusivo.
                   </p>
-                  <div className="grid grid-cols-2 gap-4 text-center mt-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center mt-3">
+                  <div className="bg-white dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 p-3 rounded">
+                    <p className="text-sm font-semibold text-amber-900 dark:text-amber-100">Cobertura aplicável</p>
+                    <p className="text-xl font-bold text-amber-900 dark:text-amber-100">{overallScore.completionPercentage}%</p>
+                    <p className="text-xs text-amber-800 dark:text-amber-200">{overallScore.evaluatedParameters}/{overallScore.totalParameters} indicadores</p>
+                  </div>
+                  <div className="bg-white dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 p-3 rounded">
+                    <p className="text-sm font-semibold text-amber-900 dark:text-amber-100">Pendentes / N/A</p>
+                    <p className="text-xl font-bold text-amber-900 dark:text-amber-100">{overallScore.pendingParameters} / {overallScore.notApplicableParameters}</p>
+                  </div>
                     <div className="bg-amber-100 dark:bg-amber-900/40 p-2 rounded">
                       <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">Avaliados</p>
                       <p className="text-lg font-bold text-amber-700 dark:text-amber-300">{getEvaluatedDomainsCount()}</p>
@@ -2092,6 +2104,9 @@ export default function Evaluation() {
                       <p className="text-lg font-bold text-muted-foreground">{evaluationDomains.length - getEvaluatedDomainsCount()}</p>
                     </div>
                   </div>
+                  {missingDomains.length > 0 && (
+                    <p className="mt-3 text-sm font-medium text-amber-950 dark:text-amber-100">Domínios sem dados: {missingDomains.join("; ")}. Eles não representam pontuação zero.</p>
+                  )}
                 </div>
               )}
 
@@ -2099,9 +2114,9 @@ export default function Evaluation() {
                 <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-center bg-gradient-to-r from-teal-600 to-teal-600 bg-clip-text text-transparent">
                   Resultados da Escala MuseTera
                 </h2>
-                {getEvaluatedDomainsCount() < evaluationDomains.length && (
+                {isPartialEvaluation && (
                   <p className="text-center text-sm text-teal-600 dark:text-teal-400 mb-6">
-                    Avaliação Parcial — {getEvaluatedDomainsCount()}/{evaluationDomains.length} domínios
+                    Avaliação parcial — {overallScore.evaluatedParameters}/{overallScore.totalParameters} indicadores pontuados ({overallScore.completionPercentage}% de cobertura)
                   </p>
                 )}
                 <div className="w-16 h-1 bg-gradient-to-r from-teal-700 to-emerald-600 mx-auto rounded-full mb-8" />
@@ -2109,23 +2124,32 @@ export default function Evaluation() {
                 {/* Score Summary Cards */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
                   <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl p-4 text-white text-center shadow-lg shadow-teal-500/20">
-                    <p className="text-3xl font-black">{overallScore.percentage}%</p>
-                    <p className="text-xs font-medium text-teal-100 mt-1">Pontuação Geral</p>
+                    <p className="text-3xl font-black">{hasScoredParameters ? `${overallScore.percentage}%` : "—"}</p>
+                    <p className="text-sm font-semibold text-white mt-1">Média dos itens pontuados</p>
                   </div>
                   <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-4 text-white text-center shadow-lg shadow-emerald-500/20">
                     <p className="text-3xl font-black">{getEvaluatedDomainsCount()}/{evaluationDomains.length}</p>
-                    <p className="text-xs font-medium text-emerald-100 mt-1">Domínios</p>
+                    <p className="text-sm font-semibold text-white mt-1">Domínios com dados</p>
                   </div>
                   <div className="bg-gradient-to-br from-teal-500 to-emerald-600 rounded-2xl p-4 text-white text-center shadow-lg shadow-teal-500/20">
                     <p className="text-3xl font-black">{getEvaluatedSubdomainsCount()}</p>
-                    <p className="text-xs font-medium text-teal-100 mt-1">Subdomínios</p>
+                    <p className="text-sm font-semibold text-white mt-1">Subdomínios com dados</p>
                   </div>
                   <div className="bg-gradient-to-br from-teal-500 to-emerald-600 rounded-2xl p-4 text-white text-center shadow-lg shadow-teal-500/20">
                     <p className="text-3xl font-black">{overallScore.raw}</p>
-                    <p className="text-xs font-medium text-teal-100 mt-1">Pontos / {overallScore.max}</p>
+                    <p className="text-sm font-semibold text-white mt-1">Pontos / {overallScore.max}</p>
                   </div>
                 </div>
 
+                <div className="mb-6 rounded-xl border border-teal-300 dark:border-teal-700 bg-card px-4 py-4 text-sm text-foreground">
+                  <p className="font-semibold text-base">Interpretação do resultado</p>
+                  {hasScoredParameters ? (
+                    <p className="mt-2">Desempenho observado: <strong>{overallScore.percentage}%</strong> nos {overallScore.evaluatedParameters} indicadores pontuados. Cobertura: <strong>{overallScore.completionPercentage}%</strong> dos {overallScore.totalParameters} indicadores aplicáveis. {isPartialEvaluation ? "Resultado parcial, sem conclusão global. Compare apenas condições de aplicação e cobertura semelhantes." : "Todos os domínios possuem dados e não há indicadores pendentes; interpretar segundo registros clínicos e adaptações."}</p>
+                  ) : (
+                    <p className="mt-2">Não há pontuação registrada. Os resultados permanecem não avaliados, e nenhum percentual representa desempenho do paciente.</p>
+                  )}
+                  <p className="mt-2 text-foreground/85">Não aplicáveis ({overallScore.notApplicableParameters}) são excluídos do denominador; itens ainda pendentes ({overallScore.pendingParameters}) também não recebem zero automaticamente.</p>
+                </div>
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
                   {/* Radar Chart */}
                   <Card className="border border-border/50 shadow-lg p-3 sm:p-6 rounded-2xl bg-card">
