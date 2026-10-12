@@ -1,3 +1,4 @@
+import { presentationParameterLabel } from "@/pages/evaluation/utils/autismGuidance";
 import React from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -128,12 +129,16 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
     parameters: string[]
   ) => {
     let total = 0;
+    let count = 0;
     parameters.forEach((p) => {
       const key = `${domainTitle}-${subdomainTitle}-${p}`;
       const v = selections[key];
-      total += v && FREQ_LABEL[v] ? FREQ_LABEL[v].score : 0;
+      if (v && FREQ_LABEL[v]) {
+        total += FREQ_LABEL[v].score;
+        count++;
+      }
     });
-    return Math.round((total / (parameters.length * 100)) * 100);
+    return count ? Math.round(total / count) : 0;
   };
 
   const calcDomainPct = (domain: EvaluationDomain) => {
@@ -143,8 +148,10 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
       s.parameters.forEach((p) => {
         const key = `${domain.title}-${s.title}-${p}`;
         const v = selections[key];
-        total += v && FREQ_LABEL[v] ? FREQ_LABEL[v].score : 0;
-        max += 100;
+        if (v && FREQ_LABEL[v]) {
+          total += FREQ_LABEL[v].score;
+          max += 100;
+        }
       });
     });
     return max > 0 ? Math.round((total / max) * 100) : 0;
@@ -745,10 +752,10 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
                 const key = `${domain.title}-${sub.title}-${p}`;
                 const v = selections[key];
                 const freq = (v && FREQ_LABEL[v]) || FREQ_LABEL['nao_observado'];
-                return { param: p, value: v, freq };
+                return { param: presentationParameterLabel(p), value: v, freq };
               });
               const evaluatedRows = rows.filter(
-                (r) => r.value && r.value !== 'nao_observado'
+                (r) => r.value && r.value !== 'nao_aplicavel'
               );
               if (evaluatedRows.length === 0) return null;
 
