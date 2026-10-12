@@ -9,7 +9,6 @@ import { ProfessionalHeader } from "./Professional/components/ProfessionalHeader
 import { PersonalInfoCard } from "./Professional/components/PersonalInfoCard";
 import { ProfessionalCredentialsCard } from "./Professional/components/ProfessionalCredentialsCard";
 import { ActionButtons } from "./Professional/components/ActionButtons";
-import { DashboardBackground } from "@/components/dashboard/DashboardBackground";
 
 interface ProfessionalData {
   id?: string;
@@ -206,7 +205,7 @@ export default function Professional() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-700 mx-auto"></div>
           <p className="text-gray-600">Carregando perfil profissional...</p>
         </div>
       </div>
@@ -220,7 +219,7 @@ export default function Professional() {
           <p className="text-red-600">Erro ao carregar dados profissionais</p>
           <button 
             onClick={() => refetch()} 
-            className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+            className="px-4 py-2 bg-teal-700 text-white rounded hover:bg-teal-800"
           >
             Tentar novamente
           </button>
@@ -230,9 +229,8 @@ export default function Professional() {
   }
 
   return (
-    <div className="relative min-h-screen bg-background">
-      <DashboardBackground />
-      <div className={`relative z-10 mx-auto p-4 space-y-8 animate-fade-in ${isMobile ? 'max-w-full px-2' : 'max-w-4xl'}`}>
+    <div className="relative min-h-screen bg-gradient-to-br from-background via-teal-50/40 to-emerald-50/20 dark:via-teal-950/20 dark:to-background">
+      <div className={`relative z-10 mx-auto p-4 space-y-6 ${isMobile ? 'max-w-full px-2' : 'max-w-4xl'}`}>
         <ProfessionalHeader
           avatarUrl={avatarUrl}
           isEditing={isEditing}
@@ -242,7 +240,7 @@ export default function Professional() {
           onAvatarChange={handleAvatarChange}
         />
 
-        <div className={`grid gap-8 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-2'}`}>
+        <div className={`grid gap-5 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-2'}`}>
           <PersonalInfoCard
             formData={formData}
             setFormData={setFormData}
