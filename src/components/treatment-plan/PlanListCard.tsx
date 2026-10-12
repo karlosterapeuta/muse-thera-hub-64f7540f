@@ -60,7 +60,7 @@ export function PlanListCard({ plan, index, isDownloading, isDuplicating, onView
       transition={{ duration: 0.35, delay: Math.min(index * 0.04, 0.3) }}
     >
       <Card className="group relative h-full flex flex-col overflow-hidden border border-border/60 bg-card hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-purple-500 to-pink-500" />
+        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-teal-700 via-teal-600 to-emerald-700" />
         <div className="absolute -top-12 -right-12 w-32 h-32 bg-gradient-to-br from-primary to-purple-500 opacity-[0.06] dark:opacity-[0.12] rounded-full blur-2xl group-hover:opacity-[0.15] transition-opacity" />
 
         <div className="relative p-5 flex flex-col h-full">
@@ -107,7 +107,7 @@ export function PlanListCard({ plan, index, isDownloading, isDuplicating, onView
             <Button size="sm" variant="ghost" onClick={onView} className="flex-1 gap-1.5 hover:bg-primary/10 hover:text-primary">
               <Eye className="h-3.5 w-3.5" /> Ver
             </Button>
-            <Button size="sm" variant="ghost" onClick={onEdit} className="flex-1 gap-1.5 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400">
+            <Button size="sm" variant="ghost" onClick={onEdit} className="flex-1 gap-1.5 hover:bg-teal-500/10 hover:text-teal-700 dark:hover:text-teal-300">
               <Edit className="h-3.5 w-3.5" /> Editar
             </Button>
             <Button size="sm" variant="ghost" onClick={onDownload} disabled={isDownloading} className="flex-1 gap-1.5 hover:bg-emerald-500/10 hover:text-emerald-600 dark:hover:text-emerald-400">
