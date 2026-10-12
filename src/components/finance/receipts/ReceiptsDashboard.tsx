@@ -6,7 +6,7 @@ import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, PieChart, 
 
 const fmtBRL = (v: number) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v);
 
-const COLORS = ["hsl(var(--primary))", "#f59e0b", "#10b981", "#3b82f6", "#a855f7", "#ef4444"];
+const COLORS = ["#0f766e", "#0d9488", "#115e59", "#10b981", "#5aa99d", "#ef4444"];
 
 export function ReceiptsDashboard() {
   const { data: receipts = [] } = usePaymentReceipts();
@@ -65,9 +65,9 @@ export function ReceiptsDashboard() {
     <div className="space-y-4">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <StatCard icon={BanknoteIcon} label="Recebido no mês" value={fmtBRL(stats.total)} color="from-emerald-500 to-emerald-600" />
-        <StatCard icon={ReceiptIcon} label="Recibos no mês" value={String(stats.count)} color="from-primary to-amber-500" />
-        <StatCard icon={TrendingUpIcon} label="Ticket médio" value={fmtBRL(stats.avg)} color="from-blue-500 to-indigo-600" />
-        <StatCard icon={XCircleIcon} label="Cancelados" value={String(stats.cancelled)} color="from-rose-500 to-pink-600" />
+        <StatCard icon={ReceiptIcon} label="Recibos no mês" value={String(stats.count)} color="from-teal-700 to-teal-800" />
+        <StatCard icon={TrendingUpIcon} label="Ticket médio" value={fmtBRL(stats.avg)} color="from-teal-700 to-teal-800" />
+        <StatCard icon={XCircleIcon} label="Cancelados" value={String(stats.cancelled)} color="from-teal-700 to-emerald-800" />
       </div>
 
       <Card className="bg-card/60 backdrop-blur-xl">
@@ -103,7 +103,7 @@ export function ReceiptsDashboard() {
                 {topClients.map((c, i) => (
                   <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-background/50">
                     <div className="flex items-center gap-2 min-w-0">
-                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-amber-500 text-white flex items-center justify-center text-xs font-bold">{i + 1}</div>
+                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-teal-700 to-teal-800 text-white flex items-center justify-center text-xs font-bold">{i + 1}</div>
                       <span className="font-medium truncate">{c.name}</span>
                     </div>
                     <div className="text-right shrink-0">
