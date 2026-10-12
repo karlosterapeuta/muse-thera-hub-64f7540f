@@ -356,7 +356,7 @@ export function FinalReviewSection({
           )}
 
           <div className="border-t-2 border-teal-600/30 pt-4 sm:pt-6 mt-6 sm:mt-8">
-            <div className="bg-gradient-to-r from-teal-900/5 to-[#0d0d0d]/10 p-4 sm:p-6 rounded-lg">
+            <div className="bg-gradient-to-r from-teal-900/5 to-teal-900/10 p-4 sm:p-6 rounded-lg">
               <div className="text-center">
                 <p className="text-base sm:text-lg font-semibold text-foreground mb-2">
                   <strong>Identificação profissional:</strong> {reportData.signature || reportData.professionalName || 'Nao informado'}
@@ -411,7 +411,7 @@ export function FinalReviewSection({
         </div>
         <div className="flex items-start gap-2.5">
           <Eye className="mt-0.5 h-5 w-5 shrink-0 text-teal-600" />
-          <div><p className="text-sm font-semibold">Análise por IA</p><p className="mt-1 text-xs leading-relaxed text-muted-foreground">A redação é um rascunho clínico. Não aceite avanços ou prognósticos sem evidência registrada.</p></div>
+          <div><p className="text-sm font-semibold">Análise clínica do relatório</p><p className="mt-1 text-xs leading-relaxed text-muted-foreground">Confira se a síntese corresponde às respostas e às classificações documentadas, sem afirmar resultados não observados.</p></div>
         </div>
         <div className="flex items-start gap-2.5">
           <Download className="mt-0.5 h-5 w-5 shrink-0 text-teal-600" />
