@@ -34,14 +34,10 @@ function LayoutContent({ children }: LayoutProps) {
   const { toggleSidebar, setOpenMobile, isMobile } = useSidebar();
   const isDashboard = location.pathname === '/dashboard';
   const lastTrackedPath = useRef<string>("");
-  const hasAutoOpenedMobile = useRef(false);
 
-  // Auto-open sidebar on mobile when first loading
+  // Never obscure the first mobile screen: open the menu only when requested.
   useEffect(() => {
-    if (isMobile && !hasAutoOpenedMobile.current && !publicRoutes.includes(location.pathname)) {
-      hasAutoOpenedMobile.current = true;
-      setOpenMobile(true);
-    }
+    if (isMobile) setOpenMobile(false);
   }, [isMobile, setOpenMobile, location.pathname]);
 
   // Atalho de teclado Ctrl+B / Cmd+B para toggle do sidebar
@@ -159,12 +155,12 @@ function LayoutContent({ children }: LayoutProps) {
   }
 
   return (
-    <div className="flex min-h-screen w-full bg-background">
+    <div className="flex min-h-[100dvh] w-full min-w-0 overflow-x-clip bg-background">
       {/* Sidebar com push behavior */}
       <Sidebar />
       
       {/* Main content que será empurrado */}
-      <div className="flex-1 flex flex-col w-full min-w-0">
+      <div className="flex min-w-0 w-full flex-1 flex-col">
         {/* Warning banner for expiring plans */}
         <UserExpirationWarning />
         
@@ -178,9 +174,9 @@ function LayoutContent({ children }: LayoutProps) {
           <div className="pointer-events-none absolute -top-16 -left-16 h-48 w-48 rounded-full bg-primary/10 blur-3xl" />
           <div className="pointer-events-none absolute -top-16 right-1/4 h-48 w-48 rounded-full bg-teal-500/10 blur-3xl" />
 
-          <div className="relative flex h-20 items-center justify-between px-6 sm:px-8 gap-6">
+          <div className="relative flex min-h-14 items-center justify-between gap-2 px-2 py-2 sm:min-h-16 sm:gap-3 sm:px-4 lg:h-20 lg:gap-6 lg:px-8">
             {/* Left: Trigger + Logo + Breadcrumbs */}
-            <div className="flex items-center gap-4 flex-1 min-w-0">
+            <div className="flex min-w-0 flex-1 items-center gap-1 sm:gap-3 lg:gap-4">
               <SidebarTrigger className="h-10 w-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-teal-700 to-teal-800 text-white hover:opacity-90 hover:scale-105 shadow-lg transition-all duration-200" />
               
               <HeaderLogo />
@@ -196,7 +192,7 @@ function LayoutContent({ children }: LayoutProps) {
             {isDashboard && <HeaderGreeting />}
             
             {/* Right: Actions */}
-            <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
+            <div className="flex shrink-0 items-center gap-1 sm:gap-2 lg:gap-4">
               <HeaderTime />
               <ThemeToggle />
               <ProfessionalAvatar size="sm" />
@@ -208,7 +204,7 @@ function LayoutContent({ children }: LayoutProps) {
         </header>
         
         {/* Conteúdo principal */}
-        <main className="flex-1 overflow-auto bg-background" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+        <main className="min-w-0 max-w-full flex-1 overflow-x-auto overflow-y-visible bg-background" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
           {children || <Outlet />}
         </main>
         
