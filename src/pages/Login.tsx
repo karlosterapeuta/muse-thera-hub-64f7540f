@@ -10,7 +10,7 @@ import RegisterForm from "@/components/auth/RegisterForm";
 import { StarfieldBackground } from "@/components/auth/StarfieldBackground";
 import { CosmicAmbientMusic } from "@/components/auth/CosmicAmbientMusic";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2 } from "lucide-react";
+import { Loader2, ClipboardList, ChartNoAxesCombined, CalendarDays, ShieldCheck, Music2 } from "lucide-react";
 
 interface HashParams {
   [key: string]: string;
@@ -254,12 +254,50 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+    <main className="relative min-h-screen overflow-x-hidden bg-[#060c20] text-white">
       <StarfieldBackground />
       <CosmicAmbientMusic />
-      <div className="relative z-10 w-full max-w-sm sm:max-w-md md:max-w-lg p-4 sm:p-6">
-        {renderForm()}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#061429]/90 via-[#07172d]/65 to-[#0b2034]/85" aria-hidden="true" />
+      <div className="pointer-events-none absolute -left-32 top-1/4 h-80 w-80 rounded-full bg-teal-500/10 blur-3xl" aria-hidden="true" />
+      <div className="relative z-10 mx-auto grid min-h-screen w-full max-w-[1440px] items-center gap-8 px-4 py-8 sm:px-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(380px,0.92fr)] lg:gap-12 lg:px-12 xl:px-20">
+        <section className="mx-auto hidden w-full max-w-xl lg:block" aria-label="Conheça o MuseTera">
+          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-teal-300/25 bg-teal-300/10 px-4 py-2 text-sm font-medium text-teal-100">
+            <Music2 className="h-4 w-4" aria-hidden="true" />
+            Tecnologia para a musicoterapia
+          </div>
+          <h1 className="max-w-xl text-5xl font-extrabold leading-[1.12] tracking-tight text-white xl:text-6xl">
+            Mais tempo para <span className="text-teal-300">cuidar.</span><br />
+            Menos tempo com burocracia.
+          </h1>
+          <p className="mt-6 max-w-lg text-lg leading-relaxed text-slate-200">
+            Organize sua prática musicoterapêutica em um só lugar, do primeiro acolhimento ao acompanhamento da evolução.
+          </p>
+          <div className="mt-9 grid max-w-lg grid-cols-2 gap-3">
+            {[
+              { icon: ClipboardList, title: "Anamnese e avaliação", text: "Registros clínicos estruturados" },
+              { icon: ChartNoAxesCombined, title: "Evolução e relatórios", text: "Acompanhe cada conquista" },
+              { icon: CalendarDays, title: "Agenda e atendimentos", text: "Rotina mais organizada" },
+              { icon: ShieldCheck, title: "Gestão profissional", text: "Informações em seu espaço de trabalho" },
+            ].map(({ icon: Icon, title, text }) => (
+              <div key={title} className="rounded-2xl border border-white/15 bg-white/[0.06] p-4 backdrop-blur-sm">
+                <Icon className="mb-3 h-5 w-5 text-teal-300" aria-hidden="true" />
+                <h2 className="text-sm font-semibold text-white">{title}</h2>
+                <p className="mt-1 text-xs leading-relaxed text-slate-300">{text}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-8 text-sm text-slate-300">MuseTera · Anamnese, avaliação, plano terapêutico, intervenção e relatórios.</p>
+        </section>
+        <section className="mx-auto w-full max-w-[520px]" aria-label="Acesso à plataforma MuseTera">
+          <div className="mb-5 text-center lg:hidden">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-300">Gestão em musicoterapia</p>
+            <h1 className="mt-2 text-2xl font-bold text-white">Sua prática clínica, mais organizada.</h1>
+            <p className="mt-2 text-sm text-slate-200">Anamnese, avaliação, evolução e relatórios em um só lugar.</p>
+          </div>
+          {renderForm()}
+          <p className="mt-6 text-center text-xs text-slate-300">MuseTera · Gestão para musicoterapeutas</p>
+        </section>
       </div>
-    </div>
+    </main>
   );
 }
