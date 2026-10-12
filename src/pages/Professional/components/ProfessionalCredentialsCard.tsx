@@ -31,9 +31,9 @@ export function ProfessionalCredentialsCard({
 
   return (
     <Card className="group overflow-hidden rounded-2xl border border-white/10 bg-card/70 backdrop-blur-xl shadow-lg hover:shadow-2xl hover:shadow-amber-500/10 hover:-translate-y-1 transition-all duration-300">
-      <CardHeader className="pb-4 bg-gradient-to-r from-amber-500/10 via-purple-500/5 to-transparent border-b border-white/10">
+      <CardHeader className="pb-4 bg-gradient-to-r from-teal500/10 via-teal500/5 to-transparent border-b border-white/10">
         <CardTitle className="flex items-center gap-3 text-lg">
-          <span className="flex items-center justify-center h-9 w-9 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-300 ring-1 ring-amber-400/30">
+          <span className="flex items-center justify-center h-9 w-9 rounded-xl bg-teal500/15 text-teal600 dark:text-teal300 ring-1 ring-teal400/30">
             <Award className="h-5 w-5" />
           </span>
           Credenciais Profissionais
@@ -51,7 +51,7 @@ export function ProfessionalCredentialsCard({
             value={formData.specialty}
             onChange={(e) => setFormData({ ...formData, specialty: e.target.value })}
             disabled={!isEditing}
-            className={isEditing ? "border-purple-200 focus:border-purple-500 dark:border-purple-800 dark:focus:border-purple-400" : "bg-muted"}
+            className={isEditing ? "border-teal200 focus:border-teal500 dark:border-teal800 dark:focus:border-teal400" : "bg-muted"}
             placeholder="Ex: Musicoterapia Neurológica"
           />
         </div>
@@ -67,7 +67,7 @@ export function ProfessionalCredentialsCard({
             value={formData.association}
             onValueChange={(value) => setFormData({ ...formData, association: value })}
           >
-            <SelectTrigger className={isEditing ? "border-purple-200 focus:border-purple-500 dark:border-purple-800 dark:focus:border-purple-400" : "bg-muted"}>
+            <SelectTrigger className={isEditing ? "border-teal200 focus:border-teal500 dark:border-teal800 dark:focus:border-teal400" : "bg-muted"}>
               <SelectValue placeholder="Selecione uma associação" />
             </SelectTrigger>
             <SelectContent className="max-h-60">
@@ -89,7 +89,7 @@ export function ProfessionalCredentialsCard({
               value={formData.register}
               onChange={(e) => setFormData({ ...formData, register: e.target.value })}
               disabled={!isEditing}
-              className={isEditing ? "border-purple-200 focus:border-purple-500 dark:border-purple-800 dark:focus:border-purple-400" : "bg-muted"}
+              className={isEditing ? "border-teal200 focus:border-teal500 dark:border-teal800 dark:focus:border-teal400" : "bg-muted"}
               placeholder="Informe seu número de registro"
             />
           </div>

@@ -257,11 +257,11 @@ export default function ActivitiesPage() {
             <div className="flex items-center justify-center lg:justify-end">
               <div className="relative">
                 {/* Efeito de brilho de fundo */}
-                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-xl blur opacity-30 animate-pulse"></div>
+                <div className="absolute -inset-1 bg-gradient-to-r from-teal-700 via-teal-600 to-emerald-700 rounded-xl blur opacity-30 animate-pulse"></div>
                 
-                <div className="relative flex items-center space-x-2 sm:space-x-3 bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 p-4 sm:p-5 rounded-xl border-2 border-blue-200/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+                <div className="relative flex items-center space-x-2 sm:space-x-3 bg-gradient-to-r from-teal-50 via-emerald-50 to-teal-50 p-4 sm:p-5 rounded-xl border-2 border-blue-200/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
                   <div className="relative">
-                    <Brain className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 flex-shrink-0 animate-pulse" />
+                    <Brain className="h-5 w-5 sm:h-6 sm:w-6 text-teal-700 flex-shrink-0 animate-pulse" />
                     <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-ping"></div>
                   </div>
                   
@@ -270,7 +270,7 @@ export default function ActivitiesPage() {
                       <Label htmlFor="tea-mode" className="font-bold text-sm sm:text-base text-blue-800 cursor-pointer">
                         Modo TEA
                       </Label>
-                      <p className="text-xs text-blue-600/80 hidden sm:block">
+                      <p className="text-xs text-teal-700/80 hidden sm:block">
                         Atividades especializadas
                       </p>
                     </div>

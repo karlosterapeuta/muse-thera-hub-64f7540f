@@ -339,7 +339,7 @@ export default function Evaluation() {
       title: "Domínio Musical",
       description: "Avaliação das habilidades e respostas musicais do paciente",
       icon: "🎵",
-      color: "from-purple-500 to-pink-500",
+      color: "from-teal-700 to-emerald-700",
       subdomains: [
         {
           title: "Percepção Musical",
@@ -389,7 +389,7 @@ export default function Evaluation() {
       title: "Domínio Psicossocial",
       description: "Avaliação dos aspectos psicológicos, emocionais e sociais",
       icon: "👥",
-      color: "from-blue-500 to-cyan-500",
+      color: "from-teal-700 to-teal-800",
       subdomains: [
         {
           title: "Interação Social",
@@ -489,7 +489,7 @@ export default function Evaluation() {
       title: "Domínio Sensório-Motor",
       description: "Avaliação da integração sensorial e capacidades motoras",
       icon: "👐",
-      color: "from-orange-500 to-red-500",
+      color: "from-teal-600 to-teal-800",
       subdomains: [
         {
           title: "Coordenação Motora",
@@ -539,7 +539,7 @@ export default function Evaluation() {
       title: "Domínio Comunicativo-Interativo",
       description: "Avaliação das habilidades de comunicação e interação através da música",
       icon: "🗣️",
-      color: "from-indigo-500 to-purple-500",
+      color: "from-emerald-700 to-teal-800",
       subdomains: [
         {
           title: "Comunicação Verbal",
@@ -1971,13 +1971,13 @@ export default function Evaluation() {
                     
                     {domain.subdomains.map((subdomain, subdomainIndex) => {
                       const domainColorMap: Record<string, { border: string; bg: string; headerBg: string; text: string; badgeBg: string; badgeText: string; badgeBorder: string; infoBg: string; infoText: string }> = {
-                        "from-purple-500 to-pink-500": { border: "border-l-pink-500", bg: "bg-gradient-to-r from-pink-50 via-purple-50 to-fuchsia-50 dark:from-pink-950/30 dark:via-purple-950/30 dark:to-fuchsia-950/30", headerBg: "bg-gradient-to-r from-purple-600 to-pink-600", text: "text-purple-800 dark:text-purple-200", badgeBg: "bg-pink-100 dark:bg-pink-900/40", badgeText: "text-pink-700 dark:text-pink-300", badgeBorder: "border-pink-300 dark:border-pink-700", infoBg: "hover:bg-pink-100 dark:hover:bg-pink-900/30", infoText: "text-pink-600 dark:text-pink-400" },
-                        "from-blue-500 to-cyan-500": { border: "border-l-cyan-500", bg: "bg-gradient-to-r from-blue-50 via-cyan-50 to-sky-50 dark:from-blue-950/30 dark:via-cyan-950/30 dark:to-sky-950/30", headerBg: "bg-gradient-to-r from-blue-600 to-cyan-600", text: "text-blue-800 dark:text-blue-200", badgeBg: "bg-cyan-100 dark:bg-cyan-900/40", badgeText: "text-cyan-700 dark:text-cyan-300", badgeBorder: "border-cyan-300 dark:border-cyan-700", infoBg: "hover:bg-cyan-100 dark:hover:bg-cyan-900/30", infoText: "text-cyan-600 dark:text-cyan-400" },
+                        "from-teal-700 to-emerald-700": { border: "border-l-pink-500", bg: "bg-gradient-to-r from-pink-50 via-purple-50 to-fuchsia-50 dark:from-pink-950/30 dark:via-purple-950/30 dark:to-fuchsia-950/30", headerBg: "bg-gradient-to-r from-purple-600 to-pink-600", text: "text-purple-800 dark:text-purple-200", badgeBg: "bg-pink-100 dark:bg-pink-900/40", badgeText: "text-pink-700 dark:text-pink-300", badgeBorder: "border-pink-300 dark:border-pink-700", infoBg: "hover:bg-pink-100 dark:hover:bg-pink-900/30", infoText: "text-pink-600 dark:text-pink-400" },
+                        "from-teal-700 to-teal-800": { border: "border-l-cyan-500", bg: "bg-gradient-to-r from-blue-50 via-cyan-50 to-sky-50 dark:from-blue-950/30 dark:via-cyan-950/30 dark:to-sky-950/30", headerBg: "bg-gradient-to-r from-blue-600 to-cyan-600", text: "text-blue-800 dark:text-blue-200", badgeBg: "bg-cyan-100 dark:bg-cyan-900/40", badgeText: "text-cyan-700 dark:text-cyan-300", badgeBorder: "border-cyan-300 dark:border-cyan-700", infoBg: "hover:bg-cyan-100 dark:hover:bg-cyan-900/30", infoText: "text-cyan-600 dark:text-cyan-400" },
                         "from-emerald-500 to-teal-500": { border: "border-l-teal-500", bg: "bg-gradient-to-r from-emerald-50 via-teal-50 to-green-50 dark:from-emerald-950/30 dark:via-teal-950/30 dark:to-green-950/30", headerBg: "bg-gradient-to-r from-emerald-600 to-teal-600", text: "text-emerald-800 dark:text-emerald-200", badgeBg: "bg-teal-100 dark:bg-teal-900/40", badgeText: "text-teal-700 dark:text-teal-300", badgeBorder: "border-teal-300 dark:border-teal-700", infoBg: "hover:bg-teal-100 dark:hover:bg-teal-900/30", infoText: "text-teal-600 dark:text-teal-400" },
-                        "from-orange-500 to-red-500": { border: "border-l-orange-500", bg: "bg-gradient-to-r from-orange-50 via-amber-50 to-yellow-50 dark:from-orange-950/30 dark:via-amber-950/30 dark:to-yellow-950/30", headerBg: "bg-gradient-to-r from-orange-600 to-red-600", text: "text-orange-800 dark:text-orange-200", badgeBg: "bg-orange-100 dark:bg-orange-900/40", badgeText: "text-orange-700 dark:text-orange-300", badgeBorder: "border-orange-300 dark:border-orange-700", infoBg: "hover:bg-orange-100 dark:hover:bg-orange-900/30", infoText: "text-orange-600 dark:text-orange-400" },
-                        "from-indigo-500 to-purple-500": { border: "border-l-indigo-500", bg: "bg-gradient-to-r from-indigo-50 via-violet-50 to-purple-50 dark:from-indigo-950/30 dark:via-violet-950/30 dark:to-purple-950/30", headerBg: "bg-gradient-to-r from-indigo-600 to-purple-600", text: "text-indigo-800 dark:text-indigo-200", badgeBg: "bg-indigo-100 dark:bg-indigo-900/40", badgeText: "text-indigo-700 dark:text-indigo-300", badgeBorder: "border-indigo-300 dark:border-indigo-700", infoBg: "hover:bg-indigo-100 dark:hover:bg-indigo-900/30", infoText: "text-indigo-600 dark:text-indigo-400" },
+                        "from-teal-600 to-teal-800": { border: "border-l-orange-500", bg: "bg-gradient-to-r from-orange-50 via-amber-50 to-yellow-50 dark:from-orange-950/30 dark:via-amber-950/30 dark:to-yellow-950/30", headerBg: "bg-gradient-to-r from-orange-600 to-red-600", text: "text-orange-800 dark:text-orange-200", badgeBg: "bg-orange-100 dark:bg-orange-900/40", badgeText: "text-orange-700 dark:text-orange-300", badgeBorder: "border-orange-300 dark:border-orange-700", infoBg: "hover:bg-orange-100 dark:hover:bg-orange-900/30", infoText: "text-orange-600 dark:text-orange-400" },
+                        "from-emerald-700 to-teal-800": { border: "border-l-indigo-500", bg: "bg-gradient-to-r from-indigo-50 via-violet-50 to-purple-50 dark:from-indigo-950/30 dark:via-violet-950/30 dark:to-purple-950/30", headerBg: "bg-gradient-to-r from-indigo-600 to-purple-600", text: "text-indigo-800 dark:text-indigo-200", badgeBg: "bg-indigo-100 dark:bg-indigo-900/40", badgeText: "text-indigo-700 dark:text-indigo-300", badgeBorder: "border-indigo-300 dark:border-indigo-700", infoBg: "hover:bg-indigo-100 dark:hover:bg-indigo-900/30", infoText: "text-indigo-600 dark:text-indigo-400" },
                       };
-                      const colors = domainColorMap[domain.color] || domainColorMap["from-purple-500 to-pink-500"];
+                      const colors = domainColorMap[domain.color] || domainColorMap["from-teal-700 to-emerald-700"];
                       
                       return (
                       <div key={subdomainIndex} className="mb-8 last:mb-0">

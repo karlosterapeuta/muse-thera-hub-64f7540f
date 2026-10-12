@@ -207,7 +207,7 @@ export default function BackupPage() {
                 </div>
               </div>
               <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                <Clock className="h-5 w-5 text-blue-500 mt-0.5" />
+                <Clock className="h-5 w-5 text-teal-700 dark:text-teal-300 mt-0.5" />
                 <div>
                   <p className="font-medium text-sm">Recomendação</p>
                   <p className="text-xs text-muted-foreground">
@@ -225,7 +225,7 @@ export default function BackupPage() {
                 </div>
               </div>
               <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                <Server className="h-5 w-5 text-purple-500 mt-0.5" />
+                <Server className="h-5 w-5 text-teal-700 dark:text-teal-300 mt-0.5" />
                 <div>
                   <p className="font-medium text-sm">Migração VPS</p>
                   <p className="text-xs text-muted-foreground">

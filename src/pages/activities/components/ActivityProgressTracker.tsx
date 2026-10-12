@@ -127,7 +127,7 @@ export const ActivityProgressTracker: React.FC<ActivityProgressTrackerProps> = (
       case 'not_started':
         return 'text-gray-500';
       case 'in_progress':
-        return 'text-blue-500';
+        return 'text-teal-700 dark:text-teal-300';
       case 'completed':
         return 'text-green-500';
       case 'paused':
@@ -177,7 +177,7 @@ export const ActivityProgressTracker: React.FC<ActivityProgressTrackerProps> = (
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
-                <Play className="h-4 w-4 text-blue-600" />
+                <Play className="h-4 w-4 text-teal-700 dark:text-teal-300" />
               </div>
               <div>
                 <p className="text-2xl font-bold">{categories.inProgress.length}</p>
@@ -219,7 +219,7 @@ export const ActivityProgressTracker: React.FC<ActivityProgressTrackerProps> = (
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
-                <Clock className="h-4 w-4 text-purple-600" />
+                <Clock className="h-4 w-4 text-teal-700 dark:text-teal-300" />
               </div>
               <div>
                 <p className="text-2xl font-bold">
@@ -478,7 +478,7 @@ export const ActivityProgressTracker: React.FC<ActivityProgressTrackerProps> = (
                 </Card>
                 <Card>
                   <CardContent className="p-4 text-center">
-                    <div className="text-2xl font-bold text-blue-600">
+                    <div className="text-2xl font-bold text-teal-700 dark:text-teal-300">
                       {formatTime(selectedActivityData.totalTimeSpent)}
                     </div>
                     <p className="text-sm text-muted-foreground">Tempo Gasto</p>

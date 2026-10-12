@@ -10,10 +10,10 @@ interface PlanStatsHeaderProps {
 }
 
 const stats = [
-  { key: "total", label: "Total", icon: ClipboardList, gradient: "from-blue-500 to-indigo-600", text: "text-blue-600 dark:text-blue-400" },
+  { key: "total", label: "Total", icon: ClipboardList, gradient: "from-teal-700 to-teal-800", text: "text-teal-700 dark:text-teal-300" },
   { key: "active", label: "Ativos", icon: CheckCircle2, gradient: "from-emerald-500 to-green-600", text: "text-emerald-600 dark:text-emerald-400" },
-  { key: "draft", label: "Rascunhos", icon: FileEdit, gradient: "from-amber-500 to-orange-500", text: "text-amber-600 dark:text-amber-400" },
-  { key: "completed", label: "Concluídos", icon: Archive, gradient: "from-violet-500 to-purple-600", text: "text-violet-600 dark:text-violet-400" },
+  { key: "draft", label: "Rascunhos", icon: FileEdit, gradient: "from-teal-600 to-emerald-700", text: "text-teal-700 dark:text-teal-300" },
+  { key: "completed", label: "Concluídos", icon: Archive, gradient: "from-teal-700 to-emerald-700", text: "text-teal-700 dark:text-teal-300" },
 ];
 
 export function PlanStatsHeader(props: PlanStatsHeaderProps) {

@@ -44,7 +44,7 @@ const games: GameItem[] = [
     description: "Toque músicas com sinos coloridos e partitura visual guiada.",
     to: "/musical-bells",
     icon: Bell,
-    gradient: "from-rose-500 to-orange-500",
+    gradient: "from-teal-700 to-teal-800",
     category: "Instrumentos",
     tags: ["TEA", "Cores"],
   },
@@ -53,7 +53,7 @@ const games: GameItem[] = [
     description: "Melodias 100% sincronizadas visual-auditivas validadas para TEA.",
     to: "/tea-hero",
     icon: Sparkles,
-    gradient: "from-violet-500 to-purple-600",
+    gradient: "from-emerald-700 to-teal-700",
     category: "Ritmo & Melodia",
     tags: ["TEA", "Sincronia"],
   },
@@ -62,7 +62,7 @@ const games: GameItem[] = [
     description: "Sequências rítmicas no xilofone com feedback visual e sonoro.",
     to: "/xylophone-hero",
     icon: Piano,
-    gradient: "from-sky-500 to-blue-600",
+    gradient: "from-teal-600 to-emerald-700",
     category: "Ritmo & Melodia",
     tags: ["Ritmo"],
   },
@@ -71,7 +71,7 @@ const games: GameItem[] = [
     description: "Toque tubos coloridos no ritmo certo e crie melodias divertidas.",
     to: "/boomwhacker-hero",
     icon: Gamepad2,
-    gradient: "from-fuchsia-500 to-pink-600",
+    gradient: "from-teal-700 to-teal-800",
     category: "Ritmo & Melodia",
     tags: ["Cores", "Ritmo"],
   },
@@ -80,7 +80,7 @@ const games: GameItem[] = [
     description: "Clique nos bichinhos para descobrir instrumentos da orquestra.",
     to: "/orquestra-animal",
     icon: Music2,
-    gradient: "from-orange-500 to-pink-600",
+    gradient: "from-emerald-700 to-teal-700",
     category: "Estimulação",
     tags: ["Infantil", "Descoberta"],
   },
@@ -89,7 +89,7 @@ const games: GameItem[] = [
     description: "Música, ritmo e diversão com dinossauros — com modo calmo.",
     to: "/dino-ritmos",
     icon: Music4,
-    gradient: "from-purple-500 to-pink-500",
+    gradient: "from-teal-600 to-emerald-700",
     category: "Estimulação",
     tags: ["Infantil", "Modo Calmo"],
   },
@@ -98,7 +98,7 @@ const games: GameItem[] = [
     description: "Visualize a estrutura musical em tempo real para escuta ativa.",
     to: "/musicogram",
     icon: Volume2,
-    gradient: "from-teal-500 to-cyan-600",
+    gradient: "from-teal-700 to-teal-800",
     category: "Estimulação",
     tags: ["Escuta"],
   },
@@ -116,7 +116,7 @@ const games: GameItem[] = [
     description: "Crie e edite suas próprias melodias de forma livre e intuitiva.",
     to: "/music-composer",
     icon: Music2,
-    gradient: "from-indigo-500 to-violet-600",
+    gradient: "from-emerald-700 to-teal-700",
     category: "Criação",
     tags: ["Criação"],
   },
@@ -125,7 +125,7 @@ const games: GameItem[] = [
     description: "Biblioteca de canções com partituras e recursos para sessões.",
     to: "/songs",
     icon: Headphones,
-    gradient: "from-blue-500 to-indigo-600",
+    gradient: "from-teal-600 to-emerald-700",
     category: "Criação",
     tags: ["Repertório"],
   },
@@ -134,7 +134,7 @@ const games: GameItem[] = [
     description: "Crie batidas arrastando personagens — criatividade musical livre.",
     to: "/sprunki",
     icon: PaintBucket,
-    gradient: "from-cyan-500 to-sky-600",
+    gradient: "from-teal-700 to-teal-800",
     category: "Criação",
     tags: ["Criação"],
   },
@@ -143,7 +143,7 @@ const games: GameItem[] = [
     description: "Experimentos musicais interativos para explorar sons e ritmos.",
     to: "/chrome-music-lab",
     icon: Guitar,
-    gradient: "from-yellow-500 to-amber-600",
+    gradient: "from-emerald-700 to-teal-700",
     category: "Criação",
     tags: ["Experimentos"],
   },
@@ -269,8 +269,8 @@ const Resources = () => {
       {/* Decorative orbs */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
-        <div className="absolute top-10 right-0 h-80 w-80 rounded-full bg-purple-500/10 blur-3xl" />
-        <div className="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-pink-500/10 blur-3xl" />
+        <div className="absolute top-10 right-0 h-80 w-80 rounded-full bg-teal-500/10 blur-3xl" />
+        <div className="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-emerald-500/10 blur-3xl" />
       </div>
 
       <div className="relative px-4 sm:px-6 py-6 max-w-6xl mx-auto">

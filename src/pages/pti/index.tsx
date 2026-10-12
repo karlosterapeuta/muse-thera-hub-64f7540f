@@ -86,11 +86,11 @@ export default function PtiList() {
   };
 
   const statCards = [
-    { label: "Total de planos", value: stats.total, icon: ClipboardList, color: "text-blue-500" },
+    { label: "Total de planos", value: stats.total, icon: ClipboardList, color: "text-teal-700 dark:text-teal-300" },
     { label: "Planos ativos", value: stats.ativos, icon: Activity, color: "text-emerald-500" },
     { label: "Em reavaliação", value: stats.reavaliacao, icon: TrendingUp, color: "text-amber-500" },
-    { label: "Objetivos", value: stats.objetivos, icon: Target, color: "text-violet-500" },
-    { label: "Metas", value: stats.metas, icon: CheckCircle2, color: "text-rose-500" },
+    { label: "Objetivos", value: stats.objetivos, icon: Target, color: "text-teal-700 dark:text-teal-300" },
+    { label: "Metas", value: stats.metas, icon: CheckCircle2, color: "text-teal-700 dark:text-teal-300" },
   ];
 
   return (

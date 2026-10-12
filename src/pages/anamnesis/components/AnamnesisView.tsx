@@ -551,7 +551,7 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
       {renderTextSection(
         "Detalhes Musicais do Paciente",
         Music,
-        "from-violet-500 to-fuchsia-500",
+        "from-teal-700 to-emerald-700",
         [
           { key: 'instruments_played', label: 'Instrumento(s) que toca/tocou' },
           { key: 'music_practice_time', label: 'Tempo de Prática Musical' }
@@ -660,7 +660,7 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
       {renderBooleanSection(
         "Desenvolvimento da Linguagem",
         MessageCircle,
-        "from-amber-500 to-yellow-500",
+        "from-teal-600 to-emerald-700",
         ['babbling', 'simple_phrases', 'echolalia', 'first_words', 'nonverbal_communication', 'verbal_language_absence'],
         {
           babbling: 'Balbucio',

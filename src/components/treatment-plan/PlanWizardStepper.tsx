@@ -39,7 +39,7 @@ export function PlanWizardStepper({
       {/* Progress bar */}
       <div className="h-2 w-full rounded-full bg-muted/60 overflow-hidden">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-primary to-amber-500 transition-all duration-500 ease-out"
+          className="h-full rounded-full bg-gradient-to-r from-teal-700 to-teal-800 transition-all duration-500 ease-out"
           style={{ width: `${completion}%` }}
         />
       </div>
@@ -60,7 +60,7 @@ export function PlanWizardStepper({
               className={cn(
                 'group flex shrink-0 items-center gap-2 rounded-xl border px-2.5 py-2 text-xs font-medium transition-all',
                 isActive
-                  ? 'border-transparent bg-gradient-to-br from-primary to-amber-500 text-white shadow-md'
+                  ? 'border-transparent bg-gradient-to-br from-teal-700 to-teal-800 text-white shadow-md'
                   : complete
                     ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/15'
                     : 'border-border/60 bg-background/40 text-muted-foreground hover:bg-muted/60',

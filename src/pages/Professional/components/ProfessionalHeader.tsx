@@ -33,21 +33,21 @@ export function ProfessionalHeader({
   };
 
   return (
-    <Card className="relative overflow-hidden border border-amber-300/20 bg-gradient-to-br from-[#0A0F2C] via-[#141B45] to-[#1A1545] text-white shadow-2xl rounded-3xl">
+    <Card className="relative overflow-hidden border border-teal-300/20 bg-gradient-to-br from-[#0F302F] via-[#164845] to-[#155E58] text-white shadow-2xl rounded-3xl">
       {/* Decorative glows */}
-      <div className="absolute -top-24 -right-16 h-64 w-64 rounded-full bg-amber-400/20 blur-3xl" />
-      <div className="absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-indigo-500/25 blur-3xl" />
+      <div className="absolute -top-24 -right-16 h-64 w-64 rounded-full bg-teal-400/20 blur-3xl" />
+      <div className="absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-emerald-500/20 blur-3xl" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,215,140,0.12),transparent_55%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(120,100,220,0.18),transparent_60%)]" />
 
       <div className="relative p-8 md:p-10">
         <div className="flex flex-col md:flex-row items-center gap-8">
           <div className="relative group">
-            <div className="absolute -inset-2 rounded-full bg-gradient-to-tr from-amber-300/50 via-amber-200/20 to-transparent blur-md opacity-70" />
+            <div className="absolute -inset-2 rounded-full bg-gradient-to-tr from-teal-300/50 via-teal-200/20 to-transparent blur-md opacity-70" />
             <div className="relative">
-              <Avatar className="h-32 w-32 border-4 border-amber-200/40 shadow-2xl ring-4 ring-white/10">
+              <Avatar className="h-32 w-32 border-4 border-teal-200/40 shadow-2xl ring-4 ring-white/10">
                 <AvatarImage src={avatarUrl || ""} alt="Foto do Profissional" />
-                <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-2xl font-bold">
+                <AvatarFallback className="bg-gradient-to-br from-teal-600 to-teal-800 text-white text-2xl font-bold">
                   {getInitials()}
                 </AvatarFallback>
               </Avatar>
@@ -84,13 +84,13 @@ export function ProfessionalHeader({
 
           <div className="flex-1 text-center md:text-left space-y-4">
             <div>
-              <div className="inline-flex items-center gap-2 mb-3 rounded-full bg-amber-300/15 px-3 py-1 backdrop-blur-sm ring-1 ring-amber-200/30">
-                <Star className="h-4 w-4 text-amber-300 fill-amber-300" />
-                <span className="text-xs font-semibold uppercase tracking-wider text-amber-100">
+              <div className="inline-flex items-center gap-2 mb-3 rounded-full bg-teal-300/15 px-3 py-1 backdrop-blur-sm ring-1 ring-teal-200/30">
+                <Star className="h-4 w-4 text-teal-200 fill-amber-300" />
+                <span className="text-xs font-semibold uppercase tracking-wider text-teal-50">
                   Musicoterapeuta Profissional
                 </span>
               </div>
-              <h1 className="text-3xl md:text-4xl font-bold mb-1 tracking-tight bg-gradient-to-r from-white via-amber-50 to-amber-200/90 bg-clip-text text-transparent">
+              <h1 className="text-3xl md:text-4xl font-bold mb-1 tracking-tight bg-gradient-to-r from-white via-teal-50 to-teal-100/90 bg-clip-text text-transparent">
                 {name || "Nome do Profissional"}
               </h1>
               <p className="text-base md:text-lg text-white/75">
@@ -107,7 +107,7 @@ export function ProfessionalHeader({
               <Badge variant="secondary" className="bg-emerald-400/20 text-emerald-50 border-emerald-200/30 hover:bg-emerald-400/30 backdrop-blur-sm">
                 ✓ Verificado
               </Badge>
-              <Badge variant="secondary" className="bg-amber-300/15 text-amber-100 border-amber-200/30 hover:bg-amber-300/25 backdrop-blur-sm">
+              <Badge variant="secondary" className="bg-teal-300/15 text-teal-50 border-teal-200/30 hover:bg-teal-300/25 backdrop-blur-sm">
                 Ativo
               </Badge>
             </div>
