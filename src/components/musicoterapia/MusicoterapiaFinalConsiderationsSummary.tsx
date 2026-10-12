@@ -12,9 +12,9 @@ export function MusicoterapiaFinalConsiderationsSummary({
   if (!summary.paragraphs.length) return null;
 
   return (
-    <Card className="border border-[#c9a84c]/25">
+    <Card className="border border-teal-600/25">
       <CardHeader>
-        <CardTitle className="text-base text-[#c9a84c]">
+        <CardTitle className="text-base text-teal-700 dark:text-teal-300">
           Considerações Finais
         </CardTitle>
       </CardHeader>
