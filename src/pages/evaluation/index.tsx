@@ -215,45 +215,17 @@ export default function Evaluation() {
     loadAllEvaluations();
   }, [loadAllEvaluations]);
 
-  // Auto-carregar a avaliação mais recente do TIPO selecionado quando paciente é selecionado.
-  // Cada período (Inicial/Progresso/Periódica/Final) é tratado de forma separada e exclusiva.
-  const [skipAutoLoad, setSkipAutoLoad] = useState(draftLoaded);
-  useEffect(() => {
-    // Não auto-carregar se está editando, carregando, ou se acabou de restaurar draft
-    if (editingEvaluationId || isLoadingEvaluations) {
-      return;
-    }
-    if (skipAutoLoad) {
-      setSkipAutoLoad(false);
-      return;
-    }
+  // Sessões novas começam em branco. Uma avaliação anterior só é aberta
+  // explicitamente por "Carregar" ou "Editar", evitando reutilizar respostas.
+  const startNewEvaluation = () => {
+    setEditingEvaluationId(null);
+    setSelections({});
+    setObservations({});
+    setEvaluationDate(new Date());
+    toast.info("Nova sessão iniciada. O histórico existente foi preservado.");
+  };
 
-    // Filtra apenas avaliações do tipo (período) atualmente selecionado
-    const sameType = savedEvaluations.filter(
-      (e) => (e.content?.evaluationType || e.type) === selectedEvaluation
-        || getEvaluationTypeMeta(e.type).value === selectedEvaluation
-    );
 
-    if (sameType.length > 0) {
-      // Carregar a avaliação mais recente DESTE tipo (já ordenada por data desc)
-      const mostRecentEvaluation = sameType[0];
-
-      if (mostRecentEvaluation && mostRecentEvaluation.content) {
-        setSelections(mostRecentEvaluation.content.selections || {});
-        setObservations(mostRecentEvaluation.content.observations || {});
-        setEvaluationDate(new Date(mostRecentEvaluation.date));
-
-        toast.info(
-          `${getEvaluationTypeMeta(selectedEvaluation).label} de ${format(new Date(mostRecentEvaluation.date), 'dd/MM/yyyy')} carregada`
-        );
-      }
-    } else if (selectedPatient) {
-      // Sem avaliação salva deste período: começar em branco (exclusivo do tipo)
-      setSelections({});
-      setObservations({});
-      setEvaluationDate(new Date());
-    }
-  }, [savedEvaluations, selectedPatient, selectedEvaluation, isLoadingEvaluations, editingEvaluationId]);
 
 
   // Agrupar avaliações por paciente (apenas pacientes COM avaliações salvas)
@@ -698,15 +670,9 @@ export default function Evaluation() {
 
     let success;
 
-    // Avaliação já existente DESTE tipo para o paciente (cada período é exclusivo).
-    // Evita criar registros duplicados a cada clique em "Salvar".
-    const existingOfType = savedEvaluations.find(
-      (e) =>
-        (e.content?.evaluationType || e.type) === selectedEvaluation ||
-        getEvaluationTypeMeta(e.type).value === selectedEvaluation
-    );
-
-    const targetId = editingEvaluationId || existingOfType?.id || null;
+    // Somente o botão explícito "Editar" permite UPDATE.
+    // Avaliações novas sempre criam uma linha independente no histórico.
+    const targetId = editingEvaluationId;
 
     if (targetId) {
       // Atualizar avaliação existente (em edição ou do mesmo período)
@@ -720,7 +686,7 @@ export default function Evaluation() {
         overallScore
       );
       if (success) {
-        setEditingEvaluationId(null);
+        startNewEvaluation();
       }
     } else {
       // Criar nova avaliação
@@ -732,6 +698,7 @@ export default function Evaluation() {
         domainScoresData,
         overallScore
       );
+      if (success) startNewEvaluation();
     }
   };
 
@@ -743,7 +710,8 @@ export default function Evaluation() {
       if (evaluation.content.evaluationType) {
         setSelectedEvaluation(evaluation.content.evaluationType);
       }
-      toast.success("Avaliação carregada com sucesso!");
+      setEditingEvaluationId(evaluation.id);
+      toast.success("Avaliação aberta para edição. Use Nova sessão para registrar outro atendimento.");
     }
   };
 
@@ -1708,6 +1676,9 @@ export default function Evaluation() {
                 </div>
               </div>
 
+              <Button type="button" variant="outline" onClick={startNewEvaluation} disabled={!selectedPatient || isSaving} className="w-full sm:w-auto border-teal-700 text-teal-800 dark:text-teal-200">
+                Nova sessão (preservar histórico)
+              </Button>
               <TooltipProvider>
                 <TooltipComponent>
                   <TooltipTrigger asChild>
