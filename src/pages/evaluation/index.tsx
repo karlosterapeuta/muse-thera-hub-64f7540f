@@ -2016,11 +2016,26 @@ export default function Evaluation() {
                                 { value: "excepcional", label: "Excep.", score: 5, bg: "bg-green-50 dark:bg-green-950", bgSelected: "bg-green-800 text-white", border: "border-green-200 dark:border-green-800" },
                               ];
                               return (
-                                <div key={paramIndex} className="rounded-xl border bg-card p-4 shadow-sm">
-                                  <p className="text-base font-semibold leading-snug text-foreground mb-2">{presentationParameterLabel(parameter)}</p>
-                                  <div className="mb-3 rounded-lg border border-teal-300/70 bg-teal-50 px-3 py-3 text-sm leading-relaxed text-teal-950 dark:border-teal-800 dark:bg-teal-950/30 dark:text-teal-100">
-                                    <span className="font-semibold">Tarefa observável: </span>
-                                    {EVALUATION_ACTIVITY_PROTOCOLS[subdomain.title]?.prompts[paramIndex] || "Observar este indicador durante tarefa musical pertinente e registrar a resposta."}
+                                <div key={paramIndex} className={`min-w-0 rounded-2xl border p-3 shadow-sm transition-colors sm:p-4 ${currentSelection ? "border-teal-400 bg-teal-50/40 dark:border-teal-700 dark:bg-teal-950/20" : "border-border bg-card"}`}>
+                                  <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
+                                    <div className="min-w-0 flex-1">
+                                      <p className="mb-1 text-xs font-bold uppercase tracking-wide text-teal-800 dark:text-teal-200">Indicador {paramIndex + 1}</p>
+                                      <h4 className="break-words text-base font-bold leading-snug text-foreground sm:text-lg">{presentationParameterLabel(parameter)}</h4>
+                                    </div>
+                                    {currentSelection && (
+                                      <span className="shrink-0 rounded-full border border-teal-300 bg-teal-100 px-2.5 py-1 text-xs font-bold text-teal-950 dark:border-teal-700 dark:bg-teal-900 dark:text-teal-50">
+                                        Pontuado
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="mb-4 min-w-0 rounded-r-xl rounded-l-sm border border-teal-200 border-l-4 border-l-teal-700 bg-[#F0FDFA] p-3 shadow-sm sm:p-4 dark:border-teal-800 dark:border-l-teal-400 dark:bg-teal-950/50">
+                                    <div className="mb-2 flex items-center gap-2 text-xs font-extrabold uppercase tracking-wide text-[#115E59] dark:text-teal-200">
+                                      <ClipboardList className="h-4 w-4 shrink-0" aria-hidden="true" />
+                                      Atividade proposta · tarefa observável
+                                    </div>
+                                    <p className="break-words text-[17px] font-semibold leading-relaxed text-[#134E4A] dark:text-teal-50">
+                                      {EVALUATION_ACTIVITY_PROTOCOLS[subdomain.title]?.prompts[paramIndex] || "Observar este indicador durante tarefa musical pertinente e registrar a resposta."}
+                                    </p>
                                   </div>
                                   {TEA_CLINICAL_REVIEWS[parameter] && (
                                     <div className="mb-3 rounded-lg border border-teal-300 bg-card px-3 py-3 text-sm leading-relaxed text-foreground dark:border-teal-700">
@@ -2028,7 +2043,8 @@ export default function Evaluation() {
                                       <p className="mt-1">{TEA_CLINICAL_REVIEWS[parameter].guidance}</p>
                                     </div>
                                   )}
-                                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                                  <p className="mb-2 text-sm font-semibold text-foreground">Nível observado</p>
+                                  <div className="grid grid-cols-2 min-[380px]:grid-cols-3 sm:grid-cols-6 gap-2" role="group" aria-label={`Pontuação do indicador: ${presentationParameterLabel(parameter)}`}>
                                     {levels.map((lvl) => {
                                       const isSelected = currentSelection === lvl.value;
                                       return (
