@@ -1,3 +1,4 @@
+import { compareMatchedAssessments } from "@/utils/evaluationLongitudinal";
 import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -139,6 +140,10 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
     });
   }, [selectedEvaluations]);
 
+  const matchedComparison = selectedEvaluations.length >= 2
+    ? compareMatchedAssessments(selectedEvaluations[0], selectedEvaluations[selectedEvaluations.length - 1])
+    : null;
+
   const getVariationIcon = (variation: number) => {
     if (variation > 5) return <TrendingUp className="h-4 w-4 text-emerald-600" />;
     if (variation < -5) return <TrendingDown className="h-4 w-4 text-red-600" />;
@@ -208,6 +213,16 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
 
   return (
     <div className="space-y-6">
+      {matchedComparison && (
+        <Card className="mb-5 border-2 border-teal-300 bg-card p-4 text-sm text-foreground dark:border-teal-700">
+          <h3 className="text-base font-bold text-teal-900 dark:text-teal-100">Comparação com indicadores equivalentes</h3>
+          {matchedComparison.comparable ? (
+            <p className="mt-2">Indicadores pontuados nas duas avaliações: <strong>{matchedComparison.sharedCount}</strong>. Primeira média: <strong>{matchedComparison.firstMean}%</strong>; última média: <strong>{matchedComparison.lastMean}%</strong>; diferença descritiva: <strong>{matchedComparison.change! > 0 ? "+" : ""}{matchedComparison.change} pontos percentuais</strong>.</p>
+          ) : <p className="mt-2">Não há indicadores pontuados em ambas as avaliações. Não é possível calcular uma variação comparável.</p>}
+          <p className="mt-2 text-foreground/85">Cobertura original: {matchedComparison.firstTotal} itens pontuados na primeira avaliação e {matchedComparison.lastTotal} na última. Os gráficos históricos de percentuais globais são descritivos e podem incluir conjuntos diferentes de indicadores; não demonstram evolução isoladamente.</p>
+          {matchedComparison.versionWarning && <p className="mt-2 font-medium text-amber-800 dark:text-amber-200">Versão de pontuação não registrada ou diferente em pelo menos uma avaliação. Interprete a comparação com cautela.</p>}
+        </Card>
+      )}
       {/* Comparação entre Avaliações: Inicial → Final */}
       <Card className="p-6 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/50 dark:to-indigo-950/50 border-0 shadow-xl">
         <div className="flex flex-col items-center mb-4">
@@ -222,7 +237,7 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
               className={`mt-2 ${getVariationColor(stageVariation)} flex items-center gap-1`}
             >
               {getVariationIcon(stageVariation)}
-              Evolução total: {stageVariation > 0 ? `+${stageVariation}%` : `${stageVariation}%`}
+              Diferença bruta (não ajustada): {stageVariation > 0 ? `+${stageVariation}%` : `${stageVariation}%`}
             </Badge>
           )}
         </div>
