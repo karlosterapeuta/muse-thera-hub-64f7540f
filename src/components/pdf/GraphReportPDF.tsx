@@ -1,3 +1,4 @@
+import { summarizeSubdomain, summarizeDomain, isScored } from "@/utils/museteraScoring";
 import { presentationParameterLabel } from "@/pages/evaluation/utils/autismGuidance";
 import React from 'react';
 import { format } from 'date-fns';
@@ -122,40 +123,12 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
 
   const overallPerf = getPerfLabel(overallScore.percentage);
 
-  // Para tabela de subdomínios por domínio (usa selections para calcular real)
-  const calcSubdomainPct = (
-    domainTitle: string,
-    subdomainTitle: string,
-    parameters: string[]
-  ) => {
-    let total = 0;
-    let count = 0;
-    parameters.forEach((p) => {
-      const key = `${domainTitle}-${subdomainTitle}-${p}`;
-      const v = selections[key];
-      if (v && FREQ_LABEL[v]) {
-        total += FREQ_LABEL[v].score;
-        count++;
-      }
-    });
-    return count ? Math.round(total / count) : 0;
-  };
+  // Cálculos idênticos aos da interface, inclusive pontuação zero e N/A.
+  const calcSubdomainPct = (domainTitle: string, subdomainTitle: string, parameters: string[]) =>
+    summarizeSubdomain(selections, domainTitle, subdomainTitle, parameters).percentage;
 
-  const calcDomainPct = (domain: EvaluationDomain) => {
-    let total = 0;
-    let max = 0;
-    domain.subdomains.forEach((s) => {
-      s.parameters.forEach((p) => {
-        const key = `${domain.title}-${s.title}-${p}`;
-        const v = selections[key];
-        if (v && FREQ_LABEL[v]) {
-          total += FREQ_LABEL[v].score;
-          max += 100;
-        }
-      });
-    });
-    return max > 0 ? Math.round((total / max) * 100) : 0;
-  };
+  const calcDomainPct = (domain: EvaluationDomain) =>
+    summarizeDomain(selections, domain).percentage;
 
   return (
     <div
@@ -755,7 +728,7 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
                 return { param: presentationParameterLabel(p), value: v, freq };
               });
               const evaluatedRows = rows.filter(
-                (r) => r.value && r.value !== 'nao_aplicavel'
+                (r) => isScored(r.value)
               );
               if (evaluatedRows.length === 0) return null;
 
