@@ -445,7 +445,12 @@ export async function exportMusicoterapiaNativePdf(
   // Recomendações automáticas complementam, mas nunca substituem,
   // as orientações individuais preenchidas pelo profissional.
   recommendations.forEach((recommendation, index) => {
-    item(String(index + 1), recommendation);
+    const numbered = String(index + 1) + '. ' + clean(recommendation);
+    // Itens numerados sem bolinha adicional e sem separador de dois-pontos.
+    const lines: string[] = pdf.splitTextToSize(numbered, usable - 6);
+    const required = lines.length * textHeight(9.45) + 2.5;
+    ensure(required);
+    write(numbered, margin + 3, usable - 6, 9.45, DARK, false, 2.5);
   });
 
   header('Considerações finais', 16);
@@ -479,13 +484,15 @@ export async function exportMusicoterapiaNativePdf(
   for (const [label, value] of signatureRows) {
     wrappedDetails.push(...(pdf.splitTextToSize(clean(label) + ': ' + clean(value), availableTextWidth) as string[]));
   }
-  const signatureHeight = Math.max(
-    (images.photo || images.stamp) ? 48 : 37,
-    24 + wrappedDetails.length * 4.3
-  );
-  // Evitar assinatura órfã ou colocada junto do último parágrafo.
-  ensure(signatureHeight + 9);
-  y += 3;
+  // O rodapé inicia em 283 mm. O bloco final cabe até 277 mm.
+  // O cálculo anterior somava 24 mm + linhas, criando uma altura exagerada
+  // apesar de o conteúdo começar em y+15 mm.
+  const detailBottomOffset = 15 + Math.max(0, wrappedDetails.length - 1) * 4.3 + 2;
+  const imageBottomOffset = (images.photo || images.stamp) ? 38 : 0;
+  const signatureHeight = Math.max(40, detailBottomOffset + 9, imageBottomOffset + 7);
+  // Reservar exatamente o espaço necessário, sem folga artificial.
+  ensure(signatureHeight + 4);
+  y += 2;
   pdf.setFillColor(248,252,251);
   pdf.setDrawColor(...BORDER);
   pdf.roundedRect(margin, y, usable, signatureHeight, 2, 2, 'FD');
@@ -501,7 +508,7 @@ export async function exportMusicoterapiaNativePdf(
     lineY += 4.3;
   }
   setFace(7.1,false,MUTED);
-  pdf.text('Carimbo cadastrado, quando presente, não substitui a verificação da assinatura.',margin+5,y+signatureHeight-5);
+  pdf.text('Carimbo cadastrado, quando presente, não substitui a verificação da assinatura.',margin+5,y+signatureHeight-4);
   y += signatureHeight+1;
 
   const totalPages=pdf.internal.getNumberOfPages();
