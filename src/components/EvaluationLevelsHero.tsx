@@ -2,10 +2,9 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, Info, BookOpen } from "lucide-react";
+import { ChevronDown, ChevronUp, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
-import { useNavigate } from "react-router-dom";
 
 const developmentLevels = [
   {
@@ -88,32 +87,6 @@ export function EvaluationLevelsHero() {
             </div>
           </div>
           <div className="flex gap-2 self-start sm:self-center flex-shrink-0">
-            <Button
-              onClick={() => navigate('/evaluation/article')}
-              className={cn(
-                "relative overflow-hidden",
-                "bg-teal-700",
-                "hover:bg-teal-800",
-                "text-white font-semibold shadow-lg",
-                "border border-teal-700",
-                "focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2",
-                "transition-colors duration-200",
-                "motion-reduce:animate-none motion-reduce:transform-none",
-                isMobile ? "text-sm px-3 py-2" : "text-sm px-4 py-2"
-              )}
-              size={isMobile ? "sm" : "default"}
-            >
-              <div className="relative z-10 flex items-center gap-1">
-                <BookOpen className={cn(
-                  "",
-                  isMobile ? "h-3 w-3" : "h-4 w-4"
-                )} />
-                <span className="font-bold tracking-wide">
-                  {isMobile ? "Artigo" : "Artigo Científico"}
-                </span>
-              </div>
-              
-            </Button>
             <Button
               variant="ghost"
               size={isMobile ? "sm" : "default"}
