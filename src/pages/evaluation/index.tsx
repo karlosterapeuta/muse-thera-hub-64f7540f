@@ -1914,6 +1914,12 @@ export default function Evaluation() {
 
               <p className="mb-5 rounded-xl border border-teal-200 bg-teal-50/60 px-4 py-3 text-sm leading-relaxed text-teal-900 dark:border-teal-800 dark:bg-teal-950/30 dark:text-teal-100">Aplique a escala com 16 protocolos por subdomínio e 128 tarefas observáveis. Abra o guia da atividade para consultar materiais e passos, registre o desempenho nas observações e selecione o nível correspondente. Parâmetros não testados ficam fora da média, enquanto Não observado (0) é uma resposta efetivamente avaliada.</p>
 
+              <div className="mb-5 space-y-2 rounded-xl border border-teal-300 bg-card p-4 text-sm leading-relaxed text-foreground dark:border-teal-700">
+                <p className="font-semibold text-teal-900 dark:text-teal-100">Orientações para avaliação de pacientes autistas</p>
+                <p>Permita escolha de repertório e instrumento, uso de comunicação alternativa, respostas por gesto ou movimento, pausas e adaptações sensoriais. Não exija contato ocular, fala, toque físico ou exposição musical involuntária. Observe a funcionalidade no contexto do paciente.</p>
+                <p className="text-muted-foreground">Esta escala descreve respostas musicoterapêuticas observadas. Não estabelece diagnóstico de autismo, nível de suporte nem comparação normativa entre pacientes. Registre apoios e adaptações para interpretar mudanças entre sessões.</p>
+              </div>
+
               {/* Estatísticas da Avaliação Parcial */}
               <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-lg p-4 mb-6">
                 <h3 className="text-lg font-semibold text-emerald-800 dark:text-emerald-200 mb-2">Status da Avaliação</h3>
