@@ -26,7 +26,7 @@ export function MusicoterapiaApproachSelector({
 
   return (
     <section className="space-y-5" aria-label="Abordagens musicoterapêuticas">
-      <div className="flex gap-3 rounded-2xl border border-teal-600/40 bg-gradient-to-br from-[#c9a84c]/[0.1] to-background p-4 sm:p-6">
+      <div className="flex gap-3 rounded-2xl border border-teal-600/40 bg-gradient-to-br from-teal-600/10 to-background p-4 sm:p-6">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-teal-600/40 bg-teal-600/15">
           <Music2 className="h-5 w-5 text-teal-800 dark:text-teal-200" />
         </div>
