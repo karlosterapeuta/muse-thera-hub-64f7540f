@@ -1025,43 +1025,6 @@ export default function MusicoterapiaPage() {
         </div>
 
       {viewMode === 'create' ? (
-              <>
-                <List className="h-5 w-5 mr-2" />
-                Ver Relatórios Salvos
-              </>
-            ) : (
-              <>
-                <Wand2 className="h-4 w-4 mr-2" />
-                Criar Novo Relatório
-              </>
-            )}
-          </Button>
-          {viewMode === 'create' && (
-            <Button
-              variant="outline"
-              onClick={handleSaveReport}
-              disabled={isSaving}
-              className="w-full border-border/60 bg-card/60 backdrop-blur-xl"
-            >
-              {isSaving ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2" />
-                  Salvando...
-                </>
-              ) : (
-                <>
-                  <Save className="h-4 w-4 mr-2" />
-                  Salvar
-                </>
-              )}
-            </Button>
-          )}
-        </div>
-
-
-
-
-      {viewMode === 'create' ? (
         <>
           {/* Contextual workspace controls: one compact toolbar above the form. */}
           <div className="flex flex-col gap-4 rounded-2xl border border-border/70 bg-card p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-5">
