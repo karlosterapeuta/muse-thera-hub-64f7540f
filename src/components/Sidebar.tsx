@@ -30,13 +30,13 @@ export default function AppSidebar({ onNavigate }: SidebarProps) {
   return (
     <Sidebar collapsible="icon" className="border-r">
       {/* Background decoration */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/3 via-purple-500/3 to-pink-500/3 pointer-events-none -z-10"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-teal-500/5 via-emerald-500/5 to-teal-500/5 pointer-events-none -z-10"></div>
       
-      <SidebarHeader className="bg-gradient-to-br from-background via-card/80 to-blue-50/20 dark:to-blue-950/20 backdrop-blur-xl">
+      <SidebarHeader className="bg-gradient-to-br from-background via-card/80 to-teal-50/25 dark:to-teal-950/25 backdrop-blur-xl">
         <CustomHeader collapsed={collapsed} />
       </SidebarHeader>
       
-      <SidebarContent className="bg-gradient-to-br from-background via-card/80 to-blue-50/20 dark:to-blue-950/20 backdrop-blur-xl">
+      <SidebarContent className="bg-gradient-to-br from-background via-card/80 to-teal-50/25 dark:to-teal-950/25 backdrop-blur-xl">
         <ProfessionalInfo 
           collapsed={collapsed} 
           professionalInfo={professionalInfo}
@@ -51,7 +51,7 @@ export default function AppSidebar({ onNavigate }: SidebarProps) {
         />
       </SidebarContent>
 
-      <SidebarFooter className="bg-gradient-to-br from-background via-card/80 to-blue-50/20 dark:to-blue-950/20 backdrop-blur-xl">
+      <SidebarFooter className="bg-gradient-to-br from-background via-card/80 to-teal-50/25 dark:to-teal-950/25 backdrop-blur-xl">
         <CustomFooter collapsed={collapsed} onNavigate={handleNavigate} />
       </SidebarFooter>
     </Sidebar>
