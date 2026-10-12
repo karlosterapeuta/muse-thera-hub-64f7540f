@@ -30,7 +30,6 @@ import { generateSectionPdf } from '@/utils/sectionPdfGenerator';
 import { GraphReportPDF } from '@/components/pdf/GraphReportPDF';
 import { PDFPreviewDialog } from "@/components/PDFPreviewDialog";
 import { PatientSelect } from "../anamnesis/components/PatientSelect";
-import { EvaluationLevelsHero } from "@/components/EvaluationLevelsHero";
 import { 
   Tabs, 
   TabsContent, 
@@ -1589,8 +1588,6 @@ export default function Evaluation() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-teal-50/30 to-emerald-50/20 dark:via-teal-950/20 dark:to-background">
       <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-3 sm:py-4 space-y-3 sm:space-y-4 animate-fade-in">
-        <EvaluationLevelsHero />
-        
         <div className="text-center mb-8 animate-fade-in px-2 sm:px-3">
           <h1 className="text-3xl sm:text-4xl font-bold text-teal-900 dark:text-teal-100 mb-2">
             Escala MuseTera
