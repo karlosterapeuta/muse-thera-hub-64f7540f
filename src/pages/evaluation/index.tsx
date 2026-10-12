@@ -64,6 +64,7 @@ import { AreasAnalysis } from "./components/AreasAnalysis";
 import { TherapeuticSuggestions } from "./components/TherapeuticSuggestions";
 import { getEvaluationTypeMeta } from "@/utils/evaluationTypes";
 import { EVALUATION_ACTIVITY_PROTOCOLS } from "./utils/activityProtocols";
+import { ParameterRubric } from "./components/ParameterRubric";
 import { Document, Packer, Paragraph, AlignmentType, ImageRun } from "docx";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
@@ -605,7 +606,7 @@ export default function Evaluation() {
   // Helper functions for partial evaluation
   const isParameterEvaluated = (domain: string, subdomain: string, parameter: string): boolean => {
     const key = `${domain}-${subdomain}-${parameter}`;
-    return selections[key] && selections[key] !== 'nao_observado';
+    return Boolean(selections[key] && selections[key] !== 'nao_aplicavel');
   };
 
   const isSubdomainEvaluated = (domain: string, subdomain: string, parameters: string[]): boolean => {
@@ -649,14 +650,14 @@ export default function Evaluation() {
   };
 
   const calculateSubdomainScore = (domain: string, subdomain: string, parameters: string[]) => {
-    const maxPossible = parameters.length * 100;
+    const maxPossible = parameters.filter(param => isParameterEvaluated(domain, subdomain, param)).length * 100;
     
     const totalScore = parameters.reduce((acc, param) => {
       const score = calculateScore(domain, subdomain, param);
       return acc + score;
     }, 0);
     
-    const percentage = Math.round((totalScore / maxPossible) * 100);
+    const percentage = maxPossible > 0 ? Math.round((totalScore / maxPossible) * 100) : 0;
     
     return {
       raw: totalScore,
@@ -671,12 +672,12 @@ export default function Evaluation() {
     domain.subdomains.forEach((subdomain: any) => {
       const score = calculateSubdomainScore(domain.title, subdomain.title, subdomain.parameters);
       totalScore += score.raw;
-      maxPossible += subdomain.parameters.length * 100;
+      maxPossible += subdomain.parameters.filter(param => isParameterEvaluated(domain.title, subdomain.title, param)).length * 100;
     });
     
     return {
       raw: totalScore,
-      percentage: Math.round((totalScore / maxPossible) * 100)
+      percentage: maxPossible > 0 ? Math.round((totalScore / maxPossible) * 100) : 0
     };
   };
 
@@ -691,8 +692,8 @@ export default function Evaluation() {
         subdomain.parameters.forEach(param => {
           const score = calculateScore(domain.title, subdomain.title, param);
           totalScore += score;
-          maxPossible += 100;
-          totalParametersCount++;
+          if (isParameterEvaluated(domain.title, subdomain.title, param)) maxPossible += 100;
+          if (selections[`${domain.title}-${subdomain.title}-${param}`] !== 'nao_aplicavel') totalParametersCount++;
           
           if (isParameterEvaluated(domain.title, subdomain.title, param)) {
             evaluatedParametersCount++;
@@ -1233,7 +1234,7 @@ export default function Evaluation() {
           const selection = selections[key];
           const score = calculateScore(domain.title, subdomain.title, param);
           
-          if (selection && selection !== 'nao_observado') {
+          if (selection && selection !== 'nao_aplicavel') {
             const paramData = {
               domain: domain.title,
               subdomain: subdomain.title,
@@ -1903,7 +1904,7 @@ export default function Evaluation() {
                 </CollapsibleContent>
               </Collapsible>
 
-              <p className="mb-5 rounded-xl border border-teal-200 bg-teal-50/60 px-4 py-3 text-sm leading-relaxed text-teal-900 dark:border-teal-800 dark:bg-teal-950/30 dark:text-teal-100">Aplique a escala com 16 protocolos por subdomínio e 128 tarefas observáveis. Abra o guia da atividade para consultar materiais e passos, registre o desempenho nas observações e selecione o nível correspondente. Este protocolo ainda depende de estudos de validade e confiabilidade.</p>
+              <p className="mb-5 rounded-xl border border-teal-200 bg-teal-50/60 px-4 py-3 text-sm leading-relaxed text-teal-900 dark:border-teal-800 dark:bg-teal-950/30 dark:text-teal-100">Aplique a escala com 16 protocolos por subdomínio e 128 tarefas observáveis. Abra o guia da atividade para consultar materiais e passos, registre o desempenho nas observações e selecione o nível correspondente. Este protocolo ainda depende de estudos de validade e confiabilidade. Parâmetros não testados ficam fora da média, enquanto Não observado (0) é uma resposta efetivamente avaliada.</p>
 
               {/* Estatísticas da Avaliação Parcial */}
               <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-lg p-4 mb-6">
@@ -2075,6 +2076,14 @@ export default function Evaluation() {
                                       );
                                     })}
                                   </div>
+                                  <ParameterRubric
+                                    parameterKey={selectionKey}
+                                    parameterLabel={parameter}
+                                    selection={currentSelection}
+                                    observations={observations}
+                                    onEvidenceChange={(key, value) => setObservations(prev => ({ ...prev, [key]: value }))}
+                                    onSelectionChange={(value) => setSelections(prev => ({ ...prev, [selectionKey]: value }))}
+                                  />
                                 </div>
                               );
                             })}
