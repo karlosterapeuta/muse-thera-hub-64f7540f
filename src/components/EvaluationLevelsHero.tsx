@@ -11,44 +11,44 @@ const developmentLevels = [
   {
     level: 0,
     name: "Não Observado",
-    description: "Habilidade não demonstrada ou não observada durante a avaliação",
+    description: "Habilidade não demonstrada após oportunidades acessíveis; quando não testada, marque não aplicável",
     color: "border-muted-foreground bg-muted/30 text-foreground",
-    circleColor: "bg-muted-foreground"
+    circleColor: "bg-slate-700"
   },
   {
     level: 1,
     name: "Emergente", 
     description: "Início do desenvolvimento da habilidade, demonstrações esporádicas",
-    color: "border-red-500 bg-red-50 text-red-700",
-    circleColor: "bg-red-500"
+    color: "border-red-700 bg-red-50 text-red-900 dark:bg-red-950/40 dark:text-red-100",
+    circleColor: "bg-red-800"
   },
   {
     level: 2,
     name: "Inconsistente",
     description: "Habilidade demonstrada ocasionalmente, com variação na qualidade",
-    color: "border-orange-400 bg-orange-50 text-orange-700",
-    circleColor: "bg-orange-400"
+    color: "border-orange-700 bg-orange-50 text-orange-900 dark:bg-orange-950/40 dark:text-orange-100",
+    circleColor: "bg-orange-800"
   },
   {
     level: 3,
     name: "Moderado",
     description: "Habilidade demonstrada de forma moderada, com apoio ou orientação",
-    color: "border-yellow-400 bg-yellow-50 text-yellow-700",
-    circleColor: "bg-yellow-400"
+    color: "border-amber-700 bg-amber-50 text-amber-950 dark:bg-amber-950/40 dark:text-amber-100",
+    circleColor: "bg-amber-800"
   },
   {
     level: 4,
     name: "Consistente",
     description: "Habilidade demonstrada regularmente e de forma independente",
-    color: "border-blue-500 bg-blue-50 text-blue-700",
-    circleColor: "bg-blue-500"
+    color: "border-blue-700 bg-blue-50 text-blue-900 dark:bg-blue-950/40 dark:text-blue-100",
+    circleColor: "bg-blue-800"
   },
   {
     level: 5,
     name: "Excepcional",
-    description: "Habilidade altamente desenvolvida, performance exemplar e criativa",
-    color: "border-green-500 bg-green-50 text-green-700",
-    circleColor: "bg-green-500"
+    description: "Resposta funcional estável e autônoma no contexto testado, com flexibilidade quando pertinente",
+    color: "border-green-700 bg-green-50 text-green-900 dark:bg-green-950/40 dark:text-green-100",
+    circleColor: "bg-green-800"
   }
 ];
 
@@ -82,7 +82,7 @@ export function EvaluationLevelsHero() {
               <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground leading-tight">
                 Guia de Níveis de Desenvolvimento - Escala MuseTera
               </h2>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+              <p className="text-sm text-foreground/85 mt-1">
                 Sistema de 6 níveis com pontuação de 0 a 100 pontos para avaliação musicoterapêutica profissional
               </p>
             </div>
@@ -99,7 +99,7 @@ export function EvaluationLevelsHero() {
                 "focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2",
                 "transition-colors duration-200",
                 "motion-reduce:animate-none motion-reduce:transform-none",
-                isMobile ? "text-xs px-3 py-2" : "text-sm px-4 py-2"
+                isMobile ? "text-sm px-3 py-2" : "text-sm px-4 py-2"
               )}
               size={isMobile ? "sm" : "default"}
             >
@@ -121,7 +121,7 @@ export function EvaluationLevelsHero() {
               aria-expanded={isExpanded}
               aria-controls="evaluation-levels-guide-content"
               aria-label={isExpanded ? "Recolher guia de níveis de desenvolvimento" : "Expandir guia de níveis de desenvolvimento"}
-              className="text-white hover:text-blue-800 hover:bg-blue-100"
+              className="text-teal-900 hover:text-teal-950 hover:bg-teal-100 dark:text-teal-100 dark:hover:bg-teal-900"
             >
               {isExpanded ? (
                 <>
@@ -163,7 +163,7 @@ export function EvaluationLevelsHero() {
                       {level.name}
                     </h3>
                   </div>
-                  <p className="text-xs sm:text-sm leading-relaxed text-left flex-1">
+                  <p className="text-sm leading-relaxed text-left flex-1">
                     {level.description}
                   </p>
                 </div>
@@ -177,12 +177,12 @@ export function EvaluationLevelsHero() {
               Como usar a Escala MuseTera (0-5) - Total de 100 Pontos:
             </h4>
             <ul className="text-sm text-foreground/85 space-y-2">
-              <li className="leading-relaxed">• <strong>0 - Não Observado:</strong> 0 pontos (0%) - Habilidade não demonstrada ou observada</li>
+              <li className="leading-relaxed">• <strong>0 - Não Observado:</strong> 0 pontos (0%) - Habilidade não demonstrada após oportunidades adequadas e acessíveis</li>
               <li className="leading-relaxed">• <strong>1 - Emergente:</strong> 20 pontos (20%) - Primeiros sinais da habilidade, demonstrações esporádicas</li>
               <li className="leading-relaxed">• <strong>2 - Inconsistente:</strong> 40 pontos (40%) - Habilidade presente mas com grande variação na qualidade</li>
               <li className="leading-relaxed">• <strong>3 - Moderado:</strong> 60 pontos (60%) - Habilidade funcional que requer apoio ou orientação</li>
               <li className="leading-relaxed">• <strong>4 - Consistente:</strong> 80 pontos (80%) - Habilidade bem estabelecida e demonstrada independentemente</li>
-              <li className="leading-relaxed">• <strong>5 - Excepcional:</strong> 100 pontos (100%) - Demonstração exemplar com criatividade e maestria</li>
+              <li className="leading-relaxed">• <strong>5 - Excepcional:</strong> 100 pontos (100%) - Resposta estável e autônoma no contexto testado</li>
             </ul>
             <div className="mt-4 p-3 bg-teal-50 dark:bg-teal-950/40 rounded-lg border border-teal-700/20 dark:border-teal-400/25">
               <p className="text-sm text-foreground/85 font-medium leading-relaxed">
