@@ -229,8 +229,7 @@ export default function Professional() {
   }
 
   return (
-    <div className="relative min-h-screen bg-background">
-      <DashboardBackground />
+    <div className="relative min-h-screen bg-gradient-to-br from-background via-teal-50/40 to-emerald-50/20 dark:via-teal-950/20 dark:to-background">
       <div className={`relative z-10 mx-auto p-4 space-y-6 ${isMobile ? 'max-w-full px-2' : 'max-w-4xl'}`}>
         <ProfessionalHeader
           avatarUrl={avatarUrl}
