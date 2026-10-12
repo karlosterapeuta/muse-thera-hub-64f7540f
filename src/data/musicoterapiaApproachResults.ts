@@ -32,7 +32,7 @@ export function getRecordedApproachResults(approachIds: unknown, rawResults: unk
       approach,
       result: {
         status: value.status,
-        indicators: value.status === 'not_applied' ? [] : Array.isArray(value.indicators) ? value.indicators.filter((v): v is string => typeof v === 'string').slice(0, 6) : [],
+        indicators: value.status === 'not_applied' ? [] : Array.isArray(value.indicators) ? value.indicators.filter((v): v is string => typeof v === 'string').slice(0, 12) : [],
         note: value.status === 'not_applied' ? '' : typeof value.note === 'string' ? value.note.slice(0, 2000) : ''
       } as ApproachResultEntry
     }];
