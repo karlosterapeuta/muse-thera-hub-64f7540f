@@ -27,7 +27,7 @@ serve(async (req) => {
 
     const patientName = reportData.patientName || 'o(a) paciente';
     const patientAge = reportData.patientAge || 'Nao informado';
-    const patientDiagnosis = reportData.patientDiagnosis || 'TEA - Transtorno do Espectro Autista';
+    const patientDiagnosis = reportData.patientDiagnosis || 'Nao informado';
     const professionalName = reportData.professionalName || 'o(a) musicoterapeuta';
     const sessionDate = reportData.sessionDate || new Date().toLocaleDateString('pt-BR');
 
@@ -40,36 +40,44 @@ serve(async (req) => {
       if (Array.isArray(v) && v.length === 0) return;
       filledFields[k] = v;
     });
-    const fieldValuesJson = JSON.stringify(filledFields, null, 2);
+    const additionalObservations = typeof reportData.additionalObservations === 'string'
+      ? reportData.additionalObservations.trim() : '';
+    if (Object.keys(filledFields).length === 0 && !additionalObservations) {
+      return new Response(JSON.stringify({ success: false, error: 'INSUFFICIENT_CLINICAL_DATA' }), {
+        status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    const fieldValuesJson = JSON.stringify({
+      ...filledFields,
+      ...(additionalObservations ? { additional_observations: additionalObservations } : {}),
+    }, null, 2);
 
-    const systemPrompt =
-      "Voce e um(a) musicoterapeuta clinico(a) especialista em Transtorno do Espectro Autista (TEA), " +
-      "com profundo dominio da terminologia tecnica e cientifica da Musicoterapia (abordagens de Benenzon, " +
-      "Nordoff-Robbins, modelo Bonny/GIM, IMTAP, tecnicas de improvisacao, recriacao, composicao e audicao receptiva). " +
-      "Sua tarefa e redigir um RELATORIO PROFISSIONAL DE EVOLUCAO MUSICOTERAPEUTICA (semestral/trimestral) de alto padrao, " +
-      "seguindo RIGOROSAMENTE o roteiro/modelo abaixo, a partir EXCLUSIVAMENTE dos dados fornecidos. " +
-      "REGRAS OBRIGATORIAS: " +
-      "1. Escreva texto corrido, coeso, fluido e profissional, em paragrafos bem estruturados. NUNCA apenas liste respostas cruas. " +
-      "2. Use linguagem tecnica, cientifica e etica, adequada para prontuarios, instituicoes, escolas, equipes multiprofissionais e responsaveis. " +
-      "3. NAO invente, suponha ou extrapole informacoes que nao estejam respaldadas nos dados fornecidos. " +
-      "Se nao houver dados para uma secao, escreva uma redacao tecnica generica e prudente coerente com o quadro, sem inventar fatos especificos. " +
-      "4. Evite repeticoes, frases genericas vazias ou roboticas. Personalize para este paciente. " +
-      "5. Interprete os dados de forma contextualizada e clinica, relacionando observacoes entre si quando pertinente. " +
-      "6. Refira-se ao paciente como 'paciente' (terminologia inclusiva), nunca como 'crianca'. " +
-      "Retorne EXCLUSIVAMENTE um JSON valido (sem markdown, sem texto extra) no formato: " +
-      '{ "sections": [ { "title": "string", "content": "string com um ou mais paragrafos separados por \\n\\n" } ] }. ' +
-      "Gere as secoes NESTA ORDEM EXATA e com ESTES TITULOS EXATOS (nao gere a Identificacao do Paciente nem a Assinatura, pois sao montadas pelo sistema): " +
-      "1. 'Motivo do Encaminhamento' - paragrafo descrevendo por que o paciente iniciou a Musicoterapia. " +
-      "2. 'Objetivos Terapeuticos Desenvolvidos' - texto que apresenta os objetivos trabalhados no periodo. " +
-      "3. 'Metodologia Musicoterapeutica Utilizada' - descreve como ocorreu o tratamento, tecnicas e abordagens. " +
-      "4. 'Evolucao Clinica' - PARTE MAIS IMPORTANTE, em texto corrido, organizada internamente com subtitulos em uma linha seguida do paragrafo. " +
-      "Use estes subtitulos (omita um subtitulo apenas se nao houver qualquer dado relacionado): Comunicacao; Interacao Social; Atencao Compartilhada; Contato Visual; Regulacao Emocional; Processamento Sensorial; Aspectos Cognitivos; Coordenacao Motora; Respostas Musicais (ritmo, melodia, harmonia, improvisacao, criatividade, memoria musical); Participacao Terapeutica (engajamento, iniciativa, permanencia, motivacao). " +
-      "Formate cada subtitulo como o texto do subtitulo seguido de dois pontos no inicio do paragrafo. " +
-      "5. 'Resultados Observados' - paragrafo sintetizando os avancos observados no periodo. " +
-      "6. 'Aspectos que Ainda Necessitam Intervencao' - aspectos que persistem e precisam de continuidade. " +
-      "7. 'Prognostico Terapeutico' - paragrafo de prognostico. " +
-      "8. 'Recomendacoes' - recomendacoes para continuidade do acompanhamento. " +
-      "9. 'Consideracoes Finais' - resumo tecnico conclusivo.";
+    const systemPrompt = [
+      "Atue como assistente de redacao clinica em Musicoterapia, em portugues brasileiro.",
+      "Produza texto dissertativo, tecnico, preciso e legivel, com paragrafos que articulem objetivo terapeutico, procedimento REALMENTE registrado, resposta observada e interpretacao cautelosa.",
+      "REGRAS DE FIDELIDADE CLINICA OBRIGATORIAS:",
+      "Use EXCLUSIVAMENTE fatos presentes nos dados fornecidos. Nenhuma caracteristica, tecnica, instrumento, duracao, frequencia, escore, mudanca ou progresso pode ser presumido.",
+      "Informacoes sobre diagnostico, medicacoes ou nivel de suporte sao dados informados e nao conclusoes diagnosticas do musicoterapeuta.",
+      "NAO transforme objetivos planejados, textos de modelos ou possibilidades terapeuticas em procedimentos que de fato aconteceram.",
+      "Se o registro nao sustentar uma secao, omita-a; nao complete com narrativa generica, prognostico, analise de eficácia ou resultados ficticios.",
+      "Diferencie cuidadosamente: 'registrou-se' para fatos observados, 'pode indicar' para interpretacoes prudentes e 'recomenda-se' para propostas futuras.",
+      "Nao confunda 'sem avanco observado' com incapacidade definitiva ou regressao. Nao declare efeito causal, eficacia ou generalizacao sem avaliacao comparativa.",
+      "Apenas descreva evolucao temporal quando existirem avaliacoes com datas distintas e parametros comparaveis. Caso contrario, descreva o estado documentado no periodo, sem afirmar melhora ou piora.",
+      "Nao crie bibliografia ou citas cientificas. Nomeie abordagem, metodo, escala ou referencia somente quando constar como efetivamente selecionada/utilizada nos registros.",
+      "Empregue terminologia musicoterapeutica pertinente, como responsividade sonoro-musical, reciprocidade musical, intencionalidade comunicativa e expressao vocal, APENAS quando sustentada pelas observacoes.",
+      "Evite repetir listas de metas nos resultados e nas consideracoes finais. Redija um texto individualizado, objetivo, coeso, sem exageros e sem julgamentos estigmatizantes.",
+      "As secoes geradas sao RASCUNHOS e exigem revisao e aprovacao do musicoterapeuta antes da emissao.",
+      "Retorne APENAS JSON valido no formato { \"sections\": [{ \"title\": \"string\", \"content\": \"string\" }] }.",
+      "Use os seguintes titulos, nesta ordem, APENAS quando houver fundamento documental: 'Motivo do Encaminhamento'; 'Objetivos Terapêuticos'; 'Procedimentos e Abordagens Registrados'; 'Análise Clínica Musicoterapêutica'; 'Resultados Observados'; 'Recomendações'; 'Considerações Finais'.",
+      "Uma classificacao 'Em evolucao' nao demonstra por si so que a habilidade foi executada, nem melhora de frequencia, autonomia ou consistencia. Escreva somente que o profissional classificou assim; nao invente imitacao de sons ou de melodias.",
+      "Uma abordagem selecionada nao comprova sua aplicacao detalhada nem seus beneficios teoricos. 'Compartilhou lembrancas' nao demonstra melhora de memoria, afetividade, linguagem ou cognicao.",
+      "PROIBIDO afirmar progresso notavel, evolucao consistente, prognostico favoravel, efeitos garantidos, melhoria significativa, estrategias realizadas nao registradas ou colaboracao com escola/familia nao comprovada.",
+      "Descricoes padrao dos objetivos e abordagens sao planejamento e contexto, NAO evidencias de resultados observados.",
+      "Gere SOMENTE uma secao intitulada 'Análise Clínica Musicoterapêutica' com 3 a 5 paragrafos objetivos: contexto e objetivo, abordagem e resposta registrada, classificacoes e limites, e indicacoes prudentes. Nao produza recomendacoes ou consideracoes finais como secoes, pois o PDF ja as contem.",
+      "A secao 'Análise Clínica Musicoterapêutica' e central: conecte observacoes, procedimentos aplicados e respostas, sem inventar comparacoes.",
+      "Em 'Resultados Observados', apresente claramente dificuldades, registros em observacao e eventuais avancos apenas se registrados.",
+      "Em 'Considerações Finais', sintetize os limites dos dados e a necessidade de reavaliacao, sem repetir contagens ou atribuir resultados nao demonstrados."
+    ].join(" ");
 
     const userPrompt =
       "DADOS DO PACIENTE\nNome: " + patientName + "\nIdade: " + patientAge +
@@ -91,7 +99,7 @@ serve(async (req) => {
           { role: 'user', content: userPrompt },
         ],
         response_format: { type: 'json_object' },
-        temperature: 0.6,
+        temperature: 0.2,
       }),
     });
 

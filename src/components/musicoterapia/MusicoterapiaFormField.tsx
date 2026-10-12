@@ -10,7 +10,6 @@ import { Slider } from '@/components/ui/slider';
 import { X, HelpCircle } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import type { ReportField } from '@/data/musicoterapiaTemplate';
-import { TherapeuticObjectivesField } from './TherapeuticObjectivesField';
 import { SessionActivitiesField } from './SessionActivitiesField';
 import { PatientEvolutionField } from './PatientEvolutionField';
 import { RecommendationsField } from './RecommendationsField';
@@ -44,16 +43,6 @@ export function MusicoterapiaFormField({
   };
 
   const renderField = () => {
-    // Campo especializado para objetivos terapêuticos
-    if (field.id === 'therapeutic_objectives') {
-      return (
-        <TherapeuticObjectivesField
-          value={(value as string[]) || []}
-          onChange={onChange}
-        />
-      );
-    }
-
     // Campo especializado para atividades das sessões
     if (field.id === 'session_activities') {
       return (

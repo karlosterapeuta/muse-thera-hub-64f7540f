@@ -1,7 +1,8 @@
 import React from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Calendar, CalendarIcon, User } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { Calendar, CalendarIcon, User, ClipboardList, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -10,7 +11,6 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import type { ReportData } from '@/data/musicoterapiaTemplate';
-import { formatAgeString } from '@/utils/dateUtils';
 
 type Patient = {
   id: string;
@@ -25,9 +25,14 @@ interface BasicInformationSectionProps {
   professionalData?: any;
   patients?: Patient[];
   isLoadingPatients?: boolean;
+  onSelectPatient: (patientId: string) => void;
+  anamnesisStatus: 'idle' | 'loading' | 'loaded' | 'empty' | 'error';
 }
 
-export function BasicInformationSection({ reportData, onUpdateData, professionalData, patients = [], isLoadingPatients = false }: BasicInformationSectionProps) {
+export function BasicInformationSection({
+  reportData, onUpdateData, professionalData, patients = [], isLoadingPatients = false,
+  onSelectPatient, anamnesisStatus
+}: BasicInformationSectionProps) {
   const handleFieldChange = (field: string, value: string) => {
     if (field.startsWith('fieldValues.')) {
       const fieldId = field.replace('fieldValues.', '');
@@ -48,31 +53,10 @@ export function BasicInformationSection({ reportData, onUpdateData, professional
     }
   };
 
-  const handlePatientSelect = (value: string) => {
-    if (value === 'manual') {
-      // Reset para entrada manual
-      onUpdateData({
-        selectedPatientId: '',
-        patientName: '',
-        patientAge: '',
-        patientDiagnosis: ''
-      });
-    } else {
-      // Selecionar paciente existente
-      const selectedPatient = patients.find(p => p.id === value);
-      if (selectedPatient) {
-        // Calcular idade usando utilitário centralizado
-        const age = formatAgeString(selectedPatient.birth_date, selectedPatient.age);
-
-        onUpdateData({
-          selectedPatientId: value,
-          patientName: selectedPatient.name,
-          patientAge: age,
-          patientDiagnosis: 'TEA - Transtorno do Espectro Autista'
-        });
-      }
-    }
+  const handlePatientSelect = (patientId: string) => {
+    onSelectPatient(patientId);
   };
+
 
   const sessionDate = reportData.sessionDate ? new Date(reportData.sessionDate) : undefined;
   const hasPatients = Array.isArray(patients) && patients.length > 0;
@@ -172,6 +156,18 @@ export function BasicInformationSection({ reportData, onUpdateData, professional
           />
         </div>
 
+        {/* Responsável legal: prioriza os registros do paciente e da Anamnese. */}
+        <div className="space-y-2">
+          <Label htmlFor="patient_guardian" className="text-sm font-medium">Responsável legal</Label>
+          <Input
+            id="patient_guardian"
+            placeholder="Nome do responsável, quando disponível"
+            value={reportData.patientGuardian || ''}
+            onChange={(event) => handleFieldChange('patientGuardian', event.target.value)}
+            className="w-full"
+          />
+        </div>
+
         {/* Data da Sessão */}
         <div className="space-y-2">
           <Label className="text-sm font-medium">
@@ -234,6 +230,74 @@ export function BasicInformationSection({ reportData, onUpdateData, professional
           />
         </div>
       </div>
+
+      {reportData.selectedPatientId && (
+        <div role="status" aria-live="polite" className="rounded-lg border border-border/60 bg-muted/30 px-4 py-3 text-sm">
+          {anamnesisStatus === 'loading' && (
+            <span className="flex gap-2 items-center text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin shrink-0" />
+              Carregando os dados da Anamnese deste paciente...
+            </span>
+          )}
+          {anamnesisStatus === 'loaded' && (
+            <span className="flex gap-2 items-center text-emerald-600 dark:text-emerald-300">
+              <CheckCircle2 className="h-4 w-4 shrink-0" />
+              Dados da Anamnese importados automaticamente. Confira as informações abaixo.
+            </span>
+          )}
+          {anamnesisStatus === 'empty' && (
+            <span className="text-muted-foreground">
+              Não há Anamnese cadastrada para este paciente. Preencha apenas as informações disponíveis.
+            </span>
+          )}
+          {anamnesisStatus === 'error' && (
+            <span className="flex gap-2 items-center text-amber-600 dark:text-amber-300">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              Não foi possível consultar a Anamnese. Os campos continuam disponíveis para preenchimento manual.
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* O motivo do encaminhamento integra a identificação, sem etapa adicional. */}
+      <section aria-labelledby="referral-heading" className="rounded-xl border border-teal-600/25 bg-teal-600/5 p-4 sm:p-5 space-y-4">
+        <div className="flex items-start gap-3">
+          <ClipboardList className="h-5 w-5 text-teal-700 dark:text-teal-300 shrink-0 mt-0.5" />
+          <div>
+            <h3 id="referral-heading" className="font-semibold text-foreground">Motivo do Encaminhamento</h3>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+              Informe a origem e o motivo do acompanhamento musicoterapêutico, quando disponíveis.
+            </p>
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="referral_source" className="text-sm font-medium">
+            Quem encaminhou o paciente? <span className="text-xs text-muted-foreground">(opcional)</span>
+          </Label>
+          <Input
+            id="referral_source"
+            placeholder="Ex.: Neuropediatra, escola, família ou equipe interdisciplinar"
+            value={String(reportData.fieldValues?.referral_source ?? '')}
+            onChange={(event) => handleFieldChange('fieldValues.referral_source', event.target.value)}
+            className="w-full"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="referral_reason" className="text-sm font-medium">
+            Motivo do encaminhamento <span className="text-xs text-muted-foreground">(opcional)</span>
+          </Label>
+          <Textarea
+            id="referral_reason"
+            rows={3}
+            placeholder="Ex.: Necessidade de estimular comunicação, atenção e interação social por meio de atividades musicais."
+            value={String(reportData.fieldValues?.referral_reason ?? '')}
+            onChange={(event) => handleFieldChange('fieldValues.referral_reason', event.target.value)}
+            className="w-full resize-y"
+          />
+        </div>
+      </section>
+
+
     </div>
   );
 }

@@ -10,6 +10,18 @@ import { MusicoterapiaQuickFill } from './MusicoterapiaQuickFill';
 import { FinalReviewSection } from './FinalReviewSection';
 import { BasicInformationSection } from './BasicInformationSection';
 import { MusicoterapiaGuidance } from './MusicoterapiaGuidance';
+import { MusicoterapiaObjectiveSelector } from './MusicoterapiaObjectiveSelector';
+import { getSelectedMusicoterapiaObjectives } from '@/data/musicoterapiaObjectives';
+import { getSelectedMusicoterapiaApproaches } from '@/data/musicoterapiaApproaches';
+import { MusicoterapiaApproachSelector } from './MusicoterapiaApproachSelector';
+import { MusicoterapiaReferenceSelector } from './MusicoterapiaReferenceSelector';
+import { getSelectedMusicoterapiaReferences } from '@/data/musicoterapiaReferences';
+import { MusicoterapiaApproachResults } from './MusicoterapiaApproachResults';
+import { MusicoterapiaObjectiveOutcomes } from './MusicoterapiaObjectiveOutcomes';
+import { MusicoterapiaPendingInterventions } from './MusicoterapiaPendingInterventions';
+import { MusicoterapiaFinalConsiderations } from './MusicoterapiaFinalConsiderations';
+import { getObjectiveOutcomesValidationIssues } from '@/data/musicoterapiaObjectiveOutcomes';
+import { getApproachResultsValidationIssues } from '@/data/musicoterapiaApproachResults';
 
 interface MusicoterapiaReportWizardProps {
   reportData: Partial<ReportData>;
@@ -17,7 +29,13 @@ interface MusicoterapiaReportWizardProps {
   onGenerateWithAI: (keyPoints: string) => Promise<any>;
   isGeneratingWithAI: boolean;
   patients: any[];
+  onSelectPatient: (patientId: string) => void;
+  anamnesisStatus: 'idle' | 'loading' | 'loaded' | 'empty' | 'error';
   onSaveReport: () => void;
+  logoUrl: string | null;
+  onLogoChange: (logoUrl: string | null) => void;
+  onExportPDF: (logoUrl?: string | null) => Promise<void>;
+  isExporting: boolean;
   isSaving: boolean;
   professionalData?: any;
 }
@@ -26,76 +44,62 @@ const STEPS = [
   {
     id: 'basic_info',
     title: '1. Identificação do Paciente',
-    description: 'Dados do paciente e do profissional',
+    description: 'Dados do paciente, profissional e motivo do encaminhamento',
     icon: Target,
-    fields: ['patient_name', 'patient_age', 'patient_diagnosis', 'cid_code', 'support_level', 'comorbidities', 'current_medications', 'treatment_start_date', 'session_count', 'session_frequency', 'session_duration', 'professional_name', 'professional_registry', 'session_date']
-  },
-  {
-    id: 'referral',
-    title: '2. Motivo do Encaminhamento',
-    description: 'Origem e justificativa do encaminhamento',
-    icon: ClipboardList,
-    fields: ['referral_source', 'referral_reason']
+    fields: ['patient_name', 'patient_age', 'patient_diagnosis', 'evaluation_period', 'diagnosis_source', 'cid_code', 'support_level', 'comorbidities', 'current_medications', 'treatment_start_date', 'session_count', 'session_frequency', 'session_duration', 'professional_name', 'professional_registry', 'session_date', 'referral_source', 'referral_reason']
   },
   {
     id: 'therapeutic_objectives',
-    title: '3. Objetivos Terapêuticos',
-    description: 'Metas e planejamento',
+    title: '2. Objetivos Terapêuticos',
+    description: 'Seleção de objetivos a desenvolver e planejamento individualizado',
     icon: Target,
-    fields: ['therapeutic_objectives', 'specific_goals']
+    fields: [] // Nesta etapa, usar somente o catálogo de 27 objetivos selecionáveis
   },
   {
     id: 'methodology',
-    title: '4. Metodologia Musicoterapêutica',
-    description: 'Abordagem, técnicas e procedimentos',
+    title: '3. Abordagem Musicoterapêutica',
+    description: 'Selecione uma ou mais abordagens adotadas no acompanhamento',
     icon: Music,
-    fields: ['theoretical_framework', 'assessment_tools_used', 'session_setting', 'session_structure', 'session_activities', 'improvisation_use', 'receptive_techniques', 'recreative_techniques', 'compositional_techniques', 'tempo_dynamics_used', 'vocal_work']
-  },
-  {
-    id: 'clinical_evolution',
-    title: '5. Evolução Clínica',
-    description: 'Progressos por domínios do desenvolvimento',
-    icon: Heart,
-    fields: ['domain_communication_verbal', 'domain_communication_nonverbal', 'domain_social_interaction', 'joint_attention', 'eye_contact_quality', 'domain_emotional', 'self_regulation_strategies', 'domain_sensory_integration', 'domain_cognitive', 'domain_motor_gross', 'domain_motor_fine', 'domain_musicality', 'vocalizations_observed', 'verbal_output_during_music', 'echolalia_musical', 'aac_use', 'pragmatic_skills', 'patient_evolution', 'evolution_compared_baseline']
+    fields: [] // Somente o catálogo das 10 abordagens
   },
   {
     id: 'observed_results',
-    title: '6. Resultados Observados',
-    description: 'Metas atingidas e indicadores',
+    title: '4. Resultados Observados',
+    description: 'Respostas às abordagens da Etapa 03 e evolução dos objetivos da Etapa 02',
     icon: Brain,
-    fields: ['goals_achieved', 'goals_in_progress', 'quantitative_indicators', 'treatment_summary']
+    fields: [] // Preenchimento rápido, vinculado às abordagens realmente selecionadas
   },
   {
     id: 'pending_intervention',
-    title: '7. Aspectos a Intervir',
-    description: 'Pontos que ainda necessitam de intervenção',
+    title: '5. Aspectos a Intervir',
+    description: 'Demandas geradas a partir dos resultados informados na Etapa 04',
     icon: Target,
-    fields: ['goals_not_achieved', 'red_flags_to_monitor']
+    fields: [] // Exibição automática de objetivos ainda em desenvolvimento
   },
   {
-    id: 'prognosis',
-    title: '8. Prognóstico Terapêutico',
-    description: 'Objetivos futuros e prognóstico',
-    icon: Target,
-    fields: ['next_objectives_short', 'next_objectives_medium', 'next_objectives_long', 'proposed_interventions', 'expected_outcomes', 'revaluation_date']
+    id: 'references',
+    title: '6. Referência',
+    description: 'Escolha autores e obras para fundamentar o relatório',
+    icon: BookOpen,
+    fields: [] // Somente seis referências bibliográficas selecionáveis
   },
   {
     id: 'recommendations',
-    title: '9. Recomendações',
-    description: 'Família, escola e equipe',
+    title: '7. Recomendações',
+    description: 'Orientações objetivas para a continuidade do acompanhamento',
     icon: Home,
-    fields: ['recommendations', 'home_activities', 'family_guidance', 'school_recommendations', 'interdisciplinary_team_notes', 'playlist_recommended']
+    fields: ['recommendations'] // Apenas o campo principal, sem cartões extras
   },
   {
     id: 'final_considerations',
-    title: '10. Considerações Finais',
-    description: 'Síntese conclusiva',
+    title: '8. Considerações Finais',
+    description: 'Síntese objetiva dos resultados e demandas ainda em acompanhamento',
     icon: Sparkles,
-    fields: ['final_considerations', 'conclusion', 'complementary_observations', 'additional_notes']
+    fields: [] // Síntese derivada das Etapas 04–05 e nota opcional do profissional
   },
   {
     id: 'final_review',
-    title: '11. Assinatura',
+    title: '9. Assinatura',
     description: 'Assinatura e finalização',
     icon: Check,
     fields: ['signature', 'review_notes']
@@ -103,16 +107,14 @@ const STEPS = [
 ];
 
 const STEP_HINTS: Record<string, { icon: React.ElementType; title: string; description: string }> = {
-  basic_info: { icon: Info, title: 'Identificação do paciente', description: 'Confirme dados do paciente e do profissional. Esses dados aparecem no cabeçalho do relatório final.' },
-  referral: { icon: ClipboardList, title: 'Motivo do encaminhamento', description: 'Descreva quem encaminhou e a razão clínica que originou o início dos atendimentos.' },
-  therapeutic_objectives: { icon: Target, title: 'Objetivos terapêuticos', description: 'Descreva metas claras, mensuráveis e individualizadas. Quanto mais específicas, mais sólido o relatório.' },
-  methodology: { icon: Music, title: 'Metodologia musicoterapêutica', description: 'Detalhe a abordagem teórica, técnicas (receptivas, recriativas, improvisacionais, compositivas) e procedimentos utilizados.' },
-  clinical_evolution: { icon: Heart, title: 'Evolução clínica', description: 'Registre os progressos por domínio: comunicação, interação social, regulação emocional, cognição, motricidade e respostas musicais.' },
-  observed_results: { icon: Brain, title: 'Resultados observados', description: 'Sintetize as metas atingidas e os indicadores objetivos de progresso no período avaliado.' },
-  pending_intervention: { icon: Target, title: 'Aspectos a intervir', description: 'Liste os pontos que ainda necessitam de intervenção e os sinais a monitorar.' },
-  prognosis: { icon: Target, title: 'Prognóstico terapêutico', description: 'Estruture objetivos de curto, médio e longo prazo, com prognóstico e data de reavaliação.' },
-  recommendations: { icon: Home, title: 'Recomendações', description: 'Oriente família, escola e equipe interdisciplinar com recomendações práticas.' },
-  final_considerations: { icon: Sparkles, title: 'Considerações finais', description: 'Sintetize a evolução global e a indicação de continuidade do acompanhamento.' },
+  basic_info: { icon: Info, title: 'Identificação e encaminhamento', description: 'Confirme os dados do paciente e do profissional e, quando disponíveis, informe a origem e o motivo do encaminhamento.' },
+  therapeutic_objectives: { icon: Target, title: 'Objetivos terapêuticos', description: 'Selecione os objetivos que a musicoterapia irá estimular; defina metas observáveis e individualizadas, respeitando as características do paciente.' },
+  methodology: { icon: Music, title: 'Abordagem Musicoterapêutica', description: 'Selecione os referenciais e modos de intervenção efetivamente previstos ou utilizados. Métodos especializados exigem capacitação apropriada.' },
+  observed_results: { icon: Brain, title: 'Resultados por abordagem e objetivo', description: 'Registre a resposta às abordagens e a evolução de cada objetivo. A Etapa 05 será atualizada automaticamente.' },
+  pending_intervention: { icon: Target, title: 'Aspectos a intervir', description: 'Veja as demandas que precisam continuar, calculadas a partir dos resultados da Etapa 04.' },
+  references: { icon: BookOpen, title: 'Referências bibliográficas', description: 'Selecione apenas obras coerentes com as abordagens e efetivamente utilizadas no embasamento clínico.' },
+  recommendations: { icon: Home, title: 'Recomendações', description: 'Registre apenas orientações essenciais, específicas para o paciente e coerentes com os resultados das etapas anteriores.' },
+  final_considerations: { icon: Sparkles, title: 'Síntese clínica', description: 'Revise a síntese baseada nos resultados registrados e acrescente somente o que ainda não conste no relatório.' },
   final_review: { icon: Check, title: 'Assinatura', description: 'Revise o relatório, organize com IA se desejar, assine e finalize.' },
 };
 
@@ -125,80 +127,6 @@ interface TemplateOption {
 }
 
 const STEP_TEMPLATES: Record<string, TemplateOption[]> = {
-  methodology: [
-    {
-      id: 'methodology_benenzon',
-      label: 'Modelo Benenzon (ISO)',
-      description: 'Abordagem centrada no Princípio do ISO, com técnicas receptivas e improvisacionais.',
-      values: {
-        theoretical_framework: 'A intervenção fundamenta-se no Modelo Benenzon de Musicoterapia, com ênfase no Princípio do ISO (Identidade Sonora) — gestacional, universal, cultural, complementar e grupal —, articulado às diretrizes de intervenção em TEA conforme DSM-5-TR e CID-11.',
-        assessment_tools_used: 'Instrumentos: observação clínica sistematizada, mapeamento do ISO do paciente, registro de respostas sonoro-musicais e Escala MuseTera de avaliação musicoterapêutica.',
-        session_setting: 'Individual',
-        session_structure: 'Sessões com estrutura previsível: ritual de abertura sonoro-musical, desenvolvimento (exploração e improvisação) e ritual de encerramento, com duração média de 40 a 50 minutos.',
-        session_activities: ['Atividades de exploração instrumental livre, diálogos sonoros, improvisações vinculares e uso de objetos intermediários, respeitando o ISO do paciente.'],
-        improvisation_use: 'A improvisação clínica foi utilizada como principal recurso de vínculo e comunicação não-verbal, partindo do ISO do paciente para construção de diálogos sonoros.',
-        receptive_techniques: 'Técnicas receptivas: audição de canções e trechos musicais pertencentes ao ISO do paciente, favorecendo regulação e disponibilidade interna.',
-        recreative_techniques: 'Técnicas recriativas: recriação de canções familiares e padrões rítmicos, favorecendo participação ativa e troca de turnos.',
-        compositional_techniques: 'Recursos compositivos pontuais, com criação conjunta de pequenos motivos sonoros como forma de expressão e pertencimento.',
-        tempo_dynamics_used: 'Variações de andamento e dinâmica foram utilizadas para regular estados de ativação, alternando momentos de organização e de expansão.',
-        vocal_work: 'Trabalho vocal por meio de vocalizações, cantos e modulações de voz, favorecendo a comunicação e a expressão emocional.'
-      }
-    },
-    {
-      id: 'methodology_nordoff_robbins',
-      label: 'Nordoff-Robbins (Criativa)',
-      description: 'Improvisação clínica e desenvolvimento do "Music Child".',
-      values: {
-        theoretical_framework: 'A intervenção fundamenta-se na Musicoterapia Criativa de Nordoff-Robbins, que enfatiza a improvisação clínica e o desenvolvimento do "Music Child", articulada às diretrizes de intervenção em TEA conforme DSM-5-TR e CID-11.',
-        assessment_tools_used: 'Instrumentos: escalas Nordoff-Robbins (Child-Therapist Relationship e Musical Communicativeness), observação clínica e registro audiovisual de sessões.',
-        session_setting: 'Individual',
-        session_structure: 'Sessões estruturadas em torno da improvisação clínica responsiva, com abertura, desenvolvimento musical co-criativo e encerramento.',
-        session_activities: ['Improvisações instrumentais e vocais responsivas, canções terapêuticas compostas para o paciente e atividades de turno musical.'],
-        improvisation_use: 'A improvisação clínica foi o eixo central das sessões, com o terapeuta acompanhando e ampliando musicalmente as iniciativas do paciente.',
-        receptive_techniques: 'Momentos receptivos pontuais para regulação e escuta de motivos musicais significativos.',
-        recreative_techniques: 'Recriação de canções terapêuticas e padrões musicais, estimulando engajamento e antecipação.',
-        compositional_techniques: 'Composição de canções terapêuticas personalizadas, integrando nome, interesses e respostas do paciente.',
-        tempo_dynamics_used: 'Uso intencional de andamento, intensidade e contraste musical para sustentar a atenção e modular respostas emocionais.',
-        vocal_work: 'Trabalho vocal por meio do canto terapêutico e de vocalizações responsivas, favorecendo a comunicação musical.'
-      }
-    },
-    {
-      id: 'methodology_nmt',
-      label: 'Musicoterapia Neurológica (NMT)',
-      description: 'Técnicas padronizadas de Thaut (RAS, TIMP, MACT...) com base em neurociência.',
-      values: {
-        theoretical_framework: 'A intervenção fundamenta-se no modelo de Musicoterapia Neurológica (NMT) de Michael Thaut, baseado na neurociência da música e na plasticidade cerebral, utilizando técnicas padronizadas para reabilitação sensório-motora, cognitiva e de linguagem em TEA, em consonância com DSM-5-TR e CID-11.',
-        assessment_tools_used: 'Instrumentos: protocolos NMT padronizados, avaliação de sincronização rítmica, testes de atenção e função executiva e registro neurocomportamental sistematizado.',
-        session_setting: 'Individual',
-        session_structure: 'Sessões organizadas por objetivos neurofuncionais, com aquecimento, aplicação de técnicas NMT específicas e fechamento, com registro de respostas.',
-        session_activities: ['Atividades de sincronização rítmica, marcha sonora, exercícios motores instrumentais e tarefas de atenção e memória musical.'],
-        improvisation_use: 'A improvisação foi utilizada de forma estruturada, como recurso complementar às técnicas padronizadas.',
-        receptive_techniques: 'Estimulação auditiva rítmica (RAS) e padrões sonoros para regulação e organização sensório-motora.',
-        recreative_techniques: 'Execução musical instrumental terapêutica (TIMP) para treino motor e coordenação.',
-        compositional_techniques: 'Uso pontual de criação de sequências musicais para treino de memória e função executiva (MACT/MMT).',
-        tempo_dynamics_used: 'Andamento e pulsação controlados por metrônomo e variações dinâmicas para favorecer sincronização e regulação.',
-        vocal_work: 'Técnicas vocais como entonação melódica (MIT) e estimulação musical da fala, conforme objetivos de linguagem.'
-      }
-    },
-    {
-      id: 'methodology_integrative',
-      label: 'Abordagem integrativa',
-      description: 'Combinação de Benenzon, Bruscia, Nordoff-Robbins e recursos sensoriais.',
-      values: {
-        theoretical_framework: 'A prática fundamenta-se em abordagem integrativa: Modelo Benenzon (Princípio do ISO), modelo de Bruscia (níveis e métodos — receptivo, recriativo, improvisacional e compositivo) e Musicoterapia Criativa de Nordoff-Robbins, associados às diretrizes de intervenção em TEA conforme DSM-5-TR e CID-11.',
-        assessment_tools_used: 'Instrumentos: Escala MuseTera, IMTAP, mapeamento do ISO, observação clínica sistematizada e registro qualitativo por método.',
-        session_setting: 'Individual',
-        session_structure: 'Sessões com estrutura previsível e flexível, contemplando abertura, desenvolvimento (com diferentes métodos) e encerramento.',
-        session_activities: ['Atividades receptivas, recriativas, improvisacionais e compositivas, ajustadas ao perfil e ao momento clínico do paciente.'],
-        improvisation_use: 'A improvisação foi utilizada como recurso central de vínculo e comunicação, integrada às demais técnicas.',
-        receptive_techniques: 'Audição musical seletiva, relaxamento sonoro e escuta de repertório significativo para regulação.',
-        recreative_techniques: 'Recriação de canções e padrões rítmicos, favorecendo participação, antecipação e troca de turnos.',
-        compositional_techniques: 'Criação conjunta de canções e motivos musicais como forma de expressão e pertencimento.',
-        tempo_dynamics_used: 'Variações de andamento e dinâmica utilizadas intencionalmente para regular ativação e sustentar a atenção.',
-        vocal_work: 'Trabalho vocal por meio de cantos, vocalizações e modulações, favorecendo comunicação e expressão emocional.'
-      }
-    }
-  ],
   communication_language: [
     {
       id: 'verbal_emerging',
@@ -542,141 +470,8 @@ const STEP_TEMPLATES: Record<string, TemplateOption[]> = {
         references_cited: 'Stige, B. (2002). Culture-Centered Music Therapy. Barcelona Publishers. Stige, B.; Aaro, L. E. (2012). Invitation to Community Music Therapy. Routledge. Pavlicevic, M.; Ansdell, G. (2004). Community Music Therapy. Jessica Kingsley. APA (2022). DSM-5-TR.'
       }
     }
-  ],
-  observed_results: [
-    {
-      id: 'results_positive',
-      label: 'Evolução positiva',
-      description: 'Paciente alcançou a maioria das metas com ganhos consistentes.',
-      values: {
-        goals_achieved: 'A maioria das metas terapêuticas propostas foi alcançada com sucesso, com destaque para a ampliação da comunicação (verbal e/ou não-verbal), maior tempo de atenção compartilhada e melhora na autorregulação emocional durante as atividades musicais.',
-        goals_in_progress: 'Algumas metas encontram-se em fase de consolidação, evoluindo de forma consistente sessão a sessão, com tendência clara de generalização para contextos familiar e escolar.',
-        quantitative_indicators: 'Os indicadores quantitativos da Escala MuseTera demonstraram evolução ascendente em todos os domínios avaliados, com ganhos mais expressivos nas dimensões comunicativa e socioemocional.',
-        treatment_summary: 'O período terapêutico caracterizou-se por evolução clínica favorável e consistente. O paciente respondeu positivamente às intervenções musicoterapêuticas, demonstrando engajamento progressivo, ampliação de repertório de habilidades e ganhos generalizáveis ao cotidiano.'
-      }
-    },
-    {
-      id: 'results_partial',
-      label: 'Evolução parcial',
-      description: 'Ganhos importantes, com metas ainda em desenvolvimento.',
-      values: {
-        goals_achieved: 'Parte das metas terapêuticas foi alcançada, com ganhos pontuais em comunicação não-verbal, tolerância ao setting e participação em atividades musicais estruturadas.',
-        goals_in_progress: 'Diversas metas permanecem em desenvolvimento, exigindo continuidade do processo terapêutico para consolidação. Observa-se evolução gradual, ainda dependente de mediação e apoio estruturado.',
-        quantitative_indicators: 'Os indicadores quantitativos da Escala MuseTera apontam evolução moderada, com avanços em domínios específicos e estabilidade em outros, indicando necessidade de manutenção do plano terapêutico.',
-        treatment_summary: 'O período terapêutico apresentou evolução parcial, com avanços relevantes em áreas específicas e metas ainda em processo de consolidação. Recomenda-se continuidade do tratamento para potencializar os ganhos observados.'
-      }
-    },
-    {
-      id: 'results_limited',
-      label: 'Evolução limitada / inicial',
-      description: 'Fase inicial ou ganhos discretos, vínculo em construção.',
-      values: {
-        goals_achieved: 'Nesta fase inicial, observam-se ganhos discretos, especialmente relacionados ao estabelecimento do vínculo terapêutico e à tolerância progressiva ao ambiente sonoro-musical.',
-        goals_in_progress: 'A maior parte das metas permanece em estágio inicial de desenvolvimento, demandando tempo, constância e adaptações sensoriais para que se efetivem ganhos mais consistentes.',
-        quantitative_indicators: 'Os indicadores quantitativos da Escala MuseTera mantêm-se em patamares iniciais, refletindo o caráter recente do processo terapêutico e a importância da continuidade para evolução mensurável.',
-        treatment_summary: 'O período avaliado corresponde a uma fase inicial do processo terapêutico, marcada pela construção do vínculo e pela adaptação ao setting. Os ganhos, ainda discretos, sinalizam abertura para evolução com a continuidade do tratamento.'
-      }
-    },
-    {
-      id: 'results_unfavorable',
-      label: 'Resposta abaixo do esperado',
-      description: 'Paciente não respondeu bem às intervenções no período.',
-      values: {
-        goals_achieved: 'No período avaliado, as metas terapêuticas propostas não foram alcançadas conforme o esperado, observando-se respostas inconsistentes às intervenções musicoterapêuticas e dificuldade de engajamento sustentado nas atividades.',
-        goals_in_progress: 'A maioria das metas permanece sem evolução significativa, exigindo revisão do plano terapêutico, das estratégias adotadas e das adaptações sensoriais e ambientais oferecidas.',
-        quantitative_indicators: 'Os indicadores quantitativos da Escala MuseTera mantiveram-se estáveis ou apresentaram pouca variação, refletindo a baixa resposta às intervenções no período avaliado.',
-        treatment_summary: 'O período terapêutico caracterizou-se por resposta abaixo do esperado, com baixo engajamento e ganhos pouco expressivos. Recomenda-se reavaliação do plano terapêutico, investigação de fatores intervenientes (clínicos, sensoriais, contextuais) e eventual articulação interdisciplinar.'
-      }
-    }
-  ],
-  pending_intervention: [
-    {
-      id: 'pending_communication',
-      label: 'Foco em comunicação',
-      description: 'Aspectos comunicativos ainda a desenvolver.',
-      values: {
-        goals_not_achieved: 'As metas relacionadas à comunicação verbal expressiva e ao uso funcional da linguagem em contextos sociais ainda não foram plenamente alcançadas, permanecendo como prioridade para a próxima etapa terapêutica.',
-        red_flags_to_monitor: 'Recomenda-se monitorar a frequência de comportamentos repetitivos e estereotipias, bem como possíveis sinais de sobrecarga sensorial durante as atividades musicais.'
-      }
-    },
-    {
-      id: 'pending_social_regulation',
-      label: 'Foco em interação e regulação',
-      description: 'Interação social e autorregulação a fortalecer.',
-      values: {
-        goals_not_achieved: 'As metas voltadas à interação social recíproca, à atenção compartilhada sustentada e à autorregulação emocional em situações de frustração ainda requerem maior consolidação.',
-        red_flags_to_monitor: 'Atenção a episódios de desregulação emocional, dificuldade em transições e variações na qualidade do contato visual, que devem ser acompanhados ao longo do processo.'
-      }
-    },
-    {
-      id: 'pending_sensory',
-      label: 'Foco sensório-motor',
-      description: 'Integração sensorial e aspectos motores a evoluir.',
-      values: {
-        goals_not_achieved: 'As metas relacionadas à integração sensorial, à coordenação motora e à tolerância a diferentes estímulos sonoros e texturas instrumentais ainda estão em desenvolvimento.',
-        red_flags_to_monitor: 'Monitorar respostas de defesa sensorial (auditiva, tátil), bem como sinais de hipo ou hiper-reatividade que possam interferir na participação nas atividades.'
-      }
-    },
-    {
-      id: 'pending_low_response',
-      label: 'Resposta global limitada',
-      description: 'Paciente com baixo engajamento e dificuldades amplas.',
-      values: {
-        goals_not_achieved: 'A maior parte das metas terapêuticas não foi alcançada no período, observando-se baixo engajamento global, dificuldade de adesão ao setting e respostas inconsistentes às diferentes propostas musicais. Recomenda-se revisão do plano terapêutico e das estratégias de abordagem.',
-        red_flags_to_monitor: 'Atenção a sinais de sobrecarga sensorial persistente, recusa frequente das atividades, aumento de comportamentos de esquiva ou desregulação, e possíveis fatores clínicos ou contextuais que estejam interferindo na resposta terapêutica, com indicação de articulação interdisciplinar.'
-      }
-    }
-  ],
-  prognosis: [
-    {
-      id: 'prognosis_favorable',
-      label: 'Prognóstico favorável',
-      description: 'Boa resposta terapêutica e perspectiva de evolução consistente.',
-      values: {
-        next_objectives_short: 'Curto prazo (1-3 meses): Ampliar repertório de canções funcionais; consolidar troca de turnos musicais; aumentar o tempo de atenção compartilhada.',
-        next_objectives_medium: 'Médio prazo (3-6 meses): Desenvolver autorregulação por meio de improvisações estruturadas; estimular comunicação intencional via instrumentos.',
-        next_objectives_long: 'Longo prazo (6-12 meses): Promover a generalização das habilidades musicais para os contextos familiar e escolar.',
-        proposed_interventions: 'Manutenção das intervenções receptivas, recriativas e improvisacionais, com foco em ISO de Benenzon e adaptações sensoriais individualizadas.',
-        expected_outcomes: 'Espera-se evolução consistente nas dimensões comunicativa, socioemocional e sensório-motora, com generalização para contextos do cotidiano. Prognóstico favorável.'
-      }
-    },
-    {
-      id: 'prognosis_reserved',
-      label: 'Prognóstico reservado',
-      description: 'Evolução possível, dependente de continuidade e suporte.',
-      values: {
-        next_objectives_short: 'Curto prazo (1-3 meses): Fortalecer o vínculo terapêutico; ampliar a tolerância ao setting; consolidar rotinas sonoras previsíveis.',
-        next_objectives_medium: 'Médio prazo (3-6 meses): Desenvolver gradualmente a atenção compartilhada e a comunicação intencional, respeitando o ritmo do paciente.',
-        next_objectives_long: 'Longo prazo (6-12 meses): Buscar a consolidação de ganhos básicos, com reavaliação contínua dos objetivos conforme a evolução clínica.',
-        proposed_interventions: 'Intervenções predominantemente receptivas e exploratórias, com estruturação altamente previsível e adaptações sensoriais constantes.',
-        expected_outcomes: 'Prognóstico reservado: a evolução é possível, porém gradual, e fortemente dependente da continuidade do tratamento e do suporte familiar e interdisciplinar.'
-      }
-    },
-    {
-      id: 'prognosis_discharge',
-      label: 'Preparação para alta',
-      description: 'Ganhos consolidados, com vistas à alta terapêutica gradual.',
-      values: {
-        next_objectives_short: 'Curto prazo (1-3 meses): Estimular a autonomia na escolha de atividades musicais; consolidar a autorregulação por meio da música.',
-        next_objectives_medium: 'Médio prazo (3-6 meses): Promover a participação em atividades musicais grupais; transferir estratégias para o cotidiano.',
-        next_objectives_long: 'Longo prazo (6-12 meses): Preparar a alta terapêutica gradual, com orientações de continuidade musical em ambiente familiar e/ou escolar.',
-        proposed_interventions: 'Intervenções improvisacionais e compositivas centradas na autonomia do paciente, com orientação familiar e interdisciplinar para sustentação dos ganhos.',
-        expected_outcomes: 'Espera-se que o paciente utilize a música como recurso autorregulatório e comunicativo de forma autônoma e generalizada, sustentando os ganhos após a alta.'
-      }
-    },
-    {
-      id: 'prognosis_unfavorable',
-      label: 'Prognóstico desfavorável / a reavaliar',
-      description: 'Baixa resposta no período; necessita revisão do plano.',
-      values: {
-        next_objectives_short: 'Curto prazo (1-3 meses): Reestruturar o setting e as estratégias de abordagem; priorizar o restabelecimento do vínculo terapêutico e a tolerância mínima às atividades; reduzir demandas e ampliar adaptações sensoriais.',
-        next_objectives_medium: 'Médio prazo (3-6 meses): Investigar e tratar fatores intervenientes (clínicos, sensoriais, emocionais, contextuais); reavaliar a indicação e a frequência dos atendimentos em conjunto com a equipe interdisciplinar.',
-        next_objectives_long: 'Longo prazo (6-12 meses): Redefinir objetivos terapêuticos a partir de nova avaliação, considerando o ritmo individual do paciente e a necessidade de suporte intensivo e articulado.',
-        proposed_interventions: 'Intervenções predominantemente receptivas e de baixa demanda, com estruturação altamente previsível, adaptações sensoriais constantes e revisão contínua do plano terapêutico em articulação interdisciplinar.',
-        expected_outcomes: 'Prognóstico reservado a desfavorável no momento: a evolução depende da identificação e do manejo dos fatores que limitaram a resposta terapêutica, bem como da continuidade do tratamento com plano revisado e suporte familiar e interdisciplinar consistente.'
-      }
-    }
   ]
+
 };
 
 export function MusicoterapiaReportWizard({ 
@@ -685,7 +480,13 @@ export function MusicoterapiaReportWizard({
   onGenerateWithAI, 
   isGeneratingWithAI,
   patients,
+  onSelectPatient,
+  anamnesisStatus,
   onSaveReport,
+  logoUrl,
+  onLogoChange,
+  onExportPDF,
+  isExporting,
   isSaving,
   professionalData
 }: MusicoterapiaReportWizardProps) {
@@ -771,6 +572,36 @@ export function MusicoterapiaReportWizard({
       return missingFields;
     }
 
+    // Objetivos novos devem ser escolhidos exclusivamente no catálogo aprovado.
+    // Conteúdo legado permanece nos relatórios antigos, mas não é oferecido aqui.
+    if (currentStepData.id === 'therapeutic_objectives') {
+      const selected = getSelectedMusicoterapiaObjectives(reportData.fieldValues?.therapeutic_objective_ids);
+      return selected.length > 0
+        ? []
+        : [{ id: 'therapeutic_objective_ids', label: 'Selecione pelo menos um dos 27 objetivos terapêuticos' }];
+    }
+
+    if (currentStepData.id === 'methodology') {
+      const selected = getSelectedMusicoterapiaApproaches(reportData.fieldValues?.musicoterapia_approach_ids);
+      return selected.length > 0
+        ? []
+        : [{ id: 'musicoterapia_approach_ids', label: 'Selecione pelo menos uma abordagem musicoterapêutica' }];
+    }
+
+    if (currentStepData.id === 'observed_results') {
+      const issues = [
+        ...getApproachResultsValidationIssues(
+          reportData.fieldValues?.musicoterapia_approach_ids,
+          reportData.fieldValues?.approach_results
+        ),
+        ...getObjectiveOutcomesValidationIssues(
+          reportData.fieldValues?.therapeutic_objective_ids,
+          reportData.fieldValues?.objective_outcomes
+        )
+      ];
+      return issues.map((message, index) => ({ id: `result_${index}`, label: message }));
+    }
+
     // Validação padrão para outras etapas
     const requiredFields = musicoterapiaTemplate.fields.filter(field => 
       field.required && currentStepData.fields.includes(field.id)
@@ -785,28 +616,26 @@ export function MusicoterapiaReportWizard({
   };
 
   const canProceed = () => {
+    // Aguardar a consulta à Anamnese antes de avançar para outras etapas.
+    if (currentStep === 0 && anamnesisStatus === 'loading') return false;
     const missingFields = validateCurrentStep();
     return missingFields.length === 0;
   };
 
-  const handleAIGeneration = async () => {
-    const observations = Object.entries(reportData.fieldValues || {})
-      .map(([key, value]) => `${key}: ${value}`)
-      .join('\n');
-    
-    return await onGenerateWithAI(observations || 'Sessão de musicoterapia para TEA');
-  };
+
 
   const renderStepFields = () => {
     // Se for a primeira etapa (Informações Básicas), renderizar o componente especializado
     if (currentStep === 0) {
       return (
-        <div className="dark">
+        <div className="space-y-1">
           <BasicInformationSection
             reportData={reportData}
             onUpdateData={onUpdateData}
             professionalData={professionalData}
             patients={patients}
+            onSelectPatient={onSelectPatient}
+            anamnesisStatus={anamnesisStatus}
           />
         </div>
       );
@@ -815,14 +644,85 @@ export function MusicoterapiaReportWizard({
     // Se for a última etapa (Revisão Final), renderizar o componente especial
     if (currentStep === STEPS.length - 1) {
       return (
-        <div className="dark">
+        <div className="space-y-1">
           <FinalReviewSection
             reportData={reportData}
-            onOrganizeWithAI={handleAIGeneration}
-            isGeneratingWithAI={isGeneratingWithAI}
+            logoUrl={logoUrl}
+            onLogoChange={onLogoChange}
+            onExportPDF={onExportPDF}
+            isExporting={isExporting}
             onSaveReport={onSaveReport}
             isSaving={isSaving}
             professionalData={professionalData}
+          />
+        </div>
+      );
+    }
+
+    if (currentStepData.id === 'references') {
+      return (
+        <div className="space-y-1">
+          <MusicoterapiaReferenceSelector
+            selectedIds={getSelectedMusicoterapiaReferences(reportData.fieldValues?.musicoterapia_reference_ids).map((item) => item.id)}
+            selectedApproachIds={getSelectedMusicoterapiaApproaches(reportData.fieldValues?.musicoterapia_approach_ids).map((item) => item.id)}
+            onChange={(ids) => handleFieldUpdate('musicoterapia_reference_ids', ids)}
+          />
+        </div>
+      );
+    }
+
+    // A Etapa 03 mostra exclusivamente as dez abordagens solicitadas,
+    // sem os formulários, buscas ou modelos de metodologia legados.
+    if (currentStepData.id === 'methodology') {
+      return (
+        <div className="space-y-1">
+          <MusicoterapiaApproachSelector
+            selectedIds={getSelectedMusicoterapiaApproaches(reportData.fieldValues?.musicoterapia_approach_ids).map((item) => item.id)}
+            onChange={(ids) => handleFieldUpdate('musicoterapia_approach_ids', ids)}
+          />
+        </div>
+      );
+    }
+
+    // A Etapa 04 mostra somente as abordagens selecionadas na Etapa 03.
+    // Os antigos campos extensos e os modelos de respostas prontas não são exibidos.
+    if (currentStepData.id === 'observed_results') {
+      return (
+        <div className="space-y-1">
+          <div className="space-y-6">
+            <MusicoterapiaApproachResults
+              selectedApproachIds={getSelectedMusicoterapiaApproaches(reportData.fieldValues?.musicoterapia_approach_ids).map((item) => item.id)}
+              value={reportData.fieldValues?.approach_results}
+              onChange={(results) => handleFieldUpdate('approach_results', results)}
+            />
+            <MusicoterapiaObjectiveOutcomes
+              selectedIds={getSelectedMusicoterapiaObjectives(reportData.fieldValues?.therapeutic_objective_ids).map((item) => item.id)}
+              value={reportData.fieldValues?.objective_outcomes}
+              onChange={(outcomes) => handleFieldUpdate('objective_outcomes', outcomes)}
+            />
+          </div>
+        </div>
+      );
+    }
+
+    if (currentStepData.id === 'pending_intervention') {
+      return (
+        <div className="space-y-1">
+          <MusicoterapiaPendingInterventions
+            selectedObjectiveIds={reportData.fieldValues?.therapeutic_objective_ids}
+            selectedApproachIds={reportData.fieldValues?.musicoterapia_approach_ids}
+            objectiveOutcomes={reportData.fieldValues?.objective_outcomes}
+          />
+        </div>
+      );
+    }
+
+    if (currentStepData.id === 'final_considerations') {
+      return (
+        <div className="space-y-1">
+          <MusicoterapiaFinalConsiderations
+            fields={reportData.fieldValues}
+            onChange={(note) => handleFieldUpdate('final_considerations', note)}
           />
         </div>
       );
@@ -839,38 +739,45 @@ export function MusicoterapiaReportWizard({
     const HintIcon = hint?.icon || Info;
 
     return (
-      <div className="dark space-y-8">
-        {/* Step hint banner */}
-        {hint && (
-          <div className="relative overflow-hidden rounded-2xl border border-[#c9a84c]/20 bg-gradient-to-br from-[#c9a84c]/[0.06] via-transparent to-transparent p-5 flex gap-4">
-            <div className="shrink-0 h-10 w-10 rounded-xl bg-[#c9a84c]/10 border border-[#c9a84c]/30 flex items-center justify-center">
-              <HintIcon className="h-5 w-5 text-[#f0d78c]" />
+      <div className="space-y-6">
+        {/* Evitar orientações redundantes na Etapa 07, que agora tem só um campo. */}
+        {hint && currentStepData.id !== 'recommendations' && (
+          <div className="relative overflow-hidden rounded-2xl border border-teal-600/20 bg-gradient-to-br from-teal-600/5 via-transparent to-transparent p-5 flex gap-4">
+            <div className="shrink-0 h-10 w-10 rounded-xl bg-teal-600/10 border border-teal-600/30 flex items-center justify-center">
+              <HintIcon className="h-5 w-5 text-teal-800 dark:text-teal-200" />
             </div>
             <div className="space-y-1">
-              <div className="text-[10px] uppercase tracking-[0.2em] text-[#c9a84c] font-bold">Dica clínica</div>
-              <h3 className="text-base text-[#f0d78c] font-semibold" style={{ fontFamily: "'Instrument Serif', serif" }}>
+              <div className="text-[10px] uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400 font-bold">Dica clínica</div>
+              <h3 className="text-base text-teal-800 dark:text-teal-200 font-semibold" >
                 {hint.title}
               </h3>
-              <p className="text-sm text-gray-400 font-light leading-relaxed">{hint.description}</p>
+              <p className="text-sm text-muted-foreground font-light leading-relaxed">{hint.description}</p>
             </div>
           </div>
         )}
 
+        {currentStepData.id === 'therapeutic_objectives' && (
+          <MusicoterapiaObjectiveSelector
+            selectedIds={getSelectedMusicoterapiaObjectives(reportData.fieldValues?.therapeutic_objective_ids).map((item) => item.id)}
+            onChange={(ids) => handleFieldUpdate('therapeutic_objective_ids', ids)}
+          />
+        )}
+
         {/* Templates profissionais (noir/gold) */}
         {templateOptions && (
-          <div className="relative rounded-2xl border-2 border-[#c9a84c]/40 bg-gradient-to-br from-[#c9a84c]/[0.10] via-[#0d0d0d]/60 to-[#0d0d0d]/40 p-5 sm:p-6 space-y-5 shadow-[0_0_40px_-12px_rgba(201,168,76,0.35)]">
-            <div className="absolute -top-3 left-5 px-3 py-1 rounded-full bg-[#c9a84c] text-[#0d0d0d] text-[10px] uppercase tracking-[0.18em] font-black shadow-lg">
+          <div className="relative rounded-2xl border-2 border-teal-600/40 bg-gradient-to-br from-teal-600/10 via-card to-card p-5 sm:p-6 space-y-5 shadow-sm">
+            <div className="absolute -top-3 left-5 px-3 py-1 rounded-full bg-teal-700 text-white text-[10px] uppercase tracking-[0.18em] font-black shadow-lg">
               ✦ Textos prontos
             </div>
             <div className="flex items-start gap-3 pt-1">
-              <div className="h-11 w-11 rounded-xl bg-[#c9a84c]/15 border border-[#c9a84c]/40 flex items-center justify-center shrink-0">
-                <Wand2 className="h-5 w-5 text-[#f0d78c]" />
+              <div className="h-11 w-11 rounded-xl bg-teal-600/15 border border-teal-600/40 flex items-center justify-center shrink-0">
+                <Wand2 className="h-5 w-5 text-teal-800 dark:text-teal-200" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-lg text-[#f0d78c] font-bold" style={{ fontFamily: "'Instrument Serif', serif" }}>
+                <h3 className="text-lg text-teal-800 dark:text-teal-200 font-bold" >
                   Selecione um texto pronto
                 </h3>
-                <p className="text-sm text-gray-300 font-light leading-relaxed">
+                <p className="text-sm text-foreground/80 font-light leading-relaxed">
                   Escolha o modelo mais próximo do perfil clínico do paciente — os campos serão preenchidos automaticamente e você poderá editá-los livremente.
                 </p>
               </div>
@@ -885,21 +792,21 @@ export function MusicoterapiaReportWizard({
                     onClick={() => applyTemplateOption(opt)}
                     className={`group text-left p-4 rounded-xl border transition-all ${
                       isActive
-                        ? 'border-[#c9a84c] bg-[#c9a84c]/15 shadow-[0_0_30px_-10px_rgba(201,168,76,0.6)]'
-                        : 'border-[#c9a84c]/25 bg-[#1a1a1a]/70 hover:border-[#c9a84c]/60 hover:bg-[#c9a84c]/[0.08] hover:-translate-y-0.5'
+                        ? 'border-teal-600 bg-teal-600/15 shadow-[0_0_30px_-10px_rgba(201,168,76,0.6)]'
+                        : 'border-teal-600/25 bg-card/70 hover:border-teal-600/60 hover:bg-teal-600/[0.08] hover:-translate-y-0.5'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2 mb-1.5">
-                      <span className={`font-semibold text-sm ${isActive ? 'text-[#f0d78c]' : 'text-gray-200 group-hover:text-[#f0d78c]'}`}>
+                      <span className={`font-semibold text-sm ${isActive ? 'text-teal-800 dark:text-teal-200' : 'text-foreground group-hover:text-teal-700 dark:group-hover:text-teal-200'}`}>
                         {opt.label}
                       </span>
                       {isActive && (
-                        <div className="h-5 w-5 rounded-full bg-[#c9a84c] flex items-center justify-center">
-                          <Check className="h-3 w-3 text-[#0d0d0d]" />
+                        <div className="h-5 w-5 rounded-full bg-teal-700 flex items-center justify-center">
+                          <Check className="h-3 w-3 text-white" />
                         </div>
                       )}
                     </div>
-                    <p className="text-xs text-gray-500 font-light leading-relaxed">{opt.description}</p>
+                    <p className="text-xs text-muted-foreground font-normal leading-relaxed">{opt.description}</p>
                   </button>
                 );
               })}
@@ -919,16 +826,16 @@ export function MusicoterapiaReportWizard({
             return (
               <div
                 key={field.id}
-                className={`group rounded-2xl border bg-[#0d0d0d]/40 p-5 sm:p-6 transition-all hover:border-[#c9a84c]/40 ${
-                  isFilled ? 'border-[#c9a84c]/30' : 'border-white/10'
+                className={`group rounded-2xl border bg-background/40 p-5 sm:p-6 transition-all hover:border-teal-600/40 ${
+                  isFilled ? 'border-teal-600/30' : 'border-border/60'
                 }`}
               >
                 <div className="flex items-start gap-3 mb-4">
                   <div
                     className={`shrink-0 h-7 w-7 rounded-full flex items-center justify-center text-[10px] font-black border transition-colors ${
                       isFilled
-                        ? 'bg-[#c9a84c] text-[#0d0d0d] border-[#c9a84c]'
-                        : 'bg-transparent text-gray-500 border-white/15 group-hover:text-[#f0d78c] group-hover:border-[#c9a84c]/50'
+                        ? 'bg-teal-700 text-white border-teal-600'
+                        : 'bg-transparent text-muted-foreground border-border/70 group-hover:text-teal-800 dark:text-teal-200 group-hover:border-teal-600/50'
                     }`}
                   >
                     {isFilled ? <Check className="h-3.5 w-3.5" /> : String(idx + 1).padStart(2, '0')}
@@ -959,158 +866,126 @@ export function MusicoterapiaReportWizard({
   const StepIcon = currentStepData.icon;
 
   return (
-    <div className={`${showQuickFill ? 'max-w-6xl' : 'max-w-3xl'} mx-auto space-y-8 sm:space-y-12 lg:space-y-16 px-3 sm:px-4 lg:px-0 transition-[max-width] duration-300`} style={{ fontFamily: "'Work Sans', sans-serif" }}>
-      {/* Editorial Hero — Monolithic noir & gold */}
-      <header className="flex flex-col items-center text-center space-y-4 sm:space-y-6 lg:space-y-8 pt-2">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#c9a84c]/30 bg-[#c9a84c]/5 text-[#f0d78c] text-[9px] sm:text-[10px] font-bold tracking-[0.2em] uppercase">
-          Protocolo Clínico · TEA
-        </div>
-
-        <div className="space-y-2 sm:space-y-3 lg:space-y-4">
-          <h1
-            className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl text-[#f0d78c] leading-[1.05] px-2"
-            style={{ fontFamily: "'Instrument Serif', serif" }}
-          >
-            Relatório MuseTera TEA
-          </h1>
-          <p className="text-gray-400 max-w-xl mx-auto text-sm sm:text-base lg:text-lg font-light leading-relaxed px-2">
-            Estrutura premium para documentação de avaliação, objetivos, técnicas e evolução clínica em musicoterapia.
-          </p>
-        </div>
-
-        {/* Progresso editorial */}
-        <div className="w-full max-w-md pt-2">
-          <div className="flex justify-between items-center mb-2 text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold">
-            <span>Progresso</span>
-            <span className="text-[#c9a84c]">{Math.round(progress)}%</span>
+    <div className={`${showQuickFill ? 'max-w-6xl' : 'max-w-5xl'} mx-auto space-y-5 sm:space-y-6 lg:space-y-7 px-3 sm:px-4 lg:px-0 transition-[max-width] duration-300`} >
+      {/* Clinical workspace: compact heading, readable progress and direct step navigation */}
+      <header className="relative overflow-hidden rounded-2xl border border-teal-800/25 bg-gradient-to-br from-[#0f302f] via-[#164845] to-[#155e58] p-5 sm:p-7 lg:p-8 shadow-lg">
+        <div className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full border-[32px] border-border/60" />
+        <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="space-y-3">
+            <div className="inline-flex items-center gap-2 rounded-full border border-teal-200/25 bg-white/10 px-3 py-1 text-[11px] font-semibold tracking-wide text-teal-50">
+              <Music className="h-3.5 w-3.5" />
+              MUSETERA · DOCUMENTAÇÃO CLÍNICA
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl lg:text-4xl">
+              Relatório MuseTera TEA
+            </h1>
+            <p className="max-w-2xl text-sm leading-relaxed text-teal-50/85">
+              Documente o atendimento em nove etapas, registre respostas observáveis e revise o conteúdo antes de gerar o relatório clínico.
+            </p>
           </div>
-          <div className="h-[2px] bg-white/5 overflow-hidden rounded-full">
-            <div
-              className="h-full bg-gradient-to-r from-[#c9a84c] to-[#f0d78c] transition-all duration-500"
-              style={{ width: `${progress}%` }}
-            />
+          <div className="w-full rounded-xl border border-border/70 bg-white/10 p-4 backdrop-blur-sm lg:w-64">
+            <div className="mb-2 flex items-center justify-between text-xs font-medium text-teal-50">
+              <span>Etapa {currentStep + 1} de {STEPS.length}</span>
+              <span>{Math.round(progress)}%</span>
+            </div>
+            <div className="h-2 overflow-hidden rounded-full bg-black/20" role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100} aria-label="Progresso do relatório">
+              <div className="h-full rounded-full bg-teal-200 transition-all duration-300" style={{ width: `${progress}%` }} />
+            </div>
+            <p className="mt-2 text-xs text-teal-50/75">Navegação do formulário · não indica conclusão clínica</p>
           </div>
         </div>
       </header>
 
-      {/* Stepper Indicator — horizontal numbered */}
-      {/* Stepper Indicator — compact on mobile, full on desktop */}
-      <nav className="relative px-1 sm:px-2">
-        {/* Mobile: compact pill view */}
-        <div className="lg:hidden space-y-3">
-          <div className="flex items-center justify-between gap-3">
-            <button
-              type="button"
-              onClick={handlePrevStep}
-              disabled={currentStep === 0}
-              aria-label="Etapa anterior"
-              className="h-9 w-9 rounded-full bg-[#1a1a1a] border border-white/10 text-[#f0d78c] disabled:opacity-30 flex items-center justify-center shrink-0"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-            <div className="flex-1 min-w-0 text-center">
-              <div className="text-[9px] uppercase tracking-[0.2em] text-[#c9a84c] font-bold">
-                Etapa {currentStep + 1} de {STEPS.length}
-              </div>
-              <div className="text-sm text-[#f0d78c] font-semibold truncate" style={{ fontFamily: "'Instrument Serif', serif" }}>
-                {currentStepData.title.replace(/^\d+\.\s*/, '')}
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={handleNextStep}
-              disabled={currentStep === STEPS.length - 1 || !canProceed()}
-              aria-label="Próxima etapa"
-              className="h-9 w-9 rounded-full bg-[#c9a84c] text-[#0d0d0d] disabled:opacity-30 flex items-center justify-center shrink-0"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
+      {/* Compact context strip uses only current report values; no implied clinical completion. */}
+      <div className="grid gap-2 rounded-2xl border border-border/70 bg-card p-3 shadow-sm sm:grid-cols-3 sm:p-4">
+        <div className="min-w-0 rounded-xl bg-muted/40 px-3 py-2">
+          <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Paciente</p>
+          <p className="mt-1 truncate text-sm font-semibold text-foreground">{reportData.patientName?.trim() || 'Aguardando identificação'}</p>
+        </div>
+        <div className="rounded-xl bg-muted/40 px-3 py-2">
+          <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Objetivos selecionados</p>
+          <p className="mt-1 text-sm font-semibold text-foreground">{getSelectedMusicoterapiaObjectives(reportData.fieldValues?.therapeutic_objective_ids).length}</p>
+        </div>
+        <div className="rounded-xl bg-muted/40 px-3 py-2">
+          <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Abordagens selecionadas</p>
+          <p className="mt-1 text-sm font-semibold text-foreground">{getSelectedMusicoterapiaApproaches(reportData.fieldValues?.musicoterapia_approach_ids).length}</p>
+        </div>
+      </div>
+
+      {/* All steps remain directly accessible on desktop; mobile uses a scrollable row */}
+      <nav aria-label="Etapas do relatório" className="rounded-2xl border border-border/70 bg-card p-3 shadow-sm sm:p-4">
+        <div className="flex items-center justify-between gap-3 pb-3">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-teal-600 dark:text-teal-400">Organização do documento</p>
+            <p className="text-sm text-muted-foreground">Navegue entre as nove etapas. Os registros precisam de revisão antes da emissão.</p>
           </div>
-          <div className="flex items-center justify-center gap-1.5">
-            {STEPS.map((step, index) => {
-              const isCompleted = index < currentStep;
-              const isCurrent = index === currentStep;
-              return (
-                <button
-                  key={step.id}
-                  type="button"
-                  onClick={() => { setCurrentStep(index); scrollToStepContent(); }}
-                  aria-label={`Ir para ${step.title}`}
-                  className={`h-1.5 rounded-full transition-all ${
-                    isCurrent ? 'w-6 bg-[#c9a84c]' : isCompleted ? 'w-3 bg-[#c9a84c]/60' : 'w-3 bg-white/15'
-                  }`}
-                />
-              );
-            })}
+          <div className="hidden shrink-0 items-center gap-2 rounded-lg bg-muted px-3 py-2 text-xs font-medium text-foreground sm:flex">
+            <ClipboardList className="h-4 w-4 text-teal-600" />
+            {currentStep + 1}/{STEPS.length}
           </div>
         </div>
-
-        {/* Desktop: full stepper */}
-        <div className="hidden lg:block relative">
-          <div className="absolute top-5 left-0 w-full h-[1px] bg-white/5" />
-          <ul className="relative flex justify-between">
-            {STEPS.map((step, index) => {
-              const isCompleted = index < currentStep;
-              const isCurrent = index === currentStep;
-              return (
-                <li key={step.id} className="flex flex-col items-center gap-3 flex-1 min-w-0">
-                  <button
-                    type="button"
-                    onClick={() => setCurrentStep(index)}
-                    className={`h-10 w-10 rounded-full flex items-center justify-center text-xs font-black ring-8 ring-[#0d0d0d] transition-all
-                      ${isCurrent
-                        ? 'bg-[#c9a84c] text-[#0d0d0d] shadow-[0_0_24px_rgba(201,168,76,0.35)] scale-110'
-                        : isCompleted
-                          ? 'bg-[#1a1a1a] border border-[#c9a84c]/60 text-[#f0d78c]'
-                          : 'bg-[#1a1a1a] border border-white/15 text-white/60 hover:border-[#c9a84c]/40'
-                      }`}
-                  >
-                    {isCompleted ? <Check className="h-4 w-4" /> : String(index + 1).padStart(2, '0')}
-                  </button>
-                  <span
-                    className={`text-[9px] uppercase tracking-widest font-bold text-center transition-colors px-1 leading-tight
-                      ${isCurrent ? 'text-[#c9a84c]' : isCompleted ? 'text-[#f0d78c]/70' : 'text-gray-500'}`}
-                    style={{ fontFamily: "'Work Sans'" }}
-                  >
-                    {step.title.replace(/^\d+\.\s*/, '').split(' ').slice(0, 2).join(' ')}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
+        <div className="flex gap-2 overflow-x-auto pb-2 lg:grid lg:grid-cols-4 lg:overflow-visible xl:grid-cols-5">
+          {STEPS.map((step, index) => {
+            const active = currentStep === index;
+            const Icon = step.icon;
+            return (
+              <button
+                key={step.id}
+                type="button"
+                onClick={() => { setCurrentStep(index); scrollToStepContent(); }}
+                aria-current={active ? 'step' : undefined}
+                aria-label={`Etapa ${index + 1}: ${step.title.replace(/^\d+\.\s*/, '')}`}
+                className={`flex min-w-[162px] items-center gap-2 rounded-xl border px-3 py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 lg:min-w-0 ${
+                  active
+                    ? 'border-teal-500 bg-teal-50 text-teal-950 shadow-sm dark:bg-teal-950/40 dark:text-teal-100'
+                    : 'border-border/70 bg-background text-foreground hover:border-teal-400 hover:bg-accent/50'
+                }`}
+              >
+                <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
+                  active ? 'bg-teal-700 text-white' : 'bg-muted text-muted-foreground'
+                }`}>
+                  <Icon className="h-4 w-4" />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-[10px] font-medium opacity-70">ETAPA {String(index + 1).padStart(2, '0')}</span>
+                  <span className="block text-xs font-semibold leading-tight">{step.title.replace(/^\d+\.\s*/, '')}</span>
+                </span>
+              </button>
+            );
+          })}
         </div>
       </nav>
 
       {/* Main Wizard Card — Monolithic */}
       <div ref={stepContentRef} className={`grid grid-cols-1 gap-6 ${showQuickFill ? 'lg:grid-cols-4' : ''}`}>
-        <section className={`${showQuickFill ? 'lg:col-span-3' : ''} bg-[#1a1a1a] rounded-2xl sm:rounded-[2rem] lg:rounded-[2.5rem] border border-white/5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden relative`}>
+        <section className={`${showQuickFill ? 'lg:col-span-3' : ''} bg-card rounded-2xl border border-border/70 shadow-lg overflow-hidden relative`}>
           {/* Premium accent light */}
-          <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#c9a84c]/10 blur-[100px] rounded-full pointer-events-none" />
+          <div className="absolute -top-24 -right-24 w-64 h-64 bg-teal-500/5 blur-[100px] rounded-full pointer-events-none" />
 
           <div className="p-4 sm:p-8 lg:p-12 space-y-6 sm:space-y-8 lg:space-y-10 relative z-10">
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-[#c9a84c] font-bold">
+              <div className="inline-flex items-center gap-2 text-xs uppercase tracking-wider text-teal-700 dark:text-teal-300 font-semibold">
                 <StepIcon className="h-3.5 w-3.5" />
                 Etapa {String(currentStep + 1).padStart(2, '0')} de {String(STEPS.length).padStart(2, '0')}
               </div>
               <h2
-                className="text-2xl sm:text-3xl lg:text-4xl text-[#f0d78c] leading-tight"
-                style={{ fontFamily: "'Instrument Serif', serif" }}
+                className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground leading-tight"
+                
               >
                 {currentStepData.title.replace(/^\d+\.\s*/, '')}
               </h2>
-              <p className="text-xs sm:text-sm text-gray-500 font-light">{currentStepData.description}</p>
+              <p className="text-sm text-muted-foreground">{currentStepData.description}</p>
             </div>
 
             <div className="text-foreground">
               {renderStepFields()}
             </div>
 
-            <footer className="pt-6 sm:pt-8 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between border-t border-white/5 gap-4 sm:gap-6">
+            <footer className="pt-6 sm:pt-8 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between border-t border-border/60 gap-4 sm:gap-6">
               <div className="hidden sm:flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-[#c9a84c] animate-pulse" />
-                <span className="text-[10px] text-gray-500 uppercase tracking-widest font-medium">
-                  Sincronizado com Nuvem
+                <div className="w-2 h-2 rounded-full bg-teal-600" />
+                <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">
+                  Revise as informações antes de emitir
                 </span>
               </div>
 
@@ -1119,7 +994,7 @@ export function MusicoterapiaReportWizard({
                   variant="ghost"
                   onClick={handlePrevStep}
                   disabled={currentStep === 0}
-                  className="text-gray-400 hover:text-[#f0d78c] hover:bg-white/5 px-3 sm:px-4"
+                  className="text-muted-foreground hover:text-foreground hover:bg-muted px-3 sm:px-4"
                 >
                   <ChevronLeft className="h-4 w-4 sm:mr-2" />
                   <span className="hidden sm:inline">Anterior</span>
@@ -1128,8 +1003,8 @@ export function MusicoterapiaReportWizard({
                   type="button"
                   onClick={handleNextStep}
                   disabled={currentStep === STEPS.length - 1 || !canProceed()}
-                  className="group flex items-center justify-center gap-2 sm:gap-3 bg-[#c9a84c] hover:bg-[#f0d78c] disabled:opacity-40 disabled:cursor-not-allowed text-[#0d0d0d] px-5 sm:px-10 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-sm sm:text-base flex-1 sm:flex-none"
-                  style={{ fontFamily: "'Work Sans'" }}
+                  className="group flex min-h-11 items-center justify-center gap-2 bg-teal-700 hover:bg-teal-800 disabled:opacity-40 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-semibold transition-colors text-sm flex-1 sm:flex-none"
+                  
                 >
                   Próxima Seção
                   <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -1139,7 +1014,9 @@ export function MusicoterapiaReportWizard({
 
             {!canProceed() && (
               <p className="text-xs text-destructive text-center">
-                Preencha os campos obrigatórios para continuar
+                {currentStep === 0 && anamnesisStatus === 'loading'
+                  ? 'Aguarde: buscando os dados da Anamnese...'
+                  : 'Preencha os campos obrigatórios para continuar'}
               </p>
             )}
           </div>
