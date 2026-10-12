@@ -101,14 +101,14 @@ export default function LoginForm({ onSwitchToPasswordReset, onSwitchToRegister 
 
   return (
     <>
-      <div className="w-full animate-fade-in relative">
+      <div className="relative w-full min-w-0 animate-fade-in">
       {/* Enhanced Floating Musical Elements */}
       <div className="absolute -top-4 md:-top-6 -left-4 md:-left-6 w-12 md:w-16 h-12 md:h-16 bg-gradient-to-br from-primary/30 to-secondary/30 rounded-full blur-2xl animate-pulse"></div>
       <div className="absolute -top-3 md:-top-4 -right-6 md:-right-8 w-8 md:w-10 h-8 md:h-10 bg-gradient-to-br from-secondary/40 to-primary/40 rounded-full blur-xl animate-pulse delay-1000"></div>
       <div className="absolute bottom-10 -left-8 w-10 h-10 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full blur-xl animate-pulse delay-2000"></div>
       
       {/* Cosmic Hero - Planeta central com órbitas, planetas e logo */}
-      <div className="text-center mb-5 relative rounded-3xl border border-white/15 bg-slate-950/50 px-4 py-4 backdrop-blur-xl">
+      <div className="relative mb-3 rounded-2xl border border-white/15 bg-slate-950/50 px-3 py-2 text-center backdrop-blur-xl sm:mb-5 sm:rounded-3xl sm:px-4 sm:py-4">
         <CosmicHeroLogo />
         <p className="text-sm text-slate-100 animate-fade-in delay-200 font-medium mt-1">
           Sua clínica de musicoterapia, organizada em um só lugar
@@ -154,14 +154,14 @@ export default function LoginForm({ onSwitchToPasswordReset, onSwitchToRegister 
       )}
 
       {/* Enhanced Form Card with Glassmorphism */}
-      <div className="relative bg-white/95 text-slate-900 backdrop-blur-xl rounded-3xl shadow-2xl shadow-black/30 border border-white/80 p-6 sm:p-8 md:p-9 animate-scale-in delay-300 overflow-hidden">
+      <div className="relative w-full min-w-0 overflow-hidden rounded-2xl border border-white/80 bg-white/95 p-4 text-slate-900 shadow-2xl shadow-black/30 backdrop-blur-xl animate-scale-in delay-300 sm:rounded-3xl sm:p-7 lg:p-8">
         {/* Enhanced Decorative Elements */}
         <div className="absolute -top-2 -left-2 w-24 md:w-32 h-24 md:h-32 bg-gradient-to-br from-primary/30 to-transparent rounded-tl-3xl blur-2xl"></div>
         <div className="absolute -bottom-2 -right-2 w-24 md:w-32 h-24 md:h-32 bg-gradient-to-tl from-secondary/30 to-transparent rounded-br-3xl blur-2xl"></div>
         <div className="absolute top-1/2 left-0 w-1 h-32 bg-gradient-to-b from-transparent via-primary/30 to-transparent blur-sm"></div>
         <div className="absolute top-1/2 right-0 w-1 h-32 bg-gradient-to-b from-transparent via-secondary/30 to-transparent blur-sm"></div>
         
-        <form onSubmit={handleLogin} className="space-y-5 md:space-y-6 relative z-10">
+        <form onSubmit={handleLogin} className="relative z-10 space-y-4 sm:space-y-5">
           {/* Enhanced Email Input */}
           <div className="space-y-2 group">
             <label htmlFor="email" className="block text-xs sm:text-sm font-semibold text-slate-800 transition-colors group-focus-within:text-teal-800">
@@ -176,7 +176,7 @@ export default function LoginForm({ onSwitchToPasswordReset, onSwitchToRegister 
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="pl-10 md:pl-12 h-12 md:h-14 bg-white text-slate-950 placeholder:text-slate-500 border-2 border-slate-300 focus:border-teal-700 transition-all duration-300 focus:ring-4 focus:ring-primary/20 text-sm md:text-base rounded-xl hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5"
+                className="pl-10 md:pl-12 h-12 sm:h-13 bg-white text-slate-950 placeholder:text-slate-500 border-2 border-slate-300 focus:border-teal-700 transition-all duration-300 focus:ring-4 focus:ring-primary/20 text-base rounded-xl hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5"
                 placeholder="seu@email.com"
                 autoComplete="email"
                 required
@@ -186,7 +186,7 @@ export default function LoginForm({ onSwitchToPasswordReset, onSwitchToRegister 
 
           {/* Enhanced Password Input */}
           <div className="space-y-2 group">
-            <label htmlFor="password" className="block text-xs sm:text-sm font-semibold text-foreground transition-colors group-focus-within:text-primary">
+            <label htmlFor="password" className="block text-sm font-semibold text-slate-800 transition-colors group-focus-within:text-teal-800">
               Senha
             </label>
             <div className="relative">
@@ -235,7 +235,7 @@ export default function LoginForm({ onSwitchToPasswordReset, onSwitchToRegister 
             type="submit"
             disabled={isLoading}
             isLoading={isLoading}
-            className="w-full h-12 md:h-14 font-bold rounded-xl text-sm md:text-base transform hover:scale-[1.02] active:scale-[0.98]"
+            className="w-full h-12 md:h-14 font-bold rounded-xl text-sm md:text-base transition-transform active:scale-[0.99]"
           >
             {!isLoading && (
               <>
@@ -248,7 +248,7 @@ export default function LoginForm({ onSwitchToPasswordReset, onSwitchToRegister 
         </form>
 
         {onSwitchToRegister && (
-          <div className="mt-6 text-center relative z-10">
+          <div className="relative z-10 mt-5 text-center">
             <p className="text-sm text-slate-700">
               Ainda não tem conta?{" "}
               <button
