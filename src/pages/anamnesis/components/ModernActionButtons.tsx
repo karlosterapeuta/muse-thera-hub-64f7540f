@@ -66,8 +66,8 @@ export function ModernActionButtons({
               disabled={isSaving}
               className={cn(
                 "flex items-center gap-2 px-6 py-3 transition-all duration-200",
-                "bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700",
-                "dark:from-gray-600 dark:to-gray-700 dark:hover:from-gray-700 dark:hover:to-gray-800 text-white"
+                "bg-teal-700 hover:bg-teal-800",
+                "text-white"
               )}
             >
               {isSaving ? (
@@ -86,7 +86,7 @@ export function ModernActionButtons({
               disabled={isExportingPDF || isSaving}
               className={cn(
                 "flex items-center gap-2 px-6 py-3 shadow-lg hover:shadow-xl transition-all duration-200",
-                "bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground"
+                "bg-teal-800 hover:bg-teal-900 text-white"
               )}
             >
               {isExportingPDF ? (
