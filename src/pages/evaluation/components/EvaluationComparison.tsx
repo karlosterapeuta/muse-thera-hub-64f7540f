@@ -49,8 +49,10 @@ const DOMAIN_COLORS: Record<string, string> = {
 
 export function EvaluationComparison({ evaluations, selectedIds }: EvaluationComparisonProps) {
   const selectedEvaluations = useMemo(() => {
-    return evaluations
-      .filter((e) => selectedIds.includes(e.id))
+    const selected = evaluations.filter(e => selectedIds.includes(e.id));
+    const patientId = selected[0]?.patient_id;
+    return selected
+      .filter(e => e.patient_id === patientId)
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }, [evaluations, selectedIds]);
 
@@ -67,7 +69,7 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
 
       selectedEvaluations.forEach((evaluation, index) => {
         const domainScore = evaluation.content?.domainScores?.find((d) => d.domain === domain);
-        dataPoint[`eval_${index}`] = domainScore?.score || 0;
+        dataPoint[`eval_${index}`] = domainScore?.score ?? null;
         dataPoint[`date_${index}`] = format(new Date(evaluation.date), "dd/MM", { locale: ptBR });
       });
 
@@ -80,7 +82,7 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
       const dataPoint: Record<string, any> = {
         date: format(new Date(evaluation.date), "dd/MM/yy", { locale: ptBR }),
         fullDate: evaluation.date,
-        overall: evaluation.content?.overallScore?.percentage || 0,
+        overall: evaluation.content?.overallScore?.percentage ?? null,
       };
 
       evaluation.content?.domainScores?.forEach((domain) => {
@@ -101,14 +103,16 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
         label: meta.label,
         color: meta.color,
         date: format(new Date(evaluation.date), "dd/MM/yy", { locale: ptBR }),
-        score: evaluation.content?.overallScore?.percentage || 0,
+        score: evaluation.content?.overallScore?.percentage ?? null,
       };
     });
   }, [selectedEvaluations]);
 
   const stageVariation = useMemo(() => {
     if (stageData.length < 2) return 0;
-    return stageData[stageData.length - 1].score - stageData[0].score;
+    const first = stageData[0].score;
+    const last = stageData[stageData.length - 1].score;
+    return first === null || last === null ? 0 : last - first;
   }, [stageData]);
 
   // Levantamento de dados / análise detalhada entre as avaliações
@@ -126,12 +130,12 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
     return domains.map((domain) => {
       const scores = selectedEvaluations.map((evaluation) => {
         const domainScore = evaluation.content?.domainScores?.find((d) => d.domain === domain);
-        return domainScore?.score || 0;
+        return domainScore?.score ?? null;
       });
 
       const firstScore = scores[0];
       const lastScore = scores[scores.length - 1];
-      const variation = lastScore - firstScore;
+      const variation = firstScore === null || lastScore === null ? null : lastScore - firstScore;
 
       return {
         domain: domain.replace("Domínio ", ""),
@@ -188,7 +192,7 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
     );
   }
 
-  if (selectedIds.length === 1) {
+  if (selectedEvaluations.length === 1) {
     const evaluation = selectedEvaluations[0];
     return (
       <Card className="p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
