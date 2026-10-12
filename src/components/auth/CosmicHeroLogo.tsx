@@ -317,10 +317,10 @@ export function CosmicHeroLogo() {
   }, []);
 
   return (
-    <div className="flex justify-center animate-[float-cosmic_6s_ease-in-out_infinite]">
+    <div className="flex min-w-0 justify-center motion-safe:sm:animate-[float-cosmic_6s_ease-in-out_infinite]">
       <canvas
         ref={canvasRef}
-        className="w-[280px] h-[280px] sm:w-[320px] sm:h-[320px] md:w-[360px] md:h-[360px] lg:w-[400px] lg:h-[400px]"
+        className="h-[150px] w-[150px] max-w-full sm:h-[220px] sm:w-[220px] md:h-[260px] md:w-[260px] lg:h-[280px] lg:w-[280px] xl:h-[310px] xl:w-[310px]"
         style={{ imageRendering: "auto" }}
       />
     </div>
