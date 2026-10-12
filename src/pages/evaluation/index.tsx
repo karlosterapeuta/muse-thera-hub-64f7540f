@@ -1576,7 +1576,15 @@ export default function Evaluation() {
                   <PatientSelect
                     patients={patients}
                     selectedPatient={selectedPatient}
-                    onSelect={setSelectedPatient}
+                    onSelect={(patientId) => {
+                      if (patientId !== selectedPatient) {
+                        setSelectedPatient(patientId);
+                        setEditingEvaluationId(null);
+                        setSelections({});
+                        setObservations({});
+                        setEvaluationDate(new Date());
+                      }
+                    }}
                     isLoading={isLoading}
                     emptyMessage="Nenhum paciente cadastrado por você"
                   />
