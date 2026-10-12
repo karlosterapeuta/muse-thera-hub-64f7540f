@@ -119,6 +119,7 @@ export function useEvaluationStorage(patientId: string | null) {
       return false;
     }
 
+    if (isSaving) return false;
     setIsSaving(true);
     try {
       const evaluationTypeMap: Record<string, string> = {
@@ -149,8 +150,7 @@ export function useEvaluationStorage(patientId: string | null) {
       if (error) throw error;
 
       toast.success("Avaliação salva com sucesso!");
-      await loadEvaluations();
-      await loadAllEvaluations();
+      await Promise.allSettled([loadEvaluations(), loadAllEvaluations()]);
       return true;
     } catch (error) {
       console.error("Erro ao salvar avaliação:", error);
@@ -187,12 +187,15 @@ export function useEvaluationStorage(patientId: string | null) {
       const type = evaluationTypeMap[evaluationType] || "musetera_evaluation";
       const content = { selections, observations, domainScores, overallScore, evaluationType, scoringVersion: CURRENT_SCORING_VERSION };
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("assessments")
         .update({ date: date.toISOString(), type, content })
-        .eq("id", evaluationId);
+        .eq("id", evaluationId)
+        .eq("patient_id", patientId)
+        .select("id");
 
       if (error) throw error;
+      if (!data?.length) throw new Error("Avaliação não encontrada ou sem permissão para atualizar.");
 
       toast.success("Avaliação atualizada com sucesso!");
       await loadEvaluations();
@@ -208,14 +211,18 @@ export function useEvaluationStorage(patientId: string | null) {
   };
 
   const deleteEvaluation = async (evaluationId: string) => {
+    if (!patientId) return false;
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("assessments")
         .delete()
-        .eq("id", evaluationId);
+        .eq("id", evaluationId)
+        .eq("patient_id", patientId)
+        .select("id");
 
       if (error) throw error;
 
+      if (!data?.length) throw new Error("Avaliação não encontrada ou sem permissão para excluir.");
       toast.success("Avaliação excluída com sucesso!");
       setSavedEvaluations((prev) => prev.filter((e) => e.id !== evaluationId));
       setAllEvaluations((prev) => prev.filter((e) => e.id !== evaluationId));
