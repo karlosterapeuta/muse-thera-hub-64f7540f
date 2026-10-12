@@ -10,21 +10,21 @@
   html {
     margin: 0 !important;
     padding: 0 !important;
-    width: 100vw;
-    max-width: 100vw;
+    width: 100%;
+    max-width: 100%;
     overflow-x: hidden;
   }
   
   body {
     margin: 0 !important;
     padding: 0 !important;
-    width: 100vw;
-    max-width: 100vw;
+    width: 100%;
+    max-width: 100%;
   }
   
   #root {
     width: 100%;
-    max-width: 100vw;
+    max-width: 100%;
     margin: 0;
     padding: 0;
   }
@@ -432,7 +432,7 @@
 /* Otimização de layout para aproveitamento máximo da tela */
 .layout-optimized {
   width: 100%;
-  max-width: 100vw;
+  max-width: 100%;
   margin: 0 auto;
 }
 
@@ -477,8 +477,8 @@
 /* Classe para conteúdo ultra-amplo no mobile */
 @media (max-width: 640px) {
   .mobile-ultra-wide {
-    width: 100vw;
-    max-width: 100vw;
+    width: 100%;
+    max-width: 100%;
     margin-left: 0;
     margin-right: 0;
     padding-left: 0;
@@ -642,4 +642,60 @@
 @keyframes shimmer-slide {
   0% { left: -150%; }
   100% { left: 150%; }
+}
+
+/* MuseTera adaptive layout foundation — preserve natural vertical scrolling. */
+@layer base {
+  html {
+    min-width: 0;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  body, #root {
+    min-width: 0;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: clip;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  img, video, svg, canvas { max-width: 100%; }
+  img, video { height: auto; }
+  input, select, textarea, button { max-width: 100%; }
+  :where(main, article, section) { min-width: 0; }
+  :where(pre, code) { overflow-wrap: anywhere; }
+}
+
+/* Mobile: keep tables horizontally scrollable rather than clipping clinical cells. */
+@media (max-width: 767px) {
+  :where([data-radix-scroll-area-viewport], .overflow-x-auto) {
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  input:not([type="checkbox"]):not([type="radio"]), select, textarea {
+    font-size: max(16px, 1rem);
+  }
+  :where([role="dialog"], [role="alertdialog"]) {
+    max-width: min(96vw, 36rem);
+    max-height: calc(100dvh - 24px);
+    overflow-y: auto;
+  }
+  .musetera-responsive-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  .musetera-responsive-container {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+}
+
+/* Respect iPhone display cutouts and accessibility motion preferences. */
+.musetera-safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.musetera-safe-top { padding-top: env(safe-area-inset-top, 0px); }
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in, .animate-slide-in, .animate-scale-in,
+  .animate-float-slow, .animate-float-slower, .animate-pulse-slow {
+    animation: none !important;
+  }
+  html:focus-within { scroll-behavior: auto; }
 }
