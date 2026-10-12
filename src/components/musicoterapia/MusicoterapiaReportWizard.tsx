@@ -628,7 +628,7 @@ export function MusicoterapiaReportWizard({
     // Se for a primeira etapa (Informações Básicas), renderizar o componente especializado
     if (currentStep === 0) {
       return (
-        <div className="dark">
+        <div className="space-y-1">
           <BasicInformationSection
             reportData={reportData}
             onUpdateData={onUpdateData}
@@ -644,7 +644,7 @@ export function MusicoterapiaReportWizard({
     // Se for a última etapa (Revisão Final), renderizar o componente especial
     if (currentStep === STEPS.length - 1) {
       return (
-        <div className="dark">
+        <div className="space-y-1">
           <FinalReviewSection
             reportData={reportData}
             logoUrl={logoUrl}
@@ -661,7 +661,7 @@ export function MusicoterapiaReportWizard({
 
     if (currentStepData.id === 'references') {
       return (
-        <div className="dark">
+        <div className="space-y-1">
           <MusicoterapiaReferenceSelector
             selectedIds={getSelectedMusicoterapiaReferences(reportData.fieldValues?.musicoterapia_reference_ids).map((item) => item.id)}
             selectedApproachIds={getSelectedMusicoterapiaApproaches(reportData.fieldValues?.musicoterapia_approach_ids).map((item) => item.id)}
@@ -675,7 +675,7 @@ export function MusicoterapiaReportWizard({
     // sem os formulários, buscas ou modelos de metodologia legados.
     if (currentStepData.id === 'methodology') {
       return (
-        <div className="dark">
+        <div className="space-y-1">
           <MusicoterapiaApproachSelector
             selectedIds={getSelectedMusicoterapiaApproaches(reportData.fieldValues?.musicoterapia_approach_ids).map((item) => item.id)}
             onChange={(ids) => handleFieldUpdate('musicoterapia_approach_ids', ids)}
@@ -688,7 +688,7 @@ export function MusicoterapiaReportWizard({
     // Os antigos campos extensos e os modelos de respostas prontas não são exibidos.
     if (currentStepData.id === 'observed_results') {
       return (
-        <div className="dark">
+        <div className="space-y-1">
           <div className="space-y-6">
             <MusicoterapiaApproachResults
               selectedApproachIds={getSelectedMusicoterapiaApproaches(reportData.fieldValues?.musicoterapia_approach_ids).map((item) => item.id)}
@@ -707,7 +707,7 @@ export function MusicoterapiaReportWizard({
 
     if (currentStepData.id === 'pending_intervention') {
       return (
-        <div className="dark">
+        <div className="space-y-1">
           <MusicoterapiaPendingInterventions
             selectedObjectiveIds={reportData.fieldValues?.therapeutic_objective_ids}
             selectedApproachIds={reportData.fieldValues?.musicoterapia_approach_ids}
@@ -719,7 +719,7 @@ export function MusicoterapiaReportWizard({
 
     if (currentStepData.id === 'final_considerations') {
       return (
-        <div className="dark">
+        <div className="space-y-1">
           <MusicoterapiaFinalConsiderations
             fields={reportData.fieldValues}
             onChange={(note) => handleFieldUpdate('final_considerations', note)}
@@ -739,19 +739,19 @@ export function MusicoterapiaReportWizard({
     const HintIcon = hint?.icon || Info;
 
     return (
-      <div className="dark space-y-8">
+      <div className="space-y-6">
         {/* Evitar orientações redundantes na Etapa 07, que agora tem só um campo. */}
         {hint && currentStepData.id !== 'recommendations' && (
-          <div className="relative overflow-hidden rounded-2xl border border-[#c9a84c]/20 bg-gradient-to-br from-[#c9a84c]/[0.06] via-transparent to-transparent p-5 flex gap-4">
-            <div className="shrink-0 h-10 w-10 rounded-xl bg-[#c9a84c]/10 border border-[#c9a84c]/30 flex items-center justify-center">
-              <HintIcon className="h-5 w-5 text-[#f0d78c]" />
+          <div className="relative overflow-hidden rounded-2xl border border-teal-600/20 bg-gradient-to-br from-[#c9a84c]/[0.06] via-transparent to-transparent p-5 flex gap-4">
+            <div className="shrink-0 h-10 w-10 rounded-xl bg-teal-600/10 border border-teal-600/30 flex items-center justify-center">
+              <HintIcon className="h-5 w-5 text-teal-800 dark:text-teal-200" />
             </div>
             <div className="space-y-1">
               <div className="text-[10px] uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400 font-bold">Dica clínica</div>
-              <h3 className="text-base text-[#f0d78c] font-semibold" style={{ fontFamily: "'Instrument Serif', serif" }}>
+              <h3 className="text-base text-teal-800 dark:text-teal-200 font-semibold" style={{ fontFamily: "inherit" }}>
                 {hint.title}
               </h3>
-              <p className="text-sm text-gray-400 font-light leading-relaxed">{hint.description}</p>
+              <p className="text-sm text-muted-foreground font-light leading-relaxed">{hint.description}</p>
             </div>
           </div>
         )}
@@ -765,19 +765,19 @@ export function MusicoterapiaReportWizard({
 
         {/* Templates profissionais (noir/gold) */}
         {templateOptions && (
-          <div className="relative rounded-2xl border-2 border-[#c9a84c]/40 bg-gradient-to-br from-[#c9a84c]/[0.10] via-[#0d0d0d]/60 to-[#0d0d0d]/40 p-5 sm:p-6 space-y-5 shadow-[0_0_40px_-12px_rgba(201,168,76,0.35)]">
-            <div className="absolute -top-3 left-5 px-3 py-1 rounded-full bg-[#c9a84c] text-[#0d0d0d] text-[10px] uppercase tracking-[0.18em] font-black shadow-lg">
+          <div className="relative rounded-2xl border-2 border-teal-600/40 bg-gradient-to-br from-[#c9a84c]/[0.10] via-[#0d0d0d]/60 to-[#0d0d0d]/40 p-5 sm:p-6 space-y-5 shadow-[0_0_40px_-12px_rgba(201,168,76,0.35)]">
+            <div className="absolute -top-3 left-5 px-3 py-1 rounded-full bg-teal-700 text-white text-[10px] uppercase tracking-[0.18em] font-black shadow-lg">
               ✦ Textos prontos
             </div>
             <div className="flex items-start gap-3 pt-1">
-              <div className="h-11 w-11 rounded-xl bg-[#c9a84c]/15 border border-[#c9a84c]/40 flex items-center justify-center shrink-0">
-                <Wand2 className="h-5 w-5 text-[#f0d78c]" />
+              <div className="h-11 w-11 rounded-xl bg-teal-600/15 border border-teal-600/40 flex items-center justify-center shrink-0">
+                <Wand2 className="h-5 w-5 text-teal-800 dark:text-teal-200" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-lg text-[#f0d78c] font-bold" style={{ fontFamily: "'Instrument Serif', serif" }}>
+                <h3 className="text-lg text-teal-800 dark:text-teal-200 font-bold" style={{ fontFamily: "inherit" }}>
                   Selecione um texto pronto
                 </h3>
-                <p className="text-sm text-gray-300 font-light leading-relaxed">
+                <p className="text-sm text-foreground/80 font-light leading-relaxed">
                   Escolha o modelo mais próximo do perfil clínico do paciente — os campos serão preenchidos automaticamente e você poderá editá-los livremente.
                 </p>
               </div>
@@ -792,17 +792,17 @@ export function MusicoterapiaReportWizard({
                     onClick={() => applyTemplateOption(opt)}
                     className={`group text-left p-4 rounded-xl border transition-all ${
                       isActive
-                        ? 'border-[#c9a84c] bg-[#c9a84c]/15 shadow-[0_0_30px_-10px_rgba(201,168,76,0.6)]'
-                        : 'border-[#c9a84c]/25 bg-[#1a1a1a]/70 hover:border-[#c9a84c]/60 hover:bg-[#c9a84c]/[0.08] hover:-translate-y-0.5'
+                        ? 'border-teal-600 bg-teal-600/15 shadow-[0_0_30px_-10px_rgba(201,168,76,0.6)]'
+                        : 'border-teal-600/25 bg-card/70 hover:border-teal-600/60 hover:bg-teal-600/[0.08] hover:-translate-y-0.5'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2 mb-1.5">
-                      <span className={`font-semibold text-sm ${isActive ? 'text-[#f0d78c]' : 'text-gray-200 group-hover:text-[#f0d78c]'}`}>
+                      <span className={`font-semibold text-sm ${isActive ? 'text-teal-800 dark:text-teal-200' : 'text-gray-200 group-hover:text-teal-800 dark:text-teal-200'}`}>
                         {opt.label}
                       </span>
                       {isActive && (
-                        <div className="h-5 w-5 rounded-full bg-[#c9a84c] flex items-center justify-center">
-                          <Check className="h-3 w-3 text-[#0d0d0d]" />
+                        <div className="h-5 w-5 rounded-full bg-teal-700 flex items-center justify-center">
+                          <Check className="h-3 w-3 text-white" />
                         </div>
                       )}
                     </div>
@@ -826,16 +826,16 @@ export function MusicoterapiaReportWizard({
             return (
               <div
                 key={field.id}
-                className={`group rounded-2xl border bg-[#0d0d0d]/40 p-5 sm:p-6 transition-all hover:border-[#c9a84c]/40 ${
-                  isFilled ? 'border-[#c9a84c]/30' : 'border-white/10'
+                className={`group rounded-2xl border bg-background/40 p-5 sm:p-6 transition-all hover:border-teal-600/40 ${
+                  isFilled ? 'border-teal-600/30' : 'border-border/60'
                 }`}
               >
                 <div className="flex items-start gap-3 mb-4">
                   <div
                     className={`shrink-0 h-7 w-7 rounded-full flex items-center justify-center text-[10px] font-black border transition-colors ${
                       isFilled
-                        ? 'bg-[#c9a84c] text-[#0d0d0d] border-[#c9a84c]'
-                        : 'bg-transparent text-gray-500 border-white/15 group-hover:text-[#f0d78c] group-hover:border-[#c9a84c]/50'
+                        ? 'bg-teal-700 text-white border-teal-600'
+                        : 'bg-transparent text-muted-foreground border-border/70 group-hover:text-teal-800 dark:text-teal-200 group-hover:border-teal-600/50'
                     }`}
                   >
                     {isFilled ? <Check className="h-3.5 w-3.5" /> : String(idx + 1).padStart(2, '0')}
@@ -866,10 +866,10 @@ export function MusicoterapiaReportWizard({
   const StepIcon = currentStepData.icon;
 
   return (
-    <div className={`${showQuickFill ? 'max-w-6xl' : 'max-w-3xl'} mx-auto space-y-5 sm:space-y-6 lg:space-y-7 px-3 sm:px-4 lg:px-0 transition-[max-width] duration-300`} style={{ fontFamily: "'Work Sans', sans-serif" }}>
+    <div className={`${showQuickFill ? 'max-w-6xl' : 'max-w-5xl'} mx-auto space-y-5 sm:space-y-6 lg:space-y-7 px-3 sm:px-4 lg:px-0 transition-[max-width] duration-300`} >
       {/* Clinical workspace: compact heading, readable progress and direct step navigation */}
       <header className="relative overflow-hidden rounded-2xl border border-teal-800/25 bg-gradient-to-br from-[#0f302f] via-[#164845] to-[#155e58] p-5 sm:p-7 lg:p-8 shadow-lg">
-        <div className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full border-[32px] border-white/5" />
+        <div className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full border-[32px] border-border/60" />
         <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="space-y-3">
             <div className="inline-flex items-center gap-2 rounded-full border border-teal-200/25 bg-white/10 px-3 py-1 text-[11px] font-semibold tracking-wide text-teal-50">
@@ -877,13 +877,13 @@ export function MusicoterapiaReportWizard({
               MUSETERA · DOCUMENTAÇÃO CLÍNICA
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl lg:text-4xl">
-              Relatório Musicoterapêutico
+              Relatório MuseTera TEA
             </h1>
             <p className="max-w-2xl text-sm leading-relaxed text-teal-50/85">
-              Registre os achados do atendimento, acompanhe os objetivos e revise as evidências antes da emissão do documento.
+              Documente o atendimento em nove etapas, registre respostas observáveis e revise o conteúdo antes de gerar o relatório clínico.
             </p>
           </div>
-          <div className="w-full rounded-xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm lg:w-64">
+          <div className="w-full rounded-xl border border-border/70 bg-white/10 p-4 backdrop-blur-sm lg:w-64">
             <div className="mb-2 flex items-center justify-between text-xs font-medium text-teal-50">
               <span>Etapa {currentStep + 1} de {STEPS.length}</span>
               <span>{Math.round(progress)}%</span>
@@ -891,7 +891,7 @@ export function MusicoterapiaReportWizard({
             <div className="h-2 overflow-hidden rounded-full bg-black/20" role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100} aria-label="Progresso do relatório">
               <div className="h-full rounded-full bg-teal-200 transition-all duration-300" style={{ width: `${progress}%` }} />
             </div>
-            <p className="mt-2 text-xs text-teal-50/75">Preenchimento e revisão clínica</p>
+            <p className="mt-2 text-xs text-teal-50/75">Navegação do formulário · não indica conclusão clínica</p>
           </div>
         </div>
       </header>
@@ -901,7 +901,7 @@ export function MusicoterapiaReportWizard({
         <div className="flex items-center justify-between gap-3 pb-3">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-teal-600 dark:text-teal-400">Organização do documento</p>
-            <p className="text-sm text-muted-foreground">Selecione uma etapa para consultar ou revisar as informações.</p>
+            <p className="text-sm text-muted-foreground">Navegue entre as nove etapas. Os registros precisam de revisão antes da emissão.</p>
           </div>
           <div className="hidden shrink-0 items-center gap-2 rounded-lg bg-muted px-3 py-2 text-xs font-medium text-foreground sm:flex">
             <Check className="h-4 w-4 text-teal-600" />
@@ -927,9 +927,9 @@ export function MusicoterapiaReportWizard({
                 }`}
               >
                 <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
-                  active ? 'bg-teal-700 text-white' : complete ? 'bg-teal-100 text-teal-800 dark:bg-teal-900/60 dark:text-teal-100' : 'bg-muted text-muted-foreground'
+                  active ? 'bg-teal-700 text-white' : complete ? 'bg-muted text-muted-foreground' : 'bg-muted text-muted-foreground'
                 }`}>
-                  {complete ? <Check className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
+                  <Icon className="h-4 w-4" />
                 </span>
                 <span className="min-w-0">
                   <span className="block text-[10px] font-medium opacity-70">ETAPA {String(index + 1).padStart(2, '0')}</span>
@@ -949,17 +949,17 @@ export function MusicoterapiaReportWizard({
 
           <div className="p-4 sm:p-8 lg:p-12 space-y-6 sm:space-y-8 lg:space-y-10 relative z-10">
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-[#c9a84c] font-bold">
+              <div className="inline-flex items-center gap-2 text-xs uppercase tracking-wider text-teal-700 dark:text-teal-300 font-semibold">
                 <StepIcon className="h-3.5 w-3.5" />
                 Etapa {String(currentStep + 1).padStart(2, '0')} de {String(STEPS.length).padStart(2, '0')}
               </div>
               <h2
                 className="text-2xl sm:text-3xl lg:text-4xl text-foreground leading-tight"
-                style={{ fontFamily: "'Instrument Serif', serif" }}
+                style={{ fontFamily: "inherit" }}
               >
                 {currentStepData.title.replace(/^\d+\.\s*/, '')}
               </h2>
-              <p className="text-xs sm:text-sm text-gray-500 font-light">{currentStepData.description}</p>
+              <p className="text-sm text-muted-foreground">{currentStepData.description}</p>
             </div>
 
             <div className="text-foreground">
@@ -968,9 +968,9 @@ export function MusicoterapiaReportWizard({
 
             <footer className="pt-6 sm:pt-8 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between border-t border-border/60 gap-4 sm:gap-6">
               <div className="hidden sm:flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-[#c9a84c] animate-pulse" />
-                <span className="text-[10px] text-gray-500 uppercase tracking-widest font-medium">
-                  Sincronizado com Nuvem
+                <div className="w-2 h-2 rounded-full bg-teal-600" />
+                <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">
+                  Revise as informações antes de emitir
                 </span>
               </div>
 
@@ -988,8 +988,8 @@ export function MusicoterapiaReportWizard({
                   type="button"
                   onClick={handleNextStep}
                   disabled={currentStep === STEPS.length - 1 || !canProceed()}
-                  className="group flex items-center justify-center gap-2 sm:gap-3 bg-[#c9a84c] hover:bg-[#f0d78c] disabled:opacity-40 disabled:cursor-not-allowed text-[#0d0d0d] px-5 sm:px-10 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-sm sm:text-base flex-1 sm:flex-none"
-                  style={{ fontFamily: "'Work Sans'" }}
+                  className="group flex min-h-11 items-center justify-center gap-2 bg-teal-700 hover:bg-teal-800 disabled:opacity-40 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-semibold transition-colors text-sm flex-1 sm:flex-none"
+                  
                 >
                   Próxima Seção
                   <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
