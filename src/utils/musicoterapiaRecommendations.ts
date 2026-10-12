@@ -60,8 +60,10 @@ const isGenericRecommendation = (value: string) =>
 
 /** Preserva orientação substantiva redigida pelo profissional, sem reescrita por IA. */
 export function getProfessionalRecommendation(value: unknown): string | null {
-  if (typeof value !== 'string') return null;
-  const normalized = value.trim();
+  const normalized = Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === 'string')
+        .map(item => item.trim()).filter(Boolean).join('\n')
+    : typeof value === 'string' ? value.trim() : '';
   return normalized && !isGenericRecommendation(normalized) ? normalized : null;
 }
 
