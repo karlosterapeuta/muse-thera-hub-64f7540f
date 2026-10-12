@@ -144,6 +144,31 @@ const downloadPdfAsWordPages = async (pdfBlob: Blob, title: string, filename: st
   }
 };
 
+type EvaluationAnamnesisHeader = { guardianNames: string[]; cidCode: string | null };
+
+async function loadEvaluationAnamnesisHeader(patientId: string): Promise<EvaluationAnamnesisHeader> {
+  const { data: auth, error: authError } = await supabase.auth.getUser();
+  if (authError || !auth.user) throw new Error("Sessão não autenticada para consultar a anamnese.");
+  const { data, error } = await supabase
+    .from("anamnesis")
+    .select("mother_name, father_name, legal_guardian, cid_code")
+    .eq("patient_id", patientId)
+    .eq("professional_id", auth.user.id)
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw new Error("Não foi possível consultar a anamnese do paciente: " + error.message);
+  const names = [data?.legal_guardian, data?.mother_name, data?.father_name]
+    .filter((value): value is string => typeof value === "string" && Boolean(value.trim()))
+    .map(value => value.trim());
+  return {
+    guardianNames: Array.from(new Set(names.filter((name, index) =>
+      names.findIndex(other => other.toLocaleLowerCase("pt-BR") === name.toLocaleLowerCase("pt-BR")) === index
+    ))),
+    cidCode: typeof data?.cid_code === "string" ? data.cid_code.trim() || null : null,
+  };
+}
+
 const safeDocxFileName = (value: string) => value
   .normalize("NFD")
   .replace(/[\u0300-\u036f]/g, "")
@@ -1300,6 +1325,7 @@ export default function Evaluation() {
     const loadingId = toast.loading("Preparando avaliação para download...");
 
     try {
+      const anamnesisHeader = await loadEvaluationAnamnesisHeader(evaluation.patient_id);
       // Categorizar dados da avaliação SALVA
       const { achievements, developmentAreas } = categorizeEvaluationDataFromSaved(evaluation);
       
@@ -1346,6 +1372,8 @@ export default function Evaluation() {
             patientName={patient.name || 'Paciente'}
             patientAge={calculateAgeFromBirthDate(patient.birth_date) ?? patient.age ?? null}
             patientBirthDate={patient.birth_date}
+            guardianNames={anamnesisHeader.guardianNames}
+            cidCode={anamnesisHeader.cidCode}
             evaluationDate={evaluationDateLabel}
             professionalName={professionalData?.name || 'Profissional'}
             professionalRegister={professionalData?.register || undefined}
@@ -1414,6 +1442,7 @@ export default function Evaluation() {
       : "Montando relatório completo em PDF...");
 
     try {
+      const anamnesisHeader = await loadEvaluationAnamnesisHeader(selectedPatient);
       const { achievements, developmentAreas } = categorizeEvaluationData();
       const reportContent = buildEvaluationReportContent({
         patientName,
@@ -1443,6 +1472,8 @@ export default function Evaluation() {
             patientName={patientName}
             patientAge={patientAge}
             patientBirthDate={selectedPatientData?.birth_date}
+            guardianNames={anamnesisHeader.guardianNames}
+            cidCode={anamnesisHeader.cidCode}
             evaluationDate={dateLabel}
             professionalName={professionalData?.name || "Profissional"}
             professionalRegister={professionalData?.register || undefined}
