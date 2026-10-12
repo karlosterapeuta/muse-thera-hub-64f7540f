@@ -1011,23 +1011,20 @@ export default function MusicoterapiaPage() {
       </div>
 
       <div className="container mx-auto p-4 sm:p-6 max-w-6xl space-y-6">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate('/dashboard')}
-          className="gap-2 text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Voltar
-        </Button>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')}
+            className="gap-2 text-muted-foreground hover:text-foreground">
+            <ArrowLeft className="h-4 w-4" />
+            Voltar ao painel
+          </Button>
+          <Button variant="outline" onClick={() => setViewMode(viewMode === 'create' ? 'list' : 'create')}
+            className="min-h-10 gap-2 border-border bg-card">
+            {viewMode === 'create' ? <List className="h-4 w-4" /> : <Wand2 className="h-4 w-4" />}
+            {viewMode === 'create' ? 'Ver relatórios salvos' : 'Criar novo relatório'}
+          </Button>
+        </div>
 
-        {/* MOBILE: Action buttons at TOP for visibility */}
-        <div className="flex flex-col gap-2 sm:hidden">
-          <Button
-            onClick={() => setViewMode(viewMode === 'create' ? 'list' : 'create')}
-            className="w-full h-12 font-semibold border-0 bg-teal-700 hover:bg-teal-800 text-white shadow-sm hover:opacity-90 transition-all duration-300"
-          >
-            {viewMode === 'create' ? (
+      {viewMode === 'create' ? (
               <>
                 <List className="h-5 w-5 mr-2" />
                 Ver Relatórios Salvos
