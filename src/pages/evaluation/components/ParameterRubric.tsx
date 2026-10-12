@@ -36,12 +36,12 @@ export function ParameterRubric({ parameterKey, parameterLabel, selection, obser
   const update = (field: string, value: string) => onEvidenceChange(id, JSON.stringify({ ...parsed, [field]: value }));
   const selected = RUBRIC_LEVELS.find(level => level.key === selection);
   return (
-    <Collapsible open={open} onOpenChange={setOpen} className="mt-3 rounded-lg border border-border bg-muted/20">
-      <CollapsibleTrigger type="button" className="flex min-h-11 w-full items-center justify-between gap-2 px-3 py-2 text-left text-xs font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500">
-        <span className="flex items-center gap-2"><ClipboardCheck className="h-4 w-4 text-teal-700 dark:text-teal-300" /> Critérios e registro da aplicação</span>
+    <Collapsible open={open} onOpenChange={setOpen} className="mt-3 rounded-lg border border-teal-700/20 bg-card dark:border-teal-500/25">
+      <CollapsibleTrigger type="button" className="flex min-h-11 w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500">
+        <span className="flex items-center gap-2"><ClipboardCheck className="h-4 w-4 text-teal-800 dark:text-teal-200" /> Critérios e registro da aplicação</span>
         <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} />
       </CollapsibleTrigger>
-      <CollapsibleContent className="space-y-3 border-t px-3 py-3 text-xs leading-relaxed">
+      <CollapsibleContent className="space-y-3 border-t px-3 py-3 text-sm leading-relaxed">
         <p className="text-muted-foreground">Observe a tarefa: <strong className="text-foreground">{parameterLabel}</strong>. Os níveis são âncoras clínicas propostas; não são pontos de corte validados. Compare respostas somente em condições de aplicação equivalentes.</p>
         <div className="grid gap-2">
           {RUBRIC_LEVELS.map(level => (
@@ -53,10 +53,10 @@ export function ParameterRubric({ parameterKey, parameterLabel, selection, obser
         </div>
         {selected && <p className="rounded-md bg-teal-50 px-3 py-2 text-teal-900 dark:bg-teal-950/40 dark:text-teal-100"><strong>Nível selecionado:</strong> {selected.title}. Justifique com as evidências abaixo.</p>}
         <div className="grid gap-3 sm:grid-cols-2">
-          <label className="space-y-1 font-medium">Oportunidades/tentativas realizadas
+          <label className="space-y-1 text-sm font-medium">Oportunidades/tentativas realizadas
             <Input inputMode="numeric" type="number" min="0" max="99" placeholder="Ex.: 3" value={parsed.attempts || ""} onChange={e=>update("attempts",e.target.value)} className="bg-background" />
           </label>
-          <label className="space-y-1 font-medium">Respostas funcionais observadas
+          <label className="space-y-1 text-sm font-medium">Respostas funcionais observadas
             <Input inputMode="numeric" type="number" min="0" max="99" placeholder="Ex.: 2" value={parsed.successes || ""} onChange={e=>update("successes",e.target.value)} className="bg-background" />
           </label>
           <div className="space-y-1 sm:col-span-2">
@@ -80,7 +80,7 @@ export function ParameterRubric({ parameterKey, parameterLabel, selection, obser
         {parsed.attempts && parsed.successes && Number(parsed.successes) > Number(parsed.attempts) && <p role="alert" className="text-destructive">As respostas observadas não podem superar o número de tentativas.</p>}
         <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-amber-950 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100">
           <strong>Quando não pontuar:</strong> se faltou oportunidade, a tarefa não era segura ou houve barreira de acessibilidade, selecione “Não aplicável/não testado” no parâmetro. Isso é diferente de “Não observado” (0).
-          <button type="button" className="mt-2 block rounded-md border border-amber-500 px-3 py-2 font-semibold focus-visible:ring-2" aria-pressed={selection === "nao_aplicavel"} onClick={()=>onSelectionChange(selection==="nao_aplicavel"?"":"nao_aplicavel")}>{selection==="nao_aplicavel"?"Desmarcar não aplicável":"Marcar não aplicável / não testado"}</button>
+          <button type="button" className="mt-2 block rounded-md border border-amber-700 bg-white px-3 py-2 text-sm font-semibold text-amber-950 hover:bg-amber-100 focus-visible:ring-2 dark:border-amber-500 dark:bg-amber-950 dark:text-amber-50" aria-pressed={selection === "nao_aplicavel"} onClick={()=>onSelectionChange(selection==="nao_aplicavel"?"":"nao_aplicavel")}>{selection==="nao_aplicavel"?"Desmarcar não aplicável":"Marcar não aplicável / não testado"}</button>
         </div>
       </CollapsibleContent>
     </Collapsible>
