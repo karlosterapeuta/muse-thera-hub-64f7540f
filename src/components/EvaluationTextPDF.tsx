@@ -28,6 +28,8 @@ interface EvaluationTextPDFProps {
   patientName: string;
   patientAge: number | null;
   patientBirthDate?: string | null;
+  guardianNames?: string[];
+  cidCode?: string | null;
   evaluationDate: string;
   professionalName: string;
   professionalRegister?: string;
@@ -78,6 +80,8 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
   patientName,
   patientAge,
   patientBirthDate,
+  guardianNames = [],
+  cidCode,
   evaluationDate,
   professionalName,
   professionalRegister,
@@ -179,6 +183,19 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
             <div style={{ color: '#475569', fontSize: '9pt', fontWeight: 700 }}>IDADE REGISTRADA</div>
             <div style={{ color: '#172b4d', fontSize: '11pt', fontWeight: 600 }}>{patientAge != null ? `${patientAge} anos` : 'Não informada'}</div>
           </div>
+        </div>
+        <div style={{ marginTop: '12px', paddingBottom: '12px', borderBottom: '1px solid #d9e2ec' }}>
+          <div style={{ color: '#475569', fontSize: '9pt', fontWeight: 700 }}>RESPONSÁVEL(IS) INFORMADO(S) NA ANAMNESE</div>
+          <div style={{ color: '#172b4d', fontSize: '10.5pt', fontWeight: 600, overflowWrap: 'anywhere' }}>
+            {guardianNames.length ? guardianNames.join(' · ') : 'Não informado(s)'}
+          </div>
+        </div>
+        <div style={{ marginTop: '12px', paddingBottom: '12px', borderBottom: '1px solid #d9e2ec' }}>
+          <div style={{ color: '#475569', fontSize: '9pt', fontWeight: 700 }}>CID INFORMADO NA ANAMNESE</div>
+          <div style={{ color: '#172b4d', fontSize: '10.5pt', fontWeight: 600, overflowWrap: 'anywhere' }}>
+            {cidCode?.trim() || 'Não informado'}
+          </div>
+          <div style={{ color: '#64748b', fontSize: '8pt', marginTop: '3px' }}>Dado cadastral reproduzido da anamnese; não constitui confirmação diagnóstica.</div>
         </div>
         <div style={{ fontSize: '9pt', letterSpacing: '1.2px', fontWeight: 700, color: '#0f766e', marginTop: '13px', marginBottom: '10px' }}>
           DADOS DA AVALIAÇÃO
