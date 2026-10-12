@@ -124,15 +124,15 @@ export function FinalReviewSection({
         : [];
 
     return (
-      <div className="max-w-4xl mx-auto bg-white">
-        <div className="relative bg-gradient-to-r from-[#0d0d0d] to-[#1a1a1a] text-white p-4 sm:p-8 rounded-t-lg">
+      <div className="max-w-4xl mx-auto rounded-xl bg-white text-slate-900 shadow-sm">
+        <div className="relative bg-gradient-to-r from-teal-900 to-teal-700 text-white p-4 sm:p-8 rounded-t-lg">
           <div className="absolute top-4 right-4 opacity-20">
             <FileText className="h-12 w-12 sm:h-16 sm:w-16" />
           </div>
           <div className="relative z-10">
             <h1 className="text-2xl sm:text-3xl font-bold mb-2">Relatorio MuseTera TEA</h1>
-            <p className="text-teal-600 dark:text-teal-300 text-base sm:text-lg">Musicoterapia para Transtorno do Espectro Autista</p>
-            <div className="mt-4 text-xs sm:text-sm text-teal-600 dark:text-teal-300/80">
+            <p className="text-teal-100 text-base sm:text-lg">Musicoterapia para Transtorno do Espectro Autista</p>
+            <div className="mt-4 text-xs sm:text-sm text-teal-100/80">
               Gerado em {new Date().toLocaleDateString('pt-BR')} as {new Date().toLocaleTimeString('pt-BR')}
             </div>
           </div>
@@ -140,10 +140,10 @@ export function FinalReviewSection({
 
         <div className="p-4 sm:p-8 space-y-6 sm:space-y-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            <Card className="border-l-4 border-l-[#c9a84c] shadow-sm">
+            <Card className="border-l-4 border-l-teal-700 shadow-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-teal-600 dark:text-teal-300 text-base sm:text-lg">
-                  <div className="w-8 h-8 bg-[#c9a84c]/20 rounded-full flex items-center justify-center text-sm">
+                  <div className="w-8 h-8 bg-teal-600/20 rounded-full flex items-center justify-center text-sm">
                     P
                   </div>
                   Dados do Paciente
@@ -165,10 +165,10 @@ export function FinalReviewSection({
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-[#c9a84c] shadow-sm">
+            <Card className="border-l-4 border-l-teal-700 shadow-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-teal-600 dark:text-teal-300 text-base sm:text-lg">
-                  <div className="w-8 h-8 bg-[#c9a84c]/20 rounded-full flex items-center justify-center text-sm">
+                  <div className="w-8 h-8 bg-teal-600/20 rounded-full flex items-center justify-center text-sm">
                     M
                   </div>
                   Dados do Profissional
@@ -194,7 +194,7 @@ export function FinalReviewSection({
       <MusicoterapiaReferralSummary source={fields.referral_source} reason={fields.referral_reason} />
 
           {selectedObjectives.length > 0 && (
-            <Card className="border border-[#c9a84c]/30">
+            <Card className="border border-teal-600/30">
               <CardHeader>
                 <CardTitle className="text-teal-600 dark:text-teal-300">Objetivos a estimular ou desenvolver</CardTitle>
               </CardHeader>
@@ -207,7 +207,7 @@ export function FinalReviewSection({
                     <section key={category.id} className="space-y-2">
                       <h4 className="text-sm font-semibold text-teal-600 dark:text-teal-300">{category.icon} {category.title}</h4>
                       {group.map((objective) => (
-                        <div key={objective.id} className="rounded-lg border border-[#c9a84c]/20 p-3 bg-[#c9a84c]/5">
+                        <div key={objective.id} className="rounded-lg border border-teal-600/20 p-3 bg-teal-600/5">
                           <p className="font-semibold text-sm">{objective.icon} {objective.title}</p>
                           <p className="text-sm mt-1 leading-relaxed">{objective.objective}</p>
                         </div>
@@ -221,17 +221,17 @@ export function FinalReviewSection({
 
           {selectedObjectives.length === 0 && complementaryObjectives.length > 0 && (
             <Card className="shadow-sm">
-              <CardHeader className="bg-gradient-to-r from-[#c9a84c]/20 to-[#c9a84c]/10 rounded-t-lg">
+              <CardHeader className="bg-gradient-to-r from-teal-600/20 to-teal-600/10 rounded-t-lg">
                 <CardTitle className="flex items-center gap-2 text-teal-600 dark:text-teal-300 text-sm sm:text-base">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-xs">O</div>
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-teal-600/30 rounded-full flex items-center justify-center text-xs">O</div>
                   Objetivos complementares
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-4 text-sm">
                 <div className="space-y-2 sm:space-y-3">
                   {complementaryObjectives.map((objective: string, index: number) => (
-                    <div key={index} className="flex items-start gap-3 p-2 sm:p-3 bg-[#c9a84c]/10 rounded-lg border border-[#c9a84c]/20">
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-teal-600 dark:text-teal-300 font-bold text-[10px] sm:text-xs mt-0.5 flex-shrink-0">{index + 1}</div>
+                    <div key={index} className="flex items-start gap-3 p-2 sm:p-3 bg-teal-600/10 rounded-lg border border-teal-600/20">
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-teal-600/30 rounded-full flex items-center justify-center text-teal-600 dark:text-teal-300 font-bold text-[10px] sm:text-xs mt-0.5 flex-shrink-0">{index + 1}</div>
                       <p className="text-foreground leading-relaxed flex-1">{objective}</p>
                     </div>
                   ))}
@@ -241,7 +241,7 @@ export function FinalReviewSection({
           )}
 
           {selectedApproaches.length > 0 && (
-            <Card className="border border-[#c9a84c]/30">
+            <Card className="border border-teal-600/30">
               <CardHeader>
                 <CardTitle className="text-teal-600 dark:text-teal-300">Abordagem Musicoterapêutica</CardTitle>
               </CardHeader>
@@ -250,7 +250,7 @@ export function FinalReviewSection({
                   Abordagens selecionadas pelo profissional. A escolha não comprova aplicação ou resultados.
                 </p>
                 {selectedApproaches.map((approach) => (
-                  <div key={approach.id} className="rounded-lg border border-[#c9a84c]/20 p-3 bg-[#c9a84c]/5 space-y-1">
+                  <div key={approach.id} className="rounded-lg border border-teal-600/20 p-3 bg-teal-600/5 space-y-1">
                     <p className="font-semibold text-sm">{approach.title}</p>
                     <p className="text-sm leading-relaxed">{approach.description}</p>
                     <p className="text-sm leading-relaxed"><strong>Objetivos possíveis:</strong> {approach.goals}</p>
@@ -269,17 +269,17 @@ export function FinalReviewSection({
 
           {isLegacyReport && fields.session_activities && Array.isArray(fields.session_activities) && fields.session_activities.length > 0 && (
             <Card className="shadow-sm">
-              <CardHeader className="bg-gradient-to-r from-[#c9a84c]/20 to-[#c9a84c]/10 rounded-t-lg">
+              <CardHeader className="bg-gradient-to-r from-teal-600/20 to-teal-600/10 rounded-t-lg">
                 <CardTitle className="flex items-center gap-2 text-teal-600 dark:text-teal-300 text-sm sm:text-base">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-xs">A</div>
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-teal-600/30 rounded-full flex items-center justify-center text-xs">A</div>
                   Atividades Realizadas
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-4 text-sm">
                 <div className="space-y-2 sm:space-y-3">
                   {fields.session_activities.map((activity: string, index: number) => (
-                    <div key={index} className="flex items-start gap-3 p-2 sm:p-3 bg-[#c9a84c]/10 rounded-lg border border-[#c9a84c]/20">
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-teal-600 dark:text-teal-300 font-bold text-[10px] sm:text-xs mt-1 flex-shrink-1">-</div>
+                    <div key={index} className="flex items-start gap-3 p-2 sm:p-3 bg-teal-600/10 rounded-lg border border-teal-600/20">
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-teal-600/30 rounded-full flex items-center justify-center text-teal-600 dark:text-teal-300 font-bold text-[10px] sm:text-xs mt-1 flex-shrink-1">-</div>
                       <p className="text-foreground leading-relaxed flex-1">{activity}</p>
                     </div>
                   ))}
@@ -290,17 +290,17 @@ export function FinalReviewSection({
 
           {isLegacyReport && fields.patient_evolution && Array.isArray(fields.patient_evolution) && fields.patient_evolution.length > 0 && (
             <Card className="shadow-sm">
-              <CardHeader className="bg-gradient-to-r from-[#c9a84c]/20 to-[#c9a84c]/10 rounded-t-lg">
+              <CardHeader className="bg-gradient-to-r from-teal-600/20 to-teal-600/10 rounded-t-lg">
                 <CardTitle className="flex items-center gap-2 text-teal-600 dark:text-teal-300 text-sm sm:text-base">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-xs">E</div>
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-teal-600/30 rounded-full flex items-center justify-center text-xs">E</div>
                   Evolucao do Paciente
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-4 text-sm">
                 <div className="space-y-2 sm:space-y-3">
                   {fields.patient_evolution.map((evolution: string, index: number) => (
-                    <div key={index} className="flex items-start gap-3 p-2 sm:p-3 bg-[#c9a84c]/10 rounded-lg border border-[#c9a84c]/20">
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-teal-600 dark:text-teal-300 font-bold text-[10px] sm:text-xs mt-1 flex-shrink-0">ok</div>
+                    <div key={index} className="flex items-start gap-3 p-2 sm:p-3 bg-teal-600/10 rounded-lg border border-teal-600/20">
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-teal-600/30 rounded-full flex items-center justify-center text-teal-600 dark:text-teal-300 font-bold text-[10px] sm:text-xs mt-1 flex-shrink-0">ok</div>
                       <p className="text-foreground leading-relaxed flex-1">{evolution}</p>
                     </div>
                   ))}
@@ -311,17 +311,17 @@ export function FinalReviewSection({
 
           {fields.recommendations && Array.isArray(fields.recommendations) && fields.recommendations.length > 0 && (
             <Card className="shadow-sm">
-              <CardHeader className="bg-gradient-to-r from-[#c9a84c]/20 to-[#c9a84c]/10 rounded-t-lg">
+              <CardHeader className="bg-gradient-to-r from-teal-600/20 to-teal-600/10 rounded-t-lg">
                 <CardTitle className="flex items-center gap-2 text-teal-600 dark:text-teal-300 text-sm sm:text-base">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-xs">R</div>
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-teal-600/30 rounded-full flex items-center justify-center text-xs">R</div>
                   Recomendacoes
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-4 text-sm">
                 <div className="space-y-2 sm:space-y-3">
                   {fields.recommendations.map((recommendation: string, index: number) => (
-                    <div key={index} className="flex items-start gap-3 p-2 sm:p-3 bg-[#c9a84c]/10 rounded-lg border border-[#c9a84c]/20">
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-teal-600 dark:text-teal-300 font-bold text-[10px] sm:text-xs mt-1 flex-shrink-1">&gt;</div>
+                    <div key={index} className="flex items-start gap-3 p-2 sm:p-3 bg-teal-600/10 rounded-lg border border-teal-600/20">
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-teal-600/30 rounded-full flex items-center justify-center text-teal-600 dark:text-teal-300 font-bold text-[10px] sm:text-xs mt-1 flex-shrink-1">&gt;</div>
                       <p className="text-foreground leading-relaxed flex-1">{recommendation}</p>
                     </div>
                   ))}
@@ -332,17 +332,17 @@ export function FinalReviewSection({
 
           {isLegacyReport && fields.conclusion && Array.isArray(fields.conclusion) && fields.conclusion.length > 0 && (
             <Card className="shadow-sm">
-              <CardHeader className="bg-gradient-to-r from-[#c9a84c]/20 to-[#c9a84c]/10 rounded-t-lg">
+              <CardHeader className="bg-gradient-to-r from-teal-600/20 to-teal-600/10 rounded-t-lg">
                 <CardTitle className="flex items-center gap-2 text-teal-600 dark:text-teal-300 text-sm sm:text-base">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-xs">C</div>
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-teal-600/30 rounded-full flex items-center justify-center text-xs">C</div>
                   Conclusao
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-4 text-sm">
                 <div className="space-y-2 sm:space-y-3">
                   {fields.conclusion.map((conclusion: string, index: number) => (
-                    <div key={index} className="flex items-start gap-3 p-2 sm:p-3 bg-[#c9a84c]/10 rounded-lg border border-[#c9a84c]/20">
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-[#c9a84c]/30 rounded-full flex items-center justify-center text-teal-600 dark:text-teal-300 font-bold text-[10px] sm:text-xs mt-1 flex-shrink-0">*</div>
+                    <div key={index} className="flex items-start gap-3 p-2 sm:p-3 bg-teal-600/10 rounded-lg border border-teal-600/20">
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-teal-600/30 rounded-full flex items-center justify-center text-teal-600 dark:text-teal-300 font-bold text-[10px] sm:text-xs mt-1 flex-shrink-0">*</div>
                       <p className="text-foreground leading-relaxed flex-1">{conclusion}</p>
                     </div>
                   ))}
@@ -355,14 +355,14 @@ export function FinalReviewSection({
             <MusicoterapiaFinalConsiderationsSummary fields={fields} />
           )}
 
-          <div className="border-t-2 border-[#c9a84c]/30 pt-4 sm:pt-6 mt-6 sm:mt-8">
-            <div className="bg-gradient-to-r from-[#0d0d0d]/5 to-[#0d0d0d]/10 p-4 sm:p-6 rounded-lg">
+          <div className="border-t-2 border-teal-600/30 pt-4 sm:pt-6 mt-6 sm:mt-8">
+            <div className="bg-gradient-to-r from-teal-900/5 to-[#0d0d0d]/10 p-4 sm:p-6 rounded-lg">
               <div className="text-center">
                 <p className="text-base sm:text-lg font-semibold text-foreground mb-2">
                   <strong>Identificação profissional:</strong> {reportData.signature || reportData.professionalName || 'Nao informado'}
                 </p>
                 <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-muted-foreground">
-                  <div className="w-2 h-2 bg-[#c9a84c] rounded-full"></div>
+                  <div className="w-2 h-2 bg-teal-700 rounded-full"></div>
                   <span>Documento emitido pelo MuseTera; assinatura eletrônica não verificada</span>
                 </div>
               </div>
@@ -463,7 +463,7 @@ export function FinalReviewSection({
                   <img
                     src={logoUrl}
                     alt="Logo"
-                    className="w-full h-20 object-contain border border-[#c9a84c]/30 rounded-xl bg-[#0d0d0d]/40"
+                    className="w-full h-20 object-contain border border-teal-600/30 rounded-xl bg-muted/40"
                   />
                   <Button
                     variant="destructive"
@@ -487,7 +487,7 @@ export function FinalReviewSection({
                 />
                 <Button
                   variant="outline"
-                  className="w-full border-[#c9a84c]/30 hover:bg-[#c9a84c]/10 hover:text-teal-600 dark:text-teal-300 text-xs sm:text-sm"
+                  className="w-full border-teal-600/30 hover:bg-teal-600/10 hover:text-teal-600 dark:text-teal-300 text-xs sm:text-sm"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploadingLogo}
                 >
@@ -522,7 +522,7 @@ export function FinalReviewSection({
           <div className="flex-1 flex flex-col justify-end">
             <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
               <DialogTrigger asChild>
-                <Button variant="outline" className="w-full border-[#c9a84c]/30 hover:bg-[#c9a84c]/10 hover:text-teal-600 dark:text-teal-300 text-xs sm:text-sm">
+                <Button variant="outline" className="w-full border-teal-600/30 hover:bg-teal-600/10 hover:text-teal-600 dark:text-teal-300 text-xs sm:text-sm">
                   <Eye className="h-4 w-4 mr-2" />
                   Previa
                 </Button>
@@ -598,15 +598,15 @@ export function FinalReviewSection({
 
 
       {/* Progress Summary */}
-      <div className="rounded-2xl border border-[#c9a84c]/30 bg-gradient-to-br from-[#c9a84c]/10 to-transparent p-4 sm:p-5">
+      <div className="rounded-2xl border border-teal-600/30 bg-gradient-to-br from-teal-600/10 to-transparent p-4 sm:p-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-teal-600/10 border border-teal-600/20">
               <CheckCircle className="h-5 w-5 text-teal-600 dark:text-teal-300" />
             </div>
             <div>
-              <p className="text-sm sm:text-base font-semibold text-teal-600 dark:text-teal-300">Relatorio Concluido</p>
-              <p className="text-xs sm:text-sm text-muted-foreground">Revise os dados e os avisos clínicos antes de exportar.</p>
+              <p className="text-sm sm:text-base font-semibold text-teal-600 dark:text-teal-300">Pronto para revisão profissional</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">A emissão depende da conferência dos dados, das classificações e da leitura do documento final.</p>
             </div>
           </div>
           <ChevronRight className="h-5 w-5 text-teal-600 dark:text-teal-300 hidden sm:block" />
@@ -618,7 +618,7 @@ export function FinalReviewSection({
 
 function StatCard({ label, value, icon }: { label: string; value: string; icon: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-white/5 bg-[#0d0d0d]/30 p-3 sm:p-4 text-center hover:border-[#c9a84c]/30 transition-all">
+    <div className="rounded-xl border border-border/70 bg-card p-3 sm:p-4 text-center transition-colors hover:border-teal-600/30">
       <div className="flex items-center justify-center mb-2">
         {icon}
       </div>
