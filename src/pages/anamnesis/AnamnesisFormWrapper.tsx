@@ -650,14 +650,14 @@ export default function AnamnesisFormWrapper({
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="w-full px-0 sm:px-2 py-4 space-y-6 max-w-6xl mx-auto">
-        <Card className="border-0 shadow-2xl overflow-hidden">
+      <div className="w-full px-3 sm:px-5 py-5 space-y-5 max-w-6xl mx-auto">
+        <Card className="border border-teal-700/15 bg-card shadow-lg overflow-hidden rounded-2xl">
           <ModernAnamnesisHeader editMode={!!editAnamnesisId} />
           
-          <CardContent className="p-8">
+          <CardContent className="p-4 sm:p-6 lg:p-8">
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* Patient Selection */}
-              <div className="bg-card rounded-xl p-6 border border-border shadow-sm space-y-4">
+              <div className="bg-card rounded-xl p-4 sm:p-6 border border-teal-700/15 shadow-sm space-y-4">
                 <PatientSelect
                   patients={patients}
                   selectedPatient={selectedPatient}
@@ -678,7 +678,7 @@ export default function AnamnesisFormWrapper({
               
               {/* Form Content in Tabs */}
               <ModernTabsNavigation>
-                <div className="bg-card rounded-xl p-6 border border-border shadow-sm">
+                <div className="bg-card rounded-xl p-4 sm:p-6 border border-teal-700/15 shadow-sm">
                   <InitialEvaluationForm
                     content={formData}
                     onChange={updateFormData}
