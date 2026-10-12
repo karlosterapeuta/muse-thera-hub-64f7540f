@@ -13,9 +13,18 @@ interface RecommendationsFieldProps {
  * Mantém o formato string[] já usado pelos relatórios existentes.
  */
 const QUICK_SUGGESTIONS = [
-  'Manter o acompanhamento musicoterapêutico e reavaliar os objetivos periodicamente.',
-  'Priorizar nas próximas sessões os objetivos que ainda apresentam dificuldades.',
-  'Compartilhar com a família estratégias musicais adequadas às preferências do paciente.'
+  'Recomenda-se manter o acompanhamento musicoterapêutico e reavaliar periodicamente os objetivos estabelecidos, utilizando registros descritivos das respostas musicais, do contexto das atividades e dos apoios necessários, para orientar possíveis ajustes no planejamento.',
+  'Sugere-se revisar os objetivos classificados com dificuldade e adequar a complexidade das propostas sonoro-musicais às possibilidades de participação do paciente, respeitando suas preferências, sinais de desconforto e formas individuais de comunicação.',
+  'Nos objetivos classificados como sem avanço observado, recomenda-se reexaminar as estratégias terapêuticas e ampliar os registros das oportunidades oferecidas, das respostas apresentadas e do nível de mediação, sem interpretar essa classificação como incapacidade permanente.',
+  'Para estimular a imitação vocal, podem ser consideradas experiências graduais de eco sonoro, canto responsivo e pequenas alternâncias melódicas, quando pertinentes, com registro de tentativas, iniciativas espontâneas e respostas produzidas com ou sem apoio.',
+  'Para favorecer a atenção compartilhada, sugere-se oferecer oportunidades de interação em torno de instrumentos, pausas musicais e escolhas de repertório, observando iniciativas e respostas de compartilhamento de interesse sem exigir contato ocular.',
+  'Recomenda-se favorecer oportunidades de comunicação funcional nas experiências musicais, incluindo escolhas, pedidos, recusas, gestos e vocalizações, documentando quais modalidades comunicativas foram utilizadas e as condições em que ocorreram.',
+  'Considerar as preferências musicais efetivamente manifestadas pelo paciente na seleção de repertórios e instrumentos futuros, observando aceitação, recusa, participação voluntária e possíveis necessidades de adaptação sensorial.',
+  'Para objetivos ligados à percepção auditiva, sugere-se explorar gradualmente contrastes de timbre, altura, intensidade e duração, respeitando a sensibilidade sonora e registrando respostas discriminativas, sinais de conforto e necessidade de mediação.',
+  'Nos objetivos relacionados à interação social e ao vínculo terapêutico, recomenda-se propor experiências musicais compartilhadas e previsíveis, respeitando o ritmo de aproximação do paciente e registrando iniciativas, reciprocidade e permanência voluntária.',
+  'Para objetivos de expressão emocional e autorregulação, considerar experiências musicais escolhidas ou aceitas pelo paciente, documentando sinais observáveis de participação, desconforto e estratégias de apoio, sem presumir redução de ansiedade ou outros efeitos clínicos.',
+  'Nas atividades instrumentais e rítmicas, sugere-se graduar as demandas motoras e de sequenciamento conforme as necessidades observadas, registrando execução, tentativas, ritmo de participação e tipo de assistência, sem pressupor progresso funcional não documentado.',
+  'Quando pertinente e autorizado, orientar familiares e equipe de acompanhamento sobre preferências musicais e formas de participação registradas, alinhando as propostas de continuidade sem atribuir resultados terapêuticos a contextos que não foram avaliados.'
 ] as const;
 
 export function RecommendationsField({ value = [], onChange }: RecommendationsFieldProps) {
@@ -41,7 +50,7 @@ export function RecommendationsField({ value = [], onChange }: RecommendationsFi
   return (
     <div className="space-y-3">
       <p className="text-xs sm:text-sm text-muted-foreground">
-        Escreva orientações breves e específicas para este paciente.
+        Selecione sugestões para compor recomendações mais descritivas e individualizadas. Revise e adapte o texto aos registros reais do paciente antes de emitir o relatório.
       </p>
 
       <Textarea
@@ -49,7 +58,7 @@ export function RecommendationsField({ value = [], onChange }: RecommendationsFi
         aria-label="Recomendações terapêuticas"
         value={content}
         onChange={(event) => updateText(event.target.value)}
-        rows={4}
+        rows={6}
         placeholder="Ex.: Manter sessões de musicoterapia. Reavaliar a atenção e a concentração após o próximo período de acompanhamento."
         className="bg-[#101a2e] border-white/15 text-gray-100 placeholder:text-gray-400 resize-y min-h-[120px]"
       />
@@ -57,7 +66,7 @@ export function RecommendationsField({ value = [], onChange }: RecommendationsFi
       <div className="space-y-2">
         <p className="flex items-center gap-2 text-xs text-gray-400">
           <Lightbulb className="h-3.5 w-3.5 text-[#c9a84c]" />
-          Sugestões rápidas (opcionais; revise antes de incluir)
+          Sugestões rápidas (exemplos editáveis; inclua apenas os pertinentes)
         </p>
         <div className="flex flex-wrap gap-2">
           {QUICK_SUGGESTIONS.map((suggestion) => {
