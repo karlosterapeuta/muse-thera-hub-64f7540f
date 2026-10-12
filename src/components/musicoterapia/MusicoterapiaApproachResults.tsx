@@ -99,41 +99,41 @@ export function MusicoterapiaApproachResults({ selectedApproachIds, value, onCha
 
   return (
     <div className="space-y-4">
-      <div className="rounded-2xl border border-[#c9a84c]/40 bg-[#c9a84c]/10 p-4 flex gap-3">
-        <ClipboardCheck className="h-6 w-6 shrink-0 text-[#f0d78c]" />
+      <div className="rounded-2xl border border-teal-600/40 bg-teal-600/10 p-4 flex gap-3">
+        <ClipboardCheck className="h-6 w-6 shrink-0 text-teal-800 dark:text-teal-200" />
         <div>
-          <h3 className="font-semibold text-[#f0d78c]">Como o paciente respondeu a cada abordagem?</h3>
-          <p className="text-sm text-gray-300 mt-1">
+          <h3 className="font-semibold text-teal-800 dark:text-teal-200">Como o paciente respondeu a cada abordagem?</h3>
+          <p className="text-sm text-foreground/80 mt-1">
             Selecione a classificação e marque somente as situações realmente observadas. Os exemplos são opcionais e podem ser complementados com uma descrição própria.
           </p>
-          <p className="text-xs text-[#f0d78c] mt-2" aria-live="polite">{recorded.length} de {approaches.length} registradas</p>
+          <p className="text-xs text-teal-800 dark:text-teal-200 mt-2" aria-live="polite">{recorded.length} de {approaches.length} registradas</p>
         </div>
       </div>
-      {!approaches.length && <p className="text-amber-300 text-sm">Selecione uma abordagem na Etapa 03.</p>}
+      {!approaches.length && <p className="text-amber-700 dark:text-amber-300 text-sm">Selecione uma abordagem na Etapa 03.</p>}
       {approaches.map((approach, i) => {
         const result = recorded.find(item => item.approach.id === approach.id)?.result;
         return (
-          <section key={approach.id} className="rounded-xl border border-white/15 bg-[#151515] p-4 space-y-3">
+          <section key={approach.id} className="rounded-xl border border-border/70 bg-card p-4 space-y-3">
             <div className="flex gap-2 items-center">
-              <span className="rounded-full border border-[#c9a84c]/40 text-[#f0d78c] text-xs px-2 py-1">{i + 1}</span>
-              <h4 className="text-[#f0d78c] font-semibold text-sm flex-1">{approach.title}</h4>
+              <span className="rounded-full border border-teal-600/40 text-teal-800 dark:text-teal-200 text-xs px-2 py-1">{i + 1}</span>
+              <h4 className="text-teal-800 dark:text-teal-200 font-semibold text-sm flex-1">{approach.title}</h4>
               {result && <Check className="h-4 w-4 text-emerald-400" />}
             </div>
-            <p className="text-xs text-gray-400">Qual foi a resposta observada?</p>
+            <p className="text-xs text-muted-foreground">Qual foi a resposta observada?</p>
             <div className="flex flex-wrap gap-2">
               {approachResultStatuses.map(item => (
                 <button key={item.id} type="button" aria-pressed={result?.status === item.id}
                   onClick={() => update(approach.id, { status: item.id, indicators: item.id === 'not_applied' ? [] : result?.indicators || [], note: item.id === 'not_applied' ? '' : result?.note || '' })}
-                  className={`rounded-lg border px-3 py-2 text-xs focus-visible:ring-2 focus-visible:ring-[#f0d78c] ${result?.status === item.id
-                    ? 'bg-[#c9a84c] text-black border-[#c9a84c]'
-                    : 'bg-[#0d0d0d] text-gray-200 border-white/20 hover:border-[#c9a84c]/60'}`}>
+                  className={`rounded-lg border px-3 py-2 text-xs focus-visible:ring-2 focus-visible:ring-teal-500 ${result?.status === item.id
+                    ? 'bg-teal-700 text-white border-teal-600'
+                    : 'bg-background text-foreground/90 border-border/70 hover:border-teal-600/60'}`}>
                   {item.label}
                 </button>
               ))}
             </div>
             {result && result.status !== 'not_applied' && (
-              <div className="border-t border-white/10 pt-3 space-y-3">
-                <p className="text-xs text-gray-400">O que aconteceu? Selecione os registros observados <span className="text-gray-500">(opcional)</span></p>
+              <div className="border-t border-border/60 pt-3 space-y-3">
+                <p className="text-xs text-muted-foreground">O que aconteceu? Selecione os registros observados <span className="text-muted-foreground">(opcional)</span></p>
                 <div className="flex flex-wrap gap-2">
                   {(suggestions[approach.id] || []).map(label => {
                     const selected = result.indicators.includes(label);
@@ -141,15 +141,15 @@ export function MusicoterapiaApproachResults({ selectedApproachIds, value, onCha
                       <button type="button" key={label} aria-pressed={selected}
                         onClick={() => update(approach.id, { indicators: selected ? result.indicators.filter(x => x !== label) : [...result.indicators, label] })}
                         className={`border rounded-full px-3 py-1.5 text-xs ${selected
-                          ? 'border-[#c9a84c] bg-[#c9a84c]/15 text-[#f0d78c]'
-                          : 'border-white/20 text-gray-300'}`}>
+                          ? 'border-teal-600 bg-teal-600/15 text-teal-800 dark:text-teal-200'
+                          : 'border-border/70 text-foreground/80'}`}>
                         {selected ? '✓ ' : '+ '}{label}
                       </button>
                     );
                   })}
                 </div>
                 <button type="button" onClick={() => setOpenNotes(list => list.includes(approach.id) ? list.filter(x => x !== approach.id) : [...list, approach.id])}
-                  className="text-xs text-[#f0d78c] hover:underline">
+                  className="text-xs text-teal-800 dark:text-teal-200 hover:underline">
                   {openNotes.includes(approach.id) || result.note ? 'Ocultar observação' : '+ Observação curta (opcional)'}
                 </button>
                 {(openNotes.includes(approach.id) || Boolean(result.note)) && (
@@ -157,14 +157,14 @@ export function MusicoterapiaApproachResults({ selectedApproachIds, value, onCha
                     value={result.note}
                     onChange={event => update(approach.id, { note: event.target.value })}
                     placeholder="Ex.: Em 5 oportunidades, respondeu em 4 com apoio gestual."
-                    className="bg-[#0d0d0d] border-white/20 text-gray-100" />
+                    className="bg-background border-border/70 text-foreground" />
                 )}
               </div>
             )}
           </section>
         );
       })}
-      {issues.length > 0 && <p className="text-xs text-amber-200 rounded-lg border border-amber-500/30 p-3" role="status">{issues.join(' ')}</p>}
+      {issues.length > 0 && <p className="text-xs text-amber-700 dark:text-amber-200 rounded-lg border border-amber-500/30 p-3" role="status">{issues.join(' ')}</p>}
     </div>
   );
 }
