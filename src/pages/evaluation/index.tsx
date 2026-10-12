@@ -64,6 +64,7 @@ import { AreasAnalysis } from "./components/AreasAnalysis";
 import { TherapeuticSuggestions } from "./components/TherapeuticSuggestions";
 import { getEvaluationTypeMeta } from "@/utils/evaluationTypes";
 import { EVALUATION_ACTIVITY_PROTOCOLS } from "./utils/activityProtocols";
+import { AUTISM_DOMAIN_NOTES, presentationParameterLabel } from "./utils/autismGuidance";
 import { ParameterRubric } from "./components/ParameterRubric";
 import { Document, Packer, Paragraph, AlignmentType, ImageRun } from "docx";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
@@ -1665,21 +1666,21 @@ export default function Evaluation() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-teal-50/30 to-emerald-50/20 dark:via-teal-950/20 dark:to-background">
       <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-3 sm:py-4 space-y-3 sm:space-y-4 animate-fade-in">
         <EvaluationLevelsHero />
         
         <div className="text-center mb-8 animate-fade-in px-2 sm:px-3">
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-teal-800 via-teal-700 to-emerald-700 bg-clip-text text-transparent mb-4 animate-pulse-gentle">
+          <h1 className="text-3xl sm:text-4xl font-bold text-teal-900 dark:text-teal-100 mb-2">
             Escala MuseTera
           </h1>
-          <p className="text-lg sm:text-xl text-muted-foreground font-medium">
-            Instrumento de Avaliação Musicoterapêutica Profissional
+          <p className="text-base sm:text-lg text-foreground/85 font-medium">
+            Avaliação musicoterapêutica funcional com atividades adaptáveis ao perfil autista
           </p>
           <div className="w-24 h-1 bg-gradient-to-r from-teal-700 to-emerald-600 mx-auto mt-4 rounded-full"></div>
         </div>
         
-        <Card className="backdrop-blur-sm bg-background/80 border border-teal-200/60 dark:border-teal-800/60 shadow-2xl shadow-teal-500/10 p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl animate-fade-in">
+        <Card className="bg-card border border-teal-700/15 dark:border-teal-500/20 shadow-sm p-4 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl">
           <div className="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4 sm:gap-6 mb-6 sm:mb-8">
             <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 items-stretch lg:items-center">
               <div className="p-1 bg-gradient-to-r from-teal-700 to-emerald-600 rounded-2xl">
@@ -1837,21 +1838,21 @@ export default function Evaluation() {
             <TabsList className="grid w-full grid-cols-3 bg-background/80 backdrop-blur-sm p-1 sm:p-1.5 rounded-2xl h-auto min-h-[3.5rem] sm:min-h-[4.5rem] border border-teal-200/50 dark:border-teal-800/50 shadow-lg">
               <TabsTrigger 
                 value="evaluation" 
-                className="rounded-xl flex flex-col sm:flex-row items-center justify-center text-[11px] sm:text-xs md:text-sm lg:text-base font-bold px-1.5 sm:px-3 py-2 sm:py-3 gap-1 sm:gap-2 leading-tight text-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-700 data-[state=active]:to-teal-800 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-teal-300/60 dark:data-[state=active]:ring-teal-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
+                className="rounded-xl flex flex-col sm:flex-row items-center justify-center text-sm md:text-base font-bold px-1.5 sm:px-3 py-2 sm:py-3 gap-1 sm:gap-2 leading-tight text-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-700 data-[state=active]:to-teal-800 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-teal-300/60 dark:data-[state=active]:ring-teal-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
               >
                 <ClipboardList className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
                 <span>Escala MuseTera</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="results" 
-                className="rounded-xl flex flex-col sm:flex-row items-center justify-center text-[11px] sm:text-xs md:text-sm lg:text-base font-bold px-1.5 sm:px-3 py-2 sm:py-3 gap-1 sm:gap-2 leading-tight text-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-700 data-[state=active]:to-teal-800 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-emerald-300/60 dark:data-[state=active]:ring-emerald-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
+                className="rounded-xl flex flex-col sm:flex-row items-center justify-center text-sm md:text-base font-bold px-1.5 sm:px-3 py-2 sm:py-3 gap-1 sm:gap-2 leading-tight text-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-700 data-[state=active]:to-teal-800 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-emerald-300/60 dark:data-[state=active]:ring-emerald-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
               >
                 <BarChart2 className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
                 <span>Resultados</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="comparison" 
-                className="rounded-xl flex flex-col sm:flex-row items-center justify-center text-[11px] sm:text-xs md:text-sm lg:text-base font-bold px-1.5 sm:px-3 py-2 sm:py-3 gap-1 sm:gap-2 leading-tight text-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-700 data-[state=active]:to-emerald-800 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-teal-300/60 dark:data-[state=active]:ring-teal-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
+                className="rounded-xl flex flex-col sm:flex-row items-center justify-center text-sm md:text-base font-bold px-1.5 sm:px-3 py-2 sm:py-3 gap-1 sm:gap-2 leading-tight text-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-700 data-[state=active]:to-emerald-800 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-teal-300/60 dark:data-[state=active]:ring-teal-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
               >
                 <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
                 <span>Evolução do Paciente</span>
@@ -1939,9 +1940,9 @@ export default function Evaluation() {
 
               {evaluationDomains.map((domain, domainIndex) => (
                 <div key={domainIndex} className="group animate-fade-in" style={{animationDelay: `${domainIndex * 0.1}s`}}>
-                  <Card className={`border-0 shadow-xl hover:shadow-2xl transition-all duration-500 p-6 sm:p-8 rounded-3xl bg-gradient-to-br ${domain.color} bg-opacity-5 group-hover:bg-opacity-10`}>
+                  <Card className={`border border-teal-700/15 dark:border-teal-500/20 shadow-sm p-4 sm:p-6 rounded-2xl bg-card`}>
                     <div className="flex items-center mb-6 gap-3">
-                      <div className={`text-3xl p-3 rounded-2xl bg-gradient-to-r ${domain.color} bg-opacity-20`}>
+                      <div className={`text-3xl p-3 rounded-2xl bg-teal-50 dark:bg-teal-950/40`}>
                         {domain.icon}
                       </div>
                       <h2 className="text-xl sm:text-2xl font-bold text-foreground">{domain.title}</h2>
@@ -1973,6 +1974,10 @@ export default function Evaluation() {
                       </div>
                     </div>
                     
+                    <p className="mb-5 rounded-lg border border-teal-200 bg-teal-50/70 px-4 py-3 text-sm leading-relaxed text-teal-950 dark:border-teal-800 dark:bg-teal-950/30 dark:text-teal-100">
+                      <strong>Aplicação no TEA:</strong> {AUTISM_DOMAIN_NOTES[domain.title]}
+                    </p>
+
                     {domain.subdomains.map((subdomain, subdomainIndex) => {
                       const domainColorMap: Record<string, { border: string; bg: string; headerBg: string; text: string; badgeBg: string; badgeText: string; badgeBorder: string; infoBg: string; infoText: string }> = {
                         "from-teal-700 to-emerald-700": { border: "border-l-teal-600", bg: "bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 dark:from-emerald-950/30 dark:via-teal-950/30 dark:to-emerald-950/30", headerBg: "bg-gradient-to-r from-teal-600 to-emerald-600", text: "text-teal-800 dark:text-teal-200", badgeBg: "bg-emerald-100 dark:bg-emerald-900/40", badgeText: "text-emerald-700 dark:text-emerald-300", badgeBorder: "border-emerald-300 dark:border-emerald-700", infoBg: "hover:bg-emerald-100 dark:hover:bg-emerald-900/30", infoText: "text-emerald-600 dark:text-emerald-400" },
@@ -1984,16 +1989,16 @@ export default function Evaluation() {
                       const colors = domainColorMap[domain.color] || domainColorMap["from-teal-700 to-emerald-700"];
                       
                       return (
-                      <div key={subdomainIndex} className="mb-8 last:mb-0">
-                        <Card className={`border-l-4 ${colors.border} ${colors.bg} backdrop-blur-sm p-3 sm:p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300`}>
-                          <div className="flex items-center justify-between mb-4">
+                      <div key={subdomainIndex} className="mb-4 last:mb-0">
+                        <Card className={`border-l-4 ${colors.border} ${colors.bg} p-3 sm:p-5 rounded-xl shadow-none`}>
+                          <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
                             <div className="flex items-center gap-2">
                               <div className={`w-2 h-2 rounded-full ${colors.headerBg}`} />
-                              <h3 className={`text-lg sm:text-xl font-bold ${colors.text}`}>{subdomain.title}</h3>
+                              <h3 className={`text-base sm:text-lg font-bold ${colors.text}`}>{subdomain.title}</h3>
                               <TooltipProvider>
                                 <TooltipComponent>
                                   <TooltipTrigger asChild>
-                                    <Button variant="ghost" size="icon" className={`h-6 w-6 ${colors.infoBg} rounded-full`}>
+                                    <Button variant="ghost" size="icon" className={`h-9 w-9 ${colors.infoBg} rounded-full`}>
                                       <Info className={`h-4 w-4 ${colors.infoText}`} />
                                     </Button>
                                   </TooltipTrigger>
@@ -2006,16 +2011,22 @@ export default function Evaluation() {
                             
                             {/* Badge indicador de status do subdomínio */}
                             {isSubdomainEvaluated(domain.title, subdomain.title, subdomain.parameters) ? (
-                              <div className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-semibold border border-emerald-300 shadow-sm">
+                              <div className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm font-semibold border border-emerald-300">
                                 ✓ Avaliado
                               </div>
                             ) : (
-                              <div className={`${colors.badgeBg} ${colors.badgeText} px-3 py-1 rounded-full text-xs font-medium border ${colors.badgeBorder}`}>
+                              <div className={`${colors.badgeBg} ${colors.badgeText} px-3 py-1 rounded-full text-sm font-medium border ${colors.badgeBorder}`}>
                                 Pendente
                               </div>
                             )}
                           </div>
                           
+                          <Collapsible className="w-full">
+                            <CollapsibleTrigger className="mb-3 flex min-h-11 w-full items-center justify-between gap-2 rounded-lg border border-teal-300 bg-card px-4 py-3 text-left text-sm font-semibold text-teal-900 hover:bg-teal-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 dark:border-teal-700 dark:text-teal-100 dark:hover:bg-teal-950/50">
+                              <span>Aplicar atividades · {subdomain.parameters.filter(param => isParameterEvaluated(domain.title, subdomain.title, param)).length}/{subdomain.parameters.length} indicadores pontuados</span>
+                              <ChevronDown className="h-5 w-5 shrink-0" aria-hidden="true" />
+                            </CollapsibleTrigger>
+                            <CollapsibleContent className="space-y-4 pt-1">
                           {EVALUATION_ACTIVITY_PROTOCOLS[subdomain.title] && (
                             <Collapsible className="mb-4 rounded-xl border border-teal-200 bg-card dark:border-teal-800">
                               <CollapsibleTrigger className="flex min-h-12 w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm font-semibold text-teal-800 hover:bg-teal-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 dark:text-teal-200 dark:hover:bg-teal-950/40">
@@ -2037,17 +2048,17 @@ export default function Evaluation() {
                               const selectionKey = `${domain.title}-${subdomain.title}-${parameter}`;
                               const currentSelection = selections[selectionKey];
                               const levels = [
-                                { value: "nao_observado", label: "Não Obs.", score: 0, bg: "bg-gray-100 dark:bg-gray-800", bgSelected: "bg-gray-500 text-white", border: "border-gray-300 dark:border-gray-600" },
-                                { value: "emergente", label: "Emerg.", score: 1, bg: "bg-red-50 dark:bg-red-950", bgSelected: "bg-red-500 text-white", border: "border-red-200 dark:border-red-800" },
-                                { value: "inconsistente", label: "Incons.", score: 2, bg: "bg-orange-50 dark:bg-orange-950", bgSelected: "bg-orange-500 text-white", border: "border-orange-200 dark:border-orange-800" },
-                                { value: "moderado", label: "Moder.", score: 3, bg: "bg-yellow-50 dark:bg-yellow-950", bgSelected: "bg-yellow-500 text-white", border: "border-yellow-200 dark:border-yellow-800" },
-                                { value: "consistente", label: "Consist.", score: 4, bg: "bg-lime-50 dark:bg-lime-950", bgSelected: "bg-lime-600 text-white", border: "border-lime-200 dark:border-lime-800" },
-                                { value: "excepcional", label: "Excep.", score: 5, bg: "bg-green-50 dark:bg-green-950", bgSelected: "bg-green-600 text-white", border: "border-green-200 dark:border-green-800" },
+                                { value: "nao_observado", label: "Não Obs.", score: 0, bg: "bg-gray-100 dark:bg-gray-800", bgSelected: "bg-slate-700 text-white", border: "border-gray-300 dark:border-gray-600" },
+                                { value: "emergente", label: "Emerg.", score: 1, bg: "bg-red-50 dark:bg-red-950", bgSelected: "bg-red-800 text-white", border: "border-red-200 dark:border-red-800" },
+                                { value: "inconsistente", label: "Incons.", score: 2, bg: "bg-orange-50 dark:bg-orange-950", bgSelected: "bg-orange-800 text-white", border: "border-orange-200 dark:border-orange-800" },
+                                { value: "moderado", label: "Moder.", score: 3, bg: "bg-yellow-50 dark:bg-yellow-950", bgSelected: "bg-amber-800 text-white", border: "border-yellow-200 dark:border-yellow-800" },
+                                { value: "consistente", label: "Consist.", score: 4, bg: "bg-lime-50 dark:bg-lime-950", bgSelected: "bg-lime-800 text-white", border: "border-lime-200 dark:border-lime-800" },
+                                { value: "excepcional", label: "Excep.", score: 5, bg: "bg-green-50 dark:bg-green-950", bgSelected: "bg-green-800 text-white", border: "border-green-200 dark:border-green-800" },
                               ];
                               return (
                                 <div key={paramIndex} className="rounded-xl border bg-card p-4 shadow-sm">
-                                  <p className="text-sm font-semibold text-foreground mb-2">{parameter}</p>
-                                  <div className="mb-3 rounded-lg border border-teal-200/70 bg-teal-50/70 px-3 py-2 text-xs leading-relaxed text-teal-900 dark:border-teal-800 dark:bg-teal-950/30 dark:text-teal-100">
+                                  <p className="text-base font-semibold leading-snug text-foreground mb-2">{presentationParameterLabel(parameter)}</p>
+                                  <div className="mb-3 rounded-lg border border-teal-300/70 bg-teal-50 px-3 py-3 text-sm leading-relaxed text-teal-950 dark:border-teal-800 dark:bg-teal-950/30 dark:text-teal-100">
                                     <span className="font-semibold">Tarefa observável: </span>
                                     {EVALUATION_ACTIVITY_PROTOCOLS[subdomain.title]?.prompts[paramIndex] || "Observar este indicador durante tarefa musical pertinente e registrar a resposta."}
                                   </div>
@@ -2064,21 +2075,23 @@ export default function Evaluation() {
                                               [selectionKey]: lvl.value
                                             }))
                                           }
-                                          className={`h-11 sm:h-12 rounded-lg text-xs sm:text-sm font-medium border transition-all duration-200 touch-manipulation ${
+                                          aria-pressed={isSelected}
+                                           aria-label={`${presentationParameterLabel(parameter)}: ${lvl.label}, nível ${lvl.score}`}
+                                           className={`min-h-12 rounded-lg text-sm font-semibold border transition-colors touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2 ${
                                             isSelected
                                               ? `${lvl.bgSelected} border-transparent shadow-md scale-[1.02]`
                                               : `${lvl.bg} ${lvl.border} hover:opacity-80`
                                           }`}
                                         >
                                           <span className="block leading-tight">{lvl.label}</span>
-                                          <span className={`block text-[10px] sm:text-xs ${isSelected ? 'text-white/80' : 'text-muted-foreground'}`}>({lvl.score})</span>
+                                          <span className={`block text-xs sm:text-sm ${isSelected ? 'text-white' : 'text-muted-foreground'}`}>({lvl.score})</span>
                                         </button>
                                       );
                                     })}
                                   </div>
                                   <ParameterRubric
                                     parameterKey={selectionKey}
-                                    parameterLabel={parameter}
+                                    parameterLabel={presentationParameterLabel(parameter)}
                                     selection={currentSelection}
                                     observations={observations}
                                     onEvidenceChange={(key, value) => setObservations(prev => ({ ...prev, [key]: value }))}
@@ -2104,6 +2117,8 @@ export default function Evaluation() {
                               className="min-h-[80px]"
                             />
                           </div>
+                            </CollapsibleContent>
+                          </Collapsible>
                         </Card>
                       </div>
                       );
