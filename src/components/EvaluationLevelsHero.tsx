@@ -75,18 +75,18 @@ export function EvaluationLevelsHero() {
   };
 
   return (
-    <Card className="mb-4 sm:mb-6 bg-gradient-to-r from-blue-50 via-blue-50 to-blue-100 dark:from-blue-950 dark:via-blue-900 dark:to-blue-950 border-blue-200 dark:border-blue-800 shadow-lg">
+    <Card className="mb-4 sm:mb-6 bg-gradient-to-br from-teal-50 via-background to-emerald-50 dark:from-teal-950/50 dark:via-background dark:to-emerald-950/30 border-teal-700/20 dark:border-teal-400/20 shadow-sm">
       <CardContent className="p-3 sm:p-4 lg:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-3 sm:mb-4">
           <div className="flex items-start sm:items-center gap-2 sm:gap-3">
-            <div className="p-1.5 sm:p-2 bg-blue-100 rounded-lg flex-shrink-0">
-              <Info className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
+            <div className="p-1.5 sm:p-2 bg-teal-700 dark:bg-teal-700 rounded-lg flex-shrink-0">
+              <Info className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
             </div>
             <div className="min-w-0 flex-1">
-              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white leading-tight">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground leading-tight">
                 Guia de Níveis de Desenvolvimento - Escala MuseTera
               </h2>
-              <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-200 mt-1">
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                 Sistema de 6 níveis com pontuação de 0 a 100 pontos para avaliação musicoterapêutica profissional
               </p>
             </div>
@@ -96,12 +96,12 @@ export function EvaluationLevelsHero() {
               onClick={() => navigate('/evaluation/article')}
               className={cn(
                 "relative overflow-hidden",
-                "bg-gradient-to-r from-blue-600 via-blue-600 to-blue-700",
-                "hover:from-blue-700 hover:via-blue-700 hover:to-blue-800",
+                "bg-teal-700",
+                "hover:bg-teal-800",
                 "text-white font-semibold shadow-lg",
-                "border-2 border-blue-400",
-                "animate-blink-glow",
-                "transition-all duration-300 hover:scale-105",
+                "border border-teal-700",
+                "focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2",
+                "transition-colors duration-200",
                 "motion-reduce:animate-none motion-reduce:transform-none",
                 isMobile ? "text-xs px-3 py-2" : "text-sm px-4 py-2"
               )}
@@ -109,20 +109,23 @@ export function EvaluationLevelsHero() {
             >
               <div className="relative z-10 flex items-center gap-1">
                 <BookOpen className={cn(
-                  "animate-icon-bounce motion-reduce:animate-none",
+                  "",
                   isMobile ? "h-3 w-3" : "h-4 w-4"
                 )} />
                 <span className="font-bold tracking-wide">
                   {isMobile ? "Artigo" : "Artigo Científico"}
                 </span>
               </div>
-              <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 to-pink-400/20 animate-pulse" />
+              
             </Button>
             <Button
               variant="ghost"
               size={isMobile ? "sm" : "default"}
               onClick={toggleExpanded}
-              className="text-blue-600 hover:text-blue-800 hover:bg-blue-100"
+              aria-expanded={isExpanded}
+              aria-controls="evaluation-levels-guide-content"
+              aria-label={isExpanded ? "Recolher guia de níveis de desenvolvimento" : "Expandir guia de níveis de desenvolvimento"}
+              className="text-white hover:text-blue-800 hover:bg-blue-100"
             >
               {isExpanded ? (
                 <>
@@ -139,9 +142,9 @@ export function EvaluationLevelsHero() {
           </div>
         </div>
 
-        <div className={cn(
+        <div id="evaluation-levels-guide-content" aria-hidden={!isExpanded} className={cn(
           "transition-all duration-300 overflow-hidden",
-          isExpanded ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
+          isExpanded ? "max-h-[2600px] opacity-100" : "max-h-0 opacity-0 invisible"
         )}>
           <div className={cn("grid gap-3 sm:gap-4 lg:gap-6", getGridCols())}>
             {developmentLevels.map((level) => (
@@ -164,7 +167,7 @@ export function EvaluationLevelsHero() {
                       {level.name}
                     </h3>
                   </div>
-                  <p className="text-xs sm:text-sm leading-relaxed text-justify hyphens-auto flex-1">
+                  <p className="text-xs sm:text-sm leading-relaxed text-left flex-1">
                     {level.description}
                   </p>
                 </div>
@@ -172,12 +175,12 @@ export function EvaluationLevelsHero() {
             ))}
           </div>
 
-          <div className="mt-4 sm:mt-6 p-4 sm:p-5 bg-card/60 rounded-lg border border-border">
-            <h4 className="font-medium text-gray-900 dark:text-white mb-3 flex items-center gap-2 text-sm sm:text-base">
-              <Info className="h-4 w-4 text-blue-600 flex-shrink-0" />
+          <div className="mt-4 sm:mt-6 p-4 sm:p-5 bg-card/90 rounded-xl border border-teal-700/15">
+            <h4 className="font-medium text-foreground mb-3 flex items-center gap-2 text-sm sm:text-base">
+              <Info className="h-4 w-4 text-teal-700 dark:text-teal-300 flex-shrink-0" />
               Como usar a Escala MuseTera (0-5) - Total de 100 Pontos:
             </h4>
-            <ul className="text-xs sm:text-sm text-gray-800 dark:text-gray-200 space-y-2">
+            <ul className="text-sm text-foreground/85 space-y-2">
               <li className="leading-relaxed">• <strong>0 - Não Observado:</strong> 0 pontos (0%) - Habilidade não demonstrada ou observada</li>
               <li className="leading-relaxed">• <strong>1 - Emergente:</strong> 20 pontos (20%) - Primeiros sinais da habilidade, demonstrações esporádicas</li>
               <li className="leading-relaxed">• <strong>2 - Inconsistente:</strong> 40 pontos (40%) - Habilidade presente mas com grande variação na qualidade</li>
@@ -185,8 +188,8 @@ export function EvaluationLevelsHero() {
               <li className="leading-relaxed">• <strong>4 - Consistente:</strong> 80 pontos (80%) - Habilidade bem estabelecida e demonstrada independentemente</li>
               <li className="leading-relaxed">• <strong>5 - Excepcional:</strong> 100 pontos (100%) - Demonstração exemplar com criatividade e maestria</li>
             </ul>
-            <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 rounded border border-blue-200 dark:border-blue-400">
-              <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-200 font-medium leading-relaxed">
+            <div className="mt-4 p-3 bg-teal-50 dark:bg-teal-950/40 rounded-lg border border-teal-700/20 dark:border-teal-400/25">
+              <p className="text-sm text-foreground/85 font-medium leading-relaxed">
                 💡 <strong>Dica:</strong> Considere o contexto individual de cada paciente e use evidências observáveis para justificar sua pontuação.
               </p>
             </div>
