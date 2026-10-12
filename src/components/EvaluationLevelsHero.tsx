@@ -53,10 +53,7 @@ const developmentLevels = [
 ];
 
 export function EvaluationLevelsHero() {
-  const [isExpanded, setIsExpanded] = useState(() => {
-    const saved = localStorage.getItem('evaluation-levels-expanded');
-    return saved ? JSON.parse(saved) : true;
-  });
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const isMobile = useIsMobile();
   const isTablet = useIsTablet();
@@ -65,7 +62,6 @@ export function EvaluationLevelsHero() {
   const toggleExpanded = () => {
     const newState = !isExpanded;
     setIsExpanded(newState);
-    localStorage.setItem('evaluation-levels-expanded', JSON.stringify(newState));
   };
 
   const getGridCols = () => {
