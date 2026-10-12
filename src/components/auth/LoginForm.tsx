@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -8,6 +8,50 @@ import { WelcomeToast } from "./WelcomeToast";
 import { useWelcomeMessage } from "@/hooks/useWelcomeMessage";
 import { logUserActivity } from "@/utils/activityLogger";
 import { createPortal } from "react-dom";
+
+const BRAND_LOGO = "/lovable-uploads/musetera-logo-new.png";
+
+function LoginBrandLogo() {
+  const [transparentLogo, setTransparentLogo] = useState<string | null>(null);
+  useEffect(() => {
+    const image = new Image();
+    image.src = BRAND_LOGO;
+    image.onload = () => {
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = image.naturalWidth;
+        canvas.height = image.naturalHeight;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        ctx.drawImage(image, 0, 0);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const pixels = imageData.data;
+        // Remove only near-black, neutral backdrop pixels from the original logo.
+        for (let i = 0; i < pixels.length; i += 4) {
+          const r = pixels[i], g = pixels[i + 1], b = pixels[i + 2];
+          const spread = Math.max(r, g, b) - Math.min(r, g, b);
+          if ((r < 36 && g < 36 && b < 36) || ((r + g + b) / 3 < 52 && spread < 18)) {
+            pixels[i + 3] = 0;
+          }
+        }
+        ctx.putImageData(imageData, 0, 0);
+        setTransparentLogo(canvas.toDataURL("image/png"));
+      } catch (error) {
+        console.warn("Não foi possível preparar a transparência da logo.", error);
+      }
+    };
+  }, []);
+
+  return (
+    <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center overflow-hidden rounded-full sm:h-28 sm:w-28">
+      <img
+        src={transparentLogo || BRAND_LOGO}
+        alt="Logotipo MuseTera"
+        className="h-full w-full rounded-full object-contain"
+      />
+    </div>
+  );
+}
 
 type LoginFormProps = {
   onSwitchToPasswordReset: () => void;
@@ -101,7 +145,7 @@ export default function LoginForm({ onSwitchToPasswordReset, onSwitchToRegister 
     <>
       <div className="relative w-full min-w-0">
       <div className="mb-7 text-center">
-        <img src="/lovable-uploads/musetera-logo-new.png" alt="Logotipo MuseTera" className="mx-auto mb-4 h-24 w-24 object-contain sm:h-28 sm:w-28" />
+        <LoginBrandLogo />
         <h1 className="text-3xl font-bold tracking-tight text-[#104f49] dark:text-teal-100 sm:text-4xl">Bem-vindo ao MuseTera</h1>
         <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-slate-600 dark:text-slate-300">
           Acesse sua área de trabalho e organize seus atendimentos musicoterapêuticos.
