@@ -21,9 +21,10 @@ type FormProps = {
   onChange: (content: Record<string, any>) => void;
   fieldErrors?: Record<string, string>;
   getSectionErrors?: (sectionNumber: number) => ValidationError[];
+  activeTab?: string;
 };
 
-export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, getSectionErrors }: FormProps) {
+export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, getSectionErrors, activeTab = 'personal' }: FormProps) {
   const updateField = (field: string, value: string | boolean) => {
     onChange({ ...content, [field]: value });
   };
@@ -110,6 +111,8 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
         ].filter(Boolean).length}
       />
 
+      {activeTab === 'personal' && (
+        <>
       {/* SEÇÃO 1: Identificação e Encaminhamento */}
       <CollapsibleSection
         title="Identificação e Encaminhamento"
@@ -197,6 +200,11 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
         </div>
       </CollapsibleSection>
 
+        </>
+      )}
+
+      {activeTab === 'clinical' && (
+        <>
       {/* SEÇÃO 2: Histórico Clínico e Médico */}
       <CollapsibleSection
         title="Histórico Clínico e Médico"
@@ -239,6 +247,11 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
         </div>
       </CollapsibleSection>
 
+        </>
+      )}
+
+      {activeTab === 'clinical' && (
+        <>
       {/* SEÇÃO 3: Medicação em Uso */}
       <CollapsibleSection
         title="Medicação em Uso"
@@ -277,6 +290,11 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
         </div>
       </CollapsibleSection>
 
+        </>
+      )}
+
+      {activeTab === 'clinical' && (
+        <>
       {/* SEÇÃO 4: Terapias e Acompanhamentos */}
       <CollapsibleSection
         title="Terapias e Acompanhamentos"
@@ -323,6 +341,11 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
         </div>
       </CollapsibleSection>
 
+        </>
+      )}
+
+      {activeTab === 'musical' && (
+        <>
       {/* SEÇÃO 5: Perfil Musical do Paciente */}
       <CollapsibleSection
         title="Perfil Musical do Paciente"
@@ -375,6 +398,11 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
         </div>
       </CollapsibleSection>
 
+        </>
+      )}
+
+      {activeTab === 'musical' && (
+        <>
       {/* SEÇÃO 6: Identidade Sonora (ISO) */}
       <CollapsibleSection
         title="Identidade Sonora (ISO)"
@@ -467,6 +495,11 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
         </div>
       </CollapsibleSection>
 
+        </>
+      )}
+
+      {activeTab === 'musical' && (
+        <>
       {/* SEÇÃO 7: Comportamento Musical Observado */}
       <CollapsibleSection
         title="Comportamento Musical Observado"
@@ -497,6 +530,11 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
         </div>
       </CollapsibleSection>
 
+        </>
+      )}
+
+      {activeTab === 'musical' && (
+        <>
       {/* SEÇÃO 8: Processamento Auditivo e Sensorial */}
       <CollapsibleSection
         title="Processamento Auditivo e Sensorial"
@@ -538,6 +576,11 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
         </div>
       </CollapsibleSection>
 
+        </>
+      )}
+
+      {activeTab === 'development' && (
+        <>
       {/* SEÇÃO 9: Desenvolvimento Neuropsicomotor */}
       <CollapsibleSection
         title="Desenvolvimento Neuropsicomotor"
@@ -572,6 +615,11 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
         </div>
       </CollapsibleSection>
 
+        </>
+      )}
+
+      {activeTab === 'behavioral' && (
+        <>
       {/* SEÇÃO 10: Aspectos Comportamentais e Emocionais */}
       <CollapsibleSection
         title="Aspectos Comportamentais e Emocionais"
@@ -624,6 +672,11 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
         </div>
       </CollapsibleSection>
 
+        </>
+      )}
+
+      {activeTab === 'behavioral' && (
+        <>
       {/* SEÇÃO 11: Contexto Social e Escolar */}
       <CollapsibleSection
         title="Contexto Social e Escolar"
@@ -669,6 +722,11 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
         </div>
       </CollapsibleSection>
 
+        </>
+      )}
+
+      {activeTab === 'behavioral' && (
+        <>
       {/* Objetivos Terapêuticos */}
       <CollapsibleSection
         title="Objetivos Terapêuticos"
@@ -702,6 +760,9 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
           />
         </div>
       </CollapsibleSection>
+        </>
+      )}
+
     </div>
   );
 }

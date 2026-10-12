@@ -24,7 +24,7 @@ export function ModernTextField({
 }: ModernTextFieldProps) {
   return (
     <div className={`space-y-2 ${className}`}>
-      <Label className="text-sm font-bold text-gray-800 dark:text-gray-200 flex items-center gap-1">
+      <Label className="text-sm font-bold text-foreground flex items-center gap-1">
         {label}
         {required && <span className="text-red-500">*</span>}
       </Label>
@@ -34,7 +34,7 @@ export function ModernTextField({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="min-h-[100px] resize-y bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 rounded-lg"
+          className="min-h-[100px] resize-y bg-background border border-input text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 rounded-lg"
         />
       ) : (
         <Input
@@ -42,7 +42,7 @@ export function ModernTextField({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 rounded-lg"
+          className="bg-background border border-input text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 rounded-lg"
         />
       )}
       

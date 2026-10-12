@@ -92,6 +92,7 @@ export default function AnamnesisFormWrapper({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isExportingPDF, setIsExportingPDF] = useState(false);
   const [showValidation, setShowValidation] = useState(false);
+  const [activeAnamnesisTab, setActiveAnamnesisTab] = useState("personal");
   const { toast } = useToast();
   const navigate = useNavigate();
   
@@ -654,7 +655,7 @@ export default function AnamnesisFormWrapper({
         <Card className="border border-teal-700/15 bg-card shadow-lg overflow-hidden rounded-2xl">
           <ModernAnamnesisHeader editMode={!!editAnamnesisId} />
           
-          <CardContent className="p-4 sm:p-6 lg:p-8">
+          <CardContent className="p-3 sm:p-6 lg:p-8">
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* Patient Selection */}
               <div className="bg-card rounded-xl p-4 sm:p-6 border border-teal-700/15 shadow-sm space-y-4">
@@ -677,9 +678,10 @@ export default function AnamnesisFormWrapper({
               </div>
               
               {/* Form Content in Tabs */}
-              <ModernTabsNavigation>
+              <ModernTabsNavigation activeTab={activeAnamnesisTab} onTabChange={setActiveAnamnesisTab}>
                 <div className="bg-card rounded-xl p-4 sm:p-6 border border-teal-700/15 shadow-sm">
                   <InitialEvaluationForm
+                    activeTab={activeAnamnesisTab}
                     content={formData}
                     onChange={updateFormData}
                     fieldErrors={showValidation ? validation.fieldErrors : {}}
