@@ -48,7 +48,7 @@ const statusGuidance: Record<ObjectiveOutcomeStatus, { label: string; direction:
 };
 
 const withoutTerminalPunctuation = (value: string) =>
-  value.trim().replace(/[\\s.!?;:,]+$/gu, '').trim();
+  value.trim().replace(/[\s.!?;:,]+$/gu, '').trim();
 
 const ensurePeriod = (value: string) => {
   const normalized = withoutTerminalPunctuation(value);
@@ -56,7 +56,7 @@ const ensurePeriod = (value: string) => {
 };
 
 const isGenericRecommendation = (value: string) =>
-  /^manter\\s+o\\s+acompanhamento\\s+musicoterap[eê]utico\\s+e\\s+reavaliar\\s+os\\s+objetivos\\s+periodicamente\\s*\\.?$/iu.test(value.trim());
+  /^manter\s+o\s+acompanhamento\s+musicoterap[eê]utico\s+e\s+reavaliar\s+os\s+objetivos\s+periodicamente\s*\.?$/iu.test(value.trim());
 
 /** Preserva orientação substantiva redigida pelo profissional, sem reescrita por IA. */
 export function getProfessionalRecommendation(value: unknown): string | null {
