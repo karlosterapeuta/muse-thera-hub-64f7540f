@@ -66,6 +66,7 @@ import { getEvaluationTypeMeta } from "@/utils/evaluationTypes";
 import { EVALUATION_ACTIVITY_PROTOCOLS } from "./utils/activityProtocols";
 import { AUTISM_DOMAIN_NOTES, presentationParameterLabel } from "./utils/autismGuidance";
 import { ParameterRubric } from "./components/ParameterRubric";
+import { isScored, levelScore, summarizeSubdomain, summarizeDomain, summarizeEvaluation, parameterKey } from "@/utils/museteraScoring";
 import { Document, Packer, Paragraph, AlignmentType, ImageRun } from "docx";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
@@ -604,124 +605,34 @@ export default function Evaluation() {
     }
   ];
 
-  // Helper functions for partial evaluation
-  const isParameterEvaluated = (domain: string, subdomain: string, parameter: string): boolean => {
-    const key = `${domain}-${subdomain}-${parameter}`;
-    return Boolean(selections[key] && selections[key] !== 'nao_aplicavel');
-  };
+  // Motor único para tela, análises e documentos.
+  const isParameterEvaluated = (domain: string, subdomain: string, parameter: string): boolean =>
+    isScored(selections[parameterKey(domain, subdomain, parameter)]);
 
-  const isSubdomainEvaluated = (domain: string, subdomain: string, parameters: string[]): boolean => {
-    return parameters.some(param => isParameterEvaluated(domain, subdomain, param));
-  };
+  const isSubdomainEvaluated = (domain: string, subdomain: string, parameters: string[]): boolean =>
+    summarizeSubdomain(selections, domain, subdomain, parameters).evaluatedParameters > 0;
 
-  const isDomainEvaluated = (domain: any): boolean => {
-    return domain.subdomains.some((subdomain: any) => 
-      isSubdomainEvaluated(domain.title, subdomain.title, subdomain.parameters)
-    );
-  };
+  const isDomainEvaluated = (domain: any): boolean =>
+    summarizeDomain(selections, domain).evaluatedParameters > 0;
 
-  const getEvaluatedDomainsCount = (): number => {
-    return evaluationDomains.filter(domain => isDomainEvaluated(domain)).length;
-  };
+  const getEvaluatedDomainsCount = (): number =>
+    summarizeEvaluation(selections, evaluationDomains).evaluatedDomains;
 
-  const getEvaluatedSubdomainsCount = (): number => {
-    let count = 0;
-    evaluationDomains.forEach(domain => {
-      domain.subdomains.forEach((subdomain: any) => {
-        if (isSubdomainEvaluated(domain.title, subdomain.title, subdomain.parameters)) {
-          count++;
-        }
-      });
-    });
-    return count;
-  };
+  const getEvaluatedSubdomainsCount = (): number =>
+    evaluationDomains.reduce((count, domain) =>
+      count + domain.subdomains.filter(subdomain =>
+        isSubdomainEvaluated(domain.title, subdomain.title, subdomain.parameters)
+      ).length, 0);
 
-  const calculateScore = (domain: string, subdomain: string, parameter: string) => {
-    const key = `${domain}-${subdomain}-${parameter}`;
-    const value = selections[key];
-    
-    if (!value) return 0;
-    
-    return value === "nao_observado" ? 0 : 
-           value === "emergente" ? 20 : 
-           value === "inconsistente" ? 40 : 
-           value === "moderado" ? 60 :
-           value === "consistente" ? 80 : 
-           value === "excepcional" ? 100 : 0;
-  };
+  const calculateScore = (domain: string, subdomain: string, parameter: string): number =>
+    levelScore(selections[parameterKey(domain, subdomain, parameter)]) ?? 0;
 
-  const calculateSubdomainScore = (domain: string, subdomain: string, parameters: string[]) => {
-    const maxPossible = parameters.filter(param => isParameterEvaluated(domain, subdomain, param)).length * 100;
-    
-    const totalScore = parameters.reduce((acc, param) => {
-      const score = calculateScore(domain, subdomain, param);
-      return acc + score;
-    }, 0);
-    
-    const percentage = maxPossible > 0 ? Math.round((totalScore / maxPossible) * 100) : 0;
-    
-    return {
-      raw: totalScore,
-      percentage: percentage
-    };
-  };
+  const calculateSubdomainScore = (domain: string, subdomain: string, parameters: string[]) =>
+    summarizeSubdomain(selections, domain, subdomain, parameters);
 
-  const calculateDomainScore = (domain: any) => {
-    let totalScore = 0;
-    let maxPossible = 0;
-    
-    domain.subdomains.forEach((subdomain: any) => {
-      const score = calculateSubdomainScore(domain.title, subdomain.title, subdomain.parameters);
-      totalScore += score.raw;
-      maxPossible += subdomain.parameters.filter(param => isParameterEvaluated(domain.title, subdomain.title, param)).length * 100;
-    });
-    
-    return {
-      raw: totalScore,
-      percentage: maxPossible > 0 ? Math.round((totalScore / maxPossible) * 100) : 0
-    };
-  };
+  const calculateDomainScore = (domain: any) => summarizeDomain(selections, domain);
 
-  const calculateOverallScore = () => {
-    let totalScore = 0;
-    let maxPossible = 0;
-    let evaluatedParametersCount = 0;
-    let totalParametersCount = 0;
-    
-    evaluationDomains.forEach(domain => {
-      domain.subdomains.forEach(subdomain => {
-        subdomain.parameters.forEach(param => {
-          const score = calculateScore(domain.title, subdomain.title, param);
-          totalScore += score;
-          if (isParameterEvaluated(domain.title, subdomain.title, param)) maxPossible += 100;
-          if (selections[`${domain.title}-${subdomain.title}-${param}`] !== 'nao_aplicavel') totalParametersCount++;
-          
-          if (isParameterEvaluated(domain.title, subdomain.title, param)) {
-            evaluatedParametersCount++;
-          }
-        });
-      });
-    });
-    
-    const completionPercentage = totalParametersCount > 0 
-      ? Math.round((evaluatedParametersCount / totalParametersCount) * 100) 
-      : 0;
-    
-    const scorePercentage = maxPossible > 0 
-      ? Math.round((totalScore / maxPossible) * 100) 
-      : 0;
-    
-    return {
-      raw: totalScore,
-      max: maxPossible,
-      percentage: scorePercentage,
-      completionPercentage: completionPercentage,
-      evaluatedDomains: getEvaluatedDomainsCount(),
-      totalDomains: evaluationDomains.length,
-      evaluatedParameters: evaluatedParametersCount,
-      totalParameters: totalParametersCount
-    };
-  };
+  const calculateOverallScore = () => summarizeEvaluation(selections, evaluationDomains);
 
   const getDomainAverages = () => {
     const averages = evaluationDomains
@@ -1660,17 +1571,6 @@ export default function Evaluation() {
     }
   };
 
-  const levelToScore = (level: string): number => {
-    switch(level) {
-      case '0': return 0;   // Não Observado
-      case '1': return 20;  // Emergente
-      case '2': return 40;  // Inconsistente
-      case '3': return 60;  // Moderado
-      case '4': return 80;  // Consistente
-      case '5': return 100; // Excepcional
-      default: return 0;
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-teal-50/30 to-emerald-50/20 dark:via-teal-950/20 dark:to-background">
@@ -1772,11 +1672,11 @@ export default function Evaluation() {
                 <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <h3 className="text-sm font-semibold text-foreground">Relatório completo de avaliação</h3>
-                    <p className="text-xs leading-relaxed text-muted-foreground">
+                    <p className="text-sm leading-relaxed text-foreground/85">
                       Texto clínico, parâmetros, gráficos e identificação profissional em um único documento.
                     </p>
                   </div>
-                  <span className="text-xs text-muted-foreground">Escolha o formato de saída</span>
+                  <span className="text-sm text-foreground/80">Escolha o formato de saída</span>
                 </div>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <Button
@@ -1932,7 +1832,7 @@ export default function Evaluation() {
                   <div className="text-center">
                     <p className="text-2xl font-bold text-teal-600 dark:text-teal-400">{getEvaluatedSubdomainsCount()}</p>
                     <p className="text-sm text-teal-700 dark:text-teal-300">Subdomínios Avaliados</p>
-                    <p className="text-xs text-teal-600 dark:text-teal-400">
+                    <p className="text-sm text-teal-800 dark:text-teal-200">
                       de {evaluationDomains.reduce((acc, domain) => acc + domain.subdomains.length, 0)} total
                     </p>
                   </div>
@@ -1954,7 +1854,7 @@ export default function Evaluation() {
               {evaluationDomains.map((domain, domainIndex) => (
                 <div key={domainIndex} className="group animate-fade-in" style={{animationDelay: `${domainIndex * 0.1}s`}}>
                   <Card className={`border border-teal-700/15 dark:border-teal-500/20 shadow-sm p-4 sm:p-6 rounded-2xl bg-card`}>
-                    <div className="flex items-center mb-6 gap-3">
+                    <div className="flex flex-wrap items-center mb-5 gap-3">
                       <div className={`text-3xl p-3 rounded-2xl bg-teal-50 dark:bg-teal-950/40`}>
                         {domain.icon}
                       </div>
@@ -1963,11 +1863,11 @@ export default function Evaluation() {
                       {/* Badge indicador de status do domínio */}
                       <div className="ml-auto flex items-center gap-2">
                         {isDomainEvaluated(domain) ? (
-                          <div className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-semibold border border-emerald-200">
+                          <div className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm font-semibold border border-emerald-300">
                             ✓ Avaliado
                           </div>
                         ) : (
-                          <div className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-medium border border-gray-200">
+                          <div className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm font-medium border border-gray-300">
                             Não Avaliado
                           </div>
                         )}
@@ -2050,7 +1950,7 @@ export default function Evaluation() {
                                 <p><strong>Materiais:</strong> {EVALUATION_ACTIVITY_PROTOCOLS[subdomain.title].materials}</p>
                                 <p><strong>Aplicação:</strong> {EVALUATION_ACTIVITY_PROTOCOLS[subdomain.title].procedure}</p>
                                 <p><strong>O que registrar:</strong> {EVALUATION_ACTIVITY_PROTOCOLS[subdomain.title].evidence}</p>
-                                <p className="rounded-lg bg-teal-50 p-3 text-xs text-teal-900 dark:bg-teal-950/40 dark:text-teal-100">Protocolo clínico proposto, ainda não validado cientificamente. Adapte com justificativa à idade, comunicação, acessibilidade e condições sensoriais; documente pistas e apoios.</p>
+                                <p className="rounded-lg bg-teal-50 p-3 text-sm text-teal-950 dark:bg-teal-950/40 dark:text-teal-100">Protocolo clínico proposto, ainda não validado cientificamente. Adapte com justificativa à idade, comunicação, acessibilidade e condições sensoriais; documente pistas e apoios.</p>
                               </CollapsibleContent>
                             </Collapsible>
                           )}
