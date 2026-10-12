@@ -65,6 +65,7 @@ import { TherapeuticSuggestions } from "./components/TherapeuticSuggestions";
 import { getEvaluationTypeMeta } from "@/utils/evaluationTypes";
 import { EVALUATION_ACTIVITY_PROTOCOLS } from "./utils/activityProtocols";
 import { AUTISM_DOMAIN_NOTES, presentationParameterLabel } from "./utils/autismGuidance";
+import { TEA_CLINICAL_REVIEWS } from "./utils/clinicalReviews";
 import { ParameterRubric } from "./components/ParameterRubric";
 import { isScored, levelScore, summarizeSubdomain, summarizeDomain, summarizeEvaluation, parameterKey } from "@/utils/museteraScoring";
 import { Document, Packer, Paragraph, AlignmentType, ImageRun } from "docx";
@@ -1999,6 +2000,12 @@ export default function Evaluation() {
                                     <span className="font-semibold">Tarefa observável: </span>
                                     {EVALUATION_ACTIVITY_PROTOCOLS[subdomain.title]?.prompts[paramIndex] || "Observar este indicador durante tarefa musical pertinente e registrar a resposta."}
                                   </div>
+                                  {TEA_CLINICAL_REVIEWS[parameter] && (
+                                    <div className="mb-3 rounded-lg border border-teal-300 bg-card px-3 py-3 text-sm leading-relaxed text-foreground dark:border-teal-700">
+                                      <p className="font-semibold text-teal-900 dark:text-teal-100">Orientação clínica TEA · revisão do indicador</p>
+                                      <p className="mt-1">{TEA_CLINICAL_REVIEWS[parameter].guidance}</p>
+                                    </div>
+                                  )}
                                   <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                                     {levels.map((lvl) => {
                                       const isSelected = currentSelection === lvl.value;
