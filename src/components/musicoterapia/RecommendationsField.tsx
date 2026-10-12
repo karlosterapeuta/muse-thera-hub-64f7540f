@@ -62,7 +62,7 @@ export function RecommendationsField({ value = [], onChange }: RecommendationsFi
         onChange={(event) => updateText(event.target.value)}
         rows={6}
         placeholder="Ex.: Manter sessões de musicoterapia. Reavaliar a atenção e a concentração após o próximo período de acompanhamento."
-        className="bg-[#101a2e] border-border/70 text-foreground placeholder:text-muted-foreground resize-y min-h-[120px]"
+        className="bg-background border-border/70 text-foreground placeholder:text-muted-foreground resize-y min-h-[120px]"
       />
 
       <div className="space-y-2">
