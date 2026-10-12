@@ -658,7 +658,11 @@ export default function Evaluation() {
       toast.error("Selecione um paciente primeiro");
       return;
     }
-    
+    if (overallScore.evaluatedParameters === 0) {
+      toast.error("Pontue ao menos um indicador antes de salvar.");
+      return;
+    }
+
     const domainScoresData = evaluationDomains.map(domain => ({
       domain: domain.title,
       score: calculateDomainScore(domain).percentage,
