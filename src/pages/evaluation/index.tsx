@@ -1668,19 +1668,19 @@ export default function Evaluation() {
         <EvaluationLevelsHero />
         
         <div className="text-center mb-8 animate-fade-in px-2 sm:px-3">
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4 animate-pulse-gentle">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-teal-600 via-teal-600 to-teal-600 bg-clip-text text-transparent mb-4 animate-pulse-gentle">
             Escala MuseTera
           </h1>
           <p className="text-lg sm:text-xl text-muted-foreground font-medium">
             Instrumento de Avaliação Musicoterapêutica Profissional
           </p>
-          <div className="w-24 h-1 bg-gradient-to-r from-purple-500 to-blue-500 mx-auto mt-4 rounded-full"></div>
+          <div className="w-24 h-1 bg-gradient-to-r from-teal-500 to-teal-500 mx-auto mt-4 rounded-full"></div>
         </div>
         
-        <Card className="backdrop-blur-sm bg-background/80 border border-blue-200/60 dark:border-blue-800/60 shadow-2xl shadow-blue-500/10 p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl animate-fade-in">
+        <Card className="backdrop-blur-sm bg-background/80 border border-teal-200/60 dark:border-teal-800/60 shadow-2xl shadow-teal-500/10 p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl animate-fade-in">
           <div className="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4 sm:gap-6 mb-6 sm:mb-8">
             <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 items-stretch lg:items-center">
-              <div className="p-1 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl">
+              <div className="p-1 bg-gradient-to-r from-teal-500 to-teal-500 rounded-2xl">
                 <div className="bg-background rounded-xl p-4 shadow-sm">
                   <PatientSelect
                     patients={patients}
@@ -1710,15 +1710,15 @@ export default function Evaluation() {
                 <Button
                   variant={"outline"}
                   className={cn(
-                    "w-full sm:w-[220px] justify-start text-left font-normal border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all duration-300 text-foreground font-medium",
+                    "w-full sm:w-[220px] justify-start text-left font-normal border-teal-300 hover:bg-teal-50 dark:hover:bg-teal-900/30 transition-all duration-300 text-foreground font-medium",
                     !evaluationDate && "text-muted-foreground"
                   )}
                 >
-                  <CalendarIcon className="mr-2 h-4 w-4 text-blue-600" />
+                  <CalendarIcon className="mr-2 h-4 w-4 text-teal-600" />
                   {evaluationDate ? format(evaluationDate, "dd/MM/yyyy") : <span>Selecionar data</span>}
                 </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-popover border-2 border-blue-300 dark:border-blue-700 shadow-2xl" align="start">
+                  <PopoverContent className="w-auto p-0 bg-popover border-2 border-teal-300 dark:border-teal-700 shadow-2xl" align="start">
                     <Calendar
                       mode="single"
                       selected={evaluationDate}
@@ -1737,7 +1737,7 @@ export default function Evaluation() {
                 value={selectedEvaluation}
                 onValueChange={setSelectedEvaluation}
               >
-                <SelectTrigger className="w-full sm:w-[200px] text-foreground font-medium border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all duration-300">
+                <SelectTrigger className="w-full sm:w-[200px] text-foreground font-medium border-teal-300 hover:bg-teal-50 dark:hover:bg-teal-900/30 transition-all duration-300">
                   <SelectValue placeholder="Selecione a avaliação" />
                 </SelectTrigger>
                 <SelectContent className="border-0 shadow-xl">
@@ -1772,7 +1772,7 @@ export default function Evaluation() {
                   <Button
                     onClick={handleGenerateEvaluationText}
                     disabled={isGeneratingText || isGeneratingWord || !selectedPatient || overallScore.evaluatedParameters === 0}
-                    className="w-full justify-center gap-2 bg-blue-600 text-white hover:bg-blue-700"
+                    className="w-full justify-center gap-2 bg-teal-600 text-white hover:bg-teal-700"
                   >
                     {isGeneratingText ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileText className="h-4 w-4" />}
                     Baixar relatório em PDF
@@ -1797,7 +1797,7 @@ export default function Evaluation() {
                       disabled={isSaving || !selectedPatient}
                       className={`w-full sm:w-auto justify-center flex items-center gap-2 text-white border-0 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 ${
                         editingEvaluationId 
-                          ? "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+                          ? "bg-gradient-to-r from-teal-500 to-teal-500 hover:from-teal-600 hover:to-teal-600"
                           : "bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600"
                       }`}
                     >
@@ -1832,10 +1832,10 @@ export default function Evaluation() {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-            <TabsList className="grid w-full grid-cols-3 bg-background/80 backdrop-blur-sm p-1 sm:p-1.5 rounded-2xl h-auto min-h-[3.5rem] sm:min-h-[4.5rem] border border-blue-200/50 dark:border-blue-800/50 shadow-lg">
+            <TabsList className="grid w-full grid-cols-3 bg-background/80 backdrop-blur-sm p-1 sm:p-1.5 rounded-2xl h-auto min-h-[3.5rem] sm:min-h-[4.5rem] border border-teal-200/50 dark:border-teal-800/50 shadow-lg">
               <TabsTrigger 
                 value="evaluation" 
-                className="rounded-xl flex flex-col sm:flex-row items-center justify-center text-[11px] sm:text-xs md:text-sm lg:text-base font-bold px-1.5 sm:px-3 py-2 sm:py-3 gap-1 sm:gap-2 leading-tight text-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-primary-foreground data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-blue-300/60 dark:data-[state=active]:ring-blue-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
+                className="rounded-xl flex flex-col sm:flex-row items-center justify-center text-[11px] sm:text-xs md:text-sm lg:text-base font-bold px-1.5 sm:px-3 py-2 sm:py-3 gap-1 sm:gap-2 leading-tight text-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-500 data-[state=active]:to-teal-500 data-[state=active]:text-primary-foreground data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-teal-300/60 dark:data-[state=active]:ring-teal-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
               >
                 <ClipboardList className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
                 <span>Escala MuseTera</span>
@@ -1849,7 +1849,7 @@ export default function Evaluation() {
               </TabsTrigger>
               <TabsTrigger 
                 value="comparison" 
-                className="rounded-xl flex flex-col sm:flex-row items-center justify-center text-[11px] sm:text-xs md:text-sm lg:text-base font-bold px-1.5 sm:px-3 py-2 sm:py-3 gap-1 sm:gap-2 leading-tight text-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-primary-foreground data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-purple-300/60 dark:data-[state=active]:ring-purple-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
+                className="rounded-xl flex flex-col sm:flex-row items-center justify-center text-[11px] sm:text-xs md:text-sm lg:text-base font-bold px-1.5 sm:px-3 py-2 sm:py-3 gap-1 sm:gap-2 leading-tight text-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-500 data-[state=active]:to-emerald-500 data-[state=active]:text-primary-foreground data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-teal-300/60 dark:data-[state=active]:ring-teal-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
               >
                 <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
                 <span>Evolução do Paciente</span>
@@ -1886,16 +1886,16 @@ export default function Evaluation() {
               )}
 
               <Collapsible className="mb-6">
-                <CollapsibleTrigger className="w-full bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-lg p-3 flex items-center justify-between hover:bg-blue-100 dark:hover:bg-blue-950/60 transition-colors">
+                <CollapsibleTrigger className="w-full bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 rounded-lg p-3 flex items-center justify-between hover:bg-teal-100 dark:hover:bg-teal-950/60 transition-colors">
                   <div className="flex items-center gap-2">
-                    <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                    <span className="text-sm font-semibold text-blue-800 dark:text-blue-200">Como usar a escala</span>
+                    <Info className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+                    <span className="text-sm font-semibold text-teal-800 dark:text-teal-200">Como usar a escala</span>
                   </div>
-                  <ChevronDown className="h-4 w-4 text-blue-600 dark:text-blue-400 transition-transform duration-200 [[data-state=open]>&]:rotate-180" />
+                  <ChevronDown className="h-4 w-4 text-teal-600 dark:text-teal-400 transition-transform duration-200 [[data-state=open]>&]:rotate-180" />
                 </CollapsibleTrigger>
-                <CollapsibleContent className="bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 border-t-0 rounded-b-lg p-4">
-                  <h3 className="text-base font-semibold text-blue-800 dark:text-blue-200 mb-2">Escala MuseTera - Versão Profissional</h3>
-                  <p className="text-blue-700 dark:text-blue-300 text-sm">
+                <CollapsibleContent className="bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 border-t-0 rounded-b-lg p-4">
+                  <h3 className="text-base font-semibold text-teal-800 dark:text-teal-200 mb-2">Escala MuseTera - Versão Profissional</h3>
+                  <p className="text-teal-700 dark:text-teal-300 text-sm">
                     Sistema de pontuação (0-100): Não Observado (0), Emergente (20), Inconsistente (40), 
                     Moderado (60), Consistente (80), Excepcional (100)
                   </p>
@@ -1919,11 +1919,11 @@ export default function Evaluation() {
                     </p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                    <p className="text-2xl font-bold text-teal-600 dark:text-teal-400">
                       {calculateOverallScore().percentage}%
                     </p>
-                    <p className="text-sm text-blue-700 dark:text-blue-300">Pontuação Média</p>
-                    <p className="text-xs text-blue-600 dark:text-blue-400">escala MuseTera</p>
+                    <p className="text-sm text-teal-700 dark:text-teal-300">Pontuação Média</p>
+                    <p className="text-xs text-teal-600 dark:text-teal-400">escala MuseTera</p>
                   </div>
                 </div>
                 <div className="mt-3 text-center">
@@ -1971,11 +1971,11 @@ export default function Evaluation() {
                     
                     {domain.subdomains.map((subdomain, subdomainIndex) => {
                       const domainColorMap: Record<string, { border: string; bg: string; headerBg: string; text: string; badgeBg: string; badgeText: string; badgeBorder: string; infoBg: string; infoText: string }> = {
-                        "from-teal-700 to-emerald-700": { border: "border-l-pink-500", bg: "bg-gradient-to-r from-pink-50 via-purple-50 to-fuchsia-50 dark:from-pink-950/30 dark:via-purple-950/30 dark:to-fuchsia-950/30", headerBg: "bg-gradient-to-r from-purple-600 to-pink-600", text: "text-purple-800 dark:text-purple-200", badgeBg: "bg-pink-100 dark:bg-pink-900/40", badgeText: "text-pink-700 dark:text-pink-300", badgeBorder: "border-pink-300 dark:border-pink-700", infoBg: "hover:bg-pink-100 dark:hover:bg-pink-900/30", infoText: "text-pink-600 dark:text-pink-400" },
-                        "from-teal-700 to-teal-800": { border: "border-l-cyan-500", bg: "bg-gradient-to-r from-blue-50 via-cyan-50 to-sky-50 dark:from-blue-950/30 dark:via-cyan-950/30 dark:to-sky-950/30", headerBg: "bg-gradient-to-r from-blue-600 to-cyan-600", text: "text-blue-800 dark:text-blue-200", badgeBg: "bg-cyan-100 dark:bg-cyan-900/40", badgeText: "text-cyan-700 dark:text-cyan-300", badgeBorder: "border-cyan-300 dark:border-cyan-700", infoBg: "hover:bg-cyan-100 dark:hover:bg-cyan-900/30", infoText: "text-cyan-600 dark:text-cyan-400" },
+                        "from-teal-700 to-emerald-700": { border: "border-l-pink-500", bg: "bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 dark:from-emerald-950/30 dark:via-teal-950/30 dark:to-emerald-950/30", headerBg: "bg-gradient-to-r from-teal-600 to-emerald-600", text: "text-teal-800 dark:text-teal-200", badgeBg: "bg-emerald-100 dark:bg-emerald-900/40", badgeText: "text-emerald-700 dark:text-emerald-300", badgeBorder: "border-emerald-300 dark:border-emerald-700", infoBg: "hover:bg-emerald-100 dark:hover:bg-emerald-900/30", infoText: "text-emerald-600 dark:text-emerald-400" },
+                        "from-teal-700 to-teal-800": { border: "border-l-cyan-500", bg: "bg-gradient-to-r from-teal-50 via-emerald-50 to-teal-50 dark:from-teal-950/30 dark:via-emerald-950/30 dark:to-teal-950/30", headerBg: "bg-gradient-to-r from-teal-600 to-emerald-600", text: "text-teal-800 dark:text-teal-200", badgeBg: "bg-emerald-100 dark:bg-emerald-900/40", badgeText: "text-emerald-700 dark:text-emerald-300", badgeBorder: "border-emerald-300 dark:border-emerald-700", infoBg: "hover:bg-emerald-100 dark:hover:bg-emerald-900/30", infoText: "text-emerald-600 dark:text-emerald-400" },
                         "from-emerald-500 to-teal-500": { border: "border-l-teal-500", bg: "bg-gradient-to-r from-emerald-50 via-teal-50 to-green-50 dark:from-emerald-950/30 dark:via-teal-950/30 dark:to-green-950/30", headerBg: "bg-gradient-to-r from-emerald-600 to-teal-600", text: "text-emerald-800 dark:text-emerald-200", badgeBg: "bg-teal-100 dark:bg-teal-900/40", badgeText: "text-teal-700 dark:text-teal-300", badgeBorder: "border-teal-300 dark:border-teal-700", infoBg: "hover:bg-teal-100 dark:hover:bg-teal-900/30", infoText: "text-teal-600 dark:text-teal-400" },
-                        "from-teal-600 to-teal-800": { border: "border-l-orange-500", bg: "bg-gradient-to-r from-orange-50 via-amber-50 to-yellow-50 dark:from-orange-950/30 dark:via-amber-950/30 dark:to-yellow-950/30", headerBg: "bg-gradient-to-r from-orange-600 to-red-600", text: "text-orange-800 dark:text-orange-200", badgeBg: "bg-orange-100 dark:bg-orange-900/40", badgeText: "text-orange-700 dark:text-orange-300", badgeBorder: "border-orange-300 dark:border-orange-700", infoBg: "hover:bg-orange-100 dark:hover:bg-orange-900/30", infoText: "text-orange-600 dark:text-orange-400" },
-                        "from-emerald-700 to-teal-800": { border: "border-l-indigo-500", bg: "bg-gradient-to-r from-indigo-50 via-violet-50 to-purple-50 dark:from-indigo-950/30 dark:via-violet-950/30 dark:to-purple-950/30", headerBg: "bg-gradient-to-r from-indigo-600 to-purple-600", text: "text-indigo-800 dark:text-indigo-200", badgeBg: "bg-indigo-100 dark:bg-indigo-900/40", badgeText: "text-indigo-700 dark:text-indigo-300", badgeBorder: "border-indigo-300 dark:border-indigo-700", infoBg: "hover:bg-indigo-100 dark:hover:bg-indigo-900/30", infoText: "text-indigo-600 dark:text-indigo-400" },
+                        "from-teal-600 to-teal-800": { border: "border-l-orange-500", bg: "bg-gradient-to-r from-teal-50 via-teal-50 to-emerald-50 dark:from-teal-950/30 dark:via-teal-950/30 dark:to-emerald-950/30", headerBg: "bg-gradient-to-r from-teal-600 to-red-600", text: "text-teal-800 dark:text-teal-200", badgeBg: "bg-teal-100 dark:bg-teal-900/40", badgeText: "text-teal-700 dark:text-teal-300", badgeBorder: "border-teal-300 dark:border-teal-700", infoBg: "hover:bg-teal-100 dark:hover:bg-teal-900/30", infoText: "text-teal-600 dark:text-teal-400" },
+                        "from-emerald-700 to-teal-800": { border: "border-l-indigo-500", bg: "bg-gradient-to-r from-teal-50 via-teal-50 to-teal-50 dark:from-teal-950/30 dark:via-teal-950/30 dark:to-teal-950/30", headerBg: "bg-gradient-to-r from-teal-600 to-teal-600", text: "text-teal-800 dark:text-teal-200", badgeBg: "bg-teal-100 dark:bg-teal-900/40", badgeText: "text-teal-700 dark:text-teal-300", badgeBorder: "border-teal-300 dark:border-teal-700", infoBg: "hover:bg-teal-100 dark:hover:bg-teal-900/30", infoText: "text-teal-600 dark:text-teal-400" },
                       };
                       const colors = domainColorMap[domain.color] || domainColorMap["from-teal-700 to-emerald-700"];
                       
@@ -2106,33 +2106,33 @@ export default function Evaluation() {
               )}
 
               <Card className="border-0 shadow-2xl p-4 sm:p-8 rounded-3xl bg-background">
-                <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-center bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-center bg-gradient-to-r from-teal-600 to-teal-600 bg-clip-text text-transparent">
                   Resultados da Escala MuseTera
                 </h2>
                 {getEvaluatedDomainsCount() < evaluationDomains.length && (
-                  <p className="text-center text-sm text-amber-600 dark:text-amber-400 mb-6">
+                  <p className="text-center text-sm text-teal-600 dark:text-teal-400 mb-6">
                     Avaliação Parcial — {getEvaluatedDomainsCount()}/{evaluationDomains.length} domínios
                   </p>
                 )}
-                <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-blue-500 mx-auto rounded-full mb-8" />
+                <div className="w-16 h-1 bg-gradient-to-r from-teal-500 to-teal-500 mx-auto rounded-full mb-8" />
                 
                 {/* Score Summary Cards */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-                  <div className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl p-4 text-white text-center shadow-lg shadow-purple-500/20">
+                  <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl p-4 text-white text-center shadow-lg shadow-teal-500/20">
                     <p className="text-3xl font-black">{overallScore.percentage}%</p>
-                    <p className="text-xs font-medium text-purple-100 mt-1">Pontuação Geral</p>
+                    <p className="text-xs font-medium text-teal-100 mt-1">Pontuação Geral</p>
                   </div>
                   <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-4 text-white text-center shadow-lg shadow-emerald-500/20">
                     <p className="text-3xl font-black">{getEvaluatedDomainsCount()}/{evaluationDomains.length}</p>
                     <p className="text-xs font-medium text-emerald-100 mt-1">Domínios</p>
                   </div>
-                  <div className="bg-gradient-to-br from-blue-500 to-cyan-600 rounded-2xl p-4 text-white text-center shadow-lg shadow-blue-500/20">
+                  <div className="bg-gradient-to-br from-teal-500 to-emerald-600 rounded-2xl p-4 text-white text-center shadow-lg shadow-teal-500/20">
                     <p className="text-3xl font-black">{getEvaluatedSubdomainsCount()}</p>
-                    <p className="text-xs font-medium text-blue-100 mt-1">Subdomínios</p>
+                    <p className="text-xs font-medium text-teal-100 mt-1">Subdomínios</p>
                   </div>
-                  <div className="bg-gradient-to-br from-orange-500 to-rose-600 rounded-2xl p-4 text-white text-center shadow-lg shadow-orange-500/20">
+                  <div className="bg-gradient-to-br from-teal-500 to-emerald-600 rounded-2xl p-4 text-white text-center shadow-lg shadow-teal-500/20">
                     <p className="text-3xl font-black">{overallScore.raw}</p>
-                    <p className="text-xs font-medium text-orange-100 mt-1">Pontos / {overallScore.max}</p>
+                    <p className="text-xs font-medium text-teal-100 mt-1">Pontos / {overallScore.max}</p>
                   </div>
                 </div>
 
@@ -2140,7 +2140,7 @@ export default function Evaluation() {
                   {/* Radar Chart */}
                   <Card className="border border-border/50 shadow-lg p-3 sm:p-6 rounded-2xl bg-card">
                     <div className="flex items-center gap-3 mb-6">
-                      <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-md">
+                      <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center shadow-md">
                         <span className="text-white text-lg">📊</span>
                       </div>
                       <div>
@@ -2153,8 +2153,8 @@ export default function Evaluation() {
                         <RadarChart cx="50%" cy="50%" outerRadius="75%" data={domainScores}>
                           <defs>
                             <linearGradient id="radarGradient" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.4} />
-                              <stop offset="100%" stopColor="#6366f1" stopOpacity={0.1} />
+                              <stop offset="0%" stopColor="#0f766e" stopOpacity={0.4} />
+                              <stop offset="100%" stopColor="#0d9488" stopOpacity={0.1} />
                             </linearGradient>
                           </defs>
                           <PolarGrid stroke="hsl(var(--border))" strokeDasharray="3 3" />
@@ -2171,10 +2171,10 @@ export default function Evaluation() {
                           <Radar 
                             name="Perfil" 
                             dataKey="value" 
-                            stroke="#8b5cf6" 
+                            stroke="#0f766e" 
                             fill="url(#radarGradient)" 
                             strokeWidth={2.5}
-                            dot={{ r: 5, fill: '#8b5cf6', stroke: '#fff', strokeWidth: 2 }}
+                            dot={{ r: 5, fill: '#0f766e', stroke: '#fff', strokeWidth: 2 }}
                           />
                           <Tooltip 
                             contentStyle={{ 
@@ -2262,7 +2262,7 @@ export default function Evaluation() {
                 {/* Bar Chart */}
                 <Card className="border border-border/50 shadow-lg p-3 sm:p-6 rounded-2xl bg-card">
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center shadow-md">
+                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center shadow-md">
                       <span className="text-white text-lg">📈</span>
                     </div>
                     <div>
@@ -2325,7 +2325,7 @@ export default function Evaluation() {
                                 <div className="flex items-center gap-2">
                                   <div className="w-full bg-muted rounded-full h-2">
                                     <div 
-                                      className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500" 
+                                      className="h-2 rounded-full bg-gradient-to-r from-teal-500 to-teal-500" 
                                       style={{ width: `${data.value}%` }}
                                     />
                                   </div>
@@ -2357,11 +2357,11 @@ export default function Evaluation() {
                   {/* Legend */}
                   <div className="flex flex-wrap justify-center gap-4 mt-4">
                     {[
-                      { label: "Musical", color: "from-purple-400 to-purple-600" },
+                      { label: "Musical", color: "from-teal-400 to-teal-600" },
                       { label: "Psicossocial", color: "from-emerald-400 to-emerald-600" },
-                      { label: "Cognitivo", color: "from-amber-400 to-amber-600" },
+                      { label: "Cognitivo", color: "from-teal-400 to-teal-600" },
                       { label: "Sensório-Motor", color: "from-red-400 to-red-600" },
-                      { label: "Comunicativo", color: "from-indigo-400 to-indigo-600" },
+                      { label: "Comunicativo", color: "from-teal-400 to-teal-600" },
                     ].map(item => (
                       <div key={item.label} className="flex items-center gap-2">
                         <div className={`w-3 h-3 rounded-full bg-gradient-to-br ${item.color}`} />
@@ -2375,9 +2375,9 @@ export default function Evaluation() {
             
             <TabsContent value="comparison" className="mt-8">
               {/* Header e Grid de Cards de Pacientes */}
-              <Card className="p-4 sm:p-6 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-indigo-950/50 dark:via-purple-950/50 dark:to-pink-950/50 border-0 shadow-xl mb-6">
+              <Card className="p-4 sm:p-6 bg-gradient-to-br from-teal-50 via-teal-50 to-emerald-50 dark:from-teal-950/50 dark:via-teal-950/50 dark:to-emerald-950/50 border-0 shadow-xl mb-6">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="h-12 w-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
+                  <div className="h-12 w-12 rounded-full bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center shadow-lg">
                     <FileBarChart className="h-6 w-6 text-white" />
                   </div>
                   <div>
