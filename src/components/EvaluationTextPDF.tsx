@@ -170,7 +170,7 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
             <div style={{ color: '#172b4d', fontSize: '11pt', fontWeight: 600 }}>
               {patientBirthDate ? (() => {
                 const datePart = patientBirthDate.slice(0, 10);
-                const match = /^(\\d{4})-(\\d{2})-(\\d{2})$/.exec(datePart);
+                const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(datePart);
                 return match ? `${match[3]}/${match[2]}/${match[1]}` : 'Não informada';
               })() : 'Não informada'}
             </div>
