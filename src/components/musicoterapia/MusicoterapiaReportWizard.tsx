@@ -742,13 +742,13 @@ export function MusicoterapiaReportWizard({
       <div className="space-y-6">
         {/* Evitar orientações redundantes na Etapa 07, que agora tem só um campo. */}
         {hint && currentStepData.id !== 'recommendations' && (
-          <div className="relative overflow-hidden rounded-2xl border border-teal-600/20 bg-gradient-to-br from-[#c9a84c]/[0.06] via-transparent to-transparent p-5 flex gap-4">
+          <div className="relative overflow-hidden rounded-2xl border border-teal-600/20 bg-gradient-to-br from-teal-600/5 via-transparent to-transparent p-5 flex gap-4">
             <div className="shrink-0 h-10 w-10 rounded-xl bg-teal-600/10 border border-teal-600/30 flex items-center justify-center">
               <HintIcon className="h-5 w-5 text-teal-800 dark:text-teal-200" />
             </div>
             <div className="space-y-1">
               <div className="text-[10px] uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400 font-bold">Dica clínica</div>
-              <h3 className="text-base text-teal-800 dark:text-teal-200 font-semibold" style={{ fontFamily: "inherit" }}>
+              <h3 className="text-base text-teal-800 dark:text-teal-200 font-semibold" >
                 {hint.title}
               </h3>
               <p className="text-sm text-muted-foreground font-light leading-relaxed">{hint.description}</p>
@@ -765,7 +765,7 @@ export function MusicoterapiaReportWizard({
 
         {/* Templates profissionais (noir/gold) */}
         {templateOptions && (
-          <div className="relative rounded-2xl border-2 border-teal-600/40 bg-gradient-to-br from-[#c9a84c]/[0.10] via-[#0d0d0d]/60 to-[#0d0d0d]/40 p-5 sm:p-6 space-y-5 shadow-[0_0_40px_-12px_rgba(201,168,76,0.35)]">
+          <div className="relative rounded-2xl border-2 border-teal-600/40 bg-gradient-to-br from-teal-600/10 via-card to-card p-5 sm:p-6 space-y-5 shadow-sm">
             <div className="absolute -top-3 left-5 px-3 py-1 rounded-full bg-teal-700 text-white text-[10px] uppercase tracking-[0.18em] font-black shadow-lg">
               ✦ Textos prontos
             </div>
@@ -774,7 +774,7 @@ export function MusicoterapiaReportWizard({
                 <Wand2 className="h-5 w-5 text-teal-800 dark:text-teal-200" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-lg text-teal-800 dark:text-teal-200 font-bold" style={{ fontFamily: "inherit" }}>
+                <h3 className="text-lg text-teal-800 dark:text-teal-200 font-bold" >
                   Selecione um texto pronto
                 </h3>
                 <p className="text-sm text-foreground/80 font-light leading-relaxed">
@@ -797,7 +797,7 @@ export function MusicoterapiaReportWizard({
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2 mb-1.5">
-                      <span className={`font-semibold text-sm ${isActive ? 'text-teal-800 dark:text-teal-200' : 'text-gray-200 group-hover:text-teal-800 dark:text-teal-200'}`}>
+                      <span className={`font-semibold text-sm ${isActive ? 'text-teal-800 dark:text-teal-200' : 'text-foreground group-hover:text-teal-700 dark:group-hover:text-teal-200'}`}>
                         {opt.label}
                       </span>
                       {isActive && (
@@ -896,6 +896,22 @@ export function MusicoterapiaReportWizard({
         </div>
       </header>
 
+      {/* Compact context strip uses only current report values; no implied clinical completion. */}
+      <div className="grid gap-2 rounded-2xl border border-border/70 bg-card p-3 shadow-sm sm:grid-cols-3 sm:p-4">
+        <div className="min-w-0 rounded-xl bg-muted/40 px-3 py-2">
+          <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Paciente</p>
+          <p className="mt-1 truncate text-sm font-semibold text-foreground">{reportData.patientName?.trim() || 'Aguardando identificação'}</p>
+        </div>
+        <div className="rounded-xl bg-muted/40 px-3 py-2">
+          <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Objetivos selecionados</p>
+          <p className="mt-1 text-sm font-semibold text-foreground">{getSelectedMusicoterapiaObjectives(reportData.fieldValues?.therapeutic_objective_ids).length}</p>
+        </div>
+        <div className="rounded-xl bg-muted/40 px-3 py-2">
+          <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Abordagens selecionadas</p>
+          <p className="mt-1 text-sm font-semibold text-foreground">{getSelectedMusicoterapiaApproaches(reportData.fieldValues?.musicoterapia_approach_ids).length}</p>
+        </div>
+      </div>
+
       {/* All steps remain directly accessible on desktop; mobile uses a scrollable row */}
       <nav aria-label="Etapas do relatório" className="rounded-2xl border border-border/70 bg-card p-3 shadow-sm sm:p-4">
         <div className="flex items-center justify-between gap-3 pb-3">
@@ -904,14 +920,13 @@ export function MusicoterapiaReportWizard({
             <p className="text-sm text-muted-foreground">Navegue entre as nove etapas. Os registros precisam de revisão antes da emissão.</p>
           </div>
           <div className="hidden shrink-0 items-center gap-2 rounded-lg bg-muted px-3 py-2 text-xs font-medium text-foreground sm:flex">
-            <Check className="h-4 w-4 text-teal-600" />
+            <ClipboardList className="h-4 w-4 text-teal-600" />
             {currentStep + 1}/{STEPS.length}
           </div>
         </div>
         <div className="flex gap-2 overflow-x-auto pb-2 lg:grid lg:grid-cols-4 lg:overflow-visible xl:grid-cols-5">
           {STEPS.map((step, index) => {
             const active = currentStep === index;
-            const complete = index < currentStep;
             const Icon = step.icon;
             return (
               <button
@@ -919,7 +934,7 @@ export function MusicoterapiaReportWizard({
                 type="button"
                 onClick={() => { setCurrentStep(index); scrollToStepContent(); }}
                 aria-current={active ? 'step' : undefined}
-                aria-label={`Etapa ${index + 1}: ${step.title.replace(/^\\d+\\.\\s*/, '')}`}
+                aria-label={`Etapa ${index + 1}: ${step.title.replace(/^\d+\.\s*/, '')}`}
                 className={`flex min-w-[162px] items-center gap-2 rounded-xl border px-3 py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 lg:min-w-0 ${
                   active
                     ? 'border-teal-500 bg-teal-50 text-teal-950 shadow-sm dark:bg-teal-950/40 dark:text-teal-100'
@@ -927,13 +942,13 @@ export function MusicoterapiaReportWizard({
                 }`}
               >
                 <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
-                  active ? 'bg-teal-700 text-white' : complete ? 'bg-muted text-muted-foreground' : 'bg-muted text-muted-foreground'
+                  active ? 'bg-teal-700 text-white' : 'bg-muted text-muted-foreground'
                 }`}>
                   <Icon className="h-4 w-4" />
                 </span>
                 <span className="min-w-0">
                   <span className="block text-[10px] font-medium opacity-70">ETAPA {String(index + 1).padStart(2, '0')}</span>
-                  <span className="block text-xs font-semibold leading-tight">{step.title.replace(/^\\d+\\.\\s*/, '')}</span>
+                  <span className="block text-xs font-semibold leading-tight">{step.title.replace(/^\d+\.\s*/, '')}</span>
                 </span>
               </button>
             );
@@ -954,8 +969,8 @@ export function MusicoterapiaReportWizard({
                 Etapa {String(currentStep + 1).padStart(2, '0')} de {String(STEPS.length).padStart(2, '0')}
               </div>
               <h2
-                className="text-2xl sm:text-3xl lg:text-4xl text-foreground leading-tight"
-                style={{ fontFamily: "inherit" }}
+                className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground leading-tight"
+                
               >
                 {currentStepData.title.replace(/^\d+\.\s*/, '')}
               </h2>
