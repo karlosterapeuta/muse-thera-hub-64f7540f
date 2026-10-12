@@ -1,5 +1,6 @@
 
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { FileText, UserCheck, Plus, ClipboardList, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,8 @@ export function DashboardStats({
   totalInterventions,
   isLoading
 }: DashboardStatsProps) {
+  const navigate = useNavigate();
+  /* Indicadores abrem seus módulos correspondentes. */
   console.log("🎯 DashboardStats recebeu os dados:", {
     totalPatients,
     totalReports,
@@ -35,6 +38,7 @@ export function DashboardStats({
       icon: UserCheck,
       gradient: "from-teal-700 via-teal-800 to-emerald-900",
       actionText: totalPatients === 0 ? "Cadastrar Primeiro Paciente" : `${totalPatients} pacientes ativos`,
+      path: "/patients",
       isEmpty: totalPatients === 0
     },
     {
@@ -44,6 +48,7 @@ export function DashboardStats({
       icon: ClipboardList,
       gradient: "from-emerald-600 via-teal-700 to-teal-800",
       actionText: totalAnamnesis === 0 ? "Realizar Primeira Anamnese" : `${totalAnamnesis} anamneses registradas`,
+      path: "/anamnesis",
       isEmpty: totalAnamnesis === 0
     },
     {
@@ -53,6 +58,7 @@ export function DashboardStats({
       icon: Target,
       gradient: "from-teal-600 via-emerald-700 to-emerald-800",
       actionText: totalInterventions === 0 ? "Criar Primeira Intervenção" : `${totalInterventions} planos ativos`,
+      path: "/intervention",
       isEmpty: totalInterventions === 0
     },
     {
@@ -62,6 +68,7 @@ export function DashboardStats({
       icon: FileText,
       gradient: "from-green-700 via-teal-800 to-teal-900",
       actionText: totalReports === 0 ? "Gerar Primeiro Relatório" : `${totalReports} relatórios criados`,
+      path: "/processes/musicoterapia",
       isEmpty: totalReports === 0
     }
   ];
@@ -98,6 +105,7 @@ export function DashboardStats({
         return (
           <Card 
             key={index} 
+            role="link" tabIndex={0} aria-label={`Abrir ${stat.title}`} onClick={() => navigate(stat.path)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); navigate(stat.path); } }}
             className={`relative overflow-hidden border-0 shadow-lg rounded-xl bg-gradient-to-br ${stat.gradient} text-white hover:shadow-2xl sm:hover:scale-105 transition-all duration-300 group cursor-pointer`}
           >
             <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -107,10 +115,10 @@ export function DashboardStats({
                   <stat.icon className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-[10px] sm:text-xs lg:text-sm font-semibold text-white/90 truncate leading-tight">
+                  <h3 className="text-xs sm:text-sm font-semibold text-white/90 truncate leading-tight">
                     {stat.title}
                   </h3>
-                  <p className="text-[8px] sm:text-[10px] lg:text-xs text-white/70 truncate">
+                  <p className="text-xs text-white/70 truncate">
                     {stat.subtitle}
                   </p>
                 </div>
@@ -127,15 +135,16 @@ export function DashboardStats({
                 
                 {stat.isEmpty ? (
                   <Button 
+                    onClick={(event) => { event.stopPropagation(); navigate(stat.path); }}
                     variant="secondary" 
                     size="sm" 
-                    className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm text-[9px] sm:text-xs w-full group/button py-1 sm:py-1.5 h-auto"
+                    className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm text-xs w-full group/button py-1 sm:py-1.5 h-auto"
                   >
                     <Plus className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1 group-hover/button:rotate-90 transition-transform duration-300 flex-shrink-0" />
                     <span className="truncate leading-tight">{stat.actionText}</span>
                   </Button>
                 ) : (
-                  <div className="inline-flex items-center px-1.5 sm:px-2 lg:px-3 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-xs font-medium bg-white/10 text-white/80 backdrop-blur-sm group-hover:bg-white/20 transition-colors">
+                  <div className="inline-flex items-center px-1.5 sm:px-2 lg:px-3 py-0.5 sm:py-1 rounded-full text-xs font-medium bg-white/10 text-white/80 backdrop-blur-sm group-hover:bg-white/20 transition-colors">
                     <span className="truncate">{stat.actionText}</span>
                   </div>
                 )}
