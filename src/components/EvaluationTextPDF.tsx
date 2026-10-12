@@ -27,6 +27,7 @@ interface EvaluationTextPDFProps {
   content: EvaluationTextContent;
   patientName: string;
   patientAge: number | null;
+  patientBirthDate?: string | null;
   evaluationDate: string;
   professionalName: string;
   professionalRegister?: string;
@@ -76,6 +77,7 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
   content,
   patientName,
   patientAge,
+  patientBirthDate,
   evaluationDate,
   professionalName,
   professionalRegister,
@@ -142,47 +144,74 @@ export const EvaluationTextPDF: React.FC<EvaluationTextPDFProps> = ({
         </h2>
       </div>
 
-      {/* Dados do Paciente */}
-      <div
+      {/* Identificação clínica: bloco A4 indivisível e com alto contraste para impressão. */}
+      <section
         data-pdf-section
         style={{
           ...sectionBase,
-          backgroundColor: '#f1f5f9',
-          padding: '15px',
+          border: '1px solid #cbd5e1',
+          borderTop: '5px solid #0f766e',
           borderRadius: '8px',
+          padding: '16px 18px',
+          backgroundColor: '#ffffff',
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
         }}
       >
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
-            gap: '10px',
-          }}
-        >
+        <div style={{ fontSize: '9pt', letterSpacing: '1.2px', fontWeight: 700, color: '#0f766e', marginBottom: '5px' }}>
+          IDENTIFICAÇÃO DO PACIENTE
+        </div>
+        <div style={{ ...textBlock, fontWeight: 700, fontSize: '16pt', color: '#102a43', lineHeight: 1.3, marginBottom: '12px' }}>
+          {patientName?.trim() || 'Nome não informado'}
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '12px 18px', paddingBottom: '13px', borderBottom: '1px solid #d9e2ec' }}>
           <div style={textBlock}>
-            <strong style={{ color: '#0f766e' }}>Paciente:</strong> {patientName}
+            <div style={{ color: '#475569', fontSize: '9pt', fontWeight: 700 }}>DATA DE NASCIMENTO</div>
+            <div style={{ color: '#172b4d', fontSize: '11pt', fontWeight: 600 }}>
+              {patientBirthDate ? (() => {
+                const datePart = patientBirthDate.slice(0, 10);
+                const match = /^(\\d{4})-(\\d{2})-(\\d{2})$/.exec(datePart);
+                return match ? `${match[3]}/${match[2]}/${match[1]}` : 'Não informada';
+              })() : 'Não informada'}
+            </div>
           </div>
           <div style={textBlock}>
-            <strong style={{ color: '#0f766e' }}>Idade:</strong>{' '}
-            {patientAge ? `${patientAge} anos` : 'Não informada'}
-          </div>
-          <div style={textBlock}>
-            <strong style={{ color: '#0f766e' }}>Data da Avaliação:</strong> {evaluationDate}
-          </div>
-          <div style={textBlock}>
-            <strong style={{ color: '#0f766e' }}>Pontuação Global:</strong>{' '}
-            {overallScore.percentage}%
+            <div style={{ color: '#475569', fontSize: '9pt', fontWeight: 700 }}>IDADE REGISTRADA</div>
+            <div style={{ color: '#172b4d', fontSize: '11pt', fontWeight: 600 }}>{patientAge != null ? `${patientAge} anos` : 'Não informada'}</div>
           </div>
         </div>
-        <div style={{ ...textBlock, marginTop: '10px' }}>
-          <strong style={{ color: '#0f766e' }}>Domínios Avaliados:</strong>{' '}
-          {overallScore.evaluatedDomains}/{overallScore.totalDomains}
-          <span style={{ marginLeft: '20px' }}>
-            <strong style={{ color: '#0f766e' }}>Parâmetros Avaliados:</strong>{' '}
-            {overallScore.evaluatedParameters}
-          </span>
+        <div style={{ fontSize: '9pt', letterSpacing: '1.2px', fontWeight: 700, color: '#0f766e', marginTop: '13px', marginBottom: '10px' }}>
+          DADOS DA AVALIAÇÃO
         </div>
-      </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '12px 18px' }}>
+          <div style={textBlock}>
+            <div style={{ color: '#475569', fontSize: '9pt', fontWeight: 700 }}>PROCEDIMENTO</div>
+            <div style={{ color: '#172b4d', fontSize: '10.5pt', fontWeight: 600 }}>Avaliação musicoterapêutica — Escala MuseTera</div>
+          </div>
+          <div style={textBlock}>
+            <div style={{ color: '#475569', fontSize: '9pt', fontWeight: 700 }}>DATA DA AVALIAÇÃO</div>
+            <div style={{ color: '#172b4d', fontSize: '11pt', fontWeight: 600 }}>{evaluationDate}</div>
+          </div>
+          <div style={textBlock}>
+            <div style={{ color: '#475569', fontSize: '9pt', fontWeight: 700 }}>PROFISSIONAL RESPONSÁVEL</div>
+            <div style={{ color: '#172b4d', fontSize: '10.5pt', fontWeight: 600 }}>{professionalName?.trim() || 'Não informado'}</div>
+            {professionalRegister && <div style={{ color: '#475569', fontSize: '9pt' }}>Registro: {professionalRegister}</div>}
+          </div>
+          <div style={textBlock}>
+            <div style={{ color: '#475569', fontSize: '9pt', fontWeight: 700 }}>ABRANGÊNCIA DO REGISTRO</div>
+            <div style={{ color: '#172b4d', fontSize: '10.5pt', fontWeight: 600 }}>
+              {overallScore.evaluatedDomains}/{overallScore.totalDomains} domínios · {overallScore.evaluatedParameters} indicadores pontuados
+            </div>
+          </div>
+        </div>
+        <div style={{ marginTop: '14px', padding: '10px 12px', borderRadius: '6px', backgroundColor: '#edf7f5', border: '1px solid #b8d9d1', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+          <div style={{ fontSize: '9.5pt', color: '#24443e', lineHeight: 1.35 }}>
+            <strong>Resultado descritivo</strong>
+            <div>Percentual dos indicadores pontuados; interpretar com a cobertura da avaliação.</div>
+          </div>
+          <div style={{ fontSize: '17pt', fontWeight: 800, color: '#0b5e52', whiteSpace: 'nowrap' }}>{overallScore.percentage}%</div>
+        </div>
+      </section>
 
       {/* Síntese Geral */}
       <section data-pdf-section style={sectionBase}>
