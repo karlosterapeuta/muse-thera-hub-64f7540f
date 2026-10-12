@@ -38,79 +38,12 @@ export async function getWeekSessions(professionalId: string, startDate: Date, e
       .order('date');
 
     if (error) {
-      console.error("❌ Erro ao buscar sessões:", error);
-      
-      // Fallback: buscar sessões sem filtro de data restrito
-      console.log("🔄 Tentando busca alternativa com período expandido...");
-      const { data: fallbackSessions, error: fallbackError } = await supabase
-        .from("sessions")
-        .select(`
-          id, 
-          date, 
-          notes,
-          patient_id,
-          patients!inner (
-            name,
-            professional_id
-          )
-        `)
-        .eq('patients.professional_id', professionalId)
-        .order('date', { ascending: false })
-        .limit(20);
-
-      if (fallbackError) {
-        console.error("❌ Erro na busca alternativa:", fallbackError);
-        return [];
-      }
-
-      const fallbackFormatted = (fallbackSessions || []).map(session => ({
-        id: session.id,
-        date: session.date,
-        notes: session.notes,
-        patient_id: session.patient_id,
-        patients: session.patients || { name: "Paciente não encontrado" }
-      }));
-
-      console.log("✅ Sessões encontradas na busca alternativa:", fallbackFormatted.length);
-      return fallbackFormatted;
+      console.error("Erro ao buscar sessões da semana:", error);
+      throw error;
     }
 
-    if (!sessionsData || sessionsData.length === 0) {
-      console.log("ℹ️ Nenhuma sessão encontrada no período especificado");
-      
-      // Buscar sessões mais antigas para mostrar algo no dashboard
-      const { data: recentSessions, error: recentError } = await supabase
-        .from("sessions")
-        .select(`
-          id, 
-          date, 
-          notes,
-          patient_id,
-          patients!inner (
-            name,
-            professional_id
-          )
-        `)
-        .eq('patients.professional_id', professionalId)
-        .order('date', { ascending: false })
-        .limit(10);
-
-      if (recentError) {
-        console.error("❌ Erro ao buscar sessões recentes:", recentError);
-        return [];
-      }
-
-      const recentFormatted = (recentSessions || []).map(session => ({
-        id: session.id,
-        date: session.date,
-        notes: session.notes,
-        patient_id: session.patient_id,
-        patients: session.patients || { name: "Paciente não encontrado" }
-      }));
-
-      console.log("✅ Sessões recentes encontradas:", recentFormatted.length);
-      return recentFormatted;
-    }
+    // Sem resultados nesta semana: não buscar registros antigos como substitutos.
+    if (!sessionsData || sessionsData.length === 0) return [];
 
     const formattedSessions = sessionsData.map(session => ({
       id: session.id,

@@ -1,9 +1,6 @@
-
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
-import { FileText, UserCheck, Plus, ClipboardList, Target } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { FileText, UserCheck, ClipboardList, Target, ArrowUpRight } from "lucide-react";
 
 interface DashboardStatsProps {
   totalPatients: number;
@@ -13,146 +10,33 @@ interface DashboardStatsProps {
   isLoading: boolean;
 }
 
-export function DashboardStats({
-  totalPatients,
-  totalReports,
-  totalAnamnesis,
-  totalInterventions,
-  isLoading
-}: DashboardStatsProps) {
+export function DashboardStats({ totalPatients, totalReports, totalAnamnesis, totalInterventions, isLoading }: DashboardStatsProps) {
   const navigate = useNavigate();
-  /* Indicadores abrem seus módulos correspondentes. */
-  console.log("🎯 DashboardStats recebeu os dados:", {
-    totalPatients,
-    totalReports,
-    totalAnamnesis,
-    totalInterventions,
-    isLoading
-  });
-
   const stats = [
-    {
-      title: "Pacientes Cadastrados",
-      value: totalPatients || 0,
-      subtitle: "Total de pacientes",
-      icon: UserCheck,
-      gradient: "from-teal-700 via-teal-800 to-emerald-900",
-      actionText: totalPatients === 0 ? "Cadastrar Primeiro Paciente" : `${totalPatients} pacientes ativos`,
-      path: "/patients",
-      isEmpty: totalPatients === 0
-    },
-    {
-      title: "Anamneses Realizadas",
-      value: totalAnamnesis || 0,
-      subtitle: "Avaliações completas",
-      icon: ClipboardList,
-      gradient: "from-emerald-600 via-teal-700 to-teal-800",
-      actionText: totalAnamnesis === 0 ? "Realizar Primeira Anamnese" : `${totalAnamnesis} anamneses registradas`,
-      path: "/anamnesis",
-      isEmpty: totalAnamnesis === 0
-    },
-    {
-      title: "Intervenções Criadas",
-      value: totalInterventions || 0,
-      subtitle: "Planos terapêuticos",
-      icon: Target,
-      gradient: "from-teal-600 via-emerald-700 to-emerald-800",
-      actionText: totalInterventions === 0 ? "Criar Primeira Intervenção" : `${totalInterventions} planos ativos`,
-      path: "/intervention",
-      isEmpty: totalInterventions === 0
-    },
-    {
-      title: "Relatórios Gerados",
-      value: totalReports || 0,
-      subtitle: "Documentos produzidos",
-      icon: FileText,
-      gradient: "from-green-700 via-teal-800 to-teal-900",
-      actionText: totalReports === 0 ? "Gerar Primeiro Relatório" : `${totalReports} relatórios criados`,
-      path: "/processes/musicoterapia",
-      isEmpty: totalReports === 0
-    }
+    { title: "Pacientes", value: totalPatients, subtitle: "Cadastrados", icon: UserCheck, path: "/patients" },
+    { title: "Anamneses", value: totalAnamnesis, subtitle: "Registradas", icon: ClipboardList, path: "/anamnesis" },
+    { title: "Intervenções", value: totalInterventions, subtitle: "Criadas", icon: Target, path: "/intervention" },
+    { title: "Relatórios", value: totalReports, subtitle: "Gerados", icon: FileText, path: "/processes/musicoterapia" }
   ];
-
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
-        {stats.map((_, index) => (
-          <Card key={index} className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 animate-pulse">
-            <div className="p-3 sm:p-4 lg:p-6 space-y-3 sm:space-y-4">
-              <div className="flex items-center space-x-2 sm:space-x-3">
-                <div className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 bg-gray-300 dark:bg-gray-600 rounded-lg sm:rounded-xl"></div>
-                <div className="space-y-1 sm:space-y-2 flex-1">
-                  <div className="h-2 sm:h-3 bg-gray-300 dark:bg-gray-600 rounded w-3/4"></div>
-                  <div className="h-1.5 sm:h-2 bg-gray-300 dark:bg-gray-600 rounded w-1/2"></div>
-                </div>
-              </div>
-              <div className="space-y-1.5 sm:space-y-2">
-                <div className="h-5 sm:h-6 lg:h-8 bg-gray-300 dark:bg-gray-600 rounded w-1/2"></div>
-                <div className="h-2.5 sm:h-3 lg:h-4 bg-gray-300 dark:bg-gray-600 rounded w-2/3"></div>
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
-    );
-  }
-
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 w-full">
-      {stats.map((stat, index) => {
-        console.log(`📊 Renderizando card ${index}:`, stat.title, "Valor:", stat.value);
-        
-        return (
-          <Card 
-            key={index} 
-            role="link" tabIndex={0} aria-label={`Abrir ${stat.title}`} onClick={() => navigate(stat.path)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); navigate(stat.path); } }}
-            className={`relative overflow-hidden border-0 shadow-lg rounded-xl bg-gradient-to-br ${stat.gradient} text-white hover:shadow-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-teal-300 sm:hover:scale-[1.02] transition-all duration-300 group cursor-pointer`}
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            <div className="relative px-3 py-3 sm:px-4 sm:py-4 lg:px-6 lg:py-6">
-              <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-4">
-                <div className="p-1 sm:p-1.5 lg:p-2 bg-white/20 rounded-lg sm:rounded-xl backdrop-blur-sm group-hover:scale-110 transition-transform duration-300">
-                  <stat.icon className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-xs sm:text-sm font-semibold text-white/90 truncate leading-tight">
-                    {stat.title}
-                  </h3>
-                  <p className="text-xs text-white/70 truncate">
-                    {stat.subtitle}
-                  </p>
-                </div>
-              </div>
-              
-              <div className="space-y-2 sm:space-y-3">
-                <div className="text-lg sm:text-xl lg:text-2xl font-bold text-white group-hover:scale-105 transition-transform duration-300">
-                  {stat.isEmpty ? (
-                    <span className="text-sm sm:text-base lg:text-lg text-white/80">0</span>
-                  ) : (
-                    <span className="drop-shadow-lg">{stat.value}</span>
-                  )}
-                </div>
-                
-                {stat.isEmpty ? (
-                  <Button 
-                    onClick={(event) => { event.stopPropagation(); navigate(stat.path); }}
-                    variant="secondary" 
-                    size="sm" 
-                    className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm text-xs w-full group/button py-1 sm:py-1.5 h-auto"
-                  >
-                    <Plus className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1 group-hover/button:rotate-90 transition-transform duration-300 flex-shrink-0" />
-                    <span className="truncate leading-tight">{stat.actionText}</span>
-                  </Button>
-                ) : (
-                  <div className="inline-flex items-center px-1.5 sm:px-2 lg:px-3 py-0.5 sm:py-1 rounded-full text-xs font-medium bg-white/10 text-white/80 backdrop-blur-sm group-hover:bg-white/20 transition-colors">
-                    <span className="truncate">{stat.actionText}</span>
-                  </div>
-                )}
-              </div>
+    <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+      {stats.map(stat => (
+        <Card key={stat.path} className="overflow-hidden border-teal-700/15 bg-card shadow-sm transition-shadow hover:shadow-md">
+          <button type="button" onClick={() => navigate(stat.path)}
+            className="flex h-full w-full flex-col items-start gap-3 p-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-teal-500 sm:p-5"
+            aria-label={`Abrir ${stat.title}`}>
+            <div className="flex w-full items-center justify-between">
+              <span className="rounded-xl bg-teal-50 p-2 text-teal-700 dark:bg-teal-950/50 dark:text-teal-300"><stat.icon className="h-5 w-5" aria-hidden="true" /></span>
+              <ArrowUpRight className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
             </div>
-          </Card>
-        );
-      })}
+            <div>
+              <p className="text-sm font-semibold leading-snug text-foreground">{stat.title}</p>
+              <p className="text-xs leading-relaxed text-muted-foreground">{stat.subtitle}</p>
+            </div>
+            <span className="text-3xl font-bold tabular-nums tracking-tight text-teal-800 dark:text-teal-200" aria-live="polite">{isLoading ? "—" : stat.value}</span>
+          </button>
+        </Card>
+      ))}
     </div>
   );
 }
