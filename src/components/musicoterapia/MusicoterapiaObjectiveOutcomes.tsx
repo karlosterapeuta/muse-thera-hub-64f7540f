@@ -18,7 +18,7 @@ export function MusicoterapiaObjectiveOutcomes({ selectedIds, value, onChange }:
   const completed = getObjectiveOutcomes(selectedIds, source).length;
 
   return (
-    <section className="space-y-3 rounded-2xl border border-teal-600/30 bg-[#121212] p-4 sm:p-5">
+    <section className="space-y-3 rounded-2xl border border-teal-600/30 bg-card p-4 sm:p-5">
       <div>
         <h3 className="font-semibold text-teal-800 dark:text-teal-200">Evolução dos objetivos da Etapa 02</h3>
         <p className="text-sm text-foreground/80 mt-1">
@@ -28,7 +28,7 @@ export function MusicoterapiaObjectiveOutcomes({ selectedIds, value, onChange }:
         <p className="text-xs text-teal-700 dark:text-teal-300 mt-2" aria-live="polite">{completed} de {selected.length} objetivos registrados</p>
       </div>
       {selected.map(item => (
-        <div key={item.id} className="rounded-xl border border-border/70 bg-[#1c1c1c] p-3 space-y-2">
+        <div key={item.id} className="rounded-xl border border-border/70 bg-muted/40 p-3 space-y-2">
           <p className="font-medium text-sm text-foreground">{item.icon} {item.title}</p>
           <div className="flex flex-wrap gap-2" role="group" aria-label={`Evolução: ${item.title}`}>
             {objectiveOutcomeOptions.map(option => {
