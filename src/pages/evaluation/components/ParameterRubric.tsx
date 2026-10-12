@@ -36,18 +36,18 @@ export function ParameterRubric({ parameterKey, parameterLabel, selection, obser
   const update = (field: string, value: string) => onEvidenceChange(id, JSON.stringify({ ...parsed, [field]: value }));
   const selected = RUBRIC_LEVELS.find(level => level.key === selection);
   return (
-    <Collapsible open={open} onOpenChange={setOpen} className="mt-3 rounded-lg border border-teal-700/20 bg-card dark:border-teal-500/25">
-      <CollapsibleTrigger type="button" className="flex min-h-11 w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500">
+    <Collapsible open={open} onOpenChange={setOpen} className="mt-3 rounded-lg border-2 border-teal-700/25 bg-card dark:border-teal-400/30">
+      <CollapsibleTrigger type="button" className="flex min-h-12 w-full items-center justify-between gap-2 px-3 py-3 text-left text-base font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500">
         <span className="flex items-center gap-2"><ClipboardCheck className="h-4 w-4 text-teal-800 dark:text-teal-200" /> Critérios e registro da aplicação</span>
         <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} />
       </CollapsibleTrigger>
-      <CollapsibleContent className="space-y-3 border-t px-3 py-3 text-sm leading-relaxed">
-        <p className="text-muted-foreground">Observe a tarefa: <strong className="text-foreground">{parameterLabel}</strong>. Os níveis são âncoras clínicas propostas; não são pontos de corte validados. Compare respostas somente em condições de aplicação equivalentes.</p>
+      <CollapsibleContent className="space-y-4 border-t px-3 py-4 text-sm leading-relaxed">
+        <p className="text-foreground/90">Observe a tarefa: <strong className="text-foreground">{parameterLabel}</strong>. Os níveis são âncoras clínicas propostas; não são pontos de corte validados. Compare respostas somente em condições de aplicação equivalentes.</p>
         <div className="grid gap-2">
           {RUBRIC_LEVELS.map(level => (
             <div key={level.key} className={`rounded-md border px-3 py-2 ${selection === level.key ? "border-teal-500 bg-teal-50 dark:bg-teal-950/40" : "bg-card"}`}>
               <strong>{level.title} · {level.value} pontos</strong>
-              <p className="mt-1 text-muted-foreground">{level.description}</p>
+              <p className="mt-1 text-foreground/90">{level.description}</p>
             </div>
           ))}
         </div>
