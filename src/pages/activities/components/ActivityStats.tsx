@@ -62,8 +62,8 @@ export const ActivityStats: React.FC<ActivityStatsProps> = ({
       icon: Target,
       label: 'Filtradas',
       value: filteredActivities,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50 dark:bg-blue-900/20'
+      color: 'text-teal-700 dark:text-teal-300',
+      bgColor: 'bg-teal-50 dark:bg-teal-900/20'
     },
     {
       icon: Heart,
@@ -83,8 +83,8 @@ export const ActivityStats: React.FC<ActivityStatsProps> = ({
       icon: Eye,
       label: 'Visualizadas',
       value: recentlyViewedCount,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50 dark:bg-purple-900/20'
+      color: 'text-teal-700 dark:text-teal-300',
+      bgColor: 'bg-teal-50 dark:bg-teal-900/20'
     }
   ];
 
