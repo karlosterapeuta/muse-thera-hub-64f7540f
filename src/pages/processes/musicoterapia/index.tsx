@@ -1002,11 +1002,11 @@ export default function MusicoterapiaPage() {
   }, [professionalId]);
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen bg-background/50">
       {/* Ambient cosmic background */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
-        <div className="absolute top-1/3 -right-32 h-96 w-96 rounded-full bg-amber-400/10 blur-3xl" />
+        <div className="absolute top-1/3 -right-32 h-96 w-96 rounded-full bg-teal-400/5 blur-3xl" />
         <div className="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-primary/5 blur-3xl" />
       </div>
 
@@ -1066,47 +1066,27 @@ export default function MusicoterapiaPage() {
 
       {viewMode === 'create' ? (
         <>
-          {/* Export PDF Card */}
-          <Card className="relative overflow-hidden border border-teal-700/20 bg-card shadow-sm rounded-2xl">
-            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-teal-500 via-teal-700 to-teal-900" />
-            <CardContent className="p-5 sm:p-6">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <div className="relative flex-shrink-0">
-                    <div className="absolute inset-0 bg-teal-600/20 blur-lg opacity-30" />
-                    <div className="relative flex items-center justify-center w-12 h-12 rounded-xl bg-teal-700 shadow-sm">
-                      <Download className="h-6 w-6 text-white" />
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
-                      Relatório clínico · emissão e exportação
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      Depois da revisão clínica, exporte um PDF pesquisável com os resultados, gráficos e a análise dissertativa.
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  onClick={() => void handleExportPDF()}
-                  disabled={isExporting}
-                  className="bg-teal-700 hover:bg-teal-800 text-white border-0 shadow-sm transition-colors font-semibold"
-                >
-                  {isExporting ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                      Gerando PDF...
-                    </>
-                  ) : (
-                    <>
-                      <Download className="h-4 w-4 mr-2" />
-                      Exportar PDF profissional
-                    </>
-                  )}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Contextual workspace controls: one compact toolbar above the form. */}
+          <div className="flex flex-col gap-4 rounded-2xl border border-border/70 bg-card p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-5">
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-wider text-teal-700 dark:text-teal-300">MUSETERA · RELATÓRIOS</p>
+              <h2 className="mt-1 text-lg font-semibold text-foreground">Área de documentação clínica</h2>
+              <p className="mt-1 max-w-xl text-sm text-muted-foreground">
+                Preencha as etapas e confira a revisão final antes de emitir o documento.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button variant="outline" onClick={handleSaveReport} disabled={isSaving} className="gap-2 border-border">
+                <Save className="h-4 w-4" />
+                {isSaving ? 'Salvando...' : 'Salvar rascunho'}
+              </Button>
+              <Button onClick={() => void handleExportPDF()} disabled={isExporting}
+                className="gap-2 bg-teal-700 font-semibold text-white hover:bg-teal-800">
+                <Download className="h-4 w-4" />
+                {isExporting ? 'Gerando PDF...' : 'Exportar PDF'}
+              </Button>
+            </div>
+          </div>
 
           {/* Main Content */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 lg:space-y-6">
@@ -1143,7 +1123,7 @@ export default function MusicoterapiaPage() {
             </TabsContent>
 
             <TabsContent value="preview" className="space-y-6">
-              <Card className="rounded-none sm:rounded-lg">
+              <Card className="rounded-xl">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <FileText className="h-5 w-5 text-primary" />
@@ -1163,54 +1143,14 @@ export default function MusicoterapiaPage() {
             </TabsContent>
           </Tabs>
 
-          {/* Export PDF Card (bottom duplicate) */}
-          <Card className="relative overflow-hidden border border-border/60 bg-card/60 backdrop-blur-xl shadow-lg rounded-2xl">
-            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary via-amber-500 to-primary" />
-            <CardContent className="p-5 sm:p-6">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <div className="relative flex-shrink-0">
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary to-amber-500 blur-lg opacity-40" />
-                    <div className="relative flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-amber-500 shadow-md">
-                      <Download className="h-6 w-6 text-white" />
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
-                      Gerar Relatório Final
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      Exporta os registros clínicos em PDF profissional, com texto selecionável e gráficos.
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  onClick={() => void handleExportPDF()}
-                  disabled={isExporting}
-                  className="bg-teal-700 hover:bg-teal-800 text-white border-0 shadow-sm transition-colors font-semibold"
-                >
-                  {isExporting ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                      Gerando PDF...
-                    </>
-                  ) : (
-                    <>
-                      <Download className="h-4 w-4 mr-2" />
-                      Exportar PDF profissional
-                    </>
-                  )}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+
         </>
 
       ) : (
         /* Lista de Relatórios Salvos */
         <div className="space-y-6">
           {/* Search and Filters */}
-          <Card className="rounded-none sm:rounded-lg">
+          <Card className="rounded-xl">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <List className="h-5 w-5" />
@@ -1237,14 +1177,14 @@ export default function MusicoterapiaPage() {
 
           {/* Reports List */}
           {isLoadingReports ? (
-            <Card className="rounded-none sm:rounded-lg">
+            <Card className="rounded-xl">
               <CardContent className="flex items-center justify-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
                 <span className="ml-2">Carregando relatórios...</span>
               </CardContent>
             </Card>
           ) : filteredReports.length === 0 ? (
-            <Card className="rounded-none sm:rounded-lg">
+            <Card className="rounded-xl">
               <CardContent className="text-center py-8">
                 <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-semibold mb-2">
@@ -1260,7 +1200,7 @@ export default function MusicoterapiaPage() {
           ) : (
             <div className="grid gap-4">
               {filteredReports.map((report) => (
-                <Card key={report.id} className="hover:shadow-lg transition-shadow rounded-none sm:rounded-lg">
+                <Card key={report.id} className="hover:shadow-lg transition-shadow rounded-xl">
                   <CardContent className="p-4 sm:p-6">
                     <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
                       {/* Patient info */}
@@ -1335,7 +1275,7 @@ export default function MusicoterapiaPage() {
 
 
       {/* Footer with Template Info */}
-      <Card className="rounded-none sm:rounded-lg">
+      <Card className="rounded-xl">
         <CardContent className="pt-6">
           <div className="flex items-center justify-between text-sm text-muted-foreground">
             <div className="flex items-center space-x-4">
