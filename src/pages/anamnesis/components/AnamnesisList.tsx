@@ -106,31 +106,31 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
       </Button>
 
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col gap-4 rounded-2xl border border-teal-800/20 bg-gradient-to-r from-[#0f302f] to-[#155e58] p-5 text-white shadow-lg sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Anamneses Salvas</h1>
-          <p className="text-muted-foreground">Gerencie todas as anamneses dos seus pacientes</p>
+          <h1 className="text-2xl font-bold text-white">Anamneses Salvas</h1>
+          <p className="text-teal-50/85">Gerencie todas as anamneses dos seus pacientes</p>
         </div>
-        <Button onClick={onCreateNew} className="flex items-center gap-2">
+        <Button onClick={onCreateNew} className="flex items-center gap-2 bg-white text-teal-900 hover:bg-teal-50">
           <Plus size={16} />
           Nova Anamnese
         </Button>
       </div>
 
       {/* Search */}
-      <div className="relative max-w-md">
+      <div className="relative w-full max-w-lg">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
         <Input
           placeholder="Buscar por paciente ou demanda..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10"
+          className="pl-10 bg-card border-teal-700/20"
         />
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
+        <Card className="border-teal-700/15 shadow-sm">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -141,7 +141,7 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-teal-700/15 shadow-sm">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -154,7 +154,7 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-teal-700/15 shadow-sm">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -199,7 +199,7 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredAnamneses.map((anamnesis) => (
-            <Card key={anamnesis.id} className="hover:shadow-lg transition-shadow">
+            <Card key={anamnesis.id} className="border-teal-700/15 hover:shadow-md transition-shadow">
               <CardHeader className="pb-3">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
