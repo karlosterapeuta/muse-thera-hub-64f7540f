@@ -124,7 +124,7 @@ export function FinalReviewSection({
         : [];
 
     return (
-      <div className="max-w-4xl mx-auto rounded-xl bg-white text-slate-900 shadow-sm">
+      <div className="max-w-4xl mx-auto rounded-xl bg-card text-foreground shadow-sm">
         <div className="relative bg-gradient-to-r from-teal-900 to-teal-700 text-white p-4 sm:p-8 rounded-t-lg">
           <div className="absolute top-4 right-4 opacity-20">
             <FileText className="h-12 w-12 sm:h-16 sm:w-16" />
@@ -373,7 +373,11 @@ export function FinalReviewSection({
     );
   };
 
-  const filledFieldsCount = Object.keys(reportData.fieldValues || {}).length;
+  const filledFieldsCount = Object.values(reportData.fieldValues || {}).filter(value =>
+    value !== null && value !== undefined &&
+    (typeof value !== "string" || value.trim().length > 0) &&
+    (!Array.isArray(value) || value.length > 0)
+  ).length;
   const clinicalWarnings = getMusicoterapiaQualityWarnings(reportData);
   const totalSteps = 9;
 
@@ -385,7 +389,7 @@ export function FinalReviewSection({
           <div className="p-2 rounded-xl bg-teal-700/10 border border-teal-700/20 flex-shrink-0">
             <Info className="h-4 w-4 sm:h-5 sm:w-5 text-teal-600 dark:text-teal-300" />
           </div>
-          <div className="min-w-1">
+          <div className="min-w-0">
             <p className="font-medium text-sm sm:text-base text-teal-800 dark:text-teal-200">Revisão e emissão</p>
             <p className="text-xs sm:text-sm text-muted-foreground mt-1 leading-relaxed">
               Confira a identificação, os objetivos, os resultados observados e os limites da análise clínica antes de emitir o documento.
@@ -529,7 +533,7 @@ export function FinalReviewSection({
               </DialogTrigger>
               <DialogContent className="max-w-4xl max-h-[85vh] p-0 overflow-hidden">
                 <DialogHeader className="p-4 sm:p-6 pb-0">
-                  <DialogTitle className="text-sm sm:text-base">Previa do Relatorio de Musicoterapia</DialogTitle>
+                  <DialogTitle className="text-sm sm:text-base">Prévia do Relatório de Musicoterapia</DialogTitle>
                   <DialogDescription className="text-xs sm:text-sm">
                     Prévia resumida; o PDF final contém também as demais seções clínicas
                   </DialogDescription>
