@@ -1,3 +1,4 @@
+import { CURRENT_SCORING_VERSION } from "@/utils/evaluationLongitudinal";
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -29,6 +30,7 @@ export interface SavedEvaluation {
       totalParameters: number;
     };
     evaluationType: string;
+    scoringVersion?: string;
   };
   created_at: string;
 }
@@ -134,6 +136,7 @@ export function useEvaluationStorage(patientId: string | null) {
         domainScores,
         overallScore,
         evaluationType,
+        scoringVersion: CURRENT_SCORING_VERSION,
       };
 
       const { error } = await supabase.from("assessments").insert({
@@ -182,7 +185,7 @@ export function useEvaluationStorage(patientId: string | null) {
       };
 
       const type = evaluationTypeMap[evaluationType] || "musetera_evaluation";
-      const content = { selections, observations, domainScores, overallScore, evaluationType };
+      const content = { selections, observations, domainScores, overallScore, evaluationType, scoringVersion: CURRENT_SCORING_VERSION };
 
       const { error } = await supabase
         .from("assessments")
