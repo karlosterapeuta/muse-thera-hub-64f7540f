@@ -2,10 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff, Mail, Lock, Music, CheckCircle2, AlertTriangle } from "lucide-react";
-import { CosmicHeroLogo } from "./CosmicHeroLogo";
+import { Eye, EyeOff, Mail, Lock, ArrowRight, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { GradientButton } from "./GradientButton";
 import { WelcomeToast } from "./WelcomeToast";
 import { useWelcomeMessage } from "@/hooks/useWelcomeMessage";
 import { logUserActivity } from "@/utils/activityLogger";
@@ -101,22 +99,13 @@ export default function LoginForm({ onSwitchToPasswordReset, onSwitchToRegister 
 
   return (
     <>
-      <div className="relative w-full min-w-0 animate-fade-in">
-      {/* Enhanced Floating Musical Elements */}
-      <div className="absolute -top-4 md:-top-6 -left-4 md:-left-6 w-12 md:w-16 h-12 md:h-16 bg-gradient-to-br from-primary/30 to-secondary/30 rounded-full blur-2xl animate-pulse"></div>
-      <div className="absolute -top-3 md:-top-4 -right-6 md:-right-8 w-8 md:w-10 h-8 md:h-10 bg-gradient-to-br from-secondary/40 to-primary/40 rounded-full blur-xl animate-pulse delay-1000"></div>
-      <div className="absolute bottom-10 -left-8 w-10 h-10 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full blur-xl animate-pulse delay-2000"></div>
-      
-      {/* Cosmic Hero - Planeta central com órbitas, planetas e logo */}
-      <div className="relative mb-3 rounded-2xl border border-white/15 bg-slate-950/50 px-3 py-2 text-center backdrop-blur-xl sm:mb-5 sm:rounded-3xl sm:px-4 sm:py-4">
-        <CosmicHeroLogo />
-        <p className="text-sm text-slate-100 animate-fade-in delay-200 font-medium mt-1">
-          Sua clínica de musicoterapia, organizada em um só lugar
+      <div className="relative w-full min-w-0">
+      <div className="mb-7 text-center">
+        <img src="/lovable-uploads/musetera-logo-new.png" alt="Logotipo MuseTera" className="mx-auto mb-4 h-24 w-24 object-contain sm:h-28 sm:w-28" />
+        <h1 className="text-3xl font-bold tracking-tight text-[#104f49] dark:text-teal-100 sm:text-4xl">Bem-vindo ao MuseTera</h1>
+        <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+          Acesse sua área de trabalho e organize seus atendimentos musicoterapêuticos.
         </p>
-        <div className="inline-flex items-center gap-2 px-3 py-1 mt-2 rounded-full bg-teal-400/10 border border-teal-300/30 animate-fade-in delay-300">
-          <CheckCircle2 className="w-3 h-3 text-primary" />
-          <span className="text-xs text-teal-100">Anamnese · Avaliação · Evolução</span>
-        </div>
       </div>
       
       {/* Card de Bloqueio - Usuário Inativo */}
@@ -155,13 +144,7 @@ export default function LoginForm({ onSwitchToPasswordReset, onSwitchToRegister 
 
       {/* Enhanced Form Card with Glassmorphism */}
       <div className="relative w-full min-w-0 overflow-hidden rounded-2xl border border-white/80 bg-white/95 p-4 text-slate-900 shadow-2xl shadow-black/30 backdrop-blur-xl animate-scale-in delay-300 sm:rounded-3xl sm:p-7 lg:p-8">
-        {/* Enhanced Decorative Elements */}
-        <div className="absolute -top-2 -left-2 w-24 md:w-32 h-24 md:h-32 bg-gradient-to-br from-primary/30 to-transparent rounded-tl-3xl blur-2xl"></div>
-        <div className="absolute -bottom-2 -right-2 w-24 md:w-32 h-24 md:h-32 bg-gradient-to-tl from-secondary/30 to-transparent rounded-br-3xl blur-2xl"></div>
-        <div className="absolute top-1/2 left-0 w-1 h-32 bg-gradient-to-b from-transparent via-primary/30 to-transparent blur-sm"></div>
-        <div className="absolute top-1/2 right-0 w-1 h-32 bg-gradient-to-b from-transparent via-secondary/30 to-transparent blur-sm"></div>
-        
-        <form onSubmit={handleLogin} className="relative z-10 space-y-4 sm:space-y-5">
+        <form onSubmit={handleLogin} className="relative space-y-5">
           {/* Enhanced Email Input */}
           <div className="space-y-2 group">
             <label htmlFor="email" className="block text-xs sm:text-sm font-semibold text-slate-800 transition-colors group-focus-within:text-teal-800">
@@ -231,20 +214,9 @@ export default function LoginForm({ onSwitchToPasswordReset, onSwitchToRegister 
           </div>
 
           {/* Enhanced Gradient Submit Button */}
-          <GradientButton
-            type="submit"
-            disabled={isLoading}
-            isLoading={isLoading}
-            className="w-full h-12 md:h-14 font-bold rounded-xl text-sm md:text-base transition-transform active:scale-[0.99]"
-          >
-            {!isLoading && (
-              <>
-                <Music className="w-4 h-4 md:w-5 md:h-5" />
-                Entrar
-              </>
-            )}
-            {isLoading && <span>Entrando...</span>}
-          </GradientButton>
+          <button type="submit" disabled={isLoading} className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#0f766e] px-4 py-3 text-base font-bold text-white transition-colors hover:bg-[#115e59] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-teal-300 disabled:cursor-wait disabled:opacity-70">
+            {isLoading ? "Entrando..." : <><span>Entrar na plataforma</span><ArrowRight className="h-5 w-5" aria-hidden="true" /></>}
+          </button>
         </form>
 
         {onSwitchToRegister && (
