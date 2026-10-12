@@ -88,7 +88,7 @@ export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEdi
                   <div className="flex flex-col">
                     <span className="text-foreground">{patient.age} anos</span>
                     {patient.birth_date && (
-                      <span className="text-[10px] uppercase tracking-wider opacity-60">
+                      <span className="text-xs uppercase tracking-wider opacity-60">
                         {formatBirthDateForDisplay(patient.birth_date)}
                       </span>
                     )}
@@ -100,11 +100,11 @@ export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEdi
               </TableCell>
               <TableCell className="py-4">
                 {patient.has_anamnesis ? (
-                  <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 px-3 py-1 font-semibold text-[10px] uppercase tracking-widest">
+                  <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 px-3 py-1 font-semibold text-xs uppercase tracking-widest">
                     Completa
                   </Badge>
                 ) : (
-                  <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/20 px-3 py-1 font-semibold text-[10px] uppercase tracking-widest">
+                  <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/20 px-3 py-1 font-semibold text-xs uppercase tracking-widest">
                     Pendente
                   </Badge>
                 )}
@@ -144,7 +144,7 @@ export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEdi
                     variant="ghost"
                     size="icon"
                     onClick={() => onEdit(patient)}
-                    className="h-9 w-9 text-muted-foreground hover:text-indigo-600 hover:bg-indigo-500/5 rounded-lg transition-all"
+                    className="h-9 w-9 text-muted-foreground hover:text-teal-700 dark:hover:text-teal-300 hover:bg-teal-500/5 rounded-lg transition-all"
                     title="Editar Cadastro"
                   >
                     <Pencil className="h-4 w-4" />
