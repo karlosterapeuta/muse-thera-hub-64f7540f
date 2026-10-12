@@ -98,7 +98,7 @@ export function PlanStickyHeader(p: PlanStickyHeaderProps) {
         <div className="flex items-center gap-2">
           <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
             <motion.div
-              className="h-full bg-gradient-to-r from-primary via-purple-500 to-pink-500"
+              className="h-full bg-gradient-to-r from-teal-700 via-teal-600 to-emerald-700"
               initial={{ width: 0 }}
               animate={{ width: `${p.completion}%` }}
               transition={{ duration: 0.6, ease: 'easeOut' }}
