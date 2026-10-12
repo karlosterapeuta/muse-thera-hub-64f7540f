@@ -439,7 +439,7 @@ export default function Evaluation() {
       title: "Domínio Cognitivo",
       description: "Avaliação das funções cognitivas estimuladas pela música",
       icon: "🧠",
-      color: "from-emerald-500 to-teal-500",
+      color: "from-emerald-700 to-teal-800",
       subdomains: [
         {
           title: "Funções Executivas",
@@ -757,7 +757,7 @@ export default function Evaluation() {
     { name: "A desenvolver", value: 100 - overallScore.percentage },
   ];
 
-  const COLORS = ['#10b981', '#f97316'];
+  const COLORS = ['#0f766e', '#a6b6b1'];
 
   // Handler functions for evaluation storage
   const handleSaveEvaluation = async () => {
@@ -1668,19 +1668,19 @@ export default function Evaluation() {
         <EvaluationLevelsHero />
         
         <div className="text-center mb-8 animate-fade-in px-2 sm:px-3">
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-teal-600 via-teal-600 to-teal-600 bg-clip-text text-transparent mb-4 animate-pulse-gentle">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-teal-800 via-teal-700 to-emerald-700 bg-clip-text text-transparent mb-4 animate-pulse-gentle">
             Escala MuseTera
           </h1>
           <p className="text-lg sm:text-xl text-muted-foreground font-medium">
             Instrumento de Avaliação Musicoterapêutica Profissional
           </p>
-          <div className="w-24 h-1 bg-gradient-to-r from-teal-500 to-teal-500 mx-auto mt-4 rounded-full"></div>
+          <div className="w-24 h-1 bg-gradient-to-r from-teal-700 to-emerald-600 mx-auto mt-4 rounded-full"></div>
         </div>
         
         <Card className="backdrop-blur-sm bg-background/80 border border-teal-200/60 dark:border-teal-800/60 shadow-2xl shadow-teal-500/10 p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl animate-fade-in">
           <div className="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4 sm:gap-6 mb-6 sm:mb-8">
             <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 items-stretch lg:items-center">
-              <div className="p-1 bg-gradient-to-r from-teal-500 to-teal-500 rounded-2xl">
+              <div className="p-1 bg-gradient-to-r from-teal-700 to-emerald-600 rounded-2xl">
                 <div className="bg-background rounded-xl p-4 shadow-sm">
                   <PatientSelect
                     patients={patients}
@@ -1797,7 +1797,7 @@ export default function Evaluation() {
                       disabled={isSaving || !selectedPatient}
                       className={`w-full sm:w-auto justify-center flex items-center gap-2 text-white border-0 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 ${
                         editingEvaluationId 
-                          ? "bg-gradient-to-r from-teal-500 to-teal-500 hover:from-teal-600 hover:to-teal-600"
+                          ? "bg-gradient-to-r from-teal-700 to-emerald-600 hover:from-teal-600 hover:to-teal-600"
                           : "bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600"
                       }`}
                     >
@@ -1835,21 +1835,21 @@ export default function Evaluation() {
             <TabsList className="grid w-full grid-cols-3 bg-background/80 backdrop-blur-sm p-1 sm:p-1.5 rounded-2xl h-auto min-h-[3.5rem] sm:min-h-[4.5rem] border border-teal-200/50 dark:border-teal-800/50 shadow-lg">
               <TabsTrigger 
                 value="evaluation" 
-                className="rounded-xl flex flex-col sm:flex-row items-center justify-center text-[11px] sm:text-xs md:text-sm lg:text-base font-bold px-1.5 sm:px-3 py-2 sm:py-3 gap-1 sm:gap-2 leading-tight text-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-500 data-[state=active]:to-teal-500 data-[state=active]:text-primary-foreground data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-teal-300/60 dark:data-[state=active]:ring-teal-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
+                className="rounded-xl flex flex-col sm:flex-row items-center justify-center text-[11px] sm:text-xs md:text-sm lg:text-base font-bold px-1.5 sm:px-3 py-2 sm:py-3 gap-1 sm:gap-2 leading-tight text-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-700 data-[state=active]:to-teal-800 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-teal-300/60 dark:data-[state=active]:ring-teal-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
               >
                 <ClipboardList className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
                 <span>Escala MuseTera</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="results" 
-                className="rounded-xl flex flex-col sm:flex-row items-center justify-center text-[11px] sm:text-xs md:text-sm lg:text-base font-bold px-1.5 sm:px-3 py-2 sm:py-3 gap-1 sm:gap-2 leading-tight text-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-primary-foreground data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-emerald-300/60 dark:data-[state=active]:ring-emerald-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
+                className="rounded-xl flex flex-col sm:flex-row items-center justify-center text-[11px] sm:text-xs md:text-sm lg:text-base font-bold px-1.5 sm:px-3 py-2 sm:py-3 gap-1 sm:gap-2 leading-tight text-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-700 data-[state=active]:to-teal-800 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-emerald-300/60 dark:data-[state=active]:ring-emerald-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
               >
                 <BarChart2 className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
                 <span>Resultados</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="comparison" 
-                className="rounded-xl flex flex-col sm:flex-row items-center justify-center text-[11px] sm:text-xs md:text-sm lg:text-base font-bold px-1.5 sm:px-3 py-2 sm:py-3 gap-1 sm:gap-2 leading-tight text-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-500 data-[state=active]:to-emerald-500 data-[state=active]:text-primary-foreground data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-teal-300/60 dark:data-[state=active]:ring-teal-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
+                className="rounded-xl flex flex-col sm:flex-row items-center justify-center text-[11px] sm:text-xs md:text-sm lg:text-base font-bold px-1.5 sm:px-3 py-2 sm:py-3 gap-1 sm:gap-2 leading-tight text-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-700 data-[state=active]:to-emerald-800 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-teal-300/60 dark:data-[state=active]:ring-teal-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
               >
                 <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
                 <span>Evolução do Paciente</span>
@@ -1971,11 +1971,11 @@ export default function Evaluation() {
                     
                     {domain.subdomains.map((subdomain, subdomainIndex) => {
                       const domainColorMap: Record<string, { border: string; bg: string; headerBg: string; text: string; badgeBg: string; badgeText: string; badgeBorder: string; infoBg: string; infoText: string }> = {
-                        "from-teal-700 to-emerald-700": { border: "border-l-pink-500", bg: "bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 dark:from-emerald-950/30 dark:via-teal-950/30 dark:to-emerald-950/30", headerBg: "bg-gradient-to-r from-teal-600 to-emerald-600", text: "text-teal-800 dark:text-teal-200", badgeBg: "bg-emerald-100 dark:bg-emerald-900/40", badgeText: "text-emerald-700 dark:text-emerald-300", badgeBorder: "border-emerald-300 dark:border-emerald-700", infoBg: "hover:bg-emerald-100 dark:hover:bg-emerald-900/30", infoText: "text-emerald-600 dark:text-emerald-400" },
-                        "from-teal-700 to-teal-800": { border: "border-l-cyan-500", bg: "bg-gradient-to-r from-teal-50 via-emerald-50 to-teal-50 dark:from-teal-950/30 dark:via-emerald-950/30 dark:to-teal-950/30", headerBg: "bg-gradient-to-r from-teal-600 to-emerald-600", text: "text-teal-800 dark:text-teal-200", badgeBg: "bg-emerald-100 dark:bg-emerald-900/40", badgeText: "text-emerald-700 dark:text-emerald-300", badgeBorder: "border-emerald-300 dark:border-emerald-700", infoBg: "hover:bg-emerald-100 dark:hover:bg-emerald-900/30", infoText: "text-emerald-600 dark:text-emerald-400" },
-                        "from-emerald-500 to-teal-500": { border: "border-l-teal-500", bg: "bg-gradient-to-r from-emerald-50 via-teal-50 to-green-50 dark:from-emerald-950/30 dark:via-teal-950/30 dark:to-green-950/30", headerBg: "bg-gradient-to-r from-emerald-600 to-teal-600", text: "text-emerald-800 dark:text-emerald-200", badgeBg: "bg-teal-100 dark:bg-teal-900/40", badgeText: "text-teal-700 dark:text-teal-300", badgeBorder: "border-teal-300 dark:border-teal-700", infoBg: "hover:bg-teal-100 dark:hover:bg-teal-900/30", infoText: "text-teal-600 dark:text-teal-400" },
-                        "from-teal-600 to-teal-800": { border: "border-l-orange-500", bg: "bg-gradient-to-r from-teal-50 via-teal-50 to-emerald-50 dark:from-teal-950/30 dark:via-teal-950/30 dark:to-emerald-950/30", headerBg: "bg-gradient-to-r from-teal-600 to-red-600", text: "text-teal-800 dark:text-teal-200", badgeBg: "bg-teal-100 dark:bg-teal-900/40", badgeText: "text-teal-700 dark:text-teal-300", badgeBorder: "border-teal-300 dark:border-teal-700", infoBg: "hover:bg-teal-100 dark:hover:bg-teal-900/30", infoText: "text-teal-600 dark:text-teal-400" },
-                        "from-emerald-700 to-teal-800": { border: "border-l-indigo-500", bg: "bg-gradient-to-r from-teal-50 via-teal-50 to-teal-50 dark:from-teal-950/30 dark:via-teal-950/30 dark:to-teal-950/30", headerBg: "bg-gradient-to-r from-teal-600 to-teal-600", text: "text-teal-800 dark:text-teal-200", badgeBg: "bg-teal-100 dark:bg-teal-900/40", badgeText: "text-teal-700 dark:text-teal-300", badgeBorder: "border-teal-300 dark:border-teal-700", infoBg: "hover:bg-teal-100 dark:hover:bg-teal-900/30", infoText: "text-teal-600 dark:text-teal-400" },
+                        "from-teal-700 to-emerald-700": { border: "border-l-teal-600", bg: "bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 dark:from-emerald-950/30 dark:via-teal-950/30 dark:to-emerald-950/30", headerBg: "bg-gradient-to-r from-teal-600 to-emerald-600", text: "text-teal-800 dark:text-teal-200", badgeBg: "bg-emerald-100 dark:bg-emerald-900/40", badgeText: "text-emerald-700 dark:text-emerald-300", badgeBorder: "border-emerald-300 dark:border-emerald-700", infoBg: "hover:bg-emerald-100 dark:hover:bg-emerald-900/30", infoText: "text-emerald-600 dark:text-emerald-400" },
+                        "from-teal-700 to-teal-800": { border: "border-l-emerald-600", bg: "bg-gradient-to-r from-teal-50 via-emerald-50 to-teal-50 dark:from-teal-950/30 dark:via-emerald-950/30 dark:to-teal-950/30", headerBg: "bg-gradient-to-r from-teal-600 to-emerald-600", text: "text-teal-800 dark:text-teal-200", badgeBg: "bg-emerald-100 dark:bg-emerald-900/40", badgeText: "text-emerald-700 dark:text-emerald-300", badgeBorder: "border-emerald-300 dark:border-emerald-700", infoBg: "hover:bg-emerald-100 dark:hover:bg-emerald-900/30", infoText: "text-emerald-600 dark:text-emerald-400" },
+                        "from-emerald-700 to-teal-800": { border: "border-l-teal-500", bg: "bg-gradient-to-r from-emerald-50 via-teal-50 to-green-50 dark:from-emerald-950/30 dark:via-teal-950/30 dark:to-green-950/30", headerBg: "bg-gradient-to-r from-emerald-600 to-teal-600", text: "text-emerald-800 dark:text-emerald-200", badgeBg: "bg-teal-100 dark:bg-teal-900/40", badgeText: "text-teal-700 dark:text-teal-300", badgeBorder: "border-teal-300 dark:border-teal-700", infoBg: "hover:bg-teal-100 dark:hover:bg-teal-900/30", infoText: "text-teal-600 dark:text-teal-400" },
+                        "from-teal-600 to-teal-800": { border: "border-l-teal-700", bg: "bg-gradient-to-r from-teal-50 via-teal-50 to-emerald-50 dark:from-teal-950/30 dark:via-teal-950/30 dark:to-emerald-950/30", headerBg: "bg-gradient-to-r from-teal-700 to-emerald-700", text: "text-teal-800 dark:text-teal-200", badgeBg: "bg-teal-100 dark:bg-teal-900/40", badgeText: "text-teal-700 dark:text-teal-300", badgeBorder: "border-teal-300 dark:border-teal-700", infoBg: "hover:bg-teal-100 dark:hover:bg-teal-900/30", infoText: "text-teal-600 dark:text-teal-400" },
+                        "from-emerald-700 to-teal-800": { border: "border-l-emerald-700", bg: "bg-gradient-to-r from-teal-50 via-teal-50 to-teal-50 dark:from-teal-950/30 dark:via-teal-950/30 dark:to-teal-950/30", headerBg: "bg-gradient-to-r from-teal-600 to-teal-600", text: "text-teal-800 dark:text-teal-200", badgeBg: "bg-teal-100 dark:bg-teal-900/40", badgeText: "text-teal-700 dark:text-teal-300", badgeBorder: "border-teal-300 dark:border-teal-700", infoBg: "hover:bg-teal-100 dark:hover:bg-teal-900/30", infoText: "text-teal-600 dark:text-teal-400" },
                       };
                       const colors = domainColorMap[domain.color] || domainColorMap["from-teal-700 to-emerald-700"];
                       
@@ -2114,7 +2114,7 @@ export default function Evaluation() {
                     Avaliação Parcial — {getEvaluatedDomainsCount()}/{evaluationDomains.length} domínios
                   </p>
                 )}
-                <div className="w-16 h-1 bg-gradient-to-r from-teal-500 to-teal-500 mx-auto rounded-full mb-8" />
+                <div className="w-16 h-1 bg-gradient-to-r from-teal-700 to-emerald-600 mx-auto rounded-full mb-8" />
                 
                 {/* Score Summary Cards */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
@@ -2211,9 +2211,9 @@ export default function Evaluation() {
                                 <stop offset="0%" stopColor="#10b981" />
                                 <stop offset="100%" stopColor="#059669" />
                               </linearGradient>
-                              <linearGradient id="pieOrange" x1="0" y1="0" x2="1" y2="1">
-                                <stop offset="0%" stopColor="#f97316" />
-                                <stop offset="100%" stopColor="#ea580c" />
+                              <linearGradient id="pieRemaining" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stopColor="#a6b6b1" />
+                                <stop offset="100%" stopColor="#d5e1dc" />
                               </linearGradient>
                             </defs>
                             <Pie
@@ -2228,7 +2228,7 @@ export default function Evaluation() {
                               label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                             >
                               <Cell fill="url(#pieGreen)" />
-                              <Cell fill="url(#pieOrange)" />
+                              <Cell fill="url(#pieRemaining)" />
                             </Pie>
                             <Tooltip 
                               contentStyle={{ 
@@ -2325,7 +2325,7 @@ export default function Evaluation() {
                                 <div className="flex items-center gap-2">
                                   <div className="w-full bg-muted rounded-full h-2">
                                     <div 
-                                      className="h-2 rounded-full bg-gradient-to-r from-teal-500 to-teal-500" 
+                                      className="h-2 rounded-full bg-gradient-to-r from-teal-700 to-emerald-600" 
                                       style={{ width: `${data.value}%` }}
                                     />
                                   </div>
