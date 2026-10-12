@@ -260,9 +260,9 @@ export function BasicInformationSection({
       )}
 
       {/* O motivo do encaminhamento integra a identificação, sem etapa adicional. */}
-      <section aria-labelledby="referral-heading" className="rounded-xl border border-[#c9a84c]/25 bg-[#c9a84c]/[0.04] p-4 sm:p-5 space-y-4">
+      <section aria-labelledby="referral-heading" className="rounded-xl border border-teal-600/25 bg-teal-600/5 p-4 sm:p-5 space-y-4">
         <div className="flex items-start gap-3">
-          <ClipboardList className="h-5 w-5 text-[#c9a84c] shrink-0 mt-0.5" />
+          <ClipboardList className="h-5 w-5 text-teal-700 dark:text-teal-300 shrink-0 mt-0.5" />
           <div>
             <h3 id="referral-heading" className="font-semibold text-foreground">Motivo do Encaminhamento</h3>
             <p className="text-xs sm:text-sm text-muted-foreground mt-1">
