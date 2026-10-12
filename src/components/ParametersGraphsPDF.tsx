@@ -1,3 +1,4 @@
+import { levelScore, isScored } from "@/utils/museteraScoring";
 import { presentationParameterLabel } from "@/pages/evaluation/utils/autismGuidance";
 
 import React from 'react';
@@ -47,14 +48,7 @@ const LEVEL_LABELS: Record<string, { label: string; color: string; bgColor: stri
   "excepcional": { label: "Excepcional", color: "#7c3aed", bgColor: "#faf5ff" },
 };
 
-const levelToScore = (level: string): number => {
-  return level === "nao_observado" ? 0 : 
-         level === "emergente" ? 20 : 
-         level === "inconsistente" ? 40 : 
-         level === "moderado" ? 60 :
-         level === "consistente" ? 80 : 
-         level === "excepcional" ? 100 : 0;
-};
+const levelToScore = (level: string): number => levelScore(level) ?? 0;
 
 // A4 page wrapper style — height fixa para evitar overflow que gera páginas em branco
 const pageStyle: React.CSSProperties = {
@@ -124,7 +118,7 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
       subdomain.parameters?.forEach((param: string) => {
         const key = `${domain.title}-${subdomain.title}-${param}`;
         const value = selectedParameters[key];
-        if (value && value !== "nao_aplicavel") {
+        if (isScored(value)) {
           evaluatedDetails.push({
             domain: domain.title,
             subdomain: subdomain.title,
