@@ -1904,7 +1904,7 @@ export default function Evaluation() {
                 </CollapsibleContent>
               </Collapsible>
 
-              <p className="mb-5 rounded-xl border border-teal-200 bg-teal-50/60 px-4 py-3 text-sm leading-relaxed text-teal-900 dark:border-teal-800 dark:bg-teal-950/30 dark:text-teal-100">Aplique a escala com 16 protocolos por subdomínio e 128 tarefas observáveis. Abra o guia da atividade para consultar materiais e passos, registre o desempenho nas observações e selecione o nível correspondente. Este protocolo ainda depende de estudos de validade e confiabilidade. Parâmetros não testados ficam fora da média, enquanto Não observado (0) é uma resposta efetivamente avaliada.</p>
+              <p className="mb-5 rounded-xl border border-teal-200 bg-teal-50/60 px-4 py-3 text-sm leading-relaxed text-teal-900 dark:border-teal-800 dark:bg-teal-950/30 dark:text-teal-100">Aplique a escala com 16 protocolos por subdomínio e 128 tarefas observáveis. Abra o guia da atividade para consultar materiais e passos, registre o desempenho nas observações e selecione o nível correspondente. Parâmetros não testados ficam fora da média, enquanto Não observado (0) é uma resposta efetivamente avaliada.</p>
 
               {/* Estatísticas da Avaliação Parcial */}
               <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-lg p-4 mb-6">
