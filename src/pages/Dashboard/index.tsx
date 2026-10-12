@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { DashboardStats } from "./components/DashboardStats";
 import { useDashboardData } from "./hooks/useDashboardData";
 import { ProductsShowcase } from "@/components/products/ProductsShowcase";
+import { CosmicBackground } from "@/components/auth/CosmicBackground";
 import { PlanStatusCard } from "@/components/dashboard/PlanStatusCard";
 import { PendingUsersPanel } from "@/components/dashboard/PendingUsersPanel";
 import { useAdmin } from "@/hooks/use-admin";
@@ -20,6 +21,10 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen relative w-full overflow-x-hidden bg-gradient-to-br from-background via-teal-50/50 to-emerald-50/30 dark:via-teal-950/30 dark:to-emerald-950/20">
+      {/* Música das Esferas preservada como textura suave monocromática. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden opacity-[0.07] [filter:sepia(1)_hue-rotate(75deg)_saturate(0.65)]">
+        <CosmicBackground />
+      </div>
 
       {/* Ambient cosmic blobs */}
       <div className="pointer-events-none absolute inset-0 -z-0 overflow-hidden">
