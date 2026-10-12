@@ -18,9 +18,9 @@ export function MusicoterapiaObjectiveFlowSummary({ objectiveIds, outcomes }: Pr
   const notAssessed = results.filter(item => item.status === 'not_assessed');
 
   return (
-    <Card className="border border-[#c9a84c]/30">
+    <Card className="border border-teal-600/30">
       <CardHeader>
-        <CardTitle className="text-[#c9a84c] text-base">Resultados dos Objetivos e Aspectos a Intervir</CardTitle>
+        <CardTitle className="text-teal-700 dark:text-teal-300 text-base">Resultados dos Objetivos e Aspectos a Intervir</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
