@@ -106,7 +106,7 @@ export function DashboardStats({
           <Card 
             key={index} 
             role="link" tabIndex={0} aria-label={`Abrir ${stat.title}`} onClick={() => navigate(stat.path)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); navigate(stat.path); } }}
-            className={`relative overflow-hidden border-0 shadow-lg rounded-xl bg-gradient-to-br ${stat.gradient} text-white hover:shadow-2xl sm:hover:scale-105 transition-all duration-300 group cursor-pointer`}
+            className={`relative overflow-hidden border-0 shadow-lg rounded-xl bg-gradient-to-br ${stat.gradient} text-white hover:shadow-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-teal-300 sm:hover:scale-[1.02] transition-all duration-300 group cursor-pointer`}
           >
             <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div className="relative px-3 py-3 sm:px-4 sm:py-4 lg:px-6 lg:py-6">
