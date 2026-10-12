@@ -275,7 +275,7 @@ export default function Evaluation() {
       ))];
       
       // Calcular score médio
-      const scoresWithValue = evals.filter(e => e.content?.overallScore?.percentage);
+      const scoresWithValue = evals.filter(e => typeof e.content?.overallScore?.percentage === 'number');
       const avgScore = scoresWithValue.length > 0
         ? scoresWithValue.reduce((sum, e) => 
             sum + (e.content?.overallScore?.percentage || 0), 0
@@ -1352,14 +1352,21 @@ export default function Evaluation() {
     
     // Iterar sobre as seleções salvas
     Object.entries(savedSelections).forEach(([key, value]) => {
-      const parts = key.split('-');
-      if (parts.length >= 3) {
-        const domain = parts[0];
-        const subdomain = parts[1];
-        const parameter = parts.slice(2).join('-');
+      // Names such as "Domínio Sensório-Motor" contain hyphens;
+      // match the original full prefix instead of splitting on "-".
+      const match = evaluationDomains.flatMap(domain =>
+        domain.subdomains.map(subdomain => ({
+          domain: domain.title,
+          subdomain: subdomain.title,
+          prefix: `${domain.title}-${subdomain.title}-`
+        }))
+      ).find(item => key.startsWith(item.prefix));
+      if (match) {
+        const { domain, subdomain } = match;
+        const parameter = key.slice(match.prefix.length);
         const score = levelToScoreValue(value as string);
         
-        if (value && value !== 'nao_observado' && value !== '0') {
+        if (value && value !== 'nao_aplicavel') {
           const paramData = {
             domain,
             subdomain,
@@ -1392,7 +1399,7 @@ export default function Evaluation() {
 
     // Verificar se há parâmetros avaliados
     const savedSelections = evaluation.content?.selections || {};
-    const evaluatedCount = Object.values(savedSelections).filter(v => v && v !== 'nao_observado' && v !== '0').length;
+    const evaluatedCount = Object.values(savedSelections).filter(v => v && v !== 'nao_aplicavel').length;
     
     if (evaluatedCount === 0) {
       toast.error("Esta avaliação não possui parâmetros marcados");
