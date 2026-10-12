@@ -63,8 +63,8 @@ export function UnifiedWeeklySchedule({ weekDays, isLoading }: UnifiedWeeklySche
       <CardContent>
         {!hasValidData ? (
           <div className="flex flex-col items-center justify-center h-64">
-            <div className="bg-gradient-to-br from-red-100 to-pink-100 rounded-full p-6 mb-6">
-              <Calendar className="h-12 w-12 text-red-500" />
+            <div className="bg-gradient-to-br from-teal-100 to-emerald-100 rounded-full p-6 mb-6">
+              <Calendar className="h-12 w-12 text-teal-700" />
             </div>
             <h3 className="text-lg font-semibold text-gray-600 mb-2">Erro ao carregar agenda</h3>
             <p className="text-gray-500 text-center mb-4">
