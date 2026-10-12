@@ -1,8 +1,8 @@
 
 import { useQuery } from "@tanstack/react-query";
-import { DashboardData, DayData, DashboardSession, FinancialAgendaItem } from "../types/dashboardTypes";
+import { DashboardData } from "../types/dashboardTypes";
 import { getCurrentUserId } from "../services/professionalService";
-import { getWeekSessions, SessionData } from "../services/sessionsService";
+import { getWeekSessions } from "../services/sessionsService";
 import { getWeekFinancialRecords, getFinancialSchedule } from "../services/financialService";
 import { createWeekStructure, organizeSessionsByDay, addFinancialDataToDays } from "../utils/weekDataProcessor";
 import { calculateStatistics } from "../utils/statisticsCalculator";
@@ -47,32 +47,15 @@ export const useDashboardData = (): DashboardData => {
       addFinancialDataToDays(weekStructure, financialData);
       const statistics = calculateStatistics(sessionsData, financialData);
 
-      // Mock data for upcoming sessions and session chart
-      const mockUpcomingSessions = [
-        { id: "1", patientName: "Maria Silva", time: "10:00 - 11:00" },
-        { id: "2", patientName: "João Pereira", time: "14:00 - 15:00" },
-        { id: "3", patientName: "Ana Souza", time: "16:00 - 17:00" },
-      ];
-
-      const mockSessionData = [
-        { date: "Seg", sessions: statistics.totalSessions > 0 ? Math.ceil(statistics.totalSessions / 7) : 0 },
-        { date: "Ter", sessions: statistics.totalSessions > 0 ? Math.ceil(statistics.totalSessions / 7) : 0 },
-        { date: "Qua", sessions: statistics.totalSessions > 0 ? Math.ceil(statistics.totalSessions / 7) : 0 },
-        { date: "Qui", sessions: statistics.totalSessions > 0 ? Math.ceil(statistics.totalSessions / 7) : 0 },
-        { date: "Sex", sessions: statistics.totalSessions > 0 ? Math.ceil(statistics.totalSessions / 7) : 0 },
-        { date: "Sab", sessions: 0 },
-        { date: "Dom", sessions: 0 },
-      ];
-
       return {
         weekDays: weekStructure,
         totalSessions: statistics.totalSessions,
         totalRevenue: statistics.totalRevenue,
         averagePerSession: statistics.averagePerSession,
-        upcomingSessions: statistics.futureSessions || mockUpcomingSessions,
-        monthlyChange: 5.2,
+        upcomingSessions: statistics.futureSessions,
+        monthlyChange: 0,
         completionRate: statistics.completionRate,
-        sessionData: statistics.sessionData || mockSessionData,
+        sessionData: statistics.sessionData,
         financialSchedule: financialSchedule || [],
       };
     },
