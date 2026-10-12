@@ -170,6 +170,8 @@ export default function Evaluation() {
   const [isGeneratingText, setIsGeneratingText] = useState(false);
   const [isGeneratingWord, setIsGeneratingWord] = useState(false);
   const [activeTab, setActiveTab] = useState(draft?.activeTab || "evaluation");
+  const [activeDomainFilter, setActiveDomainFilter] = useState("Domínio Musical");
+  const [activeSubdomainFilter, setActiveSubdomainFilter] = useState("all");
   const [selectedForComparison, setSelectedForComparison] = useState<string[]>([]);
   const [editingEvaluationId, setEditingEvaluationId] = useState<string | null>(draft?.editingEvaluationId || null);
   const [evolutionPatientId, setEvolutionPatientId] = useState<string | null>(null);
@@ -338,7 +340,7 @@ export default function Evaluation() {
 
   const selectedPatientData = patients.find(p => p.id === selectedPatient);
 
-  const evaluationDomains = [
+  const evaluationDomains = useMemo(() => ([
     {
       title: "Domínio Musical",
       description: "Avaliação das habilidades e respostas musicais do paciente",
@@ -603,7 +605,7 @@ export default function Evaluation() {
         }
       ]
     }
-  ];
+  ]), []);
 
   // Motor único para tela, análises e documentos.
   const isParameterEvaluated = (domain: string, subdomain: string, parameter: string): boolean =>
@@ -1851,7 +1853,29 @@ export default function Evaluation() {
                 </div>
               </div>
 
-              {evaluationDomains.map((domain, domainIndex) => (
+              <nav aria-label="Navegação por domínios da avaliação" className="mb-5 rounded-xl border border-teal-300 bg-card p-4 dark:border-teal-700">
+                <h3 className="mb-2 text-base font-bold text-foreground">Navegar pela avaliação</h3>
+                <p className="mb-3 text-sm text-foreground/85">Selecione o domínio e, se desejar, um subdomínio. As respostas permanecem no rascunho.</p>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div className="space-y-1">
+                    <label htmlFor="eval-domain-filter" className="text-sm font-semibold text-foreground">Domínio</label>
+                    <select id="eval-domain-filter" className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600" value={activeDomainFilter} onChange={event => { setActiveDomainFilter(event.target.value); setActiveSubdomainFilter("all"); }}>
+                      <option value="all">Todos os domínios</option>
+                      {evaluationDomains.map(domain => <option key={domain.title} value={domain.title}>{domain.title}</option>)}
+                    </select>
+                  </div>
+                  <div className="space-y-1">
+                    <label htmlFor="eval-subdomain-filter" className="text-sm font-semibold text-foreground">Subdomínio</label>
+                    <select id="eval-subdomain-filter" disabled={activeDomainFilter === "all"} className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground disabled:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600" value={activeSubdomainFilter} onChange={event => setActiveSubdomainFilter(event.target.value)}>
+                      <option value="all">Todos os subdomínios</option>
+                      {evaluationDomains.find(domain => domain.title === activeDomainFilter)?.subdomains.map(subdomain => <option key={subdomain.title} value={subdomain.title}>{subdomain.title}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <p aria-live="polite" className="mt-3 text-sm font-medium text-teal-900 dark:text-teal-100">Progresso geral: {overallScore.evaluatedParameters} de {overallScore.totalParameters} indicadores aplicáveis pontuados · {overallScore.completionPercentage}% preenchido</p>
+              </nav>
+
+              {evaluationDomains.filter(domain => activeDomainFilter === "all" || domain.title === activeDomainFilter).map((domain, domainIndex) => (
                 <div key={domainIndex} className="group animate-fade-in" style={{animationDelay: `${domainIndex * 0.1}s`}}>
                   <Card className={`border border-teal-700/15 dark:border-teal-500/20 shadow-sm p-4 sm:p-6 rounded-2xl bg-card`}>
                     <div className="flex flex-wrap items-center mb-5 gap-3">
@@ -1891,7 +1915,7 @@ export default function Evaluation() {
                       <strong>Aplicação no TEA:</strong> {AUTISM_DOMAIN_NOTES[domain.title]}
                     </p>
 
-                    {domain.subdomains.map((subdomain, subdomainIndex) => {
+                    {domain.subdomains.filter(subdomain => activeSubdomainFilter === "all" || domain.title !== activeDomainFilter || subdomain.title === activeSubdomainFilter).map((subdomain, subdomainIndex) => {
                       const domainColorMap: Record<string, { border: string; bg: string; headerBg: string; text: string; badgeBg: string; badgeText: string; badgeBorder: string; infoBg: string; infoText: string }> = {
                         "from-teal-700 to-emerald-700": { border: "border-l-teal-600", bg: "bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 dark:from-emerald-950/30 dark:via-teal-950/30 dark:to-emerald-950/30", headerBg: "bg-gradient-to-r from-teal-600 to-emerald-600", text: "text-teal-800 dark:text-teal-200", badgeBg: "bg-emerald-100 dark:bg-emerald-900/40", badgeText: "text-emerald-700 dark:text-emerald-300", badgeBorder: "border-emerald-300 dark:border-emerald-700", infoBg: "hover:bg-emerald-100 dark:hover:bg-emerald-900/30", infoText: "text-emerald-600 dark:text-emerald-400" },
                         "from-teal-700 to-teal-800": { border: "border-l-emerald-600", bg: "bg-gradient-to-r from-teal-50 via-emerald-50 to-teal-50 dark:from-teal-950/30 dark:via-emerald-950/30 dark:to-teal-950/30", headerBg: "bg-gradient-to-r from-teal-600 to-emerald-600", text: "text-teal-800 dark:text-teal-200", badgeBg: "bg-emerald-100 dark:bg-emerald-900/40", badgeText: "text-emerald-700 dark:text-emerald-300", badgeBorder: "border-emerald-300 dark:border-emerald-700", infoBg: "hover:bg-emerald-100 dark:hover:bg-emerald-900/30", infoText: "text-emerald-600 dark:text-emerald-400" },
