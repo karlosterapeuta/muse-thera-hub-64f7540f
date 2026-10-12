@@ -97,7 +97,7 @@ export function SidebarFooter({ collapsed, onNavigate }: SidebarFooterProps) {
         <Button
           variant="ghost"
           className={cn(
-            "w-full h-11 rounded-xl transition-all duration-300 group text-blue-500 hover:text-blue-400 hover:bg-blue-500/10",
+            "w-full h-11 rounded-xl transition-all duration-300 group text-teal-600 hover:text-teal-700 hover:bg-teal-600/10 dark:text-teal-300 dark:hover:text-teal-200",
             collapsed ? "justify-center px-2" : "justify-start gap-3 px-4"
           )}
           onClick={handleForceUpdate}

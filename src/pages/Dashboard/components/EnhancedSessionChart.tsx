@@ -67,15 +67,15 @@ export function EnhancedSessionChart({ sessionData, isLoading }: EnhancedSession
       <CardContent>
         {totalSessions === 0 ? (
           <div className="flex flex-col items-center justify-center h-64">
-            <div className="bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-full p-6 mb-6">
-              <Calendar className="h-12 w-12 text-blue-600 dark:text-blue-400" />
+            <div className="bg-gradient-to-br from-teal-100 to-emerald-100 dark:from-teal-900/30 dark:to-emerald-900/30 rounded-full p-6 mb-6">
+              <Calendar className="h-12 w-12 text-teal-700 dark:text-teal-300" />
             </div>
             <h3 className="text-xl font-semibold text-foreground mb-3">Comece sua jornada!</h3>
             <p className="text-muted-foreground text-center mb-6 max-w-md leading-relaxed">
               Ainda não há sessões registradas. Agende seu primeiro atendimento para começar a acompanhar sua evolução profissional.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
-              <Button className="bg-blue-600 hover:bg-blue-700">
+              <Button className="bg-teal-700 hover:bg-teal-800">
                 <Plus className="h-4 w-4 mr-2" />
                 Agendar Primeira Sessão
               </Button>
@@ -114,8 +114,8 @@ export function EnhancedSessionChart({ sessionData, isLoading }: EnhancedSession
               />
               <defs>
                 <linearGradient id="sessionGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8}/>
-                  <stop offset="95%" stopColor="#1D4ED8" stopOpacity={0.6}/>
+                  <stop offset="5%" stopColor="#0d9488" stopOpacity={0.8}/>
+                  <stop offset="95%" stopColor="#115e59" stopOpacity={0.6}/>
                 </linearGradient>
               </defs>
             </BarChart>

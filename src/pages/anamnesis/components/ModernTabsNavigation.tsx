@@ -26,7 +26,7 @@ export function ModernTabsNavigation({
       label: "Dados Pessoais",
       mobileLabel: "Dados",
       icon: UserCircle,
-      gradient: "from-blue-500 to-indigo-600",
+      gradient: "from-teal-700 to-teal-800",
       description: "Informações básicas do paciente",
     },
     {
@@ -34,7 +34,7 @@ export function ModernTabsNavigation({
       label: "Histórico Musical",
       mobileLabel: "Histórico",
       icon: AudioWaveform,
-      gradient: "from-purple-500 to-violet-600",
+      gradient: "from-emerald-600 to-teal-700",
       description: "Experiências e preferências musicais",
     },
     {
@@ -42,7 +42,7 @@ export function ModernTabsNavigation({
       label: "Avaliação Clínica",
       mobileLabel: "Avaliação",
       icon: Stethoscope,
-      gradient: "from-emerald-500 to-teal-600",
+      gradient: "from-teal-600 to-teal-800",
       description: "Diagnósticos e tratamentos atuais",
     },
     {
@@ -50,7 +50,7 @@ export function ModernTabsNavigation({
       label: "Desenvolvimento",
       mobileLabel: "Desenv.",
       icon: Activity,
-      gradient: "from-amber-500 to-orange-600",
+      gradient: "from-emerald-700 to-teal-800",
       description: "Marcos do desenvolvimento",
     },
     {
@@ -58,7 +58,7 @@ export function ModernTabsNavigation({
       label: "Terapêutico e Comportamental",
       mobileLabel: "T.C.",
       icon: Brain,
-      gradient: "from-rose-500 to-pink-600",
+      gradient: "from-teal-700 to-emerald-800",
       description: "Aspectos comportamentais e sociais",
     },
   ];
@@ -77,7 +77,7 @@ export function ModernTabsNavigation({
                   value={tab.id}
                   className={`shrink-0 min-w-[118px] sm:min-w-[132px] md:min-w-0 flex flex-col items-center justify-center gap-1.5 px-2 py-3 sm:px-3 sm:py-3.5 rounded-xl border-2 transition-all duration-300 ${
                     isActive
-                      ? "bg-card border-primary/60 shadow-lg text-foreground"
+                      ? "bg-card border-teal-600/60 shadow-lg text-foreground"
                       : "bg-transparent border-transparent text-muted-foreground hover:bg-card/60 hover:text-foreground"
                   }`}
                 >

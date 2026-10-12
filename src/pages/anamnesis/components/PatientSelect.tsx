@@ -51,7 +51,7 @@ export function PatientSelect({
         onValueChange={onSelect}
         disabled={disabled || isLoading || !hasPatients}
       >
-        <SelectTrigger className="w-full bg-white text-gray-900 font-medium border-blue-300">
+        <SelectTrigger className="w-full bg-background text-foreground font-medium border-teal-600/30">
           <SelectValue placeholder={getPlaceholderText()} />
         </SelectTrigger>
         <SelectContent 

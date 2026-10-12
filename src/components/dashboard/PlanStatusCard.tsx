@@ -60,7 +60,7 @@ export function PlanStatusCard() {
     
     if (planData.isUnlimited) {
       return (
-        <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+        <Badge className="bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300">
           <Infinity className="h-3 w-3 mr-1" />
           Ilimitado
         </Badge>
@@ -134,7 +134,7 @@ export function PlanStatusCard() {
   if (!planData) return null;
 
   return (
-    <Card className="relative overflow-hidden border-0 shadow-2xl rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 dark:from-indigo-700 dark:via-purple-700 dark:to-pink-600">
+    <Card className="relative overflow-hidden border-0 shadow-2xl rounded-2xl bg-gradient-to-r from-teal-800 via-teal-700 to-emerald-700 dark:from-teal-900 dark:via-teal-800 dark:to-emerald-900">
       {/* Decorative elements */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/20 blur-2xl" />

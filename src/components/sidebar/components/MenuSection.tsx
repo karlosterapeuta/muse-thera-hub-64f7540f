@@ -63,13 +63,13 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
                 collapsed && "justify-center px-2",
                 isProcessesItem
                   ? cn(
-                      "my-1 ring-1 ring-amber-400/40 shadow-lg shadow-amber-500/20 bg-gradient-to-r from-amber-500/20 via-orange-500/15 to-yellow-500/20 hover:shadow-xl hover:shadow-amber-500/30 hover:-translate-y-0.5",
+                      "my-1 ring-1 ring-teal-600/30 shadow-lg shadow-teal-600/10 bg-gradient-to-r from-teal-600/15 via-emerald-600/10 to-teal-700/15 hover:shadow-xl hover:shadow-teal-600/20 hover:-translate-y-0.5",
                       isActive
-                        ? "text-white ring-amber-300/60 shadow-amber-500/40 bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500"
+                        ? "text-white ring-teal-300/60 shadow-teal-700/30 bg-gradient-to-r from-teal-700 via-emerald-700 to-teal-800"
                         : "text-foreground"
                     )
                   : isActive
-                  ? "text-white shadow-lg shadow-purple-600/20 bg-gradient-to-r from-primary/85 to-purple-600/85"
+                  ? "text-white shadow-lg shadow-teal-700/20 bg-gradient-to-r from-teal-700/90 to-teal-800/90"
                   : "text-foreground/50 hover:text-foreground hover:bg-white/5 hover:translate-x-0.5"
               )
             }
@@ -92,7 +92,7 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
                     "relative shrink-0 flex items-center justify-center w-8 h-8 rounded-lg shadow-md transition-transform duration-300 group-hover:scale-110",
                     isActive
                       ? "bg-white/20"
-                      : "bg-gradient-to-br from-amber-400 to-orange-500 shadow-amber-500/30"
+                      : "bg-gradient-to-br from-teal-600 to-emerald-700 shadow-teal-600/20"
                   )}>
                     <item.icon size={18} className={cn(isActive ? "text-white" : "text-white drop-shadow")} />
                   </div>
@@ -124,7 +124,7 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
                         "text-sm font-extrabold tracking-tight truncate",
                         isActive
                           ? "text-white"
-                          : "bg-gradient-to-r from-amber-600 via-orange-600 to-amber-500 dark:from-amber-300 dark:via-orange-300 dark:to-yellow-300 bg-clip-text text-transparent"
+                          : "bg-gradient-to-r from-teal-700 via-emerald-700 to-teal-800 dark:from-teal-300 dark:via-emerald-300 dark:to-teal-200 bg-clip-text text-transparent"
                       )}>
                         {item.text}
                       </span>
@@ -143,7 +143,7 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
                 {item.path === "/vagas" && vagasCount > 0 && (
                   <span
                     className={cn(
-                      "z-10 flex items-center justify-center rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold shadow",
+                      "z-10 flex items-center justify-center rounded-full bg-gradient-to-r from-teal-600 to-emerald-700 text-white font-bold shadow",
                       collapsed
                         ? "absolute top-0.5 right-0.5 h-4 min-w-4 px-1 text-[9px]"
                         : "h-5 min-w-5 px-1.5 text-[10px]"
@@ -159,7 +159,7 @@ export function MenuSection({ title, items, collapsed, onNavigate, showTitle = t
                     "relative z-10 shrink-0 rounded-full px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wide shadow",
                     isActive
                       ? "bg-white/25 text-white"
-                      : "bg-gradient-to-r from-amber-500 to-orange-500 text-white"
+                      : "bg-gradient-to-r from-teal-700 to-teal-800 text-white"
                   )}>
                     Principal
                   </span>

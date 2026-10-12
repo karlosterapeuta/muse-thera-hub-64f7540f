@@ -16,7 +16,7 @@ export function FinancialAgenda({ financialSchedule, isLoading }: FinancialAgend
       <Card className="border border-border shadow-lg rounded-xl bg-card hover:shadow-xl transition-all duration-300">
         <div className="p-6 w-full">
           <div className="flex items-center space-x-3 mb-6">
-            <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl">
+            <div className="p-2 bg-gradient-to-r from-teal-700 to-emerald-700 rounded-xl">
               <DollarSign className="h-6 w-6 text-white" />
             </div>
             <h3 className="text-2xl font-bold text-foreground">
@@ -41,7 +41,7 @@ export function FinancialAgenda({ financialSchedule, isLoading }: FinancialAgend
       <div className="p-6 w-full">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl">
+            <div className="p-2 bg-gradient-to-r from-teal-700 to-emerald-700 rounded-xl">
               <DollarSign className="h-6 w-6 text-white" />
             </div>
             <h3 className="text-2xl font-bold text-foreground">
@@ -64,7 +64,7 @@ export function FinancialAgenda({ financialSchedule, isLoading }: FinancialAgend
               >
                 <div className="flex items-center space-x-4">
                   <div className="relative">
-                    <div className="w-11 h-11 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl flex items-center justify-center font-bold shadow-md">
+                    <div className="w-11 h-11 bg-gradient-to-r from-teal-700 to-emerald-700 text-white rounded-xl flex items-center justify-center font-bold shadow-md">
                       <DollarSign className="h-5 w-5" />
                     </div>
                     <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 border-2 border-background rounded-full animate-pulse"></div>
@@ -111,7 +111,7 @@ export function FinancialAgenda({ financialSchedule, isLoading }: FinancialAgend
           </div>
         ) : (
           <div className="text-center py-16 space-y-6">
-            <div className="w-20 h-20 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="w-20 h-20 bg-gradient-to-br from-teal-100 to-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <DollarSign className="h-10 w-10 text-green-500" />
             </div>
             <h4 className="text-xl font-semibold text-foreground mb-3">Comece seus registros financeiros</h4>

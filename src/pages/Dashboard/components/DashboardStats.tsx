@@ -33,7 +33,7 @@ export function DashboardStats({
       value: totalPatients || 0,
       subtitle: "Total de pacientes",
       icon: UserCheck,
-      gradient: "from-emerald-500 via-emerald-600 to-green-700",
+      gradient: "from-teal-700 via-teal-800 to-emerald-900",
       actionText: totalPatients === 0 ? "Cadastrar Primeiro Paciente" : `${totalPatients} pacientes ativos`,
       isEmpty: totalPatients === 0
     },
@@ -42,7 +42,7 @@ export function DashboardStats({
       value: totalAnamnesis || 0,
       subtitle: "Avaliações completas",
       icon: ClipboardList,
-      gradient: "from-blue-500 via-blue-600 to-indigo-700",
+      gradient: "from-emerald-600 via-teal-700 to-teal-800",
       actionText: totalAnamnesis === 0 ? "Realizar Primeira Anamnese" : `${totalAnamnesis} anamneses registradas`,
       isEmpty: totalAnamnesis === 0
     },
@@ -51,7 +51,7 @@ export function DashboardStats({
       value: totalInterventions || 0,
       subtitle: "Planos terapêuticos",
       icon: Target,
-      gradient: "from-amber-500 via-orange-600 to-red-700",
+      gradient: "from-teal-600 via-emerald-700 to-emerald-800",
       actionText: totalInterventions === 0 ? "Criar Primeira Intervenção" : `${totalInterventions} planos ativos`,
       isEmpty: totalInterventions === 0
     },
@@ -60,7 +60,7 @@ export function DashboardStats({
       value: totalReports || 0,
       subtitle: "Documentos produzidos",
       icon: FileText,
-      gradient: "from-violet-500 via-violet-600 to-purple-700",
+      gradient: "from-green-700 via-teal-800 to-teal-900",
       actionText: totalReports === 0 ? "Gerar Primeiro Relatório" : `${totalReports} relatórios criados`,
       isEmpty: totalReports === 0
     }

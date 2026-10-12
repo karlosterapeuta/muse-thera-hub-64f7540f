@@ -295,9 +295,9 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
           {fields.map(field => {
             if (!anamnesisData[field]) return null;
             return (
-              <div key={field} className="flex items-center gap-2 p-2 rounded-lg bg-gray-800 border border-gray-700">
+              <div key={field} className="flex items-center gap-2 p-2 rounded-lg bg-muted/40 border border-border/70">
                 <CheckCircle2 className="h-4 w-4 text-green-500" />
-                <span className="text-sm text-white font-medium">{labels[field] || field.replace(/_/g, ' ')}</span>
+                <span className="text-sm text-foreground font-medium">{labels[field] || field.replace(/_/g, ' ')}</span>
               </div>
             );
           })}
@@ -316,12 +316,12 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
             
             return (
               <div key={field.key}>
-                <h4 className="font-bold text-sm text-white mb-2">{field.label}</h4>
-                <div className={`p-3 rounded-lg border ${isEmpty ? 'bg-gray-800 border-gray-700' : 'bg-gray-800 border-gray-600'}`}>
+                <h4 className="font-bold text-sm text-foreground mb-2">{field.label}</h4>
+                <div className={`p-3 rounded-lg border ${isEmpty ? 'bg-muted/40 border-border/70' : 'bg-muted/40 border-teal-700/20'}`}>
                   {isEmpty ? (
-                    <p className="text-sm text-gray-400 italic">Campo disponível para preenchimento</p>
+                    <p className="text-sm text-muted-foreground italic">Campo disponível para preenchimento</p>
                   ) : (
-                    <p className="text-sm text-white leading-relaxed whitespace-pre-wrap">{value}</p>
+                    <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{value}</p>
                   )}
                 </div>
               </div>
@@ -343,19 +343,19 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
   const stats = getCompletionStats();
 
   return (
-    <div className="space-y-6 bg-gray-950 p-6 rounded-xl">
+    <div className="space-y-6 bg-background p-6 rounded-xl">
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
         <div className="flex items-center gap-4">
-          <Button variant="outline" onClick={onBack} className="flex items-center gap-2 border-gray-700 text-white hover:bg-gray-800">
+          <Button variant="outline" onClick={onBack} className="flex items-center gap-2 border-border/70 text-foreground hover:bg-muted/40">
             <ArrowLeft size={16} />
             Voltar
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-white">
+            <h1 className="text-3xl font-bold text-foreground">
               Anamnese Detalhada
             </h1>
-            <p className="text-gray-400">Paciente: {anamnesis.patient_name}</p>
+            <p className="text-muted-foreground">Paciente: {anamnesis.patient_name}</p>
           </div>
         </div>
         <div className="flex flex-col sm:flex-row gap-2">
@@ -389,50 +389,50 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-gray-900 border-gray-700">
+        <Card className="bg-card border-border/70">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-400">Criado em</p>
-                <p className="font-semibold text-white">{formatDate(anamnesis.created_at)}</p>
+                <p className="text-sm text-muted-foreground">Criado em</p>
+                <p className="font-semibold text-foreground">{formatDate(anamnesis.created_at)}</p>
               </div>
-              <Calendar className="text-blue-500" size={20} />
+              <Calendar className="text-teal-700 dark:text-teal-300" size={20} />
             </div>
           </CardContent>
         </Card>
         
-        <Card className="bg-gray-900 border-gray-700">
+        <Card className="bg-card border-border/70">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-400">Atualizado em</p>
-                <p className="font-semibold text-white">{formatDate(anamnesis.updated_at)}</p>
+                <p className="text-sm text-muted-foreground">Atualizado em</p>
+                <p className="font-semibold text-foreground">{formatDate(anamnesis.updated_at)}</p>
               </div>
               <Clock className="text-green-500" size={20} />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-900 border-gray-700">
+        <Card className="bg-card border-border/70">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-400">Completude</p>
-                <p className="font-semibold text-white">{stats.overallCompletion}%</p>
+                <p className="text-sm text-muted-foreground">Completude</p>
+                <p className="font-semibold text-foreground">{stats.overallCompletion}%</p>
               </div>
-              <Activity className="text-orange-500" size={20} />
+              <Activity className="text-teal-700 dark:text-teal-300" size={20} />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-900 border-gray-700">
+        <Card className="bg-card border-border/70">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-400">Aspectos Marcados</p>
-                <p className="font-semibold text-white">{stats.checkedFields}</p>
+                <p className="text-sm text-muted-foreground">Aspectos Marcados</p>
+                <p className="font-semibold text-foreground">{stats.checkedFields}</p>
               </div>
-              <CheckCircle2 className="text-purple-500" size={20} />
+              <CheckCircle2 className="text-teal-700 dark:text-teal-300" size={20} />
             </div>
           </CardContent>
         </Card>
@@ -443,53 +443,53 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         anamnesisData.referral_professional || anamnesisData.main_clinical_demand ||
         anamnesisData.diagnosis_details || anamnesisData.cid_code ||
         anamnesisData.clinical_details) && (
-        <ModernFormCard title="Identificação e Encaminhamento" icon={User} gradient="from-blue-500 to-cyan-500">
+        <ModernFormCard title="Identificação e Encaminhamento" icon={User} gradient="from-teal-700 to-emerald-700">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {anamnesisData.legal_guardian && (
               <div>
-                <p className="text-sm font-semibold text-gray-400">Responsável Legal</p>
-                <p className="font-medium text-white">{anamnesisData.legal_guardian}</p>
+                <p className="text-sm font-semibold text-muted-foreground">Responsável Legal</p>
+                <p className="font-medium text-foreground">{anamnesisData.legal_guardian}</p>
               </div>
             )}
             {anamnesisData.family_relationship && (
               <div>
-                <p className="text-sm font-semibold text-gray-400">Parentesco</p>
-                <p className="font-medium text-white">{anamnesisData.family_relationship}</p>
+                <p className="text-sm font-semibold text-muted-foreground">Parentesco</p>
+                <p className="font-medium text-foreground">{anamnesisData.family_relationship}</p>
               </div>
             )}
             {anamnesisData.referral_professional && (
               <div>
-                <p className="text-sm font-semibold text-gray-400">Profissional que Encaminhou</p>
-                <p className="font-medium text-white">{anamnesisData.referral_professional}</p>
+                <p className="text-sm font-semibold text-muted-foreground">Profissional que Encaminhou</p>
+                <p className="font-medium text-foreground">{anamnesisData.referral_professional}</p>
               </div>
             )}
             {anamnesisData.cid_code && (
               <div>
-                <p className="text-sm font-semibold text-gray-400">CID-10/11</p>
-                <p className="font-medium text-white">{anamnesisData.cid_code}</p>
+                <p className="text-sm font-semibold text-muted-foreground">CID-10/11</p>
+                <p className="font-medium text-foreground">{anamnesisData.cid_code}</p>
               </div>
             )}
             {anamnesisData.main_clinical_demand && (
               <div className="md:col-span-2">
-                <p className="text-sm font-semibold text-gray-400">Demanda Clínica Principal</p>
-                <div className="bg-gray-800 p-3 rounded-lg border border-gray-700 mt-1">
-                  <p className="text-white leading-relaxed whitespace-pre-wrap">{anamnesisData.main_clinical_demand}</p>
+                <p className="text-sm font-semibold text-muted-foreground">Demanda Clínica Principal</p>
+                <div className="bg-muted/40 p-3 rounded-lg border border-border/70 mt-1">
+                  <p className="text-foreground leading-relaxed whitespace-pre-wrap">{anamnesisData.main_clinical_demand}</p>
                 </div>
               </div>
             )}
             {anamnesisData.diagnosis_details && (
               <div className="md:col-span-2">
-                <p className="text-sm font-semibold text-gray-400">Diagnóstico(s) Existente(s)</p>
-                <div className="bg-gray-800 p-3 rounded-lg border border-gray-700 mt-1">
-                  <p className="text-white leading-relaxed whitespace-pre-wrap">{anamnesisData.diagnosis_details}</p>
+                <p className="text-sm font-semibold text-muted-foreground">Diagnóstico(s) Existente(s)</p>
+                <div className="bg-muted/40 p-3 rounded-lg border border-border/70 mt-1">
+                  <p className="text-foreground leading-relaxed whitespace-pre-wrap">{anamnesisData.diagnosis_details}</p>
                 </div>
               </div>
             )}
             {anamnesisData.clinical_details && (
               <div className="md:col-span-2">
-                <p className="text-sm font-semibold text-gray-400">Detalhes Clínicos Adicionais</p>
-                <div className="bg-gray-800 p-3 rounded-lg border border-gray-700 mt-1">
-                  <p className="text-white leading-relaxed whitespace-pre-wrap">{anamnesisData.clinical_details}</p>
+                <p className="text-sm font-semibold text-muted-foreground">Detalhes Clínicos Adicionais</p>
+                <div className="bg-muted/40 p-3 rounded-lg border border-border/70 mt-1">
+                  <p className="text-foreground leading-relaxed whitespace-pre-wrap">{anamnesisData.clinical_details}</p>
                 </div>
               </div>
             )}
@@ -501,7 +501,7 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
       {renderTextSection(
         "História Sonora e Musical Detalhada",
         Headphones,
-        "from-purple-500 to-pink-500",
+        "from-teal-700 to-emerald-700",
         [
           { key: 'pregnancy_sound_experiences', label: 'Experiências sonoras durante a gravidez' },
           { key: 'mother_movements_songs', label: 'Movimentos da mãe com canções' },
@@ -530,7 +530,7 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
       {renderTextSection(
         "Medicação em Uso",
         Stethoscope,
-        "from-red-500 to-orange-500",
+        "from-teal-700 to-emerald-700",
         [
           { key: 'current_medication', label: 'Medicação Atual' },
           { key: 'medication_schedule', label: 'Horários e Dosagens' },
@@ -541,7 +541,7 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
       {renderTextSection(
         "Acompanhamento Terapêutico",
         Heart,
-        "from-rose-500 to-pink-500",
+        "from-teal-700 to-emerald-700",
         [
           { key: 'therapy_frequency', label: 'Frequência das Terapias' },
           { key: 'therapy_observations', label: 'Observações sobre Evolução' }
@@ -561,7 +561,7 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
       {renderTextSection(
         "Objetivos e Abordagem Terapêutica",
         Activity,
-        "from-emerald-500 to-teal-500",
+        "from-teal-700 to-emerald-700",
         [
           { key: 'therapeutic_goals', label: 'Objetivos terapêuticos' },
           { key: 'treatment_approach', label: 'Abordagem de tratamento' }
@@ -572,7 +572,7 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
       {renderBooleanSection(
         "Terapias e Suporte",
         Heart,
-        "from-pink-500 to-rose-500",
+        "from-teal-700 to-emerald-700",
         ['psychological_support', 'psychopedagogical', 'occupational_therapy', 'physiotherapy', 'equine_therapy', 'speech_therapy', 'aba_therapy', 'sensory_integration', 'psychomotricity', 'nutrition', 'music_therapy'],
         {
           psychological_support: 'Apoio psicológico',
@@ -592,7 +592,7 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
       {renderBooleanSection(
         "Experiências Musicais",
         Music,
-        "from-violet-500 to-purple-500",
+        "from-teal-700 to-emerald-700",
         ['musical_education', 'instrumental_practice', 'body_musical_expression', 'vocal_expression', 'choral_activities', 'music_therapy_experience', 'no_musical_experience'],
         {
           musical_education: 'Educação musical',
@@ -608,7 +608,7 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
       {renderBooleanSection(
         "Comportamento Musical",
         Volume2,
-        "from-indigo-500 to-blue-500",
+        "from-teal-700 to-emerald-700",
         ['active_musical_listening', 'body_expression', 'sound_responsiveness', 'spontaneous_vocal', 'instrumental_exploration', 'adverse_sound_reactivity', 'auditory_hypersensitivity', 'positive_musical_response', 'nominal_call_response', 'active_sound_search', 'specific_sound_aversion', 'sound_source_location'],
         {
           active_musical_listening: 'Escuta musical ativa',
@@ -629,7 +629,7 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
       {renderBooleanSection(
         "Preferências Musicais",
         Palette,
-        "from-cyan-500 to-blue-500",
+        "from-teal-700 to-emerald-700",
         ['children_repertoire', 'rock_genre', 'sacred_gospel', 'other_musical_genres', 'brazilian_popular', 'country_music', 'classical_music'],
         {
           children_repertoire: 'Repertório infantil',
@@ -675,7 +675,7 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
       {renderBooleanSection(
         "Aspectos Sociais",
         Users,
-        "from-teal-500 to-cyan-500",
+        "from-teal-700 to-emerald-700",
         ['visual_contact', 'shared_play', 'stereotyped_behavior', 'peer_interaction', 'social_isolation', 'restricted_interests'],
         {
           visual_contact: 'Contato visual',
@@ -690,7 +690,7 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
       {renderBooleanSection(
         "Regulação Emocional",
         Heart,
-        "from-pink-500 to-red-500",
+        "from-teal-700 to-emerald-700",
         ['heteroaggressive', 'emotional_ability', 'anxiety', 'frequent_crying', 'low_frustration_tolerance', 'irritability'],
         {
           heteroaggressive: 'Heteroagressividade',
@@ -705,7 +705,7 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
       {renderBooleanSection(
         "Transtornos e Condições",
         Brain,
-        "from-orange-500 to-red-500",
+        "from-teal-700 to-emerald-700",
         ['autism_spectrum', 'down_syndrome', 'intellectual_disability', 'other_diagnoses', 'adhd', 'chronic_encephalopathy', 'anxiety_disorders', 'cerebral_palsy', 'epilepsy', 'williams_syndrome', 'fragile_x_syndrome', 'rett_syndrome', 'angelman_syndrome', 'alzheimer', 'parkinson', 'depression', 'bipolar_disorder'],
         {
           autism_spectrum: 'Espectro autista',
@@ -747,11 +747,11 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
               <p className="text-sm text-muted-foreground">Campos Preenchidos</p>
             </div>
             <div className="text-center p-4 bg-muted/50 rounded-lg">
-              <p className="text-2xl font-bold text-orange-600">{stats.overallCompletion}%</p>
+              <p className="text-2xl font-bold text-teal-700 dark:text-teal-300">{stats.overallCompletion}%</p>
               <p className="text-sm text-muted-foreground">Completude Geral</p>
             </div>
             <div className="text-center p-4 bg-muted/50 rounded-lg">
-              <p className="text-2xl font-bold text-blue-600">{anamnesis.patient_id.slice(-8)}</p>
+              <p className="text-2xl font-bold text-teal-700 dark:text-teal-300">{anamnesis.patient_id.slice(-8)}</p>
               <p className="text-sm text-muted-foreground">ID do Paciente</p>
             </div>
           </div>

@@ -86,7 +86,7 @@ export default function PublicAnamnesis() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#0a0a1f] text-foreground">
+    <div className="relative min-h-screen bg-background text-foreground">
       <StarfieldBackground />
       <div className="relative z-10 w-full max-w-4xl mx-auto px-3 py-8">
         <div className="flex flex-col items-center text-center mb-8">
@@ -95,14 +95,14 @@ export default function PublicAnamnesis() {
             alt="MuseTera"
             className="h-20 w-auto mb-4 drop-shadow-[0_0_20px_rgba(234,179,8,0.5)]"
           />
-          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-yellow-300 to-amber-500 bg-clip-text text-transparent">
+          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-teal-600 to-emerald-700 bg-clip-text text-transparent">
             Anamnese MuseTera
           </h1>
         </div>
 
         {state === "loading" && (
           <div className="flex flex-col items-center justify-center py-20 text-white/80">
-            <Loader2 className="h-10 w-10 animate-spin mb-3 text-amber-400" />
+            <Loader2 className="h-10 w-10 animate-spin mb-3 text-teal-700 dark:text-teal-300" />
             <p>Carregando formulário...</p>
           </div>
         )}
@@ -133,7 +133,7 @@ export default function PublicAnamnesis() {
         {state === "ready" && (
           <Card className="bg-card/90 backdrop-blur border-border shadow-2xl">
             <CardContent className="p-5 sm:p-8 space-y-6">
-              <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-center">
+              <div className="rounded-xl border border-teal-600/30 bg-teal-600/5 p-4 text-center">
                 <p className="text-sm text-muted-foreground">
                   Anamnese de
                 </p>
