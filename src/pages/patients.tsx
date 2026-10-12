@@ -37,7 +37,6 @@ import {
   Trash2,
   HeartPulse
 } from "lucide-react";
-import { CosmicBackground } from "@/components/auth/CosmicBackground";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -167,22 +166,21 @@ export default function PatientsPage() {
   };
 
   return (
-    <div className="min-h-screen relative w-full overflow-x-hidden">
-      <CosmicBackground />
+    <div className="min-h-screen relative w-full overflow-x-hidden bg-gradient-to-br from-background via-teal-50/40 to-emerald-50/20 dark:via-teal-950/20 dark:to-background">
 
       {/* Ambient cosmic blobs */}
       <div className="pointer-events-none absolute inset-0 -z-0 overflow-hidden">
         <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
-        <div className="absolute top-1/3 -right-32 h-96 w-96 rounded-full bg-amber-400/10 blur-3xl" />
+        <div className="absolute top-1/3 -right-32 h-96 w-96 rounded-full bg-teal-400/5 blur-3xl" />
         <div className="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-primary/5 blur-3xl" />
       </div>
 
-      <div className="relative z-10 container mx-auto py-6 md:py-10 space-y-8 animate-fadeIn max-w-7xl px-4">
+      <div className="relative z-10 container mx-auto py-4 md:py-6 space-y-5 md:space-y-6 max-w-7xl px-3 sm:px-6">
         {/* Elegant Hero Header */}
-        <div className="relative overflow-hidden rounded-3xl border border-border/40 bg-card/60 backdrop-blur-xl shadow-2xl">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-amber-400/10 pointer-events-none" />
+        <div className="relative overflow-hidden rounded-2xl border border-teal-700/15 bg-card shadow-sm">
+          <div className="absolute inset-0 bg-gradient-to-br from-teal-700/5 via-transparent to-emerald-500/5 pointer-events-none" />
           <div className="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
-          <div className="relative flex flex-col md:flex-row md:items-end justify-between gap-6 p-6 md:p-10">
+          <div className="relative flex flex-col md:flex-row md:items-end justify-between gap-4 p-4 md:p-6">
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-primary font-semibold tracking-[0.2em] uppercase text-xs">
                 <span className="inline-flex items-center justify-center h-6 w-6 rounded-lg bg-primary/15 text-primary">
@@ -190,10 +188,10 @@ export default function PatientsPage() {
                 </span>
                 Gestão de Atendimento
               </div>
-              <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-none bg-gradient-to-br from-foreground via-foreground to-primary bg-clip-text text-transparent">
+              <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight leading-none bg-gradient-to-br from-foreground via-foreground to-primary bg-clip-text text-transparent">
                 Pacientes
               </h1>
-              <p className="text-muted-foreground text-base md:text-lg max-w-xl leading-relaxed">
+              <p className="text-muted-foreground text-sm md:text-base max-w-xl leading-relaxed">
                 Centralize o histórico, anamneses e informações vitais dos seus pacientes em um só lugar.
               </p>
             </div>
@@ -201,7 +199,7 @@ export default function PatientsPage() {
             <Button 
               onClick={() => setIsAddDialogOpen(true)} 
               size="lg"
-              className="bg-gradient-to-r from-primary to-amber-500 hover:from-primary/90 hover:to-amber-500/90 text-primary-foreground shadow-xl hover:shadow-primary/30 transition-all duration-300 transform hover:-translate-y-1 px-8 rounded-2xl font-semibold"
+              className="bg-teal-700 hover:bg-teal-800 text-white shadow-sm transition-colors px-5 rounded-xl font-semibold"
             >
               <UserRoundPlus className="h-5 w-5 mr-2" />
               Novo Paciente
@@ -220,18 +218,18 @@ export default function PatientsPage() {
               placeholder="Pesquisar por nome ou responsável..."
               value={searchTerm}
               onChange={handleSearchChange}
-              className="pl-12 py-6 bg-card/70 backdrop-blur-sm border border-border/40 shadow-lg rounded-2xl text-lg focus-visible:ring-2 focus-visible:ring-primary/30 transition-all placeholder:text-muted-foreground/60"
+              className="pl-12 py-6 bg-card border border-teal-700/15 shadow-sm rounded-xl text-base focus-visible:ring-2 focus-visible:ring-primary/30 transition-all placeholder:text-muted-foreground/60"
             />
           </div>
           
-          <div className="flex items-center justify-between lg:justify-end gap-4 p-4 bg-card/60 backdrop-blur-xl rounded-2xl border border-border/40 shadow-lg">
+          <div className="flex items-center justify-between lg:justify-end gap-4 p-4 bg-card rounded-xl border border-teal-700/15 shadow-sm">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-primary/10 rounded-xl ring-1 ring-primary/20">
                 <Users className="h-5 w-5 text-primary" />
               </div>
               <div>
                 <div className="text-2xl font-bold leading-none">{patients.length}</div>
-                <div className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mt-1">Total Ativos</div>
+                <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mt-1">Total Ativos</div>
               </div>
             </div>
             <div className="h-10 w-px bg-border/50 hidden sm:block" />
@@ -282,7 +280,7 @@ export default function PatientsPage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="bg-card/70 backdrop-blur-xl rounded-3xl border border-border/40 shadow-2xl overflow-hidden">
+                  <div className="bg-card rounded-2xl border border-teal-700/15 shadow-sm overflow-hidden">
                     <PatientList
                       patients={filteredPatients}
                       onEdit={handleEditClick}
@@ -294,7 +292,7 @@ export default function PatientsPage() {
                   </div>
                 )
               ) : (
-                <div className="text-center py-32 bg-card/40 backdrop-blur-xl border-2 border-dashed border-border/60 rounded-3xl shadow-xl">
+                <div className="text-center py-32 bg-card border-2 border-dashed border-border/60 rounded-2xl shadow-sm">
                   <div className="inline-flex p-6 bg-muted rounded-full mb-6">
                     <Users className="h-12 w-12 text-muted-foreground" />
                   </div>
