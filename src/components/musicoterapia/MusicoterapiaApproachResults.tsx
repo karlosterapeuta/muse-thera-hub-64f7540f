@@ -5,16 +5,76 @@ import { getSelectedMusicoterapiaApproaches } from '@/data/musicoterapiaApproach
 import { approachResultStatuses, getRecordedApproachResults, getApproachResultsValidationIssues, type ApproachResultsById, type ApproachResultEntry } from '@/data/musicoterapiaApproachResults';
 
 const suggestions: Record<string, string[]> = {
-  ativa: ['Cantou ou vocalizou', 'Tocou instrumentos', 'Fez escolhas musicais'],
-  receptiva: ['Escutou voluntariamente', 'Expressou preferências', 'Compartilhou lembranças'],
-  improvisacao: ['Iniciou sons', 'Respondeu à improvisação', 'Alternou turnos'],
-  recreativa: ['Participou de jogos', 'Cantou canções conhecidas', 'Interagiu em grupo'],
-  analitica: ['Expressou sentimentos', 'Compartilhou significados', 'Improvisou livremente'],
-  neurologica_nmt: ['Realizou movimento ritmado', 'Executou sequência motora', 'Acompanhou pistas musicais'],
-  comportamental: ['Realizou resposta-alvo', 'Aguardou turno', 'Seguiu sequência'],
-  humanista: ['Fez escolhas', 'Expressou preferências', 'Participou voluntariamente'],
-  nordoff_robbins: ['Respondeu à improvisação', 'Iniciou interação musical', 'Sustentou trocas'],
-  bonny_gim: ['Participou da escuta guiada', 'Compartilhou imagens', 'Relatou percepções']
+  ativa: [
+    'Cantou ou vocalizou', 'Tocou instrumentos', 'Fez escolhas musicais',
+    'Explorou diferentes timbres', 'Acompanhou uma pulsação com apoio',
+    'Iniciou uma sequência instrumental', 'Respondeu a pausas musicais',
+    'Experimentou diferentes intensidades sonoras', 'Solicitou repetir a atividade',
+    'Participou de canto compartilhado'
+  ],
+  receptiva: [
+    'Escutou voluntariamente', 'Expressou preferências', 'Compartilhou lembranças',
+    'Escolheu o repertório para escuta', 'Solicitou repetir uma música',
+    'Demonstrou desconforto com determinado som', 'Manteve-se na experiência de escuta',
+    'Reconheceu uma música familiar', 'Respondeu a mudanças de intensidade',
+    'Comunicou desejo de interromper a escuta'
+  ],
+  improvisacao: [
+    'Iniciou sons', 'Respondeu à improvisação', 'Alternou turnos',
+    'Variou padrões rítmicos', 'Propôs uma ideia musical',
+    'Reproduziu um motivo apresentado', 'Mudou o andamento da execução',
+    'Utilizou pausas na troca musical', 'Explorou combinações de instrumentos',
+    'Concluiu uma sequência improvisada'
+  ],
+  recreativa: [
+    'Participou de jogos', 'Cantou canções conhecidas', 'Interagiu em grupo',
+    'Escolheu uma brincadeira musical', 'Aguardou sua vez com apoio',
+    'Acompanhou gestos de uma canção', 'Participou de jogo de pergunta e resposta',
+    'Solicitou continuar a brincadeira', 'Explorou instrumento durante o jogo',
+    'Comunicou preferência por atividade'
+  ],
+  analitica: [
+    'Expressou sentimentos', 'Compartilhou significados', 'Improvisou livremente',
+    'Associou uma música a uma experiência', 'Descreveu sensações durante a escuta',
+    'Escolheu sons para representar uma ideia', 'Comentou sua produção musical',
+    'Solicitou interromper a proposta', 'Compartilhou uma lembrança musical',
+    'Identificou elementos relevantes da experiência'
+  ],
+  neurologica_nmt: [
+    'Realizou movimento ritmado', 'Executou sequência motora', 'Acompanhou pistas musicais',
+    'Sincronizou um movimento com pulso musical', 'Realizou alternância de movimentos com apoio',
+    'Iniciou movimento após sinal musical', 'Concluiu sequência de movimentos proposta',
+    'Necessitou de pistas adicionais para executar', 'Ajustou o andamento do movimento',
+    'Apresentou dificuldade na sequência proposta'
+  ],
+  comportamental: [
+    'Realizou resposta-alvo', 'Aguardou turno', 'Seguiu sequência',
+    'Respondeu a uma instrução musical simples', 'Solicitou ajuda durante a atividade',
+    'Completou etapa com mediação', 'Escolheu entre duas propostas sonoras',
+    'Retomou a atividade após uma pausa', 'Recusou uma demanda musical',
+    'Precisou de apoio para alternar tarefas'
+  ],
+  humanista: [
+    'Fez escolhas', 'Expressou preferências', 'Participou voluntariamente',
+    'Iniciou uma experiência musical própria', 'Recusou uma proposta e escolheu outra',
+    'Compartilhou uma criação sonora', 'Solicitou mudança de repertório',
+    'Escolheu a intensidade da experiência', 'Expressou necessidades durante a atividade',
+    'Manteve participação em proposta escolhida'
+  ],
+  nordoff_robbins: [
+    'Respondeu à improvisação', 'Iniciou interação musical', 'Sustentou trocas',
+    'Introduziu variação rítmica', 'Acompanhou mudança melódica',
+    'Alternou iniciativa e resposta musical', 'Criou motivo sonoro espontâneo',
+    'Interrompeu e retomou a interação', 'Comunicou preferência durante o diálogo musical',
+    'Explorou diferentes formas de resposta instrumental'
+  ],
+  bonny_gim: [
+    'Participou da escuta guiada', 'Compartilhou imagens', 'Relatou percepções',
+    'Selecionou repertório para a experiência', 'Descreveu sensações evocadas',
+    'Compartilhou lembrança associada à música', 'Solicitou pausa na escuta',
+    'Comunicou desconforto durante a experiência', 'Descreveu uma imagem simbólica',
+    'Compartilhou impressões após a escuta'
+  ]
 };
 
 interface Props {
@@ -44,7 +104,7 @@ export function MusicoterapiaApproachResults({ selectedApproachIds, value, onCha
         <div>
           <h3 className="font-semibold text-[#f0d78c]">Como o paciente respondeu a cada abordagem?</h3>
           <p className="text-sm text-gray-300 mt-1">
-            Um toque para informar a resposta. Depois, se desejar, marque o que observou.
+            Selecione a classificação e marque somente as situações realmente observadas. Os exemplos são opcionais e podem ser complementados com uma descrição própria.
           </p>
           <p className="text-xs text-[#f0d78c] mt-2" aria-live="polite">{recorded.length} de {approaches.length} registradas</p>
         </div>
@@ -73,7 +133,7 @@ export function MusicoterapiaApproachResults({ selectedApproachIds, value, onCha
             </div>
             {result && result.status !== 'not_applied' && (
               <div className="border-t border-white/10 pt-3 space-y-3">
-                <p className="text-xs text-gray-400">O que aconteceu? <span className="text-gray-500">(opcional)</span></p>
+                <p className="text-xs text-gray-400">O que aconteceu? Selecione os registros observados <span className="text-gray-500">(opcional)</span></p>
                 <div className="flex flex-wrap gap-2">
                   {(suggestions[approach.id] || []).map(label => {
                     const selected = result.indicators.includes(label);
