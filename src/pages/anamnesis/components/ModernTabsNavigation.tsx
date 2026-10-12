@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Stethoscope, Brain, Activity, UserCircle, AudioWaveform } from "lucide-react";
 
@@ -13,10 +12,8 @@ export function ModernTabsNavigation({
   activeTab = "personal",
   onTabChange,
 }: ModernTabsNavigationProps) {
-  const [currentTab, setCurrentTab] = useState(activeTab);
 
   const handleTabChange = (tab: string) => {
-    setCurrentTab(tab);
     onTabChange?.(tab);
   };
 
@@ -65,16 +62,17 @@ export function ModernTabsNavigation({
 
   return (
     <div className="w-full">
-      <Tabs value={currentTab} onValueChange={handleTabChange} className="w-full">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <div className="mb-5 md:mb-8">
-          <TabsList className="flex w-full gap-2 overflow-x-auto p-2 md:grid md:grid-cols-5 md:overflow-visible h-auto rounded-2xl bg-muted/40 border border-border/60">
+          <TabsList aria-label="Seções da anamnese" className="flex w-full gap-2 overflow-x-auto p-2 md:grid md:grid-cols-5 md:overflow-visible h-auto rounded-2xl bg-muted/40 border border-border/60">
             {tabs.map((tab) => {
-              const isActive = currentTab === tab.id;
+              const isActive = activeTab === tab.id;
 
               return (
                 <TabsTrigger
                   key={tab.id}
                   value={tab.id}
+                  aria-label={tab.label}
                   className={`shrink-0 min-w-[118px] sm:min-w-[132px] md:min-w-0 flex flex-col items-center justify-center gap-1.5 px-2 py-3 sm:px-3 sm:py-3.5 rounded-xl border-2 transition-all duration-300 ${
                     isActive
                       ? "bg-card border-teal-600/60 shadow-lg text-foreground"
