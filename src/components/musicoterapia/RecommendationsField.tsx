@@ -28,6 +28,8 @@ const QUICK_SUGGESTIONS = [
 ] as const;
 
 export function RecommendationsField({ value = [], onChange }: RecommendationsFieldProps) {
+  const [showAllSuggestions, setShowAllSuggestions] = React.useState(false);
+  const visibleSuggestions = showAllSuggestions ? QUICK_SUGGESTIONS : QUICK_SUGGESTIONS.slice(0, 4);
   const items = Array.isArray(value)
     ? value.filter((item): item is string => typeof item === 'string')
     : typeof value === 'string' ? [value] : [];
@@ -66,10 +68,10 @@ export function RecommendationsField({ value = [], onChange }: RecommendationsFi
       <div className="space-y-2">
         <p className="flex items-center gap-2 text-xs text-muted-foreground">
           <Lightbulb className="h-3.5 w-3.5 text-teal-700 dark:text-teal-300" />
-          Sugestões rápidas (exemplos editáveis; inclua apenas os pertinentes)
+          Sugestões rápidas · escolha e personalize apenas o que for pertinente
         </p>
-        <div className="flex flex-wrap gap-2">
-          {QUICK_SUGGESTIONS.map((suggestion) => {
+        <div className="grid gap-2 sm:grid-cols-2">
+          {visibleSuggestions.map((suggestion) => {
             const selected = content.includes(suggestion);
             return (
               <button
@@ -77,7 +79,7 @@ export function RecommendationsField({ value = [], onChange }: RecommendationsFi
                 key={suggestion}
                 aria-pressed={selected}
                 onClick={() => addSuggestion(suggestion)}
-                className={`rounded-lg border px-3 py-2 text-xs text-left leading-relaxed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${selected
+                className={`rounded-lg border px-3 py-2 text-sm text-left leading-relaxed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${selected
                   ? 'border-teal-600 bg-teal-600/15 text-teal-800 dark:text-teal-200'
                   : 'border-border/70 text-foreground/80 hover:border-teal-600/50'}`}
               >
@@ -87,6 +89,12 @@ export function RecommendationsField({ value = [], onChange }: RecommendationsFi
             );
           })}
         </div>
+        <Button type="button" variant="outline" size="sm"
+          onClick={() => setShowAllSuggestions(current => !current)}
+          aria-expanded={showAllSuggestions}
+          className="w-full border-border text-foreground hover:bg-muted sm:w-auto">
+          {showAllSuggestions ? 'Mostrar menos sugestões' : `Ver todas as ${QUICK_SUGGESTIONS.length} sugestões`}
+        </Button>
       </div>
       {content.trim() && (
         <div className="flex justify-end">
