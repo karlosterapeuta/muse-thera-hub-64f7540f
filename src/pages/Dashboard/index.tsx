@@ -1,104 +1,52 @@
-import React, { useEffect } from "react";
 import { DashboardStats } from "./components/DashboardStats";
 import { useDashboardData } from "./hooks/useDashboardData";
 import { ProductsShowcase } from "@/components/products/ProductsShowcase";
-import { CosmicBackground } from "@/components/auth/CosmicBackground";
 import { PlanStatusCard } from "@/components/dashboard/PlanStatusCard";
 import { PendingUsersPanel } from "@/components/dashboard/PendingUsersPanel";
 import { useAdmin } from "@/hooks/use-admin";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { ShieldCheck, Sparkles, LayoutDashboard, Activity, Users, FileText } from "lucide-react";
+import { ShieldCheck, LayoutDashboard, ClipboardList, CalendarDays, FileText, Plus, ArrowRight, Clock3, Activity } from "lucide-react";
+import { format, isSameDay } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 export default function Dashboard() {
   const { data: isAdmin } = useAdmin();
   const navigate = useNavigate();
   const data = useDashboardData();
-
-  useEffect(() => {
-    return () => {};
-  }, []);
+  const now = new Date();
+  const weeklySessions = data.weekDays.flatMap(day => day.sessions.map(session => ({ ...session, dateForSort: day.date })));
+  const upcoming = weeklySessions
+    .filter(session => new Date(session.date).getTime() >= now.getTime() || (isSameDay(new Date(session.date), now) && !String(session.formatted_time).includes("Invalid")))
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .slice(0, 4);
 
   return (
-    <div className="min-h-screen relative w-full overflow-x-hidden bg-gradient-to-br from-background via-teal-50/50 to-emerald-50/30 dark:via-teal-950/30 dark:to-emerald-950/20">
-      {/* Música das Esferas preservada como textura suave monocromática. */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden opacity-[0.07] motion-reduce:hidden [filter:sepia(1)_hue-rotate(75deg)_saturate(0.65)]">
-        <CosmicBackground />
-      </div>
-
-      {/* Ambient cosmic blobs */}
-      <div className="pointer-events-none absolute inset-0 -z-0 overflow-hidden">
-        <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
-        <div className="absolute top-1/3 -right-32 h-96 w-96 rounded-full bg-teal-400/10 blur-3xl" />
-        <div className="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-primary/5 blur-3xl" />
-      </div>
-
-      {/* Main Content */}
-      <div className="relative z-10 w-full px-4 sm:px-6 py-6 space-y-6 max-w-[1600px] mx-auto">
-        {/* Premium Header */}
-        <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-card/60 backdrop-blur-xl shadow-lg">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-teal-500/5" />
-          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
-
-          <div className="relative p-6 sm:p-8 lg:p-10">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-              <div className="flex items-start gap-5">
-                <div className="relative flex-shrink-0">
-                  <div className="absolute inset-0 bg-gradient-to-br from-teal-700 to-teal-800 blur-xl opacity-40" />
-                  <div className="relative p-4 rounded-2xl bg-gradient-to-br from-teal-700 to-teal-800 shadow-lg">
-                    <LayoutDashboard className="h-7 w-7 lg:h-8 lg:w-8 text-white" />
-                  </div>
-                </div>
-                <div className="space-y-2 min-w-0">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border/60 bg-background/40 backdrop-blur text-xs font-medium text-muted-foreground">
-                    <Sparkles className="h-3 w-3 text-teal-600 dark:text-teal-300" />
-                    Visão Geral · MuseTera
-                  </div>
-                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight bg-gradient-to-br from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
-                    Dashboard
-                  </h1>
-                  <p className="text-sm sm:text-base text-muted-foreground max-w-2xl leading-relaxed">
-                    Acompanhe pacientes, relatórios e a evolução do seu trabalho clínico em musicoterapia em um só lugar.
-                  </p>
-                </div>
-              </div>
-
-              {isAdmin && (
-                <div className="flex flex-col gap-2 lg:items-end">
-                  <Button
-                    onClick={() => navigate("/users")}
-                    className="bg-gradient-to-br from-teal-700 to-teal-800 text-white border-0 shadow-md hover:opacity-90 transition-all duration-200 font-semibold"
-                  >
-                    <ShieldCheck className="h-4 w-4 mr-2" />
-                    Painel Administrativo
-                  </Button>
-                </div>
-              )}
-            </div>
-
-            {/* Status pills */}
-            <div className="mt-6 flex flex-wrap items-center gap-2">
-              <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border/60 bg-background/40 backdrop-blur text-xs font-medium">
-                <Users className="h-3.5 w-3.5 text-primary" /> Pacientes
-              </div>
-              <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border/60 bg-background/40 backdrop-blur text-xs font-medium">
-                <FileText className="h-3.5 w-3.5 text-teal-600 dark:text-teal-300" /> Relatórios
-              </div>
-              <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border/60 bg-background/40 backdrop-blur text-xs font-medium">
-                <Activity className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-300" /> Evolução
+    <div className="min-h-screen bg-gradient-to-br from-background via-teal-50/40 to-emerald-50/20 dark:via-teal-950/20 dark:to-background">
+      <main className="mx-auto flex w-full max-w-[1500px] flex-col gap-5 px-3 py-4 sm:gap-6 sm:px-6 sm:py-6">
+        <header className="rounded-2xl border border-teal-700/15 bg-card px-4 py-5 shadow-sm sm:px-6 sm:py-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex min-w-0 items-start gap-3 sm:items-center">
+              <div className="rounded-xl bg-teal-800 p-3 text-white"><LayoutDashboard className="h-6 w-6" aria-hidden="true" /></div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-300">Painel clínico · MuseTera</p>
+                <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">Visão geral</h1>
+                <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">Acompanhe seus pacientes, documentos e atendimentos em um só lugar.</p>
               </div>
             </div>
+            {isAdmin && <Button variant="outline" className="w-full gap-2 sm:w-auto" onClick={() => navigate("/users")}><ShieldCheck className="h-4 w-4" /> Administração</Button>}
           </div>
-        </div>
+          <nav aria-label="Ações rápidas" className="mt-5 flex flex-wrap gap-2 border-t border-border/70 pt-4">
+            <Button className="gap-2 bg-teal-700 text-white hover:bg-teal-800" onClick={() => navigate("/anamnesis")}><Plus className="h-4 w-4" /> Nova anamnese</Button>
+            <Button variant="outline" className="gap-2" onClick={() => navigate("/processes/musicoterapia")}><FileText className="h-4 w-4" /> Relatório TEA</Button>
+            <Button variant="outline" className="gap-2" onClick={() => navigate("/patients")}><ClipboardList className="h-4 w-4" /> Pacientes</Button>
+          </nav>
+        </header>
 
-        {/* Admin: Pending Users Approval */}
         <PendingUsersPanel />
 
-        {/* Plan Status Card */}
-        <PlanStatusCard />
-
-        {/* Statistics Cards */}
-        <div>
+        <section aria-label="Indicadores da clínica">
           <DashboardStats
             totalPatients={data.totalPatients}
             totalReports={data.totalReports}
@@ -106,12 +54,42 @@ export default function Dashboard() {
             totalInterventions={data.totalInterventions}
             isLoading={data.isLoading}
           />
-        </div>
+        </section>
 
-        {/* Products Showcase */}
-        <ProductsShowcase />
-      </div>
+        <section aria-label="Rotina clínica" className="grid grid-cols-1 gap-4 lg:grid-cols-5">
+          <Card className="border-teal-700/15 shadow-sm lg:col-span-3">
+            <CardHeader className="flex flex-row items-center justify-between gap-2 pb-3">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg"><CalendarDays className="h-5 w-5 text-teal-700 dark:text-teal-300" /> Próximos atendimentos</CardTitle>
+              <Button variant="ghost" size="sm" className="gap-1 text-teal-700 dark:text-teal-300" onClick={() => navigate("/patients")}>Pacientes <ArrowRight className="h-4 w-4" /></Button>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {data.isLoading ? <p className="text-sm text-muted-foreground" role="status">Carregando atendimentos...</p> : upcoming.length > 0 ? upcoming.map(session => (
+                <div key={session.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border/60 bg-muted/20 px-3 py-3">
+                  <div className="min-w-0">
+                    <p className="break-words text-sm font-semibold text-foreground">{session.patient_name}</p>
+                    <p className="text-xs text-muted-foreground">{format(session.dateForSort, "EEEE, dd 'de' MMMM", { locale: ptBR })}</p>
+                  </div>
+                  <span className="flex items-center gap-1 text-sm font-medium text-teal-700 dark:text-teal-300"><Clock3 className="h-4 w-4" />{session.formatted_time || "Horário não informado"}</span>
+                </div>
+              )) : <div className="rounded-xl border border-dashed border-border p-6 text-center"><CalendarDays className="mx-auto mb-2 h-7 w-7 text-teal-600" /><p className="font-medium">Nenhum atendimento futuro encontrado nesta semana</p><p className="mt-1 text-sm text-muted-foreground">Os atendimentos registrados aparecerão aqui quando houver dados disponíveis.</p></div>}
+            </CardContent>
+          </Card>
+          <Card className="border-teal-700/15 shadow-sm lg:col-span-2">
+            <CardHeader className="pb-3"><CardTitle className="flex items-center gap-2 text-base sm:text-lg"><Activity className="h-5 w-5 text-teal-700 dark:text-teal-300" /> Resumo desta semana</CardTitle></CardHeader>
+            <CardContent className="space-y-4">
+              <div className="rounded-xl bg-teal-50/70 p-4 dark:bg-teal-950/30">
+                <p className="text-sm text-muted-foreground">Atendimentos registrados</p>
+                <p className="mt-1 text-3xl font-bold tabular-nums text-teal-800 dark:text-teal-200">{data.isLoading ? "—" : data.totalSessions}</p>
+              </div>
+              <p className="text-sm leading-relaxed text-muted-foreground">Resumo baseado nos registros da semana do profissional autenticado. Nenhum dado demonstrativo é exibido.</p>
+              <Button variant="outline" className="w-full gap-2" onClick={() => navigate("/intervention")}>Ver intervenções <ArrowRight className="h-4 w-4" /></Button>
+            </CardContent>
+          </Card>
+        </section>
+
+        <PlanStatusCard />
+        <section aria-label="Outros produtos"><ProductsShowcase /></section>
+      </main>
     </div>
   );
 }
-
