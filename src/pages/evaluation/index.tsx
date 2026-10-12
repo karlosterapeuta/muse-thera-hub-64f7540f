@@ -63,6 +63,7 @@ import { EvolutionTimeline } from "./components/EvolutionTimeline";
 import { AreasAnalysis } from "./components/AreasAnalysis";
 import { TherapeuticSuggestions } from "./components/TherapeuticSuggestions";
 import { getEvaluationTypeMeta } from "@/utils/evaluationTypes";
+import { EVALUATION_ACTIVITY_PROTOCOLS } from "./utils/activityProtocols";
 import { Document, Packer, Paragraph, AlignmentType, ImageRun } from "docx";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
@@ -1902,6 +1903,8 @@ export default function Evaluation() {
                 </CollapsibleContent>
               </Collapsible>
 
+              <p className="mb-5 rounded-xl border border-teal-200 bg-teal-50/60 px-4 py-3 text-sm leading-relaxed text-teal-900 dark:border-teal-800 dark:bg-teal-950/30 dark:text-teal-100">Aplique a escala com 16 protocolos por subdomínio e 128 tarefas observáveis. Abra o guia da atividade para consultar materiais e passos, registre o desempenho nas observações e selecione o nível correspondente. Este protocolo ainda depende de estudos de validade e confiabilidade.</p>
+
               {/* Estatísticas da Avaliação Parcial */}
               <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-lg p-4 mb-6">
                 <h3 className="text-lg font-semibold text-emerald-800 dark:text-emerald-200 mb-2">Status da Avaliação</h3>
@@ -2012,6 +2015,21 @@ export default function Evaluation() {
                             )}
                           </div>
                           
+                          {EVALUATION_ACTIVITY_PROTOCOLS[subdomain.title] && (
+                            <Collapsible className="mb-4 rounded-xl border border-teal-200 bg-card dark:border-teal-800">
+                              <CollapsibleTrigger className="flex min-h-12 w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm font-semibold text-teal-800 hover:bg-teal-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 dark:text-teal-200 dark:hover:bg-teal-950/40">
+                                <span className="flex items-center gap-2"><ClipboardList className="h-4 w-4 shrink-0" /> Atividade avaliativa · {EVALUATION_ACTIVITY_PROTOCOLS[subdomain.title].title}</span>
+                                <ChevronDown className="h-4 w-4 shrink-0" aria-hidden="true" />
+                              </CollapsibleTrigger>
+                              <CollapsibleContent className="space-y-3 border-t border-teal-200 px-4 py-4 text-sm leading-relaxed text-foreground dark:border-teal-800">
+                                <p><strong>Materiais:</strong> {EVALUATION_ACTIVITY_PROTOCOLS[subdomain.title].materials}</p>
+                                <p><strong>Aplicação:</strong> {EVALUATION_ACTIVITY_PROTOCOLS[subdomain.title].procedure}</p>
+                                <p><strong>O que registrar:</strong> {EVALUATION_ACTIVITY_PROTOCOLS[subdomain.title].evidence}</p>
+                                <p className="rounded-lg bg-teal-50 p-3 text-xs text-teal-900 dark:bg-teal-950/40 dark:text-teal-100">Protocolo clínico proposto, ainda não validado cientificamente. Adapte com justificativa à idade, comunicação, acessibilidade e condições sensoriais; documente pistas e apoios.</p>
+                              </CollapsibleContent>
+                            </Collapsible>
+                          )}
+
                           {/* Unified Button Grid Layout — desktop & mobile */}
                           <div className="space-y-3">
                             {subdomain.parameters.map((parameter, paramIndex) => {
@@ -2027,7 +2045,11 @@ export default function Evaluation() {
                               ];
                               return (
                                 <div key={paramIndex} className="rounded-xl border bg-card p-4 shadow-sm">
-                                  <p className="text-sm font-semibold text-foreground mb-3">{parameter}</p>
+                                  <p className="text-sm font-semibold text-foreground mb-2">{parameter}</p>
+                                  <div className="mb-3 rounded-lg border border-teal-200/70 bg-teal-50/70 px-3 py-2 text-xs leading-relaxed text-teal-900 dark:border-teal-800 dark:bg-teal-950/30 dark:text-teal-100">
+                                    <span className="font-semibold">Tarefa observável: </span>
+                                    {EVALUATION_ACTIVITY_PROTOCOLS[subdomain.title]?.prompts[paramIndex] || "Observar este indicador durante tarefa musical pertinente e registrar a resposta."}
+                                  </div>
                                   <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                                     {levels.map((lvl) => {
                                       const isSelected = currentSelection === lvl.value;
