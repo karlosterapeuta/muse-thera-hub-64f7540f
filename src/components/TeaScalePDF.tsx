@@ -1,3 +1,4 @@
+import { presentationParameterLabel } from "@/pages/evaluation/utils/autismGuidance";
 
 import React from 'react';
 import { Card } from "@/components/ui/card";
@@ -206,14 +207,14 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
 
         {evaluationDomains && evaluationDomains.map((domain, domainIndex) => (
           <div key={domainIndex} className="mb-6">
-            <h3 className="text-base font-semibold mb-3 text-blue-700 flex items-center gap-2">
+            <h3 className="text-base font-semibold mb-3 text-teal-800 flex items-center gap-2">
               <span className="text-lg">{domain.icon}</span>
               {domain.title}
             </h3>
             
             {domain.subdomains.map((subdomain: any, subdomainIndex: number) => (
               <div key={subdomainIndex} className="mb-4 ml-3">
-                <h4 className="text-sm font-medium mb-2 text-gray-700 border-l-3 border-blue-300 pl-2">
+                <h4 className="text-sm font-medium mb-2 text-gray-700 border-l-3 border-teal-300 pl-2">
                   {subdomain.title}
                 </h4>
                 
@@ -230,7 +231,7 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
                     
                     return (
                       <div key={paramIndex} className="flex justify-between items-center p-1.5 bg-gray-50 rounded text-xs">
-                        <span className="flex-1 text-gray-700">{parameter}</span>
+                        <span className="flex-1 text-gray-800">{presentationParameterLabel(parameter)}</span>
                         <div className="flex items-center gap-1">
                           {score !== null ? (
                             <>
