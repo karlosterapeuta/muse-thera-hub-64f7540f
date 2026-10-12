@@ -1,6 +1,6 @@
 
 import { MenuSection } from "./MenuSection";
-import { mainMenuItems, clinicalMenuItems, toolsMenuItems, managementMenuItems, resourcesMenuItems, communityMenuItems, getAdminMenuItems } from "../constants";
+import { mainMenuItems, clinicalMenuItems, toolsMenuItems, managementMenuItems, resourcesMenuItems, getAdminMenuItems } from "../constants";
 
 interface SidebarNavigationProps {
   collapsed: boolean;
@@ -23,8 +23,6 @@ export function SidebarNavigation({ collapsed, onNavigate, userEmail, isAdmin }:
       <MenuSection title="Gestão" items={managementMenuItems} collapsed={collapsed} onNavigate={onNavigate} />
 
       <MenuSection title="Recursos" items={resourcesMenuItems} collapsed={collapsed} onNavigate={onNavigate} />
-
-      <MenuSection title="Comunidade" items={communityMenuItems} collapsed={collapsed} onNavigate={onNavigate} />
 
       {adminMenuItems.length > 0 && (
         <div>
