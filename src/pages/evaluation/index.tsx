@@ -1571,17 +1571,6 @@ export default function Evaluation() {
     }
   };
 
-  const levelToScore = (level: string): number => {
-    switch(level) {
-      case '0': return 0;   // Não Observado
-      case '1': return 20;  // Emergente
-      case '2': return 40;  // Inconsistente
-      case '3': return 60;  // Moderado
-      case '4': return 80;  // Consistente
-      case '5': return 100; // Excepcional
-      default: return 0;
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-teal-50/30 to-emerald-50/20 dark:via-teal-950/20 dark:to-background">
