@@ -170,7 +170,7 @@ export default function Evaluation() {
   const [isGeneratingText, setIsGeneratingText] = useState(false);
   const [isGeneratingWord, setIsGeneratingWord] = useState(false);
   const [activeTab, setActiveTab] = useState(draft?.activeTab || "evaluation");
-  const [activeDomainFilter, setActiveDomainFilter] = useState("all");
+  const [activeDomainFilter, setActiveDomainFilter] = useState("Domínio Musical");
   const [activeSubdomainFilter, setActiveSubdomainFilter] = useState("all");
   const [selectedForComparison, setSelectedForComparison] = useState<string[]>([]);
   const [editingEvaluationId, setEditingEvaluationId] = useState<string | null>(draft?.editingEvaluationId || null);
