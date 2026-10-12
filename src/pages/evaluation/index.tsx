@@ -1345,6 +1345,7 @@ export default function Evaluation() {
             content={reportContent}
             patientName={patient.name || 'Paciente'}
             patientAge={calculateAgeFromBirthDate(patient.birth_date) ?? patient.age ?? null}
+            patientBirthDate={patient.birth_date}
             evaluationDate={evaluationDateLabel}
             professionalName={professionalData?.name || 'Profissional'}
             professionalRegister={professionalData?.register || undefined}
@@ -1441,6 +1442,7 @@ export default function Evaluation() {
             content={reportContent}
             patientName={patientName}
             patientAge={patientAge}
+            patientBirthDate={selectedPatientData?.birth_date}
             evaluationDate={dateLabel}
             professionalName={professionalData?.name || "Profissional"}
             professionalRegister={professionalData?.register || undefined}
