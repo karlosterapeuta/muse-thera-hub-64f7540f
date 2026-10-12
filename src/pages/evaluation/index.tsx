@@ -1188,7 +1188,7 @@ export default function Evaluation() {
     evaluationDateLabel: string;
     achievements: any[];
     developmentAreas: any[];
-    score: { percentage: number; evaluatedDomains: number; totalDomains: number; evaluatedParameters: number };
+    score: { percentage: number; evaluatedDomains: number; totalDomains: number; evaluatedParameters: number; totalParameters?: number; completionPercentage?: number };
   }) => {
     const groupByDomain = (items: any[]) =>
       items.reduce<Record<string, any[]>>((acc, item) => {
@@ -1218,7 +1218,7 @@ export default function Evaluation() {
       : 'A avaliação ainda possui poucos parâmetros preenchidos.';
 
     return {
-      sintese_geral: `A avaliação musicoterapêutica de ${patientName}${patientAge ? `, ${patientAge} anos` : ''}, realizada em ${evaluationDateLabel}, apresentou pontuação global de ${score.percentage}%. ${completionText} O resultado deve ser interpretado como um retrato clínico-funcional do momento avaliado, considerando responsividade musical, participação, comunicação, regulação emocional, integração sensório-motora e desempenho cognitivo durante atividades musicais estruturadas.`,
+      sintese_geral: `A avaliação musicoterapêutica de ${patientName}${patientAge ? `, ${patientAge} anos` : ''}, realizada em ${evaluationDateLabel}, apresentou média de ${score.percentage}% somente nos indicadores pontuados. ${completionText} ${score.totalParameters != null ? `Cobertura de ${score.evaluatedParameters}/${score.totalParameters} indicadores aplicáveis (${score.completionPercentage ?? 0}%).` : 'Cobertura total não registrada neste documento histórico.'} ${score.totalParameters == null || score.evaluatedParameters < score.totalParameters || score.evaluatedDomains < score.totalDomains ? 'Resultado parcial: não usar o percentual como conclusão global.' : 'A interpretação deve considerar o contexto de aplicação e os registros clínicos.'} Esses achados são descritivos do momento avaliado.`,
       conquistas: {
         introducao: achievementDomains.length > 0
           ? 'As conquistas abaixo representam habilidades já observadas e recursos clínicos que podem sustentar o planejamento terapêutico.'
@@ -1337,7 +1337,9 @@ export default function Evaluation() {
         percentage: rawOverallScore.percentage || 0,
         evaluatedDomains: rawOverallScore.evaluatedDomains || evaluation.content?.domainScores?.length || 0,
         totalDomains: rawOverallScore.totalDomains || evaluationDomains.length,
-        evaluatedParameters: rawOverallScore.evaluatedParameters || 0
+        evaluatedParameters: rawOverallScore.evaluatedParameters ?? 0,
+        totalParameters: rawOverallScore.totalParameters,
+        completionPercentage: rawOverallScore.completionPercentage
       };
       
       const evaluationDateLabel = format(new Date(evaluation.date), 'dd/MM/yyyy');
