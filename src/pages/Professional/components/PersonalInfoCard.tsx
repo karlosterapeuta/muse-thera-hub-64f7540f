@@ -17,9 +17,9 @@ interface PersonalInfoCardProps {
 export function PersonalInfoCard({ formData, setFormData, isEditing }: PersonalInfoCardProps) {
   return (
     <Card className="group overflow-hidden rounded-2xl border border-white/10 bg-card/70 backdrop-blur-xl shadow-lg hover:shadow-2xl hover:shadow-indigo-500/10 hover:-translate-y-1 transition-all duration-300">
-      <CardHeader className="pb-4 bg-gradient-to-r from-indigo-500/10 via-blue-500/5 to-transparent border-b border-white/10">
+      <CardHeader className="pb-4 bg-gradient-to-r from-teal500/10 via-teal500/5 to-transparent border-b border-white/10">
         <CardTitle className="flex items-center gap-3 text-lg">
-          <span className="flex items-center justify-center h-9 w-9 rounded-xl bg-indigo-500/15 text-indigo-500 dark:text-indigo-300 ring-1 ring-indigo-400/30">
+          <span className="flex items-center justify-center h-9 w-9 rounded-xl bg-teal500/15 text-teal500 dark:text-teal300 ring-1 ring-teal400/30">
             <User className="h-5 w-5" />
           </span>
           Informações Pessoais
@@ -37,7 +37,7 @@ export function PersonalInfoCard({ formData, setFormData, isEditing }: PersonalI
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             disabled={!isEditing}
-            className={isEditing ? "border-blue-200 focus:border-blue-500 dark:border-blue-800 dark:focus:border-blue-400" : "bg-muted"}
+            className={isEditing ? "border-teal200 focus:border-teal500 dark:border-teal800 dark:focus:border-teal400" : "bg-muted"}
             placeholder="Digite seu nome completo"
           />
         </div>
@@ -53,7 +53,7 @@ export function PersonalInfoCard({ formData, setFormData, isEditing }: PersonalI
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             disabled={!isEditing}
-            className={isEditing ? "border-blue-200 focus:border-blue-500 dark:border-blue-800 dark:focus:border-blue-400" : "bg-muted"}
+            className={isEditing ? "border-teal200 focus:border-teal500 dark:border-teal800 dark:focus:border-teal400" : "bg-muted"}
             placeholder="seu.email@exemplo.com"
           />
         </div>
@@ -68,7 +68,7 @@ export function PersonalInfoCard({ formData, setFormData, isEditing }: PersonalI
             value={formData.phone}
             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
             disabled={!isEditing}
-            className={isEditing ? "border-blue-200 focus:border-blue-500 dark:border-blue-800 dark:focus:border-blue-400" : "bg-muted"}
+            className={isEditing ? "border-teal200 focus:border-teal500 dark:border-teal800 dark:focus:border-teal400" : "bg-muted"}
             placeholder="(11) 99999-9999"
           />
         </div>
