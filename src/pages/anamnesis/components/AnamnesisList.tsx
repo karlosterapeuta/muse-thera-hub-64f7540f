@@ -137,7 +137,7 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
                 <p className="text-sm text-muted-foreground">Total de Anamneses</p>
                 <p className="text-2xl font-bold">{anamneses.length}</p>
               </div>
-              <FileText className="text-blue-500" size={24} />
+              <FileText className="text-teal-700 dark:text-teal-300" size={24} />
             </div>
           </CardContent>
         </Card>
@@ -150,7 +150,7 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
                   {new Set(anamneses.map(a => a.patient_id)).size}
                 </p>
               </div>
-              <User className="text-green-500" size={24} />
+              <User className="text-emerald-700 dark:text-emerald-300" size={24} />
             </div>
           </CardContent>
         </Card>
@@ -168,7 +168,7 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
                   }).length}
                 </p>
               </div>
-              <Calendar className="text-purple-500" size={24} />
+              <Calendar className="text-teal-700 dark:text-teal-300" size={24} />
             </div>
           </CardContent>
         </Card>
@@ -209,7 +209,7 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
                         ID: {anamnesis.patient_id.slice(-8)}
                       </Badge>
                       {anamnesis.filled_by_guardian && (
-                        <Badge className="text-xs bg-cyan-600 hover:bg-cyan-600 text-white">
+                        <Badge className="text-xs bg-teal-700 hover:bg-teal-800 text-white">
                           Preenchida pelo responsável
                         </Badge>
                       )}
