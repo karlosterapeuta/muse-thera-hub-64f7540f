@@ -1,3 +1,4 @@
+import { levelScore } from "@/utils/museteraScoring";
 import { presentationParameterLabel } from "@/pages/evaluation/utils/autismGuidance";
 
 import React from 'react';
@@ -222,12 +223,7 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
                   {subdomain.parameters.map((parameter: string, paramIndex: number) => {
                     const key = `${domain.title}-${subdomain.title}-${parameter}`;
                     const selectedValue = selectedParameters?.[key];
-                    const score = selectedValue === "nao_observado" ? 0 : 
-                                selectedValue === "emergente" ? 20 : 
-                                selectedValue === "inconsistente" ? 40 : 
-                                selectedValue === "moderado" ? 60 : 
-                                selectedValue === "consistente" ? 80 : 
-                                selectedValue === "excepcional" ? 100 : null;
+                    const score = levelScore(selectedValue);
                     
                     return (
                       <div key={paramIndex} className="flex justify-between items-center p-1.5 bg-gray-50 rounded text-xs">
@@ -250,7 +246,7 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
                               </span>
                             </>
                           ) : (
-                            <span className="text-gray-400 text-xs">Não avaliado</span>
+                            <span className="text-gray-700 text-xs">Não avaliado</span>
                           )}
                         </div>
                       </div>
@@ -295,7 +291,7 @@ export const TeaScalePDF: React.FC<TeaScalePDFProps> = ({
 
         {/* Footer Final */}
         <div className="border-t-2 border-gray-200 mt-6 pt-4 text-center">
-          <p className="text-xs text-gray-500 mb-1">
+          <p className="text-xs text-gray-700 mb-1">
             Documento gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
           </p>
           <p className="text-xs text-gray-500 mb-1">
