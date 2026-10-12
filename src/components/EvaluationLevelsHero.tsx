@@ -56,7 +56,6 @@ export function EvaluationLevelsHero() {
 
   const isMobile = useIsMobile();
   const isTablet = useIsTablet();
-  const navigate = useNavigate();
 
   const toggleExpanded = () => {
     const newState = !isExpanded;
