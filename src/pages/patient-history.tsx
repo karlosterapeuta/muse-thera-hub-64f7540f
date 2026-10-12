@@ -62,7 +62,6 @@ import {
   ResponsiveContainer, PieChart as RechartsPieChart, Pie, Cell, Legend,
   BarChart, Bar,
 } from "recharts";
-import { CosmicBackground } from "@/components/auth/CosmicBackground";
 
 type HistoryType =
   | "anamnesis"
@@ -1085,14 +1084,13 @@ export default function PatientHistoryPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
-      <CosmicBackground />
+    <div className="min-h-screen bg-gradient-to-br from-background via-teal-50/40 to-emerald-50/20 dark:via-teal-950/20 dark:to-background relative overflow-hidden">
       {/* Cosmic atmosphere blobs */}
       <div className="pointer-events-none absolute -top-32 -left-24 h-[28rem] w-[28rem] rounded-full bg-primary/10 blur-[120px]" />
-      <div className="pointer-events-none absolute top-1/3 -right-32 h-[26rem] w-[26rem] rounded-full bg-amber-400/10 blur-[120px]" />
+      <div className="pointer-events-none absolute top-1/3 -right-32 h-[26rem] w-[26rem] rounded-full bg-emerald-400/5 blur-[120px]" />
       <div className="pointer-events-none absolute bottom-0 left-1/4 h-[22rem] w-[22rem] rounded-full bg-primary/5 blur-[120px]" />
 
-      <div className="container mx-auto py-4 md:py-8 space-y-6 animate-fadeIn relative z-10">
+      <div className="container mx-auto px-3 sm:px-6 py-4 md:py-6 space-y-5 relative z-10">
         {/* Back button */}
         <div className="flex justify-start">
           <Button
@@ -1107,10 +1105,10 @@ export default function PatientHistoryPage() {
         </div>
 
         {/* Hero */}
-        <div className="relative overflow-hidden rounded-3xl border border-border/40 bg-card/60 backdrop-blur-xl shadow-2xl">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-amber-400/10" />
-          <div className="relative px-6 py-8 md:px-10 md:py-10 flex flex-col items-center text-center gap-4">
-            <div className="relative inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary via-amber-400 to-primary shadow-[0_0_40px_-8px_hsl(var(--primary))]">
+        <div className="relative overflow-hidden rounded-2xl border border-teal-700/15 bg-card shadow-sm">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-emerald-400/5" />
+          <div className="relative px-4 py-6 md:px-8 md:py-7 flex flex-col items-center text-center gap-4">
+            <div className="relative inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary via-teal-700 to-primary shadow-[0_0_40px_-8px_hsl(var(--primary))]">
               <History className="h-8 w-8 text-primary-foreground" />
             </div>
             <div className="space-y-2">
@@ -1127,10 +1125,10 @@ export default function PatientHistoryPage() {
 
         {!selectedPatient ? (
           /* Patient Selection */
-          <Card className="border border-border/40 shadow-2xl bg-card/70 backdrop-blur-xl rounded-3xl overflow-hidden">
-            <CardHeader className="bg-gradient-to-r from-primary/10 via-transparent to-amber-400/10 border-b border-border/40">
+          <Card className="border border-border/40 shadow-sm bg-card rounded-2xl overflow-hidden">
+            <CardHeader className="bg-gradient-to-r from-primary/10 via-transparent to-emerald-400/5 border-b border-border/40">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-gradient-to-br from-primary to-amber-400 rounded-xl shadow-lg">
+                <div className="p-2.5 bg-gradient-to-br from-primary to-emerald-700 rounded-xl shadow-lg">
                   <Users className="h-5 w-5 text-primary-foreground" />
                 </div>
                 <div>
@@ -1183,7 +1181,7 @@ export default function PatientHistoryPage() {
                       }}
                       className="group relative flex items-center gap-3 p-4 rounded-2xl border border-border/40 bg-card/70 backdrop-blur-sm hover:border-primary/50 hover:bg-card/90 hover:shadow-[0_8px_30px_-12px_hsl(var(--primary)/0.4)] hover:-translate-y-0.5 transition-all duration-300 text-left"
                     >
-                      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-primary/30 to-amber-400/30 text-primary font-bold text-sm shrink-0 ring-1 ring-primary/20">
+                      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-primary/30 to-emerald-700/30 text-primary font-bold text-sm shrink-0 ring-1 ring-primary/20">
                         {patient.name.charAt(0).toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -1208,7 +1206,7 @@ export default function PatientHistoryPage() {
           <div className="space-y-5">
             {/* Back + Patient Info */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 rounded-3xl border border-border/40 bg-card/60 backdrop-blur-xl shadow-xl p-4 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-amber-400/5 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-emerald-700/5 pointer-events-none" />
               <Button
                 variant="ghost"
                 size="sm"
@@ -1222,7 +1220,7 @@ export default function PatientHistoryPage() {
                 Voltar
               </Button>
               <div className="flex items-center gap-3 flex-1 relative z-10">
-                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-primary to-amber-400 text-primary-foreground font-bold text-lg shadow-[0_0_30px_-6px_hsl(var(--primary))]">
+                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-primary to-emerald-700 text-primary-foreground font-bold text-lg shadow-[0_0_30px_-6px_hsl(var(--primary))]">
                   {selectedPatient.name.charAt(0).toUpperCase()}
                 </div>
                 <div>
