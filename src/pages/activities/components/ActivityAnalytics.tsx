@@ -190,7 +190,7 @@ export const ActivityAnalytics: React.FC<ActivityAnalyticsProps> = ({
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
-                <Target className="h-4 w-4 text-blue-600" />
+                <Target className="h-4 w-4 text-teal-700 dark:text-teal-300" />
               </div>
               <div>
                 <p className="text-2xl font-bold">{usageStats.totalActivities}</p>
@@ -218,7 +218,7 @@ export const ActivityAnalytics: React.FC<ActivityAnalyticsProps> = ({
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
-                <Users className="h-4 w-4 text-purple-600" />
+                <Users className="h-4 w-4 text-teal-700 dark:text-teal-300" />
               </div>
               <div>
                 <p className="text-2xl font-bold">{usageStats.activeUsers}</p>
