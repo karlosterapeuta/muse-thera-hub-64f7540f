@@ -53,7 +53,7 @@ export function MusicoterapiaApproachSelector({
               onClick={() => toggle(approach.id)}
               className={`rounded-xl border p-4 sm:p-5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${checked
                 ? 'border-teal-600 bg-teal-600/15'
-                : 'border-border/70 bg-[#141414] hover:border-teal-600/60 hover:bg-teal-600/[0.06]'
+                : 'border-border/70 bg-card hover:border-teal-600/60 hover:bg-teal-600/[0.06]'
               }`}
             >
               <span className="flex items-start gap-3">
