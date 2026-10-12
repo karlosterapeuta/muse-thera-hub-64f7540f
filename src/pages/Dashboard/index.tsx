@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { ShieldCheck, LayoutDashboard, ClipboardList, CalendarDays, FileText, Plus, ArrowRight, Clock3, Activity } from "lucide-react";
-import { format, isSameDay } from "date-fns";
+import { format, startOfDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 export default function Dashboard() {
@@ -18,8 +18,8 @@ export default function Dashboard() {
   const now = new Date();
   const weeklySessions = data.weekDays.flatMap(day => day.sessions.map(session => ({ ...session, dateForSort: day.date })));
   const upcoming = weeklySessions
-    .filter(session => new Date(session.date).getTime() >= now.getTime() || (isSameDay(new Date(session.date), now) && !String(session.formatted_time).includes("Invalid")))
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .filter(session => session.date.getTime() >= startOfDay(now).getTime())
+    .sort((a, b) => a.date.getTime() - b.date.getTime())
     .slice(0, 4);
 
   return (
@@ -59,7 +59,7 @@ export default function Dashboard() {
         <section aria-label="Rotina clínica" className="grid grid-cols-1 gap-4 lg:grid-cols-5">
           <Card className="border-teal-700/15 shadow-sm lg:col-span-3">
             <CardHeader className="flex flex-row items-center justify-between gap-2 pb-3">
-              <CardTitle className="flex items-center gap-2 text-base sm:text-lg"><CalendarDays className="h-5 w-5 text-teal-700 dark:text-teal-300" /> Próximos atendimentos</CardTitle>
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg"><CalendarDays className="h-5 w-5 text-teal-700 dark:text-teal-300" /> Atendimentos desta semana</CardTitle>
               <Button variant="ghost" size="sm" className="gap-1 text-teal-700 dark:text-teal-300" onClick={() => navigate("/patients")}>Pacientes <ArrowRight className="h-4 w-4" /></Button>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -71,7 +71,7 @@ export default function Dashboard() {
                   </div>
                   <span className="flex items-center gap-1 text-sm font-medium text-teal-700 dark:text-teal-300"><Clock3 className="h-4 w-4" />{session.formatted_time || "Horário não informado"}</span>
                 </div>
-              )) : <div className="rounded-xl border border-dashed border-border p-6 text-center"><CalendarDays className="mx-auto mb-2 h-7 w-7 text-teal-600" /><p className="font-medium">Nenhum atendimento futuro encontrado nesta semana</p><p className="mt-1 text-sm text-muted-foreground">Os atendimentos registrados aparecerão aqui quando houver dados disponíveis.</p></div>}
+              )) : <div className="rounded-xl border border-dashed border-border p-6 text-center"><CalendarDays className="mx-auto mb-2 h-7 w-7 text-teal-600" /><p className="font-medium">Nenhum atendimento registrado para os próximos dias desta semana</p><p className="mt-1 text-sm text-muted-foreground">Os atendimentos registrados aparecerão aqui quando houver dados disponíveis.</p></div>}
             </CardContent>
           </Card>
           <Card className="border-teal-700/15 shadow-sm lg:col-span-2">
