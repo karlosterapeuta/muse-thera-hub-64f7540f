@@ -50,7 +50,7 @@ export function ModernAnamnesisHeader({ editMode = false }: ModernAnamnesisHeade
             ].map((item, index) => (
               <div
                 key={index}
-                className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border/60 bg-background/40 backdrop-blur text-xs font-medium"
+                className="flex items-center gap-2 px-3 py-2 rounded-xl border border-teal-100/20 bg-white/10 backdrop-blur text-xs font-medium text-teal-50"
               >
                 <item.icon className="h-3.5 w-3.5 text-teal-100" />
                 {item.label}
