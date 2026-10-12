@@ -1,3 +1,4 @@
+import { presentationParameterLabel } from "@/pages/evaluation/utils/autismGuidance";
 
 import React from 'react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, RadarChart, PolarGrid, PolarAngleAxis, Radar, LineChart, Line, Tooltip } from 'recharts';
@@ -123,11 +124,11 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
       subdomain.parameters?.forEach((param: string) => {
         const key = `${domain.title}-${subdomain.title}-${param}`;
         const value = selectedParameters[key];
-        if (value && value !== "nao_observado") {
+        if (value && value !== "nao_aplicavel") {
           evaluatedDetails.push({
             domain: domain.title,
             subdomain: subdomain.title,
-            parameter: param,
+            parameter: presentationParameterLabel(param),
             level: value,
             score: levelToScore(value),
           });
@@ -590,12 +591,12 @@ export const ParametersGraphsPDF: React.FC<ParametersGraphsPDFProps> = ({
                               breakInside: 'avoid', pageBreakInside: 'avoid'
                             }}>
 
-                              <span style={{ fontSize: '11px', color: '#374151', flex: 1, wordWrap: 'break-word', overflowWrap: 'break-word' }}>
+                              <span style={{ fontSize: '12px', color: '#1f2937', flex: 1, wordWrap: 'break-word', overflowWrap: 'break-word' }}>
                                 {param.parameter}
                               </span>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0, marginLeft: '10px' }}>
                                 <span style={{
-                                  fontSize: '10px', fontWeight: 600, color: levelInfo.color,
+                                  fontSize: '11px', fontWeight: 600, color: levelInfo.color,
                                   backgroundColor: levelInfo.bgColor, padding: '2px 8px',
                                   borderRadius: '10px', border: `1px solid ${levelInfo.color}30`, whiteSpace: 'nowrap'
                                 }}>
