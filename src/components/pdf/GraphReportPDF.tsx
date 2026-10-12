@@ -1,4 +1,4 @@
-import { summarizeSubdomain, summarizeDomain, isScored } from "@/utils/museteraScoring";
+import { summarizeSubdomain, summarizeDomain, summarizeEvaluation, isScored } from "@/utils/museteraScoring";
 import { presentationParameterLabel } from "@/pages/evaluation/utils/autismGuidance";
 import React from 'react';
 import { format } from 'date-fns';
@@ -121,7 +121,10 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
   });
   const issuedAt = format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR });
 
-  const overallPerf = getPerfLabel(overallScore.percentage);
+  const currentCoverage = summarizeEvaluation(selections, evaluationDomains);
+  const incomplete = currentCoverage.pendingParameters > 0 || currentCoverage.evaluatedDomains < currentCoverage.totalDomains;
+  const observedMean = currentCoverage.evaluatedParameters ? `${currentCoverage.percentage}%` : "Não avaliado";
+  const overallPerf = getPerfLabel(currentCoverage.percentage);
 
   // Cálculos idênticos aos da interface, inclusive pontuação zero e N/A.
   const calcSubdomainPct = (domainTitle: string, subdomainTitle: string, parameters: string[]) =>
@@ -266,6 +269,11 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
           </>
         )}
 
+        <div data-pdf-section style={{ border: '1px solid #99d5ca', background: '#f0fdfa', padding: '10px 12px', borderRadius: 6, marginBottom: 12, fontSize: 11, lineHeight: 1.5, color: '#134e4a' }}>
+          <strong>{incomplete ? "AVALIAÇÃO PARCIAL · " : ""}Desempenho observado: {observedMean}</strong>
+          <div>Cobertura: <strong>{currentCoverage.completionPercentage}%</strong> ({currentCoverage.evaluatedParameters}/{currentCoverage.totalParameters} indicadores aplicáveis) · Pendentes: {currentCoverage.pendingParameters} · Não aplicáveis: {currentCoverage.notApplicableParameters}.</div>
+          <div>{incomplete ? "O percentual considera somente itens efetivamente pontuados e não constitui resultado global conclusivo." : "Todos os itens aplicáveis estão pontuados; considerar adaptações e contexto clínico antes de interpretar os resultados."}</div>
+        </div>
         {/* Síntese executiva */}
         <div style={titleBar}>Síntese Executiva</div>
         <div
@@ -283,8 +291,8 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
               accent: '#0f172a',
             },
             {
-              label: 'Desempenho Geral',
-              value: `${overallScore.percentage}%`,
+              label: 'Média dos itens pontuados',
+              value: observedMean,
               accent: overallPerf.color,
             },
             {
@@ -352,10 +360,10 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
             }}
           >
             <span style={{ fontWeight: 700, color: '#0f172a' }}>
-              Desempenho Global
+              Média observada
             </span>
             <span style={{ fontWeight: 700, color: overallPerf.color }}>
-              {overallScore.percentage}% · {overallPerf.label}
+              {observedMean} · {incomplete ? "Parcial" : "Itens preenchidos"}
             </span>
           </div>
           <div
