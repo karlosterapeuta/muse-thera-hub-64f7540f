@@ -124,12 +124,7 @@ export default function AnamnesisFormWrapper({
         .select("*")
         .limit(1);
 
-      if (error) {
-        console.warn("⚠️ Erro ao verificar colunas:", error.message);
-        console.log("📝 Usando apenas campos básicos como fallback");
-        columnCheckCache = basicDatabaseFields;
-        return basicDatabaseFields;
-      }
+      if (error) throw new Error(`Não foi possível verificar o esquema da anamnese: ${error.message}`);
 
       // CORREÇÃO: Se temos dados, extrair colunas do objeto retornado
       if (data && data.length > 0) {
@@ -139,16 +134,12 @@ export default function AnamnesisFormWrapper({
         return actualColumns;
       }
 
-      // Se não há dados, usar apenas os campos básicos (que sabemos que existem)
-      console.log("ℹ️ Tabela vazia, usando campos básicos:", basicDatabaseFields.length);
-      columnCheckCache = basicDatabaseFields;
-      return basicDatabaseFields;
+      // Não deduzir colunas a partir de uma tabela vazia: isso pode descartar informações clínicas.
+      throw new Error("Não é possível confirmar as colunas da anamnese em uma tabela sem registros. Verifique o esquema antes de salvar.");
 
     } catch (error) {
       console.warn("⚠️ Erro ao verificar colunas disponíveis:", error);
-      console.log("📝 Usando apenas campos básicos como fallback");
-      columnCheckCache = basicDatabaseFields;
-      return basicDatabaseFields;
+      throw error;
     }
   };
 
@@ -273,7 +264,9 @@ export default function AnamnesisFormWrapper({
       }
     });
     
-    console.log("✅ Dados filtrados:", Object.keys(filteredData).length, "campos");
+    const discarded = Object.keys(data).filter(key => !availableColumns.includes(key.toLowerCase()) && !['id', 'patient_id', 'professional_id', 'created_at', 'updated_at'].includes(key.toLowerCase()));
+    const filledDiscarded = discarded.filter(key => data[key] !== null && data[key] !== undefined && data[key] !== '' && data[key] !== false);
+    if (filledDiscarded.length) throw new Error(`Campos preenchidos ainda não disponíveis no banco: ${filledDiscarded.join(', ')}. Atualize o esquema antes de salvar.`);
     return filteredData;
   };
 
@@ -338,7 +331,10 @@ export default function AnamnesisFormWrapper({
         result = await supabase
           .from("anamnesis")
           .update(anamnesisData as any)
-          .eq("id", existingAnamnesisId);
+          .eq("id", existingAnamnesisId)
+          .eq("patient_id", selectedPatient)
+          .eq("professional_id", professionalId)
+          .select("id");
       } else {
         console.log("➕ Criando nova anamnese");
         result = await supabase
@@ -347,9 +343,8 @@ export default function AnamnesisFormWrapper({
           .select();
       }
 
-      if (result.error) {
-        throw result.error;
-      }
+      if (result.error) throw result.error;
+      if (!result.data?.length) throw new Error('Nenhum registro foi confirmado pelo banco. A anamnese não foi salva.');
 
       if (!existingAnamnesisId && result.data && result.data.length > 0) {
         setExistingAnamnesisId(result.data[0].id);
@@ -367,60 +362,7 @@ export default function AnamnesisFormWrapper({
     } catch (error: any) {
       console.error("❌ Erro ao salvar anamnese:", error);
       
-      // Se ainda há erro de coluna, tentar com apenas campos básicos
-      if (error?.message?.includes('column')) {
-        console.log("🔄 Tentando novamente apenas com campos básicos...");
-        
-        try {
-          const basicFilteredData = filterDatabaseFields(formData, basicDatabaseFields);
-          const basicAnamnesisData = {
-            patient_id: selectedPatient,
-            professional_id: professionalId,
-            ...basicFilteredData
-          };
-
-          let basicResult;
-          if (existingAnamnesisId) {
-            basicResult = await supabase
-              .from("anamnesis")
-              .update(basicAnamnesisData)
-              .eq("id", existingAnamnesisId);
-          } else {
-            basicResult = await supabase
-              .from("anamnesis")
-              .insert(basicAnamnesisData)
-              .select();
-          }
-
-          if (basicResult.error) {
-            throw basicResult.error;
-          }
-
-          // Atualizar cache para usar apenas campos básicos
-          columnCheckCache = basicDatabaseFields;
-
-          toast({
-            title: "Parcialmente Salvo",
-            description: "Anamnese salva com campos básicos. Alguns campos avançados podem não ter sido salvos devido a limitações do banco de dados.",
-            variant: "default",
-          });
-          return true;
-
-        } catch (basicError) {
-          console.error("❌ Erro mesmo com campos básicos:", basicError);
-        }
-      }
-      
-      let errorMessage = "Não foi possível salvar a anamnese.";
-      if (error?.message) {
-        errorMessage += ` Detalhe: ${error.message}`;
-      }
-      
-      toast({
-        title: "Erro",
-        description: errorMessage,
-        variant: "destructive",
-      });
+      toast({ title: "Salvamento não confirmado", description: error?.message || "Os dados permanecem no formulário. Corrija o problema e tente novamente.", variant: "destructive" });
       return false;
     } finally {
       setIsSubmitting(false);
@@ -624,7 +566,8 @@ export default function AnamnesisFormWrapper({
     try {
       setIsSubmitting(true);
       
-      await saveAnamnesis();
+      const saved = await saveAnamnesis();
+      if (!saved) return;
       
       if (onBack) {
         onBack();
