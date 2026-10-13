@@ -76,6 +76,23 @@ export const generateProfessionalAnamnesePDF = async (
     console.log("🎯 Iniciando geração do PDF profissional da Anamnese...");
     
     const element = document.createElement('div');
+    // Resolve a logo local para dados embutidos antes do html2canvas, independentemente de CORS.
+    const logoUrl = new URL("/lovable-uploads/musetera-logo-new.png", window.location.origin).toString();
+    let logoBase64: string | null = null;
+    try {
+      const response = await fetch(logoUrl);
+      if (response.ok) {
+        const blob = await response.blob();
+        logoBase64 = await new Promise<string | null>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : null);
+          reader.onerror = () => resolve(null);
+          reader.readAsDataURL(blob);
+        });
+      }
+    } catch (error) {
+      console.warn("Logo institucional indisponível para exportação:", error);
+    }
     
     const generateProfessionalHTML = () => {
       // Função para valor de campo
@@ -324,7 +341,7 @@ export const generateProfessionalAnamnesePDF = async (
       const sectionHeader = (number: number, title: string) => {
         const colors = sectionColors[number] || sectionColors[1];
         return `
-          <div style="background: ${colors.gradient}; color: white; padding: 7px 12px; border-radius: 7px 7px 0 0; display: flex; align-items: center; gap: 12px;">
+          <div style="background: #125b61; color: white; padding: 8px 12px; border-radius: 7px 7px 0 0; display: flex; align-items: center; gap: 12px;">
             <div style="background: ${colors.iconBg}; padding: 5px; border-radius: 6px; display: flex; align-items: center; justify-content: center; min-width: 28px; min-height: 28px;">
               <span style="font-weight: 700; color: white; font-size: 16px;">${number}</span>
             </div>
@@ -337,7 +354,7 @@ export const generateProfessionalAnamnesePDF = async (
       const sectionContainer = (sectionNumber: number, content: string) => {
         const colors = sectionColors[sectionNumber] || sectionColors[1];
         return `
-          <div style="background-color: #ffffff; border: 1px solid ${colors.borderColor}; border-left: 4px solid ${colors.borderColor}; border-top: none; border-radius: 0 0 10px 10px; padding: 11px 13px;">
+          <div style="background-color: #ffffff; border: 1px solid ${colors.borderColor}; border-left: 3px solid #0f766e; border-top: none; border-radius: 0 0 10px 10px; padding: 11px 13px;">
             ${content}
           </div>
         `;
@@ -351,7 +368,19 @@ export const generateProfessionalAnamnesePDF = async (
           <style>
             * { margin: 0; padding: 0; box-sizing: border-box; }
             body { font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.4; background: #ffffff; }
-            .container { max-width: 800px; margin: 0 auto; background-color: #ffffff; }
+            .container { max-width: 780px; margin: 0 auto; background-color: #ffffff; color:#172b38; }
+            .document-header { margin:0 16px 15px;padding:18px 18px 13px;background:#fff;border-bottom:2px solid #0f766e; }
+            .header-brand { display:flex;align-items:center;gap:16px; }
+            .brand-logo { flex:0 0 78px;width:78px;height:78px;border-radius:12px;overflow:hidden;background:#0c3035;display:flex;align-items:center;justify-content:center; }
+            .brand-logo img { max-width:74px;max-height:74px;object-fit:contain; }
+            .header-eyebrow { color:#0f766e;font-size:10px;font-weight:800;letter-spacing:1.3px;margin-bottom:5px; }
+            .document-header h1 { color:#102d32;font-size:22px;letter-spacing:-0.4px;font-weight:800;line-height:1.22;margin:0; }
+            .header-subtitle { color:#475569;font-size:11px;line-height:1.4;margin-top:6px; }
+            .header-rule { margin-top:12px;height:3px;width:72px;background:#0d9488;border-radius:3px; }
+            .clinical-field { break-inside:avoid; }
+            .section-header { border-radius:7px 7px 0 0; }
+            .document-header,.header-brand,.brand-logo { break-inside:avoid; }
+            
             .page-break { break-before: page; page-break-before: always; }
             .clinical-field { margin: 0 0 8px; break-inside: auto; page-break-inside: auto; }
             .clinical-value { overflow-wrap: anywhere; word-break: normal; white-space: normal; }
@@ -364,21 +393,21 @@ export const generateProfessionalAnamnesePDF = async (
         </head>
         <body>
           <div class="container">
-            <!-- HEADER TEAL PREMIUM -->
-            <div style="background: linear-gradient(135deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%); color: white; padding: 18px 22px; margin-bottom: 0; border-radius: 0 0 12px 12px;">
-              <div style="text-align: center;">
-                <div style="font-size: 14px; letter-spacing: 3px; opacity: 0.9; margin-bottom: 8px;">♪ MUSICOTERAPIA CLÍNICA ♪</div>
-                <h1 style="margin: 0; font-size: 25px; font-weight: 800; letter-spacing: -0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                  ANAMNESE MUSICOTERAPÊUTICA
-                </h1>
-                <div style="margin-top: 10px; font-size: 14px; opacity: 0.95; font-weight: 500;">
-                  Avaliação Musicoterapêutica Profissional
+            <!-- Identidade institucional: contraste, equilíbrio e logo oficial -->
+            <header class="document-header">
+              <div class="header-brand">
+                ${logoBase64 ? `<div class="brand-logo"><img src="${logoBase64}" alt="Logo MuseTera" /></div>` : ''}
+                <div>
+                  <div class="header-eyebrow">MUSETERA / DOCUMENTAÇÃO CLÍNICA</div>
+                  <h1>ANAMNESE MUSICOTERAPÊUTICA</h1>
+                  <div class="header-subtitle">Histórico clínico, musical e funcional · TEA</div>
                 </div>
               </div>
-            </div>
+              <div class="header-rule"></div>
+            </header>
 
             <!-- INFORMAÇÕES DO PACIENTE -->
-            <div style="background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 2px solid #14b8a6; padding: 20px; margin: 16px 16px; border-radius: 10px;">
+            <div style="background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 2px solid #14b8a6; padding: 15px 18px; margin: 12px 16px; border-radius: 9px;">
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                 <div>
                   <div style="font-weight: 600; font-size: 10px; color: #0f766e; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">Paciente</div>
@@ -406,13 +435,13 @@ export const generateProfessionalAnamnesePDF = async (
               ${anamnesisData.finalized_at ? ` · Finalizada em ${escapeHtml(new Date(anamnesisData.finalized_at).toLocaleString('pt-BR'))}` : ''}
             </div>
             <!-- ÍNDICE NAVEGÁVEL -->
-            ${generateTableOfContents()}
+
 
             <!-- CONTEÚDO DAS SEÇÕES -->
             <div style="padding: 0 16px;">
 
               <!-- SEÇÃO 1: IDENTIFICAÇÃO E ENCAMINHAMENTO -->
-              <div style="margin-bottom: 12px;">
+              <div style="margin-bottom: 10px;">
                 ${sectionHeader(1, 'IDENTIFICAÇÃO E ENCAMINHAMENTO')}
                 ${sectionContainer(1, `
                   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
