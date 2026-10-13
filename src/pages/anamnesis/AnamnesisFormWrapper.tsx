@@ -94,6 +94,11 @@ export default function AnamnesisFormWrapper({
   const [showValidation, setShowValidation] = useState(false);
   const [reviewStatus, setReviewStatus] = useState<"draft" | "finalized">("draft");
   const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyError, setHistoryError] = useState("");
+  const [revisions, setRevisions] = useState<Array<{ id: string; changed_at: string; event: string; old_snapshot: Record<string, any> | null; new_snapshot: Record<string, any> }>>([]);
+
   const [activeAnamnesisTab, setActiveAnamnesisTab] = useState("personal");
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -384,6 +389,34 @@ export default function AnamnesisFormWrapper({
     }
   };
 
+  const loadRevisionHistory = async () => {
+    if (!existingAnamnesisId || !professionalId) return;
+    setHistoryLoading(true);
+    setHistoryError("");
+    try {
+      const { data, error } = await supabase
+        .from("anamnesis_revision_log" as any)
+        .select("id, changed_at, event, old_snapshot, new_snapshot")
+        .eq("anamnesis_id", existingAnamnesisId)
+        .eq("professional_id", professionalId)
+        .order("changed_at", { ascending: false })
+        .limit(30);
+      if (error) throw error;
+      setRevisions((data || []) as any);
+    } catch (error: any) {
+      setHistoryError(error?.message || "Não foi possível carregar o histórico. Verifique se a migração foi aplicada.");
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
+
+  const clinicalRevisionKeys = [
+    "main_clinical_demand", "diagnosis_details", "cid_code", "clinical_details",
+    "current_medication", "patient_musical_history", "musical_behavior_description",
+    "discomfort_sounds", "calming_sounds", "therapeutic_goals", "treatment_approach",
+    "tea_functional_profile", "review_status"
+  ];
+
   const exportPDF = async () => {
     if (!selectedPatient || !formData) {
       toast({
@@ -605,6 +638,60 @@ export default function AnamnesisFormWrapper({
                   {isSubmitting ? "Salvando..." : "Finalizar anamnese"}
                 </button>
               </div>
+
+              <section className="rounded-xl border border-border bg-card p-4" aria-label="Pendências e histórico de alterações">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-bold text-foreground">Conferência antes da finalização</p>
+                    <p className="text-xs text-muted-foreground mt-1">Preenchimento pode continuar como rascunho. A finalização exige os três itens abaixo.</p>
+                  </div>
+                  <button type="button" disabled={!existingAnamnesisId} onClick={() => {
+                    setHistoryOpen(value => !value);
+                    if (!historyOpen) void loadRevisionHistory();
+                  }} className="rounded-lg border border-teal-300 px-3 py-2 text-sm font-semibold text-teal-900 hover:bg-teal-50 disabled:opacity-50 dark:border-teal-700 dark:text-teal-100 dark:hover:bg-teal-950/40">
+                    {historyOpen ? "Ocultar histórico" : "Consultar histórico"}
+                  </button>
+                </div>
+                <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
+                  {([
+                    ["main_clinical_demand", "Demanda clínica"],
+                    ["patient_musical_history", "História musical"],
+                    ["therapeutic_goals", "Objetivos terapêuticos"],
+                  ] as const).map(([key, label]) => {
+                    const completed = Boolean(String(formData[key] || "").trim());
+                    return <li key={key} className={`rounded-lg border px-3 py-2 text-sm font-medium ${completed ? "border-teal-200 bg-teal-50 text-teal-950 dark:border-teal-800 dark:bg-teal-950/30 dark:text-teal-100" : "border-amber-200 bg-amber-50 text-amber-950 dark:border-amber-800 dark:bg-amber-950/20 dark:text-amber-100"}`}>
+                      {completed ? "✓" : "○"} {label} {completed ? "preenchida" : "pendente"}
+                    </li>;
+                  })}
+                </ul>
+                {historyOpen && (
+                  <div className="mt-4 space-y-3 border-t border-border pt-4">
+                    <h3 className="font-semibold text-foreground">Últimas alterações registradas</h3>
+                    {historyLoading && <p className="text-sm text-muted-foreground">Carregando histórico...</p>}
+                    {historyError && <p role="alert" className="text-sm text-destructive">{historyError}</p>}
+                    {!historyLoading && !historyError && revisions.length === 0 && <p className="text-sm text-muted-foreground">Nenhuma revisão disponível.</p>}
+                    {!historyLoading && !historyError && revisions.map(revision => {
+                      const changed = clinicalRevisionKeys.filter(key => JSON.stringify(revision.old_snapshot?.[key] ?? null) !== JSON.stringify(revision.new_snapshot?.[key] ?? null));
+                      return (
+                        <details key={revision.id} className="rounded-lg border border-border bg-muted/20 p-3">
+                          <summary className="cursor-pointer text-sm font-semibold text-foreground">
+                            {new Date(revision.changed_at).toLocaleString("pt-BR")} · {revision.event === "created" ? "Criação" : "Atualização"} · {changed.length} campo(s) clínico(s) modificado(s)
+                          </summary>
+                          <div className="mt-3 space-y-2">
+                            {changed.length ? changed.map(key => (
+                              <div key={key} className="break-words rounded-md bg-background p-2 text-xs text-foreground">
+                                <p className="mb-1 font-bold">{key.replace(/_/g, " ")}</p>
+                                <p><strong>Anterior:</strong> {JSON.stringify(revision.old_snapshot?.[key] ?? "Não informado")}</p>
+                                <p><strong>Atual:</strong> {JSON.stringify(revision.new_snapshot?.[key] ?? "Não informado")}</p>
+                              </div>
+                            )) : <p className="text-xs text-muted-foreground">Alteração administrativa ou em outro campo.</p>}
+                          </div>
+                        </details>
+                      );
+                    })}
+                  </div>
+                )}
+              </section>
 
               {/* Form Content in Tabs */}
               <ModernTabsNavigation activeTab={activeAnamnesisTab} onTabChange={setActiveAnamnesisTab}>
