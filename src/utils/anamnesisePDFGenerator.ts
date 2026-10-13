@@ -78,6 +78,22 @@ export const generateProfessionalAnamnesePDF = async (
     console.log("🎯 Iniciando geração do PDF profissional da Anamnese...");
     
     const element = document.createElement('div');
+    let footerLogo: string | null = null;
+    try {
+      const logoResponse = await fetch('/lovable-uploads/musetera-logo-new.png');
+      if (logoResponse.ok) {
+        const logoBlob = await logoResponse.blob();
+        footerLogo = await new Promise<string | null>(resolve => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : null);
+          reader.onerror = () => resolve(null);
+          reader.readAsDataURL(logoBlob);
+        });
+      }
+    } catch (error) {
+      console.warn('Logo do rodapé indisponível.', error);
+    }
+
     const generateProfessionalHTML = () => {
       // Função para valor de campo
       const escapeHtml = (value: unknown): string =>
@@ -429,7 +445,7 @@ export const generateProfessionalAnamnesePDF = async (
 
               <!-- SEÇÃO 1: IDENTIFICAÇÃO E ENCAMINHAMENTO -->
               <div style="margin-bottom: 10px;">
-                ${sectionHeader(1, 'IDENTIFICAÇÃO E ENCAMINHAMENTO')}
+                ${sectionHeader(1, 'ENCAMINHAMENTO E DEMANDA CLÍNICA')}
                 ${sectionContainer(1, `
                   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                     ${renderTextField('Nome da Mãe', 'mother_name')}
@@ -698,7 +714,10 @@ export const generateProfessionalAnamnesePDF = async (
 
             <!-- Assinatura e carimbo reais, somente no final do PDF -->
             <section class="professional-footer" style="margin:18px 16px 4px;border:1px solid #d6e8e7;border-top:3px solid #0f766e;border-radius:9px;padding:14px 16px;break-inside:avoid;page-break-inside:avoid;">
-              <h2 style="font-size:13px;color:#115e59;margin:0 0 12px;">IDENTIFICAÇÃO E ASSINATURA PROFISSIONAL</h2>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;">
+                <h2 style="font-size:13px;color:#115e59;margin:0;">ASSINATURA E CARIMBO DO MUSICOTERAPEUTA</h2>
+                ${footerLogo ? `<img src="${footerLogo}" alt="MuseTera" style="width:58px;height:58px;object-fit:contain;"/>` : '<span style="font-size:10px;color:#115e59;font-weight:800;">MUSETERA</span>'}
+              </div>
               <div style="font-weight:700;font-size:12px;color:#102a43;">${escapeHtml(professional.name || 'Profissional não informado')}</div>
               <div style="font-size:10px;color:#475569;margin-top:3px;">${escapeHtml(professional.specialty || 'Musicoterapia')}</div>
               ${professional.register || professional.license_number ? `<div style="font-size:10px;color:#475569;">Registro: ${escapeHtml(professional.register || professional.license_number)}</div>` : ''}
@@ -731,6 +750,15 @@ export const generateProfessionalAnamnesePDF = async (
     };
 
     element.innerHTML = generateProfessionalHTML();
+
+    // Garantir que as imagens do rodapé estejam prontas antes da captura do PDF.
+    const images = Array.from(element.querySelectorAll('img'));
+    await Promise.all(images.map(img => new Promise<void>(resolve => {
+      if (img.complete) return resolve();
+      const timeout = window.setTimeout(resolve, 8000);
+      img.addEventListener('load', () => { clearTimeout(timeout); resolve(); }, { once: true });
+      img.addEventListener('error', () => { clearTimeout(timeout); resolve(); }, { once: true });
+    })));
 
     const opt = {
       margin: [10, 10, 10, 10],
