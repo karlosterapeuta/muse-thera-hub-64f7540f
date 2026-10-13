@@ -105,6 +105,10 @@ export const generateProfessionalAnamnesePDF = async (
           ["daily_participation", "Autonomia e participação"],
           ["safety", "Cuidados de segurança"],
           ["family_goals", "Prioridades do paciente e responsáveis"],
+          ["communication_support", "Apoios de comunicação"],
+          ["sensory_accommodations", "Adaptações sensoriais"],
+          ["recovery_plan", "Estratégias durante sobrecarga"],
+          ["safety_actions", "Cuidados práticos durante a sessão"],
         ];
         const filled = labels.filter(([key]) =>
           typeof profile[key] === "string" && profile[key].trim().length > 0
