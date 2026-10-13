@@ -760,6 +760,16 @@ export const generateProfessionalAnamnesePDF = async (
       img.addEventListener('error', () => { clearTimeout(timeout); resolve(); }, { once: true });
     })));
 
+    const hasSignature = Boolean(digitalSignatureBase64 || professional.digital_signature_url);
+    const hasStamp = Boolean(digitalStampBase64 || professional.digital_stamp_url);
+    const loadedImages = Array.from(element.querySelectorAll('img'));
+    if ((hasSignature || hasStamp) && loadedImages.some(img =>
+      (img.alt === 'Imagem da assinatura cadastrada' || img.alt === 'Imagem do carimbo cadastrado') &&
+      img.naturalWidth === 0
+    )) {
+      throw new Error('A assinatura ou o carimbo cadastrado não carregou. O PDF não será gerado sem esses elementos.');
+    }
+
     const opt = {
       margin: [10, 10, 10, 10],
       filename: `Anamnese_Musicoterapeutica_${patientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`,
