@@ -560,6 +560,15 @@ export default function AnamnesisFormWrapper({
         }
       }
 
+      let signatureImageBase64: string | null = null;
+      if (professional?.digital_signature_url) {
+        try {
+          signatureImageBase64 = await imageUrlToBase64(professional.digital_signature_url);
+        } catch (error) {
+          console.warn("Não foi possível carregar a assinatura cadastrada.", error);
+        }
+      }
+
       const anamnesisDataForPDF = {
         ...formData,
         id: existingAnamnesisId,
@@ -578,7 +587,8 @@ export default function AnamnesisFormWrapper({
         professional,
         patientName,
         professionalPhotoBase64,
-        digitalStampBase64
+        digitalStampBase64,
+        signatureImageBase64
       );
 
       if (success) {
