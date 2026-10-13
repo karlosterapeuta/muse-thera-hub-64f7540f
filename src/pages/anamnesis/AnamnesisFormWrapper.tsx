@@ -549,11 +549,18 @@ export default function AnamnesisFormWrapper({
           .sort((left, right) => (right.created_at || "").localeCompare(left.created_at || ""))[0];
         if (!match) return null;
         const storagePath = `${authUserId}/${match.name}`;
-        const { data: signed, error: signError } = await supabase.storage
+        // Usa o download autenticado do próprio Supabase, sem CORS de URL pública
+        // ou vencimento de link assinado durante a composição do documento.
+        const { data: imageBlob, error: downloadError } = await supabase.storage
           .from("digital-signatures")
-          .createSignedUrl(storagePath, 120);
-        if (signError || !signed?.signedUrl) return null;
-        return imageUrlToBase64(signed.signedUrl);
+          .download(storagePath);
+        if (downloadError || !imageBlob) throw downloadError || new Error("Imagem indisponível no Storage");
+        return new Promise<string | null>(resolve => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : null);
+          reader.onerror = () => resolve(null);
+          reader.readAsDataURL(imageBlob);
+        });
       };
 
       if (!signatureImageBase64) {
