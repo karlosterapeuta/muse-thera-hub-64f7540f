@@ -477,54 +477,22 @@ export default function AnamnesisFormWrapper({
         return;
       }
 
-      // Get professional data - use user_id since professionalId is the auth user ID
-      console.log("🔍 Buscando profissional com user_id:", professionalId);
-      
+      // Mesma origem de dados usada pela página Carimbo Digital.
+      // Não ocultar falha de consulta com um perfil fictício sem imagens.
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+      const authUserId = authData.user?.id;
+      if (authError || !authUserId || authUserId !== professionalId) {
+        throw new Error("Sessão do profissional não confirmada. Entre novamente no portal.");
+      }
       const { data: professionalData, error: profError } = await supabase
         .from("professionals")
         .select("*")
-        .eq("user_id", professionalId)
-        .single();
-
-      // Debug logging para identificar o problema
-      console.log("📊 Query profissional resultado:", {
-        professionalId,
-        profError: profError?.message || null,
-        professionalData: professionalData ? {
-          id: professionalData.id,
-          name: professionalData.name,
-          stamp_photo_url: professionalData.stamp_photo_url,
-          avatar_url: professionalData.avatar_url,
-          digital_stamp_url: professionalData.digital_stamp_url,
-        } : null
-      });
-
-      let professional = professionalData;
-      
+        .eq("user_id", authUserId)
+        .maybeSingle();
       if (profError || !professionalData) {
-        console.warn("⚠️ Usando fallback para dados do profissional:", profError?.message);
-        // Fallback to user data
-        professional = {
-          id: professionalId,
-          name: userName,
-          email: userEmail,
-          specialty: "Musicoterapeuta",
-          phone: "",
-          license_number: "",
-          register: "",
-          association: "",
-          avatar_url: "",
-          digital_signature_url: null,
-          digital_stamp_url: null,
-          stamp_photo_url: "",
-          qr_link: null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          user_id: professionalId
-        };
-      } else {
-        console.log("✅ Dados do profissional carregados com sucesso:", professional?.name);
+        throw new Error("Não foi possível localizar o perfil profissional utilizado no Carimbo Digital.");
       }
+      const professional = professionalData;
 
       // Converter imagens para Base64
       let professionalPhotoBase64: string | null = null;
@@ -567,6 +535,27 @@ export default function AnamnesisFormWrapper({
         } catch (error) {
           console.warn("Não foi possível carregar a assinatura cadastrada.", error);
         }
+      }
+
+      const missingImages = [
+        !professional.digital_signature_url ? "assinatura digital" : null,
+        !professional.digital_stamp_url ? "carimbo digital" : null,
+      ].filter(Boolean);
+      if (missingImages.length) {
+        toast({
+          title: "Imagens ausentes neste perfil",
+          description: `O cadastro profissional consultado não retornou: ${missingImages.join(" e ")}. Verifique o perfil da sessão atual antes de exportar.`,
+          variant: "destructive",
+        });
+        return;
+      }
+      if (!signatureImageBase64 || !digitalStampBase64) {
+        toast({
+          title: "Falha ao carregar assinatura ou carimbo",
+          description: "As imagens estão cadastradas, mas não puderam ser carregadas no PDF. Verifique o acesso às imagens no Supabase e tente novamente.",
+          variant: "destructive",
+        });
+        return;
       }
 
       const anamnesisDataForPDF = {
