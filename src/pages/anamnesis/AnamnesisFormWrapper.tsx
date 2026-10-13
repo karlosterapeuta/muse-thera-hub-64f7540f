@@ -223,6 +223,7 @@ export default function AnamnesisFormWrapper({
         .select("*")
         .eq("id", editAnamnesisId)
         .eq("patient_id", selectedPatient)
+        .eq("professional_id", professionalId)
         .single();
 
       if (error) {
@@ -328,13 +329,16 @@ export default function AnamnesisFormWrapper({
         throw new Error("A migração de revisão da anamnese ainda não foi aplicada ao banco de dados.");
       }
       const filteredData = filterDatabaseFields(formData, availableColumns);
+      if (formData.tea_functional_profile && Object.keys(formData.tea_functional_profile).some(key => String(formData.tea_functional_profile[key] ?? "").trim()) && !availableColumns.includes("tea_functional_profile")) {
+        throw new Error("A migração dos campos funcionais TEA não foi aplicada ao banco.");
+      }
       if (availableColumns.includes("review_status")) {
         filteredData.review_status = mode;
         filteredData.finalized_at = mode === "finalized" ? new Date().toISOString() : null;
         filteredData.finalized_by = mode === "finalized" ? professionalId : null;
       }
       
-      console.log("💾 Tentando salvar anamnese com", Object.keys(filteredData).length, "campos");
+      // Não registrar dados sensíveis da anamnese nos logs de produção.
       
       const anamnesisData: Record<string, any> = {
         patient_id: selectedPatient,
@@ -370,7 +374,7 @@ export default function AnamnesisFormWrapper({
 
       setReviewStatus(mode);
       setLastSavedAt(new Date().toISOString());
-      console.log("✅ Anamnese salva com sucesso!");
+      setFormData(previous => ({ ...previous, review_status: mode, finalized_at: filteredData.finalized_at ?? null, finalized_by: filteredData.finalized_by ?? null }));
       setShowValidation(false);
       toast({
         title: "Sucesso!",
