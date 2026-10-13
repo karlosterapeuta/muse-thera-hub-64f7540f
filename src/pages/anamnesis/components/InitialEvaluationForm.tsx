@@ -29,6 +29,30 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
     onChange({ ...content, [field]: value });
   };
 
+  const functionalFields = [
+    { key: "communication", label: "Comunicação funcional", hint: "Como expressa desejos, recusas, desconfortos e solicita ajuda? Usa fala, gestos ou comunicação alternativa?" },
+    { key: "comprehension", label: "Compreensão e apoios", hint: "Como compreende orientações? Quais pistas visuais, gestuais ou demonstrações ajudam?" },
+    { key: "musical_interaction", label: "Participação e interação musical", hint: "Registre iniciativa, imitação, alternância de turnos, atenção compartilhada e recursos que favorecem a participação." },
+    { key: "musical_strengths", label: "Interesses, habilidades e motivadores", hint: "Quais músicas, instrumentos e atividades despertam interesse? Quais são as habilidades e pontos fortes?" },
+    { key: "sensory_triggers", label: "Sensibilidade sensorial e adaptações", hint: "Sons, timbres, volume e contextos difíceis; sinais de sobrecarga, proteção e estratégias de pausa." },
+    { key: "emotional_regulation", label: "Regulação e previsibilidade", hint: "Antecedentes, sinais iniciais de desregulação, estratégias eficazes e tempo de recuperação." },
+    { key: "daily_participation", label: "Autonomia e participação no cotidiano", hint: "Como participa em casa, na escola e nas terapias? Quais apoios são necessários?" },
+    { key: "safety", label: "Cuidados relevantes para a sessão", hint: "Alergias, crises convulsivas relatadas, riscos, orientações profissionais e cuidados de segurança pertinentes." },
+    { key: "family_goals", label: "Prioridades do paciente e da família", hint: "Quais mudanças funcionais são desejadas? O que o próprio paciente expressa como preferência?" },
+  ] as const;
+
+  const functionalProfile: Record<string, string> =
+    content.tea_functional_profile && typeof content.tea_functional_profile === "object" && !Array.isArray(content.tea_functional_profile)
+      ? content.tea_functional_profile
+      : {};
+
+  const updateFunctionalField = (key: string, value: string) => {
+    onChange({
+      ...content,
+      tea_functional_profile: { ...functionalProfile, [key]: value },
+    });
+  };
+
   const getBooleanValue = (fieldName: string): boolean => {
     if (fieldName in content) {
       return Boolean(content[fieldName]);
@@ -620,6 +644,31 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
       </CollapsibleSection>
 
         </>
+      )}
+
+      {activeTab === 'behavioral' && (
+        <section className="rounded-2xl border border-teal-300 bg-teal-50/60 p-4 shadow-sm dark:border-teal-800 dark:bg-teal-950/20 sm:p-6" aria-labelledby="tea-functional-title">
+          <h2 id="tea-functional-title" className="text-lg font-bold text-teal-950 dark:text-teal-100">Perfil funcional TEA e participação musicoterapêutica</h2>
+          <p className="mt-1 mb-5 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+            Registre informações relatadas pelo paciente ou responsável. A descrição não confirma diagnóstico e não substitui avaliação profissional.
+          </p>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {functionalFields.map(field => (
+              <div key={field.key} className="min-w-0 rounded-xl border border-border bg-card p-3">
+                <label htmlFor={`tea-${field.key}`} className="mb-1 block text-sm font-bold text-foreground">{field.label}</label>
+                <p className="mb-2 text-xs leading-relaxed text-muted-foreground">{field.hint}</p>
+                <textarea
+                  id={`tea-${field.key}`}
+                  rows={3}
+                  value={functionalProfile[field.key] || ""}
+                  onChange={event => updateFunctionalField(field.key, event.target.value)}
+                  placeholder="Não informado — descreva somente o que foi relatado ou observado."
+                  className="min-h-[94px] w-full resize-y rounded-lg border border-input bg-background px-3 py-2 text-base text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600"
+                />
+              </div>
+            ))}
+          </div>
+        </section>
       )}
 
       {activeTab === 'behavioral' && (
