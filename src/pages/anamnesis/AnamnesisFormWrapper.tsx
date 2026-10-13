@@ -67,7 +67,7 @@ const basicDatabaseFields = [
   'family_support_network',
   // Novos campos adicionados
   'mother_name', 'father_name', 'diagnosis_date', 'support_level', 'calming_strategies',
-  'odd_disorder', 'tea_functional_profile'
+  'odd_disorder', 'tea_functional_profile', 'review_status', 'finalized_at', 'finalized_by'
 ];
 
 // Campos que podem não existir (dependem da migração)
@@ -92,6 +92,8 @@ export default function AnamnesisFormWrapper({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isExportingPDF, setIsExportingPDF] = useState(false);
   const [showValidation, setShowValidation] = useState(false);
+  const [reviewStatus, setReviewStatus] = useState<"draft" | "finalized">("draft");
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
   const [activeAnamnesisTab, setActiveAnamnesisTab] = useState("personal");
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -230,6 +232,8 @@ export default function AnamnesisFormWrapper({
 
       if (anamnesisData) {
         setFormData(anamnesisData);
+        setReviewStatus(anamnesisData.review_status === "finalized" ? "finalized" : "draft");
+        setLastSavedAt(anamnesisData.updated_at || null);
         setExistingAnamnesisId(anamnesisData.id);
       }
     } catch (error) {
@@ -275,7 +279,7 @@ export default function AnamnesisFormWrapper({
     setFormData(newData);
   };
 
-  const saveAnamnesis = async (skipValidation = false) => {
+  const saveAnamnesis = async (mode: "draft" | "finalized" = "draft") => {
     if (!selectedPatient) {
       toast({
         title: "Atenção",
@@ -285,16 +289,16 @@ export default function AnamnesisFormWrapper({
       return false;
     }
 
-    // Validar campos obrigatórios (a menos que seja skip)
-    if (!skipValidation) {
-      const validationResult = validation.validate();
-      if (!validationResult.isValid) {
+    if (mode === "finalized") {
+      const requiredForReview = [
+        ["main_clinical_demand", "Demanda clínica principal"],
+        ["patient_musical_history", "História musical do paciente"],
+        ["therapeutic_goals", "Objetivos terapêuticos"],
+      ] as const;
+      const missing = requiredForReview.filter(([key]) => !String(formData[key] || "").trim()).map(([, label]) => label);
+      if (missing.length) {
         setShowValidation(true);
-        toast({
-          title: "Campos Obrigatórios",
-          description: `Preencha os ${validationResult.errors.length} campo(s) obrigatório(s) antes de salvar.`,
-          variant: "destructive",
-        });
+        toast({ title: "Anamnese incompleta para finalização", description: `Preencha: ${missing.join(", ")}. Você pode salvar como rascunho.`, variant: "destructive" });
         return false;
       }
     }
@@ -315,7 +319,15 @@ export default function AnamnesisFormWrapper({
       console.log("💾 Iniciando salvamento - verificando colunas...");
       const availableColumns = await getAvailableColumns();
       
+      if (mode === "finalized" && !["review_status", "finalized_at", "finalized_by"].every(key => availableColumns.includes(key))) {
+        throw new Error("A migração de revisão da anamnese ainda não foi aplicada ao banco de dados.");
+      }
       const filteredData = filterDatabaseFields(formData, availableColumns);
+      if (availableColumns.includes("review_status")) {
+        filteredData.review_status = mode;
+        filteredData.finalized_at = mode === "finalized" ? new Date().toISOString() : null;
+        filteredData.finalized_by = mode === "finalized" ? professionalId : null;
+      }
       
       console.log("💾 Tentando salvar anamnese com", Object.keys(filteredData).length, "campos");
       
@@ -351,11 +363,13 @@ export default function AnamnesisFormWrapper({
         setExistingAnamnesisId(result.data[0].id);
       }
 
+      setReviewStatus(mode);
+      setLastSavedAt(new Date().toISOString());
       console.log("✅ Anamnese salva com sucesso!");
       setShowValidation(false);
       toast({
         title: "Sucesso!",
-        description: "Anamnese salva com sucesso no sistema.",
+        description: mode === "finalized" ? "Anamnese finalizada e registrada no sistema." : "Rascunho salvo com sucesso no sistema.",
       });
       
       return true;
@@ -621,6 +635,21 @@ export default function AnamnesisFormWrapper({
                 )}
               </div>
               
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-teal-200 bg-teal-50 p-3 dark:border-teal-800 dark:bg-teal-950/30" role="status">
+                <div>
+                  <p className="font-semibold text-teal-950 dark:text-teal-100">Situação da anamnese: {reviewStatus === "finalized" ? "Finalizada" : "Rascunho"}</p>
+                  <p className="text-xs text-teal-900 dark:text-teal-200">
+                    {lastSavedAt ? `Último salvamento confirmado: ${new Date(lastSavedAt).toLocaleString("pt-BR")}` : "Nenhum salvamento confirmado nesta edição"}
+                  </p>
+                  <p className="mt-1 text-xs text-teal-900 dark:text-teal-200">Finalizar exige demanda, história musical e objetivos terapêuticos. O rascunho aceita dados parciais.</p>
+                </div>
+                <button type="button" disabled={isSubmitting || !selectedPatient}
+                  onClick={() => void saveAnamnesis("finalized")}
+                  className="min-h-11 rounded-lg bg-teal-800 px-4 py-2 text-sm font-bold text-white hover:bg-teal-900 disabled:opacity-50">
+                  {isSubmitting ? "Salvando..." : "Finalizar anamnese"}
+                </button>
+              </div>
+
               {/* Form Content in Tabs */}
               <ModernTabsNavigation activeTab={activeAnamnesisTab} onTabChange={setActiveAnamnesisTab}>
                 <div className="bg-card rounded-xl p-4 sm:p-6 border border-teal-700/15 shadow-sm">
@@ -644,7 +673,7 @@ export default function AnamnesisFormWrapper({
 
               {/* Action Buttons */}
               <ModernActionButtons
-                onSave={() => saveAnamnesis()}
+                onSave={() => { void saveAnamnesis("draft"); }}
                 onCancel={() => onBack ? onBack() : navigate("/processes")}
                 onExportPDF={exportPDF}
                 isSaving={isSubmitting}
