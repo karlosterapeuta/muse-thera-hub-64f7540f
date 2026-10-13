@@ -155,10 +155,10 @@ export default function AnamnesisFormWrapper({
   }, []);
 
   useEffect(() => {
-    if (selectedPatient && editAnamnesisId) {
+    if (selectedPatient && editAnamnesisId && professionalId) {
       loadPatientAnamnesis();
     }
-  }, [selectedPatient, editAnamnesisId]);
+  }, [selectedPatient, editAnamnesisId, professionalId]);
 
   const loadInitialData = async () => {
     try {
