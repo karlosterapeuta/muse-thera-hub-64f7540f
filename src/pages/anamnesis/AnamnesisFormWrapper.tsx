@@ -498,20 +498,12 @@ export default function AnamnesisFormWrapper({
       let professionalPhotoBase64: string | null = null;
       let digitalStampBase64: string | null = null;
 
-      // Debug logging antes da conversão
-      console.log("🔍 Professional object antes da conversão:", {
-        stamp_photo_url: professional?.stamp_photo_url,
-        avatar_url: professional?.avatar_url,
-        digital_stamp_url: professional?.digital_stamp_url,
-        isFallback: profError || !professionalData
-      });
-
       if (professional?.stamp_photo_url || professional?.avatar_url) {
         try {
           const photoUrl = professional.stamp_photo_url || professional.avatar_url;
-          console.log("🖼️ Convertendo foto do profissional para Base64...", photoUrl);
+
           professionalPhotoBase64 = await imageUrlToBase64(photoUrl);
-          console.log("✅ Foto convertida com sucesso:", professionalPhotoBase64 ? "OK" : "FALHOU");
+
         } catch (e) {
           console.warn("⚠️ Não foi possível converter foto para Base64:", e);
         }
@@ -615,7 +607,7 @@ export default function AnamnesisFormWrapper({
       console.error("Erro ao exportar PDF:", error);
       toast({
         title: "Erro",
-        description: "Não foi possível exportar o PDF da anamnese.",
+        description: error?.message || "Não foi possível exportar o PDF da anamnese.",
         variant: "destructive",
       });
     } finally {
