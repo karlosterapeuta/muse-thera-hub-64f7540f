@@ -537,22 +537,37 @@ export default function AnamnesisFormWrapper({
         }
       }
 
-      const missingImages = [
-        !professional.digital_signature_url ? "assinatura digital" : null,
-        !professional.digital_stamp_url ? "carimbo digital" : null,
-      ].filter(Boolean);
-      if (missingImages.length) {
-        toast({
-          title: "Imagens ausentes neste perfil",
-          description: `O cadastro profissional consultado não retornou: ${missingImages.join(" e ")}. Verifique o perfil da sessão atual antes de exportar.`,
-          variant: "destructive",
-        });
-        return;
+      // A página Carimbo Digital também grava as imagens no diretório do usuário.
+      // Se o perfil não trouxer uma URL utilizável, recuperar a imagem mais recente
+      // da própria pasta autenticada (sem consultar arquivos de outros profissionais).
+      const restoreFromOwnStorage = async (prefix: "signature_" | "stamp_"): Promise<string | null> => {
+        const { data: files, error: listError } = await supabase.storage
+          .from("digital-signatures")
+          .list(authUserId, { limit: 100, sortBy: { column: "created_at", order: "desc" } });
+        if (listError) throw listError;
+        const match = files?.filter(file => file.name.startsWith(prefix) && file.name.endsWith(".png"))
+          .sort((left, right) => (right.created_at || "").localeCompare(left.created_at || ""))[0];
+        if (!match) return null;
+        const storagePath = `${authUserId}/${match.name}`;
+        const { data: signed, error: signError } = await supabase.storage
+          .from("digital-signatures")
+          .createSignedUrl(storagePath, 120);
+        if (signError || !signed?.signedUrl) return null;
+        return imageUrlToBase64(signed.signedUrl);
+      };
+
+      if (!signatureImageBase64) {
+        try { signatureImageBase64 = await restoreFromOwnStorage("signature_"); }
+        catch (error) { console.warn("Falha ao recuperar assinatura do armazenamento do usuário.", error); }
+      }
+      if (!digitalStampBase64) {
+        try { digitalStampBase64 = await restoreFromOwnStorage("stamp_"); }
+        catch (error) { console.warn("Falha ao recuperar carimbo do armazenamento do usuário.", error); }
       }
       if (!signatureImageBase64 || !digitalStampBase64) {
         toast({
-          title: "Falha ao carregar assinatura ou carimbo",
-          description: "As imagens estão cadastradas, mas não puderam ser carregadas no PDF. Verifique o acesso às imagens no Supabase e tente novamente.",
+          title: "Assinatura ou carimbo não disponível",
+          description: "Confira se as duas imagens foram salvas na página Carimbo Digital e tente novamente. Nenhum PDF incompleto será exportado.",
           variant: "destructive",
         });
         return;
