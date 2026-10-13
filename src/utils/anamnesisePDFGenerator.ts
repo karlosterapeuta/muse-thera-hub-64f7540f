@@ -715,7 +715,7 @@ export const generateProfessionalAnamnesePDF = async (
               <div style="font-size:12px;font-weight:700;color:#0f172a;">${escapeHtml(professional.name || 'Profissional não informado')}</div>
               ${professional.register || professional.license_number ? `<div style="font-size:10px;color:#475569;margin-top:3px;">Registro: ${escapeHtml(professional.register || professional.license_number)}</div>` : ''}
               ${professional.specialty ? `<div style="font-size:10px;color:#475569;">${escapeHtml(professional.specialty)}</div>` : ''}
-              ${digitalStampBase64 ? `<div style="margin-top:12px;"><img src="${digitalStampBase64}" alt="Carimbo digital fornecido pelo profissional" style="display:block;width:auto;max-width:160px;max-height:90px;object-fit:contain;"/></div>` : ''}
+              ${digitalStampBase64 || professional.digital_stamp_url ? `<div style="margin-top:12px;padding:8px 0;"><div style="font-size:9px;font-weight:700;color:#115e59;margin-bottom:5px;">CARIMBO DIGITAL CADASTRADO</div><img src="${digitalStampBase64 || professional.digital_stamp_url}" alt="Carimbo cadastrado pelo musicoterapeuta" style="display:block;width:auto;max-width:190px;max-height:105px;object-fit:contain;"/></div>` : '<div style="font-size:9px;color:#64748b;margin-top:8px;">Carimbo digital não disponível no perfil profissional.</div>'}
               <div style="font-size:9px;color:#64748b;margin-top:10px;">
                 Documento gerado pelo MuseTera. A geração do PDF não equivale a assinatura digital certificada.
               </div>
