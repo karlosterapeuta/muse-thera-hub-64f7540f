@@ -281,6 +281,20 @@ export default function AnamnesisFormWrapper({
     return filteredData;
   };
 
+  const changeSelectedPatient = (patientId: string) => {
+    if (editPatientId) return;
+    if (patientId === selectedPatient) return;
+    setSelectedPatient(patientId);
+    setFormData({});
+    setExistingAnamnesisId(null);
+    setReviewStatus("draft");
+    setLastSavedAt(null);
+    setHistoryOpen(false);
+    setRevisions([]);
+    setHistoryError("");
+    setShowValidation(false);
+  };
+
   const updateFormData = (newData: Record<string, any>) => {
     setFormData(newData);
   };
@@ -613,7 +627,7 @@ export default function AnamnesisFormWrapper({
                 <PatientSelect
                   patients={patients}
                   selectedPatient={selectedPatient}
-                  onSelect={setSelectedPatient}
+                  onSelect={changeSelectedPatient}
                   disabled={!!editPatientId}
                 />
                 {professionalId && (
