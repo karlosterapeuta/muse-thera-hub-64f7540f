@@ -302,9 +302,9 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
                 const medication = event.target.value;
                 if (!medication) return;
                 const existing = getStringValue("current_medication").trim();
-                const entries = existing.split(/\\n|;/).map(item => item.trim()).filter(Boolean);
+                const entries = existing.split(/\n|;/).map(item => item.trim()).filter(Boolean);
                 if (entries.some(item => item.toLocaleLowerCase("pt-BR") === medication.toLocaleLowerCase("pt-BR"))) return;
-                updateField("current_medication", existing ? `${existing}\\n${medication}` : medication);
+                updateField("current_medication", existing ? `${existing}\n${medication}` : medication);
               }}
               className="min-h-12 w-full rounded-lg border border-teal-300 bg-background px-3 py-2 text-base text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:border-teal-700"
             >
