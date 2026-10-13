@@ -253,6 +253,7 @@ export default function AnamnesisFormWrapper({
     Object.entries(data).forEach(([key, value]) => {
       const normalizedKey = key.toLowerCase();
       
+      if (['id', 'patient_id', 'professional_id', 'created_at', 'updated_at'].includes(normalizedKey)) return;
       if (availableColumns.includes(normalizedKey)) {
         if (typeof value === 'boolean' || value === true || value === false) {
           filteredData[normalizedKey] = Boolean(value);
