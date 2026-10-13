@@ -140,7 +140,7 @@ export const generateProfessionalAnamnesePDF = async (
       const formatClinicalDate = (value: unknown): string => {
         if (!value) return "Não informado";
         const str = String(value);
-        const match = /^(\\d{4})-(\\d{2})-(\\d{2})/.exec(str);
+        const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(str);
         if (match) return `${match[3]}/${match[2]}/${match[1]}`;
         return "Não informado";
       };
@@ -150,42 +150,28 @@ export const generateProfessionalAnamnesePDF = async (
            <div style="font-weight:600;font-size:11px;color:#172b4d;line-height:1.45;">${escapeHtml(value || 'Não informado')}</div>
          </div>`;
 
-      // Renderizar campo de texto
+      // Campo preenchido mantém destaque; campo vazio permanece identificável,
+      // sem criar uma grande caixa cinza para cada resposta não informada.
       const renderTextField = (label: string, key: string) => {
         const value = anamnesisData[key];
+        const missing = value === null || value === undefined ||
+          (typeof value === "string" && !value.trim());
         return `
-          <div class="clinical-field" style="margin-bottom: 8px;">
-            <div style="font-weight: 600; font-size: 10px; color: #0f766e; margin-bottom: 4px; text-transform: uppercase;">
-              ${label}
-            </div>
-            <div class="clinical-value" style="background-color: #f8fafc; padding: 7px 10px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 11px; line-height: 1.6; color: #1f2937; min-height: 20px;">
-              ${getFieldValue(value)}
-            </div>
-          </div>
-        `;
+          <div class="clinical-field ${missing ? "clinical-field--empty" : "clinical-field--filled"}">
+            <div class="clinical-label">${escapeHtml(label)}</div>
+            <div class="clinical-value">${getFieldValue(value)}</div>
+          </div>`;
       };
 
-      // Renderizar checkboxes marcados
+      // Marcação não preenchida é diferente de uma resposta clínica negativa.
       const renderCheckboxes = (checkboxes: { id: string; label: string }[]) => {
-        const checked = checkboxes.filter(item => anamnesisData[item.id]);
-        if (checked.length === 0) {
-          return `
-            <div style="background-color: #f0fdfa; padding: 12px; border-radius: 8px; border: 1px solid #99f6e4;">
-              <span style="font-size: 11px; color: #9ca3af; font-style: italic;">Nenhum item selecionado</span>
-            </div>
-          `;
+        const checked = checkboxes.filter(item => anamnesisData[item.id] === true);
+        if (!checked.length) {
+          return '<div class="clinical-checkbox-empty">Não informado — nenhuma opção registrada</div>';
         }
-        
-        return `
-          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-            ${checked.map(item => `
-              <div style="background-color: #ccfbf1; border: 1px solid #14b8a6; border-radius: 20px; padding: 6px 14px; font-size: 10px; color: #0f766e; font-weight: 500; display: inline-block; min-width: 50px; min-height: 24px; line-height: 12px;">
-                <span style="color: #14b8a6; font-weight: bold;">✓</span>
-                ${item.label}
-              </div>
-            `).join('')}
-          </div>
-        `;
+        return `<div class="clinical-tags">${checked.map(item =>
+          `<span class="clinical-tag"><span aria-hidden="true">✓ </span>${escapeHtml(item.label)}</span>`
+        ).join("")}</div>`;
       };
 
       // Mapeamento de cores por categoria temática
@@ -381,7 +367,19 @@ export const generateProfessionalAnamnesePDF = async (
             .document-header,.header-brand,.brand-logo { break-inside:avoid; }
             
             .page-break { break-before: page; page-break-before: always; }
-            .clinical-field { margin: 0 0 8px; break-inside: auto; page-break-inside: auto; }
+            .clinical-section { break-inside: avoid; page-break-inside: avoid; }
+            .clinical-section-header { break-inside: avoid; page-break-inside: avoid; }
+            .clinical-field { margin:0 0 9px; break-inside:avoid; page-break-inside:avoid; }
+            .clinical-label { font-size:10px;line-height:1.35;color:#0f766e;font-weight:700;text-transform:uppercase;margin-bottom:4px; }
+            .clinical-value { border:1px solid #e2e8f0;background:#f8fafc;padding:7px 10px;border-radius:6px;font-size:11px;line-height:1.55; }
+            .clinical-field--empty { display:flex;justify-content:space-between;gap:12px;align-items:baseline;border-bottom:1px solid #f1f5f9;padding-bottom:4px;margin-bottom:6px; }
+            .clinical-field--empty .clinical-label { flex:1;min-width:0;margin:0;color:#64748b;font-size:9px; }
+            .clinical-field--empty .clinical-value { flex:0 1 44%;padding:0;border:0;background:transparent;color:#64748b;font-size:10px;text-align:right; }
+            .clinical-checkbox-empty { color:#64748b;font-size:10px;font-style:italic;padding:4px 0; }
+            .clinical-tags { display:flex;flex-wrap:wrap;gap:5px; }
+            .clinical-tag { display:inline-block;border-radius:14px;border:1px solid #7dd3c7;background:#ecfdf5;padding:4px 9px;font-size:10px;font-weight:600;color:#115e59;white-space:normal; }
+            .professional-footer { break-inside:avoid;page-break-inside:avoid; }
+            
             .clinical-value { overflow-wrap: anywhere; word-break: normal; white-space: normal; }
             .not-reported { color: #64748b; font-style: italic; }
             h1, h2, h3 { break-after: avoid; page-break-after: avoid; }
@@ -411,7 +409,7 @@ export const generateProfessionalAnamnesePDF = async (
             <div style="padding: 0 16px;">
 
               <!-- SEÇÃO 1: IDENTIFICAÇÃO E ENCAMINHAMENTO -->
-              <div style="margin-bottom: 10px;">
+              <div class="clinical-section" style="margin-bottom: 10px;">
                 ${sectionHeader(1, 'ENCAMINHAMENTO E DEMANDA CLÍNICA')}
                 ${sectionContainer(1, `
                   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
@@ -431,7 +429,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 2: HISTÓRICO CLÍNICO E MÉDICO -->
-              <div style="margin-bottom: 12px;">
+              <div class="clinical-section" style="margin-bottom: 12px;">
                 ${sectionHeader(2, 'HISTÓRICO CLÍNICO E MÉDICO')}
                 ${sectionContainer(2, `
                   <div style="margin-bottom: 16px;">
@@ -463,7 +461,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 3: MEDICAÇÃO EM USO -->
-              <div style="margin-bottom: 12px;">
+              <div class="clinical-section" style="margin-bottom: 12px;">
                 ${sectionHeader(3, 'MEDICAÇÃO EM USO')}
                 ${sectionContainer(3, `
                   ${renderTextField('Medicações Atuais', 'current_medication')}
@@ -473,7 +471,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 4: TERAPIAS E ACOMPANHAMENTOS -->
-              <div style="margin-bottom: 12px;">
+              <div class="clinical-section" style="margin-bottom: 12px;">
                 ${sectionHeader(4, 'TERAPIAS E ACOMPANHAMENTOS')}
                 ${sectionContainer(4, `
                   <div style="margin-bottom: 16px;">
@@ -498,7 +496,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 5: PERFIL MUSICAL DO PACIENTE -->
-              <div style="margin-bottom: 12px;">
+              <div class="clinical-section" style="margin-bottom: 12px;">
                 ${sectionHeader(5, 'PERFIL MUSICAL DO PACIENTE')}
                 ${sectionContainer(5, `
                   <div style="margin-bottom: 16px;">
@@ -533,7 +531,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 6: IDENTIDADE SONORA (ISO) -->
-              <div style="margin-bottom: 12px;">
+              <div class="clinical-section" style="margin-bottom: 12px;">
                 ${sectionHeader(6, 'IDENTIDADE SONORA (ISO)')}
                 ${sectionContainer(6, `
                   <div style="background: linear-gradient(135deg, #f0fdfa, #ecfeff); padding: 12px; border-radius: 8px; border-left: 4px solid #14b8a6; margin-bottom: 16px;">
@@ -552,7 +550,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 7: COMPORTAMENTO MUSICAL OBSERVADO -->
-              <div style="margin-bottom: 12px;">
+              <div class="clinical-section" style="margin-bottom: 12px;">
                 ${sectionHeader(7, 'COMPORTAMENTO MUSICAL OBSERVADO')}
                 ${sectionContainer(7, `
                   <div style="margin-bottom: 16px;">
@@ -571,7 +569,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 8: PROCESSAMENTO AUDITIVO E SENSORIAL -->
-              <div style="margin-bottom: 12px;">
+              <div class="clinical-section" style="margin-bottom: 12px;">
                 ${sectionHeader(8, 'PROCESSAMENTO AUDITIVO E SENSORIAL')}
                 ${sectionContainer(8, `
                   <div style="margin-bottom: 16px;">
@@ -591,7 +589,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 9: DESENVOLVIMENTO NEUROPSICOMOTOR -->
-              <div style="margin-bottom: 12px;">
+              <div class="clinical-section" style="margin-bottom: 12px;">
                 ${sectionHeader(9, 'DESENVOLVIMENTO NEUROPSICOMOTOR')}
                 ${sectionContainer(9, `
                   <div style="margin-bottom: 16px;">
@@ -620,7 +618,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 10: ASPECTOS COMPORTAMENTAIS E EMOCIONAIS -->
-              <div style="margin-bottom: 12px;">
+              <div class="clinical-section" style="margin-bottom: 12px;">
                 ${sectionHeader(10, 'ASPECTOS COMPORTAMENTAIS E EMOCIONAIS')}
                 ${sectionContainer(10, `
                   <div style="margin-bottom: 16px;">
@@ -651,7 +649,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 11: CONTEXTO SOCIAL E ESCOLAR -->
-              <div style="margin-bottom: 12px;">
+              <div class="clinical-section" style="margin-bottom: 12px;">
                 ${sectionHeader(11, 'CONTEXTO SOCIAL E ESCOLAR')}
                 ${sectionContainer(11, `
                   ${renderTextField('Situação Escolar', 'school_enrollment')}
@@ -664,7 +662,7 @@ export const generateProfessionalAnamnesePDF = async (
               ${renderTeaFunctionalProfile()}
 
               <!-- SEÇÃO 12: OBJETIVOS TERAPÊUTICOS -->
-              <div style="margin-bottom: 12px;">
+              <div class="clinical-section" style="margin-bottom: 12px;">
                 ${sectionHeader(12, 'OBJETIVOS TERAPÊUTICOS')}
                 ${sectionContainer(12, `
                   <div style="background: linear-gradient(135deg, #f0fdfa, #ecfeff); padding: 12px; border-radius: 8px; border-left: 4px solid #14b8a6; margin-bottom: 16px;">
@@ -680,21 +678,21 @@ export const generateProfessionalAnamnesePDF = async (
             </div>
 
             <!-- Assinatura e carimbo reais, somente no final do PDF -->
-            <section class="professional-footer" style="margin:18px 16px 4px;border:1px solid #d6e8e7;border-top:3px solid #0f766e;border-radius:9px;padding:14px 16px;break-inside:avoid;page-break-inside:avoid;">
+            <section class="professional-footer" style="margin:10px 16px 4px;border:1px solid #d6e8e7;border-top:3px solid #0f766e;border-radius:9px;padding:11px 14px;break-inside:avoid;page-break-inside:avoid;">
               <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;">
                 <h2 style="font-size:13px;color:#115e59;margin:0;">ASSINATURA E CARIMBO DO MUSICOTERAPEUTA</h2>
               </div>
               <div style="font-weight:700;font-size:12px;color:#102a43;">${escapeHtml(professional.name || 'Profissional não informado')}</div>
               <div style="font-size:10px;color:#475569;margin-top:3px;">${escapeHtml(professional.specialty || 'Musicoterapia')}</div>
               ${professional.register || professional.license_number ? `<div style="font-size:10px;color:#475569;">Registro: ${escapeHtml(professional.register || professional.license_number)}</div>` : ''}
-              <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-top:14px;">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-top:9px;">
                 <div style="flex:1;min-width:0;">
                   <div style="font-size:10px;font-weight:700;color:#115e59;margin-bottom:6px;">ASSINATURA DIGITAL CADASTRADA</div>
-                  ${digitalSignatureBase64 || professional.digital_signature_url ? `<img src="${escapeHtml(digitalSignatureBase64 || professional.digital_signature_url)}" alt="Imagem da assinatura cadastrada" style="max-width:220px;max-height:85px;width:auto;object-fit:contain;display:block;"/>` : '<p style="font-size:10px;color:#64748b;">Assinatura não cadastrada ou indisponível.</p>'}
+                  ${digitalSignatureBase64 || professional.digital_signature_url ? `<img src="${escapeHtml(digitalSignatureBase64 || professional.digital_signature_url)}" alt="Imagem da assinatura cadastrada" style="max-width:200px;max-height:66px;width:auto;object-fit:contain;display:block;"/>` : '<p style="font-size:10px;color:#64748b;">Assinatura não cadastrada ou indisponível.</p>'}
                 </div>
                 <div style="flex:1;min-width:0;">
                   <div style="font-size:10px;font-weight:700;color:#115e59;margin-bottom:6px;">CARIMBO DIGITAL CADASTRADO</div>
-                  ${digitalStampBase64 || professional.digital_stamp_url ? `<img src="${escapeHtml(digitalStampBase64 || professional.digital_stamp_url)}" alt="Imagem do carimbo cadastrado" style="max-width:190px;max-height:105px;width:auto;object-fit:contain;display:block;"/>` : '<p style="font-size:10px;color:#64748b;">Carimbo não cadastrado ou indisponível.</p>'}
+                  ${digitalStampBase64 || professional.digital_stamp_url ? `<img src="${escapeHtml(digitalStampBase64 || professional.digital_stamp_url)}" alt="Imagem do carimbo cadastrado" style="max-width:158px;max-height:75px;width:auto;object-fit:contain;display:block;"/>` : '<p style="font-size:10px;color:#64748b;">Carimbo não cadastrado ou indisponível.</p>'}
                 </div>
               </div>
               <p style="font-size:9px;line-height:1.5;color:#64748b;margin-top:12px;">Imagens da assinatura e do carimbo reproduzidas conforme cadastro. Este PDF não comprova assinatura criptográfica certificada.</p>
@@ -741,7 +739,7 @@ export const generateProfessionalAnamnesePDF = async (
       filename: `Anamnese_Musicoterapeutica_${patientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`,
       pagebreak: { 
         mode: ['css', 'legacy'],
-        avoid: ['.clinical-section-header', '.professional-footer', 'h1', 'h2', 'h3']
+        avoid: ['.clinical-section', '.clinical-section-header', '.professional-footer', '.patient-line', 'h1', 'h2', 'h3']
       },
       jsPDF: {
         unit: 'mm',
