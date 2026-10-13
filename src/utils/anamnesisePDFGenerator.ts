@@ -63,6 +63,7 @@ interface ProfessionalData {
   association?: string;
   avatar_url?: string;
   digital_stamp_url?: string;
+  digital_signature_url?: string;
 }
 
 export const generateProfessionalAnamnesePDF = async (
@@ -70,30 +71,13 @@ export const generateProfessionalAnamnesePDF = async (
   professional: ProfessionalData,
   patientName: string,
   professionalPhotoBase64?: string | null,
-  digitalStampBase64?: string | null
+  digitalStampBase64?: string | null,
+  digitalSignatureBase64?: string | null
 ): Promise<boolean> => {
   try {
     console.log("🎯 Iniciando geração do PDF profissional da Anamnese...");
     
     const element = document.createElement('div');
-    // Resolve a logo local para dados embutidos antes do html2canvas, independentemente de CORS.
-    const logoUrl = new URL("/lovable-uploads/musetera-logo-new.png", window.location.origin).toString();
-    let logoBase64: string | null = null;
-    try {
-      const response = await fetch(logoUrl);
-      if (response.ok) {
-        const blob = await response.blob();
-        logoBase64 = await new Promise<string | null>((resolve) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : null);
-          reader.onerror = () => resolve(null);
-          reader.readAsDataURL(blob);
-        });
-      }
-    } catch (error) {
-      console.warn("Logo institucional indisponível para exportação:", error);
-    }
-    
     const generateProfessionalHTML = () => {
       // Função para valor de campo
       const escapeHtml = (value: unknown): string =>
@@ -152,6 +136,19 @@ export const generateProfessionalAnamnesePDF = async (
               </div>`).join("")}
           </div>`;
       };
+
+      const formatClinicalDate = (value: unknown): string => {
+        if (!value) return "Não informado";
+        const str = String(value);
+        const match = /^(\\d{4})-(\\d{2})-(\\d{2})/.exec(str);
+        if (match) return `${match[3]}/${match[2]}/${match[1]}`;
+        return "Não informado";
+      };
+      const identityItem = (label: string, value: unknown): string =>
+        `<div style="min-width:0;overflow-wrap:anywhere;">
+           <div style="font-weight:800;font-size:9px;letter-spacing:.4px;color:#475569;margin-bottom:3px;">${escapeHtml(label)}</div>
+           <div style="font-weight:600;font-size:11px;color:#172b4d;line-height:1.45;">${escapeHtml(value || 'Não informado')}</div>
+         </div>`;
 
       // Renderizar campo de texto
       const renderTextField = (label: string, key: string) => {
@@ -393,47 +390,37 @@ export const generateProfessionalAnamnesePDF = async (
         </head>
         <body>
           <div class="container">
-            <!-- Identidade institucional: contraste, equilíbrio e logo oficial -->
-            <header class="document-header">
-              <div class="header-brand">
-                ${logoBase64 ? `<div class="brand-logo"><img src="${logoBase64}" alt="Logo MuseTera" /></div>` : ''}
-                <div>
-                  <div class="header-eyebrow">MUSETERA / DOCUMENTAÇÃO CLÍNICA</div>
-                  <h1>ANAMNESE MUSICOTERAPÊUTICA</h1>
-                  <div class="header-subtitle">Histórico clínico, musical e funcional · TEA</div>
-                </div>
-              </div>
+            <header class="document-header" style="padding:16px 18px 11px;">
+              <div class="header-eyebrow">MUSETERA · DOCUMENTAÇÃO CLÍNICA</div>
+              <h1>ANAMNESE MUSICOTERAPÊUTICA</h1>
+              <div class="header-subtitle">Histórico clínico e sonoro-musical · Registro de anamnese</div>
               <div class="header-rule"></div>
             </header>
 
-            <!-- INFORMAÇÕES DO PACIENTE -->
-            <div style="background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 2px solid #14b8a6; padding: 15px 18px; margin: 12px 16px; border-radius: 9px;">
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                <div>
-                  <div style="font-weight: 600; font-size: 10px; color: #0f766e; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">Paciente</div>
-                  <div style="font-size: 18px; font-weight: 700; color: #134e4a;">${patientName}</div>
-                </div>
-                <div>
-                  <div style="font-weight: 600; font-size: 10px; color: #0f766e; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">Data da Avaliação</div>
-                  <div style="font-size: 14px; font-weight: 600; color: #134e4a;">
-                    ${new Date(anamnesisData.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
-                  </div>
-                </div>
+            <!-- Cabeçalho do paciente inspirado na Evaluation: informação, não decoração -->
+            <section class="patient-identity" style="margin:10px 16px 14px;border:1px solid #d9e2ec;border-top:3px solid #0f766e;border-radius:9px;padding:16px 18px;break-inside:avoid;">
+              <div style="color:#0f766e;font-weight:800;font-size:10px;letter-spacing:1px;margin-bottom:6px;">IDENTIFICAÇÃO DO PACIENTE</div>
+              <div style="font-size:19px;font-weight:800;color:#102a43;margin-bottom:12px;overflow-wrap:anywhere;">${escapeHtml(patientName)}</div>
+              <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px 18px;border-bottom:1px solid #d9e2ec;padding-bottom:12px;">
+                ${identityItem('DATA DE NASCIMENTO', anamnesisData.patient_birth_date ? formatClinicalDate(anamnesisData.patient_birth_date) : '')}
+                ${identityItem('IDADE CADASTRADA', anamnesisData.patient_age != null ? `${anamnesisData.patient_age} anos` : '')}
+                ${identityItem('RESPONSÁVEL CADASTRADO', anamnesisData.patient_responsible || anamnesisData.legal_guardian || '')}
+                ${identityItem('CONTATO CADASTRADO', anamnesisData.patient_contact || '')}
+                ${identityItem('MÃE', anamnesisData.mother_name || '')}
+                ${identityItem('PAI', anamnesisData.father_name || '')}
+                ${identityItem('CID INFORMADO', anamnesisData.cid_code || '')}
+                ${identityItem('NÍVEL DE SUPORTE INFORMADO', anamnesisData.support_level || '')}
               </div>
-              <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #99f6e4;">
-                <div style="font-weight: 600; font-size: 10px; color: #0f766e; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;">Musicoterapeuta Responsável</div>
-                <div style="font-size: 13px; color: #134e4a;">
-                  <strong>${professional.name || 'Não informado'}</strong>
-                  ${professional.register || professional.license_number ? ` • ${professional.register || professional.license_number}` : ''}
-                  ${professional.specialty ? ` • ${professional.specialty}` : ''}
-                </div>
+              <div style="font-weight:800;color:#0f766e;font-size:10px;letter-spacing:1px;margin:12px 0 8px;">DADOS DA ANAMNESE</div>
+              <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 18px;">
+                ${identityItem('DATA DO REGISTRO', formatClinicalDate(anamnesisData.created_at))}
+                ${identityItem('SITUAÇÃO', anamnesisData.review_status === 'finalized' ? 'Finalizada' : 'Rascunho / não informado')}
+                ${identityItem('MUSICOTERAPEUTA RESPONSÁVEL', professional.name || '')}
+                ${identityItem('REGISTRO PROFISSIONAL', professional.register || professional.license_number || '')}
               </div>
-            </div>
+              <p style="font-size:9px;color:#64748b;margin:11px 0 0;">Diagnósticos, CID e nível de suporte reproduzem informações cadastradas; não constituem confirmação diagnóstica.</p>
+            </section>
 
-            <div style="margin:0 16px 14px;padding:9px 12px;border-radius:7px;background:#f1f5f9;color:#334155;font-size:11px;">
-              <strong>Situação:</strong> ${anamnesisData.review_status === 'finalized' ? 'Finalizada' : 'Rascunho / situação não informada'}
-              ${anamnesisData.finalized_at ? ` · Finalizada em ${escapeHtml(new Date(anamnesisData.finalized_at).toLocaleString('pt-BR'))}` : ''}
-            </div>
             <!-- ÍNDICE NAVEGÁVEL -->
 
 
@@ -709,16 +696,23 @@ export const generateProfessionalAnamnesePDF = async (
 
             </div>
 
-            <!-- IDENTIFICAÇÃO PROFISSIONAL E CARIMBO: somente informações efetivamente disponíveis -->
-            <section style="margin:18px 16px 0;border-top:2px solid #0f766e;padding:14px 12px;break-inside:avoid;">
-              <div style="font-size:12px;font-weight:700;color:#115e59;margin-bottom:8px;">IDENTIFICAÇÃO PROFISSIONAL</div>
-              <div style="font-size:12px;font-weight:700;color:#0f172a;">${escapeHtml(professional.name || 'Profissional não informado')}</div>
-              ${professional.register || professional.license_number ? `<div style="font-size:10px;color:#475569;margin-top:3px;">Registro: ${escapeHtml(professional.register || professional.license_number)}</div>` : ''}
-              ${professional.specialty ? `<div style="font-size:10px;color:#475569;">${escapeHtml(professional.specialty)}</div>` : ''}
-              ${digitalStampBase64 || professional.digital_stamp_url ? `<div style="margin-top:12px;padding:8px 0;"><div style="font-size:9px;font-weight:700;color:#115e59;margin-bottom:5px;">CARIMBO DIGITAL CADASTRADO</div><img src="${digitalStampBase64 || professional.digital_stamp_url}" alt="Carimbo cadastrado pelo musicoterapeuta" style="display:block;width:auto;max-width:190px;max-height:105px;object-fit:contain;"/></div>` : '<div style="font-size:9px;color:#64748b;margin-top:8px;">Carimbo digital não disponível no perfil profissional.</div>'}
-              <div style="font-size:9px;color:#64748b;margin-top:10px;">
-                Documento gerado pelo MuseTera. A geração do PDF não equivale a assinatura digital certificada.
+            <!-- Assinatura e carimbo reais, somente no final do PDF -->
+            <section class="professional-footer" style="margin:18px 16px 4px;border:1px solid #d6e8e7;border-top:3px solid #0f766e;border-radius:9px;padding:14px 16px;break-inside:avoid;page-break-inside:avoid;">
+              <h2 style="font-size:13px;color:#115e59;margin:0 0 12px;">IDENTIFICAÇÃO E ASSINATURA PROFISSIONAL</h2>
+              <div style="font-weight:700;font-size:12px;color:#102a43;">${escapeHtml(professional.name || 'Profissional não informado')}</div>
+              <div style="font-size:10px;color:#475569;margin-top:3px;">${escapeHtml(professional.specialty || 'Musicoterapia')}</div>
+              ${professional.register || professional.license_number ? `<div style="font-size:10px;color:#475569;">Registro: ${escapeHtml(professional.register || professional.license_number)}</div>` : ''}
+              <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-top:14px;">
+                <div style="flex:1;min-width:0;">
+                  <div style="font-size:10px;font-weight:700;color:#115e59;margin-bottom:6px;">ASSINATURA DIGITAL CADASTRADA</div>
+                  ${digitalSignatureBase64 || professional.digital_signature_url ? `<img src="${escapeHtml(digitalSignatureBase64 || professional.digital_signature_url)}" alt="Imagem da assinatura cadastrada" style="max-width:220px;max-height:85px;width:auto;object-fit:contain;display:block;"/>` : '<p style="font-size:10px;color:#64748b;">Assinatura não cadastrada ou indisponível.</p>'}
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div style="font-size:10px;font-weight:700;color:#115e59;margin-bottom:6px;">CARIMBO DIGITAL CADASTRADO</div>
+                  ${digitalStampBase64 || professional.digital_stamp_url ? `<img src="${escapeHtml(digitalStampBase64 || professional.digital_stamp_url)}" alt="Imagem do carimbo cadastrado" style="max-width:190px;max-height:105px;width:auto;object-fit:contain;display:block;"/>` : '<p style="font-size:10px;color:#64748b;">Carimbo não cadastrado ou indisponível.</p>'}
+                </div>
               </div>
+              <p style="font-size:9px;line-height:1.5;color:#64748b;margin-top:12px;">Imagens da assinatura e do carimbo reproduzidas conforme cadastro. Este PDF não comprova assinatura criptográfica certificada.</p>
             </section>
 
             <!-- Informações do Documento -->
