@@ -141,8 +141,18 @@ export default function AnamnesisFormWrapper({
         return actualColumns;
       }
 
-      // Em uma tabela vazia, usar somente os campos conhecidos; o filtro impedirá perda silenciosa de valores preenchidos.
-      return basicDatabaseFields;
+      // Uma tabela vazia não revela colunas por Object.keys. Testar explicitamente
+      // as migrações recentes sem depender de registros de outros profissionais.
+      const { error: schemaError } = await supabase
+        .from("anamnesis")
+        .select("tea_functional_profile,review_status,finalized_at,finalized_by", { head: true, count: "exact" })
+        .limit(0);
+      const hasRecentFields = !schemaError;
+      const knownFields = hasRecentFields ? basicDatabaseFields : basicDatabaseFields.filter(key =>
+        !["tea_functional_profile", "review_status", "finalized_at", "finalized_by"].includes(key)
+      );
+      columnCheckCache = knownFields;
+      return knownFields;
 
     } catch (error) {
       console.warn("⚠️ Erro ao verificar colunas disponíveis:", error);
