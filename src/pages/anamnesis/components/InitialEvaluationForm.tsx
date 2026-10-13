@@ -40,6 +40,25 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
     return content[fieldName] || "";
   };
 
+  const section1Fields = ["referral_professional", "main_clinical_demand", "diagnosis_details", "cid_code"];
+  const section2Fields = [
+    "autism_spectrum", "adhd", "down_syndrome", "intellectual_disability",
+    "cerebral_palsy", "epilepsy", "chronic_encephalopathy", "williams_syndrome",
+    "fragile_x_syndrome", "rett_syndrome", "angelman_syndrome", "alzheimer", "parkinson",
+    "depression", "bipolar_disorder", "anxiety_disorders", "odd_disorder", "other_diagnoses",
+    "clinical_details",
+  ];
+
+  const section3Fields = ["current_medication", "medication_schedule", "medication_effects"];
+  const section4Fields = ["speech_therapy", "psychological_support", "occupational_therapy", "physiotherapy"];
+  const section5Fields = ["musical_education", "instrumental_practice", "patient_musical_history"];
+  const section6Fields = ["pregnancy_sound_experiences", "childhood_sound_environment", "family_musical_history"];
+  const section7Fields = ["active_musical_listening", "body_expression", "sound_responsiveness"];
+  const section8Fields = ["auditory_hypersensitivity", "positive_musical_response", "nominal_call_response"];
+  const section9Fields = ["cervical_control", "independent_sitting", "autonomous_walking", "babbling", "first_words"];
+  const section10Fields = ["visual_contact", "peer_interaction", "irritability", "anxiety"];
+  const section11Fields = ["school_enrollment", "school_adaptation", "extracurricular_activities"];
+
   // Calculate progress
   const calculateProgress = useMemo(() => {
     const fields = [
@@ -73,24 +92,6 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
     });
   };
 
-  const section1Fields = ["referral_professional", "main_clinical_demand", "diagnosis_details", "cid_code"];
-  const section2Fields = [
-    "autism_spectrum", "adhd", "down_syndrome", "intellectual_disability",
-    "cerebral_palsy", "epilepsy", "chronic_encephalopathy", "williams_syndrome",
-    "fragile_x_syndrome", "rett_syndrome", "angelman_syndrome", "alzheimer", "parkinson",
-    "depression", "bipolar_disorder", "anxiety_disorders", "odd_disorder", "other_diagnoses",
-    "clinical_details",
-  ];
-
-  const section3Fields = ["current_medication", "medication_schedule", "medication_effects"];
-  const section4Fields = ["speech_therapy", "psychological_support", "occupational_therapy", "physiotherapy"];
-  const section5Fields = ["musical_education", "instrumental_practice", "patient_musical_history"];
-  const section6Fields = ["pregnancy_sound_experiences", "childhood_sound_environment", "family_musical_history"];
-  const section7Fields = ["active_musical_listening", "body_expression", "sound_responsiveness"];
-  const section8Fields = ["auditory_hypersensitivity", "positive_musical_response", "nominal_call_response"];
-  const section9Fields = ["cervical_control", "independent_sitting", "autonomous_walking", "babbling", "first_words"];
-  const section10Fields = ["visual_contact", "peer_interaction", "irritability", "anxiety"];
-  const section11Fields = ["school_enrollment", "school_adaptation", "extracurricular_activities"];
 
   return (
     <div className="space-y-6">
