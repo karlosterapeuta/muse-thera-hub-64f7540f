@@ -140,11 +140,11 @@ export const generateProfessionalAnamnesePDF = async (
       const renderTextField = (label: string, key: string) => {
         const value = anamnesisData[key];
         return `
-          <div class="clinical-field" style="margin-bottom: 12px;">
-            <div style="font-weight: 600; font-size: 11px; color: #0f766e; margin-bottom: 4px; text-transform: uppercase;">
+          <div class="clinical-field" style="margin-bottom: 8px;">
+            <div style="font-weight: 600; font-size: 10px; color: #0f766e; margin-bottom: 4px; text-transform: uppercase;">
               ${label}
             </div>
-            <div class="clinical-value" style="background-color: #f0fdfa; padding: 10px 12px; border-radius: 8px; border: 1px solid #99f6e4; font-size: 11px; line-height: 1.6; color: #1f2937; min-height: 20px;">
+            <div class="clinical-value" style="background-color: #f8fafc; padding: 7px 10px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 11px; line-height: 1.6; color: #1f2937; min-height: 20px;">
               ${getFieldValue(value)}
             </div>
           </div>
@@ -324,8 +324,8 @@ export const generateProfessionalAnamnesePDF = async (
       const sectionHeader = (number: number, title: string) => {
         const colors = sectionColors[number] || sectionColors[1];
         return `
-          <div style="background: ${colors.gradient}; color: white; padding: 10px 16px; border-radius: 10px 10px 0 0; display: flex; align-items: center; gap: 12px;">
-            <div style="background: ${colors.iconBg}; padding: 8px; border-radius: 8px; display: flex; align-items: center; justify-content: center; min-width: 36px; min-height: 36px;">
+          <div style="background: ${colors.gradient}; color: white; padding: 7px 12px; border-radius: 7px 7px 0 0; display: flex; align-items: center; gap: 12px;">
+            <div style="background: ${colors.iconBg}; padding: 5px; border-radius: 6px; display: flex; align-items: center; justify-content: center; min-width: 28px; min-height: 28px;">
               <span style="font-weight: 700; color: white; font-size: 16px;">${number}</span>
             </div>
             <span style="font-weight: 700; font-size: 13px; letter-spacing: 0.5px;">${number}. ${title}</span>
@@ -337,7 +337,7 @@ export const generateProfessionalAnamnesePDF = async (
       const sectionContainer = (sectionNumber: number, content: string) => {
         const colors = sectionColors[sectionNumber] || sectionColors[1];
         return `
-          <div style="background-color: #ffffff; border: 1px solid ${colors.borderColor}; border-left: 4px solid ${colors.borderColor}; border-top: none; border-radius: 0 0 10px 10px; padding: 16px;">
+          <div style="background-color: #ffffff; border: 1px solid ${colors.borderColor}; border-left: 4px solid ${colors.borderColor}; border-top: none; border-radius: 0 0 10px 10px; padding: 11px 13px;">
             ${content}
           </div>
         `;
@@ -353,22 +353,22 @@ export const generateProfessionalAnamnesePDF = async (
             body { font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.4; background: #ffffff; }
             .container { max-width: 800px; margin: 0 auto; background-color: #ffffff; }
             .page-break { break-before: page; page-break-before: always; }
-            .clinical-field { margin: 0 0 12px; break-inside: avoid; page-break-inside: avoid; }
+            .clinical-field { margin: 0 0 8px; break-inside: auto; page-break-inside: auto; }
             .clinical-value { overflow-wrap: anywhere; word-break: normal; white-space: normal; }
             .not-reported { color: #64748b; font-style: italic; }
             h1, h2, h3 { break-after: avoid; page-break-after: avoid; }
             p, div { overflow-wrap: anywhere; }
             img, svg { max-width: 100%; }
-            @media print { .clinical-field { break-inside: avoid; } }
+            @media print { h1, h2, h3 { break-after: avoid; } }
           </style>
         </head>
         <body>
           <div class="container">
             <!-- HEADER TEAL PREMIUM -->
-            <div style="background: linear-gradient(135deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%); color: white; padding: 28px 24px; margin-bottom: 0; border-radius: 0 0 20px 20px; box-shadow: 0 4px 20px rgba(13, 148, 136, 0.3);">
+            <div style="background: linear-gradient(135deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%); color: white; padding: 18px 22px; margin-bottom: 0; border-radius: 0 0 12px 12px;">
               <div style="text-align: center;">
                 <div style="font-size: 14px; letter-spacing: 3px; opacity: 0.9; margin-bottom: 8px;">♪ MUSICOTERAPIA CLÍNICA ♪</div>
-                <h1 style="margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <h1 style="margin: 0; font-size: 25px; font-weight: 800; letter-spacing: -0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                   ANAMNESE MUSICOTERAPÊUTICA
                 </h1>
                 <div style="margin-top: 10px; font-size: 14px; opacity: 0.95; font-weight: 500;">
@@ -378,7 +378,7 @@ export const generateProfessionalAnamnesePDF = async (
             </div>
 
             <!-- INFORMAÇÕES DO PACIENTE -->
-            <div style="background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 2px solid #14b8a6; padding: 20px; margin: 24px 16px; border-radius: 12px; box-shadow: 0 2px 12px rgba(13, 148, 136, 0.1);">
+            <div style="background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 2px solid #14b8a6; padding: 20px; margin: 16px 16px; border-radius: 10px;">
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                 <div>
                   <div style="font-weight: 600; font-size: 10px; color: #0f766e; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">Paciente</div>
@@ -401,6 +401,10 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
             </div>
 
+            <div style="margin:0 16px 14px;padding:9px 12px;border-radius:7px;background:#f1f5f9;color:#334155;font-size:11px;">
+              <strong>Situação:</strong> ${anamnesisData.review_status === 'finalized' ? 'Finalizada' : 'Rascunho / situação não informada'}
+              ${anamnesisData.finalized_at ? ` · Finalizada em ${escapeHtml(new Date(anamnesisData.finalized_at).toLocaleString('pt-BR'))}` : ''}
+            </div>
             <!-- ÍNDICE NAVEGÁVEL -->
             ${generateTableOfContents()}
 
@@ -408,13 +412,15 @@ export const generateProfessionalAnamnesePDF = async (
             <div style="padding: 0 16px;">
 
               <!-- SEÇÃO 1: IDENTIFICAÇÃO E ENCAMINHAMENTO -->
-              <div style="margin-bottom: 20px; page-break-inside: avoid;">
+              <div style="margin-bottom: 12px;">
                 ${sectionHeader(1, 'IDENTIFICAÇÃO E ENCAMINHAMENTO')}
                 ${sectionContainer(1, `
                   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                     ${renderTextField('Nome da Mãe', 'mother_name')}
                     ${renderTextField('Nome do Pai', 'father_name')}
                   </div>
+                   ${renderTextField('Responsável legal', 'legal_guardian')}
+                  ${renderTextField('Vínculo com paciente', 'family_relationship')}
                   ${renderTextField('Profissional Encaminhador', 'referral_professional')}
                   ${renderTextField('Demanda Clínica Principal', 'main_clinical_demand')}
                   ${renderTextField('Detalhes do Diagnóstico', 'diagnosis_details')}
@@ -426,7 +432,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 2: HISTÓRICO CLÍNICO E MÉDICO -->
-              <div style="margin-bottom: 20px; page-break-inside: avoid;">
+              <div style="margin-bottom: 12px;">
                 ${sectionHeader(2, 'HISTÓRICO CLÍNICO E MÉDICO')}
                 ${sectionContainer(2, `
                   <div style="margin-bottom: 16px;">
@@ -458,7 +464,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 3: MEDICAÇÃO EM USO -->
-              <div style="margin-bottom: 20px; page-break-inside: avoid;">
+              <div style="margin-bottom: 12px;">
                 ${sectionHeader(3, 'MEDICAÇÃO EM USO')}
                 ${sectionContainer(3, `
                   ${renderTextField('Medicações Atuais', 'current_medication')}
@@ -468,7 +474,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 4: TERAPIAS E ACOMPANHAMENTOS -->
-              <div style="margin-bottom: 20px; page-break-inside: avoid;">
+              <div style="margin-bottom: 12px;">
                 ${sectionHeader(4, 'TERAPIAS E ACOMPANHAMENTOS')}
                 ${sectionContainer(4, `
                   <div style="margin-bottom: 16px;">
@@ -493,7 +499,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 5: PERFIL MUSICAL DO PACIENTE -->
-              <div style="margin-bottom: 20px; page-break-inside: avoid;">
+              <div style="margin-bottom: 12px;">
                 ${sectionHeader(5, 'PERFIL MUSICAL DO PACIENTE')}
                 ${sectionContainer(5, `
                   <div style="margin-bottom: 16px;">
@@ -528,7 +534,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 6: IDENTIDADE SONORA (ISO) -->
-              <div style="margin-bottom: 20px; page-break-inside: avoid;">
+              <div style="margin-bottom: 12px;">
                 ${sectionHeader(6, 'IDENTIDADE SONORA (ISO)')}
                 ${sectionContainer(6, `
                   <div style="background: linear-gradient(135deg, #f0fdfa, #ecfeff); padding: 12px; border-radius: 8px; border-left: 4px solid #14b8a6; margin-bottom: 16px;">
@@ -547,7 +553,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 7: COMPORTAMENTO MUSICAL OBSERVADO -->
-              <div style="margin-bottom: 20px; page-break-inside: avoid;">
+              <div style="margin-bottom: 12px;">
                 ${sectionHeader(7, 'COMPORTAMENTO MUSICAL OBSERVADO')}
                 ${sectionContainer(7, `
                   <div style="margin-bottom: 16px;">
@@ -566,7 +572,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 8: PROCESSAMENTO AUDITIVO E SENSORIAL -->
-              <div style="margin-bottom: 20px; page-break-inside: avoid;">
+              <div style="margin-bottom: 12px;">
                 ${sectionHeader(8, 'PROCESSAMENTO AUDITIVO E SENSORIAL')}
                 ${sectionContainer(8, `
                   <div style="margin-bottom: 16px;">
@@ -586,7 +592,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 9: DESENVOLVIMENTO NEUROPSICOMOTOR -->
-              <div style="margin-bottom: 20px; page-break-inside: avoid;">
+              <div style="margin-bottom: 12px;">
                 ${sectionHeader(9, 'DESENVOLVIMENTO NEUROPSICOMOTOR')}
                 ${sectionContainer(9, `
                   <div style="margin-bottom: 16px;">
@@ -615,7 +621,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 10: ASPECTOS COMPORTAMENTAIS E EMOCIONAIS -->
-              <div style="margin-bottom: 20px; page-break-inside: avoid;">
+              <div style="margin-bottom: 12px;">
                 ${sectionHeader(10, 'ASPECTOS COMPORTAMENTAIS E EMOCIONAIS')}
                 ${sectionContainer(10, `
                   <div style="margin-bottom: 16px;">
@@ -646,7 +652,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 11: CONTEXTO SOCIAL E ESCOLAR -->
-              <div style="margin-bottom: 20px; page-break-inside: avoid;">
+              <div style="margin-bottom: 12px;">
                 ${sectionHeader(11, 'CONTEXTO SOCIAL E ESCOLAR')}
                 ${sectionContainer(11, `
                   ${renderTextField('Situação Escolar', 'school_enrollment')}
@@ -659,7 +665,7 @@ export const generateProfessionalAnamnesePDF = async (
               ${renderTeaFunctionalProfile()}
 
               <!-- SEÇÃO 12: OBJETIVOS TERAPÊUTICOS -->
-              <div style="margin-bottom: 20px; page-break-inside: avoid;">
+              <div style="margin-bottom: 12px;">
                 ${sectionHeader(12, 'OBJETIVOS TERAPÊUTICOS')}
                 ${sectionContainer(12, `
                   <div style="background: linear-gradient(135deg, #f0fdfa, #ecfeff); padding: 12px; border-radius: 8px; border-left: 4px solid #14b8a6; margin-bottom: 16px;">
@@ -674,86 +680,17 @@ export const generateProfessionalAnamnesePDF = async (
 
             </div>
 
-            <!-- RODAPÉ TEAL UNIFICADO -->
-            <div style="margin: 40px 16px 0 16px; border: 3px solid transparent; border-image: linear-gradient(135deg, #0d9488, #14b8a6, #06b6d4) 1; border-radius: 16px; overflow: hidden; background: #ffffff; box-shadow: 0 8px 24px rgba(13, 148, 136, 0.15);">
-              
-              <!-- Barra Decorativa Superior 8px -->
-              <div style="height: 8px; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%);"></div>
-              
-              <!-- Seção Principal -->
-              <div style="padding: 24px;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start;">
-                  
-                  <!-- ESQUERDA: Card de Assinatura -->
-                  <div style="background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 2px solid #14b8a6; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(20,184,166,0.15);">
-                    <div style="height: 6px; background: linear-gradient(to right, #0d9488, #14b8a6, #06b6d4);"></div>
-                    <div style="padding: 16px;">
-                      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                        ${professionalPhotoBase64 ? `
-                        <div style="width: 56px; height: 56px; flex-shrink: 0; border-radius: 50%; overflow: hidden; border: 3px solid #14b8a6; box-shadow: 0 0 12px 3px rgba(20, 184, 166, 0.4);">
-                          <img src="${professionalPhotoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
-                        </div>
-                        ` : ''}
-                        <div style="flex: 1;">
-                          <div style="font-size: 13px; font-weight: bold; color: #0f766e; margin-bottom: 6px; line-height: 1.2;">
-                            ${professional.name || 'Nome do Profissional'}
-                          </div>
-                          <div style="background-color: #ccfbf1; border: 1px solid #99f6e4; border-radius: 16px; padding: 3px 10px; display: inline-block;">
-                            <span style="font-size: 9px; color: #0f766e; font-weight: 600;">Musicoterapeuta ${professional.specialty ? `- ${professional.specialty}` : ''}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div style="font-size: 10px; color: #374151; line-height: 1.5;">
-                        ${professional.register || professional.license_number ? `<div style="margin-bottom: 2px;">Reg: ${professional.register || professional.license_number}</div>` : ''}
-                        ${professional.email ? `<div style="margin-bottom: 2px;">Email: ${professional.email}</div>` : ''}
-                        ${professional.phone ? `<div>Tel: ${professional.phone}</div>` : ''}
-                      </div>
-                    </div>
-                    <div style="border-top: 1px solid #99f6e4; background: linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa); padding: 10px 12px;">
-                      <div style="display: flex; align-items: center; justify-content: center; gap: 6px;">
-                        <span style="color: #0d9488; font-size: 12px;">✔</span>
-                        <span style="font-size: 10px; font-weight: 600; color: #0f766e;">Assinatura Digital Verificada</span>
-                        <span style="color: #0d9488; font-size: 10px;">♪</span>
-                        <span style="font-size: 10px; color: #6b7280;">Sistema MuseTera</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <!-- DIREITA: Carimbo Circular -->
-                  <div style="display: flex; flex-direction: column; align-items: center;">
-                    ${professionalPhotoBase64 ? `
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                      <div style="width: 150px; height: 150px; border-radius: 50%; background-color: #f0fdfa; border: 3px solid #14b8a6; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; box-shadow: 0 0 0 8px rgba(20, 184, 166, 0.1), 0 0 0 12px rgba(20, 184, 166, 0.05), 0 6px 16px rgba(20, 184, 166, 0.2);">
-                        <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; border: 2px solid #14b8a6; margin-bottom: 8px;">
-                          <img src="${professionalPhotoBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
-                        </div>
-                        <div style="font-size: 11px; font-weight: bold; color: #0f766e; text-align: center; margin-bottom: 4px; line-height: 1.1;">
-                          ${professional.name || 'Profissional'}
-                        </div>
-                        <div style="width: 50px; height: 1px; background-color: #14b8a6; margin-bottom: 4px;"></div>
-                        <div style="background-color: #ccfbf1; border: 1px solid #99f6e4; border-radius: 12px; padding: 2px 8px;">
-                          <span style="font-size: 8px; color: #0f766e; font-weight: 600;">Musicoterapeuta</span>
-                        </div>
-                        ${professional.register || professional.license_number ? `
-                        <div style="font-size: 8px; color: #374151; font-weight: 600; margin-top: 4px;">
-                          ${professional.register || professional.license_number}
-                        </div>
-                        ` : ''}
-                      </div>
-                    </div>
-                    <div style="margin-top: 12px; background-color: #0d9488; color: white; padding: 6px 16px; border-radius: 16px; font-size: 9px; font-weight: 600; display: inline-block; min-width: 120px; min-height: 24px; text-align: center; box-shadow: 0 3px 8px rgba(13,148,136,0.3);">
-                      MuseTera Verified
-                    </div>
-                    ` : `
-                    <div style="width: 150px; height: 150px; border: 2px dashed #14b8a6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #6b7280; background-color: #f0fdfa;">
-                      Carimbo Digital
-                    </div>
-                    `}
-                  </div>
-                  
-                </div>
+            <!-- IDENTIFICAÇÃO PROFISSIONAL E CARIMBO: somente informações efetivamente disponíveis -->
+            <section style="margin:18px 16px 0;border-top:2px solid #0f766e;padding:14px 12px;break-inside:avoid;">
+              <div style="font-size:12px;font-weight:700;color:#115e59;margin-bottom:8px;">IDENTIFICAÇÃO PROFISSIONAL</div>
+              <div style="font-size:12px;font-weight:700;color:#0f172a;">${escapeHtml(professional.name || 'Profissional não informado')}</div>
+              ${professional.register || professional.license_number ? `<div style="font-size:10px;color:#475569;margin-top:3px;">Registro: ${escapeHtml(professional.register || professional.license_number)}</div>` : ''}
+              ${professional.specialty ? `<div style="font-size:10px;color:#475569;">${escapeHtml(professional.specialty)}</div>` : ''}
+              ${digitalStampBase64 ? `<div style="margin-top:12px;"><img src="${digitalStampBase64}" alt="Carimbo digital fornecido pelo profissional" style="display:block;width:auto;max-width:160px;max-height:90px;object-fit:contain;"/></div>` : ''}
+              <div style="font-size:9px;color:#64748b;margin-top:10px;">
+                Documento gerado pelo MuseTera. A geração do PDF não equivale a assinatura digital certificada.
               </div>
-            </div>
+            </section>
 
             <!-- Informações do Documento -->
             <div style="font-size: 9px; color: #6b7280; text-align: center; margin: 16px 16px 24px 16px;">
@@ -777,7 +714,7 @@ export const generateProfessionalAnamnesePDF = async (
       filename: `Anamnese_Musicoterapeutica_${patientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`,
       pagebreak: { 
         mode: ['css', 'legacy'],
-        avoid: ['.clinical-field', 'h1', 'h2', 'h3']
+        avoid: ['h1', 'h2', 'h3']
       },
       jsPDF: {
         unit: 'mm',
