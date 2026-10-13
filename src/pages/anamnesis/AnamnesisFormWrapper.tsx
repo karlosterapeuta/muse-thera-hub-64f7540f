@@ -394,54 +394,10 @@ export default function AnamnesisFormWrapper({
       return;
     }
 
-    let currentAnamnesisId = existingAnamnesisId;
-
-    // First, make sure the anamnesis is saved before exporting
-    if (!currentAnamnesisId) {
-      try {
-        setIsSubmitting(true);
-        
-        const availableColumns = await getAvailableColumns();
-        const filteredData = filterDatabaseFields(formData, availableColumns);
-        
-        const anamnesisData: Record<string, any> = {
-          patient_id: selectedPatient,
-          professional_id: professionalId,
-          ...filteredData
-        };
-
-        const result = await supabase
-          .from("anamnesis")
-          .insert(anamnesisData)
-          .select();
-
-        if (result.error) {
-          throw result.error;
-        }
-
-        if (result.data && result.data.length > 0) {
-          currentAnamnesisId = result.data[0].id;
-          setExistingAnamnesisId(currentAnamnesisId);
-        } else {
-          toast({
-            title: "Erro",
-            description: "Não foi possível salvar a anamnese para exportar o PDF.",
-            variant: "destructive",
-          });
-          return;
-        }
-      } catch (error: any) {
-        console.error("Erro ao salvar anamnese para PDF:", error);
-        toast({
-          title: "Erro",
-          description: "Erro ao salvar anamnese antes da exportação.",
-          variant: "destructive",
-        });
-        return;
-      } finally {
-        setIsSubmitting(false);
-      }
-    }
+    // Confirmar o salvamento da versão atual antes de exportar.
+    // Não mudar automaticamente uma anamnese finalizada para rascunho.
+    const saved = await saveAnamnesis(reviewStatus);
+    if (!saved) return;
 
     try {
       setIsExportingPDF(true);
