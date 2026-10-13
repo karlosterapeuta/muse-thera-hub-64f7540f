@@ -338,7 +338,7 @@ export const generateProfessionalAnamnesePDF = async (
       const sectionHeader = (number: number, title: string) => {
         const colors = sectionColors[number] || sectionColors[1];
         return `
-          <div style="background: #125b61; color: white; padding: 8px 12px; border-radius: 7px 7px 0 0; display: flex; align-items: center; gap: 12px;">
+          <div style="background: #125b61; color: white; padding: 8px 12px; page-break-after: avoid; break-after: avoid; border-radius: 7px 7px 0 0; display: flex; align-items: center; gap: 12px;">
             <div style="background: ${colors.iconBg}; padding: 5px; border-radius: 6px; display: flex; align-items: center; justify-content: center; min-width: 28px; min-height: 28px;">
               <span style="font-weight: 700; color: white; font-size: 16px;">${number}</span>
             </div>
