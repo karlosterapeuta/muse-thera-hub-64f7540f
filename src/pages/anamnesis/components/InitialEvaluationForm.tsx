@@ -653,6 +653,10 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
             Registre informações relatadas pelo paciente ou responsável. A descrição não confirma diagnóstico e não substitui avaliação profissional.
           </p>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="md:col-span-2 rounded-xl border border-teal-200 bg-teal-50 p-3 dark:border-teal-800 dark:bg-teal-950/30">
+              <p className="font-semibold text-sm text-teal-950 dark:text-teal-100">Perguntas complementares por necessidade</p>
+              <p className="text-xs text-teal-900 dark:text-teal-200 mt-1">Responda abaixo quando houver informação relevante. As perguntas adicionais aparecem conforme os relatos; elas não são obrigatórias para o rascunho.</p>
+            </div>
             {functionalFields.map(field => (
               <div key={field.key} className="min-w-0 rounded-xl border border-border bg-card p-3">
                 <label htmlFor={`tea-${field.key}`} className="mb-1 block text-sm font-bold text-foreground">{field.label}</label>
@@ -665,6 +669,20 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
                   placeholder="Não informado — descreva somente o que foi relatado ou observado."
                   className="min-h-[94px] w-full resize-y rounded-lg border border-input bg-background px-3 py-2 text-base text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600"
                 />
+              </div>
+            ))}
+            {[
+              { trigger: "communication", key: "communication_support", label: "Apoio de comunicação no atendimento", question: "Quando há dificuldade para comunicar necessidades, quais recursos ou pistas funcionam melhor?" },
+              { trigger: "sensory_triggers", key: "sensory_accommodations", label: "Plano de adaptação sensorial", question: "Que ajustes de volume, ambiente, instrumentos, pausas ou proteção auditiva são eficazes?" },
+              { trigger: "emotional_regulation", key: "recovery_plan", label: "Conduta diante da sobrecarga", question: "Como identificar sinais precoces, oferecer escolha ou pausa e apoiar a recuperação sem aumentar o desconforto?" },
+              { trigger: "safety", key: "safety_actions", label: "Cuidados práticos na sessão", question: "Há recomendações profissionais ou orientações familiares que precisam ser observadas durante o atendimento?" },
+            ].filter(item => Boolean(functionalProfile[item.trigger]?.trim()) || Boolean(functionalProfile[item.key]?.trim())).map(item => (
+              <div key={item.key} className="min-w-0 rounded-xl border border-amber-200 bg-amber-50/70 p-3 dark:border-amber-800 dark:bg-amber-950/20">
+                <label htmlFor={`tea-${item.key}`} className="mb-1 block text-sm font-bold text-foreground">{item.label} <span className="font-normal text-muted-foreground">(complementar)</span></label>
+                <p className="mb-2 text-xs leading-relaxed text-muted-foreground">{item.question}</p>
+                <textarea id={`tea-${item.key}`} rows={3} value={functionalProfile[item.key] || ""} onChange={event => updateFunctionalField(item.key, event.target.value)}
+                  className="min-h-[94px] w-full resize-y rounded-lg border border-input bg-background px-3 py-2 text-base text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600"
+                  placeholder="Descreva os apoios identificados, se houver." />
               </div>
             ))}
           </div>
