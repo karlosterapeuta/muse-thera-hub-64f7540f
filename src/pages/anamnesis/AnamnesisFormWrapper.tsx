@@ -134,8 +134,8 @@ export default function AnamnesisFormWrapper({
         return actualColumns;
       }
 
-      // Não deduzir colunas a partir de uma tabela vazia: isso pode descartar informações clínicas.
-      throw new Error("Não é possível confirmar as colunas da anamnese em uma tabela sem registros. Verifique o esquema antes de salvar.");
+      // Em uma tabela vazia, usar somente os campos conhecidos; o filtro impedirá perda silenciosa de valores preenchidos.
+      return basicDatabaseFields;
 
     } catch (error) {
       console.warn("⚠️ Erro ao verificar colunas disponíveis:", error);
