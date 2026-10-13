@@ -735,7 +735,7 @@ export const generateProfessionalAnamnesePDF = async (
     }
 
     const opt = {
-      margin: [10, 10, 10, 10],
+      margin: [10, 10, 14, 10],
       filename: `Anamnese_Musicoterapeutica_${patientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`,
       pagebreak: { 
         mode: ['css', 'legacy'],
@@ -759,6 +759,17 @@ export const generateProfessionalAnamnesePDF = async (
 
     console.log("📄 Gerando PDF da Anamnese...");
     const pdfInstance = html2pdf().from(element).set(opt);
+    await pdfInstance.toPdf();
+    const pdfDocument = await pdfInstance.get("pdf");
+    const pageCount = pdfDocument.internal.getNumberOfPages();
+    for (let pageNumber = 1; pageNumber <= pageCount; pageNumber++) {
+      pdfDocument.setPage(pageNumber);
+      pdfDocument.setFont("helvetica", "normal");
+      pdfDocument.setFontSize(8);
+      pdfDocument.setTextColor(100, 116, 139);
+      pdfDocument.text("Musetera · Anamnese musicoterapêutica", 11, 290);
+      pdfDocument.text(`Página ${pageNumber} de ${pageCount}`, 199, 290, { align: "right" });
+    }
     await pdfInstance.save();
 
     // Auto-save to storage
