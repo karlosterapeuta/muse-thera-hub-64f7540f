@@ -598,7 +598,7 @@ export default function AnamnesisFormWrapper({
     try {
       setIsSubmitting(true);
       
-      const saved = await saveAnamnesis();
+      const saved = await saveAnamnesis(reviewStatus);
       if (!saved) return;
       
       if (onBack) {
@@ -744,7 +744,7 @@ export default function AnamnesisFormWrapper({
 
               {/* Action Buttons */}
               <ModernActionButtons
-                onSave={() => { void saveAnamnesis("draft"); }}
+                onSave={() => { void saveAnamnesis(reviewStatus); }}
                 onCancel={() => onBack ? onBack() : navigate("/processes")}
                 onExportPDF={exportPDF}
                 isSaving={isSubmitting}
