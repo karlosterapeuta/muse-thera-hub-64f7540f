@@ -94,9 +94,7 @@ export const generateProfessionalAnamnesePDF = async (
 
       // Escapar conteúdo textual relatado antes de inserir no HTML do PDF.
       const escapeClinicalText = (value: unknown): string =>
-        String(value ?? "").replace(/[&<>"']/g, character => ({
-          "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-        }[character] || character)).replace(/\\n/g, "<br />");
+        escapeHtml(value).replace(/\r?\n/g, "<br />");
 
       const renderTeaFunctionalProfile = (): string => {
         const profile = anamnesisData.tea_functional_profile;
