@@ -491,7 +491,7 @@ export default function AnamnesisFormWrapper({
 
       const anamnesisDataForPDF = {
         ...formData,
-        id: currentAnamnesisId,
+        id: existingAnamnesisId,
         patient_id: selectedPatient,
         professional_id: professionalId,
         created_at: formData.created_at || new Date().toISOString(),
