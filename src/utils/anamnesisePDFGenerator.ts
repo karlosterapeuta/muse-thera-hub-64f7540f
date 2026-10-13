@@ -165,7 +165,11 @@ export const generateProfessionalAnamnesePDF = async (
 
       // Marcação não preenchida é diferente de uma resposta clínica negativa.
       const renderCheckboxes = (checkboxes: { id: string; label: string }[]) => {
-        const checked = checkboxes.filter(item => anamnesisData[item.id] === true);
+        const checked = checkboxes.filter(item =>
+          anamnesisData[item.id] === true ||
+          anamnesisData[item.id] === 1 ||
+          anamnesisData[item.id] === "true"
+        );
         if (!checked.length) {
           return '<div class="clinical-checkbox-empty">Não informado — nenhuma opção registrada</div>';
         }
@@ -734,9 +738,15 @@ export const generateProfessionalAnamnesePDF = async (
       throw new Error('A assinatura ou o carimbo cadastrado não carregou. O PDF não será gerado sem esses elementos.');
     }
 
+    const issueDate = new Date();
+    const localIssueDate = [
+      issueDate.getFullYear(),
+      String(issueDate.getMonth() + 1).padStart(2, "0"),
+      String(issueDate.getDate()).padStart(2, "0"),
+    ].join("-");
     const opt = {
       margin: [10, 10, 14, 10],
-      filename: `Anamnese_Musicoterapeutica_${patientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`,
+      filename: `Anamnese_Musicoterapeutica_${patientName.replace(/\s+/g, '_')}_${localIssueDate}.pdf`,
       pagebreak: { 
         mode: ['css', 'legacy'],
         avoid: ['.clinical-section', '.clinical-section-header', '.professional-footer', '.patient-line', 'h1', 'h2', 'h3']
