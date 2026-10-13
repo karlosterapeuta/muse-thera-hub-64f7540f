@@ -79,11 +79,17 @@ export const generateProfessionalAnamnesePDF = async (
     
     const generateProfessionalHTML = () => {
       // Função para valor de campo
+      const escapeHtml = (value: unknown): string =>
+        String(value ?? "").replace(/[&<>"']/g, char =>
+          ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char] || char)
+        );
+
       const getFieldValue = (value: any): string => {
-        if (!value || (typeof value === 'string' && value.trim() === '')) {
-          return '<span style="color: #9ca3af; font-style: italic;">Não informado</span>';
+        if (value === null || value === undefined || (typeof value === "string" && !value.trim())) {
+          return '<span class="not-reported">Não informado</span>';
         }
-        return String(value);
+        if (typeof value === "boolean") return value ? "Sim" : "Não";
+        return escapeHtml(value).replace(/\\r?\\n/g, "<br />");
       };
 
       // Escapar conteúdo textual relatado antes de inserir no HTML do PDF.
@@ -136,11 +142,11 @@ export const generateProfessionalAnamnesePDF = async (
       const renderTextField = (label: string, key: string) => {
         const value = anamnesisData[key];
         return `
-          <div style="margin-bottom: 12px;">
+          <div class="clinical-field" style="margin-bottom: 12px;">
             <div style="font-weight: 600; font-size: 11px; color: #0f766e; margin-bottom: 4px; text-transform: uppercase;">
               ${label}
             </div>
-            <div style="background-color: #f0fdfa; padding: 10px 12px; border-radius: 8px; border: 1px solid #99f6e4; font-size: 11px; line-height: 1.5; color: #1f2937; min-height: 20px;">
+            <div class="clinical-value" style="background-color: #f0fdfa; padding: 10px 12px; border-radius: 8px; border: 1px solid #99f6e4; font-size: 11px; line-height: 1.6; color: #1f2937; min-height: 20px;">
               ${getFieldValue(value)}
             </div>
           </div>
@@ -348,7 +354,14 @@ export const generateProfessionalAnamnesePDF = async (
             * { margin: 0; padding: 0; box-sizing: border-box; }
             body { font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.4; background: #ffffff; }
             .container { max-width: 800px; margin: 0 auto; background-color: #ffffff; }
-            .page-break { page-break-before: always; }
+            .page-break { break-before: page; page-break-before: always; }
+            .clinical-field { margin: 0 0 12px; break-inside: avoid; page-break-inside: avoid; }
+            .clinical-value { overflow-wrap: anywhere; word-break: normal; white-space: normal; }
+            .not-reported { color: #64748b; font-style: italic; }
+            h1, h2, h3 { break-after: avoid; page-break-after: avoid; }
+            p, div { overflow-wrap: anywhere; }
+            img, svg { max-width: 100%; }
+            @media print { .clinical-field { break-inside: avoid; } }
           </style>
         </head>
         <body>
@@ -765,7 +778,8 @@ export const generateProfessionalAnamnesePDF = async (
       margin: [10, 10, 10, 10],
       filename: `Anamnese_Musicoterapeutica_${patientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`,
       pagebreak: { 
-        mode: ['avoid-all', 'css', 'legacy']
+        mode: ['css', 'legacy'],
+        avoid: ['.clinical-field', 'h1', 'h2', 'h3']
       },
       jsPDF: {
         unit: 'mm',
@@ -773,7 +787,7 @@ export const generateProfessionalAnamnesePDF = async (
         orientation: 'portrait'
       },
       html2canvas: {
-        scale: 1.5,
+        scale: 2,
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff',
