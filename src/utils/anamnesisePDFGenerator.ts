@@ -78,22 +78,6 @@ export const generateProfessionalAnamnesePDF = async (
     console.log("🎯 Iniciando geração do PDF profissional da Anamnese...");
     
     const element = document.createElement('div');
-    let footerLogo: string | null = null;
-    try {
-      const logoResponse = await fetch('/lovable-uploads/musetera-logo-new.png');
-      if (logoResponse.ok) {
-        const logoBlob = await logoResponse.blob();
-        footerLogo = await new Promise<string | null>(resolve => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : null);
-          reader.onerror = () => resolve(null);
-          reader.readAsDataURL(logoBlob);
-        });
-      }
-    } catch (error) {
-      console.warn('Logo do rodapé indisponível.', error);
-    }
-
     const generateProfessionalHTML = () => {
       // Função para valor de campo
       const escapeHtml = (value: unknown): string =>
@@ -413,30 +397,6 @@ export const generateProfessionalAnamnesePDF = async (
               <div class="header-rule"></div>
             </header>
 
-            <!-- Cabeçalho do paciente inspirado na Evaluation: informação, não decoração -->
-            <section class="patient-identity" style="margin:10px 16px 14px;border:1px solid #d9e2ec;border-top:3px solid #0f766e;border-radius:9px;padding:16px 18px;break-inside:avoid;">
-              <div style="color:#0f766e;font-weight:800;font-size:10px;letter-spacing:1px;margin-bottom:6px;">IDENTIFICAÇÃO DO PACIENTE</div>
-              <div style="font-size:19px;font-weight:800;color:#102a43;margin-bottom:12px;overflow-wrap:anywhere;">${escapeHtml(patientName)}</div>
-              <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px 18px;border-bottom:1px solid #d9e2ec;padding-bottom:12px;">
-                ${identityItem('DATA DE NASCIMENTO', anamnesisData.patient_birth_date ? formatClinicalDate(anamnesisData.patient_birth_date) : '')}
-                ${identityItem('IDADE CADASTRADA', anamnesisData.patient_age != null ? `${anamnesisData.patient_age} anos` : '')}
-                ${identityItem('RESPONSÁVEL CADASTRADO', anamnesisData.patient_responsible || anamnesisData.legal_guardian || '')}
-                ${identityItem('CONTATO CADASTRADO', anamnesisData.patient_contact || '')}
-                ${identityItem('MÃE', anamnesisData.mother_name || '')}
-                ${identityItem('PAI', anamnesisData.father_name || '')}
-                ${identityItem('CID INFORMADO', anamnesisData.cid_code || '')}
-                ${identityItem('NÍVEL DE SUPORTE INFORMADO', anamnesisData.support_level || '')}
-              </div>
-              <div style="font-weight:800;color:#0f766e;font-size:10px;letter-spacing:1px;margin:12px 0 8px;">DADOS DA ANAMNESE</div>
-              <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 18px;">
-                ${identityItem('DATA DO REGISTRO', formatClinicalDate(anamnesisData.created_at))}
-                ${identityItem('SITUAÇÃO', anamnesisData.review_status === 'finalized' ? 'Finalizada' : 'Rascunho / não informado')}
-                ${identityItem('MUSICOTERAPEUTA RESPONSÁVEL', professional.name || '')}
-                ${identityItem('REGISTRO PROFISSIONAL', professional.register || professional.license_number || '')}
-              </div>
-              <p style="font-size:9px;color:#64748b;margin:11px 0 0;">Diagnósticos, CID e nível de suporte reproduzem informações cadastradas; não constituem confirmação diagnóstica.</p>
-            </section>
-
             <!-- ÍNDICE NAVEGÁVEL -->
 
 
@@ -716,7 +676,6 @@ export const generateProfessionalAnamnesePDF = async (
             <section class="professional-footer" style="margin:18px 16px 4px;border:1px solid #d6e8e7;border-top:3px solid #0f766e;border-radius:9px;padding:14px 16px;break-inside:avoid;page-break-inside:avoid;">
               <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;">
                 <h2 style="font-size:13px;color:#115e59;margin:0;">ASSINATURA E CARIMBO DO MUSICOTERAPEUTA</h2>
-                ${footerLogo ? `<img src="${footerLogo}" alt="MuseTera" style="width:58px;height:58px;object-fit:contain;"/>` : '<span style="font-size:10px;color:#115e59;font-weight:800;">MUSETERA</span>'}
               </div>
               <div style="font-weight:700;font-size:12px;color:#102a43;">${escapeHtml(professional.name || 'Profissional não informado')}</div>
               <div style="font-size:10px;color:#475569;margin-top:3px;">${escapeHtml(professional.specialty || 'Musicoterapia')}</div>
