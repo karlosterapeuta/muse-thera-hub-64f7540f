@@ -466,6 +466,16 @@ export default function AnamnesisFormWrapper({
       // Get patient name
       const patient = patients.find(p => p.id === selectedPatient);
       const patientName = patient?.name || "Paciente";
+      const { data: patientDetails, error: patientDetailsError } = await supabase
+        .from("patients")
+        .select("name, age, birth_date, responsible, contact")
+        .eq("id", selectedPatient)
+        .eq("professional_id", professionalId)
+        .maybeSingle();
+      if (patientDetailsError || !patientDetails) {
+        toast({ title: "Dados cadastrais indisponíveis", description: "Não foi possível confirmar os dados do paciente para o cabeçalho do PDF.", variant: "destructive" });
+        return;
+      }
 
       // Get professional data - use user_id since professionalId is the auth user ID
       console.log("🔍 Buscando profissional com user_id:", professionalId);
@@ -556,7 +566,11 @@ export default function AnamnesisFormWrapper({
         patient_id: selectedPatient,
         professional_id: professionalId,
         created_at: formData.created_at || new Date().toISOString(),
-        patient_name: patientName
+        patient_name: patientDetails.name || patientName,
+        patient_birth_date: patientDetails.birth_date,
+        patient_age: patientDetails.age,
+        patient_responsible: patientDetails.responsible,
+        patient_contact: patientDetails.contact
       };
 
       const success = await generateProfessionalAnamnesePDF(
