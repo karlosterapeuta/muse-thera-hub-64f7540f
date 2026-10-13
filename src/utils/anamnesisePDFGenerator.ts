@@ -338,7 +338,7 @@ export const generateProfessionalAnamnesePDF = async (
       const sectionHeader = (number: number, title: string) => {
         const colors = sectionColors[number] || sectionColors[1];
         return `
-          <div style="background: #125b61; color: white; padding: 8px 12px; page-break-after: avoid; break-after: avoid; border-radius: 7px 7px 0 0; display: flex; align-items: center; gap: 12px;">
+          <div class="clinical-section-header" style="background: #125b61; color: white; padding: 8px 12px; page-break-after: avoid; break-after: avoid; border-radius: 7px 7px 0 0; display: flex; align-items: center; gap: 12px;">
             <div style="background: ${colors.iconBg}; padding: 5px; border-radius: 6px; display: flex; align-items: center; justify-content: center; min-width: 28px; min-height: 28px;">
               <span style="font-weight: 700; color: white; font-size: 16px;">${number}</span>
             </div>
@@ -376,6 +376,8 @@ export const generateProfessionalAnamnesePDF = async (
             .header-rule { margin-top:12px;height:3px;width:72px;background:#0d9488;border-radius:3px; }
             .clinical-field { break-inside:avoid; }
             .section-header { border-radius:7px 7px 0 0; }
+            .clinical-section-header { break-inside:avoid; page-break-inside:avoid; break-after:avoid; page-break-after:avoid; }
+            .clinical-section-header + div { break-before:avoid; page-break-before:avoid; }
             .document-header,.header-brand,.brand-logo { break-inside:avoid; }
             
             .page-break { break-before: page; page-break-before: always; }
@@ -396,6 +398,11 @@ export const generateProfessionalAnamnesePDF = async (
               <div class="header-subtitle">Histórico clínico e sonoro-musical · Registro de anamnese</div>
               <div class="header-rule"></div>
             </header>
+
+            <div class="patient-line" style="margin:0 16px 13px;padding:10px 13px;background:#f3f8f7;border-left:3px solid #0f766e;border-radius:4px;display:flex;justify-content:space-between;align-items:center;gap:16px;page-break-inside:avoid;">
+              <div style="min-width:0"><span style="font-size:9px;font-weight:800;color:#475569;letter-spacing:.5px;">PACIENTE</span><div style="font-size:13px;font-weight:700;color:#102a43;overflow-wrap:anywhere;">${escapeHtml(patientName)}</div></div>
+              <div style="text-align:right;flex-shrink:0"><span style="font-size:9px;font-weight:800;color:#475569;letter-spacing:.5px;">DATA DO REGISTRO</span><div style="font-size:11px;color:#172b4d;font-weight:600;">${formatClinicalDate(anamnesisData.created_at)}</div></div>
+            </div>
 
             <!-- ÍNDICE NAVEGÁVEL -->
 
@@ -734,7 +741,7 @@ export const generateProfessionalAnamnesePDF = async (
       filename: `Anamnese_Musicoterapeutica_${patientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`,
       pagebreak: { 
         mode: ['css', 'legacy'],
-        avoid: ['h1', 'h2', 'h3']
+        avoid: ['.clinical-section-header', '.professional-footer', 'h1', 'h2', 'h3']
       },
       jsPDF: {
         unit: 'mm',
