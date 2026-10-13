@@ -42,16 +42,18 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
 
   // Calculate progress
   const calculateProgress = useMemo(() => {
-    const totalFields = 80;
-    let filledFields = 0;
-    
-    Object.entries(content).forEach(([key, value]) => {
-      if (value && value !== "" && value !== false) {
-        filledFields++;
-      }
-    });
-    
-    return Math.min(Math.round((filledFields / totalFields) * 100), 100);
+    const fields = [
+      ...section1Fields, ...section2Fields, ...section3Fields, ...section4Fields,
+      ...section5Fields, ...section6Fields, ...section7Fields, ...section8Fields,
+      ...section9Fields, ...section10Fields, ...section11Fields,
+      'therapeutic_goals', 'treatment_approach'
+    ];
+    const uniqueFields = [...new Set(fields)];
+    const filled = uniqueFields.filter(key => {
+      const value = content[key];
+      return typeof value === 'string' ? value.trim().length > 0 : value === true;
+    }).length;
+    return uniqueFields.length ? Math.round(100 * filled / uniqueFields.length) : 0;
   }, [content]);
 
   // Check section completion (>= 50% of fields filled)
@@ -95,7 +97,7 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
       {/* Progress Bar */}
       <AnamnesisProgressBar 
         progress={calculateProgress}
-        totalSections={11}
+        totalSections={12}
         completedSections={[
           isSectionComplete(section1Fields),
           isSection2Complete(section2Fields),
@@ -108,6 +110,7 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
           isSectionComplete(section9Fields),
           isSectionComplete(section10Fields),
           isSectionComplete(section11Fields),
+          Boolean(getStringValue('therapeutic_goals') || getStringValue('treatment_approach')),
         ].filter(Boolean).length}
       />
 
@@ -155,7 +158,7 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
             label="Demanda Clínica Principal"
             value={getStringValue("main_clinical_demand")}
             onChange={(value) => updateField("main_clinical_demand", value)}
-            placeholder="Descreva a queixa principal e motivo do encaminhamento para musicoterapia..."
+            placeholder="Descreva a demanda principal nas palavras da família/paciente, impacto na participação, contexto, situações em que ocorre e o que esperam da musicoterapia..."
             icon={Stethoscope}
             required
             hint="Inclua informações sobre as principais dificuldades observadas e expectativas terapêuticas"
@@ -241,7 +244,7 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
             label="Detalhes Adicionais sobre Condições"
             value={getStringValue("clinical_details")}
             onChange={(value) => updateField("clinical_details", value)}
-            placeholder="Descreva detalhes específicos sobre os diagnósticos, histórico médico relevante..."
+            placeholder="Diferencie o que foi relatado pela família do que consta em documento médico. Registre condições relevantes, alergias, episódios convulsivos, cuidados e adaptações necessários na sessão..."
             minRows={2}
           />
         </div>
@@ -389,7 +392,7 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
             label="História Musical do Paciente"
             value={getStringValue("patient_musical_history")}
             onChange={(value) => updateField("patient_musical_history", value)}
-            placeholder="Descreva a relação do paciente com a música, preferências, reações a estímulos musicais..."
+            placeholder="Registre músicas e instrumentos preferidos, habilidades, interesses, maneiras de participar, atividades rejeitadas, recursos acessíveis e oportunidades de expressão musical..."
             icon={Music}
             required
             error={fieldErrors["patient_musical_history"]}
@@ -524,7 +527,7 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
             label="Descrição do Comportamento Musical Observado"
             value={getStringValue("musical_behavior_description")}
             onChange={(value) => updateField("musical_behavior_description", value)}
-            placeholder="Descreva em detalhes como o paciente se comporta em situações musicais, suas reações, preferências e aversões..."
+            placeholder="Descreva iniciativa musical, imitação rítmica/vocal, alternância de turnos, comunicação funcional, atenção compartilhada, tolerância a espera, apoios utilizados e resposta durante tarefas musicais..."
             icon={Eye}
           />
         </div>
@@ -561,7 +564,7 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
               label="Sons que Causam Desconforto"
               value={getStringValue("discomfort_sounds")}
               onChange={(value) => updateField("discomfort_sounds", value)}
-              placeholder="Liste sons, ruídos ou músicas que causam desconforto ou aversão..."
+              placeholder="Liste sons e características (volume, frequência, timbre, imprevisibilidade), contexto, sinais de desconforto, intensidade observada e medidas de proteção auditiva..."
               minRows={2}
             />
             <AutoExpandTextarea
@@ -569,7 +572,7 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
               label="Sons que Acalmam/Agradam"
               value={getStringValue("calming_sounds")}
               onChange={(value) => updateField("calming_sounds", value)}
-              placeholder="Liste sons, músicas ou vozes que acalmam ou agradam o paciente..."
+              placeholder="Informe músicas/sons preferidos, volume tolerado, sinais de conforto, opções de pausa e maneiras de recuperar a regulação após sobrecarga..."
               minRows={2}
             />
           </div>
@@ -658,7 +661,7 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
             label="Estratégias de Regulação que Funcionam"
             value={getStringValue("regulation_strategies")}
             onChange={(value) => updateField("regulation_strategies", value)}
-            placeholder="Descreva estratégias que ajudam a acalmar ou regular o paciente..."
+            placeholder="Registre gatilhos, sinais iniciais de sobrecarga, comunicação de desconforto, estratégias eficazes, apoios visuais, previsibilidade e tempo de recuperação..."
             icon={Heart}
           />
           <AutoExpandTextarea
@@ -743,7 +746,7 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
             label="Objetivos Terapêuticos Propostos"
             value={getStringValue("therapeutic_goals")}
             onChange={(value) => updateField("therapeutic_goals", value)}
-            placeholder="Defina os objetivos terapêuticos iniciais baseados na avaliação..."
+            placeholder="Defina metas funcionais, observáveis e acordadas com a família/paciente; descreva ponto de partida, contexto e indicadores de acompanhamento. Hipóteses iniciais devem ser revistas após avaliação."
             icon={Activity}
             required
             hint="Baseie-se nos dados coletados para traçar objetivos claros e mensuráveis"
