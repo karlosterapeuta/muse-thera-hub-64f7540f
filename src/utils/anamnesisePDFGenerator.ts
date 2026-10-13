@@ -86,6 +86,48 @@ export const generateProfessionalAnamnesePDF = async (
         return String(value);
       };
 
+      // Escapar conteúdo textual relatado antes de inserir no HTML do PDF.
+      const escapeClinicalText = (value: unknown): string =>
+        String(value ?? "").replace(/[&<>"']/g, character => ({
+          "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+        }[character] || character)).replace(/\\n/g, "<br />");
+
+      const renderTeaFunctionalProfile = (): string => {
+        const profile = anamnesisData.tea_functional_profile;
+        if (!profile || typeof profile !== "object" || Array.isArray(profile)) return "";
+        const labels: Array<[string, string]> = [
+          ["communication", "Comunicação funcional"],
+          ["comprehension", "Compreensão e apoios"],
+          ["musical_interaction", "Participação e interação musical"],
+          ["musical_strengths", "Interesses e habilidades musicais"],
+          ["sensory_triggers", "Perfil sensorial e adaptações"],
+          ["emotional_regulation", "Regulação e previsibilidade"],
+          ["daily_participation", "Autonomia e participação"],
+          ["safety", "Cuidados de segurança"],
+          ["family_goals", "Prioridades do paciente e responsáveis"],
+        ];
+        const filled = labels.filter(([key]) =>
+          typeof profile[key] === "string" && profile[key].trim().length > 0
+        );
+        if (!filled.length) return "";
+        return `
+          <div style="margin:20px 0;page-break-inside:avoid;">
+            <h2 style="color:#115e59;font-size:16px;border-bottom:2px solid #0f766e;padding-bottom:6px;">
+              PERFIL FUNCIONAL TEA — CONTEXTO MUSICOTERAPÊUTICO
+            </h2>
+            <p style="font-size:10px;color:#64748b;margin:8px 0;">
+              Informações relatadas no processo de anamnese; não constituem diagnóstico.
+            </p>
+            ${filled.map(([key, label]) => `
+              <div style="margin:10px 0;padding:10px 12px;background:#f0fdfa;border-left:3px solid #0f766e;border-radius:5px;page-break-inside:avoid;">
+                <strong style="color:#134e4a;font-size:11px;">${escapeClinicalText(label)}</strong>
+                <div style="color:#1f2937;font-size:11px;line-height:1.55;margin-top:4px;white-space:normal;">
+                  ${escapeClinicalText(profile[key])}
+                </div>
+              </div>`).join("")}
+          </div>`;
+      };
+
       // Renderizar campo de texto
       const renderTextField = (label: string, key: string) => {
         const value = anamnesisData[key];
@@ -598,6 +640,8 @@ export const generateProfessionalAnamnesePDF = async (
                   ${renderTextField('Rede de Apoio Familiar', 'family_support_network')}
                 `)}
               </div>
+
+              ${renderTeaFunctionalProfile()}
 
               <!-- SEÇÃO 12: OBJETIVOS TERAPÊUTICOS -->
               <div style="margin-bottom: 20px; page-break-inside: avoid;">
