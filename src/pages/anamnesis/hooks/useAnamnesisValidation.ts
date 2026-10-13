@@ -54,23 +54,27 @@ export function useAnamnesisValidation(formData: Record<string, any>) {
       });
     });
 
-    // Calcular porcentagem de preenchimento
-    let filledCount = 0;
-    allTrackableFields.forEach((field) => {
+    // Cobertura dos campos textuais conhecidos e do perfil funcional TEA.
+    // Não utiliza denominador fictício de checkboxes nem trata 'não marcado' como resposta.
+    const tracked = [...new Set(allTrackableFields)];
+    const textualCount = tracked.filter(field => {
       const value = formData[field];
-      if (value && (typeof value !== "string" || value.trim() !== "")) {
-        filledCount++;
-      }
-    });
-
-    // Também contar checkboxes marcados
-    const checkboxFields = Object.entries(formData).filter(([key, value]) => 
-      typeof value === "boolean" && value === true
+      return typeof value === "string" ? value.trim().length > 0 : value === true;
+    }).length;
+    const functionalKeys = [
+      "communication", "comprehension", "musical_interaction", "musical_strengths",
+      "sensory_triggers", "emotional_regulation", "daily_participation", "safety", "family_goals"
+    ];
+    const profile = formData.tea_functional_profile &&
+      typeof formData.tea_functional_profile === "object" &&
+      !Array.isArray(formData.tea_functional_profile)
+      ? formData.tea_functional_profile : {};
+    const functionalCount = functionalKeys.filter(key =>
+      typeof profile[key] === "string" && profile[key].trim().length > 0
+    ).length;
+    const completionPercentage = Math.round(
+      100 * (textualCount + functionalCount) / (tracked.length + functionalKeys.length)
     );
-    filledCount += checkboxFields.length;
-
-    const totalFields = allTrackableFields.length + 50; // Aproximadamente 50 checkboxes
-    const completionPercentage = Math.min(100, Math.round((filledCount / totalFields) * 100));
 
     return {
       isValid: errors.length === 0,
