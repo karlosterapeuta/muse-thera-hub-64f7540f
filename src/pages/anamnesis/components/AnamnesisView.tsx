@@ -66,6 +66,8 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         .from("anamnesis")
         .select("*")
         .eq("id", anamnesis.id)
+        .eq("patient_id", anamnesis.patient_id)
+        .eq("professional_id", (await supabase.auth.getUser()).data.user?.id || "")
         .single();
 
       if (error) {
@@ -80,16 +82,6 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
 
       setAnamnesisData(data);
       
-      // Debug logs para verificar os dados da História Sonora e Musical
-      console.log("🔍 Dados carregados da anamnese:", data);
-      console.log("🎵 História Sonora - pregnancy_sound_experiences:", data.pregnancy_sound_experiences);
-      console.log("🎵 História Sonora - mother_movements_songs:", data.mother_movements_songs);
-      console.log("🎵 História Sonora - childhood_sound_environment:", data.childhood_sound_environment);
-      console.log("🎵 História Sonora - parents_sound_reactions:", data.parents_sound_reactions);
-      console.log("🎵 História Sonora - typical_house_sounds:", data.typical_house_sounds);
-      console.log("🎵 História Sonora - night_body_sounds:", data.night_body_sounds);
-      console.log("🎵 História Sonora - family_musical_history:", data.family_musical_history);
-      console.log("🎵 História Sonora - patient_musical_history:", data.patient_musical_history);
     } catch (error) {
       console.error("Erro ao carregar dados da anamnese:", error);
       toast({
