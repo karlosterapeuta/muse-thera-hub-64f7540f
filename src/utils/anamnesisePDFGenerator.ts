@@ -89,7 +89,7 @@ export const generateProfessionalAnamnesePDF = async (
           return '<span class="not-reported">Não informado</span>';
         }
         if (typeof value === "boolean") return value ? "Sim" : "Não";
-        return escapeHtml(value).replace(/\\r?\\n/g, "<br />");
+        return escapeHtml(value).replace(/\r?\n/g, "<br />");
       };
 
       // Escapar conteúdo textual relatado antes de inserir no HTML do PDF.
