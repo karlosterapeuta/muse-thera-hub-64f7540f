@@ -720,15 +720,8 @@ export const generateProfessionalAnamnesePDF = async (
               <p style="font-size:9px;line-height:1.5;color:#64748b;margin-top:12px;">Quando presentes, imagens de assinatura e carimbo reproduzidas conforme cadastro. Este PDF não comprova assinatura criptográfica certificada.</p>
             </section>
 
-            <!-- Informações do Documento -->
-            <div style="font-size: 9px; color: #6b7280; text-align: center; margin: 16px 16px 24px 16px;">
-              <div style="margin-bottom: 4px;">
-                <strong>Documento gerado em:</strong> ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
-              </div>
-              <div style="font-size: 8px; color: #9ca3af;">
-                Este documento contém informações confidenciais protegidas pelo sigilo profissional
-              </div>
-            </div>
+            <!-- Metadados de emissão vão no rodapé vetorial da última página,
+                 fora do raster do html2pdf, evitando uma quinta página. -->
           </div>
         </body>
         </html>
@@ -789,69 +782,31 @@ export const generateProfessionalAnamnesePDF = async (
     const pdfInstance = html2pdf().from(element).set(opt);
     await pdfInstance.toPdf();
     const pdfDocument = await pdfInstance.get("pdf");
-    // Inspecionar o raster ANTES de adicionar a numeração: páginas extras vazias
-    // podem ser criadas pelo html2pdf quando a altura total excede um múltiplo de A4.
-    // Nunca remover páginas que contenham pixels de conteúdo.
-    const renderedCanvas = await pdfInstance.get('canvas') as HTMLCanvasElement | undefined;
-    if (renderedCanvas && renderedCanvas.width > 0 && renderedCanvas.height > 0) {
-      const innerWidth = pdfDocument.internal.pageSize.getWidth() - opt.margin[1] - opt.margin[3];
-      const innerHeight = pdfDocument.internal.pageSize.getHeight() - opt.margin[0] - opt.margin[2];
-      const pixelsPerPage = Math.floor(renderedCanvas.width * innerHeight / innerWidth);
-
-      if (pixelsPerPage > 0) {
-        const context = renderedCanvas.getContext('2d', { willReadFrequently: true });
-        if (context) {
-          while (pdfDocument.internal.getNumberOfPages() > 1) {
-            const lastPageIndex = pdfDocument.internal.getNumberOfPages() - 1;
-            const startY = lastPageIndex * pixelsPerPage;
-            const endY = Math.min(renderedCanvas.height, startY + pixelsPerPage);
-            if (startY >= renderedCanvas.height) {
-              pdfDocument.deletePage(lastPageIndex + 1);
-              continue;
-            }
-            const image = context.getImageData(0, startY, renderedCanvas.width, endY - startY);
-            // A página final pode conter um pequeno resíduo antialiasado do
-            // html2canvas, mesmo sem conteúdo clínico. Verificar sua extensão
-            // e densidade antes de decidir removê-la.
-            let visibleSamples = 0;
-            let firstVisibleY = image.height;
-            let lastVisibleY = -1;
-            let checkedSamples = 0;
-            for (let y = 0; y < image.height; y += 2) {
-              for (let x = 0; x < image.width; x += 2) {
-                const offset = (y * image.width + x) * 4;
-                checkedSamples++;
-                // Diferenças sutis de branco são resíduos de rasterização.
-                const isInk = image.data[offset + 3] > 128 &&
-                  Math.min(image.data[offset], image.data[offset + 1], image.data[offset + 2]) < 210;
-                if (isInk) {
-                  visibleSamples++;
-                  firstVisibleY = Math.min(firstVisibleY, y);
-                  lastVisibleY = Math.max(lastVisibleY, y);
-                }
-              }
-            }
-            const inkRatio = visibleSamples / Math.max(checkedSamples, 1);
-            const inkHeightRatio = lastVisibleY < 0 ? 0 :
-              (lastVisibleY - firstVisibleY + 1) / pixelsPerPage;
-            // Apenas resíduos quase brancos e muito pequenos podem ser descartados.
-            // Páginas com escrita, imagens, carimbos ou conteúdo significativo ficam.
-            const isTrailingRasterArtifact = inkRatio < 0.0005 && inkHeightRatio < 0.08;
-            if (!isTrailingRasterArtifact) break;
-            pdfDocument.deletePage(lastPageIndex + 1);
-          }
-        }
-      }
-    }
-
+    // Não detectar/apagar páginas por cor de pixels: conteúdo legítimo,
+    // inclusive textos discretos, poderia ser descartado.
+    // O bloco de data/confidencialidade foi retirado do HTML e é
+    // desenhado no rodapé da última página já paginada.
     const pageCount = pdfDocument.internal.getNumberOfPages();
     for (let pageNumber = 1; pageNumber <= pageCount; pageNumber++) {
       pdfDocument.setPage(pageNumber);
       pdfDocument.setFont("helvetica", "normal");
       pdfDocument.setFontSize(8);
       pdfDocument.setTextColor(100, 116, 139);
-      pdfDocument.text("Musetera · Anamnese musicoterapêutica", 11, 290);
-      pdfDocument.text(`Página ${pageNumber} de ${pageCount}`, 199, 290, { align: "right" });
+      pdfDocument.text("Musetera · Anamnese musicoterapêutica", 11, 293);
+      pdfDocument.text(`Página ${pageNumber} de ${pageCount}`, 199, 293, { align: "right" });
+
+      if (pageNumber === pageCount) {
+        const issuedAt = issueDate.toLocaleDateString('pt-BR') + ' às ' +
+          issueDate.toLocaleTimeString('pt-BR');
+        pdfDocument.setFontSize(7);
+        pdfDocument.setTextColor(100, 116, 139);
+        pdfDocument.text(`Documento gerado em: ${issuedAt}`, 105, 283.5, { align: 'center' });
+        pdfDocument.setFontSize(6.5);
+        pdfDocument.text(
+          'Este documento contém informações confidenciais protegidas pelo sigilo profissional',
+          105, 287, { align: 'center' }
+        );
+      }
     }
     await pdfInstance.save();
 
