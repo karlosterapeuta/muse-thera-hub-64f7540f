@@ -110,7 +110,8 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         association: '',
         stamp_photo_url: '',
         avatar_url: '',
-        digital_stamp_url: ''
+        digital_stamp_url: '',
+        digital_signature_url: ''
       };
 
       if (user) {
@@ -145,7 +146,8 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
             association: professional.association || '',
             stamp_photo_url: professional.stamp_photo_url || '',
             avatar_url: professional.avatar_url || '',
-            digital_stamp_url: professional.digital_stamp_url || ''
+            digital_stamp_url: professional.digital_stamp_url || '',
+            digital_signature_url: professional.digital_signature_url || ''
           };
           console.log("✅ [AnamnesisView] Dados do profissional carregados com sucesso");
         } else {
@@ -158,6 +160,7 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
       // Converter imagens para Base64
       let professionalPhotoBase64: string | null = null;
       let digitalStampBase64: string | null = null;
+      let digitalSignatureBase64: string | null = null;
 
       console.log("🔍 [AnamnesisView] URLs de imagem antes da conversão:", {
         stamp_photo_url: professionalData.stamp_photo_url,
@@ -188,6 +191,14 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         }
       }
 
+      if (professionalData.digital_signature_url) {
+        try {
+          digitalSignatureBase64 = await imageUrlToBase64(professionalData.digital_signature_url);
+        } catch (error) {
+          console.warn("Não foi possível converter a assinatura digital para o PDF:", error);
+        }
+      }
+
       // Ensure we have the required created_at field and structure the data properly
       const formattedAnamnesisData = {
         ...anamnesisData,
@@ -200,7 +211,8 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         professionalData,
         anamnesis.patient_name || 'Paciente',
         professionalPhotoBase64,
-        digitalStampBase64
+        digitalStampBase64,
+        digitalSignatureBase64
       );
 
       if (success) {
