@@ -199,11 +199,28 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         }
       }
 
+      // Fill missing identity fields only from the authenticated patient's record.
+      let patientDetails: Record<string, any> = {};
+      if (user && anamnesis.patient_id) {
+        const { data: patient, error: patientError } = await supabase
+          .from('patients')
+          .select('*')
+          .eq('id', anamnesis.patient_id)
+          .eq('user_id', user.id)
+          .maybeSingle();
+        if (!patientError && patient) patientDetails = patient;
+      }
+      const fillMissing = (primary: unknown, fallback: unknown) =>
+        primary !== undefined && primary !== null && String(primary).trim() !== '' ? primary : fallback;
+
       // Ensure we have the required created_at field and structure the data properly
       const formattedAnamnesisData = {
         ...anamnesisData,
         created_at: anamnesisData.created_at || anamnesis.created_at,
-        patient_name: anamnesis.patient_name
+        patient_name: fillMissing(anamnesisData.patient_name, fillMissing(patientDetails.name, anamnesis.patient_name)),
+        birth_date: fillMissing(anamnesisData.birth_date, patientDetails.birth_date),
+        legal_guardian: fillMissing(anamnesisData.legal_guardian, patientDetails.legal_guardian),
+        family_relationship: fillMissing(anamnesisData.family_relationship, patientDetails.family_relationship),
       };
 
       const success = await generateProfessionalAnamnesePDF(
