@@ -50,12 +50,16 @@ export default function PtiEditor() {
   const [downloading, setDownloading] = useState(false);
   const autoSaveRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const loadedRef = useRef(false);
+  // Serializa as gravações e impede duplicação de planos ao salvar pela primeira vez.
+  const planIdRef = useRef<string | undefined>(isNew ? undefined : id);
+  const saveQueueRef = useRef<Promise<void>>(Promise.resolve());
 
   // Load existing plan
   useEffect(() => {
     if (existing && !loadedRef.current) {
       loadedRef.current = true;
       setPlanId(existing.id);
+      planIdRef.current = existing.id;
       setPatientId(existing.patient_id);
       setStatus(existing.status);
       setContent({ ...createDefaultPtiContent(), ...existing.content });
@@ -79,30 +83,47 @@ export default function PtiEditor() {
   }, []);
 
   const doSave = useCallback(
-    async (silent = false) => {
+    (silent = false): Promise<boolean> => {
       if (!professional) {
         if (!silent) toast.error("Carregando seus dados profissionais. Aguarde um instante e tente novamente.");
-        return;
+        return Promise.resolve(false);
       }
-      try {
-        const savedId = await saveMutation.mutateAsync({
-          id: planId,
-          patient_id: patientId,
-          title: content.identificacao.nome
-            ? `PTI - ${content.identificacao.nome}`
-            : "Plano Terapêutico Individual",
-          status,
-          plan_date: content.identificacao.dataPlano,
-          content,
-        });
-        if (!planId) setPlanId(savedId);
-        setLastSaved(new Date());
-        if (!silent) toast.success("Plano salvo");
-      } catch (e: any) {
-        if (!silent) toast.error(e.message || "Erro ao salvar");
-      }
+
+      // A fila mantém a ordem entre autosave, salvar manualmente e exportar PDF.
+      // Cada tarefa conserva o conteúdo do momento do clique.
+      const snapshot = {
+        patient_id: patientId,
+        title: content.identificacao.nome
+          ? `PTI - ${content.identificacao.nome}`
+          : "Plano Terapêutico Individual",
+        status,
+        plan_date: content.identificacao.dataPlano,
+        content,
+        createVersion: !silent,
+      };
+      const persist = async (): Promise<boolean> => {
+        try {
+          const savedId = await saveMutation.mutateAsync({
+            ...snapshot,
+            id: planIdRef.current,
+          });
+          if (!planIdRef.current) {
+            planIdRef.current = savedId;
+            setPlanId(savedId);
+          }
+          setLastSaved(new Date());
+          if (!silent) toast.success("Plano salvo e versão registrada");
+          return true;
+        } catch (e: any) {
+          if (!silent) toast.error(e.message || "Erro ao salvar");
+          return false;
+        }
+      };
+      const pending = saveQueueRef.current.then(persist, persist);
+      saveQueueRef.current = pending.then(() => undefined, () => undefined);
+      return pending;
     },
-    [professional, planId, patientId, status, content, saveMutation],
+    [professional, patientId, status, content, saveMutation],
   );
 
   // Auto-save
@@ -172,6 +193,9 @@ export default function PtiEditor() {
   const handleDownloadPDF = async () => {
     setDownloading(true);
     try {
+      // Nunca exportar conteúdo apenas em memória: confirmar salvamento e versão.
+      const saved = await doSave(false);
+      if (!saved) return;
       const signature = (professional?.digital_signature_url
         ? await imageUrlToBase64(professional.digital_signature_url)
         : "") || "";
@@ -227,7 +251,7 @@ export default function PtiEditor() {
               </h1>
               <div className="flex items-center gap-2 mt-1">
                 <Progress value={progress} className="h-1.5 flex-1 max-w-[180px]" />
-                <span className="text-xs text-muted-foreground shrink-0">{progress}%</span>
+                <span className="text-xs text-muted-foreground shrink-0" title="Percentual de campos preenchidos; não representa evolução clínica">Preenchimento: {progress}%</span>
                 {lastSaved && (
                   <span className="text-xs text-emerald-600 flex items-center gap-1 shrink-0">
                     <Check className="h-3 w-3" /> salvo
