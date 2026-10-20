@@ -810,18 +810,34 @@ export const generateProfessionalAnamnesePDF = async (
               continue;
             }
             const image = context.getImageData(0, startY, renderedCanvas.width, endY - startY);
-            let nonWhiteSamples = 0;
-            // Amostragem conservadora; qualquer conteúdo perceptível mantém a página.
-            for (let y = 0; y < image.height && nonWhiteSamples < 5; y += 3) {
-              for (let x = 0; x < image.width && nonWhiteSamples < 5; x += 3) {
+            // A página final pode conter um pequeno resíduo antialiasado do
+            // html2canvas, mesmo sem conteúdo clínico. Verificar sua extensão
+            // e densidade antes de decidir removê-la.
+            let visibleSamples = 0;
+            let firstVisibleY = image.height;
+            let lastVisibleY = -1;
+            let checkedSamples = 0;
+            for (let y = 0; y < image.height; y += 2) {
+              for (let x = 0; x < image.width; x += 2) {
                 const offset = (y * image.width + x) * 4;
-                if (image.data[offset + 3] > 32 &&
-                    (image.data[offset] < 240 || image.data[offset + 1] < 240 || image.data[offset + 2] < 240)) {
-                  nonWhiteSamples++;
+                checkedSamples++;
+                // Diferenças sutis de branco são resíduos de rasterização.
+                const isInk = image.data[offset + 3] > 128 &&
+                  Math.min(image.data[offset], image.data[offset + 1], image.data[offset + 2]) < 210;
+                if (isInk) {
+                  visibleSamples++;
+                  firstVisibleY = Math.min(firstVisibleY, y);
+                  lastVisibleY = Math.max(lastVisibleY, y);
                 }
               }
             }
-            if (nonWhiteSamples >= 5) break;
+            const inkRatio = visibleSamples / Math.max(checkedSamples, 1);
+            const inkHeightRatio = lastVisibleY < 0 ? 0 :
+              (lastVisibleY - firstVisibleY + 1) / pixelsPerPage;
+            // Apenas resíduos quase brancos e muito pequenos podem ser descartados.
+            // Páginas com escrita, imagens, carimbos ou conteúdo significativo ficam.
+            const isTrailingRasterArtifact = inkRatio < 0.0005 && inkHeightRatio < 0.08;
+            if (!isTrailingRasterArtifact) break;
             pdfDocument.deletePage(lastPageIndex + 1);
           }
         }
