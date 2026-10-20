@@ -29,6 +29,21 @@ Arquivos alterados: `src/hooks/usePtiPlans.ts`, `src/pages/pti/editor.tsx`, `src
 
 **Limite técnico da fase 1:** snapshots e plano ainda usam duas gravações separadas em Supabase. Se a gravação da versão falhar, o plano pode ter sido salvo sem snapshot; o editor comunica essa situação e não gera PDF. Atomicidade deve ser considerada numa fase futura via transação/RPC. A versão pode ser registrada novamente ao repetir o salvamento manual. A exportação atual registra um novo snapshot explícito a cada tentativa válida.
 
+## Etapa 1B — Editor V2 guiado (implementado nesta branch)
+
+O editor `/pti/novo` e `/pti/:id` passa a apresentar uma navegação de oito etapas: identificação, contexto clínico, objetivos/metas, intervenções, acompanhamento, família/equipe, revisão e relatório.
+
+- Interface responsiva e identidade verde MuseTera com resumo de paciente, objetivos e metas.
+- Biblioteca **original** pesquisável de sugestões musicoterapêuticas. A seleção adiciona objetivo, atividade e instrumentos editáveis no mesmo registro.
+- Metas terapêuticas permitem registrar linha de base observada (opcional).
+- Importação **opt-in** de campos preenchidos da anamnese, com confirmação e sem sobrescrever campos existentes. O profissional deve conferir o conteúdo e não se presume que exista resultado de avaliação integrado.
+- Reavaliação disponível no módulo anterior, sem converter mudanças de formulário em sessões.
+- Nova etapa de revisão antes da geração de PDF, incluindo atividade, material e linha de base no documento.
+- Campos adicionais são opcionais e compatíveis com registros antigos em `pti_plans.content`.
+- Para novos planos, após a primeira gravação a navegação utiliza a URL do plano persistido, reduzindo riscos de duplicação por atualização do navegador.
+
+**Ainda pendente:** validação visual e funcional do preview Cloudflare; verificação de RLS e build. A integração com a Escala MuseTera TEA e o registro por sessão ainda não foram implementados nesta fase.
+
 ## Fase 2 — Unificação funcional, sem exclusão dos módulos antigos
 
 - Definir **/pti** como acesso unificado e preservar rotas legadas enquanto houver usuários/planos ativos.
