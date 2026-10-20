@@ -371,14 +371,14 @@ export const generateProfessionalAnamnesePDF = async (
             .document-header,.header-brand,.brand-logo { break-inside:avoid; }
             
             .page-break { break-before: page; page-break-before: always; }
-            .clinical-section { break-inside: avoid; page-break-inside: avoid; }
+            .clinical-section { break-inside: auto; page-break-inside: auto; }
             .clinical-section-header { break-inside: avoid; page-break-inside: avoid; }
             .clinical-field { margin:0 0 9px; break-inside:avoid; page-break-inside:avoid; }
             .clinical-label { font-size:10px;line-height:1.35;color:#0f766e;font-weight:700;text-transform:uppercase;margin-bottom:4px; }
             .clinical-value { border:1px solid #e2e8f0;background:#f8fafc;padding:7px 10px;border-radius:6px;font-size:11px;line-height:1.55; }
             .clinical-field--empty { display:flex;justify-content:space-between;gap:12px;align-items:baseline;border-bottom:1px solid #f1f5f9;padding-bottom:4px;margin-bottom:6px; }
-            .clinical-field--empty .clinical-label { flex:1;min-width:0;margin:0;color:#64748b;font-size:9px; }
-            .clinical-field--empty .clinical-value { flex:0 1 44%;padding:0;border:0;background:transparent;color:#64748b;font-size:10px;text-align:right; }
+            .clinical-field--empty .clinical-label { flex:1;min-width:0;margin:0;color:#475569;font-size:10px; }
+            .clinical-field--empty .clinical-value { flex:0 1 44%;padding:0;border:0;background:transparent;color:#475569;font-size:10px;text-align:right; }
             .clinical-checkbox-empty { color:#64748b;font-size:10px;font-style:italic;padding:4px 0; }
             .clinical-tags { display:flex;flex-wrap:wrap;gap:5px; }
             .clinical-tag { display:inline-block;border-radius:14px;border:1px solid #7dd3c7;background:#ecfdf5;padding:4px 9px;font-size:10px;font-weight:600;color:#115e59;white-space:normal; }
