@@ -95,7 +95,7 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         patient_name: data.patient_name || patient.name || anamnesis.patient_name,
         birth_date: data.birth_date || patient.birth_date,
         legal_guardian: data.legal_guardian || patient.responsible,
-        gender: data.gender || patient.gender,
+        gender: data.gender || (patient as Record<string, any>).gender,
       });
       
     } catch (error) {
