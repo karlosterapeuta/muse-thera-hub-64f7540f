@@ -137,7 +137,7 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         const { data: professional, error } = await supabase
           .from('professionals')
           .select('*')
-          .eq('professional_id', user.id)
+          .eq('user_id', user.id)
           .maybeSingle();
 
         console.log("📊 [AnamnesisView] Query profissional resultado:", {
