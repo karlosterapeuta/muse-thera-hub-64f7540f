@@ -115,6 +115,10 @@ export default function PtiEditor() {
           if (!silent) toast.success("Plano salvo e versão registrada");
           return true;
         } catch (e: any) {
+          if (e?.savedPlanId && !planIdRef.current) {
+            planIdRef.current = e.savedPlanId;
+            setPlanId(e.savedPlanId);
+          }
           if (!silent) toast.error(e.message || "Erro ao salvar");
           return false;
         }
