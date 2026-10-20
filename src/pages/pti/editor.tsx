@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft, Save, Plus, Trash2, Loader2, Check, FileDown, Stethoscope,
+  ArrowLeft, Save, Plus, Trash2, Loader2, Check, FileDown, Stethoscope, ChevronLeft, ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +29,9 @@ import {
 import { formatAgeString } from "@/utils/dateUtils";
 import { generateStaticPDF } from "@/utils/staticPDFGenerator";
 import { PtiPDF } from "@/components/pti/PtiPDF";
+import { PtiWizardNavigation, PTI_WIZARD_STEPS, type PtiStepId } from "@/components/pti/PtiWizardNavigation";
+import { PtiObjectiveLibrary } from "@/components/pti/PtiObjectiveLibrary";
+import { PtiReportStep } from "@/components/pti/PtiReportStep";
 import { imageUrlToBase64 } from "@/utils/imageToBase64";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
@@ -48,6 +51,7 @@ export default function PtiEditor() {
   const [content, setContent] = useState<PtiContent>(createDefaultPtiContent());
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [downloading, setDownloading] = useState(false);
+  const [activeStep, setActiveStep] = useState<PtiStepId>("identificacao");
   const autoSaveRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const loadedRef = useRef(false);
   // Serializa as gravações e impede duplicação de planos ao salvar pela primeira vez.
@@ -238,6 +242,14 @@ export default function PtiEditor() {
   const removeMeta = (mid: string) => update({ metas: content.metas.filter((m) => m.id !== mid) });
 
   const ident = content.identificacao;
+  const currentStepIndex = PTI_WIZARD_STEPS.findIndex((step) => step.id === activeStep);
+  const goStep = (offset: number) => {
+    const nextStep = PTI_WIZARD_STEPS[currentStepIndex + offset];
+    if (nextStep) {
+      setActiveStep(nextStep.id);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -251,7 +263,7 @@ export default function PtiEditor() {
             <div className="flex-1 min-w-0">
               <h1 className="text-sm sm:text-base font-bold truncate flex items-center gap-2">
                 <Stethoscope className="h-4 w-4 text-primary shrink-0" />
-                <span className="truncate">Plano Terapêutico Individual</span>
+                <span className="truncate">PTI MuseTera · Editor V2</span>
               </h1>
               <div className="flex items-center gap-2 mt-1">
                 <Progress value={progress} className="h-1.5 flex-1 max-w-[180px]" />
@@ -280,11 +292,21 @@ export default function PtiEditor() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-4xl mx-auto px-4 py-6 space-y-4"
+        className="max-w-6xl mx-auto px-4 py-6 space-y-5"
       >
+        <PtiWizardNavigation
+          current={activeStep}
+          onChange={setActiveStep}
+          patientName={ident.nome}
+          completion={progress}
+          objectives={content.objetivosEspecificos.length}
+          goals={content.metas.length}
+          status={status}
+        />
+
         {/* Patient + status selectors */}
-        <Card>
-          <CardContent className="p-4 grid sm:grid-cols-2 gap-4">
+        <Card className="border-primary/20 bg-card/90 shadow-sm">
+          <CardContent className="p-5 grid sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Paciente</Label>
               <Select value={patientId ?? undefined} onValueChange={handleSelectPatient}>
@@ -310,7 +332,8 @@ export default function PtiEditor() {
           </CardContent>
         </Card>
 
-        <Accordion type="multiple" defaultValue={["s1"]} className="space-y-3">
+        <Accordion type="multiple" defaultValue={Array.from({ length: 18 }, (_, index) => `s${index + 1}`)} className="space-y-3">
+          {activeStep === "identificacao" && (<>
           {/* 1. Identificação */}
           <SectionItem value="s1" title="1. Identificação">
             <div className="grid sm:grid-cols-2 gap-3">
@@ -329,6 +352,8 @@ export default function PtiEditor() {
             </div>
           </SectionItem>
 
+          </>)}
+          {activeStep === "contexto" && (<>
           {/* 2. Queixa Principal */}
           <SectionItem value="s2" title="2. Queixa Principal" ai={<PtiAiButton section="queixaPrincipal" context={aiContext} onApply={applyText("queixaPrincipal")} />}>
             <Textarea rows={4} value={content.queixaPrincipal} onChange={(e) => update({ queixaPrincipal: e.target.value })} placeholder="Descreva a queixa principal..." />
@@ -396,6 +421,8 @@ export default function PtiEditor() {
             <Textarea rows={5} value={content.dificuldades} onChange={(e) => update({ dificuldades: e.target.value })} />
           </SectionItem>
 
+          </>)}
+          {activeStep === "objetivos" && (<>
           {/* 7. Objetivo Geral */}
           <SectionItem value="s7" title="7. Objetivo Geral" ai={<PtiAiButton section="objetivoGeral" context={aiContext} onApply={applyText("objetivoGeral")} />}>
             <Textarea rows={4} value={content.objetivoGeral} onChange={(e) => update({ objetivoGeral: e.target.value })} />
@@ -404,6 +431,10 @@ export default function PtiEditor() {
           {/* 8. Objetivos Específicos */}
           <SectionItem value="s8" title="8. Objetivos Específicos">
             <div className="space-y-3">
+              <PtiObjectiveLibrary
+                selected={content.objetivosEspecificos.map((item) => item.descricao)}
+                onAdd={(item) => update({ objetivosEspecificos: [...content.objetivosEspecificos, { id: uid(), descricao: item.objective, prazo: "", prioridade: "Média", area: item.area }] })}
+              />
               {content.objetivosEspecificos.map((o) => (
                 <Card key={o.id} className="border-border/60">
                   <CardContent className="p-3 space-y-2">
@@ -470,6 +501,8 @@ export default function PtiEditor() {
             </div>
           </SectionItem>
 
+          </>)}
+          {activeStep === "intervencoes" && (<>
           {/* 10. Estratégias */}
           <SectionItem value="s10" title="10. Estratégias Musicoterapêuticas">
             <ChipMulti options={PTI_ESTRATEGIAS} selected={content.estrategias} onToggle={(v) => toggleArray("estrategias", v)} onAdd={(v) => update({ estrategias: [...content.estrategias, v] })} addLabel="Nova estratégia" />
@@ -507,6 +540,8 @@ export default function PtiEditor() {
             </div>
           </SectionItem>
 
+          </>)}
+          {activeStep === "acompanhamento" && (<>
           {/* 13. Critérios de Evolução */}
           <SectionItem value="s13" title="13. Critérios de Evolução (1 a 5)">
             <div className="space-y-3">
@@ -532,6 +567,8 @@ export default function PtiEditor() {
             <Textarea rows={4} value={content.criteriosAlta} onChange={(e) => update({ criteriosAlta: e.target.value })} />
           </SectionItem>
 
+          </>)}
+          {activeStep === "familia" && (<>
           {/* 15. Plano Familiar */}
           <SectionItem value="s15" title="15. Plano Familiar" ai={<PtiAiButton section="planoFamiliar" context={aiContext} onApply={applyText("planoFamiliar")} />}>
             <Textarea rows={4} value={content.planoFamiliar} onChange={(e) => update({ planoFamiliar: e.target.value })} />
@@ -556,6 +593,8 @@ export default function PtiEditor() {
             </div>
           </SectionItem>
 
+          </>)}
+          {activeStep === "revisao" && (<>
           {/* 17. Fundamentação Técnica */}
           <SectionItem value="s17" title="17. Fundamentação Técnica" ai={<PtiAiButton section="fundamentacao" context={aiContext} onApply={applyText("fundamentacao")} />}>
             <Textarea rows={5} value={content.fundamentacao} onChange={(e) => update({ fundamentacao: e.target.value })} />
@@ -577,7 +616,30 @@ export default function PtiEditor() {
               <p>Data: {ident.dataPlano && new Date(ident.dataPlano + "T00:00:00").toLocaleDateString("pt-BR")}</p>
             </div>
           </SectionItem>
+          </>)}
+          {activeStep === "relatorio" && (
+            <PtiReportStep
+              content={content}
+              completion={progress}
+              patientId={patientId}
+              planId={planId}
+              saving={saveMutation.isPending}
+              downloading={downloading}
+              onSave={() => { void doSave(false); }}
+              onExport={handleDownloadPDF}
+              onReevaluate={() => navigate(`/pti/${planId}/reavaliacao`)}
+            />
+          )}
         </Accordion>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/70 pt-5">
+          <Button variant="outline" onClick={() => goStep(-1)} disabled={currentStepIndex === 0} className="gap-2">
+            <ChevronLeft className="h-4 w-4" /> Etapa anterior
+          </Button>
+          <span className="text-xs text-muted-foreground">Etapa {currentStepIndex + 1} / {PTI_WIZARD_STEPS.length}</span>
+          <Button onClick={() => goStep(1)} disabled={currentStepIndex === PTI_WIZARD_STEPS.length - 1} className="gap-2">
+            Próxima etapa <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
       </motion.div>
     </div>
   );
