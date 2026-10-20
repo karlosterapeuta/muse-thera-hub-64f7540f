@@ -50,6 +50,7 @@ interface AnamnesisViewProps {
 
 export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps) {
   const [anamnesisData, setAnamnesisData] = useState<Record<string, any>>({});
+  const [patientDetails, setPatientDetails] = useState<Record<string, any>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const { toast } = useToast();
@@ -80,7 +81,22 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         return;
       }
 
-      setAnamnesisData(data);
+      const { data: linkedPatient, error: linkedPatientError } = await supabase
+        .from("patients")
+        .select("*")
+        .eq("id", anamnesis.patient_id)
+        .eq("professional_id", (await supabase.auth.getUser()).data.user?.id || "")
+        .maybeSingle();
+      if (linkedPatientError) console.warn("Não foi possível consultar os dados cadastrais do paciente:", linkedPatientError.message);
+      const patient = linkedPatient || {};
+      setPatientDetails(patient);
+      setAnamnesisData({
+        ...data,
+        patient_name: data.patient_name || patient.name || anamnesis.patient_name,
+        birth_date: data.birth_date || patient.birth_date,
+        legal_guardian: data.legal_guardian || patient.responsible,
+        gender: data.gender || patient.gender,
+      });
       
     } catch (error) {
       console.error("Erro ao carregar dados da anamnese:", error);
@@ -121,7 +137,7 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         const { data: professional, error } = await supabase
           .from('professionals')
           .select('*')
-          .eq('user_id', user.id)
+          .eq('professional_id', user.id)
           .maybeSingle();
 
         console.log("📊 [AnamnesisView] Query profissional resultado:", {
@@ -219,7 +235,7 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         created_at: anamnesisData.created_at || anamnesis.created_at,
         patient_name: fillMissing(anamnesisData.patient_name, fillMissing(patientDetails.name, anamnesis.patient_name)),
         birth_date: fillMissing(anamnesisData.birth_date, patientDetails.birth_date),
-        legal_guardian: fillMissing(anamnesisData.legal_guardian, patientDetails.legal_guardian),
+        legal_guardian: fillMissing(anamnesisData.legal_guardian, fillMissing(patientDetails.legal_guardian, patientDetails.responsible)),
         family_relationship: fillMissing(anamnesisData.family_relationship, patientDetails.family_relationship),
       };
 
