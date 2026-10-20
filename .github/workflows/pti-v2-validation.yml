@@ -1,0 +1,26 @@
+name: PTI V2 branch validation
+on:
+  pull_request:
+    paths:
+      - "src/pages/pti/**"
+      - "src/components/pti/**"
+      - "src/hooks/usePtiPlans.ts"
+      - "src/types/pti.ts"
+      - ".github/workflows/pti-v2-validation.yml"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: TypeScript check
+        run: npx tsc -p tsconfig.app.json --noEmit
+      - name: Build SPA
+        run: npm run build
