@@ -23,4 +23,5 @@ jobs:
       - name: TypeScript check
         run: npx tsc -p tsconfig.app.json --noEmit
       - name: Build SPA
+        if: always()
         run: npm run build
