@@ -374,6 +374,8 @@ export const generateProfessionalAnamnesePDF = async (
             .clinical-section { break-inside: auto; page-break-inside: auto; }
             .clinical-section--keep { break-inside: avoid !important; page-break-inside: avoid !important; }
             .clinical-section--keep > div { break-inside: avoid; page-break-inside: avoid; }
+            .clinical-section--keep { display: flow-root; }
+            .clinical-section--keep .clinical-section-header { break-after: avoid !important; page-break-after: avoid !important; }
             .clinical-section-header { break-inside: avoid; page-break-inside: avoid; }
             .clinical-field { margin:0 0 9px; break-inside:avoid; page-break-inside:avoid; }
             .clinical-label { font-size:10px;line-height:1.35;color:#0f766e;font-weight:700;text-transform:uppercase;margin-bottom:4px; }
@@ -428,7 +430,7 @@ export const generateProfessionalAnamnesePDF = async (
             <div style="padding: 0 16px;">
 
               <!-- SEÇÃO 1: IDENTIFICAÇÃO E ENCAMINHAMENTO -->
-              <div class="clinical-section" style="margin-bottom: 10px;">
+              <div class="clinical-section clinical-section--keep" style="margin-bottom: 10px;">
                 ${sectionHeader(1, 'ENCAMINHAMENTO E DEMANDA CLÍNICA')}
                 ${sectionContainer(1, `
                   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
@@ -448,7 +450,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 2: HISTÓRICO CLÍNICO E MÉDICO -->
-              <div class="clinical-section" style="margin-bottom: 12px;">
+              <div class="clinical-section clinical-section--keep" style="margin-bottom: 12px;">
                 ${sectionHeader(2, 'HISTÓRICO CLÍNICO E MÉDICO')}
                 ${sectionContainer(2, `
                   <div style="margin-bottom: 16px;">
@@ -490,7 +492,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 4: TERAPIAS E ACOMPANHAMENTOS -->
-              <div class="clinical-section" style="margin-bottom: 12px;">
+              <div class="clinical-section clinical-section--keep" style="margin-bottom: 12px;">
                 ${sectionHeader(4, 'TERAPIAS E ACOMPANHAMENTOS')}
                 ${sectionContainer(4, `
                   <div style="margin-bottom: 16px;">
@@ -515,7 +517,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 5: PERFIL MUSICAL DO PACIENTE -->
-              <div class="clinical-section" style="margin-bottom: 12px;">
+              <div class="clinical-section clinical-section--keep" style="margin-bottom: 12px;">
                 ${sectionHeader(5, 'PERFIL MUSICAL DO PACIENTE')}
                 ${sectionContainer(5, `
                   <div style="margin-bottom: 16px;">
@@ -569,7 +571,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 7: COMPORTAMENTO MUSICAL OBSERVADO -->
-              <div class="clinical-section" style="margin-bottom: 12px;">
+              <div class="clinical-section clinical-section--keep" style="margin-bottom: 12px;">
                 ${sectionHeader(7, 'COMPORTAMENTO MUSICAL OBSERVADO')}
                 ${sectionContainer(7, `
                   <div style="margin-bottom: 16px;">
@@ -588,7 +590,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 8: PROCESSAMENTO AUDITIVO E SENSORIAL -->
-              <div class="clinical-section" style="margin-bottom: 12px;">
+              <div class="clinical-section clinical-section--keep" style="margin-bottom: 12px;">
                 ${sectionHeader(8, 'PROCESSAMENTO AUDITIVO E SENSORIAL')}
                 ${sectionContainer(8, `
                   <div style="margin-bottom: 16px;">
@@ -608,7 +610,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 9: DESENVOLVIMENTO NEUROPSICOMOTOR -->
-              <div class="clinical-section" style="margin-bottom: 12px;">
+              <div class="clinical-section clinical-section--keep" style="margin-bottom: 12px;">
                 ${sectionHeader(9, 'DESENVOLVIMENTO NEUROPSICOMOTOR')}
                 ${sectionContainer(9, `
                   <div style="margin-bottom: 16px;">
@@ -637,7 +639,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 10: ASPECTOS COMPORTAMENTAIS E EMOCIONAIS -->
-              <div class="clinical-section" style="margin-bottom: 12px;">
+              <div class="clinical-section clinical-section--keep" style="margin-bottom: 12px;">
                 ${sectionHeader(10, 'ASPECTOS COMPORTAMENTAIS E EMOCIONAIS')}
                 ${sectionContainer(10, `
                   <div style="margin-bottom: 16px;">
@@ -681,7 +683,7 @@ export const generateProfessionalAnamnesePDF = async (
               ${renderTeaFunctionalProfile()}
 
               <!-- SEÇÃO 12: OBJETIVOS TERAPÊUTICOS -->
-              <div class="clinical-section" style="margin-bottom: 12px;">
+              <div class="clinical-section clinical-section--keep" style="margin-bottom: 12px;">
                 ${sectionHeader(12, 'OBJETIVOS TERAPÊUTICOS')}
                 ${sectionContainer(12, `
                   <div style="background: linear-gradient(135deg, #f0fdfa, #ecfeff); padding: 12px; border-radius: 8px; border-left: 4px solid #14b8a6; margin-bottom: 16px;">
