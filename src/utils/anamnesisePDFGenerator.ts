@@ -406,6 +406,19 @@ export const generateProfessionalAnamnesePDF = async (
               <div style="text-align:right;flex-shrink:0"><span style="font-size:9px;font-weight:800;color:#475569;letter-spacing:.5px;">DATA DO REGISTRO</span><div style="font-size:11px;color:#172b4d;font-weight:600;">${formatClinicalDate(anamnesisData.created_at)}</div></div>
             </div>
 
+            <!-- Identificação consolidada: valores provenientes exclusivamente da anamnese salva -->
+            <div class="patient-identification" style="margin:0 16px 12px;padding:12px;background:#ffffff;border:1px solid #c9e4df;border-radius:7px;break-inside:avoid;page-break-inside:avoid;">
+              <div style="font-size:11px;font-weight:800;color:#115e59;margin-bottom:9px;">IDENTIFICAÇÃO DO PACIENTE</div>
+              <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 15px;">
+                ${identityItem('Nome completo', patientName)}
+                ${identityItem('Data de nascimento', formatClinicalDate(anamnesisData.birth_date))}
+                ${identityItem('Responsável legal', anamnesisData.legal_guardian)}
+                ${identityItem('Parentesco', anamnesisData.family_relationship)}
+                ${identityItem('Código CID-10/11', anamnesisData.cid_code)}
+                ${identityItem('Profissional encaminhador', anamnesisData.referral_professional)}
+              </div>
+            </div>
+
             <!-- ÍNDICE NAVEGÁVEL -->
 
 
@@ -671,7 +684,7 @@ export const generateProfessionalAnamnesePDF = async (
                 ${sectionContainer(12, `
                   <div style="background: linear-gradient(135deg, #f0fdfa, #ecfeff); padding: 12px; border-radius: 8px; border-left: 4px solid #14b8a6; margin-bottom: 16px;">
                     <span style="font-size: 11px; color: #0f766e; font-style: italic;">
-                      Objetivos definidos em conjunto com a família e equipe multidisciplinar
+                      Objetivos e abordagem conforme informações registradas nesta anamnese
                     </span>
                   </div>
                   ${renderTextField('Objetivos Terapêuticos', 'therapeutic_goals')}
@@ -699,7 +712,7 @@ export const generateProfessionalAnamnesePDF = async (
                   ${digitalStampBase64 || professional.digital_stamp_url ? `<img src="${escapeHtml(digitalStampBase64 || professional.digital_stamp_url)}" alt="Imagem do carimbo cadastrado" style="max-width:158px;max-height:75px;width:auto;object-fit:contain;display:block;"/>` : '<p style="font-size:10px;color:#64748b;">Carimbo não cadastrado ou indisponível.</p>'}
                 </div>
               </div>
-              <p style="font-size:9px;line-height:1.5;color:#64748b;margin-top:12px;">Imagens da assinatura e do carimbo reproduzidas conforme cadastro. Este PDF não comprova assinatura criptográfica certificada.</p>
+              <p style="font-size:9px;line-height:1.5;color:#64748b;margin-top:12px;">Quando presentes, imagens de assinatura e carimbo reproduzidas conforme cadastro. Este PDF não comprova assinatura criptográfica certificada.</p>
             </section>
 
             <!-- Informações do Documento -->
@@ -749,7 +762,7 @@ export const generateProfessionalAnamnesePDF = async (
       filename: `Anamnese_Musicoterapeutica_${patientName.replace(/\s+/g, '_')}_${localIssueDate}.pdf`,
       pagebreak: { 
         mode: ['css', 'legacy'],
-        avoid: ['.clinical-section', '.clinical-section-header', '.professional-footer', '.patient-line', 'h1', 'h2', 'h3']
+        avoid: ['.clinical-section-header', '.professional-footer', '.patient-line', '.patient-identification', 'h1', 'h2', 'h3']
       },
       jsPDF: {
         unit: 'mm',
