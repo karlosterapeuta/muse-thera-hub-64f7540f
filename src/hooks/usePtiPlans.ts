@@ -58,6 +58,8 @@ export function useSavePtiPlan() {
       status?: string;
       plan_date: string;
       content: PtiContent;
+      /** Registra uma versão apenas em salvamentos explícitos, nunca no autosave. */
+      createVersion?: boolean;
     }) => {
       const professional_id = await getProfessionalId();
       if (!professional_id) throw new Error("Profissional não encontrado");
@@ -83,18 +85,23 @@ export function useSavePtiPlan() {
         savedId = data.id;
       }
 
-      // version snapshot
-      if (savedId) {
-        await supabase.from("pti_versions").insert({
+      // O rascunho pode ser salvo automaticamente sem gerar versões a cada edição.
+      // Uma versão histórica é criada somente no salvamento explícito, inclusive antes do PDF.
+      if (payload.createVersion && savedId) {
+        const { error: versionError } = await supabase.from("pti_versions").insert({
           pti_id: savedId,
           professional_id,
           content: payload.content as any,
         });
+        if (versionError) {
+          throw new Error("Plano salvo, mas não foi possível registrar a versão. Tente novamente antes de exportar.");
+        }
       }
       return savedId!;
     },
-    onSuccess: () => {
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["pti-plans"] });
+      queryClient.invalidateQueries({ queryKey: ["pti-plan"] });
     },
   });
 }
