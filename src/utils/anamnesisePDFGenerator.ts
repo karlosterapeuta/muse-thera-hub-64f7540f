@@ -373,6 +373,7 @@ export const generateProfessionalAnamnesePDF = async (
             .page-break { break-before: page; page-break-before: always; }
             .clinical-section { break-inside: auto; page-break-inside: auto; }
             .clinical-section--keep { break-inside: avoid !important; page-break-inside: avoid !important; }
+            .clinical-section--keep > div { break-inside: avoid; page-break-inside: avoid; }
             .clinical-section-header { break-inside: avoid; page-break-inside: avoid; }
             .clinical-field { margin:0 0 9px; break-inside:avoid; page-break-inside:avoid; }
             .clinical-label { font-size:10px;line-height:1.35;color:#0f766e;font-weight:700;text-transform:uppercase;margin-bottom:4px; }
@@ -549,7 +550,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 6: IDENTIDADE SONORA (ISO) -->
-              <div class="clinical-section" style="margin-bottom: 12px;">
+              <div class="clinical-section clinical-section--keep" style="margin-bottom: 12px;">
                 ${sectionHeader(6, 'IDENTIDADE SONORA (ISO)')}
                 ${sectionContainer(6, `
                   <div style="background: linear-gradient(135deg, #f0fdfa, #ecfeff); padding: 12px; border-radius: 8px; border-left: 4px solid #14b8a6; margin-bottom: 16px;">
@@ -759,7 +760,7 @@ export const generateProfessionalAnamnesePDF = async (
       String(issueDate.getDate()).padStart(2, "0"),
     ].join("-");
     const opt = {
-      margin: [10, 10, 14, 10],
+      margin: [12, 10, 17, 10],
       filename: `Anamnese_Musicoterapeutica_${patientName.replace(/\s+/g, '_')}_${localIssueDate}.pdf`,
       pagebreak: { 
         mode: ['css', 'legacy'],
