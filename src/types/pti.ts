@@ -3,6 +3,10 @@
 export interface PtiObjetivoEspecifico {
   id: string;
   descricao: string;
+  /** Experiência musicoterapêutica sugerida/editada para o objetivo. */
+  atividade?: string;
+  /** Instrumentos e materiais vinculados à intervenção. */
+  material?: string;
   prazo: string;
   prioridade: "Alta" | "Média" | "Baixa" | "";
   area: string;
@@ -11,6 +15,8 @@ export interface PtiObjetivoEspecifico {
 export interface PtiMeta {
   id: string;
   descricao: string;
+  /** Medida inicial observada, anterior à intervenção (não inferida por IA). */
+  linhaBase?: string;
   indicador: string;
   percentual: string;
   prazo: string;
