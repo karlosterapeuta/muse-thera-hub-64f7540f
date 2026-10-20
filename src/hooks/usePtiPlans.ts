@@ -94,7 +94,12 @@ export function useSavePtiPlan() {
           content: payload.content as any,
         });
         if (versionError) {
-          throw new Error("Plano salvo, mas não foi possível registrar a versão. Tente novamente antes de exportar.");
+          // A gravação principal já ocorreu. Informar o ID evita novo INSERT
+          // caso a primeira versão falhe durante a criação de um plano.
+          throw Object.assign(
+            new Error("Plano salvo, mas não foi possível registrar a versão. Tente novamente antes de exportar."),
+            { savedPlanId: savedId },
+          );
         }
       }
       return savedId!;
