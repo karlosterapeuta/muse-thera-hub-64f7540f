@@ -154,20 +154,29 @@ export default function PtiEditor() {
   }, [content, patientId, status]);
 
   const handleSelectPatient = (pid: string) => {
-    setPatientId(pid);
-    const p = patients?.find((x) => x.id === pid);
-    if (p) {
-      update({
-        identificacao: {
-          ...content.identificacao,
-          nome: p.name || "",
-          idade: formatAgeString(p.birth_date, p.age),
-          nascimento: p.birth_date || "",
-          responsavel: p.responsible || "",
-          telefone: p.contact || "",
-        },
-      });
+    if (pid === patientId) return;
+    if (planIdRef.current) {
+      toast.error("O paciente de um PTI já salvo não pode ser alterado. Crie um novo plano.");
+      return;
     }
+    if (patientId && !window.confirm("Trocar de paciente? O conteúdo ainda não salvo deste rascunho será reiniciado para não misturar informações clínicas.")) return;
+    const p = patients?.find((x) => x.id === pid);
+    if (!p) return;
+    // Reiniciar qualquer conteúdo anterior antes de associar o novo paciente.
+    const initial = createDefaultPtiContent();
+    setContent({
+      ...initial,
+      identificacao: {
+        ...initial.identificacao,
+        nome: p.name || "",
+        idade: formatAgeString(p.birth_date, p.age),
+        nascimento: p.birth_date || "",
+        responsavel: p.responsible || "",
+        telefone: p.contact || "",
+        profissional: professional?.name || "",
+      },
+    });
+    setPatientId(pid);
   };
 
   // Importa apenas informações efetivamente registradas na anamnese.
@@ -384,7 +393,7 @@ export default function PtiEditor() {
           <CardContent className="p-5 grid sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Paciente</Label>
-              <Select value={patientId ?? undefined} onValueChange={handleSelectPatient}>
+              <Select value={patientId ?? undefined} onValueChange={handleSelectPatient} disabled={!!planIdRef.current}>
                 <SelectTrigger><SelectValue placeholder="Selecione um paciente" /></SelectTrigger>
                 <SelectContent>
                   {(patients || []).map((p) => (
@@ -412,7 +421,7 @@ export default function PtiEditor() {
           {/* 1. Identificação */}
           <SectionItem value="s1" title="1. Identificação">
             <div className="grid sm:grid-cols-2 gap-3">
-              <Field label="Nome" value={ident.nome} onChange={(v) => update({ identificacao: { ...ident, nome: v } })} />
+              <Field label="Nome" value={ident.nome} onChange={(v) => update({ identificacao: { ...ident, nome: v } })} readOnly />
               <Field label="Idade" value={ident.idade} onChange={(v) => update({ identificacao: { ...ident, idade: v } })} />
               <Field label="Data de nascimento" type="date" value={ident.nascimento} onChange={(v) => update({ identificacao: { ...ident, nascimento: v } })} />
               <Field label="Sexo" value={ident.sexo} onChange={(v) => update({ identificacao: { ...ident, sexo: v } })} />
@@ -741,11 +750,11 @@ function SectionItem({ value, title, children, ai }: { value: string; title: str
   );
 }
 
-function Field({ label, value, onChange, type = "text" }: { label: string; value: string; onChange: (v: string) => void; type?: string }) {
+function Field({ label, value, onChange, type = "text", readOnly = false }: { label: string; value: string; onChange: (v: string) => void; type?: string; readOnly?: boolean }) {
   return (
     <div className="space-y-1.5">
       <Label className="text-sm">{label}</Label>
-      <Input type={type} value={value} onChange={(e) => onChange(e.target.value)} />
+      <Input type={type} value={value} readOnly={readOnly} className={readOnly ? "bg-muted/40 cursor-default" : undefined} onChange={(e) => onChange(e.target.value)} />
     </div>
   );
 }
