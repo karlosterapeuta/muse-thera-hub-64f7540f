@@ -332,6 +332,74 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
     );
   }
 
+  // Preserve visibility of recorded information even when new form fields are added.
+  const formattedValue = (value: unknown): string => {
+    if (typeof value === 'boolean') return value ? 'Sim' : 'Não';
+    if (Array.isArray(value)) return value.map(formattedValue).join(', ');
+    if (value && typeof value === 'object') return JSON.stringify(value, null, 2);
+    return String(value ?? '');
+  };
+  const displayName = (key: string) => key
+    .replace(/_/g, ' ')
+    .replace(/\\b\\w/g, character => character.toUpperCase());
+  const isPresent = (value: unknown) => value !== null && value !== undefined && String(value).trim() !== '';
+
+  const identificationFields = [
+    { key: 'patient_name', label: 'Paciente' },
+    { key: 'birth_date', label: 'Data de nascimento' },
+    { key: 'gender', label: 'Gênero' },
+    { key: 'legal_guardian', label: 'Responsável legal' },
+    { key: 'family_relationship', label: 'Parentesco' },
+    { key: 'referral_professional', label: 'Profissional que encaminhou' },
+    { key: 'cid_code', label: 'CID-10/11' },
+    { key: 'diagnosis_details', label: 'Diagnóstico' },
+    { key: 'main_clinical_demand', label: 'Demanda clínica principal' },
+  ];
+  const headerValues = identificationFields.map(field => ({
+    ...field,
+    value: field.key === 'patient_name'
+      ? (anamnesisData.patient_name || anamnesis.patient_name || '')
+      : anamnesisData[field.key],
+  }));
+  const alreadyShown = new Set([
+    ...identificationFields.map(field => field.key),
+    'clinical_details', 'pregnancy_sound_experiences', 'mother_movements_songs',
+    'childhood_sound_environment', 'parents_sound_reactions', 'typical_house_sounds',
+    'night_body_sounds', 'family_musical_history', 'patient_musical_history',
+    'school_enrollment', 'school_adaptation', 'extracurricular_activities',
+    'family_support_network', 'current_medication', 'medication_schedule',
+    'medication_effects', 'therapy_frequency', 'therapy_observations',
+    'instruments_played', 'music_practice_time', 'therapeutic_goals',
+    'treatment_approach', 'psychological_support', 'psychopedagogical',
+    'occupational_therapy', 'physiotherapy', 'equine_therapy', 'speech_therapy',
+    'aba_therapy', 'sensory_integration', 'psychomotricity', 'nutrition',
+    'music_therapy', 'musical_education', 'instrumental_practice',
+    'body_musical_expression', 'vocal_expression', 'choral_activities',
+    'music_therapy_experience', 'no_musical_experience', 'active_musical_listening',
+    'body_expression', 'sound_responsiveness', 'spontaneous_vocal',
+    'instrumental_exploration', 'adverse_sound_reactivity',
+    'auditory_hypersensitivity', 'positive_musical_response',
+    'nominal_call_response', 'active_sound_search', 'specific_sound_aversion',
+    'sound_source_location', 'children_repertoire', 'rock_genre', 'sacred_gospel',
+    'other_musical_genres', 'brazilian_popular', 'country_music',
+    'classical_music', 'cervical_control', 'crawling_pattern', 'fine_motor_dev',
+    'independent_sitting', 'autonomous_walking', 'broad_motor_dev', 'babbling',
+    'simple_phrases', 'echolalia', 'first_words', 'nonverbal_communication',
+    'verbal_language_absence', 'visual_contact', 'shared_play',
+    'stereotyped_behavior', 'peer_interaction', 'social_isolation',
+    'restricted_interests', 'heteroaggressive', 'emotional_ability', 'anxiety',
+    'frequent_crying', 'low_frustration_tolerance', 'irritability',
+    'autism_spectrum', 'down_syndrome', 'intellectual_disability',
+    'other_diagnoses', 'adhd', 'chronic_encephalopathy', 'anxiety_disorders',
+    'cerebral_palsy', 'epilepsy', 'williams_syndrome', 'fragile_x_syndrome',
+    'rett_syndrome', 'angelman_syndrome', 'alzheimer', 'parkinson',
+    'depression', 'bipolar_disorder',
+  ]);
+  const systemKeys = new Set(['id', 'patient_id', 'professional_id', 'created_at', 'updated_at', 'user_id']);
+  const additionalFields = Object.entries(anamnesisData).filter(([key, value]) =>
+    !alreadyShown.has(key) && !systemKeys.has(key) && isPresent(value)
+  );
+
   const stats = getCompletionStats();
 
   return (
@@ -378,6 +446,28 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
           </Button>
         </div>
       </div>
+
+      {/* Complete patient identification, visible before clinical sections */}
+      <Card className="border-emerald-700/25 bg-card min-w-0">
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2 text-lg md:text-xl text-foreground">
+            <User className="h-5 w-5 shrink-0 text-emerald-600" />
+            Identificação do paciente
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <dl className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+            {headerValues.map(field => (
+              <div key={field.key} className="min-w-0 rounded-lg border border-border/70 bg-muted/30 p-3">
+                <dt className="text-xs font-semibold text-muted-foreground">{field.label}</dt>
+                <dd className="mt-1 text-sm font-medium text-foreground whitespace-pre-wrap break-words">
+                  {isPresent(field.value) ? formattedValue(field.value) : 'Não informado'}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </CardContent>
+      </Card>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -718,6 +808,19 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
           depression: 'Depressão',
           bipolar_disorder: 'Transtorno Bipolar'
         }
+      )}
+
+      {additionalFields.length > 0 && (
+        <ModernFormCard title="Outras informações registradas" icon={FileText} gradient="from-teal-700 to-emerald-700">
+          <dl className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {additionalFields.map(([key, value]) => (
+              <div key={key} className="min-w-0 rounded-lg border border-border/70 bg-muted/30 p-3">
+                <dt className="text-sm font-semibold text-muted-foreground">{displayName(key)}</dt>
+                <dd className="mt-1 text-sm text-foreground whitespace-pre-wrap break-words">{formattedValue(value)}</dd>
+              </div>
+            ))}
+          </dl>
+        </ModernFormCard>
       )}
 
       {/* Completion Summary */}
