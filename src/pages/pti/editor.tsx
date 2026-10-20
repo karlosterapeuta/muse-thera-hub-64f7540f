@@ -288,7 +288,7 @@ export default function PtiEditor() {
   const addObjetivo = () => update({
     objetivosEspecificos: [
       ...content.objetivosEspecificos,
-      { id: uid(), descricao: "", prazo: "", prioridade: "", area: "" } as PtiObjetivoEspecifico,
+      { id: uid(), descricao: "", atividade: "", material: "", prazo: "", prioridade: "", area: "" } as PtiObjetivoEspecifico,
     ],
   });
   const updateObjetivo = (oid: string, patch: Partial<PtiObjetivoEspecifico>) =>
@@ -298,7 +298,7 @@ export default function PtiEditor() {
 
   // ---- repeatable: metas ----
   const addMeta = () => update({
-    metas: [...content.metas, { id: uid(), descricao: "", indicador: "", percentual: "", prazo: "", criterio: "" } as PtiMeta],
+    metas: [...content.metas, { id: uid(), descricao: "", linhaBase: "", indicador: "", percentual: "", prazo: "", criterio: "" } as PtiMeta],
   });
   const updateMeta = (mid: string, patch: Partial<PtiMeta>) =>
     update({ metas: content.metas.map((m) => m.id === mid ? { ...m, ...patch } : m) });
@@ -508,7 +508,7 @@ export default function PtiEditor() {
             <div className="space-y-3">
               <PtiObjectiveLibrary
                 selected={content.objetivosEspecificos.map((item) => item.descricao)}
-                onAdd={(item) => update({ objetivosEspecificos: [...content.objetivosEspecificos, { id: uid(), descricao: item.objective, prazo: "", prioridade: "Média", area: item.area }] })}
+                onAdd={(item) => update({ objetivosEspecificos: [...content.objetivosEspecificos, { id: uid(), descricao: item.objective, atividade: item.example, material: item.resource, prazo: "", prioridade: "Média", area: item.area }] })}
               />
               {content.objetivosEspecificos.map((o) => (
                 <Card key={o.id} className="border-border/60">
@@ -516,6 +516,10 @@ export default function PtiEditor() {
                     <div className="flex gap-2">
                       <Textarea rows={2} className="flex-1" placeholder="Descrição do objetivo" value={o.descricao} onChange={(e) => updateObjetivo(o.id, { descricao: e.target.value })} />
                       <Button variant="ghost" size="icon" onClick={() => removeObjetivo(o.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                    </div>
+                    <div className="grid sm:grid-cols-2 gap-2">
+                      <div className="space-y-1"><Label className="text-xs">Atividade musicoterapêutica</Label><Textarea rows={2} placeholder="Ex.: diálogo rítmico em turnos" value={o.atividade || ""} onChange={(e) => updateObjetivo(o.id, { atividade: e.target.value })} /></div>
+                      <div className="space-y-1"><Label className="text-xs">Materiais e instrumentos</Label><Textarea rows={2} placeholder="Ex.: tambor, teclado e cartões" value={o.material || ""} onChange={(e) => updateObjetivo(o.id, { material: e.target.value })} /></div>
                     </div>
                     <div className="grid sm:grid-cols-3 gap-2">
                       <Input placeholder="Prazo" value={o.prazo} onChange={(e) => updateObjetivo(o.id, { prazo: e.target.value })} />
@@ -541,7 +545,7 @@ export default function PtiEditor() {
                 <Button variant="outline" size="sm" onClick={addObjetivo} className="gap-1.5"><Plus className="h-4 w-4" /> Adicionar objetivo</Button>
                 <PtiAiButton section="objetivosEspecificos" context={aiContext} label="Sugerir com IA" onApply={(t) => {
                   const lines = t.split("\n").map((l) => l.replace(/^[-*\d.\s]+/, "").trim()).filter(Boolean);
-                  update({ objetivosEspecificos: [...content.objetivosEspecificos, ...lines.map((d) => ({ id: uid(), descricao: d, prazo: "", prioridade: "" as const, area: "" }))] });
+                  update({ objetivosEspecificos: [...content.objetivosEspecificos, ...lines.map((d) => ({ id: uid(), descricao: d, atividade: "", material: "", prazo: "", prioridade: "" as const, area: "" }))] });
                 }} />
               </div>
             </div>
@@ -558,6 +562,7 @@ export default function PtiEditor() {
                       <Button variant="ghost" size="icon" onClick={() => removeMeta(m.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                     </div>
                     <div className="grid sm:grid-cols-2 gap-2">
+                      <Input placeholder="Linha de base observada" value={m.linhaBase || ""} onChange={(e) => updateMeta(m.id, { linhaBase: e.target.value })} />
                       <Input placeholder="Indicador" value={m.indicador} onChange={(e) => updateMeta(m.id, { indicador: e.target.value })} />
                       <Input placeholder="% esperado" value={m.percentual} onChange={(e) => updateMeta(m.id, { percentual: e.target.value })} />
                       <Input placeholder="Prazo" value={m.prazo} onChange={(e) => updateMeta(m.id, { prazo: e.target.value })} />
@@ -570,7 +575,7 @@ export default function PtiEditor() {
                 <Button variant="outline" size="sm" onClick={addMeta} className="gap-1.5"><Plus className="h-4 w-4" /> Adicionar meta</Button>
                 <PtiAiButton section="metas" context={aiContext} label="Sugerir com IA" onApply={(t) => {
                   const lines = t.split("\n").map((l) => l.replace(/^[-*\d.\s]+/, "").trim()).filter(Boolean);
-                  update({ metas: [...content.metas, ...lines.map((d) => ({ id: uid(), descricao: d, indicador: "", percentual: "", prazo: "", criterio: "" }))] });
+                  update({ metas: [...content.metas, ...lines.map((d) => ({ id: uid(), descricao: d, linhaBase: "", indicador: "", percentual: "", prazo: "", criterio: "" }))] });
                 }} />
               </div>
             </div>
