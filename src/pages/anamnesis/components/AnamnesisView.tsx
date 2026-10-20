@@ -50,6 +50,7 @@ interface AnamnesisViewProps {
 
 export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps) {
   const [anamnesisData, setAnamnesisData] = useState<Record<string, any>>({});
+  const [patientDetails, setPatientDetails] = useState<Record<string, any>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const { toast } = useToast();
@@ -80,7 +81,22 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         return;
       }
 
-      setAnamnesisData(data);
+      const { data: linkedPatient, error: linkedPatientError } = await supabase
+        .from("patients")
+        .select("*")
+        .eq("id", anamnesis.patient_id)
+        .eq("professional_id", (await supabase.auth.getUser()).data.user?.id || "")
+        .maybeSingle();
+      if (linkedPatientError) console.warn("Não foi possível consultar os dados cadastrais do paciente:", linkedPatientError.message);
+      const patient = linkedPatient || {};
+      setPatientDetails(patient);
+      setAnamnesisData({
+        ...data,
+        patient_name: data.patient_name || patient.name || anamnesis.patient_name,
+        birth_date: data.birth_date || patient.birth_date,
+        legal_guardian: data.legal_guardian || patient.responsible,
+        gender: data.gender || (patient as Record<string, any>).gender,
+      });
       
     } catch (error) {
       console.error("Erro ao carregar dados da anamnese:", error);
@@ -199,11 +215,28 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         }
       }
 
+      // Fill missing identity fields only from the authenticated patient's record.
+      let patientDetails: Record<string, any> = {};
+      if (user && anamnesis.patient_id) {
+        const { data: patient, error: patientError } = await supabase
+          .from('patients')
+          .select('*')
+          .eq('id', anamnesis.patient_id)
+          .eq('user_id', user.id)
+          .maybeSingle();
+        if (!patientError && patient) patientDetails = patient;
+      }
+      const fillMissing = (primary: unknown, fallback: unknown) =>
+        primary !== undefined && primary !== null && String(primary).trim() !== '' ? primary : fallback;
+
       // Ensure we have the required created_at field and structure the data properly
       const formattedAnamnesisData = {
         ...anamnesisData,
         created_at: anamnesisData.created_at || anamnesis.created_at,
-        patient_name: anamnesis.patient_name
+        patient_name: fillMissing(anamnesisData.patient_name, fillMissing(patientDetails.name, anamnesis.patient_name)),
+        birth_date: fillMissing(anamnesisData.birth_date, patientDetails.birth_date),
+        legal_guardian: fillMissing(anamnesisData.legal_guardian, fillMissing(patientDetails.legal_guardian, patientDetails.responsible)),
+        family_relationship: fillMissing(anamnesisData.family_relationship, patientDetails.family_relationship),
       };
 
       const success = await generateProfessionalAnamnesePDF(
