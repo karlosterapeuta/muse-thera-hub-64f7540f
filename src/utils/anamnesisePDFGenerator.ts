@@ -386,7 +386,8 @@ export const generateProfessionalAnamnesePDF = async (
             .clinical-checkbox-empty { color:#64748b;font-size:10px;font-style:italic;padding:4px 0; }
             .clinical-tags { display:flex;flex-wrap:wrap;gap:5px; }
             .clinical-tag { display:inline-block;border-radius:14px;border:1px solid #7dd3c7;background:#ecfdf5;padding:4px 9px;font-size:10px;font-weight:600;color:#115e59;white-space:normal; }
-            .professional-footer { break-inside:avoid;page-break-inside:avoid; }
+            .professional-footer { break-inside:auto;page-break-inside:auto; }
+            .professional-footer img { break-inside:avoid;page-break-inside:avoid; }
             
             .clinical-value { overflow-wrap: anywhere; word-break: normal; white-space: normal; }
             .not-reported { color: #64748b; font-style: italic; }
@@ -699,7 +700,7 @@ export const generateProfessionalAnamnesePDF = async (
             </div>
 
             <!-- Assinatura e carimbo reais, somente no final do PDF -->
-            <section class="professional-footer" style="margin:10px 16px 4px;border:1px solid #d6e8e7;border-top:3px solid #0f766e;border-radius:9px;padding:11px 14px;break-inside:avoid;page-break-inside:avoid;">
+            <section class="professional-footer" style="margin:10px 16px 4px;border:1px solid #d6e8e7;border-top:3px solid #0f766e;border-radius:9px;padding:9px 12px;break-inside:auto;page-break-inside:auto;">
               <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;">
                 <h2 style="font-size:13px;color:#115e59;margin:0;">ASSINATURA E CARIMBO DO MUSICOTERAPEUTA</h2>
               </div>
@@ -766,7 +767,7 @@ export const generateProfessionalAnamnesePDF = async (
       filename: `Anamnese_Musicoterapeutica_${patientName.replace(/\s+/g, '_')}_${localIssueDate}.pdf`,
       pagebreak: { 
         mode: ['css', 'legacy'],
-        avoid: ['.clinical-section--keep', '.clinical-section-header', '.professional-footer', '.patient-line', '.patient-identification', 'h1', 'h2', 'h3']
+        avoid: ['.clinical-section--keep', '.clinical-section-header', '.patient-line', '.patient-identification', 'h1', 'h2', 'h3']
       },
       jsPDF: {
         unit: 'mm',
