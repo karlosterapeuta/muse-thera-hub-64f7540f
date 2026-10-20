@@ -110,12 +110,16 @@ export function PtiPDF({ content: c, professional, signature, stamp }: PtiPDFPro
 
       <T>8. Objetivos Específicos</T>
       {c.objetivosEspecificos.length ? c.objetivosEspecificos.map((o, i) => (
-        <P key={o.id}>{i + 1}. {o.descricao} {o.area && `[${o.area}]`} {o.prioridade && `• ${o.prioridade}`} {o.prazo && `• Prazo: ${o.prazo}`}</P>
+        <div key={o.id} style={{ marginBottom: "6px", breakInside: "avoid" }}>
+          <P>{i + 1}. {o.descricao} {o.area && `[${o.area}]`} {o.prioridade && `• ${o.prioridade}`} {o.prazo && `• Prazo: ${o.prazo}`}</P>
+          {o.atividade && <P><span style={styles.label}>Atividade: </span>{o.atividade}</P>}
+          {o.material && <P><span style={styles.label}>Materiais: </span>{o.material}</P>}
+        </div>
       )) : <P>—</P>}
 
       <T>9. Metas Terapêuticas</T>
       {c.metas.length ? c.metas.map((m, i) => (
-        <P key={m.id}>{i + 1}. {m.descricao} {m.indicador && `| Indicador: ${m.indicador}`} {m.percentual && `| ${m.percentual}`} {m.prazo && `| Prazo: ${m.prazo}`} {m.criterio && `| Critério: ${m.criterio}`}</P>
+        <P key={m.id}>{i + 1}. {m.descricao} {m.linhaBase && `| Linha de base: ${m.linhaBase}`} {m.indicador && `| Indicador: ${m.indicador}`} {m.percentual && `| ${m.percentual}`} {m.prazo && `| Prazo: ${m.prazo}`} {m.criterio && `| Critério: ${m.criterio}`}</P>
       )) : <P>—</P>}
 
       <T>10. Estratégias Musicoterapêuticas</T>
