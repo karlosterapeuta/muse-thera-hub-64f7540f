@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft, Save, Plus, Trash2, Loader2, Check, FileDown, Stethoscope, ChevronLeft, ChevronRight,
+  ArrowLeft, Save, Plus, Trash2, Loader2, Check, FileDown, Stethoscope, ChevronLeft, ChevronRight, FileSearch,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +33,7 @@ import { PtiWizardNavigation, PTI_WIZARD_STEPS, type PtiStepId } from "@/compone
 import { PtiObjectiveLibrary } from "@/components/pti/PtiObjectiveLibrary";
 import { PtiReportStep } from "@/components/pti/PtiReportStep";
 import { imageUrlToBase64 } from "@/utils/imageToBase64";
+import { supabase } from "@/integrations/supabase/client";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 
@@ -52,6 +53,7 @@ export default function PtiEditor() {
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [downloading, setDownloading] = useState(false);
   const [activeStep, setActiveStep] = useState<PtiStepId>("identificacao");
+  const [importingClinical, setImportingClinical] = useState(false);
   const autoSaveRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const loadedRef = useRef(false);
   // Serializa as gravações e impede duplicação de planos ao salvar pela primeira vez.
@@ -92,6 +94,10 @@ export default function PtiEditor() {
         if (!silent) toast.error("Carregando seus dados profissionais. Aguarde um instante e tente novamente.");
         return Promise.resolve(false);
       }
+      if (!patientId) {
+        if (!silent) toast.error("Selecione um paciente antes de salvar o PTI.");
+        return Promise.resolve(false);
+      }
 
       // A fila mantém a ordem entre autosave, salvar manualmente e exportar PDF.
       // Cada tarefa conserva o conteúdo do momento do clique.
@@ -114,6 +120,7 @@ export default function PtiEditor() {
           if (!planIdRef.current) {
             planIdRef.current = savedId;
             setPlanId(savedId);
+            navigate(`/pti/${savedId}`, { replace: true });
           }
           setLastSaved(new Date());
           if (!silent) toast.success("Plano salvo e versão registrada");
@@ -131,13 +138,13 @@ export default function PtiEditor() {
       saveQueueRef.current = pending.then(() => undefined, () => undefined);
       return pending;
     },
-    [professional, patientId, status, content, saveMutation],
+    [professional, patientId, status, content, saveMutation, navigate],
   );
 
   // Auto-save
   useEffect(() => {
     if (!loadedRef.current && !isNew) return;
-    if (!content.identificacao.nome) return;
+    if (!content.identificacao.nome || !patientId) return;
     if (autoSaveRef.current) clearTimeout(autoSaveRef.current);
     autoSaveRef.current = setTimeout(() => doSave(true), 2500);
     return () => {
@@ -160,6 +167,62 @@ export default function PtiEditor() {
           telefone: p.contact || "",
         },
       });
+    }
+  };
+
+  // Importa apenas informações efetivamente registradas na anamnese.
+  // Não sobrescreve notas já digitadas pelo profissional.
+  const importClinicalContext = async () => {
+    if (!patientId) {
+      toast.error("Selecione um paciente para importar dados da anamnese.");
+      return;
+    }
+    setImportingClinical(true);
+    try {
+      const { data: record, error } = await supabase.from("anamnesis")
+        .select("*").eq("patient_id", patientId)
+        .order("updated_at", { ascending: false }).limit(1).maybeSingle();
+      if (error) throw error;
+      if (!record) {
+        toast.info("Nenhuma anamnese encontrada para este paciente.");
+        return;
+      }
+      const rec = record as Record<string, unknown>;
+      const field = (key: string) => typeof rec[key] === "string" ? (rec[key] as string).trim() : "";
+      const clinicalDetails = field("clinical_details");
+      const diagnosis = field("diagnosis_details");
+      const code = field("cid_code");
+      const musicalHistory = field("patient_musical_history");
+      const familyMusicalHistory = field("family_musical_history");
+      if (![clinicalDetails, diagnosis, code, musicalHistory, familyMusicalHistory].some(Boolean)) {
+        toast.info("A anamnese está disponível, mas não contém dados compatíveis para importação automática.");
+        return;
+      }
+      if (!window.confirm("Importar da anamnese os campos clínicos disponíveis, mantendo os campos já preenchidos? Revise todos os dados antes de emitir o PTI.")) return;
+      const preferCurrent = (current: string, imported: string) => current.trim() || imported;
+      update({
+        identificacao: {
+          ...content.identificacao,
+          diagnostico: preferCurrent(content.identificacao.diagnostico, diagnosis),
+          cid: preferCurrent(content.identificacao.cid, code),
+        },
+        historicoClinico: {
+          ...content.historicoClinico,
+          desenvolvimento: preferCurrent(content.historicoClinico.desenvolvimento, clinicalDetails),
+          historicoMusical: preferCurrent(content.historicoClinico.historicoMusical, musicalHistory),
+        },
+      });
+      if (familyMusicalHistory && !content.historicoClinico.terapiasAnteriores.trim()) {
+        // O histórico musical familiar não corresponde a terapias anteriores:
+        // manter esse dado apenas como informação complementar verificável.
+        toast.info("Histórico musical familiar disponível na anamnese para consulta; não foi inserido em um campo de terapia anterior.");
+      }
+      toast.success("Dados disponíveis importados. Confira diagnóstico, CID e histórico.");
+    } catch (error) {
+      console.error("Erro ao importar anamnese para o PTI:", error);
+      toast.error("Não foi possível consultar a anamnese deste paciente.");
+    } finally {
+      setImportingClinical(false);
     }
   };
 
@@ -303,6 +366,18 @@ export default function PtiEditor() {
           goals={content.metas.length}
           status={status}
         />
+
+        {activeStep === "contexto" && (
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/25 bg-primary/[0.04] p-4">
+            <div>
+              <p className="text-sm font-semibold">Dados clínicos existentes</p>
+              <p className="text-xs text-muted-foreground">Preencha campos vazios a partir da anamnese cadastrada, sem substituir registros manuais.</p>
+            </div>
+            <Button variant="outline" onClick={importClinicalContext} disabled={importingClinical || !patientId} className="gap-2">
+              {importingClinical ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileSearch className="h-4 w-4" />} Importar anamnese
+            </Button>
+          </div>
+        )}
 
         {/* Patient + status selectors */}
         <Card className="border-primary/20 bg-card/90 shadow-sm">
@@ -543,6 +618,10 @@ export default function PtiEditor() {
           </>)}
           {activeStep === "acompanhamento" && (<>
           {/* 13. Critérios de Evolução */}
+          {planId && <div className="mb-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/25 bg-primary/[0.04] p-4">
+            <p className="text-sm text-muted-foreground">A reavaliação permite registrar indicadores por período sem sobrescrever o PTI original.</p>
+            <Button type="button" variant="outline" onClick={() => navigate(`/pti/${planId}/reavaliacao`)}>Abrir reavaliação</Button>
+          </div>}
           <SectionItem value="s13" title="13. Critérios de Evolução (1 a 5)">
             <div className="space-y-3">
               {PTI_CRITERIOS_EVOLUCAO.map((area) => (
