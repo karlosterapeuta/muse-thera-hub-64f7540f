@@ -372,6 +372,7 @@ export const generateProfessionalAnamnesePDF = async (
             
             .page-break { break-before: page; page-break-before: always; }
             .clinical-section { break-inside: auto; page-break-inside: auto; }
+            .clinical-section--keep { break-inside: avoid !important; page-break-inside: avoid !important; }
             .clinical-section-header { break-inside: avoid; page-break-inside: avoid; }
             .clinical-field { margin:0 0 9px; break-inside:avoid; page-break-inside:avoid; }
             .clinical-label { font-size:10px;line-height:1.35;color:#0f766e;font-weight:700;text-transform:uppercase;margin-bottom:4px; }
@@ -478,7 +479,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 3: MEDICAÇÃO EM USO -->
-              <div class="clinical-section" style="margin-bottom: 12px;">
+              <div class="clinical-section clinical-section--keep" style="margin-bottom: 12px;">
                 ${sectionHeader(3, 'MEDICAÇÃO EM USO')}
                 ${sectionContainer(3, `
                   ${renderTextField('Medicações Atuais', 'current_medication')}
@@ -666,7 +667,7 @@ export const generateProfessionalAnamnesePDF = async (
               </div>
 
               <!-- SEÇÃO 11: CONTEXTO SOCIAL E ESCOLAR -->
-              <div class="clinical-section" style="margin-bottom: 12px;">
+              <div class="clinical-section clinical-section--keep" style="margin-bottom: 12px;">
                 ${sectionHeader(11, 'CONTEXTO SOCIAL E ESCOLAR')}
                 ${sectionContainer(11, `
                   ${renderTextField('Situação Escolar', 'school_enrollment')}
@@ -705,11 +706,11 @@ export const generateProfessionalAnamnesePDF = async (
               <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-top:9px;">
                 <div style="flex:1;min-width:0;">
                   <div style="font-size:10px;font-weight:700;color:#115e59;margin-bottom:6px;">ASSINATURA DIGITAL CADASTRADA</div>
-                  ${digitalSignatureBase64 || professional.digital_signature_url ? `<img src="${escapeHtml(digitalSignatureBase64 || professional.digital_signature_url)}" alt="Imagem da assinatura cadastrada" style="max-width:200px;max-height:66px;width:auto;object-fit:contain;display:block;"/>` : '<p style="font-size:10px;color:#64748b;">Assinatura não cadastrada ou indisponível.</p>'}
+                  ${digitalSignatureBase64 || professional.digital_signature_url ? `<img src="${escapeHtml(digitalSignatureBase64 || professional.digital_signature_url)}" alt="Imagem da assinatura cadastrada" style="max-width:255px;max-height:105px;width:auto;object-fit:contain;display:block;"/>` : '<p style="font-size:10px;color:#64748b;">Assinatura não cadastrada ou indisponível.</p>'}
                 </div>
                 <div style="flex:1;min-width:0;">
                   <div style="font-size:10px;font-weight:700;color:#115e59;margin-bottom:6px;">CARIMBO DIGITAL CADASTRADO</div>
-                  ${digitalStampBase64 || professional.digital_stamp_url ? `<img src="${escapeHtml(digitalStampBase64 || professional.digital_stamp_url)}" alt="Imagem do carimbo cadastrado" style="max-width:158px;max-height:75px;width:auto;object-fit:contain;display:block;"/>` : '<p style="font-size:10px;color:#64748b;">Carimbo não cadastrado ou indisponível.</p>'}
+                  ${digitalStampBase64 || professional.digital_stamp_url ? `<img src="${escapeHtml(digitalStampBase64 || professional.digital_stamp_url)}" alt="Imagem do carimbo cadastrado" style="max-width:220px;max-height:105px;width:auto;object-fit:contain;display:block;"/>` : '<p style="font-size:10px;color:#64748b;">Carimbo não cadastrado ou indisponível.</p>'}
                 </div>
               </div>
               <p style="font-size:9px;line-height:1.5;color:#64748b;margin-top:12px;">Quando presentes, imagens de assinatura e carimbo reproduzidas conforme cadastro. Este PDF não comprova assinatura criptográfica certificada.</p>
@@ -762,7 +763,7 @@ export const generateProfessionalAnamnesePDF = async (
       filename: `Anamnese_Musicoterapeutica_${patientName.replace(/\s+/g, '_')}_${localIssueDate}.pdf`,
       pagebreak: { 
         mode: ['css', 'legacy'],
-        avoid: ['.clinical-section-header', '.professional-footer', '.patient-line', '.patient-identification', 'h1', 'h2', 'h3']
+        avoid: ['.clinical-section--keep', '.clinical-section-header', '.professional-footer', '.patient-line', '.patient-identification', 'h1', 'h2', 'h3']
       },
       jsPDF: {
         unit: 'mm',
