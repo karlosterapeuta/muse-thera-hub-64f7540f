@@ -789,6 +789,45 @@ export const generateProfessionalAnamnesePDF = async (
     const pdfInstance = html2pdf().from(element).set(opt);
     await pdfInstance.toPdf();
     const pdfDocument = await pdfInstance.get("pdf");
+    // Inspecionar o raster ANTES de adicionar a numeração: páginas extras vazias
+    // podem ser criadas pelo html2pdf quando a altura total excede um múltiplo de A4.
+    // Nunca remover páginas que contenham pixels de conteúdo.
+    const renderedCanvas = await pdfInstance.get('canvas') as HTMLCanvasElement | undefined;
+    if (renderedCanvas && renderedCanvas.width > 0 && renderedCanvas.height > 0) {
+      const innerWidth = pdfDocument.internal.pageSize.getWidth() - opt.margin[1] - opt.margin[3];
+      const innerHeight = pdfDocument.internal.pageSize.getHeight() - opt.margin[0] - opt.margin[2];
+      const pixelsPerPage = Math.floor(renderedCanvas.width * innerHeight / innerWidth);
+
+      if (pixelsPerPage > 0) {
+        const context = renderedCanvas.getContext('2d', { willReadFrequently: true });
+        if (context) {
+          while (pdfDocument.internal.getNumberOfPages() > 1) {
+            const lastPageIndex = pdfDocument.internal.getNumberOfPages() - 1;
+            const startY = lastPageIndex * pixelsPerPage;
+            const endY = Math.min(renderedCanvas.height, startY + pixelsPerPage);
+            if (startY >= renderedCanvas.height) {
+              pdfDocument.deletePage(lastPageIndex + 1);
+              continue;
+            }
+            const image = context.getImageData(0, startY, renderedCanvas.width, endY - startY);
+            let nonWhiteSamples = 0;
+            // Amostragem conservadora; qualquer conteúdo perceptível mantém a página.
+            for (let y = 0; y < image.height && nonWhiteSamples < 5; y += 3) {
+              for (let x = 0; x < image.width && nonWhiteSamples < 5; x += 3) {
+                const offset = (y * image.width + x) * 4;
+                if (image.data[offset + 3] > 32 &&
+                    (image.data[offset] < 240 || image.data[offset + 1] < 240 || image.data[offset + 2] < 240)) {
+                  nonWhiteSamples++;
+                }
+              }
+            }
+            if (nonWhiteSamples >= 5) break;
+            pdfDocument.deletePage(lastPageIndex + 1);
+          }
+        }
+      }
+    }
+
     const pageCount = pdfDocument.internal.getNumberOfPages();
     for (let pageNumber = 1; pageNumber <= pageCount; pageNumber++) {
       pdfDocument.setPage(pageNumber);
