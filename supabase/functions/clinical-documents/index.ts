@@ -71,7 +71,9 @@ function safeR2Error(error: unknown): { code: string; status: number | null; hin
   // Never show a raw S3 error message: it could contain object paths.
   // Only classify safe, pre-approved terms from the provider response.
   const message = typeof sdkError?.message === "string" ? sdkError.message : "";
-  const hint = /x-amz-content-sha256/i.test(message) ? "payload-sha256"
+  const hint = /credential access key.*length|access key.*should be 32/i.test(message) ? "access-key-format"
+    : /secret access key.*length/i.test(message) ? "secret-key-format"
+    : /x-amz-content-sha256/i.test(message) ? "payload-sha256"
     : /aws-chunked|chunked|streaming/i.test(message) ? "streaming-encoding"
     : /x-amz-sdk-checksum|checksum-algorithm|crc32|checksum/i.test(message) ? "checksum-header"
     : /content.length|content length/i.test(message) ? "content-length"
@@ -102,6 +104,21 @@ Deno.serve(async (request) => {
   // getUser faz a validação do token no Auth, em vez de confiar em claims fornecidas pelo navegador.
   const { data: { user }, error: authError } = await supabase.auth.getUser(bearer.substring(7));
   if (authError || !user) return json(request, { error: "Sessão inválida" }, 401);
+  // R2 credentials are not the dashboard's generic API token value.
+  // A bucket-scoped S3 Access Key ID is 32 hexadecimal characters; its
+  // Secret Access Key is a 64-character SHA-256 hex digest.
+  // Only report format validity; never log keys or their raw values.
+  if (!/^[a-f0-9]{32}$/i.test(cfg.accessKeyId)) {
+    return json(request, {
+      error: "Configuração R2_ACCESS_KEY_ID inválida: use o Access Key ID S3 (32 caracteres), não o token de API.",
+    }, 503);
+  }
+  if (!/^[a-f0-9]{64}$/i.test(cfg.secretAccessKey)) {
+    return json(request, {
+      error: "Configuração R2_SECRET_ACCESS_KEY inválida: use o Secret Access Key S3 (64 caracteres), não o token de API.",
+    }, 503);
+  }
+
   const s3 = new S3Client({
     region: "auto",
     endpoint: `https://${cfg.accountId}.r2.cloudflarestorage.com`,
