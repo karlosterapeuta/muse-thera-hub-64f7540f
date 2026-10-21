@@ -1,0 +1,43 @@
+name: Anamnese save schema validation
+on:
+  pull_request:
+    paths:
+      - "src/pages/anamnesis/**"
+      - "src/integrations/supabase/types.ts"
+      - "supabase/migrations/*anamnesis*.sql"
+      - ".github/workflows/anamnesis-save-validation.yml"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Build portal
+        run: npm run build
+      - name: Check migration/form schema coverage
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          const file = path => fs.readFileSync(path, 'utf8');
+          const form = file('src/pages/anamnesis/components/InitialEvaluationForm.tsx');
+          const wrapper = file('src/pages/anamnesis/AnamnesisFormWrapper.tsx');
+          const types = file('src/integrations/supabase/types.ts');
+          const migration = file('supabase/migrations/20261021180000_anamnesis_sensory_and_regulation_fields.sql');
+          const fields = ['discomfort_sounds', 'calming_sounds', 'musical_behavior_description', 'regulation_strategies'];
+          for (const name of fields) {
+            if (!form.includes(name) || !wrapper.includes("'"+name+"'") ||
+                !types.includes(name+': string | null') ||
+                !types.includes(name+'?: string | null') ||
+                !migration.includes('ADD COLUMN IF NOT EXISTS '+name+' text')) {
+              throw new Error('Missing column declaration: '+name);
+            }
+          }
+          console.log('4 fields covered by form, migration, types and save handler.');
+          JS
