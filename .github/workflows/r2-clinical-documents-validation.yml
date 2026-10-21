@@ -1,0 +1,47 @@
+name: MuseTera R2 clinical documents validation
+
+on:
+  pull_request:
+    paths:
+      - "src/pages/backup/**"
+      - "src/utils/r2ClinicalDocuments.ts"
+      - "supabase/functions/clinical-documents/**"
+      - "supabase/config.toml"
+      - ".github/workflows/r2-clinical-documents-validation.yml"
+
+jobs:
+  frontend-build-and-security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Build portal
+        run: npm run build
+      - name: Validate R2 security boundaries
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          const fn = fs.readFileSync('supabase/functions/clinical-documents/index.ts', 'utf8');
+          const cfg = fs.readFileSync('supabase/config.toml', 'utf8');
+          const ui = fs.readFileSync('src/pages/backup/index.tsx', 'utf8');
+          const checks = [
+            [cfg.includes('verify_jwt = true'), 'JWT must stay enabled'],
+            [fn.includes('supabase.auth.getUser'), 'Authenticated user required'],
+            [fn.includes('.eq("owner_user_id", user.id)'), 'Owner scoped reads required'],
+            [fn.includes('.eq("professional_id", user.id)'), 'Patient ownership required'],
+            [fn.includes('sha256(bytes)'), 'SHA-256 verification required'],
+            [!fn.includes("Access-Control-Allow-Origin: *"), "No permissive CORS"],
+            [ui.includes('isAdmin && <R2StoragePilot />'), 'Pilot must be admin only'],
+          ];
+          for (const [ok, msg] of checks) {
+            if (!ok) throw new Error(msg);
+          }
+          console.log('R2 security checks complete.');
+          JS

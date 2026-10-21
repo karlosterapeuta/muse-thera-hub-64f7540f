@@ -1,1 +1,5 @@
 project_id = "jztbkimlcrfndooyhohg"
+
+# Mantém o gateway autenticado: a função ainda valida o JWT com auth.getUser.
+[functions.clinical-documents]
+verify_jwt = true
