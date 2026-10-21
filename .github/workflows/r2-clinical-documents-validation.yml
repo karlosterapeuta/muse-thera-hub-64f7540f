@@ -37,7 +37,7 @@ jobs:
             [fn.includes('.eq("owner_user_id", user.id)'), 'Owner scoped reads required'],
             [fn.includes('.eq("professional_id", user.id)'), 'Patient ownership required'],
             [fn.includes('sha256(bytes)'), 'SHA-256 verification required'],
-            [!fn.includes('Access-Control-Allow-Origin\': \'*'), 'No permissive CORS'],
+            [!fn.includes("Access-Control-Allow-Origin: *"), "No permissive CORS"],
             [ui.includes('isAdmin && <R2StoragePilot />'), 'Pilot must be admin only'],
           ];
           for (const [ok, msg] of checks) {
