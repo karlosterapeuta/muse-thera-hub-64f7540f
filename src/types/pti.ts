@@ -54,7 +54,7 @@ export interface PtiFormulario {
 
 export const createDefaultPtiFormulario = (): PtiFormulario => ({
   nomeMae: "", nomePai: "", unidade: "", inicioImplementacao: "",
-  revisaoObjetivos: "Semestral", medicacoesAtuais: "", protocoloAvaliacao: "MuseTera TEA",
+  revisaoObjetivos: "", medicacoesAtuais: "", protocoloAvaliacao: "Não informado",
   comportamentoAutolesivo: false, comportamentoHeterolesivo: false,
   relatosResponsaveis: "", desenvolvimentoAutonomia: "", comportamentoManejo: "",
   resumoClinico: "", comportamentosAlvo: [], consideracoes: "", referencias: "",
@@ -256,7 +256,7 @@ export const createDefaultPtiContent = (): PtiContent => ({
   criteriosAlta: "",
   planoFamiliar: "",
   integracao: { profissionais: [], observacoes: "" },
-  fundamentacao: PTI_FUNDAMENTACAO_PADRAO,
+  fundamentacao: "",
 });
 
 export interface PtiPlan {
