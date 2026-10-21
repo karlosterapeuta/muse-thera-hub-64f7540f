@@ -13,7 +13,7 @@ export interface ArchivedClinicalDocument {
   created_at: string;
 }
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f-]{27,36}$/i;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export async function archiveClinicalPdfInR2(args: {
   pdf: Blob;
