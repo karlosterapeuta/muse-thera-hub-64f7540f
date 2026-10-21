@@ -73,8 +73,41 @@ const basicDatabaseFields = [
 // Campos que podem não existir (dependem da migração)
 const optionalDatabaseFields: string[] = [];
 
-// Cache para colunas verificadas
-let columnCheckCache: string[] | null = null;
+// A lista é específica do usuário e expira: o banco pode receber novas migrações.
+const SCHEMA_CACHE_TTL_MS = 60_000;
+let columnCheckCache: { userId: string; fields: string[]; checkedAt: number } | null = null;
+
+function isMissingColumnError(error: { code?: string; message?: string; details?: string }): boolean {
+  const description = [error.message, error.details].filter(Boolean).join(" ");
+  return error.code === "42703"
+    || error.code === "PGRST204"
+    || /column[^\n]*(does not exist|not found|schema cache)/i.test(description)
+    || /could not find[^\n]*column/i.test(description);
+}
+
+// HEAD valida uma projeção SQL mesmo quando não há linhas visíveis por RLS.
+// Caso só alguns campos não existam, procura exatamente quais estão faltando,
+// sem tentar gravar dados nem depender de registros de outros profissionais.
+async function probeAvailableAnamnesisColumns(columns: string[]): Promise<string[]> {
+  if (columns.length === 0) return [];
+  const { error } = await supabase
+    .from("anamnesis")
+    .select(columns.join(","), { head: true })
+    .limit(0);
+
+  if (!error) return columns;
+  if (!isMissingColumnError(error)) {
+    throw new Error(`Falha na consulta ao esquema da anamnese (código ${error.code || "desconhecido"}): ${error.message}`);
+  }
+  if (columns.length === 1) return [];
+
+  const split = Math.floor(columns.length / 2);
+  const [left, right] = await Promise.all([
+    probeAvailableAnamnesisColumns(columns.slice(0, split)),
+    probeAvailableAnamnesisColumns(columns.slice(split)),
+  ]);
+  return [...left, ...right];
+}
 
 export default function AnamnesisFormWrapper({ 
   editAnamnesisId, 
@@ -114,50 +147,37 @@ export default function AnamnesisFormWrapper({
       .join(' ');
   };
 
-  // Função melhorada para verificar colunas disponíveis com cache
-  const getAvailableColumns = async (): Promise<string[]> => {
-    // Se já temos o cache, retornar imediatamente
-    if (columnCheckCache) {
-      console.log("✅ Usando cache de colunas:", columnCheckCache.length);
-      return columnCheckCache;
+  // Não presumir que todas as colunas existem só porque a consulta retornou zero linhas.
+  const getAvailableColumns = async (forceRefresh = false): Promise<string[]> => {
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      throw new Error("Sessão do profissional indisponível. Entre novamente antes de salvar a anamnese.");
+    }
+    if (!forceRefresh && columnCheckCache?.userId === user.id
+      && Date.now() - columnCheckCache.checkedAt < SCHEMA_CACHE_TTL_MS) {
+      return columnCheckCache.fields;
     }
 
-    try {
-      console.log("🔍 Verificando colunas disponíveis na tabela anamnesis...");
-      
-      // Consultar um registro para obter as colunas reais
-      const { data, error } = await supabase
-        .from("anamnesis")
-        .select("*")
-        .limit(1);
+    // Apenas registros do profissional autenticado; nunca consultar outros prontuários.
+    const { data, error } = await supabase.from("anamnesis")
+      .select("*")
+      .eq("professional_id", user.id)
+      .limit(1);
+    if (error) {
+      throw new Error(`Não foi possível verificar o esquema da anamnese (código ${error.code || "desconhecido"}): ${error.message}`);
+    }
 
-      if (error) throw new Error(`Não foi possível verificar o esquema da anamnese: ${error.message}`);
-
-      // CORREÇÃO: Se temos dados, extrair colunas do objeto retornado
-      if (data && data.length > 0) {
-        const actualColumns = Object.keys(data[0]);
-        console.log("✅ Colunas reais detectadas do banco:", actualColumns.length, actualColumns);
-        columnCheckCache = actualColumns;
-        return actualColumns;
-      }
-
-      // Uma tabela vazia não revela colunas por Object.keys. Testar explicitamente
-      // as migrações recentes sem depender de registros de outros profissionais.
-      const { error: schemaError } = await supabase
-        .from("anamnesis")
-        .select("tea_functional_profile,review_status,finalized_at,finalized_by", { head: true, count: "exact" })
-        .limit(0);
-      const hasRecentFields = !schemaError;
-      const knownFields = hasRecentFields ? basicDatabaseFields : basicDatabaseFields.filter(key =>
-        !["tea_functional_profile", "review_status", "finalized_at", "finalized_by"].includes(key)
+    let available: string[];
+    if (data?.length) {
+      available = Object.keys(data[0]);
+    } else {
+      // Sem registros visíveis não significa que o banco contém todas as colunas.
+      available = await probeAvailableAnamnesisColumns(
+        [...new Set([...basicDatabaseFields, ...optionalDatabaseFields])],
       );
-      columnCheckCache = knownFields;
-      return knownFields;
-
-    } catch (error) {
-      console.warn("⚠️ Erro ao verificar colunas disponíveis:", error);
-      throw error;
     }
+    columnCheckCache = { userId: user.id, fields: available, checkedAt: Date.now() };
+    return available;
   };
 
   useEffect(() => {
@@ -174,9 +194,7 @@ export default function AnamnesisFormWrapper({
     try {
       setIsLoading(true);
       
-      // Verificar colunas disponíveis primeiro e aguardar
-      await getAvailableColumns();
-      
+      // Confirmar a sessão antes de consultar os campos protegidos por RLS.
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast({
@@ -191,6 +209,7 @@ export default function AnamnesisFormWrapper({
       setUserEmail(user.email || "");
       setUserName(formatNameFromEmail(user.email || ""));
       setProfessionalId(user.id);
+      await getAvailableColumns();
 
       const { data: patientsData, error: patientsError } = await supabase
         .from("patients")
@@ -287,7 +306,12 @@ export default function AnamnesisFormWrapper({
     
     const discarded = Object.keys(data).filter(key => !availableColumns.includes(key.toLowerCase()) && !['id', 'patient_id', 'professional_id', 'created_at', 'updated_at'].includes(key.toLowerCase()));
     const filledDiscarded = discarded.filter(key => data[key] !== null && data[key] !== undefined && data[key] !== '' && data[key] !== false);
-    if (filledDiscarded.length) throw new Error(`Campos preenchidos ainda não disponíveis no banco: ${filledDiscarded.join(', ')}. Atualize o esquema antes de salvar.`);
+    if (filledDiscarded.length) {
+      throw new Error(
+        `O banco de dados não possui as colunas: ${filledDiscarded.join(", ")}. `
+        + "Os dados continuam no formulário. É necessário aplicar a migração correspondente no Supabase antes de salvar."
+      );
+    }
     return filteredData;
   };
 
@@ -347,7 +371,7 @@ export default function AnamnesisFormWrapper({
       
       // SEMPRE garantir que temos as colunas disponíveis antes de prosseguir
       console.log("💾 Iniciando salvamento - verificando colunas...");
-      const availableColumns = await getAvailableColumns();
+      const availableColumns = await getAvailableColumns(true);
       
       if (mode === "finalized" && !["review_status", "finalized_at", "finalized_by"].every(key => availableColumns.includes(key))) {
         throw new Error("A migração de revisão da anamnese ainda não foi aplicada ao banco de dados.");
@@ -408,9 +432,14 @@ export default function AnamnesisFormWrapper({
       return true;
       
     } catch (error: any) {
-      console.error("❌ Erro ao salvar anamnese:", error);
-      
-      toast({ title: "Salvamento não confirmado", description: error?.message || "Os dados permanecem no formulário. Corrija o problema e tente novamente.", variant: "destructive" });
+      // Registrar apenas código e mensagem; não expor valores clínicos em logs.
+      console.error("Erro ao salvar anamnese", { code: error?.code, message: error?.message });
+      const detail = error?.code ? ` (${error.code})` : "";
+      toast({
+        title: "Anamnese não salva",
+        description: (error?.message ? `${error.message}${detail}` : "O banco não confirmou o salvamento.") + " Os dados continuam neste formulário.",
+        variant: "destructive",
+      });
       return false;
     } finally {
       setIsSubmitting(false);
