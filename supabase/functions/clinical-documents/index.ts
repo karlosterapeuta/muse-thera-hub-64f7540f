@@ -51,6 +51,25 @@ async function sha256(bytes: Uint8Array): Promise<string> {
 function safeName(input: string): string {
   return input.normalize("NFKD").replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 120);
 }
+
+/** Never return/log raw SDK errors: they may contain request details or credentials. */
+function safeR2Error(error: unknown): { code: string; status: number | null } {
+  const sdkError = error && typeof error === "object"
+    ? error as { name?: unknown; $metadata?: { httpStatusCode?: unknown } }
+    : null;
+  const permittedCodes = new Set([
+    "InvalidAccessKeyId", "SignatureDoesNotMatch", "AccessDenied",
+    "NoSuchBucket", "InvalidBucketName", "RequestTimeTooSkewed",
+    "NotImplemented", "InvalidRequest", "BadDigest", "InvalidArgument",
+    "CredentialsProviderError", "TimeoutError", "TypeError", "NetworkingError",
+  ]);
+  const code = typeof sdkError?.name === "string" && permittedCodes.has(sdkError.name)
+    ? sdkError.name : "OtherError";
+  const rawStatus = sdkError?.$metadata?.httpStatusCode;
+  const status = typeof rawStatus === "number" && Number.isInteger(rawStatus) &&
+    rawStatus >= 400 && rawStatus <= 599 ? rawStatus : null;
+  return { code, status };
+}
 Deno.serve(async (request) => {
   if (request.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: cors(request) });
@@ -75,6 +94,9 @@ Deno.serve(async (request) => {
     region: "auto",
     endpoint: `https://${cfg.accountId}.r2.cloudflarestorage.com`,
     forcePathStyle: true,
+    // Avoid unsolicited CRC32 checksums: R2 S3 supports limited checksum modes.
+    // Application-level SHA-256 is still verified on download.
+    requestChecksumCalculation: "WHEN_REQUIRED",
     credentials: { accessKeyId: cfg.accessKeyId, secretAccessKey: cfg.secretAccessKey },
   });
 
@@ -114,8 +136,13 @@ Deno.serve(async (request) => {
         Bucket: cfg.bucket, Key: objectKey, Body: bytes,
         ContentType: "application/pdf", CacheControl: "private, no-store",
       }));
-    } catch (_error) {
-      return json(request, { error: "Falha no armazenamento privado" }, 502);
+    } catch (error) {
+      const details = safeR2Error(error);
+      // Structured, non-sensitive diagnostics for the administrator.
+      console.error("[clinical-documents] R2 PutObject failed", details);
+      return json(request, {
+        error: `Falha no armazenamento privado (R2: ${details.code}${details.status ? `, HTTP ${details.status}` : ""})`,
+      }, 502);
     }
     const { error } = await supabase.from("clinical_documents").insert({
       id, owner_user_id: user.id, patient_id: patientId,
