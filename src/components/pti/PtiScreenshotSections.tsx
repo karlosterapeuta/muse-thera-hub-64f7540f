@@ -90,7 +90,7 @@ export function PtiScreenshotSections({content,update,importing,onImport,profess
         <TextInput label="Início de implementação" value={form.inicioImplementacao||ident.dataPlano} onChange={v=>uf({inicioImplementacao:v})} type="date" />
         <TextInput label="Profissional responsável" value={ident.profissional||professionalName} onChange={v=>ui({profissional:v})} />
         <label className={labelClass}>Reavaliação dos objetivos<select className={fieldClass} value={form.revisaoObjetivos} onChange={e=>uf({revisaoObjetivos:e.target.value})}>
-          {["Mensal","Trimestral","Semestral","Anual","Individualizada"].map(x=><option key={x}>{x}</option>)}
+          <option value="">Selecione uma periodicidade</option>{["Mensal","Trimestral","Semestral","Anual","Individualizada"].map(x=><option key={x}>{x}</option>)}
         </select></label>
       </div>
     </SectionBar>
