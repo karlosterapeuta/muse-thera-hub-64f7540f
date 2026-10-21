@@ -45,6 +45,9 @@ export interface PtiFormulario {
   resumoClinico: string;
   comportamentosAlvo: string[];
   consideracoes: string;
+  /** IDs das obras efetivamente selecionadas no catálogo bibliográfico. */
+  referenciasSelecionadas?: string[];
+  /** Outras obras ou referências antigas registradas manualmente. */
   referencias: string;
   dataDevolutiva: string;
   responsavelDevolutiva: string;
@@ -57,7 +60,7 @@ export const createDefaultPtiFormulario = (): PtiFormulario => ({
   revisaoObjetivos: "", medicacoesAtuais: "", protocoloAvaliacao: "Não informado",
   comportamentoAutolesivo: false, comportamentoHeterolesivo: false,
   relatosResponsaveis: "", desenvolvimentoAutonomia: "", comportamentoManejo: "",
-  resumoClinico: "", comportamentosAlvo: [], consideracoes: "", referencias: "",
+  resumoClinico: "", comportamentosAlvo: [], consideracoes: "", referenciasSelecionadas: [], referencias: "",
   dataDevolutiva: "", responsavelDevolutiva: "",
   incluirAssinatura: true, incluirRodape: true,
 });
