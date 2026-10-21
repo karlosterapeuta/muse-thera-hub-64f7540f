@@ -1,0 +1,25 @@
+name: Anamnesis save validation
+on:
+  pull_request:
+    paths:
+      - "src/pages/anamnesis/AnamnesisFormWrapper.tsx"
+      - "src/integrations/supabase/types.ts"
+      - ".github/workflows/anamnesis-save-validation.yml"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: TypeScript check
+        run: npx tsc -p tsconfig.app.json --noEmit
+      - name: Vite build (even if unrelated TS errors remain)
+        if: always()
+        run: npm run build
