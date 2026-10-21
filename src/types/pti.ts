@@ -255,7 +255,7 @@ export function computePtiProgress(c: PtiContent): number {
     !!c.criteriosAlta,
     !!c.planoFamiliar,
     c.integracao.profissionais.length > 0,
-    !!c.fundamentacao,
+    !!c.fundamentacao?.trim() && c.fundamentacao.trim() !== PTI_FUNDAMENTACAO_PADRAO,
   ];
   const filled = checks.filter(Boolean).length;
   return Math.round((filled / checks.length) * 100);
