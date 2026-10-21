@@ -49,6 +49,15 @@ O editor `/pti/novo` e `/pti/:id` foi reconstruído como **formulário contínuo
 
 **Pendências de QA:** preview Cloudflare atualizado, exercício com paciente fictício, PDF, RLS e autorização por profissional, acessibilidade e responsividade. Não houve migração ou publicação em produção.
 
+## Etapa 1C — Simplificação e identidade MuseTera
+
+- Removidas do editor as abas `CONSOLIDADO`, `PEI · INTERVENÇÃO` e `EVOLUÇÃO`. O PTI permanece como **uma página clínica contínua**. Os dados de plano e as rotas existentes de reavaliação não foram apagados.
+- Estilos da tela e do catálogo foram migrados de cores laranja/cinza fixas para classes semânticas do tema do portal (`primary`, `background`, `foreground`, `card`, `muted`, `border`), respeitando claro/escuro e a identidade verde do MuseTera.
+- Seção independente **Referências bibliográficas utilizadas**, com seis obras catalogadas: Bruscia (2014), Benenzon (1981), Nordoff e Robbins (2007), Wigram/Pedersen/Bonde (2002), Ruud (2010) e Thaut/Hömberg (2014).
+- Seleção múltipla explícita, contagem das referências e campo adicional para referências manuais. Persistência via `formulario.referenciasSelecionadas` opcional no JSON existente, sem migração SQL.
+- O PDF utiliza o cabeçalho verde e **inclui apenas as referências selecionadas e/ou as digitadas pelo profissional**. Nenhuma bibliografia é atribuída automaticamente ao plano.
+- O uso da bibliografia deve corresponder às obras realmente consultadas e à pertinência clínica do caso; inserir títulos não equivale a validar intervenções.
+
 ## Fase 2 — Unificação funcional, sem exclusão dos módulos antigos
 
 - Definir **/pti** como acesso unificado e preservar rotas legadas enquanto houver usuários/planos ativos.
