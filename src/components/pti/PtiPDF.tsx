@@ -1,5 +1,6 @@
 import { PtiContent, PTI_CRITERIOS_EVOLUCAO, createDefaultPtiFormulario } from "@/types/pti";
 import { ProfessionalData } from "@/hooks/useProfessionalData";
+import { getPtiSelectedReferences } from "./ptiReferences";
 
 interface PtiPDFProps {
   content: PtiContent;
@@ -46,8 +47,10 @@ const styles = {
 export function PtiPDF({ content: c, professional, signature, stamp }: PtiPDFProps) {
   const id = c.identificacao;
   const form = { ...createDefaultPtiFormulario(), ...c.formulario };
+  const selectedReferences = getPtiSelectedReferences(form.referenciasSelecionadas);
+  const additionalReferences = form.referencias.trim();
   const sectionBar: React.CSSProperties = {
-    background: "#ed8614", color: "#ffffff", padding: "7px 9px",
+    background: "#166534", color: "#ffffff", padding: "7px 9px",
     fontSize: "11px", fontWeight: 700, letterSpacing: ".5px",
     marginTop: "14px", marginBottom: "8px", breakAfter: "avoid",
   };
@@ -136,7 +139,15 @@ export function PtiPDF({ content: c, professional, signature, stamp }: PtiPDFPro
       {optional("Plano familiar", c.planoFamiliar)}
       {optional("Articulação multiprofissional", c.integracao.observacoes)}
       {optional("Fundamentação técnica", c.fundamentacao)}
-      {optional("Referências bibliográficas utilizadas", form.referencias)}
+      {(selectedReferences.length > 0 || additionalReferences) && <>
+        <T>REFERÊNCIAS BIBLIOGRÁFICAS UTILIZADAS</T>
+        {selectedReferences.map((reference, index) =>
+          <div key={reference} style={{ ...line, padding: "3px 0", breakInside: "avoid" }}>
+            {index + 1}. {reference}
+          </div>
+        )}
+        {additionalReferences && <div style={{ ...line, marginTop: selectedReferences.length ? "6px" : 0 }}>{additionalReferences}</div>}
+      </>}
       {(form.dataDevolutiva || form.responsavelDevolutiva) && <>
         <T>6. DEVOLUTIVA</T>
         {optional("Data da devolutiva", form.dataDevolutiva)}
