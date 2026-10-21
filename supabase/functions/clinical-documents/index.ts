@@ -53,9 +53,9 @@ function safeName(input: string): string {
 }
 
 /** Never return/log raw SDK errors: they may contain request details or credentials. */
-function safeR2Error(error: unknown): { code: string; status: number | null } {
+function safeR2Error(error: unknown): { code: string; status: number | null; hint: string } {
   const sdkError = error && typeof error === "object"
-    ? error as { name?: unknown; $metadata?: { httpStatusCode?: unknown } }
+    ? error as { name?: unknown; message?: unknown; $metadata?: { httpStatusCode?: unknown } }
     : null;
   const permittedCodes = new Set([
     "InvalidAccessKeyId", "SignatureDoesNotMatch", "AccessDenied",
@@ -68,7 +68,19 @@ function safeR2Error(error: unknown): { code: string; status: number | null } {
   const rawStatus = sdkError?.$metadata?.httpStatusCode;
   const status = typeof rawStatus === "number" && Number.isInteger(rawStatus) &&
     rawStatus >= 400 && rawStatus <= 599 ? rawStatus : null;
-  return { code, status };
+  // Never show a raw S3 error message: it could contain object paths.
+  // Only classify safe, pre-approved terms from the provider response.
+  const message = typeof sdkError?.message === "string" ? sdkError.message : "";
+  const hint = /x-amz-content-sha256/i.test(message) ? "payload-sha256"
+    : /aws-chunked|chunked|streaming/i.test(message) ? "streaming-encoding"
+    : /x-amz-sdk-checksum|checksum-algorithm|crc32|checksum/i.test(message) ? "checksum-header"
+    : /content.length|content length/i.test(message) ? "content-length"
+    : /date header|x-amz-date/i.test(message) ? "date-header"
+    : /unsupported header/i.test(message) ? "unsupported-header"
+    : /credential service|signing service/i.test(message) ? "signature-scope"
+    : /bucket/i.test(message) ? "bucket-parameter"
+    : "unclassified";
+  return { code, status, hint };
 }
 Deno.serve(async (request) => {
   if (request.method === "OPTIONS") {
@@ -133,15 +145,19 @@ Deno.serve(async (request) => {
     const digest = await sha256(bytes);
     try {
       await s3.send(new PutObjectCommand({
-        Bucket: cfg.bucket, Key: objectKey, Body: bytes,
-        ContentType: "application/pdf", CacheControl: "private, no-store",
+        Bucket: cfg.bucket,
+        Key: objectKey,
+        Body: bytes,
+        ContentLength: bytes.byteLength,
+        ContentType: "application/pdf",
+        // Omits optional metadata; only use S3-standard headers.
       }));
     } catch (error) {
       const details = safeR2Error(error);
       // Structured, non-sensitive diagnostics for the administrator.
       console.error("[clinical-documents] R2 PutObject failed", details);
       return json(request, {
-        error: `Falha no armazenamento privado (R2: ${details.code}${details.status ? `, HTTP ${details.status}` : ""})`,
+        error: `Falha no armazenamento privado (R2: ${details.code}${details.status ? `, HTTP ${details.status}` : ""}, argumento: ${details.hint})`,
       }, 502);
     }
     const { error } = await supabase.from("clinical_documents").insert({
