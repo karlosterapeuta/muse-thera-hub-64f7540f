@@ -22,7 +22,7 @@ import { usePtiPlan, useSavePtiPlan, usePtiPatients } from "@/hooks/usePtiPlans"
 import { useProfessionalData } from "@/hooks/useProfessionalData";
 import { PtiAiButton } from "@/components/pti/PtiAiButton";
 import {
-  PtiContent, createDefaultPtiContent, computePtiProgress,
+  PtiContent, createDefaultPtiContent, createDefaultPtiFormulario, computePtiProgress,
   PTI_OPTS, PTI_AREAS, PTI_ESTRATEGIAS, PTI_RECURSOS, PTI_PROFISSIONAIS,
   PTI_FREQUENCIA, PTI_CRITERIOS_EVOLUCAO, PtiObjetivoEspecifico, PtiMeta,
 } from "@/types/pti";
@@ -203,12 +203,17 @@ export default function PtiEditor() {
       const code = field("cid_code");
       const musicalHistory = field("patient_musical_history");
       const familyMusicalHistory = field("family_musical_history");
-      if (![clinicalDetails, diagnosis, code, musicalHistory, familyMusicalHistory].some(Boolean)) {
+      const motherName = field("mother_name");
+      const fatherName = field("father_name");
+      const currentMedication = field("current_medication");
+      const mainDemand = field("main_clinical_demand");
+      if (![clinicalDetails, diagnosis, code, musicalHistory, familyMusicalHistory, motherName, fatherName, currentMedication, mainDemand].some(Boolean)) {
         toast.info("A anamnese está disponível, mas não contém dados compatíveis para importação automática.");
         return;
       }
       if (!window.confirm("Importar da anamnese os campos clínicos disponíveis, mantendo os campos já preenchidos? Revise todos os dados antes de emitir o PTI.")) return;
       const preferCurrent = (current: string, imported: string) => current.trim() || imported;
+      const form = { ...createDefaultPtiFormulario(), ...content.formulario };
       update({
         identificacao: {
           ...content.identificacao,
@@ -219,6 +224,14 @@ export default function PtiEditor() {
           ...content.historicoClinico,
           desenvolvimento: preferCurrent(content.historicoClinico.desenvolvimento, clinicalDetails),
           historicoMusical: preferCurrent(content.historicoClinico.historicoMusical, musicalHistory),
+        },
+        queixaPrincipal: preferCurrent(content.queixaPrincipal, mainDemand),
+        formulario: {
+          ...form,
+          nomeMae: preferCurrent(form.nomeMae, motherName),
+          nomePai: preferCurrent(form.nomePai, fatherName),
+          medicacoesAtuais: preferCurrent(form.medicacoesAtuais, currentMedication),
+          resumoClinico: preferCurrent(form.resumoClinico, clinicalDetails),
         },
       });
       if (familyMusicalHistory && !content.historicoClinico.terapiasAnteriores.trim()) {
