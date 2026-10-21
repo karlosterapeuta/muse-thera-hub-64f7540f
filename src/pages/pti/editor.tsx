@@ -29,8 +29,6 @@ import {
 import { formatAgeString } from "@/utils/dateUtils";
 import { generateStaticPDF } from "@/utils/staticPDFGenerator";
 import { PtiPDF } from "@/components/pti/PtiPDF";
-import { PtiWizardNavigation, PTI_WIZARD_STEPS, type PtiStepId } from "@/components/pti/PtiWizardNavigation";
-import { PtiObjectiveLibrary } from "@/components/pti/PtiObjectiveLibrary";
 import { PtiContinuousForm } from "@/components/pti/PtiContinuousForm";
 import { imageUrlToBase64 } from "@/utils/imageToBase64";
 import { supabase } from "@/integrations/supabase/client";
@@ -52,7 +50,6 @@ export default function PtiEditor() {
   const [content, setContent] = useState<PtiContent>(createDefaultPtiContent());
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [downloading, setDownloading] = useState(false);
-  const [activeStep, setActiveStep] = useState<PtiStepId>("identificacao");
   const [importingClinical, setImportingClinical] = useState(false);
   const autoSaveRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const loadedRef = useRef(false);
