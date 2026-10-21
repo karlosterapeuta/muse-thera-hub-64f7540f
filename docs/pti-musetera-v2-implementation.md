@@ -29,20 +29,25 @@ Arquivos alterados: `src/hooks/usePtiPlans.ts`, `src/pages/pti/editor.tsx`, `src
 
 **Limite técnico da fase 1:** snapshots e plano ainda usam duas gravações separadas em Supabase. Se a gravação da versão falhar, o plano pode ter sido salvo sem snapshot; o editor comunica essa situação e não gera PDF. Atomicidade deve ser considerada numa fase futura via transação/RPC. A versão pode ser registrada novamente ao repetir o salvamento manual. A exportação atual registra um novo snapshot explícito a cada tentativa válida.
 
-## Etapa 1B — Editor V2 guiado (implementado nesta branch)
+## Etapa 1B — Reconstrução contínua baseada nos prints
 
-O editor `/pti/novo` e `/pti/:id` passa a apresentar uma navegação de oito etapas: identificação, contexto clínico, objetivos/metas, intervenções, acompanhamento, família/equipe, revisão e relatório.
+O editor `/pti/novo` e `/pti/:id` foi reconstruído como **formulário contínuo**, substituindo o assistente de oito etapas que estava apenas na branch de testes.
 
-- Interface responsiva e identidade verde MuseTera com resumo de paciente, objetivos e metas.
-- Biblioteca **original** pesquisável de sugestões musicoterapêuticas. A seleção adiciona objetivo, atividade e instrumentos editáveis no mesmo registro.
-- Metas terapêuticas permitem registrar linha de base observada (opcional).
-- Importação **opt-in** de campos preenchidos da anamnese, com confirmação e sem sobrescrever campos existentes. O profissional deve conferir o conteúdo e não se presume que exista resultado de avaliação integrado.
-- Reavaliação disponível no módulo anterior, sem converter mudanças de formulário em sessões.
-- Nova etapa de revisão antes da geração de PDF, incluindo atividade, material e linha de base no documento.
-- Campos adicionais são opcionais e compatíveis com registros antigos em `pti_plans.content`.
-- Para novos planos, após a primeira gravação a navegação utiliza a URL do plano persistido, reduzindo riscos de duplicação por atualização do navegador.
+- Cabeçalho claro, compactado, com nome do paciente e ações reais **Salvar**, **Nova avaliação** e **PDF do PTI**.
+- Abas horizontais **PTI**, **Consolidado**, **PEI · Intervenção** e **Evolução**; todas apontam para dados existentes. Consolidado apresenta contagem do plano; intervenção mostra as atividades planejadas, sem inventar sessões; evolução lê `pti_reavaliacoes` e oferece acesso à rota existente.
+- Blocos visuais em laranja sobre fundo claro: dados complementares, breve história clínica, objetivos por área, comportamentos-problema e considerações/plano de intervenção.
+- Campos novos em `content.formulario` (JSON opcional), incluindo mãe, pai, medicação informada, protocolo, histórico guiado, comportamentos, referências e devolutiva. Nenhuma mudança SQL e nenhum campo preexistente apagado.
+- Importação da anamnese com consentimento e preservação dos campos já preenchidos; inclui nomes dos responsáveis, CID, diagnóstico, medicações já informadas, histórico musical e informações clínicas disponíveis.
+- Catálogo próprio de **55 sugestões musicoterapêuticas** e pequenas coleções por seis outras especialidades, agrupadas, pesquisáveis e com contagem de incluídos. Conteúdo original e editável; não são itens Portage validados.
+- Grade de edição `OBJETIVO / ATIVIDADE / MATERIAL` e metas com linha de base, indicador e prazo.
+- Síntese clínica baseada apenas nos textos efetivamente fornecidos, sem alegar fatos não observados.
+- PDF profissional reorganizado conforme as seções do formulário, com opções de assinatura/carimbo e rodapé.
+- Os dados clínicos antigos permanecem acessíveis em “Campos musicoterapêuticos complementares e dados anteriores”, inclusive critérios, avaliação descritiva e fundamentação.
+- Botões de avaliação são **links ao módulo MuseTera existente**; importação automática dos objetivos da Escala MuseTera ainda requer integração própria.
 
-**Ainda pendente:** validação visual e funcional do preview Cloudflare; verificação de RLS e build. A integração com a Escala MuseTera TEA e o registro por sessão ainda não foram implementados nesta fase.
+**Restrições:** não copiar a marca, o catálogo proprietário ou materiais protegidos do produto PTI Portage. A semelhança concentra-se em organização e padrão de interação de formulário clínico. A equipe responsável precisa validar a aplicabilidade das sugestões de outras especialidades.
+
+**Pendências de QA:** preview Cloudflare atualizado, exercício com paciente fictício, PDF, RLS e autorização por profissional, acessibilidade e responsividade. Não houve migração ou publicação em produção.
 
 ## Fase 2 — Unificação funcional, sem exclusão dos módulos antigos
 
