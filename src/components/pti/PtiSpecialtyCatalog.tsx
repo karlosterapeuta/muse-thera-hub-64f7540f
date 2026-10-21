@@ -36,15 +36,15 @@ export function PtiSpecialtyCatalog({ selected, onAdd }: Props) {
   const [expanded, setExpanded] = useState<string[]>([]);
   const matches = useMemo(() => suggestions.filter(item => normalize(`${item.specialty} ${item.area} ${item.objective} ${item.example} ${item.resource}`).includes(normalize(query))), [query]);
   return (
-    <div className="overflow-hidden rounded-md border border-slate-300 bg-white">
-      <div className="space-y-3 border-b border-slate-200 p-4">
-        <h3 className="text-sm font-bold text-slate-900">Catálogo de objetivos clínicos</h3>
-        <p className="text-xs text-slate-600">Escolha uma sugestão para incluir um objetivo, atividade e material no PTI. Revise a pertinência clínica antes de salvar.</p>
+    <div className="overflow-hidden rounded-md border border-border bg-card">
+      <div className="space-y-3 border-b border-border p-4">
+        <h3 className="text-sm font-bold text-foreground">Catálogo de objetivos clínicos</h3>
+        <p className="text-xs text-muted-foreground">Escolha uma sugestão para incluir um objetivo, atividade e material no PTI. Revise a pertinência clínica antes de salvar.</p>
         <div className="relative max-w-lg">
-          <Search className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-slate-500" />
+          <Search className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <input aria-label="Buscar por objetivo, atividade, material ou subtema" value={query} onChange={e => setQuery(e.target.value)}
             placeholder="Buscar por objetivo, atividade, material ou subtema"
-            className="h-10 w-full rounded-md border border-slate-300 bg-white pl-9 pr-3 text-sm text-slate-900 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-orange-400" />
+            className="h-10 w-full rounded-md border border-border bg-card pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
         </div>
       </div>
       <div className="divide-y divide-slate-200">
@@ -56,27 +56,27 @@ export function PtiSpecialtyCatalog({ selected, onAdd }: Props) {
           const selectedCount = suggestions.filter(item => item.specialty === specialty && selected.some(x => normalize(x) === normalize(item.objective))).length;
           return (
             <div key={specialty}>
-              <button type="button" className="flex w-full items-center gap-2 px-4 py-3 text-left hover:bg-orange-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+              <button type="button" className="flex w-full items-center gap-2 px-4 py-3 text-left hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 onClick={() => setExpanded(current => current.includes(specialty) ? current.filter(x => x !== specialty) : [...current, specialty])}
                 aria-expanded={open}>
-                <span className="min-w-0 flex-1 text-xs font-bold uppercase tracking-wider text-slate-900">{specialty}</span>
-                <span className="rounded-full bg-orange-100 px-2 py-1 text-[11px] font-semibold text-orange-800">{allCount} objetivos</span>
-                {selectedCount > 0 && <span className="rounded-full bg-emerald-100 px-2 py-1 text-[11px] font-semibold text-emerald-800">{selectedCount} incluído(s)</span>}
-                {open ? <ChevronUp className="h-4 w-4 text-slate-500" /> : <ChevronDown className="h-4 w-4 text-slate-500" />}
+                <span className="min-w-0 flex-1 text-xs font-bold uppercase tracking-wider text-foreground">{specialty}</span>
+                <span className="rounded-full bg-primary/15 px-2 py-1 text-[11px] font-semibold text-primary">{allCount} objetivos</span>
+                {selectedCount > 0 && <span className="rounded-full bg-primary/15 px-2 py-1 text-[11px] font-semibold text-primary">{selectedCount} incluído(s)</span>}
+                {open ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
               </button>
-              {open && <div className="space-y-2 border-t border-slate-200 bg-slate-50 p-3">
+              {open && <div className="space-y-2 border-t border-border bg-muted/40 p-3">
                 {listed.map(item => {
                   const exists = selected.some(x => normalize(x) === normalize(item.objective));
                   return (
-                    <div key={item.objective} className="flex flex-col gap-2 rounded border border-slate-200 bg-white p-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div key={item.objective} className="flex flex-col gap-2 rounded border border-border bg-card p-3 sm:flex-row sm:items-center sm:justify-between">
                       <div className="min-w-0 space-y-1">
-                        <p className="text-xs font-semibold text-orange-800">{item.area}</p>
-                        <p className="text-sm font-medium text-slate-900">{item.objective}</p>
-                        <p className="text-xs text-slate-600"><b>Atividade:</b> {item.example}</p>
-                        <p className="text-xs text-slate-600"><b>Material:</b> {item.resource}</p>
+                        <p className="text-xs font-semibold text-primary">{item.area}</p>
+                        <p className="text-sm font-medium text-foreground">{item.objective}</p>
+                        <p className="text-xs text-muted-foreground"><b>Atividade:</b> {item.example}</p>
+                        <p className="text-xs text-muted-foreground"><b>Material:</b> {item.resource}</p>
                       </div>
                       <button type="button" disabled={exists} onClick={() => onAdd(item)}
-                        className="inline-flex shrink-0 items-center justify-center gap-1 rounded border border-orange-300 bg-orange-50 px-3 py-2 text-xs font-semibold text-orange-800 hover:bg-orange-100 disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-500">
+                        className="inline-flex shrink-0 items-center justify-center gap-1 rounded border border-primary/40 bg-primary/10 px-3 py-2 text-xs font-semibold text-primary hover:bg-primary/15 disabled:border-border disabled:bg-muted disabled:text-muted-foreground">
                         {exists ? <Check className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
                         {exists ? "Incluído" : "Adicionar"}
                       </button>
@@ -88,7 +88,7 @@ export function PtiSpecialtyCatalog({ selected, onAdd }: Props) {
           );
         })}
       </div>
-      <p className="border-t border-slate-200 bg-slate-50 px-4 py-2 text-xs text-slate-600">
+      <p className="border-t border-border bg-muted/40 px-4 py-2 text-xs text-muted-foreground">
         Sugestões ilustrativas. Objetivos de outras especialidades exigem participação do profissional habilitado; o plano musicoterapêutico deve respeitar o escopo de atuação.
       </p>
     </div>
