@@ -6,6 +6,8 @@ on:
       - "src/pages/backup/**"
       - "src/utils/r2ClinicalDocuments.ts"
       - "supabase/functions/clinical-documents/**"
+      - "supabase/functions/migrate-legacy-clinical-pdf/**"
+      - "supabase/migrations/*r2*.sql"
       - "supabase/config.toml"
       - ".github/workflows/r2-clinical-documents-validation.yml"
 
@@ -30,6 +32,8 @@ jobs:
           import fs from 'node:fs';
           const fn = fs.readFileSync('supabase/functions/clinical-documents/index.ts', 'utf8');
           const cfg = fs.readFileSync('supabase/config.toml', 'utf8');
+          const legacy = fs.readFileSync('supabase/functions/migrate-legacy-clinical-pdf/index.ts', 'utf8');
+          const legacySQL = fs.readFileSync('supabase/migrations/20261021_r2_pilot_limit_to_admin_owned_pdfs.sql','utf8');
           const ui = fs.readFileSync('src/pages/backup/index.tsx', 'utf8');
           const checks = [
             [cfg.includes('verify_jwt = true'), 'JWT must stay enabled'],
@@ -39,6 +43,15 @@ jobs:
             [fn.includes('sha256(bytes)'), 'SHA-256 verification required'],
             [!fn.includes("Access-Control-Allow-Origin: *"), "No permissive CORS"],
             [ui.includes('isAdmin && <R2StoragePilot />'), 'Pilot must be admin only'],
+            [ui.includes('isAdmin && <R2LegacyCopyPilot />'), 'Legacy pilot must be admin only'],
+            [cfg.includes('[functions.migrate-legacy-clinical-pdf]'), 'Legacy function needs JWT config'],
+            [legacy.includes('caller.rpc("has_role",{role:"admin"})'), 'Legacy backend role verification required'],
+            [legacy.includes('item.owner_user_id!==user.id'), 'Legacy pilot must limit to user-owned originals'],
+            [legacy.includes('new GetObjectCommand'), 'Round-trip GET verification required'],
+            [legacy.includes('sha256_hex:digest'), 'Persist SHA256 required'],
+            [legacy.includes('sourceDeleted:false'), 'Never delete legacy originals'],
+            [!legacy.includes('storage.from("clinical-pdfs").remove'), 'Do not delete Supabase originals'],
+            [legacySQL.includes("o.owner_id=auth.uid()::text"), 'Pilot must select admin-owned originals only'],
           ];
           for (const [ok, msg] of checks) {
             if (!ok) throw new Error(msg);

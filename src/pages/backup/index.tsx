@@ -13,6 +13,7 @@ import { SystemBackup } from "./components/SystemBackup";
 import { useAdmin } from "@/hooks/use-admin";
 import { supabase } from "@/integrations/supabase/client";
 import { R2StoragePilot } from "./components/R2StoragePilot";
+import { R2LegacyCopyPilot } from "./components/R2LegacyCopyPilot";
 
 const ALL_CATEGORIES = [
   "patients",
@@ -190,6 +191,7 @@ export default function BackupPage() {
 
         {/* Admin only: PDF sintético. Não envia dados clínicos e não afeta backups existentes. */}
         {!isLoadingAdmin && isAdmin && <R2StoragePilot />}
+        {!isLoadingAdmin && isAdmin && <R2LegacyCopyPilot />}
 
         {/* System Backup - Admin Only */}
         {!isLoadingAdmin && isAdmin && <SystemBackup isAdmin={isAdmin} />}
