@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Trash2, FileSearch, Loader2 } from "lucide-react";
 import { PtiSpecialtyCatalog, type PtiCatalogSuggestion } from "./PtiSpecialtyCatalog";
-import { type PtiContent, type PtiFormulario, type PtiObjetivoEspecifico, type PtiMeta, createDefaultPtiFormulario, PTI_ESTRATEGIAS, PTI_RECURSOS, PTI_FREQUENCIA, PTI_OPTS, PTI_PROFISSIONAIS } from "@/types/pti";
+import { type PtiContent, type PtiFormulario, type PtiObjetivoEspecifico, type PtiMeta, createDefaultPtiFormulario, PTI_ESTRATEGIAS, PTI_RECURSOS, PTI_FREQUENCIA, PTI_OPTS, PTI_PROFISSIONAIS, PTI_CRITERIOS_EVOLUCAO } from "@/types/pti";
 
 export const fieldClass = "mt-1 w-full min-h-10 rounded border border-slate-300 bg-white px-3 py-2 text-sm font-normal normal-case tracking-normal text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400";
 export const buttonClass = "inline-flex min-h-9 items-center justify-center gap-1.5 rounded border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-100 disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-orange-400";
@@ -187,11 +187,23 @@ export function PtiScreenshotSections({content,update,importing,onImport,profess
       {advanced&&<div className="mt-4 space-y-4 border-t border-slate-200 pt-4">
         <TextArea label="Queixa principal" value={content.queixaPrincipal} onChange={v=>update({queixaPrincipal:v})} />
         <TextArea label="Histórico de desenvolvimento (dados anteriores)" value={content.historicoClinico.desenvolvimento} onChange={v=>uh({desenvolvimento:v})} />
+        <TextArea label="Escolaridade" value={content.historicoClinico.escolaridade} onChange={v=>uh({escolaridade:v})} />
+        <TextArea label="Terapias anteriores" value={content.historicoClinico.terapiasAnteriores} onChange={v=>uh({terapiasAnteriores:v})} />
         <TextArea label="Histórico musical" value={content.historicoClinico.historicoMusical} onChange={v=>uh({historicoMusical:v})} />
+        <TextArea label="Preferências musicais" value={content.historicoClinico.preferenciasMusicais} onChange={v=>uh({preferenciasMusicais:v})} />
+        <TextArea label="Hipersensibilidades" value={content.historicoClinico.hipersensibilidades} onChange={v=>uh({hipersensibilidades:v})} />
+        <TextArea label="Hipossensibilidades" value={content.historicoClinico.hipossensibilidades} onChange={v=>uh({hipossensibilidades:v})} />
         <TextArea label="Comunicação" value={content.historicoClinico.comunicacao} onChange={v=>uh({comunicacao:v})} />
         <TextArea label="Potencialidades" value={content.potencialidades} onChange={v=>update({potencialidades:v})} />
         <TextArea label="Dificuldades" value={content.dificuldades} onChange={v=>update({dificuldades:v})} />
         <TextArea label="Objetivo geral" value={content.objetivoGeral} onChange={v=>update({objetivoGeral:v})} />
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <TextInput label="Sexo" value={ident.sexo} onChange={v=>ui({sexo:v})} />
+          <TextInput label="Telefone" value={ident.telefone} onChange={v=>ui({telefone:v})} />
+          <TextInput label="DSM" value={ident.dsm} onChange={v=>ui({dsm:v})} />
+          <TextInput label="Data do plano" type="date" value={ident.dataPlano} onChange={v=>ui({dataPlano:v})} />
+          <TextInput label="CBO" value={ident.cbo} onChange={v=>ui({cbo:v})} />
+        </div>
         <Chips title="Estratégias" options={PTI_ESTRATEGIAS} values={content.estrategias} onToggle={v=>tog("estrategias",v)} />
         <Chips title="Recursos" options={PTI_RECURSOS} values={content.recursos} onToggle={v=>tog("recursos",v)} />
         <div className="grid gap-3 sm:grid-cols-3">{([
@@ -201,6 +213,17 @@ export function PtiScreenshotSections({content,update,importing,onImport,profess
         ] as const).map(([key,title,opts])=><label key={key} className={labelClass}>{title}<select className={fieldClass} value={content.frequencia[key]} onChange={e=>update({frequencia:{...content.frequencia,[key]:e.target.value}})}>
           <option value="">A definir</option>{opts.map(v=><option key={v}>{v}</option>)}
         </select></label>)}</div>
+        <div className="space-y-2 rounded border border-slate-200 p-3">
+          <p className={labelClass}>Critérios de evolução (escala descritiva anterior 1–5)</p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {PTI_CRITERIOS_EVOLUCAO.map(area=><label key={area} className="text-xs font-semibold text-slate-700">{area}
+              <select className={fieldClass} value={content.criteriosEvolucao?.[area] || 0}
+                onChange={e=>update({criteriosEvolucao:{...content.criteriosEvolucao,[area]:Number(e.target.value)}})}>
+                <option value={0}>Não avaliado</option>{[1,2,3,4,5].map(n=><option key={n} value={n}>{n}</option>)}
+              </select>
+            </label>)}
+          </div>
+        </div>
         <TextArea label="Critérios para alta" value={content.criteriosAlta} onChange={v=>update({criteriosAlta:v})} />
         <TextArea label="Plano familiar" value={content.planoFamiliar} onChange={v=>update({planoFamiliar:v})} />
         <Chips title="Equipe" options={PTI_PROFISSIONAIS} values={content.integracao.profissionais} onToggle={v=>update({integracao:{...content.integracao,profissionais:content.integracao.profissionais.includes(v)?content.integracao.profissionais.filter(x=>x!==v):[...content.integracao.profissionais,v]}})} />
