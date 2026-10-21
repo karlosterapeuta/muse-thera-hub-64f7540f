@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Plus, Trash2, FileSearch, Loader2 } from "lucide-react";
 import { PtiSpecialtyCatalog, type PtiCatalogSuggestion } from "./PtiSpecialtyCatalog";
 import { type PtiContent, type PtiFormulario, type PtiObjetivoEspecifico, type PtiMeta, createDefaultPtiFormulario, PTI_ESTRATEGIAS, PTI_RECURSOS, PTI_FREQUENCIA, PTI_OPTS, PTI_PROFISSIONAIS } from "@/types/pti";
@@ -51,6 +52,7 @@ interface Props {
  content:PtiContent; update:(p:Partial<PtiContent>)=>void; importing:boolean; onImport:()=>void; professionalName:string;
 }
 export function PtiScreenshotSections({content,update,importing,onImport,professionalName}:Props) {
+  const navigate = useNavigate();
   const [catalog,setCatalog]=useState(true);
   const [advanced,setAdvanced]=useState(false);
   const [behTemplate,setBehTemplate]=useState("");
@@ -115,7 +117,7 @@ export function PtiScreenshotSections({content,update,importing,onImport,profess
       <TextArea label="Síntese da história clínica — totalmente editável" rows={6} value={form.resumoClinico} onChange={v=>uf({resumoClinico:v})} placeholder="Montar a partir do que foi relatado e registrado. Nenhuma observação será inventada." />
     </SectionBar>
     <SectionBar title="Objetivos por área" detail="Planejamento terapêutico por especialidade"
-      actions={<div className="flex gap-2"><button type="button" className={buttonClass} onClick={()=>document.querySelector("#pti-evolucao")?.scrollIntoView({behavior:"smooth"})}>Da avaliação</button><button type="button" onClick={()=>newObj()} className={buttonClass}><Plus className="h-4 w-4" /> Objetivo</button></div>}>
+      actions={<div className="flex gap-2"><button type="button" className={buttonClass} onClick={()=>navigate("/evaluation")}>Abrir avaliação</button><button type="button" onClick={()=>newObj()} className={buttonClass}><Plus className="h-4 w-4" /> Objetivo</button></div>}>
       <button type="button" className="text-xs font-semibold text-orange-800 underline" onClick={()=>setCatalog(v=>!v)}>{catalog?"Ocultar":"Exibir"} catálogo de objetivos clínicos</button>
       {catalog && <PtiSpecialtyCatalog selected={content.objetivosEspecificos.map(o=>o.descricao)} onAdd={newObj} />}
       <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-700">Objetivos incluídos ({content.objetivosEspecificos.length})</h3>
