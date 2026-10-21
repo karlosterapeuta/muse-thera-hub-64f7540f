@@ -123,7 +123,7 @@ export function PtiScreenshotSections({content,update,importing,onImport,profess
       {catalog && <PtiSpecialtyCatalog selected={content.objetivosEspecificos.map(o=>o.descricao)} onAdd={newObj} />}
       <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">Objetivos incluídos ({content.objetivosEspecificos.length})</h3>
       {content.objetivosEspecificos.length===0&&<p className="rounded border border-dashed border-border p-4 text-sm text-muted-foreground">Nenhum objetivo adicionado.</p>}
-      <div className="divide-y divide-slate-200 overflow-hidden rounded border border-border">
+      <div className="divide-y divide-border overflow-hidden rounded border border-border">
         {content.objetivosEspecificos.map((o,i)=><div key={o.id} className="space-y-3 bg-card p-3">
           <div className="flex items-center justify-between"><span className="text-xs font-bold uppercase tracking-wide text-primary">Objetivo {i+1} {o.area&&"• "+o.area}</span>
             <button type="button" aria-label={`Excluir objetivo ${i+1}`} className="rounded p-1 text-red-600 hover:bg-red-50" onClick={()=>update({objetivosEspecificos:content.objetivosEspecificos.filter(x=>x.id!==o.id)})}><Trash2 className="h-4 w-4" /></button>
@@ -175,6 +175,8 @@ export function PtiScreenshotSections({content,update,importing,onImport,profess
       setTextTemplate("");if(texts[e.target.value])uf({consideracoes:(form.consideracoes.trim()?form.consideracoes+"\n\n":"")+texts[e.target.value]});
     }}><option value="">Modelos</option><option value="continuidade">Continuidade</option><option value="familia">Integração familiar</option></select>}>
       <TextArea label="Considerações e plano de intervenção" value={form.consideracoes} rows={8} onChange={v=>uf({consideracoes:v})} />
+    </SectionBar>
+    <SectionBar title="Referências bibliográficas utilizadas">
       <div className="space-y-3 rounded-lg border border-border bg-muted/30 p-4">
         <div>
           <h3 className="text-sm font-semibold text-foreground">Referências bibliográficas utilizadas</h3>
@@ -197,6 +199,8 @@ export function PtiScreenshotSections({content,update,importing,onImport,profess
         <p className="text-xs font-medium text-primary">{(form.referenciasSelecionadas ?? []).length} referência(s) selecionada(s)</p>
       </div>
       <TextArea label="Outras referências bibliográficas utilizadas (opcional)" value={form.referencias} rows={3} onChange={v=>uf({referencias:v})} placeholder="Informe outras obras efetivamente consultadas, com autor, título e ano." />
+    </SectionBar>
+    <SectionBar title="Devolutiva">
       <div className="grid gap-3 sm:grid-cols-2">
         <TextInput label="Data da devolutiva" type="date" value={form.dataDevolutiva} onChange={v=>uf({dataDevolutiva:v})} />
         <TextInput label="Responsável pela entrega" value={form.responsavelDevolutiva} onChange={v=>uf({responsavelDevolutiva:v})} />
