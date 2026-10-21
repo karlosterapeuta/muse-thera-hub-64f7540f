@@ -121,6 +121,7 @@ export type Database = {
           brazilian_popular: boolean | null
           broad_motor_dev: boolean | null
           calming_strategies: string | null
+          calming_sounds: string | null
           cerebral_palsy: boolean | null
           cervical_control: boolean | null
           childhood_sound_environment: string | null
@@ -137,6 +138,7 @@ export type Database = {
           depression: boolean | null
           diagnosis_date: string | null
           diagnosis_details: string | null
+          discomfort_sounds: string | null
           down_syndrome: boolean | null
           echolalia: boolean | null
           emotional_ability: boolean | null
@@ -167,6 +169,7 @@ export type Database = {
           medication_schedule: string | null
           mother_movements_songs: string | null
           mother_name: string | null
+          musical_behavior_description: string | null
           music_practice_time: string | null
           music_therapy: boolean | null
           music_therapy_experience: boolean | null
@@ -193,6 +196,7 @@ export type Database = {
           psychomotricity: boolean | null
           psychopedagogical: boolean | null
           referral_professional: string | null
+          regulation_strategies: string | null
           restricted_interests: boolean | null
           rett_syndrome: boolean | null
           rock_genre: boolean | null
@@ -241,6 +245,7 @@ export type Database = {
           brazilian_popular?: boolean | null
           broad_motor_dev?: boolean | null
           calming_strategies?: string | null
+          calming_sounds?: string | null
           cerebral_palsy?: boolean | null
           cervical_control?: boolean | null
           childhood_sound_environment?: string | null
@@ -257,6 +262,7 @@ export type Database = {
           depression?: boolean | null
           diagnosis_date?: string | null
           diagnosis_details?: string | null
+          discomfort_sounds?: string | null
           down_syndrome?: boolean | null
           echolalia?: boolean | null
           emotional_ability?: boolean | null
@@ -287,6 +293,7 @@ export type Database = {
           medication_schedule?: string | null
           mother_movements_songs?: string | null
           mother_name?: string | null
+          musical_behavior_description?: string | null
           music_practice_time?: string | null
           music_therapy?: boolean | null
           music_therapy_experience?: boolean | null
@@ -313,6 +320,7 @@ export type Database = {
           psychomotricity?: boolean | null
           psychopedagogical?: boolean | null
           referral_professional?: string | null
+          regulation_strategies?: string | null
           restricted_interests?: boolean | null
           rett_syndrome?: boolean | null
           rock_genre?: boolean | null
@@ -361,6 +369,7 @@ export type Database = {
           brazilian_popular?: boolean | null
           broad_motor_dev?: boolean | null
           calming_strategies?: string | null
+          calming_sounds?: string | null
           cerebral_palsy?: boolean | null
           cervical_control?: boolean | null
           childhood_sound_environment?: string | null
@@ -377,6 +386,7 @@ export type Database = {
           depression?: boolean | null
           diagnosis_date?: string | null
           diagnosis_details?: string | null
+          discomfort_sounds?: string | null
           down_syndrome?: boolean | null
           echolalia?: boolean | null
           emotional_ability?: boolean | null
@@ -407,6 +417,7 @@ export type Database = {
           medication_schedule?: string | null
           mother_movements_songs?: string | null
           mother_name?: string | null
+          musical_behavior_description?: string | null
           music_practice_time?: string | null
           music_therapy?: boolean | null
           music_therapy_experience?: boolean | null
@@ -433,6 +444,7 @@ export type Database = {
           psychomotricity?: boolean | null
           psychopedagogical?: boolean | null
           referral_professional?: string | null
+          regulation_strategies?: string | null
           restricted_interests?: boolean | null
           rett_syndrome?: boolean | null
           rock_genre?: boolean | null
