@@ -332,7 +332,6 @@ export default function PtiEditor() {
     isPatientLocked={!!planIdRef.current}
     status={status}
     onStatus={setStatus}
-    planId={planId}
     professionalName={professional?.name || ""}
     lastSaved={lastSaved}
     saving={saveMutation.isPending}
