@@ -71,8 +71,9 @@ export async function getPrivateClinicalPdf(id: string): Promise<Blob> {
     headers: { "x-document-id": id },
   });
   if (error) throw await readableFunctionError(error, "Não foi possível baixar o documento privado");
-  if (!(data instanceof Blob) || data.type !== "application/pdf") {
-    throw new Error("O servidor não retornou um PDF válido.");
+  if (!(data instanceof Blob) || data.size === 0) {
+    throw new Error("O servidor não retornou o arquivo binário esperado.");
   }
-  return data;
+  // O SDK Supabase interpreta application/octet-stream como Blob (e application/pdf pode virar texto).
+  return new Blob([data], { type: "application/pdf" });
 }
