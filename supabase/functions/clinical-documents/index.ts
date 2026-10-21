@@ -153,7 +153,7 @@ Deno.serve(async (request) => {
     }
     return new Response(bytes, {
       headers: {
-        ...cors(request), "Content-Type": "application/pdf",
+        ...cors(request), "Content-Type": "application/octet-stream",
         "Content-Disposition": `attachment; filename="${safeName(doc.filename)}"`,
         "X-MuseTera-SHA256": doc.sha256_hex,
       },
