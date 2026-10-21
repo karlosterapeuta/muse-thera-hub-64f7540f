@@ -21,12 +21,12 @@ const styles = {
     lineHeight: 1.5,
     boxSizing: "border-box" as const,
   },
-  h1: { fontSize: "18px", fontWeight: 700, color: "#166534", margin: "0 0 2px 0" },
+  h1: { fontSize: "18px", fontWeight: 700, color: "#137B71", margin: "0 0 2px 0" },
   sectionTitle: {
     fontSize: "12px",
     fontWeight: 700,
-    color: "#14532d",
-    borderBottom: "2px solid #bbf7d0",
+    color: "#10695F",
+    borderBottom: "2px solid #B6E2DC",
     padding: "10px 0 4px 0",
     margin: "10px 0 6px 0",
   },
@@ -35,8 +35,8 @@ const styles = {
   text: { whiteSpace: "pre-wrap" as const, margin: "2px 0" },
   chip: {
     display: "inline-block",
-    background: "#dcfce7",
-    color: "#166534",
+    background: "#E5F5F2",
+    color: "#137B71",
     borderRadius: "10px",
     padding: "2px 8px",
     margin: "2px 4px 2px 0",
@@ -50,7 +50,7 @@ export function PtiPDF({ content: c, professional, signature, stamp }: PtiPDFPro
   const selectedReferences = getPtiSelectedReferences(form.referenciasSelecionadas);
   const additionalReferences = form.referencias.trim();
   const sectionBar: React.CSSProperties = {
-    background: "#166534", color: "#ffffff", padding: "7px 9px",
+    background: "#137B71", color: "#ffffff", padding: "7px 9px",
     fontSize: "11px", fontWeight: 700, letterSpacing: ".5px",
     marginTop: "14px", marginBottom: "8px", breakAfter: "avoid",
   };
@@ -64,8 +64,8 @@ export function PtiPDF({ content: c, professional, signature, stamp }: PtiPDFPro
     value?.trim() ? <K key={label} label={label} value={value} /> : null;
   return (
     <div style={{ ...styles.page, fontSize: "11px", color: "#172017" }}>
-      <header style={{ borderBottom: "2px solid #166534", paddingBottom: "8px" }}>
-        <div style={{ textAlign: "center", fontSize: "19px", fontWeight: 800, color: "#166534" }}>MUSETERA</div>
+      <header style={{ borderBottom: "2px solid #137B71", paddingBottom: "8px" }}>
+        <div style={{ textAlign: "center", fontSize: "19px", fontWeight: 800, color: "#137B71" }}>MUSETERA</div>
         <div style={{ textAlign: "center", fontSize: "15px", fontWeight: 700, margin: "4px 0" }}>Plano Terapêutico Individual</div>
         <div style={{ textAlign: "center", fontSize: "10px", color: "#647061" }}>Musicoterapia Clínica • Documento de acompanhamento individualizado</div>
       </header>
@@ -113,7 +113,7 @@ export function PtiPDF({ content: c, professional, signature, stamp }: PtiPDFPro
         </div>
       ) : <P>Nenhum objetivo cadastrado.</P>}
       {c.metas.length>0 && <>
-        <div style={{...styles.sectionTitle,color:"#166534"}}>Metas mensuráveis</div>
+        <div style={{...styles.sectionTitle,color:"#137B71"}}>Metas mensuráveis</div>
         {c.metas.map((m,i)=><div key={m.id} style={item}>
           <P><strong>Meta {i+1}: </strong>{m.descricao || "Não informado"}</P>
           {optional("Linha de base", m.linhaBase)}
@@ -162,7 +162,7 @@ export function PtiPDF({ content: c, professional, signature, stamp }: PtiPDFPro
         <strong>{id.profissional || professional?.name || "Profissional não informado"}</strong>
         {id.cbo && <span> — CBO: {id.cbo}</span>}
       </div>
-      {form.incluirRodape !== false && <footer style={{borderTop:"1px solid #bbf7d0",marginTop:"16px",paddingTop:"6px",color:"#647061",fontSize:"9px"}}>
+      {form.incluirRodape !== false && <footer style={{borderTop:"1px solid #B6E2DC",marginTop:"16px",paddingTop:"6px",color:"#647061",fontSize:"9px"}}>
         PTI MuseTera • Data do plano: {id.dataPlano || "Não informada"} • Documento de uso clínico
       </footer>}
     </div>
