@@ -47,7 +47,7 @@ export function PtiSpecialtyCatalog({ selected, onAdd }: Props) {
             className="h-10 w-full rounded-md border border-border bg-card pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
         </div>
       </div>
-      <div className="divide-y divide-slate-200">
+      <div className="divide-y divide-border">
         {specialties.map(specialty => {
           const allCount = suggestions.filter(item => item.specialty === specialty).length;
           const listed = matches.filter(item => item.specialty === specialty);
