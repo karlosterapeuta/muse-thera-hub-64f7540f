@@ -1,39 +1,55 @@
 import { supabase } from "@/integrations/supabase/client";
 
 /**
- * Saves a PDF blob to Supabase Storage (clinical-pdfs bucket).
- * Files are stored under the user's folder: {user_id}/{type}/{filename}
+ * Arquivamento no Storage é EXPLÍCITO, não um efeito colateral do botão Baixar PDF.
+ *
+ * Os dados estruturados do relatório continuam sendo salvos pelos respectivos
+ * formulários no banco. Os PDFs existentes no Storage não são modificados.
+ *
+ * Uso em fluxos com consentimento/necessidade de arquivo:
+ * savePDFToStorage(blob, nome, "report", { archive: true });
  */
 export async function savePDFToStorage(
   pdfBlob: Blob,
   filename: string,
-  type: "anamnesis" | "report" | "evaluation" | "treatment-plan" | "intervention" | "session"
+  type: "anamnesis" | "report" | "evaluation" | "treatment-plan" | "intervention" | "session",
+  options: { archive: true } | { archive?: false } = {},
 ): Promise<string | null> {
+  // Nunca efetuar upload só porque o usuário gerou ou baixou um PDF.
+  if (options.archive !== true) {
+    return null;
+  }
+
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      console.warn("⚠️ Usuário não autenticado, PDF não será salvo no sistema.");
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      console.warn("Usuário não autenticado; PDF não arquivado.");
       return null;
     }
 
-    const path = `${user.id}/${type}/${filename}`;
+    if (pdfBlob.type !== "application/pdf" || pdfBlob.size === 0) {
+      console.warn("Arquivo inválido; PDF não arquivado.");
+      return null;
+    }
 
+    const safeName = filename.split(/[\\/]/).pop()?.replace(/[^a-zA-Z0-9._-]/g, "_");
+    if (!safeName || !safeName.toLowerCase().endsWith(".pdf")) {
+      console.warn("Nome de PDF inválido; arquivo não arquivado.");
+      return null;
+    }
+
+    const path = `${user.id}/${type}/${safeName}`;
     const { data, error } = await supabase.storage
       .from("clinical-pdfs")
-      .upload(path, pdfBlob, {
-        contentType: "application/pdf",
-        upsert: true,
-      });
+      .upload(path, pdfBlob, { contentType: "application/pdf", upsert: false });
 
     if (error) {
-      console.error("❌ Erro ao salvar PDF no storage:", error);
+      console.error("Erro ao arquivar PDF no Storage:", error);
       return null;
     }
-
-    console.log("✅ PDF salvo no sistema:", data.path);
     return data.path;
   } catch (err) {
-    console.error("❌ Erro inesperado ao salvar PDF:", err);
+    console.error("Erro inesperado ao arquivar PDF:", err);
     return null;
   }
 }
