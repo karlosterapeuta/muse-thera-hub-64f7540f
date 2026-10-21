@@ -1,4 +1,4 @@
-import { PtiContent, PTI_CRITERIOS_EVOLUCAO } from "@/types/pti";
+import { PtiContent, PTI_CRITERIOS_EVOLUCAO, createDefaultPtiFormulario } from "@/types/pti";
 import { ProfessionalData } from "@/hooks/useProfessionalData";
 
 interface PtiPDFProps {
@@ -45,128 +45,115 @@ const styles = {
 
 export function PtiPDF({ content: c, professional, signature, stamp }: PtiPDFProps) {
   const id = c.identificacao;
-  const T = ({ children }: { children: React.ReactNode }) => <div style={styles.sectionTitle}>{children}</div>;
-  const P = ({ children }: { children: React.ReactNode }) => <div style={styles.text}>{children}</div>;
-
+  const form = { ...createDefaultPtiFormulario(), ...c.formulario };
+  const sectionBar: React.CSSProperties = {
+    background: "#ed8614", color: "#ffffff", padding: "7px 9px",
+    fontSize: "11px", fontWeight: 700, letterSpacing: ".5px",
+    marginTop: "14px", marginBottom: "8px", breakAfter: "avoid",
+  };
+  const line: React.CSSProperties = { margin: "2px 0", whiteSpace: "pre-wrap" };
+  const item: React.CSSProperties = { padding: "6px 0", borderBottom: "1px solid #e2e8f0", breakInside: "avoid" };
+  const K = ({ label, value }: { label: string; value?: string }) =>
+    <div style={{ margin: "2px 0" }}><strong style={styles.label}>{label}: </strong>{value?.trim() || "Não informado"}</div>;
+  const T = ({ children }: { children: React.ReactNode }) => <div style={sectionBar}>{children}</div>;
+  const P = ({ children }: { children: React.ReactNode }) => <div style={line}>{children}</div>;
+  const optional = (label: string, value?: string) =>
+    value?.trim() ? <K key={label} label={label} value={value} /> : null;
   return (
-    <div style={styles.page}>
-      <div style={{ textAlign: "center", marginBottom: "8px" }}>
-        <div style={styles.h1}>Plano Terapêutico Individual (PTI)</div>
-        <div style={{ fontSize: "11px", color: "#666" }}>Musicoterapia Clínica</div>
-      </div>
-
-      <T>1. Identificação</T>
+    <div style={{ ...styles.page, fontSize: "11px", color: "#172017" }}>
+      <header style={{ borderBottom: "2px solid #166534", paddingBottom: "8px" }}>
+        <div style={{ textAlign: "center", fontSize: "19px", fontWeight: 800, color: "#166534" }}>MUSETERA</div>
+        <div style={{ textAlign: "center", fontSize: "15px", fontWeight: 700, margin: "4px 0" }}>Plano Terapêutico Individual</div>
+        <div style={{ textAlign: "center", fontSize: "10px", color: "#647061" }}>Musicoterapia Clínica • Documento de acompanhamento individualizado</div>
+      </header>
+      <T>1. DADOS DO PACIENTE (COMPLEMENTARES)</T>
       <div style={styles.row}>
-        <span><span style={styles.label}>Nome:</span> {id.nome || "—"}</span>
-        <span><span style={styles.label}>Idade:</span> {id.idade || "—"}</span>
-        <span><span style={styles.label}>Nascimento:</span> {id.nascimento || "—"}</span>
-        <span><span style={styles.label}>Sexo:</span> {id.sexo || "—"}</span>
-        <span><span style={styles.label}>Responsável:</span> {id.responsavel || "—"}</span>
-        <span><span style={styles.label}>Telefone:</span> {id.telefone || "—"}</span>
-        <span><span style={styles.label}>Diagnóstico:</span> {id.diagnostico || "—"}</span>
-        <span><span style={styles.label}>CID:</span> {id.cid || "—"}</span>
-        <span><span style={styles.label}>DSM:</span> {id.dsm || "—"}</span>
-        <span><span style={styles.label}>Data do plano:</span> {id.dataPlano || "—"}</span>
-        <span><span style={styles.label}>Profissional:</span> {id.profissional || "—"}</span>
-        <span><span style={styles.label}>CBO:</span> {id.cbo || "—"}</span>
+        <K label="Paciente" value={id.nome} />
+        <K label="Nascimento" value={id.nascimento} />
+        {optional("Nome da mãe", form.nomeMae)}
+        {optional("Nome do pai", form.nomePai)}
+        <K label="Responsável" value={id.responsavel} />
+        <K label="Diagnóstico" value={id.diagnostico} />
+        <K label="CID" value={id.cid} />
+        <K label="Início de implementação" value={form.inicioImplementacao || id.dataPlano} />
+        <K label="Profissional" value={id.profissional || professional?.name} />
+        <K label="Reavaliação prevista" value={form.revisaoObjetivos} />
       </div>
-
-      <T>2. Queixa Principal</T>
-      <P>{c.queixaPrincipal || "—"}</P>
-
-      <T>3. Histórico Clínico</T>
-      {Object.entries({
-        Desenvolvimento: c.historicoClinico.desenvolvimento,
-        Escolaridade: c.historicoClinico.escolaridade,
-        Comunicação: c.historicoClinico.comunicacao,
-        "Terapias anteriores": c.historicoClinico.terapiasAnteriores,
-        "Histórico musical": c.historicoClinico.historicoMusical,
-        "Preferências musicais": c.historicoClinico.preferenciasMusicais,
-        Hipersensibilidades: c.historicoClinico.hipersensibilidades,
-        Hipossensibilidades: c.historicoClinico.hipossensibilidades,
-      }).filter(([, v]) => v).map(([k, v]) => (
-        <P key={k}><span style={styles.label}>{k}: </span>{v}</P>
-      ))}
-
-      <T>4. Avaliação Musicoterapêutica</T>
-      {Object.entries(c.avaliacao).map(([cat, val]) => (
-        (val.opcoes.length > 0 || val.observacoes) ? (
-          <div key={cat} style={{ margin: "3px 0" }}>
-            <div style={{ ...styles.label, textTransform: "capitalize" }}>{cat}</div>
-            <div>{val.opcoes.map((o) => <span key={o} style={styles.chip}>{o}</span>)}</div>
-            {val.observacoes && <P>{val.observacoes}</P>}
-          </div>
-        ) : null
-      ))}
-
-      <T>5. Potencialidades</T>
-      <P>{c.potencialidades || "—"}</P>
-
-      <T>6. Dificuldades</T>
-      <P>{c.dificuldades || "—"}</P>
-
-      <T>7. Objetivo Geral</T>
-      <P>{c.objetivoGeral || "—"}</P>
-
-      <T>8. Objetivos Específicos</T>
-      {c.objetivosEspecificos.length ? c.objetivosEspecificos.map((o, i) => (
-        <div key={o.id} style={{ marginBottom: "6px", breakInside: "avoid" }}>
-          <P>{i + 1}. {o.descricao} {o.area && `[${o.area}]`} {o.prioridade && `• ${o.prioridade}`} {o.prazo && `• Prazo: ${o.prazo}`}</P>
-          {o.atividade && <P><span style={styles.label}>Atividade: </span>{o.atividade}</P>}
-          {o.material && <P><span style={styles.label}>Materiais: </span>{o.material}</P>}
+      <T>2. BREVE HISTÓRIA CLÍNICA</T>
+      {optional("Unidade", form.unidade)}
+      {optional("Medicações informadas (já prescritas)", form.medicacoesAtuais)}
+      {optional("Protocolo de avaliação", form.protocoloAvaliacao)}
+      {(form.comportamentoAutolesivo || form.comportamentoHeterolesivo) &&
+        <P><strong>Comportamentos relatados: </strong>
+          {[form.comportamentoAutolesivo && "Autoagressão", form.comportamentoHeterolesivo && "Heteroagressão"].filter(Boolean).join("; ")}
+        </P>}
+      {optional("Relatos dos responsáveis", form.relatosResponsaveis)}
+      {optional("Desenvolvimento, interação e autonomia", form.desenvolvimentoAutonomia)}
+      {optional("Comportamentos e manejo", form.comportamentoManejo)}
+      {optional("Síntese clínica", form.resumoClinico)}
+      {optional("Queixa principal", c.queixaPrincipal)}
+      {optional("Histórico de desenvolvimento", c.historicoClinico.desenvolvimento)}
+      {optional("Comunicação", c.historicoClinico.comunicacao)}
+      {optional("Histórico musical", c.historicoClinico.historicoMusical)}
+      {optional("Preferências musicais", c.historicoClinico.preferenciasMusicais)}
+      {optional("Potencialidades", c.potencialidades)}
+      {optional("Dificuldades", c.dificuldades)}
+      {optional("Objetivo geral", c.objetivoGeral)}
+      <T>3. OBJETIVOS POR ÁREA — PLANEJAMENTO MUSICOTERAPÊUTICO</T>
+      {c.objetivosEspecificos.length ? c.objetivosEspecificos.map((o,i)=>
+        <div key={o.id} style={item}>
+          <P><strong>OBJETIVO {i+1}: </strong>{o.descricao || "Não informado"}{o.area && ` • ${o.area}`}</P>
+          {optional("Atividade", o.atividade)}
+          {optional("Material", o.material)}
+          {optional("Prioridade", o.prioridade)}
+          {optional("Prazo", o.prazo)}
         </div>
-      )) : <P>—</P>}
-
-      <T>9. Metas Terapêuticas</T>
-      {c.metas.length ? c.metas.map((m, i) => (
-        <P key={m.id}>{i + 1}. {m.descricao} {m.linhaBase && `| Linha de base: ${m.linhaBase}`} {m.indicador && `| Indicador: ${m.indicador}`} {m.percentual && `| ${m.percentual}`} {m.prazo && `| Prazo: ${m.prazo}`} {m.criterio && `| Critério: ${m.criterio}`}</P>
-      )) : <P>—</P>}
-
-      <T>10. Estratégias Musicoterapêuticas</T>
-      <div>{c.estrategias.length ? c.estrategias.map((e) => <span key={e} style={styles.chip}>{e}</span>) : "—"}</div>
-
-      <T>11. Recursos Utilizados</T>
-      <div>{c.recursos.length ? c.recursos.map((e) => <span key={e} style={styles.chip}>{e}</span>) : "—"}</div>
-
-      <T>12. Frequência</T>
-      <div style={styles.row}>
-        <span><span style={styles.label}>Sessões:</span> {c.frequencia.sessoes || "—"}</span>
-        <span><span style={styles.label}>Duração:</span> {c.frequencia.duracao || "—"}</span>
-        <span><span style={styles.label}>Atendimento:</span> {c.frequencia.atendimento || "—"}</span>
+      ) : <P>Nenhum objetivo cadastrado.</P>}
+      {c.metas.length>0 && <>
+        <div style={{...styles.sectionTitle,color:"#166534"}}>Metas mensuráveis</div>
+        {c.metas.map((m,i)=><div key={m.id} style={item}>
+          <P><strong>Meta {i+1}: </strong>{m.descricao || "Não informado"}</P>
+          {optional("Linha de base", m.linhaBase)}
+          {optional("Indicador", m.indicador)}
+          {optional("Alvo", m.percentual)}
+          {optional("Prazo", m.prazo)}
+          {optional("Critério de sucesso", m.criterio)}
+        </div>)}
+      </>}
+      {(c.estrategias.length>0||c.recursos.length>0||c.frequencia.sessoes||c.frequencia.duracao) && <>
+        <div style={styles.sectionTitle}>Estratégias, recursos e frequência</div>
+        {c.estrategias.length>0&&<K label="Estratégias" value={c.estrategias.join("; ")} />}
+        {c.recursos.length>0&&<K label="Recursos" value={c.recursos.join("; ")} />}
+        {optional("Frequência", c.frequencia.sessoes)}
+        {optional("Duração", c.frequencia.duracao)}
+      </>}
+      <T>4. COMPORTAMENTOS-PROBLEMA LISTADOS</T>
+      {form.comportamentosAlvo.length>0?form.comportamentosAlvo.map((v,i)=>
+        <P key={i}>{i+1}. {v.trim() || "Não descrito"}</P>):<P>Nenhum comportamento registrado neste plano.</P>}
+      <T>5. CONSIDERAÇÕES E PLANO DE INTERVENÇÃO</T>
+      <P>{form.consideracoes?.trim() || "Não informado"}</P>
+      {optional("Critérios para alta", c.criteriosAlta)}
+      {optional("Plano familiar", c.planoFamiliar)}
+      {optional("Articulação multiprofissional", c.integracao.observacoes)}
+      {optional("Fundamentação técnica", c.fundamentacao)}
+      {optional("Referências bibliográficas utilizadas", form.referencias)}
+      {(form.dataDevolutiva || form.responsavelDevolutiva) && <>
+        <T>6. DEVOLUTIVA</T>
+        {optional("Data da devolutiva", form.dataDevolutiva)}
+        {optional("Responsável pela entrega", form.responsavelDevolutiva)}
+      </>}
+      <T>ASSINATURA E IDENTIFICAÇÃO PROFISSIONAL</T>
+      <div style={{minHeight:"46px",marginTop:"10px",breakInside:"avoid"}}>
+        {form.incluirAssinatura !== false && <div style={{display:"flex",gap:"30px",alignItems:"end"}}>
+          {signature&&<img src={signature} alt="Imagem de assinatura cadastrada" style={{maxHeight:"65px",maxWidth:"230px",objectFit:"contain"}} />}
+          {stamp&&<img src={stamp} alt="Carimbo cadastrado" style={{maxHeight:"65px",maxWidth:"200px",objectFit:"contain"}} />}
+        </div>}
+        <strong>{id.profissional || professional?.name || "Profissional não informado"}</strong>
+        {id.cbo && <span> — CBO: {id.cbo}</span>}
       </div>
-
-      <T>13. Critérios de Evolução</T>
-      <div style={styles.row}>
-        {PTI_CRITERIOS_EVOLUCAO.map((a) => (
-          <span key={a}><span style={styles.label}>{a}:</span> {c.criteriosEvolucao[a] || 0}/5</span>
-        ))}
-      </div>
-
-      <T>14. Critérios para Alta</T>
-      <P>{c.criteriosAlta || "—"}</P>
-
-      <T>15. Plano Familiar</T>
-      <P>{c.planoFamiliar || "—"}</P>
-
-      <T>16. Integração Multiprofissional</T>
-      <div>{c.integracao.profissionais.length ? c.integracao.profissionais.map((p) => <span key={p} style={styles.chip}>{p}</span>) : "—"}</div>
-      {c.integracao.observacoes && <P>{c.integracao.observacoes}</P>}
-
-      <T>17. Fundamentação Técnica</T>
-      <P>{c.fundamentacao || "—"}</P>
-
-      <T>18. Assinatura</T>
-      <div style={{ marginTop: "8px" }}>
-        <div style={{ display: "flex", gap: "40px", alignItems: "flex-end" }}>
-          {signature && <img src={signature} alt="assinatura" style={{ height: "60px", objectFit: "contain" }} />}
-          {stamp && <img src={stamp} alt="carimbo" style={{ height: "60px", objectFit: "contain" }} />}
-        </div>
-        <div style={{ marginTop: "6px" }}>
-          <strong>{id.profissional || professional?.name || ""}</strong>
-          {id.cbo && <span> — CBO: {id.cbo}</span>}
-        </div>
-        <div>Data: {id.dataPlano || ""}</div>
-      </div>
+      {form.incluirRodape !== false && <footer style={{borderTop:"1px solid #bbf7d0",marginTop:"16px",paddingTop:"6px",color:"#647061",fontSize:"9px"}}>
+        PTI MuseTera • Data do plano: {id.dataPlano || "Não informada"} • Documento de uso clínico
+      </footer>}
     </div>
   );
 }
