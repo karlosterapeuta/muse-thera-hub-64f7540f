@@ -15,6 +15,20 @@ export interface ArchivedClinicalDocument {
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+async function readableFunctionError(error: unknown, fallback: string): Promise<Error> {
+  const response = (error as { context?: unknown } | null)?.context;
+  if (response instanceof Response) {
+    try {
+      const body = await response.clone().json();
+      const reason = typeof body?.error === "string" ? body.error.slice(0, 160) : "Erro HTTP";
+      return new Error(`${fallback}: ${reason} (HTTP ${response.status})`);
+    } catch {
+      return new Error(`${fallback} (HTTP ${response.status})`);
+    }
+  }
+  return new Error(fallback);
+}
+
 export async function archiveClinicalPdfInR2(args: {
   pdf: Blob;
   filename: string;
@@ -37,7 +51,7 @@ export async function archiveClinicalPdfInR2(args: {
       ...(args.patientId ? { "x-patient-id": args.patientId } : {}),
     },
   });
-  if (error) throw new Error("Não foi possível arquivar o PDF no R2.");
+  if (error) throw await readableFunctionError(error, "Não foi possível arquivar o PDF no R2");
   if (!data?.id) throw new Error("O R2 não confirmou o arquivamento.");
   return data;
 }
@@ -46,7 +60,7 @@ export async function listPrivateClinicalDocuments(): Promise<ArchivedClinicalDo
   const { data, error } = await supabase.functions.invoke("clinical-documents", {
     method: "GET",
   });
-  if (error) throw new Error("Não foi possível listar os documentos privados.");
+  if (error) throw await readableFunctionError(error, "Não foi possível listar os documentos privados");
   return data?.documents || [];
 }
 
@@ -56,8 +70,9 @@ export async function getPrivateClinicalPdf(id: string): Promise<Blob> {
     method: "GET",
     headers: { "x-document-id": id },
   });
-  if (error || !(data instanceof Blob) || data.type !== "application/pdf") {
-    throw new Error("Não foi possível baixar o documento privado.");
+  if (error) throw await readableFunctionError(error, "Não foi possível baixar o documento privado");
+  if (!(data instanceof Blob) || data.type !== "application/pdf") {
+    throw new Error("O servidor não retornou um PDF válido.");
   }
   return data;
 }
