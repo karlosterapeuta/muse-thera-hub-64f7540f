@@ -28,7 +28,42 @@ export interface PtiAvaliacaoCategoria {
   observacoes: string;
 }
 
+/** Campos adicionais do formulário contínuo. Mantidos opcionais para PTIs antigos. */
+export interface PtiFormulario {
+  nomeMae: string;
+  nomePai: string;
+  unidade: string;
+  inicioImplementacao: string;
+  revisaoObjetivos: string;
+  medicacoesAtuais: string;
+  protocoloAvaliacao: string;
+  comportamentoAutolesivo: boolean;
+  comportamentoHeterolesivo: boolean;
+  relatosResponsaveis: string;
+  desenvolvimentoAutonomia: string;
+  comportamentoManejo: string;
+  resumoClinico: string;
+  comportamentosAlvo: string[];
+  consideracoes: string;
+  referencias: string;
+  dataDevolutiva: string;
+  responsavelDevolutiva: string;
+  incluirAssinatura: boolean;
+  incluirRodape: boolean;
+}
+
+export const createDefaultPtiFormulario = (): PtiFormulario => ({
+  nomeMae: "", nomePai: "", unidade: "", inicioImplementacao: "",
+  revisaoObjetivos: "Semestral", medicacoesAtuais: "", protocoloAvaliacao: "MuseTera TEA",
+  comportamentoAutolesivo: false, comportamentoHeterolesivo: false,
+  relatosResponsaveis: "", desenvolvimentoAutonomia: "", comportamentoManejo: "",
+  resumoClinico: "", comportamentosAlvo: [], consideracoes: "", referencias: "",
+  dataDevolutiva: "", responsavelDevolutiva: "",
+  incluirAssinatura: true, incluirRodape: true,
+});
+
 export interface PtiContent {
+  formulario?: PtiFormulario;
   identificacao: {
     nome: string;
     idade: string;
@@ -176,6 +211,7 @@ export const PTI_CRITERIOS_EVOLUCAO = [
 const emptyCategoria = (): PtiAvaliacaoCategoria => ({ opcoes: [], observacoes: "" });
 
 export const createDefaultPtiContent = (): PtiContent => ({
+  formulario: createDefaultPtiFormulario(),
   identificacao: {
     nome: "",
     idade: "",
