@@ -52,6 +52,9 @@ const basicDatabaseFields = [
   'pregnancy_sound_experiences', 'mother_movements_songs', 'childhood_sound_environment',
   'parents_sound_reactions', 'typical_house_sounds', 'night_body_sounds',
   'family_musical_history', 'patient_musical_history',
+  // Observações musicais, sensoriais e estratégias de regulação (migração aditiva).
+  'discomfort_sounds', 'calming_sounds', 'musical_behavior_description',
+  'regulation_strategies',
   // Identificação/Encaminhamento e Medicação adicionais
   'diagnosis_details', 'cid_code', 'clinical_details',
   'medication_schedule', 'medication_effects',
