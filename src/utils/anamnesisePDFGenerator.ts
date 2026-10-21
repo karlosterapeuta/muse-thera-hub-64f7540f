@@ -1,5 +1,4 @@
 import html2pdf from "html2pdf.js";
-import { savePDFToStorage } from "./pdfStorageUtils";
 
 interface AnamnesisData {
   [key: string]: any;
@@ -809,14 +808,6 @@ export const generateProfessionalAnamnesePDF = async (
       }
     }
     await pdfInstance.save();
-
-    // Auto-save to storage
-    try {
-      const pdfBlob = await pdfInstance.outputPdf('blob');
-      await savePDFToStorage(pdfBlob, opt.filename, "anamnesis");
-    } catch (storageErr) {
-      console.warn("⚠️ PDF baixado mas não foi salvo no sistema:", storageErr);
-    }
 
     console.log("✅ PDF da Anamnese gerado com sucesso!");
     return true;

@@ -2,7 +2,6 @@
 import html2pdf from 'html2pdf.js';
 import { createRoot } from 'react-dom/client';
 import { toast } from 'sonner';
-import { savePDFToStorage } from './pdfStorageUtils';
 
 interface PDFOptions {
   filename?: string;
@@ -135,16 +134,6 @@ export const generateStaticPDF = async (
     // Gerar o PDF e salvar
     await worker.save();
     
-    // 8. Opcional: Salvar no storage do Supabase
-    try {
-      const pdfBlob = await worker.output('blob');
-      if (pdfBlob && pdfBlob.size > 500) {
-        await savePDFToStorage(pdfBlob, filename, "report");
-      }
-    } catch (e) {
-      console.warn('⚠️ [PDF Generator] Falha ao salvar cópia no storage:', e);
-    }
-
     console.log('✅ [PDF Generator] Concluído com sucesso!');
     return true;
 
