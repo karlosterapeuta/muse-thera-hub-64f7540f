@@ -7,3 +7,6 @@ verify_jwt = true
 # Migração piloto: administração autenticada e validação adicional por cargo no servidor.
 [functions.migrate-legacy-clinical-pdf]
 verify_jwt = true
+
+[functions.cleanup-verified-clinical-pdfs]
+verify_jwt = true
