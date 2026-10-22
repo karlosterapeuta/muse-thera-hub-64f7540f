@@ -392,7 +392,6 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
   const identificationFields = [
     { key: 'patient_name', label: 'Paciente' },
     { key: 'birth_date', label: 'Data de nascimento' },
-    { key: 'gender', label: 'Gênero' },
     { key: 'legal_guardian', label: 'Responsável legal' },
     { key: 'family_relationship', label: 'Parentesco' },
     { key: 'referral_professional', label: 'Profissional que encaminhou' },
@@ -400,12 +399,31 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
     { key: 'diagnosis_details', label: 'Diagnóstico' },
     { key: 'main_clinical_demand', label: 'Demanda clínica principal' },
   ];
+  // Use recorded values only. The list may already contain the clinical demand
+  // when the detailed record has no value; never infer a diagnosis from a CID code.
+  const recordedValue = (value: unknown): string =>
+    typeof value === 'string' ? value.trim() : String(value ?? '').trim();
   const headerValues = identificationFields.map(field => ({
     ...field,
     value: field.key === 'patient_name'
       ? (anamnesisData.patient_name || anamnesis.patient_name || '')
-      : anamnesisData[field.key],
+      : field.key === 'main_clinical_demand'
+        ? (recordedValue(anamnesisData.main_clinical_demand) ||
+           recordedValue(anamnesis.main_clinical_demand))
+        : anamnesisData[field.key],
   }));
+  const missingIdentificationValue = (key: string): string => {
+    if (key === 'diagnosis_details') {
+      const cid = recordedValue(anamnesisData.cid_code);
+      return cid
+        ? `Descrição diagnóstica não registrada (CID informado: ${cid}). Edite a anamnese para completar.`
+        : 'Diagnóstico não registrado. Edite a anamnese para completar.';
+    }
+    if (key === 'main_clinical_demand') {
+      return 'Demanda clínica principal não registrada. Edite a anamnese para completar.';
+    }
+    return 'Não informado';
+  };
   const alreadyShown = new Set([
     ...identificationFields.map(field => field.key),
     'clinical_details', 'pregnancy_sound_experiences', 'mother_movements_songs',
@@ -506,7 +524,7 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
               <div key={field.key} className="min-w-0 rounded-lg border border-border/70 bg-muted/30 p-3">
                 <dt className="text-xs font-semibold text-muted-foreground">{field.label}</dt>
                 <dd className="mt-1 text-sm font-medium text-foreground whitespace-pre-wrap break-words">
-                  {isPresent(field.value) ? formattedValue(field.value) : 'Não informado'}
+                  {isPresent(field.value) ? formattedValue(field.value) : missingIdentificationValue(field.key)}
                 </dd>
               </div>
             ))}
