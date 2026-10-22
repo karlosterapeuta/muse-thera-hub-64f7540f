@@ -46,7 +46,7 @@ jobs:
             [ui.includes('isAdmin && <R2LegacyCopyPilot />'), 'Legacy pilot must be admin only'],
             [cfg.includes('[functions.migrate-legacy-clinical-pdf]'), 'Legacy function needs JWT config'],
             [legacy.includes('caller.rpc("has_role",{role:"admin"})'), 'Legacy backend role verification required'],
-            [legacy.includes('item.owner_user_id!==user.id'), 'Legacy pilot must limit to user-owned originals'],
+            [legacy.includes('item.source_path.startsWith(item.owner_user_id+"/")'), 'Legacy originals must be bound to their owner'],
             [legacy.includes('new GetObjectCommand'), 'Round-trip GET verification required'],
             [legacy.includes('sha256_hex:digest'), 'Persist SHA256 required'],
             [legacy.includes('sourceDeleted:false'), 'Never delete legacy originals'],

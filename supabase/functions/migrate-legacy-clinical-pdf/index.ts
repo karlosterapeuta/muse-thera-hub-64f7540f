@@ -1,4 +1,4 @@
-// Piloto controlado: COPIA um PDF histórico do próprio administrador para R2 privado.
+// Migração controlada: COPIA um PDF histórico de qualquer profissional por invocação, apenas admin autenticado.
 // Nunca remove, move, substitui ou altera arquivos no Supabase Storage.
 import { createClient } from "npm:@supabase/supabase-js@2.105.4";
 import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from "npm:@aws-sdk/client-s3@3.879.0";
@@ -67,10 +67,10 @@ Deno.serve(async (req: Request) => {
   if(selectError) return answer(req,{error:"Falha ao selecionar origem elegível"},500);
   const item=rows?.[0] as {source_path:string; owner_user_id:string; expected_bytes:number; document_kind:string}|undefined;
   if(!item) return answer(req,{finished:true,copied:false});
-  if(item.owner_user_id!==user.id || !item.source_path.startsWith(user.id+"/") ||
+  if(!item.source_path.startsWith(item.owner_user_id+"/") ||
       !allowedKinds.has(item.document_kind) || !Number.isSafeInteger(Number(item.expected_bytes)) ||
       Number(item.expected_bytes) < 1 || Number(item.expected_bytes)>MAX_SIZE) {
-    return answer(req,{error:"Origem não autorizada para o piloto"},403);
+    return answer(req,{error:"Origem não elegível para migração"},403);
   }
   const admin=createClient(url,serviceKey,{auth:{persistSession:false,autoRefreshToken:false}});
   const {data:original,error:downloadError}=await admin.storage.from("clinical-pdfs").download(item.source_path);
