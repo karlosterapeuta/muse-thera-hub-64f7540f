@@ -5,7 +5,12 @@ import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } fro
 
 const MAX_SIZE = 20 * 1024 * 1024;
 const allowedKinds = new Set(["anamnesis", "evaluation", "report", "intervention", "session", "treatment-plan"]);
-const allowedOrigins = new Set((Deno.env.get("R2_ALLOWED_ORIGINS") || "https://portal.musetera.com.br").split(",").map(x => x.trim()).filter(Boolean));
+// Pilot preview is an exact, user-verified Cloudflare Pages deployment, not a wildcard.
+const allowedOrigins = new Set([
+  "https://portal.musetera.com.br",
+  "https://c2771811.portal-musetera.pages.dev",
+  ...(Deno.env.get("R2_ALLOWED_ORIGINS") || "").split(",").map(x => x.trim()).filter(Boolean),
+]);
 function headers(req: Request): Record<string, string> {
   const origin = req.headers.get("origin");
   return {
