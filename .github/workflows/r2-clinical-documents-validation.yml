@@ -7,6 +7,7 @@ on:
       - "src/utils/r2ClinicalDocuments.ts"
       - "supabase/functions/clinical-documents/**"
       - "supabase/functions/migrate-legacy-clinical-pdf/**"
+      - "supabase/functions/cleanup-verified-clinical-pdfs/**"
       - "supabase/migrations/*r2*.sql"
       - "supabase/config.toml"
       - ".github/workflows/r2-clinical-documents-validation.yml"
@@ -33,6 +34,7 @@ jobs:
           const fn = fs.readFileSync('supabase/functions/clinical-documents/index.ts', 'utf8');
           const cfg = fs.readFileSync('supabase/config.toml', 'utf8');
           const legacy = fs.readFileSync('supabase/functions/migrate-legacy-clinical-pdf/index.ts', 'utf8');
+          const cleanup = fs.readFileSync('supabase/functions/cleanup-verified-clinical-pdfs/index.ts', 'utf8');
           const legacySQL = fs.readFileSync('supabase/migrations/20261021_r2_pilot_limit_to_admin_owned_pdfs.sql','utf8');
           const ui = fs.readFileSync('src/pages/backup/index.tsx', 'utf8');
           const checks = [
@@ -51,6 +53,12 @@ jobs:
             [legacy.includes('sha256_hex:digest'), 'Persist SHA256 required'],
             [legacy.includes('sourceDeleted:false'), 'Never delete legacy originals'],
             [!legacy.includes('storage.from("clinical-pdfs").remove'), 'Do not delete Supabase originals'],
+            [cleanup.includes('caller.rpc("has_role",{role:"admin"})'), 'Cleanup must be admin only'],
+            [cleanup.includes('GetObjectCommand'), 'Cleanup must read R2 before removing source'],
+            [cleanup.includes('db.storage.from("clinical-pdfs").remove'), 'Cleanup must use Storage API'],
+            [cleanup.includes('legacy_verified_at'), 'Cleanup must require previous verification'],
+            [cleanup.includes('digest(originalBytes)') && cleanup.includes('digest(bytes)'), 'Cleanup must hash both copies'],
+            [ui.includes('isAdmin && <R2VerifiedCleanup />'), 'Cleanup UI must be admin only'],
             [legacySQL.includes("o.owner_id=auth.uid()::text"), 'Pilot must select admin-owned originals only'],
           ];
           for (const [ok, msg] of checks) {
