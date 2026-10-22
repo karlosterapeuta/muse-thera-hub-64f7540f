@@ -248,7 +248,7 @@ export default function AnamnesisFormWrapper({
 
       if (anamnesisData) {
         setFormData(anamnesisData);
-        setReviewStatus(anamnesisData.review_status === "finalized" ? "finalized" : "draft");
+        setReviewStatus((anamnesisData as Record<string, unknown>).review_status === "finalized" ? "finalized" : "draft");
         setLastSavedAt(anamnesisData.updated_at || null);
         setExistingAnamnesisId(anamnesisData.id);
       }
