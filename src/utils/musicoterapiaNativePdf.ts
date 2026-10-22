@@ -466,14 +466,14 @@ export async function exportMusicoterapiaNativePdf(
   const detailsX = images.photo ? margin + 30 : margin + 5;
   const availableTextWidth = images.stamp ? right - 42 - detailsX : right - detailsX - 7;
   const reportDate = formatMusicoterapiaPdfDate(report.sessionDate) || new Date().toLocaleDateString('pt-BR');
-  const signatureRows: Array<[string, unknown]> = [
+  const signatureRows = ([
     ['Profissional', report.professionalName || professional?.name],
     ['Especialidade', report.professionalSpecialty || professional?.specialty || 'Musicoterapia'],
     ['Registro informado', report.professionalRegistry || professional?.register],
     ['E-mail', professional?.email],
     ['Telefone', professional?.phone],
     ['Emissão', reportDate]
-  ].filter(([, value]) => Boolean(clean(value)));
+  ] as Array<[string, unknown]>).filter(([, value]) => Boolean(clean(value)));
   setFace(8.1, false, DARK);
   const wrappedDetails: string[] = [];
   for (const [label, value] of signatureRows) {
@@ -506,7 +506,7 @@ export async function exportMusicoterapiaNativePdf(
   pdf.text('Carimbo cadastrado, quando presente, não substitui a verificação da assinatura.',margin+5,y+signatureHeight-4);
   y += signatureHeight+1;
 
-  const totalPages=pdf.internal.getNumberOfPages();
+  const totalPages=pdf.getNumberOfPages();
   for(let page=1;page<=totalPages;page++){
     pdf.setPage(page);
     pdf.setDrawColor(197,216,214);

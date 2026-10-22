@@ -88,14 +88,15 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         .eq("professional_id", (await supabase.auth.getUser()).data.user?.id || "")
         .maybeSingle();
       if (linkedPatientError) console.warn("Não foi possível consultar os dados cadastrais do paciente:", linkedPatientError.message);
-      const patient = linkedPatient || {};
+      const patient: Record<string, any> = linkedPatient || {};
+      const storedAnamnesis = data as Record<string, any>;
       setPatientDetails(patient);
       setAnamnesisData({
         ...data,
-        patient_name: data.patient_name || patient.name || anamnesis.patient_name,
-        birth_date: data.birth_date || patient.birth_date,
-        legal_guardian: data.legal_guardian || patient.responsible,
-        gender: data.gender || (patient as Record<string, any>).gender,
+        patient_name: storedAnamnesis.patient_name || patient.name || anamnesis.patient_name,
+        birth_date: storedAnamnesis.birth_date || patient.birth_date,
+        legal_guardian: storedAnamnesis.legal_guardian || patient.responsible,
+        gender: storedAnamnesis.gender || patient.gender,
       });
       
     } catch (error) {
@@ -222,12 +223,14 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
           .from('patients')
           .select('*')
           .eq('id', anamnesis.patient_id)
-          .eq('user_id', user.id)
+          .eq('professional_id', user.id)
           .maybeSingle();
         if (!patientError && patient) patientDetails = patient;
       }
-      const fillMissing = (primary: unknown, fallback: unknown) =>
-        primary !== undefined && primary !== null && String(primary).trim() !== '' ? primary : fallback;
+      const fillMissing = (primary: unknown, fallback: unknown): string =>
+        primary !== undefined && primary !== null && String(primary).trim() !== ''
+          ? String(primary)
+          : fallback !== undefined && fallback !== null ? String(fallback) : '';
 
       // Ensure we have the required created_at field and structure the data properly
       const formattedAnamnesisData = {
