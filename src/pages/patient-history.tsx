@@ -77,6 +77,7 @@ type HistoryItem = {
   gradient: string;
   badgeColor: string;
   label: string;
+  evaluation?: { percentage: number; coverage: number | null; evaluated: number | null; total: number | null };
 };
 
 const typeConfig: Record<Exclude<HistoryType, "report">, {
@@ -173,7 +174,7 @@ function usePatientHistory(patientId: string | null) {
             .order("created_at", { ascending: false }),
           supabase
             .from("assessments")
-            .select("id, created_at, type, date")
+            .select("id, created_at, type, date, content")
             .eq("patient_id", patientId)
             .order("created_at", { ascending: false }),
           supabase
@@ -220,6 +221,17 @@ function usePatientHistory(patientId: string | null) {
       });
 
       assessmentsRes.data?.forEach((a) => {
+        const saved = a.content && typeof a.content === "object" && !Array.isArray(a.content) ? a.content : null;
+        const overall = saved?.overallScore && typeof saved.overallScore === "object" && !Array.isArray(saved.overallScore)
+          ? saved.overallScore : null;
+        const finiteNumber = (value: unknown): number | null =>
+          typeof value === "number" && Number.isFinite(value) ? value : null;
+        const percentage = finiteNumber(overall?.percentage);
+        const evaluated = finiteNumber(overall?.evaluatedParameters);
+        const total = finiteNumber(overall?.totalParameters);
+        const coverage = total !== null && total > 0 && evaluated !== null
+          ? Math.round((evaluated / total) * 100)
+          : finiteNumber(overall?.completionPercentage);
         items.push({
           id: a.id,
           type: "assessment",
@@ -227,6 +239,9 @@ function usePatientHistory(patientId: string | null) {
           description: `Avaliação realizada em ${a.date ? format(new Date(a.date), "dd/MM/yyyy", { locale: ptBR }) : "data não informada"}`,
           date: a.date || a.created_at || "",
           ...typeConfig.assessment,
+          evaluation: percentage !== null && evaluated !== 0 && percentage >= 0 && percentage <= 100
+            ? { percentage, coverage, evaluated, total }
+            : undefined,
         });
       });
 
@@ -663,6 +678,76 @@ function PatientInsights({ items, patient }: { items: HistoryItem[]; patient: Pa
   );
 }
 
+function EvaluationProgressCard({ items, patientId, onOpen }: {
+  items: HistoryItem[];
+  patientId: string;
+  onOpen: (path: string) => void;
+}) {
+  const evaluations = items
+    .filter((item) => item.type === "assessment" && item.evaluation)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const recent = evaluations.slice(0, 4);
+  const totalEvaluations = items.filter((item) => item.type === "assessment").length;
+
+  return (
+    <Card className="border border-border/50 bg-card/90">
+      <CardHeader className="pb-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <CardTitle className="text-base font-semibold">Evolução nas avaliações MuseTera</CardTitle>
+            <CardDescription className="text-xs">
+              {totalEvaluations} avaliação{totalEvaluations !== 1 ? "ões" : ""} registrada{totalEvaluations !== 1 ? "s" : ""}
+              {" · "}Pontuações documentadas, sem estimativas
+            </CardDescription>
+          </div>
+          <Button variant="outline" size="sm" onClick={() => onOpen(`/evaluation/paciente/${patientId}`)}>
+            Comparação detalhada <ChevronRight className="h-4 w-4 ml-1" />
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {recent.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            Nenhuma avaliação com pontuação consolidada disponível. Acesse a comparação detalhada para consultar avaliações anteriores.
+          </p>
+        ) : (
+          <div className="space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {recent.map((evaluation) => {
+                const value = evaluation.evaluation!;
+                const isPartial = value.coverage === null || value.coverage < 100;
+                return (
+                  <div key={evaluation.id} className="rounded-xl border border-border bg-muted/20 p-3">
+                    <p className="text-xs text-muted-foreground mb-1">
+                      {evaluation.date && !Number.isNaN(new Date(evaluation.date).getTime())
+                        ? format(new Date(evaluation.date), "dd/MM/yyyy", { locale: ptBR })
+                        : "Data indisponível"}
+                    </p>
+                    <p className="text-2xl font-bold text-primary">{Math.round(value.percentage)}%</p>
+                    <p className="text-xs text-muted-foreground">Indicadores pontuados</p>
+                    <Badge variant="outline" className="mt-2 text-[11px]">
+                      {isPartial ? "Avaliação parcial ou cobertura desconhecida" : "Cobertura completa"}
+                    </Badge>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {value.coverage !== null ? `Cobertura: ${Math.round(value.coverage)}%` : "Cobertura não registrada"}
+                      {value.evaluated !== null && value.total !== null && value.total > 0
+                        ? ` (${value.evaluated}/${value.total})` : ""}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Os percentuais descrevem apenas os indicadores pontuados. Diferenças entre avaliações parciais,
+              com coberturas ou condições distintas, não comprovam progresso ou regressão clínica.
+            </p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function PatientHistoryPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
@@ -926,6 +1011,7 @@ export default function PatientHistoryPage() {
                       <DocumentDistributionChart items={historyItems} />
                     </div>
                     <MonthlyBarChart items={historyItems} />
+                    <EvaluationProgressCard items={historyItems} patientId={selectedPatient.id} onOpen={navigate} />
                   </>
                 )}
               </TabsContent>
