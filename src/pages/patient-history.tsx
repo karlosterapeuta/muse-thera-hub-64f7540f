@@ -2,7 +2,6 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -22,12 +21,6 @@ import {
   PieChart,
   CalendarDays,
   FileBarChart,
-  Download,
-  Eye,
-  FolderOpen,
-  File,
-  X,
-  Trash2,
   Music,
   Sparkles,
   HeartPulse,
@@ -52,8 +45,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
 import { format, subMonths, startOfMonth, endOfMonth, isWithinInterval, differenceInDays, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Patient, usePatientsData } from "@/hooks/usePatientsData";
@@ -202,6 +193,17 @@ function usePatientHistory(patientId: string | null) {
             .order("created_at", { ascending: false }),
         ]);
 
+      const failedSources = [
+        ["anamnese", anamnesisRes.error],
+        ["avaliações", assessmentsRes.error],
+        ["planos terapêuticos", plansRes.error],
+        ["sessões", sessionsRes.error],
+        ["relatórios", reportsRes.error],
+      ].filter(([, error]) => Boolean(error));
+      if (failedSources.length) {
+        throw new Error("Falha ao carregar " + failedSources.map(([name]) => name).join(", ") + ". Tente novamente.");
+      }
+
       const items: HistoryItem[] = [];
 
       anamnesisRes.data?.forEach((a) => {
@@ -223,7 +225,7 @@ function usePatientHistory(patientId: string | null) {
           type: "assessment",
           title: `Avaliação — ${a.type || "Geral"}`,
           description: `Avaliação realizada em ${a.date ? format(new Date(a.date), "dd/MM/yyyy", { locale: ptBR }) : "data não informada"}`,
-          date: a.created_at || "",
+          date: a.date || a.created_at || "",
           ...typeConfig.assessment,
         });
       });
@@ -249,7 +251,7 @@ function usePatientHistory(patientId: string | null) {
           description: s.notes
             ? s.notes.substring(0, 100)
             : `Sessão em ${s.date ? format(new Date(s.date), "dd/MM/yyyy", { locale: ptBR }) : "data não informada"}`,
-          date: s.created_at || s.date || "",
+          date: s.date || s.created_at || "",
           ...typeConfig.session,
         });
       });
@@ -314,370 +316,6 @@ function usePatientHistory(patientId: string | null) {
   });
 }
 
-type StoredPDF = {
-  name: string;
-  path: string;
-  type: string;
-  size: number;
-  created_at: string;
-};
-
-const pdfTypeLabels: Record<string, string> = {
-  anamnesis: "Anamnese",
-  report: "Relatório",
-  evaluation: "Avaliação",
-  "treatment-plan": "Plano Terapêutico",
-  intervention: "Intervenção",
-  session: "Sessão",
-};
-
-const pdfTypeGradients: Record<string, string> = {
-  anamnesis: "from-violet-500 to-purple-600",
-  report: "from-pink-500 to-rose-600",
-  evaluation: "from-blue-500 to-cyan-600",
-  "treatment-plan": "from-emerald-500 to-green-600",
-  intervention: "from-orange-500 to-amber-600",
-  session: "from-orange-500 to-amber-600",
-};
-
-function useStoredPDFs() {
-  return useQuery({
-    queryKey: ["stored-pdfs"],
-    queryFn: async (): Promise<StoredPDF[]> => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
-
-      const folders = ["anamnesis", "report", "evaluation", "treatment-plan", "intervention", "session"];
-      const allFiles: StoredPDF[] = [];
-
-      await Promise.all(
-        folders.map(async (folder) => {
-          const { data, error } = await supabase.storage
-            .from("clinical-pdfs")
-            .list(`${user.id}/${folder}`, { sortBy: { column: "created_at", order: "desc" } });
-
-          if (!error && data) {
-            data.forEach((file) => {
-              if (file.name.endsWith(".pdf")) {
-                allFiles.push({
-                  name: file.name,
-                  path: `${user.id}/${folder}/${file.name}`,
-                  type: folder,
-                  size: file.metadata?.size || 0,
-                  created_at: file.created_at || "",
-                });
-              }
-            });
-          }
-        })
-      );
-
-      allFiles.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-      return allFiles;
-    },
-    staleTime: 60 * 1000,
-  });
-}
-
-function SavedPDFsTab({ patientName }: { patientName?: string }) {
-  const { data: allPdfs = [], isLoading, refetch } = useStoredPDFs();
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [previewName, setPreviewName] = useState<string>("");
-  const [pdfFilter, setPdfFilter] = useState<string>("all");
-  const [searchPdf, setSearchPdf] = useState<string>("");
-  const { toast } = useToast();
-
-  // Filter by patient name if provided (normalize for comparison)
-  const patientPdfs = useMemo(() => {
-    if (!patientName) return allPdfs;
-    const normalized = patientName.toLowerCase()
-      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-      .replace(/\s+/g, "_");
-    const normalizedAlt = patientName.toLowerCase()
-      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-      .replace(/\s+/g, "-");
-    const normalizedSpaces = patientName.toLowerCase()
-      .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    
-    return allPdfs.filter(pdf => {
-      const fn = pdf.name.toLowerCase()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      return fn.includes(normalized) || fn.includes(normalizedAlt) || fn.includes(normalizedSpaces);
-    });
-  }, [allPdfs, patientName]);
-
-  const filteredPdfs = useMemo(() => {
-    let result = patientPdfs;
-    if (pdfFilter !== "all") result = result.filter(p => p.type === pdfFilter);
-    if (searchPdf.trim()) {
-      const s = searchPdf.toLowerCase();
-      result = result.filter(p => p.name.toLowerCase().includes(s));
-    }
-    return result;
-  }, [patientPdfs, pdfFilter, searchPdf]);
-
-  const pdfStats = useMemo(() => {
-    const counts: Record<string, number> = {};
-    patientPdfs.forEach(p => { counts[p.type] = (counts[p.type] || 0) + 1; });
-    return counts;
-  }, [patientPdfs]);
-
-  const handlePreview = async (pdf: StoredPDF) => {
-    const { data } = await supabase.storage
-      .from("clinical-pdfs")
-      .createSignedUrl(pdf.path, 300);
-    if (data?.signedUrl) {
-      setPreviewUrl(data.signedUrl);
-      setPreviewName(pdf.name);
-    } else {
-      toast({ variant: "destructive", title: "Erro", description: "Não foi possível gerar preview" });
-    }
-  };
-
-  const handleDownload = async (pdf: StoredPDF) => {
-    const { data } = await supabase.storage
-      .from("clinical-pdfs")
-      .createSignedUrl(pdf.path, 60);
-    if (data?.signedUrl) {
-      const link = document.createElement("a");
-      link.href = data.signedUrl;
-      link.download = pdf.name;
-      link.click();
-    } else {
-      toast({ variant: "destructive", title: "Erro", description: "Não foi possível baixar o arquivo" });
-    }
-  };
-
-  const handleDelete = async (pdf: StoredPDF) => {
-    const { error } = await supabase.storage
-      .from("clinical-pdfs")
-      .remove([pdf.path]);
-    if (!error) {
-      toast({ title: "Sucesso", description: "PDF excluído com sucesso" });
-      refetch();
-    } else {
-      toast({ variant: "destructive", title: "Erro", description: "Não foi possível excluir o arquivo" });
-    }
-  };
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return "—";
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  };
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-16">
-        <div className="animate-spin rounded-full h-10 w-10 border-4 border-primary/30 border-t-primary" />
-      </div>
-    );
-  }
-
-  return (
-    <>
-      {/* Header info */}
-      <Card className="border border-border/50 bg-card/90 backdrop-blur-sm mb-4">
-        <CardContent className="p-4">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="p-2 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600">
-              <FolderOpen className="h-4 w-4 text-white" />
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-foreground">
-                Biblioteca de Documentos {patientName ? `— ${patientName}` : ""}
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                {patientPdfs.length} documento{patientPdfs.length !== 1 ? "s" : ""} salvo{patientPdfs.length !== 1 ? "s" : ""}
-              </p>
-            </div>
-          </div>
-
-          {/* Search */}
-          <div className="flex items-center bg-background border border-border rounded-lg p-2 hover:border-primary/30 transition-colors mb-3">
-            <Search className="h-3.5 w-3.5 text-muted-foreground mr-2" />
-            <Input
-              type="search"
-              placeholder="Buscar documento..."
-              value={searchPdf}
-              onChange={(e) => setSearchPdf(e.target.value)}
-              className="border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-foreground placeholder:text-muted-foreground h-7 text-xs"
-            />
-          </div>
-
-          {/* Filter badges */}
-          <div className="flex flex-wrap gap-1.5">
-            <Badge
-              variant={pdfFilter === "all" ? "default" : "outline"}
-              className="cursor-pointer text-[10px] px-2 py-0.5"
-              onClick={() => setPdfFilter("all")}
-            >
-              Todos ({patientPdfs.length})
-            </Badge>
-            {Object.entries(pdfStats).map(([type, count]) => (
-              <Badge
-                key={type}
-                variant={pdfFilter === type ? "default" : "outline"}
-                className="cursor-pointer text-[10px] px-2 py-0.5"
-                onClick={() => setPdfFilter(pdfFilter === type ? "all" : type)}
-              >
-                {pdfTypeLabels[type] || type} ({count})
-              </Badge>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {filteredPdfs.length === 0 ? (
-        <div className="text-center py-16 space-y-4">
-          <div className="w-20 h-20 mx-auto rounded-full bg-muted flex items-center justify-center">
-            <FolderOpen className="h-10 w-10 text-muted-foreground/50" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-foreground">
-              {patientPdfs.length === 0 ? "Nenhum PDF salvo" : "Nenhum resultado"}
-            </h3>
-            <p className="text-muted-foreground text-sm">
-              {patientPdfs.length === 0
-                ? "Os PDFs gerados serão salvos automaticamente aqui"
-                : "Tente ajustar o filtro ou a busca"}
-            </p>
-          </div>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {filteredPdfs.map((pdf, index) => (
-            <motion.div
-              key={pdf.path}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25, delay: index * 0.03 }}
-            >
-              <Card className="border border-border/50 bg-card/90 hover:shadow-lg hover:border-primary/30 transition-all duration-300 overflow-hidden group">
-                {/* Color strip */}
-                <div className={`h-1.5 bg-gradient-to-r ${pdfTypeGradients[pdf.type] || "from-gray-400 to-gray-500"}`} />
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-3">
-                    <div className={`p-2 rounded-lg bg-gradient-to-br ${pdfTypeGradients[pdf.type] || "from-gray-400 to-gray-500"} shrink-0`}>
-                      <File className="h-4 w-4 text-white" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-foreground truncate" title={pdf.name}>
-                        {pdf.name.replace(".pdf", "").replace(/_/g, " ")}
-                      </p>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-                          {pdfTypeLabels[pdf.type] || pdf.type}
-                        </Badge>
-                        <span className="text-[10px] text-muted-foreground">
-                          {formatFileSize(pdf.size)}
-                        </span>
-                      </div>
-                      <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1">
-                        <Clock className="h-2.5 w-2.5" />
-                        {pdf.created_at
-                          ? format(new Date(pdf.created_at), "dd MMM yyyy, HH:mm", { locale: ptBR })
-                          : "Sem data"}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-border/50">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex-1 h-8 text-xs gap-1.5"
-                      onClick={() => handlePreview(pdf)}
-                    >
-                      <Eye className="h-3.5 w-3.5" />
-                      Preview
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex-1 h-8 text-xs gap-1.5"
-                      onClick={() => handleDownload(pdf)}
-                    >
-                      <Download className="h-3.5 w-3.5" />
-                      Baixar
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
-                      onClick={() => handleDelete(pdf)}
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-      )}
-
-      {/* Preview Dialog */}
-      <Dialog open={!!previewUrl} onOpenChange={() => { setPreviewUrl(null); setPreviewName(""); }}>
-        <DialogContent className="w-[95vw] h-[95vh] max-w-none p-0 overflow-hidden flex flex-col [&>button]:hidden">
-          <DialogHeader className="p-3 sm:p-4 border-b border-border shrink-0 space-y-0">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="gap-1.5 text-xs shrink-0 h-9"
-                onClick={() => { setPreviewUrl(null); setPreviewName(""); }}
-              >
-                <ArrowLeft className="h-4 w-4" />
-                <span className="hidden sm:inline">Voltar</span>
-              </Button>
-              <DialogTitle className="text-sm font-semibold truncate flex-1 text-left">
-                {previewName.replace(".pdf", "").replace(/_/g, " ")}
-              </DialogTitle>
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-1.5 text-xs shrink-0 h-9"
-                onClick={async () => {
-                  if (previewUrl) {
-                    const link = document.createElement("a");
-                    link.href = previewUrl;
-                    link.download = previewName;
-                    link.click();
-                  }
-                }}
-              >
-                <Download className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Baixar</span>
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 shrink-0 rounded-full hover:bg-destructive/10 hover:text-destructive"
-                onClick={() => { setPreviewUrl(null); setPreviewName(""); }}
-                aria-label="Fechar"
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
-          </DialogHeader>
-          {previewUrl && (
-            <iframe
-              src={previewUrl}
-              className="w-full flex-1 min-h-0"
-              title="PDF Preview"
-            />
-          )}
-        </DialogContent>
-      </Dialog>
-    </>
-  );
-}
-
-
-
 // Analytics sub-components
 function ActivityOverTimeChart({ items }: { items: HistoryItem[] }) {
   const chartData = useMemo(() => {
@@ -697,7 +335,7 @@ function ActivityOverTimeChart({ items }: { items: HistoryItem[] }) {
         month: format(date, "MMM", { locale: ptBR }),
         total: monthItems.length,
         sessoes: monthItems.filter(i => i.type === "session").length,
-        relatorios: monthItems.filter(i => i.type === "report").length,
+        relatorios: monthItems.filter(i => ["musicoterapia_tea", "evolution_musicoterapia", "devolutiva_tea", "evolution_report", "discharge", "clinical_report", "report"].includes(i.type)).length,
         avaliacoes: monthItems.filter(i => i.type === "assessment").length,
       });
     }
@@ -1029,12 +667,13 @@ export default function PatientHistoryPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [periodFilter, setPeriodFilter] = useState<string>("all");
+  const [recordSearch, setRecordSearch] = useState("");
   const [activeTab, setActiveTab] = useState<string>("timeline");
-  const isMobile = useIsMobile();
   const navigate = useNavigate();
 
   const { data: patients = [], isLoading: loadingPatients } = usePatientsData();
-  const { data: historyItems = [], isLoading: loadingHistory } = usePatientHistory(selectedPatient?.id || null);
+  const { data: historyItems = [], isLoading: loadingHistory, isError: historyError, refetch: retryHistory } = usePatientHistory(selectedPatient?.id || null);
 
   const filteredPatients = useMemo(
     () =>
@@ -1044,13 +683,16 @@ export default function PatientHistoryPage() {
     [patients, searchTerm]
   );
 
-  const filteredHistory = useMemo(
-    () =>
-      typeFilter === "all"
-        ? historyItems
-        : historyItems.filter((item) => item.type === typeFilter),
-    [historyItems, typeFilter]
-  );
+  const filteredHistory = useMemo(() => {
+    const cutoff = periodFilter === "all" ? null : Date.now() - Number(periodFilter) * 24 * 60 * 60 * 1000;
+    const search = recordSearch.trim().toLocaleLowerCase("pt-BR");
+    return historyItems.filter((item) => {
+      if (typeFilter !== "all" && item.type !== typeFilter) return false;
+      if (cutoff !== null && (!item.date || new Date(item.date).getTime() < cutoff)) return false;
+      if (search && !`${item.title} ${item.description} ${item.label}`.toLocaleLowerCase("pt-BR").includes(search)) return false;
+      return true;
+    });
+  }, [historyItems, typeFilter, periodFilter, recordSearch]);
 
   const stats = useMemo(() => {
     const counts: Record<string, number> = {
@@ -1116,7 +758,7 @@ export default function PatientHistoryPage() {
                 Histórico do Paciente
               </h1>
               <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto">
-                Visualize todo o percurso terapêutico com analytics detalhados
+                Consulte a trajetória clínica, os registros e a atividade terapêutica em um só lugar
               </p>
             </div>
           </div>
@@ -1178,6 +820,9 @@ export default function PatientHistoryPage() {
                         setSelectedPatient(patient);
                         setSearchTerm("");
                         setActiveTab("timeline");
+                        setTypeFilter("all");
+                        setPeriodFilter("all");
+                        setRecordSearch("");
                       }}
                       className="group relative flex items-center gap-3 p-4 rounded-2xl border border-border/40 bg-card/70 backdrop-blur-sm hover:border-primary/50 hover:bg-card/90 hover:shadow-[0_8px_30px_-12px_hsl(var(--primary)/0.4)] hover:-translate-y-0.5 transition-all duration-300 text-left"
                     >
@@ -1241,6 +886,13 @@ export default function PatientHistoryPage() {
             </div>
 
 
+            {historyError && (
+              <div role="alert" className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4">
+                <p className="text-sm text-foreground">Não foi possível carregar todos os registros clínicos. Os indicadores podem estar incompletos.</p>
+                <Button variant="outline" size="sm" onClick={() => retryHistory()}>Tentar novamente</Button>
+              </div>
+            )}
+
             {/* Tabs: Timeline / Analytics */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
               <TabsList className="bg-muted/50 border border-border">
@@ -1251,13 +903,8 @@ export default function PatientHistoryPage() {
                 </TabsTrigger>
                 <TabsTrigger value="analytics" className="gap-1.5 data-[state=active]:bg-background">
                   <BarChart2 className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Analytics</span>
+                  <span className="hidden sm:inline">Indicadores</span>
                   <span className="sm:hidden">Gráficos</span>
-                </TabsTrigger>
-                <TabsTrigger value="documents" className="gap-1.5 data-[state=active]:bg-background">
-                  <FolderOpen className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Documentos PDF</span>
-                  <span className="sm:hidden">PDFs</span>
                 </TabsTrigger>
               </TabsList>
 
@@ -1298,9 +945,9 @@ export default function PatientHistoryPage() {
                     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
                   }).length;
                   const contextCards = [
-                    { key: "__days", label: "Dias em Tratamento", value: daysInTreatment, suffix: " dias", icon: CalendarDays, gradient: "from-violet-500 to-purple-600" },
+                    { key: "__days", label: "Dias desde o primeiro registro", value: daysInTreatment, suffix: " dias", icon: CalendarDays, gradient: "from-violet-500 to-purple-600" },
                     { key: "__month", label: "Registros este Mês", value: recordsThisMonth, suffix: "", icon: TrendingUp, gradient: "from-emerald-500 to-green-600" },
-                    { key: "__total", label: "Total de Documentos", value: historyItems.length, suffix: "", icon: FileText, gradient: "from-blue-500 to-cyan-600" },
+                    { key: "__total", label: "Registros clínicos", value: historyItems.length, suffix: "", icon: FileText, gradient: "from-blue-500 to-cyan-600" },
                   ];
                   return (
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
@@ -1356,8 +1003,8 @@ export default function PatientHistoryPage() {
                 })()}
 
                 {/* Filter Bar */}
-                <div className="flex items-center gap-3">
-                  <Filter className="h-4 w-4 text-muted-foreground" />
+                <div className="flex flex-wrap items-center gap-3">
+                  <Filter className="h-4 w-4 text-muted-foreground shrink-0" />
                   <Select value={typeFilter} onValueChange={setTypeFilter}>
                     <SelectTrigger className="w-[240px] bg-card border-border">
                       <SelectValue placeholder="Filtrar por tipo" />
@@ -1371,6 +1018,24 @@ export default function PatientHistoryPage() {
                       ))}
                     </SelectContent>
                   </Select>
+                  <Select value={periodFilter} onValueChange={setPeriodFilter}>
+                    <SelectTrigger aria-label="Filtrar por período" className="w-[170px] bg-card border-border">
+                      <SelectValue placeholder="Período" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todo o período</SelectItem>
+                      <SelectItem value="30">Últimos 30 dias</SelectItem>
+                      <SelectItem value="90">Últimos 90 dias</SelectItem>
+                      <SelectItem value="365">Últimos 12 meses</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    aria-label="Buscar registros clínicos"
+                    placeholder="Buscar nos registros..."
+                    value={recordSearch}
+                    onChange={(e) => setRecordSearch(e.target.value)}
+                    className="min-w-[180px] max-w-xs flex-1 bg-card"
+                  />
                   <Badge variant="outline" className="text-xs ml-auto">
                     {filteredHistory.length} registro{filteredHistory.length !== 1 ? "s" : ""}
                   </Badge>
@@ -1391,7 +1056,7 @@ export default function PatientHistoryPage() {
                         Nenhum registro encontrado
                       </h3>
                       <p className="text-muted-foreground text-sm">
-                        Este paciente ainda não possui documentos registrados
+                        Nenhum registro corresponde aos filtros selecionados
                       </p>
                     </div>
                   </div>
@@ -1458,11 +1123,6 @@ export default function PatientHistoryPage() {
                     </AnimatePresence>
                   </div>
                 )}
-              </TabsContent>
-
-              {/* Documents Tab */}
-              <TabsContent value="documents" className="space-y-4">
-                <SavedPDFsTab patientName={selectedPatient?.name} />
               </TabsContent>
             </Tabs>
           </div>
