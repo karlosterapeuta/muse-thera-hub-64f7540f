@@ -10,22 +10,10 @@ export interface PtiCatalogSuggestion {
   resource: string;
 }
 
-const specialtySuggestions: PtiCatalogSuggestion[] = [
-  { specialty: "Psicologia", area: "Autorregulação", objective: "Favorecer o reconhecimento e a expressão de emoções nas interações.", example: "Utilizar jogos simbólicos e identificação de emoções conforme orientação da equipe.", resource: "Cartões de emoções e histórias" },
-  { specialty: "Psicologia", area: "Habilidades sociais", objective: "Ampliar repertórios de espera, turnos e tolerância a mudanças graduais.", example: "Planejar atividades mediadas com alternância de turnos.", resource: "Jogos de regras simples" },
-  { specialty: "Fonoaudiologia", area: "Comunicação", objective: "Apoiar o uso funcional de recursos de comunicação definidos pela equipe.", example: "Oferecer oportunidades de escolha usando o recurso comunicativo já indicado.", resource: "Pranchas e cartões de comunicação" },
-  { specialty: "Fonoaudiologia", area: "Linguagem", objective: "Favorecer trocas comunicativas em atividades compartilhadas.", example: "Organizar turnos de pedidos, nomeações e respostas funcionais.", resource: "Objetos e recursos visuais" },
-  { specialty: "Nutrição", area: "Rotina", objective: "Apoiar a participação nas rotinas de alimentação conforme plano da equipe.", example: "Estruturar sequência visual de início, participação e encerramento.", resource: "Rotinas ilustradas" },
-  { specialty: "Psicomotricidade", area: "Coordenação", objective: "Estimular organização espacial e planejamento motor em atividades lúdicas.", example: "Realizar circuitos simples com sequências e pausas.", resource: "Cones, aros e marcações" },
-  { specialty: "Terapia Ocupacional", area: "Autonomia", objective: "Favorecer participação progressiva em atividades de vida diária.", example: "Sequenciar tarefas funcionais com ajuda graduada.", resource: "Objetos de rotina e pistas visuais" },
-  { specialty: "Psicopedagogia", area: "Aprendizagem", objective: "Apoiar manutenção da atenção e sequenciação de tarefas de aprendizagem.", example: "Organizar tarefas curtas com começo, meio e fim.", resource: "Cartões de sequência e jogos" },
-];
-
 const suggestions: PtiCatalogSuggestion[] = [
   ...MUSETERA_PTI_CATALOG.map(item => ({ ...item, specialty: "Musicoterapia" })),
-  ...specialtySuggestions,
 ];
-const specialties = ["Musicoterapia", "Psicologia", "Fonoaudiologia", "Nutrição", "Psicomotricidade", "Terapia Ocupacional", "Psicopedagogia"];
+const specialties = ["Musicoterapia"];
 const normalize = (s: string) => s.toLocaleLowerCase("pt-BR").trim();
 interface Props {
   selected: string[];
@@ -89,7 +77,7 @@ export function PtiSpecialtyCatalog({ selected, onAdd }: Props) {
         })}
       </div>
       <p className="border-t border-border bg-muted/40 px-4 py-2 text-xs text-muted-foreground">
-        Sugestões ilustrativas. Objetivos de outras especialidades exigem participação do profissional habilitado; o plano musicoterapêutico deve respeitar o escopo de atuação.
+        Sugestões musicoterapêuticas editáveis. Selecione apenas objetivos pertinentes à avaliação clínica individual.
       </p>
     </div>
   );

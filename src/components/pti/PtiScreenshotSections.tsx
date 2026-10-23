@@ -18,6 +18,54 @@ export function TextArea({label,value,onChange,rows=3,placeholder}:{label:string
 export function CheckBox({label,checked,onChange}:{label:string;checked:boolean;onChange:(v:boolean)=>void}) {
   return <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-foreground"><input type="checkbox" className="h-4 w-4 accent-primary" checked={checked} onChange={e=>onChange(e.target.checked)} />{label}</label>;
 }
+const cidOptions = [
+  ["F84.0", "Autismo infantil (CID-10)"],
+  ["F84.1", "Autismo atípico (CID-10)"],
+  ["F84.5", "Síndrome de Asperger (CID-10)"],
+  ["F84.9", "Transtorno global do desenvolvimento não especificado (CID-10)"],
+  ["6A02", "Transtorno do espectro do autismo — TEA (CID-11)"],
+  ["F90.0", "Distúrbio da atividade e da atenção (CID-10)"],
+  ["F90.9", "Transtorno hipercinético não especificado (CID-10)"],
+  ["F91.3", "Transtorno desafiador e de oposição (CID-10)"],
+  ["F70", "Deficiência intelectual leve (CID-10)"],
+  ["F71", "Deficiência intelectual moderada (CID-10)"],
+  ["F72", "Deficiência intelectual grave (CID-10)"],
+  ["F80.1", "Transtorno de linguagem expressiva (CID-10)"],
+  ["F80.2", "Transtorno de linguagem receptiva (CID-10)"],
+  ["F81.9", "Transtorno do desenvolvimento das habilidades escolares não especificado (CID-10)"],
+  ["G40.9", "Epilepsia não especificada (CID-10)"],
+] as const;
+function CidMultiSelect({value,onChange}:{value:string;onChange:(v:string)=>void}) {
+  const [search,setSearch]=useState("");
+  const [open,setOpen]=useState(false);
+  const selected=value.split(/[;,\n]+/).map(x=>x.trim()).filter(Boolean);
+  const add=(code:string)=>{
+    const normalized=code.trim().toUpperCase();
+    if (!normalized || selected.some(x=>x.toUpperCase()===normalized)) return;
+    onChange([...selected,normalized].join("; "));
+    setSearch("");
+  };
+  const filtered=cidOptions.filter(([code,label])=>`${code} ${label}`.toLowerCase().includes(search.toLowerCase()));
+  return <div className="space-y-2 sm:col-span-2">
+    <p className={labelClass}>Diagnóstico (CID) — múltipla seleção</p>
+    <div className="flex flex-wrap gap-2" aria-label="CIDs selecionados">
+      {selected.map(code=><button key={code} type="button" className="rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary" onClick={()=>onChange(selected.filter(c=>c!==code).join("; "))} aria-label={`Remover CID ${code}`}>{code} ×</button>)}
+    </div>
+    <div className="relative">
+      <input className={fieldClass} aria-label="Buscar CID" value={search} onFocus={()=>setOpen(true)} onChange={e=>{setSearch(e.target.value);setOpen(true);}} placeholder="Buscar código ou diagnóstico (ex.: TEA, F84.0, 6A02)" />
+      {open&&<div className="absolute z-20 mt-1 max-h-56 w-full overflow-y-auto rounded border border-border bg-popover p-1 shadow-lg">
+        {filtered.map(([code,label])=><button key={code} type="button" className="block w-full rounded px-3 py-2 text-left text-xs text-popover-foreground hover:bg-muted disabled:opacity-50" disabled={selected.includes(code)} onClick={()=>{add(code);setOpen(false);}}>{code} — {label}</button>)}
+        {!filtered.length&&<p className="p-2 text-xs text-muted-foreground">Não encontrado na lista rápida. Informe o código documentado abaixo.</p>}
+        <button type="button" className="w-full border-t border-border px-3 py-2 text-left text-xs text-muted-foreground" onClick={()=>setOpen(false)}>Fechar lista</button>
+      </div>}
+    </div>
+    <div className="flex flex-wrap gap-2">
+      <input className={fieldClass+" min-w-44 flex-1"} aria-label="Adicionar outro CID" placeholder="Outro CID documentado" value={open?"":search} onFocus={()=>setOpen(false)} onChange={e=>setSearch(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"){e.preventDefault();add(search);}}} />
+      <button className={buttonClass} type="button" onClick={()=>add(search)} disabled={!search.trim()}>Adicionar CID</button>
+    </div>
+    <p className="text-xs text-muted-foreground">Selecione apenas os CIDs documentados no prontuário. A lista é resumida; outros códigos podem ser incluídos manualmente.</p>
+  </div>;
+}
 export function SectionBar({title,detail,actions,children,id}:{title:string;detail?:string;actions?:React.ReactNode;children:React.ReactNode;id?:string}) {
   return <section id={id} className="overflow-hidden rounded border border-border bg-card shadow-sm">
     <div className="flex flex-wrap items-center justify-between gap-2 bg-primary px-4 py-3 text-primary-foreground">
@@ -87,7 +135,7 @@ export function PtiScreenshotSections({content,update,importing,onImport,profess
         <TextInput label="Nome do pai" value={form.nomePai} onChange={v=>uf({nomePai:v})} />
         <TextInput label="Responsável" value={ident.responsavel} onChange={v=>ui({responsavel:v})} />
         <TextInput label="Diagnóstico já registrado" value={ident.diagnostico} onChange={v=>ui({diagnostico:v})} placeholder="Registrar somente diagnósticos documentados" />
-        <TextInput label="Diagnóstico (CID)" value={ident.cid} onChange={v=>ui({cid:v})} placeholder="Informar CID existente no prontuário" />
+        <CidMultiSelect value={ident.cid} onChange={v=>ui({cid:v})} />
         <TextInput label="Início de implementação" value={form.inicioImplementacao||ident.dataPlano} onChange={v=>uf({inicioImplementacao:v})} type="date" />
         <TextInput label="Profissional responsável" value={ident.profissional||professionalName} onChange={v=>ui({profissional:v})} />
         <label className={labelClass}>Reavaliação dos objetivos<select className={fieldClass} value={form.revisaoObjetivos} onChange={e=>uf({revisaoObjetivos:e.target.value})}>
@@ -117,7 +165,7 @@ export function PtiScreenshotSections({content,update,importing,onImport,profess
       <GuidedField index={2} value={form.comportamentoManejo} onChange={v=>uf({comportamentoManejo:v})} />
       <TextArea label="Síntese da história clínica — totalmente editável" rows={6} value={form.resumoClinico} onChange={v=>uf({resumoClinico:v})} placeholder="Montar a partir do que foi relatado e registrado. Nenhuma observação será inventada." />
     </SectionBar>
-    <SectionBar title="Objetivos por área" detail="Planejamento terapêutico por especialidade"
+    <SectionBar title="Objetivos por área" detail="Musicoterapia"
       actions={<div className="flex gap-2"><button type="button" className={buttonClass} onClick={()=>navigate("/evaluation")}>Abrir avaliação</button><button type="button" onClick={()=>newObj()} className={buttonClass}><Plus className="h-4 w-4" /> Objetivo</button></div>}>
       <button type="button" className="text-xs font-semibold text-primary underline" onClick={()=>setCatalog(v=>!v)}>{catalog?"Ocultar":"Exibir"} catálogo de objetivos clínicos</button>
       {catalog && <PtiSpecialtyCatalog selected={content.objetivosEspecificos.map(o=>o.descricao)} onAdd={newObj} />}

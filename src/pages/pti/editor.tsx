@@ -56,6 +56,7 @@ export default function PtiEditor() {
   // Serializa as gravações e impede duplicação de planos ao salvar pela primeira vez.
   const planIdRef = useRef<string | undefined>(isNew ? undefined : id);
   const saveQueueRef = useRef<Promise<void>>(Promise.resolve());
+  const patientLookupRef = useRef(0);
 
   // Load existing plan
   useEffect(() => {
@@ -159,6 +160,7 @@ export default function PtiEditor() {
     if (patientId && !window.confirm("Trocar de paciente? O conteúdo ainda não salvo deste rascunho será reiniciado para não misturar informações clínicas.")) return;
     const p = patients?.find((x) => x.id === pid);
     if (!p) return;
+    const lookupId = ++patientLookupRef.current;
     // Reiniciar qualquer conteúdo anterior antes de associar o novo paciente.
     const initial = createDefaultPtiContent();
     setContent({
@@ -174,6 +176,32 @@ export default function PtiEditor() {
       },
     });
     setPatientId(pid);
+    // A anamnese contém os nomes da mãe e do pai; o cadastro básico do paciente não.
+    // Carregar somente esses campos automaticamente, sem alterar outros registros clínicos.
+    void (async () => {
+      const { data, error } = await supabase.from("anamnesis")
+        .select("mother_name, father_name")
+        .eq("patient_id", pid)
+        .order("updated_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (lookupId !== patientLookupRef.current) return;
+      if (error) {
+        console.error("Erro ao carregar responsáveis da anamnese:", error);
+        toast.info("Não foi possível carregar mãe e pai automaticamente. Você pode preencher os nomes manualmente.");
+        return;
+      }
+      if (!data) return;
+      setContent(current => ({
+        ...current,
+        formulario: {
+          ...createDefaultPtiFormulario(),
+          ...current.formulario,
+          nomeMae: current.formulario?.nomeMae?.trim() || data.mother_name || "",
+          nomePai: current.formulario?.nomePai?.trim() || data.father_name || "",
+        },
+      }));
+    })();
   };
 
   // Importa apenas informações efetivamente registradas na anamnese.
