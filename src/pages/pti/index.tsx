@@ -43,7 +43,7 @@ export default function PtiList() {
     return {
       total: list.length,
       ativos: list.filter((p) => p.status === "ativo").length,
-      reavaliacao: list.filter((p) => p.progress >= 70 && p.status !== "concluído").length,
+      preenchidos70: list.filter((p) => p.progress >= 70).length,
       objetivos,
       metas,
     };
@@ -88,7 +88,7 @@ export default function PtiList() {
   const statCards = [
     { label: "Total de planos", value: stats.total, icon: ClipboardList, color: "text-teal-700 dark:text-teal-300" },
     { label: "Planos ativos", value: stats.ativos, icon: Activity, color: "text-emerald-500" },
-    { label: "Em reavaliação", value: stats.reavaliacao, icon: TrendingUp, color: "text-amber-500" },
+    { label: "≥70% preenchidos", value: stats.preenchidos70, icon: ClipboardList, color: "text-amber-500" },
     { label: "Objetivos", value: stats.objetivos, icon: Target, color: "text-teal-700 dark:text-teal-300" },
     { label: "Metas", value: stats.metas, icon: CheckCircle2, color: "text-teal-700 dark:text-teal-300" },
   ];
@@ -129,7 +129,7 @@ export default function PtiList() {
           <Card className="border-border/60">
             <CardContent className="p-4">
               <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-primary" /> Evolução clínica (preenchimento)
+                <TrendingUp className="h-4 w-4 text-primary" /> Preenchimento dos planos — não é evolução clínica
               </h3>
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={chartData}>
@@ -195,7 +195,7 @@ export default function PtiList() {
                         )}
                         <div className="flex items-center gap-2 mb-3">
                           <Progress value={plan.progress} className="h-1.5 flex-1" />
-                          <span className="text-xs text-muted-foreground">{plan.progress}%</span>
+                          <span className="text-xs text-muted-foreground" title="Preenchimento do formulário, não evolução terapêutica">{plan.progress}% preenchido</span>
                         </div>
                         <p className="text-[11px] text-muted-foreground mb-3">
                           Atualizado {new Date(plan.updated_at).toLocaleDateString("pt-BR")}

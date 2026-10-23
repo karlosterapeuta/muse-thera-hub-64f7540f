@@ -3,6 +3,10 @@
 export interface PtiObjetivoEspecifico {
   id: string;
   descricao: string;
+  /** Experiência musicoterapêutica sugerida/editada para o objetivo. */
+  atividade?: string;
+  /** Instrumentos e materiais vinculados à intervenção. */
+  material?: string;
   prazo: string;
   prioridade: "Alta" | "Média" | "Baixa" | "";
   area: string;
@@ -11,6 +15,8 @@ export interface PtiObjetivoEspecifico {
 export interface PtiMeta {
   id: string;
   descricao: string;
+  /** Medida inicial observada, anterior à intervenção (não inferida por IA). */
+  linhaBase?: string;
   indicador: string;
   percentual: string;
   prazo: string;
@@ -22,7 +28,45 @@ export interface PtiAvaliacaoCategoria {
   observacoes: string;
 }
 
+/** Campos adicionais do formulário contínuo. Mantidos opcionais para PTIs antigos. */
+export interface PtiFormulario {
+  nomeMae: string;
+  nomePai: string;
+  unidade: string;
+  inicioImplementacao: string;
+  revisaoObjetivos: string;
+  medicacoesAtuais: string;
+  protocoloAvaliacao: string;
+  comportamentoAutolesivo: boolean;
+  comportamentoHeterolesivo: boolean;
+  relatosResponsaveis: string;
+  desenvolvimentoAutonomia: string;
+  comportamentoManejo: string;
+  resumoClinico: string;
+  comportamentosAlvo: string[];
+  consideracoes: string;
+  /** IDs das obras efetivamente selecionadas no catálogo bibliográfico. */
+  referenciasSelecionadas?: string[];
+  /** Outras obras ou referências antigas registradas manualmente. */
+  referencias: string;
+  dataDevolutiva: string;
+  responsavelDevolutiva: string;
+  incluirAssinatura: boolean;
+  incluirRodape: boolean;
+}
+
+export const createDefaultPtiFormulario = (): PtiFormulario => ({
+  nomeMae: "", nomePai: "", unidade: "", inicioImplementacao: "",
+  revisaoObjetivos: "", medicacoesAtuais: "", protocoloAvaliacao: "Não informado",
+  comportamentoAutolesivo: false, comportamentoHeterolesivo: false,
+  relatosResponsaveis: "", desenvolvimentoAutonomia: "", comportamentoManejo: "",
+  resumoClinico: "", comportamentosAlvo: [], consideracoes: "", referenciasSelecionadas: [], referencias: "",
+  dataDevolutiva: "", responsavelDevolutiva: "",
+  incluirAssinatura: true, incluirRodape: true,
+});
+
 export interface PtiContent {
+  formulario?: PtiFormulario;
   identificacao: {
     nome: string;
     idade: string;
@@ -170,6 +214,7 @@ export const PTI_CRITERIOS_EVOLUCAO = [
 const emptyCategoria = (): PtiAvaliacaoCategoria => ({ opcoes: [], observacoes: "" });
 
 export const createDefaultPtiContent = (): PtiContent => ({
+  formulario: createDefaultPtiFormulario(),
   identificacao: {
     nome: "",
     idade: "",
@@ -214,7 +259,7 @@ export const createDefaultPtiContent = (): PtiContent => ({
   criteriosAlta: "",
   planoFamiliar: "",
   integracao: { profissionais: [], observacoes: "" },
-  fundamentacao: PTI_FUNDAMENTACAO_PADRAO,
+  fundamentacao: "",
 });
 
 export interface PtiPlan {
@@ -249,7 +294,7 @@ export function computePtiProgress(c: PtiContent): number {
     !!c.criteriosAlta,
     !!c.planoFamiliar,
     c.integracao.profissionais.length > 0,
-    !!c.fundamentacao,
+    !!c.fundamentacao?.trim() && c.fundamentacao.trim() !== PTI_FUNDAMENTACAO_PADRAO,
   ];
   const filled = checks.filter(Boolean).length;
   return Math.round((filled / checks.length) * 100);
