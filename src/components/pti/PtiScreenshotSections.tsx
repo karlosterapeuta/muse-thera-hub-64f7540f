@@ -66,6 +66,41 @@ function CidMultiSelect({value,onChange}:{value:string;onChange:(v:string)=>void
     <p className="text-xs text-muted-foreground">Selecione apenas os CIDs documentados no prontuário. A lista é resumida; outros códigos podem ser incluídos manualmente.</p>
   </div>;
 }
+// Sugestões de registro, não de prescrição. O profissional confirma a medicação
+// com a família e/ou com a prescrição médica antes de incluí-la no prontuário.
+const medicationOptions = [
+  "Risperidona", "Aripiprazol", "Metilfenidato", "Lisdexanfetamina",
+  "Atomoxetina", "Clonidina", "Fluoxetina", "Sertralina",
+  "Ácido valproico / Valproato", "Carbamazepina", "Lamotrigina",
+  "Levetiracetam",
+];
+function MedicationMultiSelect({value,onChange}:{value:string;onChange:(v:string)=>void}) {
+  const [choice,setChoice]=useState("");
+  const [custom,setCustom]=useState("");
+  const medications=value.split(/;|\n/).map(v=>v.trim()).filter(Boolean);
+  const add=(name:string)=>{
+    const item=name.trim();
+    if(!item || medications.some(v=>v.toLocaleLowerCase("pt-BR")===item.toLocaleLowerCase("pt-BR")))return;
+    onChange([...medications,item].join("; "));
+    setChoice("");
+    setCustom("");
+  };
+  return <div className="space-y-2 sm:col-span-2">
+    <p className={labelClass}>Medicações atuais já prescritas</p>
+    <div className="flex flex-wrap gap-2" aria-label="Medicações registradas">
+      {medications.map((med,i)=><button type="button" key={`${med}-${i}`} className="rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs text-primary" onClick={()=>onChange(medications.filter((_,j)=>j!==i).join("; "))} aria-label={`Remover ${med}`}>{med} ×</button>)}
+    </div>
+    <div className="flex flex-col gap-2 sm:flex-row">
+      <select className={fieldClass+" flex-1"} aria-label="Selecionar medicamento" value={choice} onChange={e=>{setChoice(e.target.value);add(e.target.value);}}>
+        <option value="">Selecione um medicamento registrado</option>
+        {medicationOptions.map(med=><option key={med} value={med}>{med}</option>)}
+      </select>
+      <input className={fieldClass+" flex-1"} aria-label="Outro medicamento" value={custom} onChange={e=>setCustom(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"){e.preventDefault();add(custom);}}} placeholder="Outro medicamento prescrito" />
+      <button type="button" className={buttonClass} disabled={!custom.trim()} onClick={()=>add(custom)}>Adicionar</button>
+    </div>
+    <p className="text-xs text-muted-foreground">Lista de apoio ao registro, não uma recomendação de tratamento. Informe somente medicamentos confirmados na prescrição ou com o responsável. Dose e horário devem ser conferidos separadamente.</p>
+  </div>;
+}
 export function SectionBar({title,detail,actions,children,id}:{title:string;detail?:string;actions?:React.ReactNode;children:React.ReactNode;id?:string}) {
   return <section id={id} className="overflow-hidden rounded border border-border bg-card shadow-sm">
     <div className="flex flex-wrap items-center justify-between gap-2 bg-primary px-4 py-3 text-primary-foreground">
@@ -146,7 +181,7 @@ export function PtiScreenshotSections({content,update,importing,onImport,profess
     <SectionBar title="Breve história clínica" actions={<button type="button" onClick={synthesize} className={buttonClass}>Montar síntese</button>}>
       <div className="grid gap-4 sm:grid-cols-2">
         <TextInput label="Unidade / local" value={form.unidade} onChange={v=>uf({unidade:v})} />
-        <TextInput label="Medicações atuais já prescritas" value={form.medicacoesAtuais} onChange={v=>uf({medicacoesAtuais:v})} placeholder="Somente medicações informadas" />
+        <MedicationMultiSelect value={form.medicacoesAtuais} onChange={v=>uf({medicacoesAtuais:v})} />
         <label className={labelClass}>Protocolo de avaliação<select className={fieldClass} value={form.protocoloAvaliacao} onChange={e=>uf({protocoloAvaliacao:e.target.value})}>
           {["MuseTera TEA","Avaliação musicoterapêutica clínica","Outro protocolo documentado","Não informado"].map(x=><option key={x} value={x}>{x}</option>)}
         </select></label>
