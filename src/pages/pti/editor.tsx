@@ -322,7 +322,7 @@ export default function PtiEditor() {
         : "") || "";
       await generateStaticPDF(
         <PtiPDF content={content} professional={professional} signature={signature} stamp={stamp} />,
-        { filename: `PTI-${content.identificacao.nome || "plano"}.pdf` },
+        { filename: `PTI-${content.identificacao.nome || "plano"}.pdf`, clinicalPagination: true },
       );
     } catch (e: any) {
       toast.error("Erro ao gerar PDF");

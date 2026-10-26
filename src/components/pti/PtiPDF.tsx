@@ -12,8 +12,9 @@ interface PtiPDFProps {
 const styles = {
   page: {
     width: "210mm",
-    minHeight: "297mm",
-    padding: "14mm",
+    // A margem vertical de cada folha é aplicada pelo exportador.
+    // Uma altura mínima A4 aqui provocava páginas adicionais desnecessárias.
+    padding: "6mm 14mm",
     background: "#ffffff",
     color: "#1a1a2e",
     fontFamily: "Arial, Helvetica, sans-serif",
@@ -55,16 +56,19 @@ export function PtiPDF({ content: c, professional, signature, stamp }: PtiPDFPro
     marginTop: "14px", marginBottom: "8px", breakAfter: "avoid",
   };
   const line: React.CSSProperties = { margin: "2px 0", whiteSpace: "pre-wrap" };
-  const item: React.CSSProperties = { padding: "6px 0", borderBottom: "1px solid #e2e8f0", breakInside: "avoid" };
+  // Um objetivo longo precisa poder continuar na próxima folha; apenas
+  // cabeçalhos e registros compactos devem permanecer inteiros.
+  const item: React.CSSProperties = { padding: "6px 0", borderBottom: "1px solid #e2e8f0" };
+  const compact: React.CSSProperties = { breakInside: "avoid", pageBreakInside: "avoid" };
   const K = ({ label, value }: { label: string; value?: string }) =>
     <div style={{ margin: "2px 0" }}><strong style={styles.label}>{label}: </strong>{value?.trim() || "Não informado"}</div>;
-  const T = ({ children }: { children: React.ReactNode }) => <div style={sectionBar}>{children}</div>;
+  const T = ({ children }: { children: React.ReactNode }) => <div className="pti-pdf-heading" style={sectionBar}>{children}</div>;
   const P = ({ children }: { children: React.ReactNode }) => <div style={line}>{children}</div>;
   const optional = (label: string, value?: string) =>
     value?.trim() ? <K key={label} label={label} value={value} /> : null;
   return (
     <div style={{ ...styles.page, fontSize: "11px", color: "#172017" }}>
-      <header style={{ borderBottom: "2px solid #137B71", paddingBottom: "8px" }}>
+      <header className="pti-pdf-atomic" style={{ borderBottom: "2px solid #137B71", paddingBottom: "8px" }}>
         <div style={{ textAlign: "center", fontSize: "19px", fontWeight: 800, color: "#137B71" }}>MUSETERA</div>
         <div style={{ textAlign: "center", fontSize: "15px", fontWeight: 700, margin: "4px 0" }}>Plano Terapêutico Individual</div>
         <div style={{ textAlign: "center", fontSize: "10px", color: "#647061" }}>Musicoterapia Clínica • Documento de acompanhamento individualizado</div>
@@ -72,12 +76,15 @@ export function PtiPDF({ content: c, professional, signature, stamp }: PtiPDFPro
       <T>1. DADOS DO PACIENTE (COMPLEMENTARES)</T>
       <div style={styles.row}>
         <K label="Paciente" value={id.nome} />
+        {optional("Idade", id.idade)}
         <K label="Nascimento" value={id.nascimento} />
         {optional("Nome da mãe", form.nomeMae)}
         {optional("Nome do pai", form.nomePai)}
         <K label="Responsável" value={id.responsavel} />
+        {optional("Telefone de contato", id.telefone)}
         <K label="Diagnóstico" value={id.diagnostico} />
         <K label="CID" value={id.cid} />
+        {optional("DSM registrado", id.dsm)}
         <K label="Início de implementação" value={form.inicioImplementacao || id.dataPlano} />
         <K label="Profissional" value={id.profissional || professional?.name} />
         <K label="Reavaliação prevista" value={form.revisaoObjetivos} />
@@ -96,12 +103,25 @@ export function PtiPDF({ content: c, professional, signature, stamp }: PtiPDFPro
       {optional("Síntese clínica", form.resumoClinico)}
       {optional("Queixa principal", c.queixaPrincipal)}
       {optional("Histórico de desenvolvimento", c.historicoClinico.desenvolvimento)}
+      {optional("Escolaridade", c.historicoClinico.escolaridade)}
       {optional("Comunicação", c.historicoClinico.comunicacao)}
+      {optional("Terapias anteriores", c.historicoClinico.terapiasAnteriores)}
       {optional("Histórico musical", c.historicoClinico.historicoMusical)}
       {optional("Preferências musicais", c.historicoClinico.preferenciasMusicais)}
+      {optional("Hipersensibilidades relatadas", c.historicoClinico.hipersensibilidades)}
+      {optional("Hipossensibilidades relatadas", c.historicoClinico.hipossensibilidades)}
       {optional("Potencialidades", c.potencialidades)}
       {optional("Dificuldades", c.dificuldades)}
       {optional("Objetivo geral", c.objetivoGeral)}
+      {Object.entries(c.avaliacao || {}).some(([,value]) => value?.opcoes?.length || value?.observacoes?.trim()) && <>
+        <div style={styles.sectionTitle}>Avaliação clínica registrada</div>
+        {Object.entries(c.avaliacao).map(([key,value]) => {
+          const details = [value?.opcoes?.join("; "), value?.observacoes?.trim()].filter(Boolean).join(". ");
+          return details ? <div key={key} style={line}>
+            <strong style={styles.label}>{({comunicacao:"Comunicação",socializacao:"Socialização",cognicao:"Cognição",sensorial:"Sensorial",musicalidade:"Musicalidade"} as Record<string,string>)[key] || key}: </strong>{details}
+          </div> : null;
+        })}
+      </>}
       <T>3. OBJETIVOS POR ÁREA — PLANEJAMENTO MUSICOTERAPÊUTICO</T>
       {c.objetivosEspecificos.length ? c.objetivosEspecificos.map((o,i)=>
         <div key={o.id} style={item}>
@@ -129,6 +149,13 @@ export function PtiPDF({ content: c, professional, signature, stamp }: PtiPDFPro
         {c.recursos.length>0&&<K label="Recursos" value={c.recursos.join("; ")} />}
         {optional("Frequência", c.frequencia.sessoes)}
         {optional("Duração", c.frequencia.duracao)}
+        {optional("Modalidade de atendimento", c.frequencia.atendimento)}
+      </>}
+      {Object.entries(c.criteriosEvolucao || {}).some(([,value]) => Number(value)>0) && <>
+        <div style={styles.sectionTitle}>Indicadores de evolução registrados</div>
+        {Object.entries(c.criteriosEvolucao).filter(([,value])=>Number(value)>0).map(([key,value])=><div key={key} style={line}>
+          <strong style={styles.label}>{key}: </strong>{String(value)}
+        </div>)}
       </>}
       <T>4. COMPORTAMENTOS-PROBLEMA LISTADOS</T>
       {form.comportamentosAlvo.length>0?form.comportamentosAlvo.map((v,i)=>
@@ -138,11 +165,12 @@ export function PtiPDF({ content: c, professional, signature, stamp }: PtiPDFPro
       {optional("Critérios para alta", c.criteriosAlta)}
       {optional("Plano familiar", c.planoFamiliar)}
       {optional("Articulação multiprofissional", c.integracao.observacoes)}
+      {c.integracao.profissionais.length > 0 && <K label="Profissionais envolvidos" value={c.integracao.profissionais.join("; ")} />}
       {optional("Fundamentação técnica", c.fundamentacao)}
       {(selectedReferences.length > 0 || additionalReferences) && <>
         <T>REFERÊNCIAS BIBLIOGRÁFICAS UTILIZADAS</T>
         {selectedReferences.map((reference, index) =>
-          <div key={reference} style={{ ...line, padding: "3px 0", breakInside: "avoid" }}>
+          <div key={reference} className="pti-pdf-atomic" style={{ ...line, ...compact, padding: "3px 0" }}>
             {index + 1}. {reference}
           </div>
         )}
@@ -154,7 +182,7 @@ export function PtiPDF({ content: c, professional, signature, stamp }: PtiPDFPro
         {optional("Responsável pela entrega", form.responsavelDevolutiva)}
       </>}
       <T>ASSINATURA E IDENTIFICAÇÃO PROFISSIONAL</T>
-      <div style={{minHeight:"46px",marginTop:"10px",breakInside:"avoid"}}>
+      <div className="pti-pdf-atomic" style={{minHeight:"46px",marginTop:"10px",...compact}}>
         {form.incluirAssinatura !== false && <div style={{display:"flex",gap:"30px",alignItems:"end"}}>
           {signature&&<img src={signature} alt="Imagem de assinatura cadastrada" style={{maxHeight:"65px",maxWidth:"230px",objectFit:"contain"}} />}
           {stamp&&<img src={stamp} alt="Carimbo cadastrado" style={{maxHeight:"65px",maxWidth:"200px",objectFit:"contain"}} />}

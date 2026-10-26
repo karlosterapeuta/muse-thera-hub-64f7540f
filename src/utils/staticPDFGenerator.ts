@@ -10,6 +10,8 @@ interface PDFOptions {
   format?: 'a4' | 'letter';
   orientation?: 'portrait' | 'landscape';
   fullBleedPages?: boolean;
+  /** Paginação controlada para relatórios clínicos longos, sem alterar outros PDFs. */
+  clinicalPagination?: boolean;
 }
 
 /**
@@ -26,7 +28,8 @@ export const generateStaticPDF = async (
     quality = 2.0, // Qualidade balanceada para evitar erros de memória
     format = 'a4',
     orientation = 'portrait',
-    fullBleedPages = false
+    fullBleedPages = false,
+    clinicalPagination = false,
   } = options;
 
   let container: HTMLDivElement | null = null;
@@ -89,7 +92,7 @@ export const generateStaticPDF = async (
 
     // 6. Configurações html2pdf
     const opt = {
-      margin: 0,
+      margin: clinicalPagination ? [10, 0, 10, 0] : 0,
       filename,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { 
@@ -123,7 +126,9 @@ export const generateStaticPDF = async (
       pagebreak: { 
         mode: ['css'],
         before: '.musetera-pdf-page',
-        avoid: ['*']
+        // Evitar todos os elementos produz áreas vazias e impede blocos clínicos longos
+        // de fluírem naturalmente. Para o PTI, proteger apenas blocos curtos.
+        avoid: clinicalPagination ? ['.pti-pdf-atomic', '.pti-pdf-heading'] : ['*']
       }
     };
 

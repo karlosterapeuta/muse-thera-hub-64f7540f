@@ -76,7 +76,7 @@ export default function PtiList() {
       const stamp = (professional?.digital_stamp_url ? await imageUrlToBase64(professional.digital_stamp_url) : "") || "";
       await generateStaticPDF(
         <PtiPDF content={plan.content} professional={professional} signature={signature} stamp={stamp} />,
-        { filename: `PTI-${plan.content.identificacao.nome || "plano"}.pdf` },
+        { filename: `PTI-${plan.content.identificacao.nome || "plano"}.pdf`, clinicalPagination: true },
       );
     } catch {
       toast.error("Erro ao gerar PDF");
