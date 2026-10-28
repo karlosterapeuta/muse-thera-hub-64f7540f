@@ -1002,7 +1002,7 @@ export default function MusicoterapiaPage() {
   }, [professionalId]);
 
   return (
-    <div className="relative min-h-screen bg-background/50">
+    <div className="relative min-h-screen bg-slate-50/70 dark:bg-background">
       {/* Ambient cosmic background */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
@@ -1013,12 +1013,12 @@ export default function MusicoterapiaPage() {
       <div className="container mx-auto p-4 sm:p-6 max-w-6xl space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')}
-            className="gap-2 text-muted-foreground hover:text-foreground">
+            className="min-h-11 gap-2 text-foreground hover:bg-muted focus-visible:ring-2 focus-visible:ring-teal-600">
             <ArrowLeft className="h-4 w-4" />
             Voltar ao painel
           </Button>
           <Button variant="outline" onClick={() => setViewMode(viewMode === 'create' ? 'list' : 'create')}
-            className="min-h-10 gap-2 border-border bg-card">
+            className="min-h-11 gap-2 rounded-xl border-teal-200 bg-card font-semibold text-teal-900 hover:bg-teal-50 focus-visible:ring-2 focus-visible:ring-teal-600 dark:border-teal-800 dark:text-teal-100 dark:hover:bg-teal-950">
             {viewMode === 'create' ? <List className="h-4 w-4" /> : <Wand2 className="h-4 w-4" />}
             {viewMode === 'create' ? 'Ver relatórios salvos' : 'Criar novo relatório'}
           </Button>
@@ -1027,22 +1027,22 @@ export default function MusicoterapiaPage() {
       {viewMode === 'create' ? (
         <>
           {/* Contextual workspace controls: one compact toolbar above the form. */}
-          <div className="flex flex-col gap-4 rounded-2xl border border-border/70 bg-card p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-5">
+          <div className="flex flex-col gap-5 rounded-2xl border border-teal-200 bg-gradient-to-br from-white via-emerald-50/70 to-teal-50 p-5 shadow-sm dark:border-teal-900 dark:from-teal-950/50 dark:via-background dark:to-background sm:flex-row sm:items-center sm:justify-between sm:p-7">
             <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-wider text-teal-700 dark:text-teal-300">MUSETERA · RELATÓRIOS</p>
-              <h2 className="mt-1 text-lg font-semibold text-foreground">Área de documentação clínica</h2>
-              <p className="mt-1 max-w-xl text-sm text-muted-foreground">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-teal-800 dark:text-teal-300">MuseTera · Relatórios</p>
+              <h2 className="mt-2 text-2xl font-bold tracking-tight text-teal-950 dark:text-teal-100 sm:text-3xl">Relatório de Musicoterapia</h2>
+              <p className="mt-2 max-w-xl text-base leading-relaxed text-slate-700 dark:text-slate-200">
                 Preencha as etapas e confira a revisão final antes de emitir o documento.
               </p>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <Button variant="outline" onClick={handleSaveReport} disabled={isSaving} className="gap-2 border-border">
-                <Save className="h-4 w-4" />
+            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap">
+              <Button variant="outline" onClick={handleSaveReport} disabled={isSaving} className="min-h-12 gap-2 rounded-xl border-teal-600 bg-card font-semibold text-teal-900 hover:bg-teal-50 dark:text-teal-100 dark:hover:bg-teal-950">
+                <Save aria-hidden="true" className="h-4 w-4" />
                 {isSaving ? 'Salvando...' : 'Salvar rascunho'}
               </Button>
               <Button onClick={() => void handleExportPDF()} disabled={isExporting}
-                className="gap-2 bg-teal-700 font-semibold text-white hover:bg-teal-800">
-                <Download className="h-4 w-4" />
+                className="min-h-12 gap-2 rounded-xl bg-teal-800 px-5 font-semibold text-white hover:bg-teal-900 focus-visible:ring-2 focus-visible:ring-teal-600">
+                <Download aria-hidden="true" className="h-4 w-4" />
                 {isExporting ? 'Gerando PDF...' : 'Exportar PDF'}
               </Button>
             </div>
@@ -1050,14 +1050,14 @@ export default function MusicoterapiaPage() {
 
           {/* Main Content */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 lg:space-y-6">
-            <TabsList className="grid w-full grid-cols-2 h-11 sm:h-12 p-1 bg-card/60 backdrop-blur-xl border border-border/60 rounded-xl">
-              <TabsTrigger value="wizard" className="flex items-center gap-2 text-sm sm:text-base rounded-lg data-[state=active]:bg-teal-700 data-[state=active]:text-white data-[state=active]:shadow-md">
-                <Wand2 className="h-4 w-4" />
+            <TabsList className="grid w-full grid-cols-2 min-h-14 h-auto p-1 bg-muted/60 border border-border rounded-xl">
+              <TabsTrigger value="wizard" className="flex min-h-12 items-center justify-center gap-2 text-sm sm:text-base font-semibold rounded-lg data-[state=active]:bg-teal-800 data-[state=active]:text-white data-[state=active]:shadow-sm focus-visible:ring-2 focus-visible:ring-teal-600">
+                <Wand2 aria-hidden="true" className="h-4 w-4" />
                 <span className="hidden sm:inline">Assistente de Criação</span>
                 <span className="sm:hidden">Assistente</span>
               </TabsTrigger>
-              <TabsTrigger value="preview" className="flex items-center gap-2 text-sm sm:text-base rounded-lg data-[state=active]:bg-teal-700 data-[state=active]:text-white data-[state=active]:shadow-md">
-                <FileText className="h-4 w-4" />
+              <TabsTrigger value="preview" className="flex min-h-12 items-center justify-center gap-2 text-sm sm:text-base font-semibold rounded-lg data-[state=active]:bg-teal-800 data-[state=active]:text-white data-[state=active]:shadow-sm focus-visible:ring-2 focus-visible:ring-teal-600">
+                <FileText aria-hidden="true" className="h-4 w-4" />
                 <span className="hidden sm:inline">Visualização</span>
                 <span className="sm:hidden">Preview</span>
               </TabsTrigger>
@@ -1083,7 +1083,7 @@ export default function MusicoterapiaPage() {
             </TabsContent>
 
             <TabsContent value="preview" className="space-y-6">
-              <Card className="rounded-xl">
+              <Card className="rounded-2xl border-border shadow-sm">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <FileText className="h-5 w-5 text-primary" />
@@ -1122,14 +1122,18 @@ export default function MusicoterapiaPage() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center space-x-4">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <div className="relative flex-1 space-y-2">
+                  <label htmlFor="musicoterapia-report-search" className="block text-sm font-semibold text-foreground">Buscar relatório</label>
+                  <div className="relative">
+                  <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                   <Input
+                    id="musicoterapia-report-search"
                     placeholder="Buscar por paciente ou data..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
+                    className="h-12 rounded-xl pl-10 text-base"
                   />
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -1160,14 +1164,14 @@ export default function MusicoterapiaPage() {
           ) : (
             <div className="grid gap-4">
               {filteredReports.map((report) => (
-                <Card key={report.id} className="hover:shadow-lg transition-shadow rounded-xl">
+                <Card key={report.id} className="rounded-xl border-border shadow-sm transition-shadow hover:shadow-md">
                   <CardContent className="p-4 sm:p-6">
                     <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
                       {/* Patient info */}
                       <div className="space-y-2 min-w-0">
                         <div className="flex items-center space-x-2 flex-wrap gap-y-1">
                           <Music className="h-5 w-5 text-primary shrink-0" />
-                          <h3 className="font-semibold truncate">
+                          <h3 className="min-w-0 break-words text-base font-bold leading-snug">
                             {report.patient?.name || 'Paciente não identificado'}
                           </h3>
                           <Badge variant="secondary" className="text-xs shrink-0">Musicoterapia</Badge>
@@ -1186,7 +1190,7 @@ export default function MusicoterapiaPage() {
                             setSelectedReport(report);
                             setShowViewDialog(true);
                           }}
-                          className="text-xs sm:text-sm"
+                          className="min-h-11 rounded-lg text-sm"
                         >
                           <Eye className="h-4 w-4 mr-1" />
                           Ver
@@ -1195,7 +1199,7 @@ export default function MusicoterapiaPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => handleEditReport(report)}
-                          className="text-xs sm:text-sm"
+                          className="min-h-11 rounded-lg text-sm"
                         >
                           <Edit className="h-4 w-4 mr-1" />
                           Nova versão
@@ -1205,7 +1209,7 @@ export default function MusicoterapiaPage() {
                           size="sm"
                           onClick={() => handleDownloadReportPDF(report)}
                           disabled={isExporting}
-                          className="text-xs sm:text-sm"
+                          className="min-h-11 rounded-lg text-sm"
                         >
                           {isExporting ? (
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-1" />
@@ -1218,7 +1222,7 @@ export default function MusicoterapiaPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => handleDeleteClick(report)}
-                          className="text-xs sm:text-sm text-destructive hover:text-destructive"
+                          className="min-h-11 rounded-lg text-sm text-destructive hover:text-destructive"
                         >
                           <Trash2 className="h-4 w-4 mr-1" />
                           Excluir

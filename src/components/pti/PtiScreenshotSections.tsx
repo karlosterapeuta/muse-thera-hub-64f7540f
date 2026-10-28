@@ -5,9 +5,9 @@ import { PtiSpecialtyCatalog, type PtiCatalogSuggestion } from "./PtiSpecialtyCa
 import { PTI_MUSICOTHERAPY_REFERENCES } from "./ptiReferences";
 import { type PtiContent, type PtiFormulario, type PtiObjetivoEspecifico, type PtiMeta, createDefaultPtiFormulario, PTI_ESTRATEGIAS, PTI_RECURSOS, PTI_FREQUENCIA, PTI_OPTS, PTI_PROFISSIONAIS, PTI_CRITERIOS_EVOLUCAO } from "@/types/pti";
 
-export const fieldClass = "mt-1 w-full min-h-10 rounded border border-input bg-background px-3 py-2 text-sm font-normal normal-case tracking-normal text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring";
-export const buttonClass = "inline-flex min-h-9 items-center justify-center gap-1.5 rounded border border-border bg-card px-3 py-2 text-xs font-semibold text-foreground hover:bg-muted disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-ring";
-export const labelClass = "block min-w-0 text-[11px] font-bold uppercase tracking-wider text-muted-foreground";
+export const fieldClass = "mt-2 w-full min-h-12 rounded-xl border border-input bg-background px-3 py-2.5 text-base font-normal normal-case tracking-normal text-foreground placeholder:text-muted-foreground transition-colors hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-60";
+export const buttonClass = "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary";
+export const labelClass = "block min-w-0 text-sm font-semibold leading-relaxed text-foreground";
 
 export function TextInput({label,value,onChange,readOnly=false,type="text",placeholder}: {label:string;value?:string;onChange?:(value:string)=>void;readOnly?:boolean;type?:string;placeholder?:string}) {
   return <label className={labelClass}>{label}<input className={fieldClass+(readOnly?" bg-muted":"")} value={value||""} type={type} placeholder={placeholder} readOnly={readOnly} onChange={e=>onChange?.(e.target.value)} /></label>;
@@ -16,7 +16,7 @@ export function TextArea({label,value,onChange,rows=3,placeholder}:{label:string
   return <label className={labelClass}>{label}<textarea className={fieldClass+" resize-y"} rows={rows} value={value||""} placeholder={placeholder} onChange={e=>onChange(e.target.value)} /></label>;
 }
 export function CheckBox({label,checked,onChange}:{label:string;checked:boolean;onChange:(v:boolean)=>void}) {
-  return <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-foreground"><input type="checkbox" className="h-4 w-4 accent-primary" checked={checked} onChange={e=>onChange(e.target.checked)} />{label}</label>;
+  return <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-2 text-sm font-medium leading-relaxed text-foreground transition-colors hover:bg-muted/60"><input type="checkbox" className="h-5 w-5 shrink-0 accent-primary focus-visible:ring-2 focus-visible:ring-primary" checked={checked} onChange={e=>onChange(e.target.checked)} />{label}</label>;
 }
 const cidOptions = [
   ["F84.0", "Autismo infantil (CID-10)"],
@@ -102,12 +102,12 @@ function MedicationMultiSelect({value,onChange}:{value:string;onChange:(v:string
   </div>;
 }
 export function SectionBar({title,detail,actions,children,id}:{title:string;detail?:string;actions?:React.ReactNode;children:React.ReactNode;id?:string}) {
-  return <section id={id} className="overflow-hidden rounded border border-border bg-card shadow-sm">
-    <div className="flex flex-wrap items-center justify-between gap-2 bg-primary px-4 py-3 text-primary-foreground">
-      <h2 className="text-[13px] font-extrabold uppercase tracking-wider">{title} {detail&&<span className="ml-2 text-[11px] font-normal normal-case tracking-normal text-primary-foreground">{detail}</span>}</h2>
+  return <section id={id} className="scroll-mt-28 overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-teal-200 bg-teal-50/70 px-4 py-4 dark:border-teal-900 dark:bg-teal-950/40 sm:px-6">
+      <h2 className="border-l-4 border-teal-700 pl-3 text-base font-bold leading-snug text-teal-950 dark:text-teal-100 sm:text-lg">{title} {detail&&<span className="ml-2 inline-block rounded-full bg-teal-100 px-2.5 py-1 align-middle text-xs font-semibold text-teal-900 dark:bg-teal-900 dark:text-teal-100">{detail}</span>}</h2>
       {actions}
     </div>
-    <div className="space-y-4 p-4">{children}</div>
+    <div className="space-y-5 p-4 sm:p-6">{children}</div>
   </section>;
 }
 
@@ -160,9 +160,15 @@ export function PtiScreenshotSections({content,update,importing,onImport,profess
     ].filter(Boolean);
     if(parts.length)uf({resumoClinico:parts.join("\n\n")});
   };
-  return <div className="space-y-4" role="tabpanel">
-    <p className="rounded border border-primary/25 bg-primary/10 px-4 py-3 text-xs text-foreground">Preencha os dados abaixo. Os objetivos do catálogo são sugestões editáveis. Antes de emitir o PDF, confira os dados e salve uma versão.</p>
-    <SectionBar title="Dados do paciente (complementares)">
+  return <div className="space-y-5">
+    <nav aria-label="Acesso rápido às seções do PTI" className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
+      <p className="mb-3 text-sm font-bold text-foreground">Ir para uma seção</p>
+      <div className="flex flex-wrap gap-2">
+        {[["pti-paciente","Paciente"],["pti-historico","História clínica"],["pti-objetivos","Objetivos e metas"],["pti-comportamentos","Comportamentos"],["pti-intervencao","Intervenção"],["pti-referencias","Referências"],["pti-devolutiva","Devolutiva"]].map(([id,label])=><a key={id} href={`#${id}`} className="inline-flex min-h-11 items-center rounded-full border border-teal-200 bg-teal-50 px-3.5 py-2 text-sm font-semibold text-teal-900 transition-colors hover:border-teal-600 hover:bg-teal-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 dark:border-teal-800 dark:bg-teal-950 dark:text-teal-100 dark:hover:bg-teal-900">{label}</a>)}
+      </div>
+    </nav>
+    <p className="rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm leading-relaxed text-foreground">Preencha os dados abaixo. Os objetivos do catálogo são sugestões editáveis. Antes de emitir o PDF, confira os dados e salve uma versão.</p>
+    <SectionBar id="pti-paciente" title="Dados do paciente (complementares)">
       <div className="grid gap-4 sm:grid-cols-2">
         <TextInput label="Nome" value={ident.nome} readOnly />
         <TextInput label="Data de nascimento" value={ident.nascimento} readOnly type="date" />
@@ -178,7 +184,7 @@ export function PtiScreenshotSections({content,update,importing,onImport,profess
         </select></label>
       </div>
     </SectionBar>
-    <SectionBar title="Breve história clínica" actions={<button type="button" onClick={synthesize} className={buttonClass}>Montar síntese</button>}>
+    <SectionBar id="pti-historico" title="Breve história clínica" actions={<button type="button" onClick={synthesize} className={buttonClass}>Montar síntese</button>}>
       <div className="grid gap-4 sm:grid-cols-2">
         <TextInput label="Unidade / local" value={form.unidade} onChange={v=>uf({unidade:v})} />
         <MedicationMultiSelect value={form.medicacoesAtuais} onChange={v=>uf({medicacoesAtuais:v})} />
@@ -200,7 +206,7 @@ export function PtiScreenshotSections({content,update,importing,onImport,profess
       <GuidedField index={2} value={form.comportamentoManejo} onChange={v=>uf({comportamentoManejo:v})} />
       <TextArea label="Síntese da história clínica — totalmente editável" rows={6} value={form.resumoClinico} onChange={v=>uf({resumoClinico:v})} placeholder="Montar a partir do que foi relatado e registrado. Nenhuma observação será inventada." />
     </SectionBar>
-    <SectionBar title="Objetivos por área" detail="Musicoterapia"
+    <SectionBar id="pti-objetivos" title="Objetivos por área" detail="Musicoterapia"
       actions={<div className="flex gap-2"><button type="button" className={buttonClass} onClick={()=>navigate("/evaluation")}>Abrir avaliação</button><button type="button" onClick={()=>newObj()} className={buttonClass}><Plus className="h-4 w-4" /> Objetivo</button></div>}>
       <button type="button" className="text-xs font-semibold text-primary underline" onClick={()=>setCatalog(v=>!v)}>{catalog?"Ocultar":"Exibir"} catálogo de objetivos clínicos</button>
       {catalog && <PtiSpecialtyCatalog selected={content.objetivosEspecificos.map(o=>o.descricao)} onAdd={newObj} />}
@@ -241,7 +247,7 @@ export function PtiScreenshotSections({content,update,importing,onImport,profess
         <TextInput label="Critério de sucesso" value={m.criterio} onChange={v=>eg(m.id,{criterio:v})} />
       </div>)}
     </SectionBar>
-    <SectionBar title="Comportamentos-problema listados" actions={<div className="flex gap-2">
+    <SectionBar id="pti-comportamentos" title="Comportamentos-problema listados" actions={<div className="flex gap-2">
       <select aria-label="Modelo de comportamento" className="max-w-36 rounded border border-primary/25 bg-primary/90 px-2 text-xs text-primary-foreground" value={behTemplate} onChange={e=>setBehTemplate(e.target.value)}>
         <option value="">Modelos</option>{["Dificuldade em manter foco nas demandas","Dificuldade em aguardar turnos","Resistência à mudança de atividade","Necessidade de apoio em transições"].map(v=><option key={v} value={v}>{v}</option>)}
       </select>
@@ -253,13 +259,13 @@ export function PtiScreenshotSections({content,update,importing,onImport,profess
         <button type="button" className="p-2 text-red-600" aria-label="Remover comportamento" onClick={()=>uf({comportamentosAlvo:form.comportamentosAlvo.filter((_,j)=>i!==j)})}><Trash2 className="h-4 w-4" /></button>
       </div>)}
     </SectionBar>
-    <SectionBar title="Considerações e plano de intervenção" actions={<select aria-label="Modelo para considerações" className="max-w-44 rounded border border-primary/25 bg-primary/90 px-2 text-xs text-primary-foreground" value={textTemplate} onChange={e=>{
+    <SectionBar id="pti-intervencao" title="Considerações e plano de intervenção" actions={<select aria-label="Modelo para considerações" className="max-w-44 rounded border border-primary/25 bg-primary/90 px-2 text-xs text-primary-foreground" value={textTemplate} onChange={e=>{
       const texts:Record<string,string>={continuidade:"Considerar a continuidade do acompanhamento musicoterapêutico de acordo com os objetivos definidos, com reavaliação das metas conforme os registros documentados.",familia:"Articular orientações com a família e demais profissionais, quando pertinente e autorizado, sem presumir resultados ainda não avaliados."};
       setTextTemplate("");if(texts[e.target.value])uf({consideracoes:(form.consideracoes.trim()?form.consideracoes+"\n\n":"")+texts[e.target.value]});
     }}><option value="">Modelos</option><option value="continuidade">Continuidade</option><option value="familia">Integração familiar</option></select>}>
       <TextArea label="Considerações e plano de intervenção" value={form.consideracoes} rows={8} onChange={v=>uf({consideracoes:v})} />
     </SectionBar>
-    <SectionBar title="Referências bibliográficas utilizadas">
+    <SectionBar id="pti-referencias" title="Referências bibliográficas utilizadas">
       <div className="space-y-3 rounded-lg border border-border bg-muted/30 p-4">
         <div>
           <h3 className="text-sm font-semibold text-foreground">Referências bibliográficas utilizadas</h3>
@@ -283,7 +289,7 @@ export function PtiScreenshotSections({content,update,importing,onImport,profess
       </div>
       <TextArea label="Outras referências bibliográficas utilizadas (opcional)" value={form.referencias} rows={3} onChange={v=>uf({referencias:v})} placeholder="Informe outras obras efetivamente consultadas, com autor, título e ano." />
     </SectionBar>
-    <SectionBar title="Devolutiva">
+    <SectionBar id="pti-devolutiva" title="Devolutiva">
       <div className="grid gap-3 sm:grid-cols-2">
         <TextInput label="Data da devolutiva" type="date" value={form.dataDevolutiva} onChange={v=>uf({dataDevolutiva:v})} />
         <TextInput label="Responsável pela entrega" value={form.responsavelDevolutiva} onChange={v=>uf({responsavelDevolutiva:v})} />
