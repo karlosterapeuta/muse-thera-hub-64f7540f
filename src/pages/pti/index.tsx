@@ -20,9 +20,9 @@ import {
 import { toast } from "sonner";
 import { usePtiPlans, useDeletePtiPlan, useDuplicatePtiPlan } from "@/hooks/usePtiPlans";
 import { useProfessionalData } from "@/hooks/useProfessionalData";
-import { generateStaticPDF } from "@/utils/staticPDFGenerator";
+import { generatePtiNativePdf } from "@/utils/ptiNativePdf";
+import { confirmPtiExport } from "@/utils/ptiExportValidation";
 import { imageUrlToBase64 } from "@/utils/imageToBase64";
-import { PtiPDF } from "@/components/pti/PtiPDF";
 import { PtiPlan } from "@/types/pti";
 
 export default function PtiList() {
@@ -70,14 +70,13 @@ export default function PtiList() {
   }, [plans, search, statusFilter]);
 
   const handleDownload = async (plan: PtiPlan) => {
+    if (!confirmPtiExport(plan.content)) return;
     setDownloadingId(plan.id);
     try {
       const signature = (professional?.digital_signature_url ? await imageUrlToBase64(professional.digital_signature_url) : "") || "";
       const stamp = (professional?.digital_stamp_url ? await imageUrlToBase64(professional.digital_stamp_url) : "") || "";
-      await generateStaticPDF(
-        <PtiPDF content={plan.content} professional={professional} signature={signature} stamp={stamp} />,
-        { filename: `PTI-${plan.content.identificacao.nome || "plano"}.pdf`, clinicalPagination: true },
-      );
+      await generatePtiNativePdf({ content: plan.content, professional, signature, stamp,
+        filename: `PTI-${plan.content.identificacao.nome || "plano"}.pdf` });
     } catch {
       toast.error("Erro ao gerar PDF");
     } finally {

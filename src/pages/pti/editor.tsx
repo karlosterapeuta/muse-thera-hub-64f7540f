@@ -27,8 +27,8 @@ import {
   PTI_FREQUENCIA, PTI_CRITERIOS_EVOLUCAO, PtiObjetivoEspecifico, PtiMeta,
 } from "@/types/pti";
 import { formatAgeString } from "@/utils/dateUtils";
-import { generateStaticPDF } from "@/utils/staticPDFGenerator";
-import { PtiPDF } from "@/components/pti/PtiPDF";
+import { generatePtiNativePdf } from "@/utils/ptiNativePdf";
+import { confirmPtiExport } from "@/utils/ptiExportValidation";
 import { PtiContinuousForm } from "@/components/pti/PtiContinuousForm";
 import { imageUrlToBase64 } from "@/utils/imageToBase64";
 import { supabase } from "@/integrations/supabase/client";
@@ -309,6 +309,7 @@ export default function PtiEditor() {
   };
 
   const handleDownloadPDF = async () => {
+    if (!confirmPtiExport(content)) return;
     setDownloading(true);
     try {
       // Nunca exportar conteúdo apenas em memória: confirmar salvamento e versão.
@@ -320,10 +321,8 @@ export default function PtiEditor() {
       const stamp = (content.formulario?.incluirAssinatura !== false && professional?.digital_stamp_url
         ? await imageUrlToBase64(professional.digital_stamp_url)
         : "") || "";
-      await generateStaticPDF(
-        <PtiPDF content={content} professional={professional} signature={signature} stamp={stamp} />,
-        { filename: `PTI-${content.identificacao.nome || "plano"}.pdf`, clinicalPagination: true },
-      );
+      await generatePtiNativePdf({ content, professional, signature, stamp,
+        filename: `PTI-${content.identificacao.nome || "plano"}.pdf` });
     } catch (e: any) {
       toast.error("Erro ao gerar PDF");
     } finally {
