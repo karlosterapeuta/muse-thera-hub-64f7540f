@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff, Mail, Lock, ArrowRight, AlertTriangle } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, ArrowRight, AlertTriangle, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { WelcomeToast } from "./WelcomeToast";
 import { useWelcomeMessage } from "@/hooks/useWelcomeMessage";
@@ -43,10 +43,12 @@ function LoginBrandLogo() {
   }, []);
 
   return (
-    <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center overflow-hidden rounded-full sm:h-28 sm:w-28">
+    <div className="mx-auto mb-5 flex h-24 w-24 items-center justify-center overflow-hidden rounded-full ring-1 ring-emerald-900/10 sm:h-28 sm:w-28">
       <img
         src={transparentLogo || BRAND_LOGO}
         alt="Logotipo MuseTera"
+        width={112}
+        height={112}
         className="h-full w-full rounded-full object-contain"
       />
     </div>
@@ -66,6 +68,7 @@ export default function LoginForm({ onSwitchToPasswordReset, onSwitchToRegister 
   const [userId, setUserId] = useState<string | undefined>(undefined);
   const [showWelcome, setShowWelcome] = useState(false);
   const [showBlockedMessage, setShowBlockedMessage] = useState(false);
+  const [formError, setFormError] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
   const { data: welcomeData } = useWelcomeMessage(userId);
@@ -73,6 +76,7 @@ export default function LoginForm({ onSwitchToPasswordReset, onSwitchToRegister 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isLoading) return;
+    setFormError("");
     setIsLoading(true);
 
     try {
@@ -131,6 +135,7 @@ export default function LoginForm({ onSwitchToPasswordReset, onSwitchToRegister 
       if (error.message?.includes('Invalid login credentials')) {
         description = "Email ou senha incorretos. Verifique suas credenciais e tente novamente.";
       }
+      setFormError(description || "Não foi possível entrar. Confira os dados e tente novamente.");
       toast({
         title: "Falha no login",
         description,
@@ -144,11 +149,12 @@ export default function LoginForm({ onSwitchToPasswordReset, onSwitchToRegister 
   return (
     <>
       <div className="relative w-full min-w-0">
-      <div className="mb-7 text-center">
+      <div className="mb-8 text-center">
         <LoginBrandLogo />
-        <h1 className="text-3xl font-bold tracking-tight text-[#104f49] dark:text-teal-100 sm:text-4xl">Bem-vindo ao MuseTera</h1>
-        <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-          Acesse sua área de trabalho e organize seus atendimentos musicoterapêuticos.
+        <p className="mb-2 text-xs font-bold uppercase tracking-[0.22em] text-teal-800 dark:text-teal-300">Seu espaço profissional</p>
+        <h1 className="text-balance text-3xl font-bold tracking-tight text-[#104f49] dark:text-teal-100 sm:text-4xl">Bem-vindo ao MuseTera</h1>
+        <p className="mx-auto mt-3 max-w-sm text-base leading-relaxed text-slate-600 dark:text-slate-300">
+          Tudo pronto para cuidar de cada evolução musical.
         </p>
       </div>
       
@@ -187,25 +193,37 @@ export default function LoginForm({ onSwitchToPasswordReset, onSwitchToRegister 
       )}
 
       {/* Enhanced Form Card with Glassmorphism */}
-      <div className="relative w-full min-w-0 overflow-hidden rounded-2xl border border-white/80 bg-white/95 p-4 text-slate-900 shadow-2xl shadow-black/30 backdrop-blur-xl animate-scale-in delay-300 sm:rounded-3xl sm:p-7 lg:p-8">
-        <form onSubmit={handleLogin} className="relative space-y-5">
+      <div className="relative w-full min-w-0 overflow-hidden rounded-[24px] border border-emerald-950/10 bg-white p-5 text-slate-900 shadow-[0_24px_70px_-34px_rgba(6,78,59,0.38)] sm:p-8">
+        <div className="mb-7">
+          <h2 className="text-xl font-bold tracking-tight text-slate-900">Acessar minha conta</h2>
+          <p className="mt-1 text-sm text-slate-600">Entre com seu e-mail e sua senha.</p>
+        </div>
+        <form onSubmit={handleLogin} className="relative space-y-5" aria-busy={isLoading}>
+          {formError && (
+            <div role="alert" id="login-error" className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-3 text-sm leading-relaxed text-red-900">
+              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
+              <span>{formError}</span>
+            </div>
+          )}
           {/* Enhanced Email Input */}
           <div className="space-y-2 group">
-            <label htmlFor="email" className="block text-xs sm:text-sm font-semibold text-slate-800 transition-colors group-focus-within:text-teal-800">
+            <label htmlFor="email" className="block text-sm font-semibold text-slate-800 transition-colors group-focus-within:text-teal-800">
               E-mail
             </label>
             <div className="relative">
-              <div className="absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2 transition-all duration-300 group-focus-within:scale-110">
-                <Mail className="text-slate-600 w-4 h-4 md:w-5 md:h-5 transition-colors group-focus-within:text-primary" />
+              <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2">
+                <Mail aria-hidden="true" className="h-5 w-5 text-slate-500" />
               </div>
               <Input
                 id="email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="pl-10 md:pl-12 h-12 sm:h-13 bg-white text-slate-950 placeholder:text-slate-500 border-2 border-slate-300 focus:border-teal-700 transition-all duration-300 focus:ring-4 focus:ring-primary/20 text-base rounded-xl hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5"
+                onChange={(e) => { setEmail(e.target.value); if (formError) setFormError(""); }}
+                className="h-14 rounded-xl border border-slate-300 bg-white pl-12 text-base text-slate-950 placeholder:text-slate-500 transition-colors hover:border-teal-600 focus-visible:border-teal-700 focus-visible:ring-2 focus-visible:ring-teal-700/25"
                 placeholder="seu@email.com"
                 autoComplete="email"
+                aria-invalid={!!formError}
+                aria-describedby={formError ? "login-error" : undefined}
                 required
               />
             </div>
@@ -217,17 +235,19 @@ export default function LoginForm({ onSwitchToPasswordReset, onSwitchToRegister 
               Senha
             </label>
             <div className="relative">
-              <div className="absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2 transition-all duration-300 group-focus-within:scale-110">
-                <Lock className="text-slate-600 w-4 h-4 md:w-5 md:h-5 transition-colors group-focus-within:text-primary" />
+              <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2">
+                <Lock aria-hidden="true" className="h-5 w-5 text-slate-500" />
               </div>
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="pl-10 md:pl-12 pr-10 md:pr-12 h-12 md:h-14 bg-white text-slate-950 placeholder:text-slate-500 border-2 border-slate-300 focus:border-teal-700 transition-all duration-300 focus:ring-4 focus:ring-primary/20 text-sm md:text-base rounded-xl hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5"
+                onChange={(e) => { setPassword(e.target.value); if (formError) setFormError(""); }}
+                className="h-14 rounded-xl border border-slate-300 bg-white pl-12 pr-14 text-base text-slate-950 placeholder:text-slate-500 transition-colors hover:border-teal-600 focus-visible:border-teal-700 focus-visible:ring-2 focus-visible:ring-teal-700/25"
                 placeholder="••••••••"
                 autoComplete="current-password"
+                aria-invalid={!!formError}
+                aria-describedby={formError ? "login-error" : undefined}
                 required
               />
               <button
@@ -235,12 +255,12 @@ export default function LoginForm({ onSwitchToPasswordReset, onSwitchToRegister 
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
                 aria-pressed={showPassword}
-                className="absolute right-3 md:right-4 top-1/2 transform -translate-y-1/2 text-slate-600 hover:text-primary transition-all duration-300 hover:scale-110"
+                className="absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-teal-50 hover:text-teal-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700"
               >
                 {showPassword ? (
-                  <EyeOff className="w-4 h-4 md:w-5 md:h-5" />
+                  <EyeOff aria-hidden="true" className="h-5 w-5" />
                 ) : (
-                  <Eye className="w-4 h-4 md:w-5 md:h-5" />
+                  <Eye aria-hidden="true" className="h-5 w-5" />
                 )}
               </button>
             </div>
@@ -251,15 +271,15 @@ export default function LoginForm({ onSwitchToPasswordReset, onSwitchToRegister 
             <button
               type="button"
               onClick={onSwitchToPasswordReset}
-              className="text-xs sm:text-sm text-teal-800 hover:text-teal-950 transition-all duration-300 font-semibold hover:underline underline-offset-4"
+              className="min-h-11 cursor-pointer rounded-md px-1 text-sm font-semibold text-teal-800 underline-offset-4 transition-colors hover:text-teal-950 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700"
             >
               Esqueceu sua senha?
             </button>
           </div>
 
           {/* Enhanced Gradient Submit Button */}
-          <button type="submit" disabled={isLoading} className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#0f766e] px-4 py-3 text-base font-bold text-white transition-colors hover:bg-[#115e59] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-teal-300 disabled:cursor-wait disabled:opacity-70">
-            {isLoading ? "Entrando..." : <><span>Entrar na plataforma</span><ArrowRight className="h-5 w-5" aria-hidden="true" /></>}
+          <button type="submit" disabled={isLoading} className="flex min-h-14 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-teal-800 px-4 py-3 text-base font-bold text-white shadow-sm transition-colors hover:bg-teal-900 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-teal-300 disabled:cursor-wait disabled:opacity-70">
+            {isLoading ? <><Loader2 className="h-5 w-5 animate-spin motion-reduce:animate-none" aria-hidden="true" />Entrando com segurança...</> : <><span>Entrar na plataforma</span><ArrowRight className="h-5 w-5" aria-hidden="true" /></>}
           </button>
         </form>
 
@@ -270,7 +290,7 @@ export default function LoginForm({ onSwitchToPasswordReset, onSwitchToRegister 
               <button
                 type="button"
                 onClick={onSwitchToRegister}
-                className="text-teal-800 hover:text-teal-950 font-semibold transition-all duration-300 hover:underline underline-offset-4"
+                className="min-h-11 cursor-pointer rounded-md px-1 font-semibold text-teal-800 underline-offset-4 transition-colors hover:text-teal-950 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700"
               >
                 Criar conta
               </button>

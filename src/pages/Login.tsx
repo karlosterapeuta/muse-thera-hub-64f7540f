@@ -252,12 +252,13 @@ export default function Login() {
   };
 
   return (
-    <main className="relative flex min-h-screen min-h-[100dvh] w-full items-center justify-center overflow-x-clip bg-[#f3f8f7] px-3 py-8 text-slate-900 sm:px-6 sm:py-12 dark:bg-[#081b1c]">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(13,148,136,0.10),transparent_55%)]" aria-hidden="true" />
-      <div className="relative z-10 mx-auto w-full max-w-[470px] min-w-0">
+    <main className="relative isolate flex min-h-screen min-h-[100dvh] w-full items-center justify-center overflow-x-hidden bg-[#f2f7f5] px-4 py-8 text-slate-900 sm:px-6 sm:py-12 dark:bg-[#081b1c]">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_12%_10%,rgba(13,148,136,0.11),transparent_42%),radial-gradient(ellipse_at_90%_85%,rgba(21,128,61,0.09),transparent_42%)] dark:opacity-50" aria-hidden="true" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-800 via-teal-500 to-emerald-800" aria-hidden="true" />
+      <div className="relative z-10 mx-auto w-full max-w-[480px] min-w-0">
         {renderForm()}
-        <p className="mt-6 text-center text-xs font-medium text-slate-600 dark:text-slate-300">
-          MuseTera · Gestão profissional em musicoterapia
+        <p className="mt-6 text-center text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+          MuseTera <span aria-hidden="true">·</span> Tecnologia a serviço da musicoterapia
         </p>
       </div>
     </main>
