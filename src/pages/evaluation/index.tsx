@@ -1586,23 +1586,28 @@ export default function Evaluation() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-teal-50/30 to-emerald-50/20 dark:via-teal-950/20 dark:to-background">
-      <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-3 sm:py-4 space-y-3 sm:space-y-4 animate-fade-in">
-        <div className="text-center mb-8 animate-fade-in px-2 sm:px-3">
-          <h1 className="text-3xl sm:text-4xl font-bold text-teal-900 dark:text-teal-100 mb-2">
+    <div className="min-h-screen bg-slate-50/70 dark:bg-background">
+      <div className="w-full max-w-7xl mx-auto px-3 sm:px-5 lg:px-8 py-5 sm:py-8 space-y-5 sm:space-y-6">
+        <header className="relative overflow-hidden rounded-2xl border border-teal-200 bg-gradient-to-br from-white via-emerald-50/70 to-teal-50 px-5 py-7 shadow-sm dark:border-teal-900 dark:from-teal-950/60 dark:via-background dark:to-background sm:px-8 sm:py-9">
+          <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-teal-800 dark:text-teal-300">Avaliação clínica · Musicoterapia</p>
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-teal-950 dark:text-teal-100 mb-2">
             Escala MuseTera
           </h1>
-          <p className="text-base sm:text-lg text-foreground/85 font-medium">
+          <p className="max-w-3xl text-base sm:text-lg leading-relaxed text-slate-700 dark:text-slate-200">
             Avaliação musicoterapêutica funcional com atividades adaptáveis ao perfil autista
           </p>
-          <div className="w-24 h-1 bg-gradient-to-r from-teal-700 to-emerald-600 mx-auto mt-4 rounded-full"></div>
-        </div>
+          <div className="mt-5 flex flex-wrap gap-2 text-xs font-semibold text-teal-900 dark:text-teal-100">
+            <span className="rounded-full border border-teal-200 bg-white/85 px-3 py-1.5 dark:border-teal-800 dark:bg-teal-950/70">128 indicadores observáveis</span>
+            <span className="rounded-full border border-teal-200 bg-white/85 px-3 py-1.5 dark:border-teal-800 dark:bg-teal-950/70">Registro por sessão</span>
+            <span className="rounded-full border border-teal-200 bg-white/85 px-3 py-1.5 dark:border-teal-800 dark:bg-teal-950/70">Comparação longitudinal</span>
+          </div>
+        </header>
         
-        <Card className="bg-card border border-teal-700/15 dark:border-teal-500/20 shadow-sm p-4 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl">
+        <Card className="bg-card border border-teal-700/15 dark:border-teal-500/20 shadow-sm p-4 sm:p-6 lg:p-8 rounded-2xl">
           <div className="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4 sm:gap-6 mb-6 sm:mb-8">
             <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 items-stretch lg:items-center">
-              <div className="p-1 bg-gradient-to-r from-teal-700 to-emerald-600 rounded-2xl">
-                <div className="bg-background rounded-xl p-4 shadow-sm">
+              <div className="rounded-xl border border-teal-200 bg-teal-50/70 p-2 dark:border-teal-800 dark:bg-teal-950/30">
+                <div className="rounded-lg bg-card p-3 shadow-sm">
                   <PatientSelect
                     patients={patients}
                     selectedPatient={selectedPatient}
@@ -1687,7 +1692,7 @@ export default function Evaluation() {
                 </SelectContent>
 
               </Select>
-              <div className="w-full min-w-0 space-y-3 rounded-xl border border-border bg-card p-4 sm:p-5">
+              <div className="w-full min-w-0 space-y-3 rounded-xl border border-border bg-muted/30 p-4 sm:p-5">
                 <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <h3 className="text-sm font-semibold text-foreground">Relatório completo de avaliação</h3>
@@ -1718,7 +1723,7 @@ export default function Evaluation() {
                 </div>
               </div>
 
-              <Button type="button" variant="outline" onClick={startNewEvaluation} disabled={!selectedPatient || isSaving} className="w-full sm:w-auto border-teal-700 text-teal-800 dark:text-teal-200">
+              <Button type="button" variant="outline" onClick={startNewEvaluation} disabled={!selectedPatient || isSaving} className="min-h-11 w-full sm:w-auto border-teal-700 text-teal-800 dark:text-teal-200 focus-visible:ring-2 focus-visible:ring-teal-600">
                 Nova sessão (preservar histórico)
               </Button>
               <TooltipProvider>
@@ -1727,11 +1732,7 @@ export default function Evaluation() {
                     <Button
                       onClick={handleSaveEvaluation}
                       disabled={isSaving || !selectedPatient}
-                      className={`w-full sm:w-auto justify-center flex items-center gap-2 text-white border-0 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 ${
-                        editingEvaluationId 
-                          ? "bg-gradient-to-r from-teal-700 to-emerald-600 hover:from-teal-600 hover:to-teal-600"
-                          : "bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600"
-                      }`}
+                      className="min-h-11 w-full sm:w-auto justify-center flex items-center gap-2 bg-teal-800 text-white border-0 shadow-sm transition-colors hover:bg-teal-900 focus-visible:ring-2 focus-visible:ring-teal-500 disabled:opacity-50"
                     >
                       {isSaving ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -1764,24 +1765,24 @@ export default function Evaluation() {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-            <TabsList className="grid w-full grid-cols-3 bg-background/80 backdrop-blur-sm p-1 sm:p-1.5 rounded-2xl h-auto min-h-[3.5rem] sm:min-h-[4.5rem] border border-teal-200/50 dark:border-teal-800/50 shadow-lg">
+            <TabsList aria-label="Etapas da avaliação" className="grid w-full grid-cols-3 bg-muted/60 p-1 sm:p-1.5 rounded-xl h-auto min-h-[4rem] border border-border shadow-sm">
               <TabsTrigger 
                 value="evaluation" 
-                className="rounded-xl flex flex-col sm:flex-row items-center justify-center text-sm md:text-base font-bold px-1.5 sm:px-3 py-2 sm:py-3 gap-1 sm:gap-2 leading-tight text-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-700 data-[state=active]:to-teal-800 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-teal-300/60 dark:data-[state=active]:ring-teal-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
+                className="min-h-12 rounded-lg flex flex-col sm:flex-row items-center justify-center text-xs sm:text-sm md:text-base font-semibold px-1.5 sm:px-3 py-2 gap-1 sm:gap-2 leading-tight text-center data-[state=active]:bg-teal-800 data-[state=active]:text-white data-[state=active]:shadow-sm focus-visible:ring-2 focus-visible:ring-teal-600 transition-colors hover:bg-muted/80"
               >
                 <ClipboardList className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
                 <span>Escala MuseTera</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="results" 
-                className="rounded-xl flex flex-col sm:flex-row items-center justify-center text-sm md:text-base font-bold px-1.5 sm:px-3 py-2 sm:py-3 gap-1 sm:gap-2 leading-tight text-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-700 data-[state=active]:to-teal-800 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-emerald-300/60 dark:data-[state=active]:ring-emerald-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
+                className="min-h-12 rounded-lg flex flex-col sm:flex-row items-center justify-center text-xs sm:text-sm md:text-base font-semibold px-1.5 sm:px-3 py-2 gap-1 sm:gap-2 leading-tight text-center data-[state=active]:bg-teal-800 data-[state=active]:text-white data-[state=active]:shadow-sm focus-visible:ring-2 focus-visible:ring-teal-600 transition-colors hover:bg-muted/80"
               >
                 <BarChart2 className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
                 <span>Resultados</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="comparison" 
-                className="rounded-xl flex flex-col sm:flex-row items-center justify-center text-sm md:text-base font-bold px-1.5 sm:px-3 py-2 sm:py-3 gap-1 sm:gap-2 leading-tight text-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-700 data-[state=active]:to-emerald-800 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:ring-2 data-[state=active]:ring-teal-300/60 dark:data-[state=active]:ring-teal-400/40 data-[state=active]:scale-[1.02] transition-all duration-300 hover:bg-muted/60"
+                className="min-h-12 rounded-lg flex flex-col sm:flex-row items-center justify-center text-xs sm:text-sm md:text-base font-semibold px-1.5 sm:px-3 py-2 gap-1 sm:gap-2 leading-tight text-center data-[state=active]:bg-teal-800 data-[state=active]:text-white data-[state=active]:shadow-sm focus-visible:ring-2 focus-visible:ring-teal-600 transition-colors hover:bg-muted/80"
               >
                 <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
                 <span>Evolução do Paciente</span>
@@ -1843,50 +1844,49 @@ export default function Evaluation() {
               </div>
 
               {/* Estatísticas da Avaliação Parcial */}
-              <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-lg p-4 mb-6">
-                <h3 className="text-lg font-semibold text-emerald-800 dark:text-emerald-200 mb-2">Status da Avaliação</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{getEvaluatedDomainsCount()}</p>
-                    <p className="text-sm text-emerald-700 dark:text-emerald-300">Domínios Avaliados</p>
-                    <p className="text-xs text-emerald-600 dark:text-emerald-400">de {evaluationDomains.length} total</p>
+              <section aria-labelledby="evaluation-progress-heading" className="mb-6 rounded-2xl border border-teal-200 bg-card p-4 shadow-sm dark:border-teal-800 sm:p-6">
+                <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
+                  <div>
+                    <h3 id="evaluation-progress-heading" className="text-lg font-bold text-teal-950 dark:text-teal-100">Progresso da avaliação</h3>
+                    <p className="text-sm text-muted-foreground">Os indicadores não aplicados não entram na média.</p>
                   </div>
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-teal-600 dark:text-teal-400">{getEvaluatedSubdomainsCount()}</p>
-                    <p className="text-sm text-teal-700 dark:text-teal-300">Subdomínios Avaliados</p>
-                    <p className="text-sm text-teal-800 dark:text-teal-200">
-                      de {evaluationDomains.reduce((acc, domain) => acc + domain.subdomains.length, 0)} total
-                    </p>
+                  <span className="text-lg font-bold tabular-nums text-teal-900 dark:text-teal-100">{overallScore.completionPercentage}% preenchido</span>
+                </div>
+                <div role="progressbar" aria-label="Indicadores preenchidos" aria-valuemin={0} aria-valuemax={100} aria-valuenow={overallScore.completionPercentage} className="mb-5 h-2.5 overflow-hidden rounded-full bg-teal-100 dark:bg-teal-950">
+                  <div className="h-full rounded-full bg-teal-700 transition-[width] duration-300 motion-reduce:transition-none" style={{ width: `${overallScore.completionPercentage}%` }} />
+                </div>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  <div className="rounded-xl border border-border bg-muted/30 p-3 sm:p-4">
+                    <p className="text-2xl font-bold tabular-nums text-teal-900 dark:text-teal-100">{getEvaluatedDomainsCount()}<span className="ml-1 text-sm font-normal text-muted-foreground">/ {evaluationDomains.length}</span></p>
+                    <p className="text-sm font-medium text-foreground">Domínios avaliados</p>
                   </div>
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-teal-600 dark:text-teal-400">
+                  <div className="rounded-xl border border-border bg-muted/30 p-3 sm:p-4">
+                    <p className="text-2xl font-bold tabular-nums text-teal-900 dark:text-teal-100">{getEvaluatedSubdomainsCount()}<span className="ml-1 text-sm font-normal text-muted-foreground">/ {evaluationDomains.reduce((acc, domain) => acc + domain.subdomains.length, 0)}</span></p>
+                    <p className="text-sm font-medium text-foreground">Subdomínios avaliados</p>
+                  </div>
+                  <div className="rounded-xl border border-border bg-muted/30 p-3 sm:p-4">
+                    <p className="text-2xl font-bold tabular-nums text-teal-900 dark:text-teal-100">
                       {calculateOverallScore().percentage}%
                     </p>
-                    <p className="text-sm text-teal-700 dark:text-teal-300">Média dos itens pontuados</p>
-                    <p className="text-xs text-teal-600 dark:text-teal-400">escala MuseTera</p>
+                    <p className="text-sm font-medium text-foreground">Média dos itens pontuados</p>
                   </div>
                 </div>
-                <div className="mt-3 text-center">
-                  <p className="text-sm text-emerald-700 dark:text-emerald-300">
-                    💡 Apenas domínios avaliados impactam na pontuação final
-                  </p>
-                </div>
-              </div>
+              </section>
 
-              <nav aria-label="Navegação por domínios da avaliação" className="mb-5 rounded-xl border border-teal-300 bg-card p-4 dark:border-teal-700">
-                <h3 className="mb-2 text-base font-bold text-foreground">Navegar pela avaliação</h3>
+              <nav aria-label="Navegação por domínios da avaliação" className="mb-5 rounded-2xl border border-teal-200 bg-card p-4 shadow-sm dark:border-teal-800 sm:p-5">
+                <h3 className="mb-2 text-base font-bold text-foreground">Escolha o que deseja avaliar</h3>
                 <p className="mb-3 text-sm text-foreground/85">Selecione o domínio e, se desejar, um subdomínio. As respostas permanecem no rascunho.</p>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div className="space-y-1">
                     <label htmlFor="eval-domain-filter" className="text-sm font-semibold text-foreground">Domínio</label>
-                    <select id="eval-domain-filter" className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600" value={activeDomainFilter} onChange={event => { setActiveDomainFilter(event.target.value); setActiveSubdomainFilter("all"); }}>
+                    <select id="eval-domain-filter" className="min-h-12 w-full rounded-lg border border-input bg-background px-3 text-base text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600" value={activeDomainFilter} onChange={event => { setActiveDomainFilter(event.target.value); setActiveSubdomainFilter("all"); }}>
                       <option value="all">Todos os domínios</option>
                       {evaluationDomains.map(domain => <option key={domain.title} value={domain.title}>{domain.title}</option>)}
                     </select>
                   </div>
                   <div className="space-y-1">
                     <label htmlFor="eval-subdomain-filter" className="text-sm font-semibold text-foreground">Subdomínio</label>
-                    <select id="eval-subdomain-filter" disabled={activeDomainFilter === "all"} className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground disabled:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600" value={activeSubdomainFilter} onChange={event => setActiveSubdomainFilter(event.target.value)}>
+                    <select id="eval-subdomain-filter" disabled={activeDomainFilter === "all"} className="min-h-12 w-full rounded-lg border border-input bg-background px-3 text-base text-foreground disabled:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600" value={activeSubdomainFilter} onChange={event => setActiveSubdomainFilter(event.target.value)}>
                       <option value="all">Todos os subdomínios</option>
                       {evaluationDomains.find(domain => domain.title === activeDomainFilter)?.subdomains.map(subdomain => <option key={subdomain.title} value={subdomain.title}>{subdomain.title}</option>)}
                     </select>
@@ -1895,9 +1895,9 @@ export default function Evaluation() {
                 <p aria-live="polite" className="mt-3 text-sm font-medium text-teal-900 dark:text-teal-100">Progresso geral: {overallScore.evaluatedParameters} de {overallScore.totalParameters} indicadores aplicáveis pontuados · {overallScore.completionPercentage}% preenchido</p>
               </nav>
 
-              {evaluationDomains.filter(domain => activeDomainFilter === "all" || domain.title === activeDomainFilter).map((domain, domainIndex) => (
-                <div key={domainIndex} className="group animate-fade-in" style={{animationDelay: `${domainIndex * 0.1}s`}}>
-                  <Card className={`border border-teal-700/15 dark:border-teal-500/20 shadow-sm p-4 sm:p-6 rounded-2xl bg-card`}>
+              {evaluationDomains.filter(domain => activeDomainFilter === "all" || domain.title === activeDomainFilter).map((domain) => (
+                <div key={domain.title} className="group">
+                  <Card className="border border-teal-700/15 dark:border-teal-500/20 shadow-sm p-4 sm:p-6 rounded-2xl bg-card">
                     <div className="flex flex-wrap items-center mb-5 gap-3">
                       <div className={`text-3xl p-3 rounded-2xl bg-teal-50 dark:bg-teal-950/40`}>
                         {domain.icon}
@@ -1907,11 +1907,11 @@ export default function Evaluation() {
                       {/* Badge indicador de status do domínio */}
                       <div className="ml-auto flex items-center gap-2">
                         {isDomainEvaluated(domain) ? (
-                          <div className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm font-semibold border border-emerald-300">
-                            ✓ Avaliado
+                          <div className="bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-100 px-3 py-1 rounded-full text-sm font-semibold border border-emerald-300 dark:border-emerald-800">
+                            Avaliado
                           </div>
                         ) : (
-                          <div className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm font-medium border border-gray-300">
+                          <div className="bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200 px-3 py-1 rounded-full text-sm font-medium border border-slate-300 dark:border-slate-700">
                             Não Avaliado
                           </div>
                         )}
@@ -1919,8 +1919,8 @@ export default function Evaluation() {
                         <TooltipProvider>
                           <TooltipComponent>
                             <TooltipTrigger asChild>
-                              <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-background/50 rounded-full">
-                                <HelpCircle className="h-5 w-5 text-muted-foreground" />
+                              <Button variant="ghost" size="icon" aria-label={`Informações sobre ${domain.title}`} className="h-11 w-11 hover:bg-background/50 rounded-full focus-visible:ring-2 focus-visible:ring-teal-600">
+                                <HelpCircle aria-hidden="true" className="h-5 w-5 text-muted-foreground" />
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent className="max-w-xs bg-gray-900 text-white border-0">
@@ -1941,7 +1941,6 @@ export default function Evaluation() {
                         "from-teal-700 to-teal-800": { border: "border-l-emerald-600", bg: "bg-gradient-to-r from-teal-50 via-emerald-50 to-teal-50 dark:from-teal-950/30 dark:via-emerald-950/30 dark:to-teal-950/30", headerBg: "bg-gradient-to-r from-teal-600 to-emerald-600", text: "text-teal-800 dark:text-teal-200", badgeBg: "bg-emerald-100 dark:bg-emerald-900/40", badgeText: "text-emerald-700 dark:text-emerald-300", badgeBorder: "border-emerald-300 dark:border-emerald-700", infoBg: "hover:bg-emerald-100 dark:hover:bg-emerald-900/30", infoText: "text-emerald-600 dark:text-emerald-400" },
                         "from-emerald-700 to-teal-800": { border: "border-l-teal-500", bg: "bg-gradient-to-r from-emerald-50 via-teal-50 to-green-50 dark:from-emerald-950/30 dark:via-teal-950/30 dark:to-green-950/30", headerBg: "bg-gradient-to-r from-emerald-600 to-teal-600", text: "text-emerald-800 dark:text-emerald-200", badgeBg: "bg-teal-100 dark:bg-teal-900/40", badgeText: "text-teal-700 dark:text-teal-300", badgeBorder: "border-teal-300 dark:border-teal-700", infoBg: "hover:bg-teal-100 dark:hover:bg-teal-900/30", infoText: "text-teal-600 dark:text-teal-400" },
                         "from-teal-600 to-teal-800": { border: "border-l-teal-700", bg: "bg-gradient-to-r from-teal-50 via-teal-50 to-emerald-50 dark:from-teal-950/30 dark:via-teal-950/30 dark:to-emerald-950/30", headerBg: "bg-gradient-to-r from-teal-700 to-emerald-700", text: "text-teal-800 dark:text-teal-200", badgeBg: "bg-teal-100 dark:bg-teal-900/40", badgeText: "text-teal-700 dark:text-teal-300", badgeBorder: "border-teal-300 dark:border-teal-700", infoBg: "hover:bg-teal-100 dark:hover:bg-teal-900/30", infoText: "text-teal-600 dark:text-teal-400" },
-                        "from-emerald-700 to-teal-800": { border: "border-l-emerald-700", bg: "bg-gradient-to-r from-teal-50 via-teal-50 to-teal-50 dark:from-teal-950/30 dark:via-teal-950/30 dark:to-teal-950/30", headerBg: "bg-gradient-to-r from-teal-600 to-teal-600", text: "text-teal-800 dark:text-teal-200", badgeBg: "bg-teal-100 dark:bg-teal-900/40", badgeText: "text-teal-700 dark:text-teal-300", badgeBorder: "border-teal-300 dark:border-teal-700", infoBg: "hover:bg-teal-100 dark:hover:bg-teal-900/30", infoText: "text-teal-600 dark:text-teal-400" },
                       };
                       const colors = domainColorMap[domain.color] || domainColorMap["from-teal-700 to-emerald-700"];
                       
