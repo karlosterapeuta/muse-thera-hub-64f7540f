@@ -202,8 +202,16 @@ export function PlanStatusCard() {
           {!planData.isUnlimited && (
             <Dialog open={renewOpen} onOpenChange={setRenewOpen}>
               <DialogTrigger asChild>
-                <Button className="min-h-11 gap-2 bg-white text-emerald-900 hover:bg-emerald-50" type="button">
-                  <CreditCard className="h-4 w-4" /> Renovar plano
+                <Button
+                  className="min-h-14 w-full sm:w-auto gap-3 rounded-xl border-2 border-white/80 bg-amber-300 px-5 py-3 text-slate-950 shadow-lg shadow-black/25 transition-colors hover:bg-amber-200 hover:text-slate-950 focus-visible:ring-4 focus-visible:ring-amber-100 dark:bg-amber-300 dark:text-slate-950 dark:hover:bg-amber-200"
+                  type="button"
+                  aria-label="Renovar meu plano MuseTera com Pix ou cartão"
+                >
+                  <CreditCard className="h-6 w-6 shrink-0" aria-hidden="true" />
+                  <span className="flex flex-col items-start leading-tight">
+                    <span className="text-base font-extrabold">Renovar meu plano</span>
+                    <span className="text-xs font-semibold">Pague com Pix ou cartão</span>
+                  </span>
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-lg">
