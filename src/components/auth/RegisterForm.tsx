@@ -2,10 +2,9 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff, Mail, Lock, User, UserPlus, CheckCircle2 } from "lucide-react";
-import { CosmicHeroLogo } from "./CosmicHeroLogo";
+import { Eye, EyeOff, Mail, Lock, User, UserPlus, CheckCircle2, AlertTriangle } from "lucide-react";
+import { LoginBrandLogo } from "./LoginForm";
 import { supabase } from "@/integrations/supabase/client";
-import { GradientButton } from "./GradientButton";
 
 type RegisterFormProps = {
   onSwitchToLogin: () => void;
@@ -19,12 +18,15 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [registered, setRegistered] = useState(false);
+  const [formError, setFormError] = useState("");
   const { toast } = useToast();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError("");
 
     if (password !== confirmPassword) {
+      setFormError("As senhas não coincidem. Confira os dois campos.");
       toast({
         title: "Senhas não coincidem",
         description: "Por favor, verifique se as senhas digitadas são iguais.",
@@ -34,6 +36,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
     }
 
     if (password.length < 6) {
+      setFormError("Utilize uma senha com pelo menos 6 caracteres.");
       toast({
         title: "Senha muito curta",
         description: "A senha deve ter pelo menos 6 caracteres.",
@@ -61,6 +64,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
       if (error.message?.includes("already been registered")) {
         description = "Este email já está cadastrado. Tente fazer login.";
       }
+      setFormError(description || "Não foi possível concluir o cadastro.");
       toast({
         title: "Erro no cadastro",
         description,
@@ -73,22 +77,23 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
 
   if (registered) {
     return (
-      <div className="w-full max-w-sm sm:max-w-md md:max-w-lg animate-fade-in">
-        <div className="text-center mb-6">
-          <CosmicHeroLogo />
+      <div className="w-full min-w-0">
+        <div className="mb-6 text-center">
+          <LoginBrandLogo />
         </div>
-        <div className="relative bg-gradient-to-br from-background/60 via-background/50 to-background/60 backdrop-blur-2xl rounded-3xl shadow-2xl border border-primary/20 p-8 md:p-10 animate-scale-in">
+        <div className="rounded-3xl border border-emerald-950/10 bg-white p-6 text-slate-900 shadow-[0_24px_70px_-34px_rgba(6,78,59,0.38)] sm:p-8">
           <div className="text-center space-y-4">
-            <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-              <CheckCircle2 className="w-8 h-8 text-primary" />
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
+              <CheckCircle2 className="h-8 w-8 text-emerald-800" aria-hidden="true" />
             </div>
-            <h2 className="text-xl font-bold text-foreground">Cadastro Realizado!</h2>
-            <p className="text-muted-foreground text-sm leading-relaxed">
+            <h1 className="text-2xl font-bold text-emerald-950">Cadastro realizado!</h1>
+            <p className="text-base leading-relaxed text-slate-700">
               Sua conta foi criada com sucesso. O administrador precisa liberar seu acesso antes que você possa utilizar o sistema.
             </p>
             <button
+              type="button"
               onClick={onSwitchToLogin}
-              className="text-primary hover:text-primary/80 font-semibold text-sm transition-all hover:underline underline-offset-4"
+              className="inline-flex min-h-11 items-center rounded-lg px-3 font-semibold text-teal-800 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700"
             >
               Voltar ao login
             </button>
@@ -99,37 +104,43 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   }
 
   return (
-    <div className="w-full max-w-sm sm:max-w-md md:max-w-lg animate-fade-in relative">
-      <div className="absolute -top-4 md:-top-6 -left-4 md:-left-6 w-12 md:w-16 h-12 md:h-16 bg-gradient-to-br from-primary/30 to-secondary/30 rounded-full blur-2xl animate-pulse"></div>
-
-      <div className="text-center mb-4 md:mb-6 relative">
-        <CosmicHeroLogo />
-        <p className="text-sm sm:text-base text-muted-foreground animate-fade-in delay-200 font-medium mt-1">
-          Crie sua conta na plataforma
-        </p>
+    <div className="relative w-full min-w-0">
+      <div className="mb-7 text-center">
+        <LoginBrandLogo />
+        <p className="mb-2 text-xs font-bold uppercase tracking-[0.22em] text-teal-800 dark:text-teal-300">Seu espaço profissional</p>
+        <h1 className="text-balance text-3xl font-bold tracking-tight text-[#104f49] dark:text-teal-100 sm:text-4xl">Faça parte do MuseTera</h1>
+        <p className="mx-auto mt-3 max-w-sm text-base leading-relaxed text-slate-600 dark:text-slate-300">Organize seus atendimentos e acompanhe cada evolução musical.</p>
       </div>
 
-      <div className="relative bg-gradient-to-br from-background/60 via-background/50 to-background/60 backdrop-blur-2xl rounded-3xl md:rounded-[2rem] shadow-2xl border border-primary/20 p-6 sm:p-8 md:p-10 animate-scale-in delay-300 overflow-hidden">
-        <div className="absolute -top-2 -left-2 w-24 md:w-32 h-24 md:h-32 bg-gradient-to-br from-primary/30 to-transparent rounded-tl-3xl blur-2xl"></div>
-        <div className="absolute -bottom-2 -right-2 w-24 md:w-32 h-24 md:h-32 bg-gradient-to-tl from-secondary/30 to-transparent rounded-br-3xl blur-2xl"></div>
-
-        <form onSubmit={handleRegister} className="space-y-4 md:space-y-5 relative z-10">
+      <div className="w-full min-w-0 rounded-[24px] border border-emerald-950/10 bg-white p-5 text-slate-900 shadow-[0_24px_70px_-34px_rgba(6,78,59,0.38)] sm:p-8">
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-slate-900">Criar minha conta</h2>
+          <p className="mt-1 text-sm text-slate-600">Preencha os dados para começar.</p>
+        </div>
+        <form onSubmit={handleRegister} className="space-y-5" aria-busy={isLoading}>
+          {formError && (
+            <div id="register-error" role="alert" className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-900">
+              <AlertTriangle className="h-5 w-5 shrink-0" aria-hidden="true" />
+              <span>{formError}</span>
+            </div>
+          )}
           {/* Name */}
           <div className="space-y-2 group">
-            <label htmlFor="reg-name" className="block text-xs sm:text-sm font-semibold text-foreground">
+            <label htmlFor="reg-name" className="block text-sm font-semibold text-slate-800">
               Nome completo
             </label>
             <div className="relative">
-              <div className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2">
-                <User className="text-muted-foreground w-4 h-4 md:w-5 md:h-5 group-focus-within:text-primary transition-colors" />
+              <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2">
+                <User className="h-5 w-5 text-slate-500" aria-hidden="true" />
               </div>
               <Input
                 id="reg-name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="pl-10 md:pl-12 h-12 md:h-14 bg-background/60 backdrop-blur-sm border-2 border-primary/20 focus:border-primary rounded-xl text-sm md:text-base"
-                placeholder="Seu nome"
+                className="h-14 rounded-xl border border-slate-300 bg-white pl-12 text-base text-slate-950 placeholder:text-slate-500 focus-visible:border-teal-700 focus-visible:ring-2 focus-visible:ring-teal-700/25"
+                placeholder="Seu nome completo"
+                autoComplete="name"
                 required
               />
             </div>
@@ -137,20 +148,21 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
 
           {/* Email */}
           <div className="space-y-2 group">
-            <label htmlFor="reg-email" className="block text-xs sm:text-sm font-semibold text-foreground">
+            <label htmlFor="reg-email" className="block text-sm font-semibold text-slate-800">
               E-mail
             </label>
             <div className="relative">
-              <div className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2">
-                <Mail className="text-muted-foreground w-4 h-4 md:w-5 md:h-5 group-focus-within:text-primary transition-colors" />
+              <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2">
+                <Mail className="h-5 w-5 text-slate-500" aria-hidden="true" />
               </div>
               <Input
                 id="reg-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="pl-10 md:pl-12 h-12 md:h-14 bg-background/60 backdrop-blur-sm border-2 border-primary/20 focus:border-primary rounded-xl text-sm md:text-base"
+                className="h-14 rounded-xl border border-slate-300 bg-white pl-12 text-base text-slate-950 placeholder:text-slate-500 focus-visible:border-teal-700 focus-visible:ring-2 focus-visible:ring-teal-700/25"
                 placeholder="seu@email.com"
+                autoComplete="email"
                 required
               />
             </div>
@@ -158,58 +170,64 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
 
           {/* Password */}
           <div className="space-y-2 group">
-            <label htmlFor="reg-password" className="block text-xs sm:text-sm font-semibold text-foreground">
+            <label htmlFor="reg-password" className="block text-sm font-semibold text-slate-800">
               Senha
             </label>
             <div className="relative">
-              <div className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2">
-                <Lock className="text-muted-foreground w-4 h-4 md:w-5 md:h-5 group-focus-within:text-primary transition-colors" />
+              <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2">
+                <Lock className="h-5 w-5 text-slate-500" aria-hidden="true" />
               </div>
               <Input
                 id="reg-password"
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="pl-10 md:pl-12 pr-10 md:pr-12 h-12 md:h-14 bg-background/60 backdrop-blur-sm border-2 border-primary/20 focus:border-primary rounded-xl text-sm md:text-base"
+                className="h-14 rounded-xl border border-slate-300 bg-white pl-12 pr-14 text-base text-slate-950 placeholder:text-slate-500 focus-visible:border-teal-700 focus-visible:ring-2 focus-visible:ring-teal-700/25"
                 placeholder="Mínimo 6 caracteres"
+                autoComplete="new-password"
+                minLength={6}
+                aria-describedby="register-password-hint"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 md:right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors"
+                aria-label={showPassword ? "Ocultar senhas" : "Mostrar senhas"}
+                aria-pressed={showPassword}
+                className="absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-lg text-slate-600 hover:bg-teal-50 hover:text-teal-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700"
               >
-                {showPassword ? <EyeOff className="w-4 h-4 md:w-5 md:h-5" /> : <Eye className="w-4 h-4 md:w-5 md:h-5" />}
+                {showPassword ? <EyeOff className="h-5 w-5" aria-hidden="true" /> : <Eye className="h-5 w-5" aria-hidden="true" />}
               </button>
             </div>
+            <p id="register-password-hint" className="text-xs text-slate-600">Use pelo menos 6 caracteres. Evite senhas utilizadas em outros serviços.</p>
           </div>
 
           {/* Confirm Password */}
           <div className="space-y-2 group">
-            <label htmlFor="reg-confirm" className="block text-xs sm:text-sm font-semibold text-foreground">
+            <label htmlFor="reg-confirm" className="block text-sm font-semibold text-slate-800">
               Confirmar senha
             </label>
             <div className="relative">
-              <div className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2">
-                <Lock className="text-muted-foreground w-4 h-4 md:w-5 md:h-5 group-focus-within:text-primary transition-colors" />
+              <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2">
+                <Lock className="h-5 w-5 text-slate-500" aria-hidden="true" />
               </div>
               <Input
                 id="reg-confirm"
                 type={showPassword ? "text" : "password"}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="pl-10 md:pl-12 h-12 md:h-14 bg-background/60 backdrop-blur-sm border-2 border-primary/20 focus:border-primary rounded-xl text-sm md:text-base"
+                className="h-14 rounded-xl border border-slate-300 bg-white pl-12 text-base text-slate-950 placeholder:text-slate-500 focus-visible:border-teal-700 focus-visible:ring-2 focus-visible:ring-teal-700/25"
                 placeholder="Repita a senha"
+                autoComplete="new-password"
                 required
               />
             </div>
           </div>
 
-          <GradientButton
+          <button
             type="submit"
             disabled={isLoading}
-            isLoading={isLoading}
-            className="w-full h-12 md:h-14 font-bold rounded-xl text-sm md:text-base"
+            className="flex min-h-14 w-full items-center justify-center gap-2 rounded-xl bg-teal-800 px-4 py-3 text-base font-bold text-white shadow-sm hover:bg-teal-900 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-teal-300 disabled:cursor-wait disabled:opacity-70"
           >
             {!isLoading && (
               <>
@@ -218,16 +236,16 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
               </>
             )}
             {isLoading && <span>Criando conta...</span>}
-          </GradientButton>
+          </button>
         </form>
 
-        <div className="mt-6 text-center relative z-10">
-          <p className="text-sm text-muted-foreground">
+        <div className="mt-6 text-center">
+          <p className="text-sm text-slate-700">
             Já tem uma conta?{" "}
             <button
               type="button"
               onClick={onSwitchToLogin}
-              className="text-primary hover:text-primary/80 font-semibold transition-all hover:underline underline-offset-4"
+              className="inline-flex min-h-11 items-center rounded-md px-1 font-semibold text-teal-800 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700"
             >
               Fazer login
             </button>
