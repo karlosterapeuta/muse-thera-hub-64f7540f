@@ -1,12 +1,37 @@
-import { Calendar, Clock, Infinity, AlertCircle } from "lucide-react";
+import { Calendar, Clock, Infinity, AlertCircle, CreditCard } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export function PlanStatusCard() {
+  const [renewOpen, setRenewOpen] = useState(false);
+  const [processingPlan, setProcessingPlan] = useState<string | null>(null);
+
+  const renew = async (planCode: string) => {
+    setProcessingPlan(planCode);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-plan-renewal', {
+        body: { planCode },
+      });
+      if (error || !data?.checkoutUrl) throw new Error(data?.error || 'Não foi possível iniciar o pagamento.');
+      const checkoutUrl = new URL(data.checkoutUrl);
+      if (checkoutUrl.protocol !== 'https:' || !['mercadopago.com.br', 'www.mercadopago.com.br', 'mercadopago.com', 'www.mercadopago.com'].includes(checkoutUrl.hostname)) {
+        throw new Error('Endereço de pagamento inválido');
+      }
+      window.location.assign(checkoutUrl.toString());
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Falha ao iniciar renovação.');
+    } finally {
+      setProcessingPlan(null);
+    }
+  };
 
   const { data: planData, isLoading } = useQuery({
     queryKey: ["user-plan-status"],
@@ -173,6 +198,39 @@ export function PlanStatusCard() {
                 Restam <strong className="text-yellow-200">{planData.daysRemaining}</strong> {planData.daysRemaining === 1 ? "dia" : "dias"}
               </span>
             </div>
+          )}
+          {!planData.isUnlimited && (
+            <Dialog open={renewOpen} onOpenChange={setRenewOpen}>
+              <DialogTrigger asChild>
+                <Button className="min-h-11 gap-2 bg-white text-emerald-900 hover:bg-emerald-50" type="button">
+                  <CreditCard className="h-4 w-4" /> Renovar plano
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-lg">
+                <DialogHeader>
+                  <DialogTitle>Renovar meu plano MuseTera</DialogTitle>
+                  <DialogDescription>Escolha o período e pague com Pix ou cartão no ambiente seguro do Mercado Pago. Seu acesso será atualizado após a confirmação.</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-3">
+                  {([
+                    { code: '30d', title: '30 dias', price: 'R$ 34,90' },
+                    { code: '6m', title: '6 meses', price: 'R$ 200,00' },
+                    { code: '12m', title: '12 meses', price: 'R$ 400,00' },
+                  ] as const).map((plan) => (
+                    <div key={plan.code} className="flex items-center justify-between gap-3 rounded-xl border border-emerald-200 p-3 dark:border-emerald-800">
+                      <div>
+                        <p className="font-semibold">{plan.title}</p>
+                        <p className="text-sm text-muted-foreground">{plan.price} · Pix ou cartão</p>
+                      </div>
+                      <Button type="button" disabled={processingPlan !== null} onClick={() => renew(plan.code)}>
+                        {processingPlan === plan.code ? 'Aguarde…' : 'Escolher'}
+                      </Button>
+                    </div>
+                  ))}
+                  <p className="text-xs text-muted-foreground">A conclusão do checkout não confirma o pagamento. O novo prazo será aplicado após a confirmação do Mercado Pago, preservando os dias ainda disponíveis.</p>
+                </div>
+              </DialogContent>
+            </Dialog>
           )}
         </div>
       </CardContent>
