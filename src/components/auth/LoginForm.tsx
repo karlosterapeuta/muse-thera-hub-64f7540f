@@ -11,7 +11,7 @@ import { createPortal } from "react-dom";
 
 const BRAND_LOGO = "/lovable-uploads/musetera-logo-new.png";
 
-function LoginBrandLogo() {
+export function LoginBrandLogo() {
   const [transparentLogo, setTransparentLogo] = useState<string | null>(null);
   useEffect(() => {
     const image = new Image();
