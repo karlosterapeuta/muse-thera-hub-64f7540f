@@ -2,7 +2,7 @@ import { evaluationDomains } from "./utils/domains";
 import { buildEvaluationReportContent, loadEvaluationAnamnesisHeader } from "./utils/savedReport";
 
 import { useState, useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { calculateAgeFromBirthDate } from "@/utils/dateUtils";
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
@@ -151,19 +151,29 @@ const safeDocxFileName = (value: string) => value
   .replace(/[^a-zA-Z0-9_-]+/g, "_");
 
 
-function loadDraft() {
+function loadDraft(key = EVAL_DRAFT_KEY) {
   try {
-    const raw = sessionStorage.getItem(EVAL_DRAFT_KEY);
+    const raw = sessionStorage.getItem(key);
     if (raw) return JSON.parse(raw);
   } catch {}
   return null;
 }
 
 export default function Evaluation() {
+  const [params] = useSearchParams();
+  const requested = params.get("patient_id") || "";
+  return <EvaluationForm key={requested} requested={requested} />;
+}
+
+function EvaluationForm({ requested }: { requested: string }) {
   const navigate = useNavigate();
-  const draft = useMemo(() => loadDraft(), []);
+  const draftKey = requested ? EVAL_DRAFT_KEY + ":" + requested : EVAL_DRAFT_KEY;
+  const draft = useMemo(() => {
+    const stored = loadDraft(draftKey) || (requested ? loadDraft() : null);
+    return !requested || stored?.selectedPatient === requested ? stored : null;
+  }, [draftKey, requested]);
   const [patients, setPatients] = useState<Patient[]>([]);
-  const [selectedPatient, setSelectedPatient] = useState<string>(draft?.selectedPatient || "");
+  const [selectedPatient, setSelectedPatient] = useState<string>("");
   const [selectedEvaluation, setSelectedEvaluation] = useState(draft?.selectedEvaluation || "1");
   const [evaluationDate, setEvaluationDate] = useState<Date>(draft?.evaluationDate ? new Date(draft.evaluationDate) : new Date());
   const [selections, setSelections] = useState<Record<string, string>>(draft?.selections || {});
@@ -185,6 +195,7 @@ export default function Evaluation() {
 
   // Persist draft to sessionStorage on changes
   useEffect(() => {
+    if (!selectedPatient) return;
     const data = {
       selectedPatient,
       selectedEvaluation,
@@ -194,7 +205,7 @@ export default function Evaluation() {
       activeTab,
       editingEvaluationId,
     };
-    sessionStorage.setItem(EVAL_DRAFT_KEY, JSON.stringify(data));
+    sessionStorage.setItem(draftKey, JSON.stringify(data));
   }, [selectedPatient, selectedEvaluation, evaluationDate, selections, observations, activeTab, editingEvaluationId]);
 
   const { generateBlankScalePDF } = useEvaluationPDF();
@@ -299,9 +310,14 @@ export default function Evaluation() {
         
         console.log('Pacientes carregados:', data);
         setPatients(data || []);
-        if (data && data.length > 0) {
-          setSelectedPatient(data[0].id);
-        }
+        const target = requested || draft?.selectedPatient;
+        if (target && data?.some(p => p.id === target)) setSelectedPatient(target);
+        else if (target) {
+          setEditingEvaluationId(null);
+          setSelections({});
+          setObservations({});
+          toast.error("Paciente indisponível. Selecione um paciente para continuar.");
+        } else if (data?.length) setSelectedPatient(data[0].id);
       } catch (error) {
         console.error('Erro ao buscar pacientes:', error);
       } finally {
@@ -1078,6 +1094,10 @@ export default function Evaluation() {
                     selectedPatient={selectedPatient}
                     onSelect={(patientId) => {
                       if (patientId !== selectedPatient) {
+                        if (requested) {
+                          navigate(`/evaluation?patient_id=${encodeURIComponent(patientId)}`);
+                          return;
+                        }
                         setSelectedPatient(patientId);
                         setEditingEvaluationId(null);
                         setSelections({});
@@ -1099,9 +1119,12 @@ export default function Evaluation() {
                       return age ? `${age} anos` : 'Não informada';
                     })()}
                   </p>
+                  <Button asChild variant="link" className="min-h-11 px-0">
+                    <Link to={`/pti?patient_id=${encodeURIComponent(selectedPatient)}`}>Abrir PTI deste paciente</Link>
+                  </Button>
                 </div>
               )}
-              
+
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-bold text-foreground">Data da Avaliação</label>
                 <Popover>

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Plus, Search, FileDown, Trash2, Copy, Stethoscope, ClipboardList,
   Activity, Target, CheckCircle2, TrendingUp, Loader2, Pencil,
@@ -17,7 +17,7 @@ import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
 } from "recharts";
 import { toast } from "sonner";
-import { usePtiPlans, useDeletePtiPlan, useDuplicatePtiPlan } from "@/hooks/usePtiPlans";
+import { usePtiPatients, usePtiPlans, useDeletePtiPlan, useDuplicatePtiPlan } from "@/hooks/usePtiPlans";
 import { useProfessionalData } from "@/hooks/useProfessionalData";
 import { generatePtiNativePdf } from "@/utils/ptiNativePdf";
 import { confirmPtiExport } from "@/utils/ptiExportValidation";
@@ -26,7 +26,13 @@ import { PtiPlan } from "@/types/pti";
 
 export default function PtiList() {
   const navigate = useNavigate();
-  const { data: plans, isLoading } = usePtiPlans();
+  const [params] = useSearchParams();
+  const requested = params.get("patient_id");
+  const { data: allPlans, isLoading } = usePtiPlans();
+  const { data: patients } = usePtiPatients();
+  const patient = patients?.find(p => p.id === requested);
+  const plans = useMemo(() => requested ? allPlans?.filter(p => p.patient_id === requested) : allPlans, [allPlans, requested]);
+  const newPlanPath = requested ? `/pti/novo?patient_id=${encodeURIComponent(requested)}` : "/pti/novo";
   const { data: professional } = useProfessionalData();
   const deleteMutation = useDeletePtiPlan();
   const duplicateMutation = useDuplicatePtiPlan();
@@ -102,9 +108,12 @@ export default function PtiList() {
               <Stethoscope aria-hidden="true" className="h-6 w-6 shrink-0 text-primary" />
               Plano Terapêutico Individual
             </h1>
-            <p className="mt-2 text-base leading-relaxed text-slate-700 dark:text-slate-200">Organize seus planos, metas e reavaliações em um só lugar.</p>
+            <p className="mt-2 text-base leading-relaxed text-slate-700 dark:text-slate-200">{requested ? patient?.name || "Planos do paciente selecionado" : "Organize seus planos, metas e reavaliações em um só lugar."}</p>
           </div>
-          <Button onClick={() => navigate("/pti/novo")} className="min-h-12 shrink-0 gap-2 rounded-xl px-5 font-semibold">
+          {patient && <Button variant="outline" asChild className="min-h-11">
+            <Link to={`/intervention?patient_id=${encodeURIComponent(patient.id)}`}>Abrir intervenção</Link>
+          </Button>}
+          <Button disabled={!!requested && !patient} onClick={() => navigate(newPlanPath)} className="min-h-12 shrink-0 gap-2 rounded-xl px-5 font-semibold">
             <Plus className="h-4 w-4" /> Novo Plano
           </Button>
         </div>
@@ -179,7 +188,7 @@ export default function PtiList() {
                 <CardContent className="p-10 text-center text-muted-foreground">
                   <ClipboardList className="h-10 w-10 mx-auto mb-3 opacity-40" />
                   <p>Nenhum plano encontrado.</p>
-                  <Button variant="outline" className="mt-4 gap-2" onClick={() => navigate("/pti/novo")}>
+                  <Button variant="outline" className="mt-4 gap-2" disabled={!!requested && !patient} onClick={() => navigate(newPlanPath)}>
                     <Plus className="h-4 w-4" /> Criar primeiro plano
                   </Button>
                 </CardContent>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   ArrowLeft, Save, Plus, Trash2, Loader2, Check, FileDown, Stethoscope, ChevronLeft, ChevronRight, FileSearch,
@@ -37,6 +37,10 @@ const uid = () => Math.random().toString(36).slice(2, 10);
 
 export default function PtiEditor() {
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const requested = params.get("patient_id");
+  const initialized = useRef(false);
+  const edited = useRef(false);
   const { id } = useParams();
   const isNew = !id || id === "novo";
   const { data: existing } = usePtiPlan(id);
@@ -83,6 +87,7 @@ export default function PtiEditor() {
   const progress = computePtiProgress(content);
 
   const update = useCallback((patch: Partial<PtiContent>) => {
+    edited.current = true;
     setContent((c) => ({ ...c, ...patch }));
   }, []);
 
@@ -142,6 +147,7 @@ export default function PtiEditor() {
   // Auto-save
   useEffect(() => {
     if (!loadedRef.current && !isNew) return;
+    if (isNew && requested && !edited.current) return;
     if (!content.identificacao.nome || !patientId) return;
     if (autoSaveRef.current) clearTimeout(autoSaveRef.current);
     autoSaveRef.current = setTimeout(() => doSave(true), 2500);
@@ -203,6 +209,13 @@ export default function PtiEditor() {
       }));
     })();
   };
+
+  useEffect(() => {
+    if (!isNew || !requested || !patients || initialized.current) return;
+    initialized.current = true;
+    if (patients.some(p => p.id === requested)) handleSelectPatient(requested);
+    else toast.error("Paciente indisponível. Selecione um paciente para continuar.");
+  }, [isNew, requested, patients]);
 
   // Importa apenas informações efetivamente registradas na anamnese.
   // Não sobrescreve notas já digitadas pelo profissional.

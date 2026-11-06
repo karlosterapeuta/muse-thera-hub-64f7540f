@@ -1,3 +1,4 @@
+import { PatientCareMenu } from "./PatientCareMenu";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2, FileText, Loader2 } from "lucide-react";
@@ -76,6 +77,7 @@ export function PatientCard({ patient, onEdit, onDelete, onViewAnamnesis, onEdit
         </div>
       </CardContent>
       
+      <div className="px-3 pb-3"><PatientCareMenu patient={patient} /></div>
       <CardFooter className="flex items-center justify-between gap-2 p-3 bg-muted/30 border-t border-border/50">
         <div className="flex gap-1">
           <Button 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useProfessionalData } from '@/hooks/useProfessionalData';
@@ -54,6 +54,12 @@ type Patient = {
 };
 
 export default function InterventionForm() {
+  const [params] = useSearchParams();
+  const requested = params.get("patient_id") || "";
+  return <InterventionSession key={requested} requested={requested} />;
+}
+
+function InterventionSession({ requested }: { requested: string }) {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { data: professionalData } = useProfessionalData();
@@ -116,6 +122,8 @@ export default function InterventionForm() {
         }
 
         setPatients(data || []);
+        if (requested && data?.some(p => p.id === requested)) setSelectedPatient(requested);
+        else if (requested) toast({ title: "Paciente indisponível", description: "Selecione um paciente para continuar." });
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
         toast({
@@ -1070,7 +1078,11 @@ export default function InterventionForm() {
             <PatientSelect 
               patients={patients}
               selectedPatient={selectedPatient}
-              onSelect={setSelectedPatient}
+              onSelect={(id) => {
+                if (id === selectedPatient) return;
+                if (selectedPatient && !window.confirm("Trocar de paciente e reiniciar esta intervenção?")) return;
+                navigate(`/intervention?patient_id=${encodeURIComponent(id)}`);
+              }}
               isLoading={isLoadingPatients}
               emptyMessage="Nenhum paciente cadastrado"
             />

@@ -1,3 +1,4 @@
+import { PatientCareMenu } from "./PatientCareMenu";
 import React from 'react';
 import {
   Table,
@@ -111,6 +112,7 @@ export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEdi
               </TableCell>
               <TableCell className="py-4 text-right pr-6">
                 <div className="flex items-center justify-end gap-1">
+                  <PatientCareMenu patient={patient} />
                   {patient.has_anamnesis && (
                     <Button
                       variant="ghost"

@@ -1,4 +1,5 @@
 
+import { useId } from "react";
 import {
   Select,
   SelectContent,
@@ -32,6 +33,7 @@ export function PatientSelect({
   emptyMessage = "Nenhum paciente encontrado",
   label = "Paciente"
 }: PatientSelectProps) {
+  const controlId = useId();
   const hasPatients = Array.isArray(patients) && patients.length > 0;
   
   const getPlaceholderText = () => {
@@ -45,13 +47,13 @@ export function PatientSelect({
 
   return (
     <div>
-      <Label className="font-bold text-gray-900 dark:text-white">{label}</Label>
+      <Label htmlFor={controlId} className="font-bold text-gray-900 dark:text-white">{label}</Label>
       <Select 
         value={selectedPatient || undefined} 
         onValueChange={onSelect}
         disabled={disabled || isLoading || !hasPatients}
       >
-        <SelectTrigger className="w-full bg-background text-foreground font-medium border-teal-600/30">
+        <SelectTrigger id={controlId} className="min-h-11 w-full bg-background text-foreground font-medium border-teal-600/30">
           <SelectValue placeholder={getPlaceholderText()} />
         </SelectTrigger>
         <SelectContent 

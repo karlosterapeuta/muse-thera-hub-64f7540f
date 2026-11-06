@@ -40,6 +40,7 @@ import {
 
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { PatientCareMenu } from "./components/patients/PatientCareMenu";
 import { PatientList } from "./components/patients/PatientList";
 import { PatientCard } from "./components/patients/PatientCard";
 import { AddPatientDialog, EditPatientDialog } from "./components/patients/PatientDialogs";
@@ -400,11 +401,14 @@ export default function PatientsPage() {
             </div>
             <div className="p-6 overflow-y-auto custom-scrollbar">
               {selectedPatient && (
+                <>
+                <PatientCareMenu patient={selectedPatient} />
                 <ViewAnamnesisDialog 
                   patient={selectedPatient} 
                   closeModal={() => setIsViewAnamnesisOpen(false)}
                   onEdit={handleAnamnesisEdit}
                 />
+                </>
               )}
             </div>
           </DialogContent>
