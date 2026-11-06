@@ -1,3 +1,4 @@
+import { downloadSavedEvaluation } from "./utils/savedReport";
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -379,6 +380,7 @@ export default function PatientEvolutionPage() {
               isLoading={false}
               selectedForComparison={selectedForComparison}
               onToggleComparison={handleToggleComparison}
+              onDownloadEvaluation={(evaluation) => downloadSavedEvaluation(evaluation, professional)}
               onLoadEvaluation={handleLoadEvaluation}
               onDeleteEvaluation={handleDeleteEvaluation}
               maxComparisons={MAX_COMPARISONS}

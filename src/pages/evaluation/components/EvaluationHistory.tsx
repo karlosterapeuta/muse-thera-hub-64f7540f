@@ -214,7 +214,7 @@ export function EvaluationHistory({
                           size="sm"
                           variant="outline"
                           onClick={() => handleDownload(evaluation)}
-                          disabled={downloadingId === evaluation.id}
+                          disabled={downloadingId !== null}
                           className="h-8 text-xs bg-green-50 hover:bg-green-100 text-green-700 border-green-200 dark:bg-green-950 dark:hover:bg-green-900 dark:text-green-300 dark:border-green-800"
                         >
                           {downloadingId === evaluation.id ? (
@@ -222,7 +222,7 @@ export function EvaluationHistory({
                           ) : (
                             <Download className="h-3 w-3 mr-1" />
                           )}
-                          PDF
+                          Baixar avaliação individual (PDF)
                         </Button>
                       )}
                       <AlertDialog>
