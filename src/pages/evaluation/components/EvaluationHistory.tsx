@@ -189,6 +189,7 @@ export function EvaluationHistory({
                        {onDownloadEvaluation && (
                          <Button
                            variant="default"
+                           aria-label="Baixar avaliação individual (PDF)"
                            onClick={() => handleDownload(evaluation)}
                            disabled={downloadingId !== null}
                            className="min-h-11 h-auto whitespace-normal text-sm bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-primary"
