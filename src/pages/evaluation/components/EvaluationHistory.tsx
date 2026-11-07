@@ -18,7 +18,8 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Trash2, FileText, Loader2, History, CheckCircle2, Download, Pencil, User } from "lucide-react";
 import { SavedEvaluation } from "@/hooks/useEvaluationStorage";
-import { EVALUATION_TYPES, resolveEvaluationMeta } from "@/utils/evaluationTypes";
+import { EVALUATION_TYPES, getEvaluationTypeMeta } from "@/utils/evaluationTypes";
+import { getEvolutionStageKey, getRecordedEvaluationScore } from "@/utils/evolutionPresentation";
 
 interface EvaluationHistoryProps {
   evaluations: SavedEvaluation[];
@@ -63,19 +64,11 @@ export function EvaluationHistory({
     setDeletingId(null);
   };
 
-  const getScoreColor = (score: number) => {
-    if (score >= 80) return "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200";
-    if (score >= 60) return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
-    if (score >= 40) return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
-    if (score >= 20) return "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200";
-    return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
-  };
-
   if (isLoading) {
     return (
       <Card className="p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
         <div className="flex items-center justify-center h-48">
-          <Loader2 className="h-11 w-11 animate-spin text-purple-600" />
+          <Loader2 className="h-11 w-11 animate-spin text-primary" />
         </div>
       </Card>
     );
@@ -98,14 +91,14 @@ export function EvaluationHistory({
   }
 
   return (
-    <Card className="p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
-          <History className="h-5 w-5 text-purple-600" />
+    <section aria-label="Histórico de avaliações" className="min-w-0">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+        <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+          <History className="h-5 w-5 text-primary" aria-hidden="true" />
           Avaliações Salvas ({evaluations.length})
         </h3>
         {selectedForComparison.length > 0 && (
-          <Badge variant="secondary" className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+          <Badge variant="secondary" className="bg-secondary text-secondary-foreground" aria-live="polite">
             {selectedForComparison.length} selecionada(s)
           </Badge>
         )}
@@ -115,13 +108,13 @@ export function EvaluationHistory({
         <div className="space-y-5">
           {EVALUATION_TYPES.map((typeMeta) => {
             const group = evaluations.filter(
-              (e) => resolveEvaluationMeta(e).key === typeMeta.key
+              (e) => getEvolutionStageKey(e) === typeMeta.key
             );
             if (group.length === 0) return null;
 
             return (
               <div key={typeMeta.key} className="space-y-3">
-                <div className="flex items-center gap-2 sticky top-0 z-10 py-1.5 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
+                <div className="flex flex-wrap items-center gap-2 rounded-lg bg-muted/50 px-3 py-2">
                   <span
                     className="inline-block h-3 w-3 rounded-full"
                     style={{ backgroundColor: typeMeta.color }}
@@ -129,38 +122,39 @@ export function EvaluationHistory({
                   <h4 className="text-sm font-bold text-gray-800 dark:text-gray-100">
                     {typeMeta.label}
                   </h4>
-                  <Badge variant="outline" className={`text-[10px] ${typeMeta.badgeClass}`}>
+                  <Badge variant="outline" className={`text-xs ${typeMeta.badgeClass}`}>
                     {group.length}
                   </Badge>
-                  <span className="text-[11px] text-gray-400 dark:text-gray-500 hidden sm:inline">
+                  <span className="text-sm text-muted-foreground hidden sm:inline">
                     {typeMeta.description}
                   </span>
                 </div>
 
                 {group.map((evaluation) => {
-                  const score = evaluation.content?.overallScore?.percentage || 0;
+                    const score = getRecordedEvaluationScore(evaluation);
                   const isSelected = selectedForComparison.includes(evaluation.id);
                   const canSelect = isSelected || selectedForComparison.length < maxComparisons;
-                  const meta = resolveEvaluationMeta(evaluation);
+                    const meta = getEvaluationTypeMeta(getEvolutionStageKey(evaluation));
 
             return (
               <div
                 key={evaluation.id}
-                className={`p-4 rounded-xl border-2 transition-all duration-200 ${
+                className={`p-3 sm:p-4 rounded-xl border transition-[border-color,background-color] duration-200 ${
                   isSelected
-                    ? "border-purple-500 bg-purple-50 dark:bg-purple-950/30"
-                    : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-purple-300 dark:hover:border-purple-700"
+                    ? "border-primary bg-primary/5"
+                    : "border-border bg-card hover:border-primary/60"
                 }`}
                 style={{ borderLeftWidth: 5, borderLeftColor: meta.color }}
               >
-                <div className="flex items-start gap-3">
-                  <Checkbox
-                    aria-label={`Comparar ${meta.label} de ${format(new Date(evaluation.date), "dd/MM/yyyy")}`}
-                    checked={isSelected}
-                    onCheckedChange={() => canSelect && onToggleComparison(evaluation.id)}
-                    disabled={!canSelect}
-                    className="mt-1"
-                  />
+                <div className="flex items-start gap-2 sm:gap-3">
+                  <label className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-md hover:bg-muted focus-within:ring-2 focus-within:ring-primary">
+                    <Checkbox
+                      aria-label={`Comparar ${meta.label} de ${format(new Date(evaluation.date), "dd/MM/yyyy")}`}
+                      checked={isSelected}
+                      onCheckedChange={() => canSelect && onToggleComparison(evaluation.id)}
+                      disabled={!canSelect}
+                    />
+                  </label>
                   <div className="flex-1 min-w-0">
                     {evaluation.patient_name && (
                       <div className="flex items-center gap-1.5 mb-1">
@@ -184,56 +178,53 @@ export function EvaluationHistory({
                       </Badge>
                     </div>
                     <div className="flex items-center gap-2 mb-2">
-                      <Badge className={getScoreColor(score)}>
-                        Score: {score}%
+                       <Badge className="bg-secondary text-secondary-foreground tabular-nums">
+                         {score === null ? "Sem pontuação registrada" : `Pontuação: ${score}%`}
                       </Badge>
                       <span className="text-xs text-gray-500 dark:text-gray-400">
                         {evaluation.content?.overallScore?.evaluatedParameters || 0} parâmetros avaliados
                       </span>
                     </div>
-                    <div className="flex gap-2 flex-wrap">
+                     <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                       {onDownloadEvaluation && (
+                         <Button
+                           variant="default"
+                           onClick={() => handleDownload(evaluation)}
+                           disabled={downloadingId !== null}
+                           className="min-h-11 h-auto whitespace-normal text-sm bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-primary"
+                         >
+                           {downloadingId === evaluation.id ? (
+                             <Loader2 className="h-4 w-4 animate-spin mr-1" aria-hidden="true" />
+                           ) : (
+                             <Download className="h-4 w-4 mr-1" aria-hidden="true" />
+                           )}
+                           Baixar PDF individual
+                         </Button>
+                       )}
                       <Button
-                        size="sm"
                         variant="outline"
                         onClick={() => onLoadEvaluation(evaluation)}
-                        className="min-h-11 h-auto whitespace-normal text-sm bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-950 dark:hover:bg-blue-900 dark:text-blue-300 dark:border-blue-800"
+                         className="min-h-11 h-auto whitespace-normal text-sm border-border text-foreground hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary"
                       >
-                        <FileText className="h-3 w-3 mr-1" />
-                        Editar Avaliação
+                         <FileText className="h-4 w-4 mr-1" aria-hidden="true" />
+                         Continuar avaliação
                       </Button>
                       {onEditEvaluation && (
                         <Button
-                          size="sm"
                           variant="outline"
                           onClick={() => onEditEvaluation(evaluation)}
-                          className="min-h-11 h-auto whitespace-normal text-sm bg-amber-50 hover:bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-950 dark:hover:bg-amber-900 dark:text-amber-300 dark:border-amber-800"
+                           className="min-h-11 h-auto whitespace-normal text-sm border-border text-foreground hover:bg-muted"
                         >
                           <Pencil className="h-3 w-3 mr-1" />
                           Editar
                         </Button>
                       )}
-                      {onDownloadEvaluation && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleDownload(evaluation)}
-                          disabled={downloadingId !== null}
-                          className="min-h-11 h-auto whitespace-normal text-sm bg-green-50 hover:bg-green-100 text-green-700 border-green-200 dark:bg-green-950 dark:hover:bg-green-900 dark:text-green-300 dark:border-green-800"
-                        >
-                          {downloadingId === evaluation.id ? (
-                            <Loader2 className="h-3 w-3 animate-spin mr-1" />
-                          ) : (
-                            <Download className="h-3 w-3 mr-1" />
-                          )}
-                          Baixar avaliação individual (PDF)
-                        </Button>
-                      )}
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button
-                            size="sm"
                             variant="outline"
-                            className="min-h-11 h-auto whitespace-normal text-sm bg-red-50 hover:bg-red-100 text-red-700 border-red-200 dark:bg-red-950 dark:hover:bg-red-900 dark:text-red-300 dark:border-red-800"
+                             aria-label={`Excluir avaliação de ${format(new Date(evaluation.date), "dd/MM/yyyy")}`}
+                             className="min-h-11 h-11 w-11 border-destructive/30 text-destructive hover:bg-destructive/10"
                           >
                             {deletingId === evaluation.id ? (
                               <Loader2 className="h-3 w-3 animate-spin" />
@@ -265,7 +256,7 @@ export function EvaluationHistory({
                     </div>
                   </div>
                   {isSelected && (
-                    <CheckCircle2 className="h-5 w-5 text-purple-600 flex-shrink-0" />
+                     <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" aria-hidden="true" />
                   )}
                 </div>
               </div>
@@ -283,6 +274,6 @@ export function EvaluationHistory({
           Selecione até {maxComparisons} avaliações para comparar a evolução
         </p>
       )}
-    </Card>
+    </section>
   );
 }

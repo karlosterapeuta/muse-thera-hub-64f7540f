@@ -65,6 +65,7 @@ import { EvolutionTimeline } from "./components/EvolutionTimeline";
 import { AreasAnalysis } from "./components/AreasAnalysis";
 import { TherapeuticSuggestions } from "./components/TherapeuticSuggestions";
 import { getEvaluationTypeMeta } from "@/utils/evaluationTypes";
+import { getEvolutionStageKey, getRecordedEvaluationScore } from "@/utils/evolutionPresentation";
 import { EVALUATION_ACTIVITY_PROTOCOLS } from "./utils/activityProtocols";
 import { AUTISM_DOMAIN_NOTES, presentationParameterLabel } from "./utils/autismGuidance";
 import { TEA_CLINICAL_REVIEWS } from "./utils/clinicalReviews";
@@ -168,6 +169,7 @@ export default function Evaluation() {
 
 function EvaluationForm({ requested }: { requested: string }) {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const draftKey = requested ? EVAL_DRAFT_KEY + ":" + requested : EVAL_DRAFT_KEY;
   const draft = useMemo(() => {
     const stored = loadDraft(draftKey) || (requested ? loadDraft() : null);
@@ -182,13 +184,23 @@ function EvaluationForm({ requested }: { requested: string }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isGeneratingText, setIsGeneratingText] = useState(false);
   const [isGeneratingWord, setIsGeneratingWord] = useState(false);
-  const [activeTab, setActiveTab] = useState(draft?.activeTab || "evaluation");
+  const requestedTab = searchParams.get("tab");
+  const [activeTab, setActiveTab] = useState(
+    requestedTab && ["evaluation", "results", "comparison"].includes(requestedTab)
+      ? requestedTab : draft?.activeTab || "evaluation"
+  );
+  const handleTabChange = (nextTab: string) => {
+    setActiveTab(nextTab);
+    const nextParams = new URLSearchParams(searchParams);
+    if (nextTab === "evaluation") nextParams.delete("tab");
+    else nextParams.set("tab", nextTab);
+    setSearchParams(nextParams, { replace: true });
+  };
   const [onlyPending, setOnlyPending] = useState(false);
   const [activeDomainFilter, setActiveDomainFilter] = useState("Domínio Musical");
   const [activeSubdomainFilter, setActiveSubdomainFilter] = useState("all");
   const [selectedForComparison, setSelectedForComparison] = useState<string[]>([]);
   const [editingEvaluationId, setEditingEvaluationId] = useState<string | null>(draft?.editingEvaluationId || null);
-  const [evolutionPatientId, setEvolutionPatientId] = useState<string | null>(null);
   const [draftLoaded] = useState(!!draft);
   const [pdfPreviewOpen, setPdfPreviewOpen] = useState(false);
   const [pdfPreviewBlob, setPdfPreviewBlob] = useState<Blob | null>(null);
@@ -274,17 +286,16 @@ function EvaluationForm({ requested }: { requested: string }) {
       );
       
       // Extrair tipos únicos de avaliação
-      const uniqueTypes = [...new Set(evals.map(e => 
-        e.content?.evaluationType || e.type || "Avaliação"
-      ))];
+      const uniqueTypes = [...new Set(evals.map(getEvolutionStageKey))];
       
-      // Calcular score médio
-      const scoresWithValue = evals.filter(e => typeof e.content?.overallScore?.percentage === 'number');
-      const avgScore = scoresWithValue.length > 0
-        ? scoresWithValue.reduce((sum, e) => 
-            sum + (e.content?.overallScore?.percentage || 0), 0
-          ) / scoresWithValue.length
-        : 0;
+      // Apenas avaliações efetivamente pontuadas participam da média descritiva.
+      // Ausência de pontuação não é equivalente a uma resposta clínica 0.
+      const recordedScores = evals
+        .map(getRecordedEvaluationScore)
+        .filter((score): score is number => score !== null);
+      const avgScore = recordedScores.length > 0
+        ? recordedScores.reduce((sum, score) => sum + score, 0) / recordedScores.length
+        : null;
       
       // Buscar dados do paciente
       const patient = patients.find(p => p.id === patientId);
@@ -296,7 +307,7 @@ function EvaluationForm({ requested }: { requested: string }) {
         totalEvaluations: evals.length,
         evaluationTypes: uniqueTypes,
         lastEvaluationDate: sortedEvals[0].date,
-        averageScore: Math.round(avgScore),
+        averageScore: avgScore === null ? null : Math.round(avgScore),
       };
     }).sort((a, b) => 
       new Date(b.lastEvaluationDate).getTime() - new Date(a.lastEvaluationDate).getTime()
@@ -513,7 +524,7 @@ function EvaluationForm({ requested }: { requested: string }) {
       }
     }
     setEditingEvaluationId(evaluation.id);
-    setActiveTab("evaluation");
+    handleTabChange("evaluation");
     toast.info("Modo de edição ativado. Faça as alterações e clique em 'Atualizar Avaliação'.");
   };
 
@@ -1198,7 +1209,7 @@ function EvaluationForm({ requested }: { requested: string }) {
             </div>
           </div>
 
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="mb-6">
             <TabsList aria-label="Etapas da avaliação" className="grid w-full grid-cols-3 bg-muted/60 p-1 sm:p-1.5 rounded-xl h-auto min-h-[4rem] border border-border shadow-sm">
               <TabsTrigger 
                 value="evaluation" 
@@ -1863,16 +1874,16 @@ function EvaluationForm({ requested }: { requested: string }) {
             
             <TabsContent value="comparison" className="mt-8">
               {/* Header e Grid de Cards de Pacientes */}
-              <Card className="p-4 sm:p-6 bg-gradient-to-br from-teal-50 via-teal-50 to-emerald-50 dark:from-teal-950/50 dark:via-teal-950/50 dark:to-emerald-950/50 border-0 shadow-xl mb-6">
+              <Card className="mb-6 border-border bg-card p-4 shadow-sm sm:p-6">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="h-12 w-12 rounded-full bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center shadow-lg">
-                    <FileBarChart className="h-6 w-6 text-white" />
+                  <div className="h-12 w-12 shrink-0 rounded-full bg-primary/10 flex items-center justify-center">
+                    <FileBarChart className="h-6 w-6 text-primary" aria-hidden="true" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                    <h2 className="text-xl font-bold text-foreground">
                       Evolução dos Pacientes
                     </h2>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-muted-foreground">
                       {patientsWithEvaluations.length} {patientsWithEvaluations.length === 1 ? "paciente" : "pacientes"} com avaliações salvas
                     </p>
                   </div>
@@ -1881,8 +1892,6 @@ function EvaluationForm({ requested }: { requested: string }) {
                 {/* Grid de Cards - clicar abre a página de evolução do paciente */}
                 <PatientEvaluationCards
                   patientsWithEvaluations={patientsWithEvaluations}
-                  selectedPatientId={evolutionPatientId}
-                  onSelectPatient={(patientId) => navigate(`/evaluation/paciente/${patientId}`)}
                   onDeletePatient={async (patientId) => {
                     const toDelete = allEvaluations.filter((e) => e.patient_id === patientId);
                     for (const ev of toDelete) {

@@ -14,6 +14,11 @@ import { EvolutionTimeline } from "./components/EvolutionTimeline";
 import { EvaluationComparison } from "./components/EvaluationComparison";
 import { AreasAnalysis } from "./components/AreasAnalysis";
 import { EVALUATION_TYPES } from "@/utils/evaluationTypes";
+import {
+  EVOLUTION_STAGE_KEYS,
+  getEvolutionStageKey,
+  selectEvaluationsForEvolution,
+} from "@/utils/evolutionPresentation";
 import { generateSectionPdf } from "@/utils/sectionPdfGenerator";
 import { savePDFToStorage } from "@/utils/pdfStorageUtils";
 import { EvolutionReportPDF } from "@/components/EvolutionReportPDF";
@@ -23,14 +28,6 @@ import museteraLogo from "@/assets/musetera-logo-transparent.png.asset.json";
 import React from "react";
 
 const MAX_COMPARISONS = 4;
-
-// As 4 etapas obrigatórias da jornada de avaliação
-const REQUIRED_TYPES = [
-  "avaliacao_inicial",
-  "avaliacao_progresso",
-  "avaliacao_periodica",
-  "avaliacao_final",
-];
 
 export default function PatientEvolutionPage() {
   const { patientId } = useParams<{ patientId: string }>();
@@ -75,34 +72,11 @@ export default function PatientEvolutionPage() {
 
         setEvaluations(mapped);
         setPatientName(mapped[0]?.patient_name || "Paciente");
-        // Comparação progressiva: seleciona automaticamente uma avaliação de cada
-        // etapa concluída, na ordem Inicial → Progresso → Periódica → Final.
-        // Com apenas a inicial, o sistema aguarda (sem comparação).
-        const byDateAsc = [...mapped].sort(
-          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+        // As etapas salvas usam chaves no banco e números no formulário.
+        // Resolve ambos, escolhendo o registro mais recente de cada etapa.
+        setSelectedForComparison(
+          selectEvaluationsForEvolution(mapped, MAX_COMPARISONS).map((e) => e.id)
         );
-        const stageOrder = [
-          "avaliacao_inicial",
-          "avaliacao_progresso",
-          "avaliacao_periodica",
-          "avaliacao_final",
-        ];
-        const getType = (e: SavedEvaluation) => e.content?.evaluationType || e.type;
-        const autoSelected = stageOrder
-          .map((stage) => {
-            // a mais recente de cada etapa (caso haja repetições)
-            const matches = byDateAsc.filter((e) => getType(e) === stage);
-            return matches[matches.length - 1]?.id;
-          })
-          .filter(Boolean) as string[];
-
-        // Fallback: se nenhuma avaliação tipada for encontrada, usa as disponíveis
-        const finalSelection =
-          autoSelected.length > 0
-            ? autoSelected
-            : (byDateAsc.map((e) => e.id).slice(0, MAX_COMPARISONS) as string[]);
-
-        setSelectedForComparison(finalSelection);
       } catch (err) {
         console.error("Erro ao carregar avaliações:", err);
         toast.error("Erro ao carregar avaliações do paciente");
@@ -165,15 +139,10 @@ export default function PatientEvolutionPage() {
   const hasEnoughForComparison = selectedForComparison.length >= 2;
 
   // Verifica quais dos 4 tipos obrigatórios já foram concluídos
-  const typeOf = (e: SavedEvaluation) =>
-    (e.content?.evaluationType
-      ? EVALUATION_TYPES.find((t) => t.value === e.content?.evaluationType)?.key
-      : e.type) || e.type;
-
-  const completedTypes = REQUIRED_TYPES.filter((key) =>
-    evaluations.some((e) => typeOf(e) === key)
+  const completedTypes = EVOLUTION_STAGE_KEYS.filter((key) =>
+    evaluations.some((e) => getEvolutionStageKey(e) === key)
   );
-  const allFourCompleted = completedTypes.length === REQUIRED_TYPES.length;
+  const allFourCompleted = completedTypes.length === EVOLUTION_STAGE_KEYS.length;
 
   const handleExportReport = async () => {
     if (!allFourCompleted) {
@@ -183,9 +152,9 @@ export default function PatientEvolutionPage() {
     setIsExporting(true);
     try {
       // Pega a avaliação mais recente de cada tipo obrigatório, em ordem cronológica
-      const ordered = REQUIRED_TYPES.map((key) => {
+      const ordered = EVOLUTION_STAGE_KEYS.map((key) => {
         const ofType = evaluations
-          .filter((e) => typeOf(e) === key)
+          .filter((e) => getEvolutionStageKey(e) === key)
           .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         return ofType[0];
       })
@@ -263,26 +232,26 @@ export default function PatientEvolutionPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-6xl">
+    <div className="container mx-auto px-3 py-5 sm:px-4 sm:py-6 max-w-6xl">
       <Button
         variant="ghost"
         onClick={() => navigate("/evaluation?tab=comparison")}
-        className="mb-4 gap-2"
+        className="mb-4 min-h-11 gap-2 focus-visible:ring-2 focus-visible:ring-primary"
       >
         <ArrowLeft className="h-4 w-4" />
         Voltar
       </Button>
 
-      <Card className="p-6 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-indigo-950/50 dark:via-purple-950/50 dark:to-pink-950/50 border-0 shadow-xl mb-6">
+      <Card className="mb-6 border-border bg-card p-4 shadow-sm sm:p-6">
         <div className="flex items-center gap-3">
-          <div className="h-12 w-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
-            <User className="h-6 w-6 text-white" />
+          <div className="h-12 w-12 shrink-0 rounded-full bg-primary/10 flex items-center justify-center">
+            <User className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-xl font-bold text-foreground break-words">
               {isLoading ? "Carregando..." : patientName}
             </h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-muted-foreground">
               {evaluations.length}{" "}
               {evaluations.length === 1 ? "avaliação salva" : "avaliações salvas"}
             </p>
@@ -311,11 +280,11 @@ export default function PatientEvolutionPage() {
       ) : (
         <div className="space-y-6">
           {/* Histórico de Avaliações Salvas */}
-          <Card className="p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-xl">
+          <Card className="border-border bg-card p-4 shadow-sm sm:p-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
               <div>
-                <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1 flex items-center gap-2">
-                  📜 Avaliações Salvas
+                <h2 className="text-lg font-bold text-foreground mb-1 flex items-center gap-2">
+                  Avaliações salvas
                 </h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   Selecione 2 ou mais avaliações para comparar a evolução nos gráficos
@@ -329,16 +298,16 @@ export default function PatientEvolutionPage() {
                 <Button
                   onClick={handleExportReport}
                   disabled={!allFourCompleted || isExporting}
-                  className="gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg"
+                  className="min-h-11 gap-2 bg-primary hover:bg-primary/90 text-primary-foreground focus-visible:ring-2 focus-visible:ring-primary"
                 >
                   {isExporting ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
                     <FileDown className="h-4 w-4" />
                   )}
-                  {isExporting ? "Gerando PDF..." : "Exportar Comparação (4 avaliações) em PDF"}
+                  {isExporting ? "Gerando PDF…" : "Gerar PDF comparativo"}
                 </Button>
-                <span className="text-[11px] text-gray-500 dark:text-gray-400 text-center sm:text-right">
+                <span className="text-sm text-muted-foreground text-center sm:text-right">
                   {allFourCompleted
                     ? "Compara as 4 avaliações em um único relatório"
                     : "Conclua as 4 avaliações para liberar"}
@@ -348,7 +317,7 @@ export default function PatientEvolutionPage() {
 
             {/* Progresso das 4 avaliações obrigatórias */}
             <div className="flex flex-wrap items-center gap-2 mb-4 p-3 rounded-xl bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-700">
-              {REQUIRED_TYPES.map((key) => {
+              {EVOLUTION_STAGE_KEYS.map((key) => {
                 const meta = EVALUATION_TYPES.find((t) => t.key === key)!;
                 const done = completedTypes.includes(key);
                 return (
@@ -357,7 +326,7 @@ export default function PatientEvolutionPage() {
                     className={`flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full border ${
                       done
                         ? "bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800"
-                        : "bg-white text-gray-400 border-gray-200 dark:bg-gray-800 dark:text-gray-500 dark:border-gray-700"
+                        : "bg-card text-foreground/75 border-border"
                     }`}
                   >
                     {done ? (
@@ -389,9 +358,9 @@ export default function PatientEvolutionPage() {
           </Card>
 
           {/* Comparação e Gráficos de Evolução */}
-          <Card className="p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-xl">
-            <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1 flex items-center gap-2">
-              📊 Comparação: Avaliação Inicial → Final
+          <Card className="border-border bg-card p-4 shadow-sm sm:p-6">
+            <h2 className="text-lg font-bold text-foreground mb-1 flex items-center gap-2">
+              Comparação das avaliações selecionadas
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
               Comparação automática entre a primeira e a última avaliação. Você

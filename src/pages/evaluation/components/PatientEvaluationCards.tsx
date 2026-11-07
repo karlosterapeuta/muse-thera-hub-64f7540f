@@ -16,13 +16,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { Link } from "react-router-dom";
+import { getEvaluationTypeMeta } from "@/utils/evaluationTypes";
 import { 
   User, 
   ChevronRight, 
   FileBarChart,
   Calendar,
   TrendingUp,
-  CheckCircle2,
   Trash2
 } from "lucide-react";
 
@@ -33,42 +34,18 @@ export interface PatientWithEvaluations {
   totalEvaluations: number;
   evaluationTypes: string[];
   lastEvaluationDate: string;
-  averageScore: number;
+  averageScore: number | null;
 }
 
 interface PatientEvaluationCardsProps {
   patientsWithEvaluations: PatientWithEvaluations[];
-  selectedPatientId: string | null;
-  onSelectPatient: (patientId: string) => void;
   onDeletePatient?: (patientId: string) => void;
   isLoading: boolean;
 }
 
-const EVALUATION_TYPE_COLORS: Record<string, string> = {
-  "Inicial": "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300",
-  "Progresso": "bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300",
-  "Periódica": "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300",
-  "Final": "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300",
-  "Avaliação": "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
-};
-
-const getScoreColor = (score: number) => {
-  if (score >= 80) return "text-emerald-600 dark:text-emerald-400";
-  if (score >= 60) return "text-blue-600 dark:text-blue-400";
-  if (score >= 40) return "text-amber-600 dark:text-amber-400";
-  return "text-red-600 dark:text-red-400";
-};
-
-const getProgressColor = (score: number) => {
-  if (score >= 80) return "bg-emerald-500";
-  if (score >= 60) return "bg-blue-500";
-  if (score >= 40) return "bg-amber-500";
-  return "bg-red-500";
-};
-
 const getInitials = (name: string) => {
-  return name
-    .split(" ")
+  return (name.trim() || "P")
+    .split(/\s+/)
     .slice(0, 2)
     .map(n => n[0])
     .join("")
@@ -77,8 +54,6 @@ const getInitials = (name: string) => {
 
 export function PatientEvaluationCards({
   patientsWithEvaluations,
-  selectedPatientId,
-  onSelectPatient,
   onDeletePatient,
   isLoading,
 }: PatientEvaluationCardsProps) {
@@ -117,32 +92,18 @@ export function PatientEvaluationCards({
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {patientsWithEvaluations.map((patient) => {
-        const isSelected = selectedPatientId === patient.patientId;
-        
         return (
           <Card
             key={patient.patientId}
-            className={`relative p-5 transition-all duration-300 cursor-pointer hover:shadow-lg ${
-              isSelected
-                ? "ring-2 ring-purple-500 bg-purple-50/50 dark:bg-purple-950/30 shadow-lg scale-[1.02]"
-                : "bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-800"
-            }`}
-            onClick={() => onSelectPatient(patient.patientId)}
+            className="relative flex flex-col border-border bg-card p-4 shadow-sm transition-shadow duration-200 hover:shadow-md sm:p-5"
           >
-            {/* Indicador de seleção */}
-            {isSelected && (
-              <div className="absolute top-3 right-3">
-                <CheckCircle2 className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-              </div>
-            )}
-
             {/* Header com Avatar */}
             <div className="flex items-center gap-3 mb-4">
-              <div className="h-12 w-12 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-md">
+              <div className="h-12 w-12 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
                 {getInitials(patient.patientName)}
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-gray-900 dark:text-white truncate">
+                <h3 className="font-bold text-foreground break-words">
                   {patient.patientName}
                 </h3>
                 {patient.patientAge && (
@@ -155,7 +116,7 @@ export function PatientEvaluationCards({
 
             {/* Estatísticas */}
             <div className="flex items-center gap-2 mb-3">
-              <Badge variant="secondary" className="bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300">
+              <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
                 <FileBarChart className="h-3 w-3 mr-1" />
                 {patient.totalEvaluations} {patient.totalEvaluations === 1 ? "avaliação" : "avaliações"}
               </Badge>
@@ -167,9 +128,9 @@ export function PatientEvaluationCards({
                 <Badge 
                   key={type} 
                   variant="outline"
-                  className={`text-xs ${EVALUATION_TYPE_COLORS[type] || EVALUATION_TYPE_COLORS["Avaliação"]}`}
+                  className={`text-xs ${getEvaluationTypeMeta(type).badgeClass}`}
                 >
-                  {type}
+                  {getEvaluationTypeMeta(type).shortLabel}
                 </Badge>
               ))}
               {patient.evaluationTypes.length > 4 && (
@@ -179,26 +140,29 @@ export function PatientEvaluationCards({
               )}
             </div>
 
-            {/* Score Médio */}
-            <div className="mb-4">
+            {/* Média descritiva, disponível apenas quando há pontuação registrada. */}
+            <div className="mb-4" title="Média descritiva das avaliações com indicadores pontuados; não representa evolução clínica isoladamente.">
               <div className="flex items-center justify-between mb-1.5">
-                <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                  Score Médio
+                <span className="text-sm font-medium text-foreground/80">
+                  Média registrada
                 </span>
-                <span className={`text-sm font-bold ${getScoreColor(patient.averageScore)}`}>
-                  {patient.averageScore}%
-                </span>
+                {patient.averageScore !== null && (
+                  <span className="text-sm font-bold tabular-nums text-foreground">
+                    {patient.averageScore}%
+                  </span>
+                )}
               </div>
-              <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                <div 
-                  className={`h-full rounded-full transition-all duration-500 ${getProgressColor(patient.averageScore)}`}
-                  style={{ width: `${patient.averageScore}%` }}
-                />
-              </div>
+              {patient.averageScore === null ? (
+                <p className="text-sm text-muted-foreground">Sem pontuação registrada</p>
+              ) : (
+                <div role="progressbar" aria-label={`Média registrada de ${patient.patientName}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={patient.averageScore} className="h-2 rounded-full bg-muted overflow-hidden">
+                  <div className="h-full rounded-full bg-primary transition-[width] duration-300 motion-reduce:transition-none" style={{ width: `${patient.averageScore}%` }} />
+                </div>
+              )}
             </div>
 
             {/* Última Avaliação */}
-            <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-4">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
               <Calendar className="h-3.5 w-3.5" />
               <span>
                 Última: {format(new Date(patient.lastEvaluationDate), "dd/MM/yyyy", { locale: ptBR })}
@@ -206,39 +170,31 @@ export function PatientEvaluationCards({
             </div>
 
             {/* Botão Ver Evolução */}
-            <Button
-              variant={isSelected ? "default" : "outline"}
-              size="sm"
-              className={`w-full ${
-                isSelected 
-                  ? "bg-purple-600 hover:bg-purple-700 text-white" 
-                  : "hover:bg-purple-50 dark:hover:bg-purple-950/30"
-              }`}
-              onClick={(e) => {
-                e.stopPropagation();
-                onSelectPatient(patient.patientId);
-              }}
-            >
-              <TrendingUp className="h-4 w-4 mr-2" />
-              {isSelected ? "Selecionado" : "Ver Evolução"}
-              <ChevronRight className="h-4 w-4 ml-auto" />
+            <Button asChild className="mt-auto min-h-11 w-full bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-primary">
+              <Link to={`/evaluation/paciente/${patient.patientId}`}>
+                <TrendingUp className="h-4 w-4 mr-2" aria-hidden="true" />
+                Ver evolução
+                <ChevronRight className="h-4 w-4 ml-auto" aria-hidden="true" />
+              </Link>
             </Button>
 
-            {/* Botão Excluir Avaliações */}
+            {/* A exclusão em massa fica recolhida, longe da ação principal. */}
             {onDeletePatient && (
-              <AlertDialog>
+              <details className="mt-3 group">
+                <summary className="min-h-11 flex cursor-pointer items-center justify-center rounded-md text-sm font-medium text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                  Mais opções
+                </summary>
+                <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button
                     variant="ghost"
-                    size="sm"
-                    className="w-full mt-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
-                    onClick={(e) => e.stopPropagation()}
+                    className="min-h-11 w-full text-destructive hover:text-destructive hover:bg-destructive/10"
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
                     Excluir avaliações
                   </Button>
                 </AlertDialogTrigger>
-                <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+                <AlertDialogContent>
                   <AlertDialogHeader>
                     <AlertDialogTitle>Excluir todas as avaliações?</AlertDialogTitle>
                     <AlertDialogDescription>
@@ -260,6 +216,7 @@ export function PatientEvaluationCards({
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
+              </details>
             )}
           </Card>
         );

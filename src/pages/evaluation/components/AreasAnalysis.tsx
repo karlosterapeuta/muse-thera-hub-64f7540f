@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, Minus, CheckCircle2, AlertTriangle, ArrowRight } from "lucide-react";
 import { SavedEvaluation } from "@/hooks/useEvaluationStorage";
 import { analyzeAreas, DomainScore } from "@/pages/evaluation/utils/suggestionEngine";
+import { getRecordedEvaluationScore } from "@/utils/evolutionPresentation";
 
 interface AreasAnalysisProps {
   evaluations: SavedEvaluation[];
@@ -20,9 +21,13 @@ const DOMAIN_ICONS: Record<string, string> = {
 };
 
 export function AreasAnalysis({ evaluations }: AreasAnalysisProps) {
+  const scoredEvaluations = useMemo(
+    () => evaluations.filter((evaluation) => getRecordedEvaluationScore(evaluation) !== null),
+    [evaluations]
+  );
   const { improved, needsAttention } = useMemo(() => {
-    return analyzeAreas(evaluations);
-  }, [evaluations]);
+    return analyzeAreas(scoredEvaluations);
+  }, [scoredEvaluations]);
 
   const getTrendIcon = (trend: 'improving' | 'stable' | 'declining') => {
     switch (trend) {
@@ -43,7 +48,7 @@ export function AreasAnalysis({ evaluations }: AreasAnalysisProps) {
     return (
       <div
         key={domain.domain}
-        className={`p-4 rounded-xl border-2 transition-all ${
+        className={`p-4 rounded-xl border-2 transition-colors ${
           type === 'improved'
             ? 'bg-emerald-50/80 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800'
             : isDecline
@@ -93,7 +98,7 @@ export function AreasAnalysis({ evaluations }: AreasAnalysisProps) {
     );
   };
 
-  if (evaluations.length < 2) {
+  if (scoredEvaluations.length < 2) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card className="p-6 bg-emerald-50/50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800">
@@ -102,11 +107,11 @@ export function AreasAnalysis({ evaluations }: AreasAnalysisProps) {
               <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-300" />
             </div>
             <h3 className="text-lg font-bold text-emerald-800 dark:text-emerald-200">
-              Áreas que Melhoraram
+              Variações positivas por área
             </h3>
           </div>
           <p className="text-sm text-emerald-700 dark:text-emerald-300 text-center py-8">
-            Realize pelo menos 2 avaliações para visualizar a evolução das áreas.
+            Registre pontuações em pelo menos 2 avaliações para visualizar as variações por área.
           </p>
         </Card>
 
@@ -116,11 +121,11 @@ export function AreasAnalysis({ evaluations }: AreasAnalysisProps) {
               <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-300" />
             </div>
             <h3 className="text-lg font-bold text-amber-800 dark:text-amber-200">
-              Áreas que Precisam Atenção
+              Áreas a acompanhar
             </h3>
           </div>
           <p className="text-sm text-amber-700 dark:text-amber-300 text-center py-8">
-            Realize pelo menos 2 avaliações para identificar áreas que precisam de atenção.
+            Registre pontuações em pelo menos 2 avaliações para identificar áreas a acompanhar.
           </p>
         </Card>
       </div>
@@ -129,18 +134,18 @@ export function AreasAnalysis({ evaluations }: AreasAnalysisProps) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {/* Áreas que Melhoraram */}
-      <Card className="p-6 bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-950/50 dark:to-green-950/50 border-0 shadow-xl">
+      {/* Variações positivas: descrição, não significância clínica. */}
+      <Card className="p-4 sm:p-6 bg-card border-border shadow-sm">
         <div className="flex items-center gap-3 mb-4">
           <div className="h-10 w-10 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center">
             <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-300" />
           </div>
           <div>
             <h3 className="text-lg font-bold text-emerald-800 dark:text-emerald-200">
-              Áreas que Melhoraram
+              Variações positivas por área
             </h3>
             <p className="text-xs text-emerald-600 dark:text-emerald-400">
-              Variação positiva maior que 5%
+              Aumento descritivo superior a 5 pontos percentuais
             </p>
           </div>
         </div>
@@ -151,28 +156,28 @@ export function AreasAnalysis({ evaluations }: AreasAnalysisProps) {
           ) : (
             <div className="text-center py-6">
               <p className="text-sm text-emerald-700 dark:text-emerald-300">
-                Nenhuma área com melhoria significativa ainda.
+                Nenhuma área superou esse critério descritivo.
               </p>
               <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
-                Continue as intervenções terapêuticas!
+                Confira também as observações clínicas das sessões.
               </p>
             </div>
           )}
         </div>
       </Card>
 
-      {/* Áreas que Precisam Atenção */}
-      <Card className="p-6 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/50 dark:to-orange-950/50 border-0 shadow-xl">
+      {/* Áreas a acompanhar */}
+      <Card className="p-4 sm:p-6 bg-card border-border shadow-sm">
         <div className="flex items-center gap-3 mb-4">
           <div className="h-10 w-10 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center">
             <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-300" />
           </div>
           <div>
             <h3 className="text-lg font-bold text-amber-800 dark:text-amber-200">
-              Áreas que Precisam Atenção
+              Áreas a acompanhar
             </h3>
             <p className="text-xs text-amber-600 dark:text-amber-400">
-              Variação menor que 5% ou em declínio
+              Estabilidade ou variação negativa no recorte exibido
             </p>
           </div>
         </div>
@@ -183,15 +188,18 @@ export function AreasAnalysis({ evaluations }: AreasAnalysisProps) {
           ) : (
             <div className="text-center py-6">
               <p className="text-sm text-amber-700 dark:text-amber-300">
-                Todas as áreas estão em progresso! 🎉
+                Nenhuma área se enquadrou neste recorte.
               </p>
               <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
-                Continue o excelente trabalho!
+                Revise a comparabilidade das avaliações selecionadas.
               </p>
             </div>
           )}
         </div>
       </Card>
+      <p className="col-span-full text-sm text-muted-foreground">
+        Estas variações são descritivas e podem refletir diferenças de cobertura entre avaliações. Não indicam, isoladamente, mudança clinicamente significativa. Use a comparação por indicadores equivalentes para a análise longitudinal.
+      </p>
     </div>
   );
 }
