@@ -70,11 +70,13 @@ test('histórico preserva zero real, sinaliza ausente e disponibiliza PDF indivi
     onLoadEvaluation: () => {},
     onDeleteEvaluation: () => {},
     onDownloadEvaluation: () => {},
+    onEditEvaluation: () => {},
   }));
   assert.match(markup, /Sem pontuação registrada/);
   assert.match(markup, /Pontuação: 0%/);
   assert.match(markup, /Baixar PDF individual/);
   assert.match(markup, /aria-label="Baixar avaliação individual \(PDF\)"/);
+  assert.match(markup, /aria-label="Editar Avaliação"/);
   assert.match(markup, /aria-label="Comparar/);
   assert.match(markup, /Continuar avaliação/);
 });
