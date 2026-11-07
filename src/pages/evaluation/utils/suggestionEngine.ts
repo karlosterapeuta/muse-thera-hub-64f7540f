@@ -326,15 +326,18 @@ export function analyzeAreas(evaluations: SavedEvaluation[]): {
       d.domain.replace("Domínio ", "") === domainName
     );
     
+    // Um domínio ausente na primeira sessão não pode ser tratado como nota zero.
+    if (!firstDomainData) return;
+
     const historicalScores = sortedEvaluations.map(evaluation => {
       const domainData = evaluation.content?.domainScores?.find(d => 
         d.domain.replace("Domínio ", "") === domainName
       );
-      return domainData?.score || 0;
-    });
+      return domainData?.score ?? null;
+    }).filter((score): score is number => score !== null);
     
-    const firstScore = firstDomainData?.score || 0;
-    const lastScore = domain.score || 0;
+    const firstScore = firstDomainData.score;
+    const lastScore = domain.score;
     const variation = lastScore - firstScore;
     
     const domainScore: DomainScore = {

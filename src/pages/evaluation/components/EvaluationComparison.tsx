@@ -27,8 +27,9 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { TrendingUp, TrendingDown, Minus, BarChart3, ArrowRight, Activity, Target, Award, Gauge } from "lucide-react";
 import { SavedEvaluation } from "@/hooks/useEvaluationStorage";
-import { resolveEvaluationMeta } from "@/utils/evaluationTypes";
+import { getEvaluationTypeMeta } from "@/utils/evaluationTypes";
 import { buildEvolutionAnalysis } from "@/utils/evolutionAnalysis";
+import { getEvolutionStageKey, getRecordedEvaluationScore } from "@/utils/evolutionPresentation";
 
 interface EvaluationComparisonProps {
   evaluations: SavedEvaluation[];
@@ -62,14 +63,15 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
     const domains = selectedEvaluations[0]?.content?.domainScores?.map((d) => d.domain) || [];
 
     return domains.map((domain) => {
-      const dataPoint: Record<string, any> = {
+      const dataPoint: Record<string, string | number | null> = {
         domain: domain.replace("Domínio ", ""),
         fullMark: 100,
       };
 
       selectedEvaluations.forEach((evaluation, index) => {
         const domainScore = evaluation.content?.domainScores?.find((d) => d.domain === domain);
-        dataPoint[`eval_${index}`] = domainScore?.score ?? null;
+        dataPoint[`eval_${index}`] = getRecordedEvaluationScore(evaluation) === null
+          ? null : domainScore?.score ?? null;
         dataPoint[`date_${index}`] = format(new Date(evaluation.date), "dd/MM", { locale: ptBR });
       });
 
@@ -79,13 +81,13 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
 
   const evolutionData = useMemo(() => {
     return selectedEvaluations.map((evaluation) => {
-      const dataPoint: Record<string, any> = {
+      const dataPoint: Record<string, string | number | null> = {
         date: format(new Date(evaluation.date), "dd/MM/yy", { locale: ptBR }),
         fullDate: evaluation.date,
-        overall: evaluation.content?.overallScore?.percentage ?? null,
+        overall: getRecordedEvaluationScore(evaluation),
       };
 
-      evaluation.content?.domainScores?.forEach((domain) => {
+      if (getRecordedEvaluationScore(evaluation) !== null) evaluation.content?.domainScores?.forEach((domain) => {
         const shortName = domain.domain.replace("Domínio ", "");
         dataPoint[shortName] = domain.score;
       });
@@ -97,27 +99,27 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
   // Comparação entre avaliações (Inicial → Final) pelo Score Global
   const stageData = useMemo(() => {
     return selectedEvaluations.map((evaluation) => {
-      const meta = resolveEvaluationMeta(evaluation);
+      const meta = getEvaluationTypeMeta(getEvolutionStageKey(evaluation));
       return {
         stage: meta.shortLabel,
         label: meta.label,
         color: meta.color,
         date: format(new Date(evaluation.date), "dd/MM/yy", { locale: ptBR }),
-        score: evaluation.content?.overallScore?.percentage ?? null,
+        score: getRecordedEvaluationScore(evaluation),
       };
     });
   }, [selectedEvaluations]);
 
   const stageVariation = useMemo(() => {
-    if (stageData.length < 2) return 0;
+    if (stageData.length < 2) return null;
     const first = stageData[0].score;
     const last = stageData[stageData.length - 1].score;
-    return first === null || last === null ? 0 : last - first;
+    return first === null || last === null ? null : last - first;
   }, [stageData]);
 
   // Levantamento de dados / análise detalhada entre as avaliações
   const analysis = useMemo(
-    () => buildEvolutionAnalysis(selectedEvaluations),
+    () => buildEvolutionAnalysis(selectedEvaluations.filter((evaluation) => getRecordedEvaluationScore(evaluation) !== null)),
     [selectedEvaluations]
   );
 
@@ -130,7 +132,7 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
     return domains.map((domain) => {
       const scores = selectedEvaluations.map((evaluation) => {
         const domainScore = evaluation.content?.domainScores?.find((d) => d.domain === domain);
-        return domainScore?.score ?? null;
+        return getRecordedEvaluationScore(evaluation) === null ? null : domainScore?.score ?? null;
       });
 
       const firstScore = scores[0];
@@ -201,7 +203,7 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
             Avaliação de {format(new Date(evaluation.date), "dd/MM/yyyy", { locale: ptBR })}
           </h3>
           <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-            Score Global: {evaluation.content?.overallScore?.percentage || 0}%
+            Pontuação global: {getRecordedEvaluationScore(evaluation) === null ? "Sem dados" : `${getRecordedEvaluationScore(evaluation)}%`}
           </Badge>
         </div>
         <div className="h-[350px]">
@@ -260,24 +262,26 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
         ) : <p className="mt-2 text-sm text-amber-800 dark:text-amber-200">Não há indicadores pontuados em todas as sessões escolhidas. Não calcule evolução comparável.</p>}
       </Card>
       {/* Comparação entre Avaliações: Inicial → Final */}
-      <Card className="p-6 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/50 dark:to-indigo-950/50 border-0 shadow-xl">
+      <Card className="border-border bg-card p-4 shadow-sm sm:p-6">
         <div className="flex flex-col items-center mb-4">
-          <h3 className="text-lg font-bold text-purple-800 dark:text-purple-200 text-center">
+          <h3 className="text-lg font-bold text-foreground text-center">
             Comparação entre Avaliações
           </h3>
-          <p className="text-sm text-purple-600/80 dark:text-purple-300/80 text-center">
+          <p className="text-sm text-muted-foreground text-center">
             Médias brutas armazenadas (podem conter indicadores diferentes)
           </p>
           {stageData.length >= 2 && (
             <Badge
-              className={`mt-2 ${getVariationColor(stageVariation)} flex items-center gap-1`}
+              className={`mt-2 ${stageVariation === null ? "bg-secondary text-secondary-foreground" : getVariationColor(stageVariation)} flex items-center gap-1`}
             >
-              {getVariationIcon(stageVariation)}
-              Diferença entre médias brutas (não ajustadas): {stageVariation > 0 ? `+${stageVariation} p.p.` : `${stageVariation} p.p.`}
+              {stageVariation !== null && getVariationIcon(stageVariation)}
+              {stageVariation === null
+                ? "Médias brutas indisponíveis para comparação"
+                : `Diferença entre médias brutas (não ajustadas): ${stageVariation > 0 ? "+" : ""}${stageVariation} p.p.`}
             </Badge>
           )}
         </div>
-        <div className="h-[400px]">
+        <div className="h-[300px] sm:h-[350px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={stageData} margin={{ top: 30, right: 20, left: 0, bottom: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" vertical={false} />
@@ -305,7 +309,7 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
                   dataKey="score"
                   position="top"
                   formatter={(v: number) => `${v}%`}
-                  style={{ fontSize: 12, fontWeight: 700, fill: "#4338ca" }}
+                  style={{ fontSize: 12, fontWeight: 700, fill: "hsl(var(--foreground))" }}
                 />
               </Bar>
             </BarChart>
@@ -314,59 +318,66 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
       </Card>
 
       {/* Levantamento de Dados — Indicadores Gerais */}
-      <Card className="p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-0 shadow-xl">
+      {analysis.stages.length < 2 && (
+        <Card role="status" className="border-border bg-muted/30 p-4 text-sm text-muted-foreground sm:p-6">
+          Registre pontuações em pelo menos 2 avaliações para visualizar médias, variações e síntese descritiva. Avaliações sem pontuação não são consideradas zero.
+        </Card>
+      )}
+      {analysis.stages.length >= 2 && (
+      <Card className="border-border bg-card p-4 shadow-sm sm:p-6">
         <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4 text-center flex items-center justify-center gap-2">
           <Activity className="h-5 w-5 text-indigo-600" />
           Levantamento de Dados
         </h3>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <div className="rounded-xl p-4 bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950/50 dark:to-violet-950/50">
-            <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-300 text-xs font-semibold mb-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="rounded-xl border border-border bg-muted/30 p-4">
+            <div className="flex items-center gap-2 text-primary text-sm font-semibold mb-1">
               <Gauge className="h-4 w-4" /> Score Médio
             </div>
             <div className="text-2xl font-extrabold text-gray-800 dark:text-gray-100">
               {analysis.averageScore}%
             </div>
           </div>
-          <div className="rounded-xl p-4 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/50 dark:to-teal-950/50">
-            <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-300 text-xs font-semibold mb-1">
+          <div className="rounded-xl border border-border bg-muted/30 p-4">
+            <div className="flex items-center gap-2 text-primary text-sm font-semibold mb-1">
               <Award className="h-4 w-4" /> Pico
             </div>
             <div className="text-2xl font-extrabold text-gray-800 dark:text-gray-100">
               {analysis.peakScore}%
             </div>
-            <div className="text-[11px] text-gray-500 dark:text-gray-400">
+            <div className="text-xs text-muted-foreground">
               {analysis.peakStage?.meta.shortLabel}
             </div>
           </div>
-          <div className="rounded-xl p-4 bg-gradient-to-br from-purple-50 to-fuchsia-50 dark:from-purple-950/50 dark:to-fuchsia-950/50">
-            <div className="flex items-center gap-2 text-purple-600 dark:text-purple-300 text-xs font-semibold mb-1">
-              <TrendingUp className="h-4 w-4" /> Evolução Total
+          <div className="rounded-xl border border-border bg-muted/30 p-4">
+            <div className="flex items-center gap-2 text-primary text-sm font-semibold mb-1">
+              <TrendingUp className="h-4 w-4" /> Variação bruta
             </div>
             <div className={`text-2xl font-extrabold ${analysis.globalVariation > 5 ? "text-emerald-600" : analysis.globalVariation < -5 ? "text-red-600" : "text-gray-600"}`}>
-              {analysis.globalVariation > 0 ? `+${analysis.globalVariation}` : analysis.globalVariation}%
+              {analysis.globalVariation > 0 ? `+${analysis.globalVariation}` : analysis.globalVariation} p.p.
             </div>
-            <div className="text-[11px] text-gray-500 dark:text-gray-400">
+            <div className="text-xs text-muted-foreground">
               {analysis.globalPercentChange > 0 ? `+${analysis.globalPercentChange}` : analysis.globalPercentChange}% relativo
             </div>
           </div>
-          <div className="rounded-xl p-4 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/50 dark:to-orange-950/50">
-            <div className="flex items-center gap-2 text-amber-600 dark:text-amber-300 text-xs font-semibold mb-1">
+          <div className="rounded-xl border border-border bg-muted/30 p-4">
+            <div className="flex items-center gap-2 text-primary text-sm font-semibold mb-1">
               <Target className="h-4 w-4" /> Período
             </div>
             <div className="text-2xl font-extrabold text-gray-800 dark:text-gray-100">
               {analysis.periodMonths}<span className="text-sm font-semibold"> {analysis.periodMonths === 1 ? "mês" : "meses"}</span>
             </div>
-            <div className="text-[11px] text-gray-500 dark:text-gray-400">
+            <div className="text-xs text-muted-foreground">
               {analysis.stages.length} avaliações
             </div>
           </div>
         </div>
       </Card>
+      )}
 
       {/* Comparação etapa a etapa (Inicial → Final) */}
       {analysis.transitions.length > 0 && (
-        <Card className="p-6 bg-gradient-to-br from-slate-50 to-gray-50 dark:from-slate-900/50 dark:to-gray-900/50 border-0 shadow-xl">
+        <Card className="border-border bg-card p-4 shadow-sm sm:p-6">
           <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1 text-center">
             Comparação Detalhada entre Etapas
           </h3>
@@ -377,7 +388,7 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
             {analysis.transitions.map((t, i) => (
               <div
                 key={i}
-                className="flex items-center justify-between gap-3 rounded-xl bg-white/70 dark:bg-gray-800/70 p-4 shadow-sm"
+                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-muted/20 p-3 sm:p-4"
               >
                 <div className="flex items-center gap-2 min-w-0 flex-1">
                   <div className="flex flex-col items-center">
@@ -395,7 +406,7 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
                   </div>
                 </div>
                 <div className="text-center hidden sm:block">
-                  <span className="text-xs text-gray-400">{t.daysBetween} dias</span>
+                  <span className="text-sm text-muted-foreground">{t.daysBetween} dias</span>
                 </div>
                 <Badge className={`${getVariationColor(t.variation)} flex items-center gap-1 text-sm px-3 py-1`}>
                   {getVariationIcon(t.variation)}
@@ -407,34 +418,36 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
         </Card>
       )}
 
-      {/* Síntese Clínica automatizada */}
-      <Card className="p-6 bg-gradient-to-br from-violet-50 to-fuchsia-50 dark:from-violet-950/50 dark:to-fuchsia-950/50 border-0 shadow-xl">
-        <h3 className="text-lg font-bold text-violet-800 dark:text-violet-200 mb-3 text-center">
-          Síntese Clínica
+      {/* Síntese descritiva apenas com pelo menos dois registros pontuados. */}
+      {analysis.stages.length >= 2 && (
+      <Card className="border-border bg-card p-4 shadow-sm sm:p-6">
+        <h3 className="text-lg font-bold text-foreground mb-3 text-center">
+          Síntese descritiva
         </h3>
         <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300 text-justify">
           O paciente foi acompanhado por meio de <strong>{analysis.stages.length} avaliações</strong>
           {analysis.periodMonths ? <> ao longo de aproximadamente <strong>{analysis.periodMonths} {analysis.periodMonths === 1 ? "mês" : "meses"}</strong></> : null}.
-          O score global evoluiu de <strong>{analysis.firstScore}%</strong> (avaliação inicial) para{" "}
-          <strong>{analysis.lastScore}%</strong> (avaliação final), uma variação de{" "}
+          A pontuação global registrada passou de <strong>{analysis.firstScore}%</strong> (primeiro registro pontuado) para{" "}
+          <strong>{analysis.lastScore}%</strong> (último registro pontuado), uma diferença descritiva de{" "}
           <strong className={analysis.globalVariation > 5 ? "text-emerald-600" : analysis.globalVariation < -5 ? "text-red-600" : "text-gray-600"}>
-            {analysis.globalVariation > 0 ? `+${analysis.globalVariation}` : analysis.globalVariation}%
-          </strong>, indicando <strong>{analysis.trendLabel.toLowerCase()}</strong>, com {analysis.consistency}.
+            {analysis.globalVariation > 0 ? `+${analysis.globalVariation}` : analysis.globalVariation}
+          </strong> pontos percentuais. A comparação clínica deve considerar os indicadores equivalentes, a cobertura e as condições de aplicação de cada sessão.
           {analysis.topGains.length > 0 && (
-            <> Os domínios com maior progresso foram <strong>{analysis.topGains.map((d) => `${d.domain} (+${d.variation}%)`).join(", ")}</strong>.</>
+            <> Os domínios com maiores variações positivas foram <strong>{analysis.topGains.map((d) => `${d.domain} (+${d.variation} p.p.)`).join(", ")}</strong>.</>
           )}
           {analysis.declines.length > 0 && (
-            <> Recomenda-se atenção aos domínios <strong>{analysis.declines.map((d) => `${d.domain} (${d.variation}%)`).join(", ")}</strong>, que apresentaram redução no período.</>
+            <> Variações negativas foram observadas nos domínios <strong>{analysis.declines.map((d) => `${d.domain} (${d.variation} p.p.)`).join(", ")}</strong>.</>
           )}
         </p>
       </Card>
+      )}
 
 
-      <Card className="p-6 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/50 dark:to-teal-950/50 border-0 shadow-xl">
+      <Card className="border-border bg-card p-4 shadow-sm sm:p-6">
         <h3 className="text-lg font-bold text-emerald-800 dark:text-emerald-200 mb-4 text-center">
           Evolução ao Longo do Tempo
         </h3>
-        <div className="h-[350px]">
+        <div className="h-[300px] sm:h-[350px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={evolutionData} margin={{ top: 20, right: 30, left: 20, bottom: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#d1fae5" />
@@ -476,7 +489,7 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
       </Card>
 
       {/* Tabela Comparativa */}
-      <Card className="p-6 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/50 dark:to-cyan-950/50 border-0 shadow-xl">
+      <Card className="border-border bg-card p-4 shadow-sm sm:p-6">
         <h3 className="text-lg font-bold text-blue-800 dark:text-blue-200 mb-4 text-center">
           Análise Comparativa Detalhada
         </h3>
@@ -525,35 +538,24 @@ export function EvaluationComparison({ evaluations, selectedIds }: EvaluationCom
                 </TableRow>
               ))}
               {/* Linha do Score Global */}
-              <TableRow className="bg-purple-50/50 dark:bg-purple-950/30 font-bold">
-                <TableCell className="font-bold text-purple-800 dark:text-purple-200">
-                  SCORE GLOBAL
+              <TableRow className="bg-secondary/50 font-bold">
+                <TableCell className="font-bold text-foreground">
+                  PONTUAÇÃO GLOBAL
                 </TableCell>
                 {selectedEvaluations.map((evaluation) => (
                   <TableCell key={evaluation.id} className="text-center">
-                    <span className="font-bold text-purple-700 dark:text-purple-300">
-                      {evaluation.content?.overallScore?.percentage || 0}%
+                    <span className="font-bold text-foreground tabular-nums">
+                      {getRecordedEvaluationScore(evaluation) === null ? "Sem dados" : `${getRecordedEvaluationScore(evaluation)}%`}
                     </span>
                   </TableCell>
                 ))}
                 <TableCell className="text-center">
                   {selectedEvaluations.length >= 2 && (
                     <Badge
-                      className={`${getVariationColor(
-                        (selectedEvaluations[selectedEvaluations.length - 1]?.content?.overallScore?.percentage || 0) -
-                          (selectedEvaluations[0]?.content?.overallScore?.percentage || 0)
-                      )} flex items-center gap-1 justify-center`}
+                      className={`${stageVariation === null ? "bg-secondary text-secondary-foreground" : getVariationColor(stageVariation)} flex items-center gap-1 justify-center`}
                     >
-                      {getVariationIcon(
-                        (selectedEvaluations[selectedEvaluations.length - 1]?.content?.overallScore?.percentage || 0) -
-                          (selectedEvaluations[0]?.content?.overallScore?.percentage || 0)
-                      )}
-                      {(() => {
-                        const variation =
-                          (selectedEvaluations[selectedEvaluations.length - 1]?.content?.overallScore?.percentage || 0) -
-                          (selectedEvaluations[0]?.content?.overallScore?.percentage || 0);
-                        return variation > 0 ? `+${variation}%` : `${variation}%`;
-                      })()}
+                      {stageVariation !== null && getVariationIcon(stageVariation)}
+                      {stageVariation === null ? "Não comparável" : `${stageVariation > 0 ? "+" : ""}${stageVariation} p.p.`}
                     </Badge>
                   )}
                 </TableCell>

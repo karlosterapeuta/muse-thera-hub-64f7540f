@@ -1,6 +1,7 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   LineChart,
   Line,
@@ -16,6 +17,7 @@ import { ptBR } from "date-fns/locale";
 import { TrendingUp, TrendingDown, Minus, LineChart as LineChartIcon } from "lucide-react";
 import { SavedEvaluation } from "@/hooks/useEvaluationStorage";
 import { calculateTrend } from "@/pages/evaluation/utils/suggestionEngine";
+import { getRecordedEvaluationScore } from "@/utils/evolutionPresentation";
 
 interface EvolutionTimelineProps {
   evaluations: SavedEvaluation[];
@@ -33,6 +35,7 @@ const DOMAIN_COLORS: Record<string, string> = {
 };
 
 export function EvolutionTimeline({ evaluations, patientName }: EvolutionTimelineProps) {
+  const [displayMode, setDisplayMode] = useState("global");
   // Ordenar avaliações por data
   const sortedEvaluations = useMemo(() => {
     return [...evaluations].sort(
@@ -43,13 +46,14 @@ export function EvolutionTimeline({ evaluations, patientName }: EvolutionTimelin
   // Preparar dados para o gráfico
   const chartData = useMemo(() => {
     return sortedEvaluations.map((evaluation) => {
-      const dataPoint: Record<string, any> = {
+      const dataPoint: Record<string, string | number | null> = {
         date: format(new Date(evaluation.date), "dd/MM/yy", { locale: ptBR }),
         fullDate: evaluation.date,
-        "Score Global": evaluation.content?.overallScore?.percentage || 0,
+        "Score Global": getRecordedEvaluationScore(evaluation),
       };
 
-      evaluation.content?.domainScores?.forEach((domain) => {
+      // Não cria pontos de domínio a partir de uma avaliação sem indicadores pontuados.
+      if (getRecordedEvaluationScore(evaluation) !== null) evaluation.content?.domainScores?.forEach((domain) => {
         const shortName = domain.domain.replace("Domínio ", "");
         dataPoint[shortName] = domain.score;
       });
@@ -59,24 +63,25 @@ export function EvolutionTimeline({ evaluations, patientName }: EvolutionTimelin
   }, [sortedEvaluations]);
 
   // Calcular tendência global
-  const globalTrend = useMemo(() => {
-    const scores = sortedEvaluations.map(e => e.content?.overallScore?.percentage || 0);
-    return calculateTrend(scores);
+  const recordedScores = useMemo(() => {
+    return sortedEvaluations
+      .map(getRecordedEvaluationScore)
+      .filter((score): score is number => score !== null);
   }, [sortedEvaluations]);
+  const globalTrend = recordedScores.length >= 2 ? calculateTrend(recordedScores) : null;
 
   // Calcular progresso total
   const progressData = useMemo(() => {
-    if (sortedEvaluations.length < 2) return null;
-    
-    const firstScore = sortedEvaluations[0].content?.overallScore?.percentage || 0;
-    const lastScore = sortedEvaluations[sortedEvaluations.length - 1].content?.overallScore?.percentage || 0;
+    if (recordedScores.length < 2) return null;
+    const firstScore = recordedScores[0];
+    const lastScore = recordedScores[recordedScores.length - 1];
     
     return {
       first: firstScore,
       last: lastScore,
       change: lastScore - firstScore,
     };
-  }, [sortedEvaluations]);
+  }, [recordedScores]);
 
   const getTrendIcon = () => {
     switch (globalTrend) {
@@ -90,24 +95,30 @@ export function EvolutionTimeline({ evaluations, patientName }: EvolutionTimelin
   };
 
   const getTrendLabel = () => {
+    if (globalTrend === null) {
+      return { text: 'Dados insuficientes', color: 'bg-secondary text-secondary-foreground' };
+    }
     switch (globalTrend) {
       case 'improving':
-        return { text: 'Em Progresso', color: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200' };
+        return { text: 'Tendência de alta', color: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200' };
       case 'declining':
-        return { text: 'Precisa Atenção', color: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' };
+        return { text: 'Tendência de baixa', color: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' };
       default:
-        return { text: 'Estável', color: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200' };
+        return { text: 'Sem tendência definida', color: 'bg-secondary text-secondary-foreground' };
     }
   };
 
   // Extrair domínios disponíveis
   const availableDomains = useMemo(() => {
-    if (sortedEvaluations.length === 0) return [];
-    const domains = sortedEvaluations[0].content?.domainScores?.map(d => 
-      d.domain.replace("Domínio ", "")
-    ) || [];
-    return domains;
+    return [...new Set(sortedEvaluations.flatMap((evaluation) =>
+      getRecordedEvaluationScore(evaluation) === null
+        ? []
+        : (evaluation.content?.domainScores || []).map((domain) => domain.domain.replace("Domínio ", ""))
+    ))];
   }, [sortedEvaluations]);
+  const displayedDomains = displayMode === "all"
+    ? availableDomains
+    : displayMode === "global" ? [] : availableDomains.filter((domain) => domain === displayMode);
 
   if (evaluations.length === 0) {
     return (
@@ -128,7 +139,7 @@ export function EvolutionTimeline({ evaluations, patientName }: EvolutionTimelin
   const trendLabel = getTrendLabel();
 
   return (
-    <Card className="p-6 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/50 dark:to-teal-950/50 border-0 shadow-xl">
+    <Card className="border-border bg-card p-4 shadow-sm sm:p-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
@@ -136,10 +147,10 @@ export function EvolutionTimeline({ evaluations, patientName }: EvolutionTimelin
             <LineChartIcon className="h-5 w-5 text-emerald-600 dark:text-emerald-300" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-emerald-900 dark:text-emerald-100">
+              <h3 className="text-lg font-bold text-foreground">
               Linha do Tempo de Evolução
             </h3>
-            <p className="text-sm text-emerald-700 dark:text-emerald-300">
+              <p className="text-sm text-muted-foreground">
               {patientName} • {evaluations.length} avaliação(ões)
             </p>
           </div>
@@ -155,16 +166,16 @@ export function EvolutionTimeline({ evaluations, patientName }: EvolutionTimelin
 
       {/* Progresso Global */}
       {progressData && (
-        <div className="mb-6 p-4 bg-white/60 dark:bg-gray-800/60 rounded-xl backdrop-blur-sm">
+        <div className="mb-6 rounded-xl border border-border bg-muted/30 p-4">
           <div className="flex flex-wrap items-center justify-center gap-4 text-center">
             <div>
               <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Primeira Avaliação</p>
               <p className="text-2xl font-bold text-gray-700 dark:text-gray-300">{progressData.first}%</p>
             </div>
             <div className="flex items-center gap-2 px-4">
-              <div className="w-16 h-1 bg-gradient-to-r from-gray-300 to-emerald-500 rounded-full" />
+              <div className="hidden h-1 w-8 rounded-full bg-border sm:block" />
               {getTrendIcon()}
-              <div className="w-16 h-1 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full" />
+              <div className="hidden h-1 w-8 rounded-full bg-primary sm:block" />
             </div>
             <div>
               <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Última Avaliação</p>
@@ -180,18 +191,37 @@ export function EvolutionTimeline({ evaluations, patientName }: EvolutionTimelin
         </div>
       )}
 
-      {/* Gráfico */}
-      <div className="h-[350px]">
+      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <label htmlFor="evolution-domain-view" className="text-sm font-medium text-foreground">Séries exibidas no gráfico</label>
+        <Select value={displayMode} onValueChange={setDisplayMode}>
+          <SelectTrigger id="evolution-domain-view" aria-label="Séries exibidas no gráfico" className="min-h-11 w-full bg-background sm:w-[260px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="global">Somente pontuação global</SelectItem>
+            {availableDomains.map((domain) => <SelectItem key={domain} value={domain}>{domain} + global</SelectItem>)}
+            {availableDomains.length > 1 && <SelectItem value="all">Todos os domínios</SelectItem>}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Gráfico: por padrão mostra só a série global, permitindo selecionar domínios. */}
+      {recordedScores.length === 0 ? (
+        <p role="status" className="rounded-lg bg-muted/40 px-4 py-10 text-center text-sm text-muted-foreground">
+          Ainda não há pontuação registrada para compor o gráfico.
+        </p>
+      ) : <div className="h-[300px] sm:h-[350px]">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 10 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#d1fae5" />
+          <LineChart data={chartData} margin={{ top: 20, right: 12, left: -20, bottom: 10 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis 
               dataKey="date" 
-              tick={{ fontSize: 11, fill: '#065f46' }} 
+              tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+              minTickGap={24}
             />
             <YAxis 
               domain={[0, 100]} 
-              tick={{ fontSize: 11, fill: '#065f46' }} 
+              tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
             />
             <Tooltip
               contentStyle={{
@@ -202,7 +232,7 @@ export function EvolutionTimeline({ evaluations, patientName }: EvolutionTimelin
               }}
               formatter={(value: number, name: string) => [`${value}%`, name]}
             />
-            <Legend />
+            {displayMode === "all" && <Legend />}
             
             {/* Linha principal - Score Global */}
             <Line
@@ -216,7 +246,7 @@ export function EvolutionTimeline({ evaluations, patientName }: EvolutionTimelin
             />
             
             {/* Linhas dos domínios */}
-            {availableDomains.map((domain) => (
+            {displayedDomains.map((domain) => (
               <Line
                 key={domain}
                 type="monotone"
@@ -230,12 +260,12 @@ export function EvolutionTimeline({ evaluations, patientName }: EvolutionTimelin
             ))}
           </LineChart>
         </ResponsiveContainer>
-      </div>
+      </div>}
 
       {/* Legenda com explicação */}
       <div className="mt-4 p-3 bg-white/40 dark:bg-gray-800/40 rounded-lg">
         <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
-          <strong>Linha sólida:</strong> Score Global • <strong>Linhas tracejadas:</strong> Domínios individuais
+          <strong>Linha sólida:</strong> pontuação global • <strong>Linhas tracejadas:</strong> domínios selecionados. As variações são descritivas; para comparação clínica use apenas indicadores equivalentes entre avaliações.
         </p>
       </div>
     </Card>
