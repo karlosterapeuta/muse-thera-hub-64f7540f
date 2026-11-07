@@ -1,3 +1,4 @@
+import { normalizeEvaluation } from "./utils/normalizeEvaluation";
 import { downloadSavedEvaluation } from "./utils/savedReport";
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -70,7 +71,7 @@ export default function PatientEvolutionPage() {
           patient_name: item.patients?.name,
           patient_age: item.patients?.age,
           patient_birth_date: item.patients?.birth_date,
-        })) as SavedEvaluation[];
+        })).map(normalizeEvaluation) as SavedEvaluation[];
 
         setEvaluations(mapped);
         setPatientName(mapped[0]?.patient_name || "Paciente");

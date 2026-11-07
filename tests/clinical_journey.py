@@ -87,7 +87,12 @@ def run():
         # Simulate loading a historical row without counters, including a legacy zero.
         del row["content"]["overallScore"]
         selections = row["content"]["selections"]
-        selections[next(iter(selections))] = "0"
+        for key, value in zip(list(selections), ["0", 1, "2", 3, "4", 5, "0", "5"]):
+            selections[key] = value
+        row["content"]["observations"] = {
+            "Domínio Musical-Percepção Musical": "Resposta com apoio visual durante a atividade.",
+            "__musetera_evidence__:" + next(iter(selections)): json.dumps({"attempts": "3", "successes": "2", "support": "pista_visual", "note": "Pausa solicitada pelo paciente."}),
+        }
         selections["Indicador não aplicável"] = "nao_aplicavel"
         selections["Indicador em branco"] = ""
         # Leave a distinct unsaved response for A before checking B.
@@ -117,16 +122,36 @@ def run():
             page.get_by_role("button", name="Baixar avaliação individual (PDF)").click()
         download = event.value
         assert "Inicial-Ana Teste" in download.suggested_filename
-        with tempfile.TemporaryDirectory() as folder:
-            pdf = Path(folder) / "avaliacao.pdf"
-            download.save_as(pdf)
-            subprocess.run(["pdftoppm", "-r", "150", "-png", str(pdf), folder + "/page"], check=True)
-            text = " ".join(subprocess.check_output(["tesseract", str(img), "stdout", "-l", "por"],
-                            text=True) for img in sorted(Path(folder).glob("page-*.png")))
-            text = " ".join(text.split())
-            assert "Ana Teste" in text and "Beto Teste" not in text, text
-            assert datetime.fromisoformat(row["date"].replace("Z", "+00:00")).astimezone(timezone.utc).strftime("%d/%m/%Y") in text, text
-            assert re.search(r"8 parâmetros foram avaliados", text, re.I), text
+        def verify_pdf(download):
+            with tempfile.TemporaryDirectory() as folder:
+                pdf = Path(folder) / "avaliacao.pdf"
+                download.save_as(pdf)
+                subprocess.run(["pdftoppm", "-r", "150", "-png", str(pdf), folder + "/page"], check=True)
+                text = " ".join(subprocess.check_output(["tesseract", str(img), "stdout", "-l", "por"],
+                                text=True) for img in sorted(Path(folder).glob("page-*.png")))
+                text = " ".join(text.split())
+                assert "Ana Teste" in text and "Beto Teste" not in text, text
+                assert datetime.fromisoformat(row["date"].replace("Z", "+00:00")).astimezone(timezone.utc).strftime("%d/%m/%Y") in text, text
+                assert re.search(r"8 parâmetros foram avaliados", text, re.I), text
+                assert "50%" in text, text
+                assert "Resposta com apoio visual" in text, text
+                assert "Pausa solicitada pelo paciente" in text, text
+                assert "Tentativas" in text, text
+                assert len(list(Path(folder).glob("page-*.png"))) > 1
+        verify_pdf(download)
+        page.get_by_role("button", name="Editar Avaliação", exact=True).click()
+        page.get_by_role("button", name=re.compile("^Aplicar atividades")).first.click()
+        expect(levels.first).to_have_attribute("aria-pressed", "true")
+        expect(page.get_by_role("button", name=re.compile(r"Emerg\., nível 1$")).nth(1)).to_have_attribute("aria-pressed", "true")
+        with page.expect_download(timeout=90000) as event:
+            page.get_by_role("button", name="Baixar relatório em PDF", exact=True).click()
+        verify_pdf(event.value)
+        page.set_viewport_size({"width": 390, "height": 844})
+        pending = page.get_by_role("button", name="Somente indicadores pendentes", exact=True)
+        pending.click()
+        expect(page.get_by_role("heading", name="Percepção Musical", exact=True)).to_have_count(0)
+        pending.click()
+        expect(page.get_by_role("heading", name="Percepção Musical", exact=True)).to_be_visible()
         browser.close()
 
 

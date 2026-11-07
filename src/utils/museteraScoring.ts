@@ -29,8 +29,21 @@ export interface ScoreSummary {
 export const parameterKey = (domain: string, subdomain: string, parameter: string) =>
   `${domain}-${subdomain}-${parameter}`;
 
-export function levelScore(level: string | undefined | null): number | null {
-  return level != null && Object.prototype.hasOwnProperty.call(SCORE_BY_LEVEL, level)
+const LEGACY_LEVELS = Object.keys(SCORE_BY_LEVEL) as ScoreLevel[];
+
+export function normalizeLevel(value: unknown): string {
+  const level = typeof value === "number" ? String(value) : value;
+  if (typeof level !== "string") return "";
+  return /^[0-5]$/.test(level) ? LEGACY_LEVELS[Number(level)] : level;
+}
+
+export function normalizeSelections(selections: Record<string, unknown> = {}): Record<string, string> {
+  return Object.fromEntries(Object.entries(selections).map(([key, value]) => [key, normalizeLevel(value)]));
+}
+
+export function levelScore(value: unknown): number | null {
+  const level = normalizeLevel(value);
+  return Object.prototype.hasOwnProperty.call(SCORE_BY_LEVEL, level)
     ? SCORE_BY_LEVEL[level as ScoreLevel]
     : null;
 }

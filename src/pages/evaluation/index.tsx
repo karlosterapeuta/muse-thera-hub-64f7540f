@@ -1,5 +1,6 @@
+import { normalizeSelections } from "@/utils/museteraScoring";
 import { evaluationDomains } from "./utils/domains";
-import { buildEvaluationReportContent, loadEvaluationAnamnesisHeader } from "./utils/savedReport";
+import { generateEvaluationReportBlob } from "./utils/savedReport";
 
 import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
@@ -176,12 +177,13 @@ function EvaluationForm({ requested }: { requested: string }) {
   const [selectedPatient, setSelectedPatient] = useState<string>("");
   const [selectedEvaluation, setSelectedEvaluation] = useState(draft?.selectedEvaluation || "1");
   const [evaluationDate, setEvaluationDate] = useState<Date>(draft?.evaluationDate ? new Date(draft.evaluationDate) : new Date());
-  const [selections, setSelections] = useState<Record<string, string>>(draft?.selections || {});
+  const [selections, setSelections] = useState<Record<string, string>>(normalizeSelections(draft?.selections || {}));
   const [observations, setObservations] = useState<Record<string, string>>(draft?.observations || {});
   const [isLoading, setIsLoading] = useState(true);
   const [isGeneratingText, setIsGeneratingText] = useState(false);
   const [isGeneratingWord, setIsGeneratingWord] = useState(false);
   const [activeTab, setActiveTab] = useState(draft?.activeTab || "evaluation");
+  const [onlyPending, setOnlyPending] = useState(false);
   const [activeDomainFilter, setActiveDomainFilter] = useState("Domínio Musical");
   const [activeSubdomainFilter, setActiveSubdomainFilter] = useState("all");
   const [selectedForComparison, setSelectedForComparison] = useState<string[]>([]);
@@ -350,6 +352,17 @@ function EvaluationForm({ requested }: { requested: string }) {
   const isParameterEvaluated = (domain: string, subdomain: string, parameter: string): boolean =>
     isScored(selections[parameterKey(domain, subdomain, parameter)]);
 
+  const isPendingParameter = (domain: string, subdomain: string, parameter: string) => {
+    const value = selections[parameterKey(domain, subdomain, parameter)];
+    return !isScored(value) && value !== "nao_aplicavel";
+  };
+  const visibleSubdomain = (domain: typeof evaluationDomains[number], subdomain: typeof domain.subdomains[number]) =>
+    (activeSubdomainFilter === "all" || domain.title !== activeDomainFilter || subdomain.title === activeSubdomainFilter) &&
+    (!onlyPending || subdomain.parameters.some(parameter => isPendingParameter(domain.title, subdomain.title, parameter)));
+  const visibleDomains = evaluationDomains
+    .filter(domain => activeDomainFilter === "all" || domain.title === activeDomainFilter)
+    .filter(domain => domain.subdomains.some(subdomain => visibleSubdomain(domain, subdomain)));
+
   const isSubdomainEvaluated = (domain: string, subdomain: string, parameters: string[]): boolean =>
     summarizeSubdomain(selections, domain, subdomain, parameters).evaluatedParameters > 0;
 
@@ -474,7 +487,7 @@ function EvaluationForm({ requested }: { requested: string }) {
 
   const handleLoadEvaluation = (evaluation: SavedEvaluation) => {
     if (evaluation.content) {
-      setSelections(evaluation.content.selections || {});
+      setSelections(normalizeSelections(evaluation.content.selections || {}));
       setObservations(evaluation.content.observations || {});
       setEvaluationDate(new Date(evaluation.date));
       if (evaluation.content.evaluationType) {
@@ -492,7 +505,7 @@ function EvaluationForm({ requested }: { requested: string }) {
     }
     
     if (evaluation.content) {
-      setSelections(evaluation.content.selections || {});
+      setSelections(normalizeSelections(evaluation.content.selections || {}));
       setObservations(evaluation.content.observations || {});
       setEvaluationDate(new Date(evaluation.date));
       if (evaluation.content.evaluationType) {
@@ -880,39 +893,6 @@ function EvaluationForm({ requested }: { requested: string }) {
     }
   };
 
-  const categorizeEvaluationData = () => {
-    const achievements: any[] = [];      // score >= 60 (Moderado, Consistente, Excepcional)
-    const developmentAreas: any[] = [];  // score < 60 (Não Observado, Emergente, Inconsistente)
-
-    evaluationDomains.forEach(domain => {
-      domain.subdomains.forEach(subdomain => {
-        subdomain.parameters.forEach(param => {
-          const key = `${domain.title}-${subdomain.title}-${param}`;
-          const selection = selections[key];
-          const score = calculateScore(domain.title, subdomain.title, param);
-          
-          if (selection && selection !== 'nao_aplicavel') {
-            const paramData = {
-              domain: domain.title,
-              subdomain: subdomain.title,
-              parameter: param,
-              score,
-              level: selection
-            };
-            
-            if (score >= 60) {
-              achievements.push(paramData);
-            } else {
-              developmentAreas.push(paramData);
-            }
-          }
-        });
-      });
-    });
-
-    return { achievements, developmentAreas };
-  };
-
   const handleDownloadCombinedReport = async (formatType: "pdf" | "word") => {
     if (!selectedPatient) {
       toast.error("Selecione um paciente primeiro");
@@ -936,74 +916,17 @@ function EvaluationForm({ requested }: { requested: string }) {
       : "Montando relatório completo em PDF...");
 
     try {
-      const anamnesisHeader = await loadEvaluationAnamnesisHeader(selectedPatient);
-      const { achievements, developmentAreas } = categorizeEvaluationData();
-      const reportContent = buildEvaluationReportContent({
-        patientName,
-        patientAge,
-        evaluationDateLabel: dateLabel,
-        achievements,
-        developmentAreas,
-        score: overallScore,
-      });
-
-      const [signatureBase64, stampBase64, photoBase64] = await Promise.all([
-        professionalData?.digital_signature_url
-          ? imageUrlToBase64(professionalData.digital_signature_url).catch(() => null)
-          : Promise.resolve(null),
-        professionalData?.digital_stamp_url
-          ? imageUrlToBase64(professionalData.digital_stamp_url).catch(() => null)
-          : Promise.resolve(null),
-        (professionalData?.stamp_photo_url || professionalData?.avatar_url)
-          ? imageUrlToBase64((professionalData?.stamp_photo_url || professionalData?.avatar_url)!).catch(() => null)
-          : Promise.resolve(null),
-      ]);
-
-      const combinedContent = (
-        <div style={{ display: "block", backgroundColor: "#ffffff" }}>
-          <EvaluationTextPDF
-            content={reportContent}
-            patientName={patientName}
-            patientAge={patientAge}
-            patientBirthDate={selectedPatientData?.birth_date}
-            guardianNames={anamnesisHeader.guardianNames}
-            cidCode={anamnesisHeader.cidCode}
-            evaluationDate={dateLabel}
-            professionalName={professionalData?.name || "Profissional"}
-            professionalRegister={professionalData?.register || undefined}
-            digitalSignatureUrl={signatureBase64 || undefined}
-            digitalStampUrl={stampBase64 || undefined}
-            professionalEmail={professionalData?.email || undefined}
-            professionalPhone={professionalData?.phone || undefined}
-            professionalSpecialty={professionalData?.specialty || undefined}
-            professionalPhotoUrl={photoBase64 || undefined}
-            suppressProfessionalFooter
-            overallScore={overallScore}
-          />
-          <GraphReportPDF
-            patientName={patientName}
-            patientAge={patientAge}
-            professionalData={professionalData}
-            evaluationDate={evaluationDate}
-            selections={selections}
-            evaluationDomains={evaluationDomains}
-            categoryData={subdomainScores}
-            pieData={pieData}
-            radarData={domainScores}
-            overallScore={overallScore}
-            professionalPhotoBase64={photoBase64 || undefined}
-            digitalStampBase64={stampBase64 || undefined}
-            digitalSignatureBase64={signatureBase64 || undefined}
-            evaluationType={selectedEvaluation}
-            suppressDocumentHeader
-          />
-        </div>
-      );
-
-      const pdfBlob = await generateSectionPdf(combinedContent, {
-        filename: `${filenameBase}.pdf`,
-        scale: 2.0,
-      });
+      const pdfBlob = await generateEvaluationReportBlob({
+        id: editingEvaluationId || "draft",
+        patient_id: selectedPatient,
+        patient_name: patientName,
+        patient_age: patientAge ?? undefined,
+        patient_birth_date: selectedPatientData?.birth_date || undefined,
+        date: evaluationDate.toISOString(),
+        created_at: evaluationDate.toISOString(),
+        type: selectedEvaluation,
+        content: { selections, observations, overallScore, domainScores: [], evaluationType: selectedEvaluation },
+      }, professionalData, `${filenameBase}.pdf`);
 
       if (isWord) {
         await downloadPdfAsWordPages(
@@ -1403,10 +1326,19 @@ function EvaluationForm({ requested }: { requested: string }) {
                     </select>
                   </div>
                 </div>
+                <Button type="button" variant={onlyPending ? "default" : "outline"} className="mt-3 min-h-12 w-full sm:w-auto"
+                  aria-pressed={onlyPending} onClick={() => setOnlyPending(value => !value)}>
+                  Somente indicadores pendentes
+                </Button>
                 <p aria-live="polite" className="mt-3 text-sm font-medium text-teal-900 dark:text-teal-100">Progresso geral: {overallScore.evaluatedParameters} de {overallScore.totalParameters} indicadores aplicáveis pontuados · {overallScore.completionPercentage}% preenchido</p>
               </nav>
 
-              {evaluationDomains.filter(domain => activeDomainFilter === "all" || domain.title === activeDomainFilter).map((domain) => (
+              {onlyPending && visibleDomains.length === 0 && (
+                <p role="status" className="rounded-xl border border-border bg-card p-4 text-foreground">
+                  Nenhum indicador pendente nos filtros selecionados. Desative o filtro para revisar as respostas.
+                </p>
+              )}
+              {visibleDomains.map((domain) => (
                 <div key={domain.title} className="group">
                   <Card className="border border-teal-700/15 dark:border-teal-500/20 shadow-sm p-4 sm:p-6 rounded-2xl bg-card">
                     <div className="flex flex-wrap items-center mb-5 gap-3">
@@ -1446,7 +1378,7 @@ function EvaluationForm({ requested }: { requested: string }) {
                       <strong>Aplicação no TEA:</strong> {AUTISM_DOMAIN_NOTES[domain.title]}
                     </p>
 
-                    {domain.subdomains.filter(subdomain => activeSubdomainFilter === "all" || domain.title !== activeDomainFilter || subdomain.title === activeSubdomainFilter).map((subdomain, subdomainIndex) => {
+                    {domain.subdomains.filter(subdomain => visibleSubdomain(domain, subdomain)).map((subdomain, subdomainIndex) => {
                       const domainColorMap: Record<string, { border: string; bg: string; headerBg: string; text: string; badgeBg: string; badgeText: string; badgeBorder: string; infoBg: string; infoText: string }> = {
                         "from-teal-700 to-emerald-700": { border: "border-l-teal-600", bg: "bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 dark:from-emerald-950/30 dark:via-teal-950/30 dark:to-emerald-950/30", headerBg: "bg-gradient-to-r from-teal-600 to-emerald-600", text: "text-teal-800 dark:text-teal-200", badgeBg: "bg-emerald-100 dark:bg-emerald-900/40", badgeText: "text-emerald-700 dark:text-emerald-300", badgeBorder: "border-emerald-300 dark:border-emerald-700", infoBg: "hover:bg-emerald-100 dark:hover:bg-emerald-900/30", infoText: "text-emerald-600 dark:text-emerald-400" },
                         "from-teal-700 to-teal-800": { border: "border-l-emerald-600", bg: "bg-gradient-to-r from-teal-50 via-emerald-50 to-teal-50 dark:from-teal-950/30 dark:via-emerald-950/30 dark:to-teal-950/30", headerBg: "bg-gradient-to-r from-teal-600 to-emerald-600", text: "text-teal-800 dark:text-teal-200", badgeBg: "bg-emerald-100 dark:bg-emerald-900/40", badgeText: "text-emerald-700 dark:text-emerald-300", badgeBorder: "border-emerald-300 dark:border-emerald-700", infoBg: "hover:bg-emerald-100 dark:hover:bg-emerald-900/30", infoText: "text-emerald-600 dark:text-emerald-400" },
@@ -1512,6 +1444,7 @@ function EvaluationForm({ requested }: { requested: string }) {
                           {/* Unified Button Grid Layout — desktop & mobile */}
                           <div className="space-y-3">
                             {subdomain.parameters.map((parameter, paramIndex) => {
+                              if (onlyPending && !isPendingParameter(domain.title, subdomain.title, parameter)) return null;
                               const selectionKey = `${domain.title}-${subdomain.title}-${parameter}`;
                               const currentSelection = selections[selectionKey];
                               const levels = [

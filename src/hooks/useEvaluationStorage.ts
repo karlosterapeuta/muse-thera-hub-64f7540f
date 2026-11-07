@@ -1,3 +1,4 @@
+import { normalizeEvaluation } from "@/pages/evaluation/utils/normalizeEvaluation";
 import { CURRENT_SCORING_VERSION } from "@/utils/evaluationLongitudinal";
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -66,7 +67,7 @@ export function useEvaluationStorage(patientId: string | null) {
         patient_birth_date: item.patients?.birth_date,
       }));
       
-      setSavedEvaluations(evaluationsWithPatient as SavedEvaluation[]);
+      setSavedEvaluations(evaluationsWithPatient.map(normalizeEvaluation) as SavedEvaluation[]);
     } catch (error) {
       console.error("Erro ao carregar avaliações:", error);
       toast.error("Erro ao carregar avaliações salvas");
@@ -93,7 +94,7 @@ export function useEvaluationStorage(patientId: string | null) {
         patient_birth_date: item.patients?.birth_date,
       }));
       
-      setAllEvaluations(evaluationsWithPatient as SavedEvaluation[]);
+      setAllEvaluations(evaluationsWithPatient.map(normalizeEvaluation) as SavedEvaluation[]);
     } catch (error) {
       console.error("Erro ao carregar todas as avaliações:", error);
       toast.error("Erro ao carregar avaliações");

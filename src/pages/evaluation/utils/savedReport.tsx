@@ -9,7 +9,9 @@ import { resolveEvaluationMeta } from "@/utils/evaluationTypes";
 import { imageUrlToBase64 } from "@/utils/imageToBase64";
 import { savePDFToStorage } from "@/utils/pdfStorageUtils";
 import { generateSectionPdf } from "@/utils/sectionPdfGenerator";
-import { levelScore } from "@/utils/museteraScoring";
+import { GraphReportPDF } from "@/components/pdf/GraphReportPDF";
+import { normalizeEvaluation } from "./normalizeEvaluation";
+import { summarizeEvaluation, summarizeDomain, summarizeSubdomain, levelScore } from "@/utils/museteraScoring";
 import { evaluationDomains } from "./domains";
 
 type EvaluationAnamnesisHeader = { guardianNames: string[]; cidCode: string | null };
@@ -110,15 +112,6 @@ export const buildEvaluationReportContent = ({
   };
 };
 
-function historicalScore(value: unknown): number | null {
-  if (typeof value === "number" || typeof value === "string") {
-    const level = String(value);
-    if (/^[0-5]$/.test(level)) return Number(level) * 20;
-    return levelScore(level);
-  }
-  return null;
-}
-
 // Função para categorizar dados de uma avaliação SALVA
 const categorizeEvaluationDataFromSaved = (evaluation: SavedEvaluation) => {
   const achievements: any[] = [];
@@ -140,7 +133,7 @@ const categorizeEvaluationDataFromSaved = (evaluation: SavedEvaluation) => {
     if (match) {
       const { domain, subdomain } = match;
       const parameter = key.slice(match.prefix.length);
-      const score = historicalScore(value);
+      const score = levelScore(value);
 
       if (score !== null) {
         const paramData = {
@@ -163,103 +156,114 @@ const categorizeEvaluationDataFromSaved = (evaluation: SavedEvaluation) => {
   return { achievements, developmentAreas };
 };
 
-// Função para gerar texto de avaliação com IA a partir de uma avaliação SALVA
-export const downloadSavedEvaluation = async (evaluation: SavedEvaluation, professionalData: ProfessionalData | null | undefined) => {
-  const patient = { name: evaluation.patient_name, birth_date: evaluation.patient_birth_date, age: evaluation.patient_age };
-  // Verificar se há parâmetros avaliados
-  const savedSelections = evaluation.content?.selections || {};
-  const scores = Object.values(savedSelections).map(historicalScore).filter((score): score is number => score !== null);
-  const evaluatedCount = scores.length;
+const evidenceLabels: Record<string, string> = {
+  attempts: "Tentativas", successes: "Respostas funcionais", support: "Apoio", note: "Evidências e adaptações",
+};
+const supportLabels: Record<string, string> = {
+  independente: "Sem ajuda", pista_visual: "Pista visual ou gestual", pista_verbal: "Pista verbal",
+  modelo: "Modelo ou demonstração", ajuda_intensa: "Ajuda intensa", nao_registrado: "Não registrado",
+};
 
-  if (evaluatedCount === 0) {
-    toast.error("Esta avaliação não possui parâmetros marcados");
-    return;
-  }
-
-
-  const loadingId = toast.loading("Preparando avaliação para download...");
-
+function observationText(key: string, value: string): string {
+  if (!key.startsWith("__musetera_evidence__:")) return value;
   try {
-    const anamnesisHeader = await loadEvaluationAnamnesisHeader(evaluation.patient_id);
-    // Categorizar dados da avaliação SALVA
-    const { achievements, developmentAreas } = categorizeEvaluationDataFromSaved(evaluation);
+    const parsed = JSON.parse(value);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return value;
+    return Object.entries(parsed)
+      .filter(([, entry]) => typeof entry === "string" && entry.trim())
+      .map(([field, entry]) => `${evidenceLabels[field] || field}: ${field === "support" ? supportLabels[String(entry)] || entry : entry}`)
+      .join("\n");
+  } catch {
+    return value;
+  }
+}
 
-    // Preparar overallScore da avaliação salva com todas as propriedades necessárias
-    const rawOverallScore: any = evaluation.content?.overallScore || {};
-    const savedOverallScore = {
-      percentage: rawOverallScore.percentage ?? Math.round(scores.reduce((sum, value) => sum + value, 0) / evaluatedCount),
-      evaluatedDomains: rawOverallScore.evaluatedDomains ?? new Set([...achievements, ...developmentAreas].map(item => item.domain)).size,
-      totalDomains: rawOverallScore.totalDomains || evaluationDomains.length,
-      evaluatedParameters: rawOverallScore.evaluatedParameters ?? evaluatedCount,
-      totalParameters: rawOverallScore.totalParameters,
-      completionPercentage: rawOverallScore.completionPercentage
-    };
+function EvaluationObservations({ observations }: { observations: Record<string, string> }) {
+  return <>{Object.entries(observations).flatMap(([key, value]) => {
+    const text = observationText(key, value);
+    if (!text.trim()) return [];
+    // Small sections keep long clinical notes legible during PDF pagination.
+    const chunks = text.match(/[\s\S]{1,850}(?:\s|$)|[\s\S]{1,850}/g) || [];
+    return chunks.map((chunk, index) => (
+      <section key={key + index} data-pdf-section style={{ width: "182mm", padding: "4mm", boxSizing: "border-box", color: "#172b4d", background: "#fff", font: "11pt Arial", lineHeight: 1.6, overflowWrap: "anywhere" }}>
+        <h2 style={{ fontSize: "13pt", color: "#0f766e" }}>Observações do terapeuta{index ? " · continuação" : ""}</h2>
+        <h3 style={{ fontSize: "11pt" }}>{key.replace("__musetera_evidence__:", "")}</h3>
+        <p style={{ whiteSpace: "pre-wrap" }}>{chunk}</p>
+      </section>
+    ));
+  })}</>;
+}
 
-    const evaluationDateLabel = format(new Date(evaluation.date), 'dd/MM/yyyy');
-    const reportContent = buildEvaluationReportContent({
-      patientName: patient.name || 'Paciente',
-      patientAge: calculateAgeFromBirthDate(patient.birth_date) ?? patient.age,
-      evaluationDateLabel,
-      achievements,
-      developmentAreas,
-      score: savedOverallScore,
-    });
+export async function generateEvaluationReportBlob(
+  source: SavedEvaluation,
+  professionalData: ProfessionalData | null | undefined,
+  filename: string,
+): Promise<Blob> {
+  const evaluation = normalizeEvaluation(source);
+  const selections = evaluation.content?.selections || {};
+  const score = summarizeEvaluation(selections, evaluationDomains);
+  if (!score.evaluatedParameters) throw new Error("Esta avaliação não possui indicadores pontuados.");
+  const patientName = evaluation.patient_name || "Paciente";
+  const patientAge = calculateAgeFromBirthDate(evaluation.patient_birth_date) ?? evaluation.patient_age ?? null;
+  const date = new Date(evaluation.date);
+  const dateLabel = format(date, "dd/MM/yyyy");
+  const header = await loadEvaluationAnamnesisHeader(evaluation.patient_id);
+  const { achievements, developmentAreas } = categorizeEvaluationDataFromSaved(evaluation);
+  const reportContent = buildEvaluationReportContent({
+    patientName, patientAge, evaluationDateLabel: dateLabel, achievements, developmentAreas, score,
+  });
+  const [signature, stamp, photo] = await Promise.all([
+    professionalData?.digital_signature_url,
+    professionalData?.digital_stamp_url,
+    professionalData?.stamp_photo_url || professionalData?.avatar_url,
+  ].map(url => url ? imageUrlToBase64(url).catch(() => undefined) : Promise.resolve(undefined)));
+  const evaluatedDomains = evaluationDomains.filter(domain => summarizeDomain(selections, domain).evaluatedParameters > 0);
+  const radarData = evaluatedDomains.map(domain => ({
+    name: domain.title.replace("Domínio ", ""),
+    value: summarizeDomain(selections, domain).percentage,
+  }));
+  const categoryData = evaluatedDomains.flatMap(domain => domain.subdomains
+    .filter(sub => summarizeSubdomain(selections, domain.title, sub.title, sub.parameters).evaluatedParameters > 0)
+    .map(sub => ({
+      name: sub.title, domain: domain.title.replace("Domínio ", ""),
+      value: summarizeSubdomain(selections, domain.title, sub.title, sub.parameters).percentage,
+    })));
+  return generateSectionPdf(
+    <div style={{ background: "#fff" }}>
+      <EvaluationTextPDF content={reportContent} patientName={patientName} patientAge={patientAge}
+        patientBirthDate={evaluation.patient_birth_date} guardianNames={header.guardianNames} cidCode={header.cidCode}
+        evaluationDate={dateLabel} professionalName={professionalData?.name || "Profissional"}
+        professionalRegister={professionalData?.register || undefined} overallScore={score} suppressProfessionalFooter />
+      <EvaluationObservations observations={evaluation.content?.observations || {}} />
+      <GraphReportPDF patientName={patientName} patientAge={patientAge} professionalData={professionalData}
+        evaluationDate={date} selections={selections} evaluationDomains={evaluationDomains} overallScore={score}
+        categoryData={categoryData} radarData={radarData}
+        pieData={[{ name: "Desenvolvido", value: score.percentage }, { name: "A desenvolver", value: 100 - score.percentage }]}
+        digitalSignatureBase64={signature || undefined} digitalStampBase64={stamp || undefined}
+        professionalPhotoBase64={photo || undefined} evaluationType={resolveEvaluationMeta(evaluation).key}
+        suppressDocumentHeader />
+    </div>,
+    { filename, scale: 2 },
+  );
+}
 
-    toast.loading("Gerando PDF do relatório...", { id: loadingId });
-
-    const [signatureBase64, stampBase64, photoBase64] = await Promise.all([
-      professionalData?.digital_signature_url
-        ? imageUrlToBase64(professionalData.digital_signature_url).catch(() => null)
-        : Promise.resolve(null),
-      professionalData?.digital_stamp_url
-        ? imageUrlToBase64(professionalData.digital_stamp_url).catch(() => null)
-        : Promise.resolve(null),
-      professionalData?.stamp_photo_url
-        ? imageUrlToBase64(professionalData.stamp_photo_url).catch(() => null)
-        : Promise.resolve(null),
-    ]);
-
-    // Gerar PDF com o texto retornado
-    const pdfContent = (
-      <div id="evaluation-text-pdf-content" style={{ display: 'block' }}>
-        <EvaluationTextPDF
-          content={reportContent}
-          patientName={patient.name || 'Paciente'}
-          patientAge={calculateAgeFromBirthDate(patient.birth_date) ?? patient.age ?? null}
-          patientBirthDate={patient.birth_date}
-          guardianNames={anamnesisHeader.guardianNames}
-          cidCode={anamnesisHeader.cidCode}
-          evaluationDate={evaluationDateLabel}
-          professionalName={professionalData?.name || 'Profissional'}
-          professionalRegister={professionalData?.register || undefined}
-          digitalSignatureUrl={signatureBase64 || undefined}
-          digitalStampUrl={stampBase64 || undefined}
-          professionalEmail={professionalData?.email || undefined}
-          professionalPhone={professionalData?.phone || undefined}
-          professionalSpecialty={professionalData?.specialty || undefined}
-          professionalPhotoUrl={photoBase64 || undefined}
-          overallScore={savedOverallScore}
-        />
-      </div>
-    );
-
-    const filename = `avaliacao-${resolveEvaluationMeta(evaluation).shortLabel}-${patient.name || 'paciente'}-${format(new Date(evaluation.date), 'yyyy-MM-dd')}.pdf`;
-    const blob = await generateSectionPdf(pdfContent, { filename, scale: 1.0 });
-
+export const downloadSavedEvaluation = async (evaluation: SavedEvaluation, professionalData: ProfessionalData | null | undefined) => {
+  const loadingId = toast.loading("Preparando relatório completo da avaliação...");
+  try {
+    const filename = `avaliacao-${resolveEvaluationMeta(evaluation).shortLabel}-${evaluation.patient_name || "paciente"}-${format(new Date(evaluation.date), "yyyy-MM-dd")}.pdf`;
+    const blob = await generateEvaluationReportBlob(evaluation, professionalData, filename);
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-
-    savePDFToStorage(blob, filename, "evaluation").catch((e) => console.warn(e));
-
-    toast.success("Avaliação baixada com sucesso!", { id: loadingId });
-  } catch (error: any) {
-    console.error("Erro ao gerar texto:", error);
-    toast.error("Erro ao baixar a avaliação. Tente novamente.", { id: loadingId });
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = filename;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+    savePDFToStorage(blob, filename, "evaluation").catch(console.warn);
+    toast.success("Relatório completo baixado.", { id: loadingId });
+  } catch (error) {
+    console.error(error);
+    toast.error("Não foi possível baixar a avaliação. Tente novamente.", { id: loadingId });
   }
 };

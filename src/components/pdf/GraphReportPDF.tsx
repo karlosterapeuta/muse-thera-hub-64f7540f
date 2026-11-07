@@ -71,7 +71,7 @@ const getPerfLabel = (pct: number) => {
   if (pct >= 60) return { label: 'Satisfatório', color: '#0891b2' };
   if (pct >= 40) return { label: 'Em Desenvolvimento', color: '#d97706' };
   if (pct > 0) return { label: 'Necessita Atenção', color: '#dc2626' };
-  return { label: 'Não Avaliado', color: '#6b7280' };
+  return { label: 'Não observado nos itens pontuados', color: '#6b7280' };
 };
 
 const baseFont = 'Inter, system-ui, -apple-system, sans-serif';
@@ -581,7 +581,7 @@ export const GraphReportPDF: React.FC<GraphReportPDFProps> = ({
         const hasAny = domain.subdomains.some((s) =>
           s.parameters.some((p) => {
             const v = selections[`${domain.title}-${s.title}-${p}`];
-            return v && v !== 'nao_observado';
+            return isScored(v);
           })
         );
         if (!hasAny) return null;

@@ -3,7 +3,6 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -51,8 +50,11 @@ export function EvaluationHistory({
   const handleDownload = async (evaluation: SavedEvaluation) => {
     if (!onDownloadEvaluation) return;
     setDownloadingId(evaluation.id);
-    await onDownloadEvaluation(evaluation);
-    setDownloadingId(null);
+    try {
+      await onDownloadEvaluation(evaluation);
+    } finally {
+      setDownloadingId(null);
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -73,7 +75,7 @@ export function EvaluationHistory({
     return (
       <Card className="p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
         <div className="flex items-center justify-center h-48">
-          <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
+          <Loader2 className="h-11 w-11 animate-spin text-purple-600" />
         </div>
       </Card>
     );
@@ -109,7 +111,7 @@ export function EvaluationHistory({
         )}
       </div>
 
-      <ScrollArea className="h-[400px] pr-4">
+      <div className="min-w-0">
         <div className="space-y-5">
           {EVALUATION_TYPES.map((typeMeta) => {
             const group = evaluations.filter(
@@ -153,6 +155,7 @@ export function EvaluationHistory({
               >
                 <div className="flex items-start gap-3">
                   <Checkbox
+                    aria-label={`Comparar ${meta.label} de ${format(new Date(evaluation.date), "dd/MM/yyyy")}`}
                     checked={isSelected}
                     onCheckedChange={() => canSelect && onToggleComparison(evaluation.id)}
                     disabled={!canSelect}
@@ -193,7 +196,7 @@ export function EvaluationHistory({
                         size="sm"
                         variant="outline"
                         onClick={() => onLoadEvaluation(evaluation)}
-                        className="h-8 text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-950 dark:hover:bg-blue-900 dark:text-blue-300 dark:border-blue-800"
+                        className="min-h-11 h-auto whitespace-normal text-sm bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-950 dark:hover:bg-blue-900 dark:text-blue-300 dark:border-blue-800"
                       >
                         <FileText className="h-3 w-3 mr-1" />
                         Editar Avaliação
@@ -203,7 +206,7 @@ export function EvaluationHistory({
                           size="sm"
                           variant="outline"
                           onClick={() => onEditEvaluation(evaluation)}
-                          className="h-8 text-xs bg-amber-50 hover:bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-950 dark:hover:bg-amber-900 dark:text-amber-300 dark:border-amber-800"
+                          className="min-h-11 h-auto whitespace-normal text-sm bg-amber-50 hover:bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-950 dark:hover:bg-amber-900 dark:text-amber-300 dark:border-amber-800"
                         >
                           <Pencil className="h-3 w-3 mr-1" />
                           Editar
@@ -215,7 +218,7 @@ export function EvaluationHistory({
                           variant="outline"
                           onClick={() => handleDownload(evaluation)}
                           disabled={downloadingId !== null}
-                          className="h-8 text-xs bg-green-50 hover:bg-green-100 text-green-700 border-green-200 dark:bg-green-950 dark:hover:bg-green-900 dark:text-green-300 dark:border-green-800"
+                          className="min-h-11 h-auto whitespace-normal text-sm bg-green-50 hover:bg-green-100 text-green-700 border-green-200 dark:bg-green-950 dark:hover:bg-green-900 dark:text-green-300 dark:border-green-800"
                         >
                           {downloadingId === evaluation.id ? (
                             <Loader2 className="h-3 w-3 animate-spin mr-1" />
@@ -230,7 +233,7 @@ export function EvaluationHistory({
                           <Button
                             size="sm"
                             variant="outline"
-                            className="h-8 text-xs bg-red-50 hover:bg-red-100 text-red-700 border-red-200 dark:bg-red-950 dark:hover:bg-red-900 dark:text-red-300 dark:border-red-800"
+                            className="min-h-11 h-auto whitespace-normal text-sm bg-red-50 hover:bg-red-100 text-red-700 border-red-200 dark:bg-red-950 dark:hover:bg-red-900 dark:text-red-300 dark:border-red-800"
                           >
                             {deletingId === evaluation.id ? (
                               <Loader2 className="h-3 w-3 animate-spin" />
@@ -272,7 +275,7 @@ export function EvaluationHistory({
             );
           })}
         </div>
-      </ScrollArea>
+      </div>
 
 
       {evaluations.length >= 2 && (
