@@ -1,0 +1,26 @@
+name: Atendimento e PDF individual
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  clinical-journey:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm install --legacy-peer-deps --no-audit --no-fund
+      - run: npm run build
+      - run: |
+          python -m pip install playwright==1.55.0
+          python -m playwright install --with-deps chromium
+          sudo apt-get install -y poppler-utils tesseract-ocr-por
+      - run: |
+          npm run preview -- --host 127.0.0.1 --port 4173 --strictPort > /tmp/portal-preview.log 2>&1 &
+          for i in {1..30}; do curl -fsS http://127.0.0.1:4173 >/dev/null && break; sleep 1; done
+          python tests/clinical_journey.py

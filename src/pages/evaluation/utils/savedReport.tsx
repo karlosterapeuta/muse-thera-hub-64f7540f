@@ -9,6 +9,7 @@ import { resolveEvaluationMeta } from "@/utils/evaluationTypes";
 import { imageUrlToBase64 } from "@/utils/imageToBase64";
 import { savePDFToStorage } from "@/utils/pdfStorageUtils";
 import { generateSectionPdf } from "@/utils/sectionPdfGenerator";
+import { levelScore } from "@/utils/museteraScoring";
 import { evaluationDomains } from "./domains";
 
 type EvaluationAnamnesisHeader = { guardianNames: string[]; cidCode: string | null };
@@ -109,25 +110,21 @@ export const buildEvaluationReportContent = ({
   };
 };
 
+function historicalScore(value: unknown): number | null {
+  if (typeof value === "number" || typeof value === "string") {
+    const level = String(value);
+    if (/^[0-5]$/.test(level)) return Number(level) * 20;
+    return levelScore(level);
+  }
+  return null;
+}
+
 // Função para categorizar dados de uma avaliação SALVA
 const categorizeEvaluationDataFromSaved = (evaluation: SavedEvaluation) => {
   const achievements: any[] = [];
   const developmentAreas: any[] = [];
 
   const savedSelections = evaluation.content?.selections || {};
-
-  // Função auxiliar para converter level em score
-  const levelToScoreValue = (level: string): number => {
-    switch(level) {
-      case '0': case 'nao_observado': return 0;
-      case '1': case 'emergente': return 20;
-      case '2': case 'inconsistente': return 40;
-      case '3': case 'moderado': return 60;
-      case '4': case 'consistente': return 80;
-      case '5': case 'excepcional': return 100;
-      default: return 0;
-    }
-  };
 
   // Iterar sobre as seleções salvas
   Object.entries(savedSelections).forEach(([key, value]) => {
@@ -143,9 +140,9 @@ const categorizeEvaluationDataFromSaved = (evaluation: SavedEvaluation) => {
     if (match) {
       const { domain, subdomain } = match;
       const parameter = key.slice(match.prefix.length);
-      const score = levelToScoreValue(value as string);
+      const score = historicalScore(value);
 
-      if (value && value !== 'nao_aplicavel') {
+      if (score !== null) {
         const paramData = {
           domain,
           subdomain,
@@ -171,7 +168,8 @@ export const downloadSavedEvaluation = async (evaluation: SavedEvaluation, profe
   const patient = { name: evaluation.patient_name, birth_date: evaluation.patient_birth_date, age: evaluation.patient_age };
   // Verificar se há parâmetros avaliados
   const savedSelections = evaluation.content?.selections || {};
-  const evaluatedCount = Object.values(savedSelections).filter(v => v && v !== 'nao_aplicavel').length;
+  const scores = Object.values(savedSelections).map(historicalScore).filter((score): score is number => score !== null);
+  const evaluatedCount = scores.length;
 
   if (evaluatedCount === 0) {
     toast.error("Esta avaliação não possui parâmetros marcados");
@@ -189,10 +187,10 @@ export const downloadSavedEvaluation = async (evaluation: SavedEvaluation, profe
     // Preparar overallScore da avaliação salva com todas as propriedades necessárias
     const rawOverallScore: any = evaluation.content?.overallScore || {};
     const savedOverallScore = {
-      percentage: rawOverallScore.percentage || 0,
-      evaluatedDomains: rawOverallScore.evaluatedDomains || evaluation.content?.domainScores?.length || 0,
+      percentage: rawOverallScore.percentage ?? Math.round(scores.reduce((sum, value) => sum + value, 0) / evaluatedCount),
+      evaluatedDomains: rawOverallScore.evaluatedDomains ?? new Set([...achievements, ...developmentAreas].map(item => item.domain)).size,
       totalDomains: rawOverallScore.totalDomains || evaluationDomains.length,
-      evaluatedParameters: rawOverallScore.evaluatedParameters ?? 0,
+      evaluatedParameters: rawOverallScore.evaluatedParameters ?? evaluatedCount,
       totalParameters: rawOverallScore.totalParameters,
       completionPercentage: rawOverallScore.completionPercentage
     };

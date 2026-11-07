@@ -4,6 +4,11 @@ import { ChevronRight, Home } from "lucide-react";
 const routeNames: Record<string, string> = {
   "/dashboard": "Dashboard",
   "/professional": "Profissional",
+  "/evaluation": "Avaliação",
+  "/pti": "Planos terapêuticos",
+  "/pti/novo": "Novo plano",
+  "/intervention": "Intervenção",
+  "/patient-history": "Histórico do paciente",
   "/patients": "Pacientes",
   "/sessions": "Sessões",
   "/processes": "Processos",
@@ -43,6 +48,7 @@ export function Breadcrumbs() {
     <nav className="flex items-center gap-2 text-sm text-muted-foreground">
       <Link
         to="/dashboard"
+        aria-label="Visão geral"
         className="flex items-center gap-1 hover:text-foreground transition-colors"
       >
         <Home className="h-5 w-5" />
@@ -50,7 +56,9 @@ export function Breadcrumbs() {
 
       {pathnames.map((_, index) => {
         const routeTo = `/${pathnames.slice(0, index + 1).join("/")}`;
-        const routeName = routeNames[routeTo] || pathnames[index];
+        if (routeTo === "/evaluation/paciente") return null;
+        const patientHistory = index === 2 && pathnames[0] === "evaluation" && pathnames[1] === "paciente";
+        const routeName = patientHistory ? "Histórico do paciente" : routeNames[routeTo] || pathnames[index];
         const isLast = index === pathnames.length - 1;
 
         return (
