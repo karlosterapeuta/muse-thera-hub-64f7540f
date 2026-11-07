@@ -193,6 +193,11 @@ function EvaluationForm({ requested }: { requested: string }) {
   const [pdfPreviewFilename, setPdfPreviewFilename] = useState<string>("documento.pdf");
   const [pdfPreviewBuilding, setPdfPreviewBuilding] = useState(false);
 
+  const [draftStorageFailed, setDraftStorageFailed] = useState(false);
+  const [savedToHistory, setSavedToHistory] = useState(false);
+  const hasDraftInput = Object.keys(selections).length > 0 ||
+    Object.values(observations).some(value => Boolean(value.trim()));
+
   // Persist draft to sessionStorage on changes
   useEffect(() => {
     if (!selectedPatient) return;
@@ -205,7 +210,12 @@ function EvaluationForm({ requested }: { requested: string }) {
       activeTab,
       editingEvaluationId,
     };
-    sessionStorage.setItem(draftKey, JSON.stringify(data));
+    try {
+      sessionStorage.setItem(draftKey, JSON.stringify(data));
+      setDraftStorageFailed(false);
+    } catch {
+      setDraftStorageFailed(true);
+    }
   }, [selectedPatient, selectedEvaluation, evaluationDate, selections, observations, activeTab, editingEvaluationId]);
 
   const { generateBlankScalePDF } = useEvaluationPDF();
@@ -229,7 +239,11 @@ function EvaluationForm({ requested }: { requested: string }) {
 
   // Sessões novas começam em branco. Uma avaliação anterior só é aberta
   // explicitamente por "Carregar" ou "Editar", evitando reutilizar respostas.
-  const startNewEvaluation = () => {
+  const startNewEvaluation = (afterSave = false) => {
+    if (!afterSave && hasDraftInput && !window.confirm(
+      "Iniciar nova sessão? As respostas deste rascunho serão descartadas. Salve a avaliação para mantê-las no histórico."
+    )) return;
+    setSavedToHistory(afterSave);
     setEditingEvaluationId(null);
     setSelections({});
     setObservations({});
@@ -442,7 +456,7 @@ function EvaluationForm({ requested }: { requested: string }) {
         overallScore
       );
       if (success) {
-        startNewEvaluation();
+        startNewEvaluation(true);
       }
     } else {
       // Criar nova avaliação
@@ -454,7 +468,7 @@ function EvaluationForm({ requested }: { requested: string }) {
         domainScoresData,
         overallScore
       );
-      if (success) startNewEvaluation();
+      if (success) startNewEvaluation(true);
     }
   };
 
@@ -1211,7 +1225,16 @@ function EvaluationForm({ requested }: { requested: string }) {
                 </div>
               </div>
 
-              <Button type="button" variant="outline" onClick={startNewEvaluation} disabled={!selectedPatient || isSaving} className="min-h-11 w-full sm:w-auto border-teal-700 text-teal-800 dark:text-teal-200 focus-visible:ring-2 focus-visible:ring-teal-600">
+              <p role="status" aria-live="polite" className="text-sm font-medium text-foreground">
+                {draftStorageFailed
+                  ? "Não foi possível guardar o rascunho nesta aba. Salve a avaliação antes de sair."
+                  : hasDraftInput
+                    ? "Rascunho nesta aba · Salve a avaliação para incluí-la no histórico."
+                    : savedToHistory
+                      ? "Avaliação salva no histórico · Nova sessão em branco."
+                      : "Nova sessão em branco"}
+              </p>
+              <Button type="button" variant="outline" onClick={() => startNewEvaluation()} disabled={!selectedPatient || isSaving} className="min-h-11 w-full sm:w-auto border-teal-700 text-teal-800 dark:text-teal-200 focus-visible:ring-2 focus-visible:ring-teal-600">
                 Nova sessão (preservar histórico)
               </Button>
               <TooltipProvider>

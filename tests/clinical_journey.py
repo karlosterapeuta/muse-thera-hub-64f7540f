@@ -83,6 +83,7 @@ def run():
         assert len(rows) == 1 and rows[0]["patient_id"] == A
         row = rows[0]
         assert row["content"]["overallScore"]["evaluatedParameters"] == 8
+        expect(page.get_by_role("status").filter(has_text="Avaliação salva no histórico")).to_be_visible()
         # Simulate loading a historical row without counters, including a legacy zero.
         del row["content"]["overallScore"]
         selections = row["content"]["selections"]
@@ -93,6 +94,13 @@ def run():
         first = levels.first
         expect(first).to_have_attribute("aria-pressed", "false")
         first.click()
+        expect(first).to_have_attribute("aria-pressed", "true")
+        expect(page.get_by_role("status").filter(has_text="Rascunho nesta aba")).to_be_visible()
+        page.once("dialog", lambda dialog: dialog.dismiss())
+        page.get_by_role("button", name="Nova sessão (preservar histórico)").click()
+        expect(first).to_have_attribute("aria-pressed", "true")
+        page.reload()
+        page.get_by_role("button", name=re.compile("^Aplicar atividades")).first.click()
         expect(first).to_have_attribute("aria-pressed", "true")
         page.get_by_role("link", name="Abrir PTI deste paciente").click()
         expect(page.get_by_text("Ana Teste", exact=True).first).to_be_visible()

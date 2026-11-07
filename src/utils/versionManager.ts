@@ -64,7 +64,9 @@ async function clearAllCaches(): Promise<void> {
     console.log('[VersionManager] localStorage limpo, removidos:', keysToRemove.length);
 
     // 4. Clear sessionStorage
-    sessionStorage.clear();
+    Object.keys(sessionStorage)
+      .filter(key => key !== "musetera-eval-draft" && !key.startsWith("musetera-eval-draft:"))
+      .forEach(key => sessionStorage.removeItem(key));
     console.log('[VersionManager] sessionStorage limpo');
 
     // 5. Clear cookies (preserve Supabase auth cookies)

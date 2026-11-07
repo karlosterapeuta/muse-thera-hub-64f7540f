@@ -62,7 +62,9 @@ export async function forceClientUpdate(): Promise<void> {
     keysToRemove.forEach((key) => localStorage.removeItem(key));
 
     // 4. Clear sessionStorage
-    sessionStorage.clear();
+    Object.keys(sessionStorage)
+      .filter(key => key !== "musetera-eval-draft" && !key.startsWith("musetera-eval-draft:"))
+      .forEach(key => sessionStorage.removeItem(key));
 
     // 5. Clear cookies (preserve auth)
     clearCookies();

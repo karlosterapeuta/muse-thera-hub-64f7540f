@@ -212,8 +212,11 @@ export class CacheManager {
       
       keysToRemove.forEach(key => localStorage.removeItem(key));
       
-      // Clear sessionStorage completely (it's temporary anyway)
-      sessionStorage.clear();
+      // Session drafts contain user input. Only discard explicit cache entries.
+      const sessionKeys = Object.keys(sessionStorage).filter(key =>
+        key.startsWith("temp_") || key.startsWith("cache_")
+      );
+      sessionKeys.forEach(key => sessionStorage.removeItem(key));
     } catch (error) {
       console.warn('Failed to clean web storage:', error);
     }
