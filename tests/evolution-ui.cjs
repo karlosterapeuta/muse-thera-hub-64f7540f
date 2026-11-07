@@ -70,7 +70,6 @@ test('histórico preserva zero real, sinaliza ausente e disponibiliza PDF indivi
     onLoadEvaluation: () => {},
     onDeleteEvaluation: () => {},
     onDownloadEvaluation: () => {},
-    onEditEvaluation: () => {},
   }));
   assert.match(markup, /Sem pontuação registrada/);
   assert.match(markup, /Pontuação: 0%/);

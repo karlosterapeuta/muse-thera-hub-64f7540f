@@ -204,6 +204,7 @@ export function EvaluationHistory({
                        )}
                       <Button
                         variant="outline"
+                        aria-label="Editar Avaliação"
                         onClick={() => onLoadEvaluation(evaluation)}
                          className="min-h-11 h-auto whitespace-normal text-sm border-border text-foreground hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary"
                       >
@@ -213,7 +214,6 @@ export function EvaluationHistory({
                       {onEditEvaluation && (
                         <Button
                           variant="outline"
-                          aria-label="Editar Avaliação"
                           onClick={() => onEditEvaluation(evaluation)}
                            className="min-h-11 h-auto whitespace-normal text-sm border-border text-foreground hover:bg-muted"
                         >
