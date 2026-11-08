@@ -22,8 +22,8 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import html2pdf from "html2pdf.js";
 import { savePDFToStorage } from "@/utils/pdfStorageUtils";
+import { buildInterventionPdf } from './utils/interventionPdf';
 import {
   Card,
   CardContent,
@@ -47,16 +47,12 @@ import { TherapyActivity, Disorder } from "@/types/therapy-activity";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type Patient = {
   id: string;
   name: string;
 };
-
-// Conteúdo clínico e texto da IA são inseridos no HTML que dá origem ao PDF.
-const escapePdfHtml = (value: unknown): string => String(value ?? '').replace(/[&<>"']/g, char => ({
-  '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
-}[char] || char));
 
 export default function InterventionForm() {
   const [params] = useSearchParams();
@@ -73,6 +69,7 @@ function InterventionSession({ requested }: { requested: string }) {
   const [selectedPatient, setSelectedPatient] = useState<string>("");
   const [selectedDemands, setSelectedDemands] = useState<Record<string, string[]>>({});
   const [selectedSubDemands, setSelectedSubDemands] = useState<Record<string, string[]>>({});
+  const [activeDisorder, setActiveDisorder] = useState<Disorder>('TEA');
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   const [suggestedActivities, setSuggestedActivities] = useState<TherapyActivity[]>([]);
   const [expandedActivities, setExpandedActivities] = useState<Set<string>>(new Set());
@@ -98,6 +95,8 @@ function InterventionSession({ requested }: { requested: string }) {
     return labels.map(label => ({ disorder, category, label }));
   });
   const selectedCount = selectedItems.length + Object.values(selectedDemands).reduce((sum, values) => sum + values.length, 0);
+  const countByDisorder = (disorder: Disorder) => selectedItems.filter(item => item.disorder === disorder).length
+    + (selectedDemands[disorder]?.length || 0);
 
   const invalidateSuggestions = () => {
     setSuggestedActivities([]);
@@ -458,262 +457,65 @@ function InterventionSession({ requested }: { requested: string }) {
       setIsSaving(false);
     }
   };
+  const loadProfessionalIdentification = async () => {
+    const signatureUrl = professionalData?.digital_signature_url;
+    const stampUrl = professionalData?.digital_stamp_url;
+    const photoUrl = professionalData?.stamp_photo_url;
+    const [signatureDataUrl, stampDataUrl, photoDataUrl] = await Promise.all([
+      signatureUrl ? imageUrlToBase64(signatureUrl) : Promise.resolve(null),
+      stampUrl ? imageUrlToBase64(stampUrl) : Promise.resolve(null),
+      photoUrl ? imageUrlToBase64(photoUrl) : Promise.resolve(null),
+    ]);
+    // Never silently remove a configured signature or stamp from clinical exports.
+    if (signatureUrl && !signatureDataUrl) {
+      throw new Error('Não foi possível carregar a assinatura cadastrada. Confira o cadastro profissional e tente novamente.');
+    }
+    if (stampUrl && !stampDataUrl) {
+      throw new Error('Não foi possível carregar o carimbo cadastrado. Confira o cadastro profissional e tente novamente.');
+    }
+    if (photoUrl && !photoDataUrl) {
+      throw new Error('Não foi possível carregar a foto profissional cadastrada. Confira o cadastro e tente novamente.');
+    }
+    return {
+      name: professionalData?.name || userName || 'Musicoterapeuta',
+      specialty: professionalData?.specialty || 'Musicoterapia',
+      registration: professionalData?.register || professionalData?.license_number || null,
+      email: professionalData?.email || userEmail || null,
+      phone: professionalData?.phone || null,
+      signatureDataUrl,
+      stampDataUrl,
+      photoDataUrl,
+    };
+  };
+
+  const exportInterventionPdf = async (patientName: string, activities: TherapyActivity[], planDate: Date, prefix: string) => {
+    const professional = await loadProfessionalIdentification();
+    const pdf = buildInterventionPdf({ patientName, activities, planDate, professional });
+    const safePatientName = patientName.replace(/[\\/:*?"<>|]/g, ' ')
+      .split('').filter(character => character.charCodeAt(0) >= 32).join('')
+      .replace(/\s+/g, ' ').trim();
+    const filename = prefix + ' - ' + (safePatientName || 'Paciente') + ' - ' + format(planDate, 'dd-MM-yyyy') + '.pdf';
+    const blob = pdf.output('blob');
+    pdf.save(filename);
+    // Preserve the current explicit-archive policy: downloading alone does not upload a PDF.
+    await savePDFToStorage(blob, filename, 'intervention');
+  };
+
   const generatePDF = async () => {
     if (!selectedPatient || suggestedActivities.length === 0) {
-      toast({
-        variant: "destructive",
-        title: "Dados incompletos",
-        description: "Gere sugestões antes de baixar o PDF.",
-      });
+      toast({ variant: 'destructive', title: 'Dados incompletos', description: 'Gere sugestões antes de baixar o PDF.' });
       return;
     }
-
     if (isPdfGenerating) return;
     setIsPdfGenerating(true);
     try {
-      // Convert professional images to Base64
-      let signatureBase64: string | null = null;
-      let photoBase64: string | null = null;
-
-      if (professionalData?.digital_signature_url) {
-        signatureBase64 = await imageUrlToBase64(professionalData.digital_signature_url);
-      }
-      if (professionalData?.stamp_photo_url) {
-        photoBase64 = await imageUrlToBase64(professionalData.stamp_photo_url);
-      }
-
-      let stampBase64: string | null = null;
-      if (professionalData?.digital_stamp_url) {
-        stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
-      }
-
       const patient = patients.find(p => p.id === selectedPatient);
-      if (!patient) throw new Error("Paciente não encontrado");
-
-      const element = document.createElement('div');
-      
-      const activitiesHTML = suggestedActivities.map((activity, index) => `
-        <div style="margin-bottom: 24px; page-break-inside: avoid;">
-          <div style="background: linear-gradient(to right, #0F766E, #115E59); color: white; padding: 12px 16px; border-radius: 8px 8px 0 0; font-weight: bold; font-size: 16px;">
-            Atividade ${index + 1}: ${escapePdfHtml(activity.disorder)}
-          </div>
-          <div style="border: 2px solid #E5E7EB; border-top: none; padding: 16px; border-radius: 0 0 8px 8px;">
-            <div style="margin-bottom: 12px;">
-              <strong style="color: #1F2937;">Transtorno:</strong> <span style="color: #4B5563;">${escapePdfHtml(activity.disorder)}</span> |
-              <strong style="color: #1F2937;">Demanda:</strong> <span style="color: #4B5563;">${escapePdfHtml(activity.demand)}</span> |
-              <strong style="color: #1F2937;">Especialidade:</strong> <span style="color: #4B5563;">${escapePdfHtml(activity.specialty)}</span>
-            </div>
-            <div style="margin-bottom: 12px;">
-              <strong style="color: #1F2937; display: block; margin-bottom: 4px;">Objetivo Terapêutico Geral:</strong>
-              <p style="color: #374151; margin: 0; line-height: 1.6;">${escapePdfHtml(activity.generalObjective)}</p>
-            </div>
-            <div style="margin-bottom: 12px;">
-              <strong style="color: #1F2937; display: block; margin-bottom: 4px;">Objetivo Específico:</strong>
-              <p style="color: #374151; margin: 0; line-height: 1.6;">${escapePdfHtml(activity.specificObjective)}</p>
-            </div>
-            <div style="margin-bottom: 12px;">
-              <strong style="color: #1F2937; display: block; margin-bottom: 4px;">Descrição da Atividade:</strong>
-              <p style="color: #374151; margin: 0; line-height: 1.6;">${escapePdfHtml(activity.activityDescription)}</p>
-            </div>
-            <div style="margin-bottom: 12px;">
-              <strong style="color: #1F2937; display: block; margin-bottom: 4px;">Materiais Necessários:</strong>
-              <ul style="color: #374151; margin: 4px 0; padding-left: 20px; line-height: 1.6;">
-                ${(Array.isArray(activity.materials) ? activity.materials : []).map(m => `<li>${escapePdfHtml(m)}</li>`).join('')}
-              </ul>
-            </div>
-            <div style="margin-bottom: 12px; display: flex; gap: 16px;">
-              <div><strong style="color: #1F2937;">Tempo:</strong> <span style="color: #4B5563;">${escapePdfHtml(activity.estimatedTime)}</span></div>
-              <div><strong style="color: #1F2937;">Complexidade:</strong> <span style="color: #4B5563;">${escapePdfHtml(activity.complexityLevel)}</span></div>
-            </div>
-            <div>
-              <strong style="color: #1F2937; display: block; margin-bottom: 4px;">Critérios de Avaliação:</strong>
-              <ul style="color: #374151; margin: 4px 0; padding-left: 20px; line-height: 1.6;">
-                ${(Array.isArray(activity.evaluationCriteria) ? activity.evaluationCriteria : []).map(c => `<li>${escapePdfHtml(c)}</li>`).join('')}
-              </ul>
-            </div>
-          </div>
-        </div>
-      `).join('');
-
-      element.innerHTML = `
-        <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto;">
-          <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 3px solid #0F766E;">
-            <h1 style="color: #0F766E; font-size: 28px; font-weight: bold; margin-bottom: 12px;">
-              Plano de Intervenção (PI)
-            </h1>
-            <h2 style="color: #1F2937; font-size: 20px; margin-bottom: 8px;">
-              Musicoterapia
-            </h2>
-            <p style="color: #6B7280; font-size: 16px; margin-bottom: 4px;">
-              <strong>Paciente:</strong> ${escapePdfHtml(patient.name)}
-            </p>
-            <p style="color: #6B7280; font-size: 14px;">
-              Data: ${format(new Date(), "PPP", { locale: ptBR })}
-            </p>
-          </div>
-
-          <div style="margin-bottom: 32px;">
-            ${activitiesHTML}
-          </div>
-
-          <!-- Footer - Digital Signature & Stamp (TEAL Design) -->
-          <div style="margin-top: 60px; border: 3px solid transparent; border-image: linear-gradient(135deg, #0d9488, #14b8a6, #06b6d4) 1; border-radius: 16px; overflow: hidden; background: #ffffff; box-shadow: 0 8px 24px rgba(13, 148, 136, 0.15);">
-            <!-- Decorative TEAL gradient bar (8px) at TOP -->
-            <div style="height: 8px; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%);"></div>
-            
-            <!-- Padding wrapper -->
-            <div style="padding: 32px;">
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start;">
-                <!-- Left Side: NESTED Signature Card -->
-                <div style="background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 2px solid #14b8a6; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(20,184,166,0.15);">
-                  <!-- Decorative TEAL gradient bar INSIDE card -->
-                  <div style="height: 8px; background: linear-gradient(to right, #0d9488, #14b8a6, #06b6d4);"></div>
-                  
-                  <div style="padding: 20px;">
-                    <div style="display: flex; align-items: start; gap: 16px; margin-bottom: 24px;">
-                      <!-- Professional Photo with blur effect -->
-                      <div style="position: relative;">
-                        <div style="position: absolute; inset: 0; border-radius: 50%; filter: blur(40px); opacity: 0.5; background: radial-gradient(circle, #14b8a6, #22d3ee, #0d9488);"></div>
-                        <img 
-                          src="${photoBase64 || '/placeholder.svg'}" 
-                          alt="Professional" 
-                          style="position: relative; width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #14b8a6;"
-                        />
-                      </div>
-                      
-                      <!-- Professional Info -->
-                      <div style="flex: 1;">
-                        <h3 style="font-weight: bold; font-size: 18px; margin-bottom: 8px; color: #0f766e;">
-                          ${escapePdfHtml(professionalData?.name || userName || 'Musicoterapeuta')}
-                        </h3>
-                        ${professionalData?.specialty ? `
-                          <div style="display: inline-block; padding: 4px 12px; border-radius: 9999px; font-size: 14px; font-weight: 500; background-color: #ccfbf1; color: #0f766e; border: 1px solid #99f6e4; margin-bottom: 12px;">
-                            🎵 ${escapePdfHtml(professionalData.specialty)}
-                          </div>
-                        ` : ''}
-                      </div>
-                    </div>
-                    
-                    <!-- Contact Information -->
-                    <div style="margin-bottom: 16px; font-size: 14px; color: #0f766e;">
-                      ${professionalData?.register || professionalData?.license_number ? `
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                          <span>📋</span>
-                          <span>${escapePdfHtml(professionalData.register || professionalData.license_number)}</span>
-                        </div>
-                      ` : ''}
-                      ${professionalData?.email || userEmail ? `
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                          <span>📧</span>
-                          <span style="word-break: break-all;">${escapePdfHtml(professionalData?.email || userEmail)}</span>
-                        </div>
-                      ` : ''}
-                      ${professionalData?.phone ? `
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                          <span>📞</span>
-                          <span>${escapePdfHtml(professionalData.phone)}</span>
-                        </div>
-                      ` : ''}
-                    </div>
-                  </div>
-                  
-                  ${signatureBase64 ? `<div style="padding: 4px 20px 16px; text-align: center;"><img src="${signatureBase64}" alt="Assinatura cadastrada" style="max-width: 180px; max-height: 75px; object-fit: contain; margin: 0 auto;" /></div>` : ''}
-                  <!-- Identificação do profissional; não é assinatura criptográfica -->
-                  <div style="border-top: 1px solid #99f6e4; background: linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa); padding: 12px 16px; text-align: center; font-size: 12px; font-weight: 500; color: #0f766e;">
-                    ${signatureBase64 ? 'Assinatura digital cadastrada' : 'Identificação profissional'} · Sistema MuseTera
-                  </div>
-                </div>
-
-                <!-- Right Side: Circular Digital Stamp (Conditional) -->
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                  ${stampBase64 ? `<img src="${stampBase64}" alt="Carimbo digital cadastrado" style="max-width: 180px; max-height: 95px; object-fit: contain; margin-bottom: 12px;" />` : ''}
-                  ${(stampBase64 || photoBase64) ? `
-                    <!-- Outer decorative dashed circle -->
-                    <div style="position: relative; width: 280px; height: 280px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px dashed #99f6e4;">
-                      <!-- Main stamp circle -->
-                      <div style="width: 240px; height: 240px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; position: relative; overflow: hidden; background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 50%, #ccfbf1 100%); border: 3px solid #14b8a6; box-shadow: 0 8px 24px rgba(20,184,166,0.2), inset 0 2px 8px rgba(20,184,166,0.1);">
-                        <!-- Professional Photo inside stamp -->
-                        ${photoBase64 ? `
-                          <img 
-                            src="${photoBase64}" 
-                            alt="Stamp" 
-                            style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; margin-bottom: 8px; border: 2px solid #0d9488;"
-                          />
-                        ` : ''}
-                        
-                        <!-- Professional Name -->
-                        <div style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 4px; color: #0f766e;">
-                          ${escapePdfHtml(professionalData?.name || userName || 'Musicoterapeuta')}
-                        </div>
-                        
-                        <!-- Decorative line -->
-                        <div style="width: 80px; height: 1px; margin-bottom: 8px; background: linear-gradient(to right, transparent, #14b8a6, transparent);"></div>
-                        
-                        <!-- Specialty Badge -->
-                        ${professionalData?.specialty ? `
-                          <div style="padding: 4px 8px; border-radius: 9999px; font-size: 12px; font-weight: 500; margin-bottom: 4px; background-color: #0d9488; color: white;">
-                            🎵 ${escapePdfHtml(professionalData.specialty)}
-                          </div>
-                        ` : ''}
-                        
-                        <!-- Registry -->
-                        ${professionalData?.register || professionalData?.license_number ? `
-                          <div style="font-size: 12px; font-weight: 500; color: #0f766e;">
-                            📋 ${escapePdfHtml(professionalData.register || professionalData.license_number)}
-                          </div>
-                        ` : ''}
-                      </div>
-                    </div>
-                    
-                    <!-- MuseTera Verified Badge -->
-                    <div style="margin-top: 16px; padding: 8px 16px; border-radius: 9999px; font-size: 12px; font-weight: bold; background: linear-gradient(135deg, #14b8a6, #06b6d4); color: white;">
-                      MuseTera · Identificação profissional
-                    </div>
-                  ` : `
-                    <!-- Placeholder when no stamp -->
-                    <div style="width: 240px; height: 240px; border: 3px dashed #14b8a6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #6b7280; background-color: #f0fdfa;">
-                      🔖 Carimbo Digital
-                    </div>
-                  `}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-
-      const opt = {
-        margin: [15, 15, 15, 15],
-        filename: `PII - ${patient.name} - ${format(new Date(), "dd-MM-yyyy")}.pdf`,
-        pagebreak: { mode: 'avoid-all' },
-        jsPDF: {
-          unit: 'mm',
-          format: 'a4',
-          orientation: 'portrait',
-        },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          letterRendering: true,
-          backgroundColor: '#ffffff',
-        },
-      };
-
-      const pdfInstance = html2pdf().from(element).set(opt);
-      await pdfInstance.save();
-      try { const blob = await pdfInstance.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "intervention"); } catch(e) { console.warn("PDF não salvo no storage:", e); }
-      
-      toast({
-        title: "PDF gerado com sucesso!",
-        description: "O Plano Intervenção Individual foi baixado.",
-      });
+      if (!patient) throw new Error('Paciente indisponível para este profissional.');
+      await exportInterventionPdf(patient.name, suggestedActivities, new Date(), 'PII');
+      toast({ title: 'PDF gerado com sucesso!', description: 'Documento profissional baixado com texto pesquisável.' });
     } catch (error) {
-      console.error("Erro ao gerar PDF:", error);
-      toast({
-        variant: "destructive",
-        title: "Erro ao gerar PDF",
-        description: "Não foi possível gerar o PDF do plano.",
-      });
+      console.error('Erro ao gerar PDF de intervenção:', error);
+      toast({ variant: 'destructive', title: 'Erro ao gerar PDF', description: error instanceof Error ? error.message : 'Não foi possível gerar o PDF.' });
     } finally {
       setIsPdfGenerating(false);
     }
@@ -761,264 +563,25 @@ function InterventionSession({ requested }: { requested: string }) {
   };
 
   const downloadPlanPDF = async (plan: any) => {
+    if (isPdfGenerating) return;
+    const rawActivities = Array.isArray(plan.complementary_materials) ? [] : plan.complementary_materials?.activities;
+    const activities = Array.isArray(rawActivities) ? rawActivities as TherapyActivity[] : [];
+    if (!activities.length) {
+      toast({ variant: 'destructive', title: 'Sem atividades', description: 'Este plano não possui atividades para gerar PDF.' });
+      return;
+    }
+
+    setIsPdfGenerating(true);
     try {
-      // Verificar se complementary_materials é array (formato antigo) ou objeto (formato correto)
-      const cm = plan.complementary_materials;
-      const activities = Array.isArray(cm) ? [] : (cm?.activities || []);
-      
-      if (activities.length === 0) {
-        toast({
-          variant: "destructive",
-          title: "Sem atividades",
-          description: "Este plano não possui atividades para gerar PDF.",
-        });
-        return;
-      }
-      
-      toast({
-        title: "Gerando PDF...",
-        description: "Aguarde enquanto o PDF é preparado.",
-      });
-
-      // Convert professional images to Base64
-      let photoBase64: string | null = null;
-      let stampBase64: string | null = null;
-      let signatureBase64: string | null = null;
-
-      if (professionalData?.stamp_photo_url) {
-        photoBase64 = await imageUrlToBase64(professionalData.stamp_photo_url);
-      }
-      if (professionalData?.digital_stamp_url) {
-        stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
-      }
-      if (professionalData?.digital_signature_url) {
-        signatureBase64 = await imageUrlToBase64(professionalData.digital_signature_url);
-      }
-
-      const element = document.createElement('div');
-      
-      const activitiesHTML = activities.map((activity: any, index: number) => `
-        <div style="margin-bottom: 24px; page-break-inside: avoid;">
-          <div style="background: linear-gradient(to right, #0F766E, #115E59); color: white; padding: 12px 16px; border-radius: 8px 8px 0 0; font-weight: bold; font-size: 16px;">
-            Atividade ${index + 1}: ${escapePdfHtml(activity.disorder)}
-          </div>
-          <div style="border: 2px solid #E5E7EB; border-top: none; padding: 16px; border-radius: 0 0 8px 8px;">
-            <div style="margin-bottom: 12px;">
-              <strong style="color: #1F2937;">Transtorno:</strong> <span style="color: #4B5563;">${escapePdfHtml(activity.disorder)}</span> |
-              <strong style="color: #1F2937;">Demanda:</strong> <span style="color: #4B5563;">${escapePdfHtml(activity.demand)}</span> |
-              <strong style="color: #1F2937;">Especialidade:</strong> <span style="color: #4B5563;">${escapePdfHtml(activity.specialty)}</span>
-            </div>
-            <div style="margin-bottom: 12px;">
-              <strong style="color: #1F2937; display: block; margin-bottom: 4px;">Objetivo Terapêutico Geral:</strong>
-              <p style="color: #374151; margin: 0; line-height: 1.6;">${escapePdfHtml(activity.generalObjective)}</p>
-            </div>
-            <div style="margin-bottom: 12px;">
-              <strong style="color: #1F2937; display: block; margin-bottom: 4px;">Objetivo Específico:</strong>
-              <p style="color: #374151; margin: 0; line-height: 1.6;">${escapePdfHtml(activity.specificObjective)}</p>
-            </div>
-            <div style="margin-bottom: 12px;">
-              <strong style="color: #1F2937; display: block; margin-bottom: 4px;">Descrição da Atividade:</strong>
-              <p style="color: #374151; margin: 0; line-height: 1.6;">${escapePdfHtml(activity.activityDescription)}</p>
-            </div>
-            <div style="margin-bottom: 12px;">
-              <strong style="color: #1F2937; display: block; margin-bottom: 4px;">Materiais Necessários:</strong>
-              <ul style="color: #374151; margin: 4px 0; padding-left: 20px; line-height: 1.6;">
-                ${(Array.isArray(activity.materials) ? activity.materials : []).map((m: string) => `<li>${escapePdfHtml(m)}</li>`).join('')}
-              </ul>
-            </div>
-            <div style="margin-bottom: 12px; display: flex; gap: 16px;">
-              <div><strong style="color: #1F2937;">Tempo:</strong> <span style="color: #4B5563;">${escapePdfHtml(activity.estimatedTime)}</span></div>
-              <div><strong style="color: #1F2937;">Complexidade:</strong> <span style="color: #4B5563;">${escapePdfHtml(activity.complexityLevel)}</span></div>
-            </div>
-            <div>
-              <strong style="color: #1F2937; display: block; margin-bottom: 4px;">Critérios de Avaliação:</strong>
-              <ul style="color: #374151; margin: 4px 0; padding-left: 20px; line-height: 1.6;">
-                ${(Array.isArray(activity.evaluationCriteria) ? activity.evaluationCriteria : []).map((c: string) => `<li>${escapePdfHtml(c)}</li>`).join('')}
-              </ul>
-            </div>
-          </div>
-        </div>
-      `).join('');
-
-      element.innerHTML = `
-        <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto;">
-          <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 3px solid #0F766E;">
-              <h1 style="color: #0F766E; font-size: 28px; font-weight: bold; margin-bottom: 12px;">
-                Plano de Intervenção (PI)
-              </h1>
-            <h2 style="color: #1F2937; font-size: 20px; margin-bottom: 8px;">
-              Musicoterapia
-            </h2>
-            <p style="color: #6B7280; font-size: 16px; margin-bottom: 4px;">
-              <strong>Paciente:</strong> ${escapePdfHtml(plan.patient_name)}
-            </p>
-            <p style="color: #6B7280; font-size: 14px;">
-              Data: ${format(new Date(plan.created_at), "PPP", { locale: ptBR })}
-            </p>
-          </div>
-
-          <div style="margin-bottom: 32px;">
-            ${activitiesHTML}
-          </div>
-
-          <!-- Footer - Digital Signature & Stamp (TEAL Design) -->
-          <div style="margin-top: 60px; border: 3px solid transparent; border-image: linear-gradient(135deg, #0d9488, #14b8a6, #06b6d4) 1; border-radius: 16px; overflow: hidden; background: #ffffff; box-shadow: 0 8px 24px rgba(13, 148, 136, 0.15);">
-            <!-- Decorative TEAL gradient bar (8px) at TOP -->
-            <div style="height: 8px; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%);"></div>
-            
-            <!-- Padding wrapper -->
-            <div style="padding: 32px;">
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start;">
-                <!-- Left Side: NESTED Signature Card -->
-                <div style="background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 2px solid #14b8a6; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(20,184,166,0.15);">
-                  <!-- Decorative TEAL gradient bar INSIDE card -->
-                  <div style="height: 8px; background: linear-gradient(to right, #0d9488, #14b8a6, #06b6d4);"></div>
-                  
-                  <div style="padding: 20px;">
-                    <div style="display: flex; align-items: start; gap: 16px; margin-bottom: 24px;">
-                      <!-- Professional Photo with blur effect -->
-                      <div style="position: relative;">
-                        <div style="position: absolute; inset: 0; border-radius: 50%; filter: blur(40px); opacity: 0.5; background: radial-gradient(circle, #14b8a6, #22d3ee, #0d9488);"></div>
-                        <img 
-                          src="${photoBase64 || '/placeholder.svg'}" 
-                          alt="Professional" 
-                          style="position: relative; width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #14b8a6;"
-                        />
-                      </div>
-                      
-                      <!-- Professional Name & Specialty -->
-                      <div style="flex: 1;">
-                        <h3 style="font-size: 18px; font-weight: bold; margin: 0 0 8px 0; color: #0d9488;">
-                          ${escapePdfHtml(professionalData?.name || userName || 'Musicoterapeuta')}
-                        </h3>
-                        ${professionalData?.specialty ? `
-                          <div style="display: inline-block; padding: 4px 12px; border-radius: 9999px; font-size: 14px; font-weight: 500; background-color: #ccfbf1; color: #0f766e; border: 1px solid #99f6e4; margin-bottom: 12px;">
-                            🎵 ${escapePdfHtml(professionalData.specialty)}
-                          </div>
-                        ` : ''}
-                      </div>
-                    </div>
-                    
-                    <!-- Contact Information -->
-                    <div style="margin-bottom: 16px; font-size: 14px; color: #0f766e;">
-                      ${professionalData?.register || professionalData?.license_number ? `
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                          <span>📋</span>
-                          <span>${escapePdfHtml(professionalData.register || professionalData.license_number)}</span>
-                        </div>
-                      ` : ''}
-                      ${professionalData?.email || userEmail ? `
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                          <span>📧</span>
-                          <span style="word-break: break-all;">${escapePdfHtml(professionalData?.email || userEmail)}</span>
-                        </div>
-                      ` : ''}
-                      ${professionalData?.phone ? `
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                          <span>📞</span>
-                          <span>${escapePdfHtml(professionalData.phone)}</span>
-                        </div>
-                      ` : ''}
-                    </div>
-                  </div>
-                  
-                  ${signatureBase64 ? `<div style="padding: 4px 20px 16px; text-align: center;"><img src="${signatureBase64}" alt="Assinatura cadastrada" style="max-width: 180px; max-height: 75px; object-fit: contain; margin: 0 auto;" /></div>` : ''}
-                  <!-- Identificação do profissional; não é assinatura criptográfica -->
-                  <div style="border-top: 1px solid #99f6e4; background: linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa); padding: 12px 16px; text-align: center; font-size: 12px; font-weight: 500; color: #0f766e;">
-                    ${signatureBase64 ? 'Assinatura digital cadastrada' : 'Identificação profissional'} · Sistema MuseTera
-                  </div>
-                </div>
-
-                <!-- Right Side: Circular Digital Stamp (Conditional) -->
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                  ${stampBase64 ? `<img src="${stampBase64}" alt="Carimbo digital cadastrado" style="max-width: 180px; max-height: 95px; object-fit: contain; margin-bottom: 12px;" />` : ''}
-                  ${(stampBase64 || photoBase64) ? `
-                    <!-- Outer decorative dashed circle -->
-                    <div style="position: relative; width: 280px; height: 280px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px dashed #99f6e4;">
-                      <!-- Main stamp circle -->
-                      <div style="width: 240px; height: 240px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; position: relative; overflow: hidden; background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 50%, #ccfbf1 100%); border: 3px solid #14b8a6; box-shadow: 0 8px 24px rgba(20,184,166,0.2), inset 0 2px 8px rgba(20,184,166,0.1);">
-                        <!-- Professional Photo inside stamp -->
-                        ${photoBase64 ? `
-                          <img 
-                            src="${photoBase64}" 
-                            alt="Stamp" 
-                            style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; margin-bottom: 8px; border: 2px solid #0d9488;"
-                          />
-                        ` : ''}
-                        
-                        <!-- Professional Name -->
-                        <div style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 4px; color: #0f766e;">
-                          ${escapePdfHtml(professionalData?.name || userName || 'Musicoterapeuta')}
-                        </div>
-                        
-                        <!-- Decorative line -->
-                        <div style="width: 80px; height: 1px; margin-bottom: 8px; background: linear-gradient(to right, transparent, #14b8a6, transparent);"></div>
-                        
-                        <!-- Specialty Badge -->
-                        ${professionalData?.specialty ? `
-                          <div style="padding: 4px 8px; border-radius: 9999px; font-size: 12px; font-weight: 500; margin-bottom: 4px; background-color: #0d9488; color: white;">
-                            🎵 ${escapePdfHtml(professionalData.specialty)}
-                          </div>
-                        ` : ''}
-                        
-                        <!-- Registry -->
-                        ${professionalData?.register || professionalData?.license_number ? `
-                          <div style="font-size: 12px; font-weight: 500; color: #0f766e;">
-                            📋 ${escapePdfHtml(professionalData.register || professionalData.license_number)}
-                          </div>
-                        ` : ''}
-                      </div>
-                    </div>
-                    
-                    <!-- MuseTera Verified Badge -->
-                    <div style="margin-top: 16px; padding: 8px 16px; border-radius: 9999px; font-size: 12px; font-weight: bold; background: linear-gradient(135deg, #14b8a6, #06b6d4); color: white;">
-                      MuseTera · Identificação profissional
-                    </div>
-                  ` : `
-                    <!-- Placeholder when no stamp -->
-                    <div style="width: 240px; height: 240px; border: 3px dashed #14b8a6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #6b7280; background-color: #f0fdfa;">
-                      🔖 Carimbo Digital
-                    </div>
-                  `}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-
-      const opt = {
-        margin: [15, 15, 15, 15],
-        filename: `PI - ${plan.patient_name} - ${format(new Date(plan.created_at), "dd-MM-yyyy")}.pdf`,
-        pagebreak: { mode: 'avoid-all' },
-        jsPDF: {
-          unit: 'mm',
-          format: 'a4',
-          orientation: 'portrait',
-        },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          letterRendering: true,
-          backgroundColor: '#ffffff',
-        },
-      };
-
-      const pdfInstance2 = html2pdf().from(element).set(opt);
-      await pdfInstance2.save();
-      try { const blob = await pdfInstance2.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "intervention"); } catch(e) { console.warn("PDF não salvo no storage:", e); }
-      
-      toast({
-        title: "PDF gerado com sucesso!",
-        description: "O Plano de Intervenção foi baixado.",
-      });
+      const createdAt = new Date(plan.created_at);
+      const planDate = Number.isNaN(createdAt.getTime()) ? new Date() : createdAt;
+      await exportInterventionPdf(plan.patient_name || plan.patient_full_name || 'Paciente', activities, planDate, 'PI');
+      toast({ title: 'PDF gerado com sucesso!', description: 'Cópia fiel às atividades salvas, com texto pesquisável.' });
     } catch (error) {
-      console.error("Erro ao gerar PDF:", error);
-      toast({
-        variant: "destructive",
-        title: "Erro ao gerar PDF",
-        description: "Não foi possível gerar o PDF do plano.",
-      });
+      console.error('Erro ao exportar plano de intervenção salvo:', error);
+      toast({ variant: 'destructive', title: 'Erro ao gerar PDF', description: error instanceof Error ? error.message : 'Não foi possível gerar o PDF.' });
+    } finally {
+      setIsPdfGenerating(false);
     }
   };
 
@@ -1099,6 +662,7 @@ function InterventionSession({ requested }: { requested: string }) {
                           variant="outline"
                           size="sm"
                           onClick={() => downloadPlanPDF(plan)}
+                          disabled={isPdfGenerating}
                           className="min-h-11 flex-1 gap-2 sm:flex-none text-xs sm:text-sm"
                         >
                           <Download className="h-4 w-4" aria-hidden="true" /> PDF
@@ -1174,8 +738,20 @@ function InterventionSession({ requested }: { requested: string }) {
           {/* Demands Selection */}
           <div>
             <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">2. Principais Demandas</h3>
-            <div className="space-y-3 sm:space-y-4">
-              {disorderOptions.map((option) => (
+            <p className="mb-3 text-sm leading-relaxed text-muted-foreground">Escolha uma condição por vez para explorar as demandas. As seleções das outras condições permanecem salvas nesta etapa.</p>
+            <Tabs value={activeDisorder} onValueChange={(value) => setActiveDisorder(value as Disorder)} className="w-full">
+              <TabsList aria-label="Categorias de demandas" className="grid h-auto w-full grid-cols-2 gap-2 bg-transparent p-0 sm:grid-cols-4">
+                {disorderOptions.map((option) => (
+                  <TabsTrigger key={option.disorder} value={option.disorder} className="min-h-12 gap-2 rounded-lg border border-border bg-background px-2 py-2.5 text-sm text-foreground data-[state=active]:border-teal-700 data-[state=active]:bg-teal-50 data-[state=active]:text-teal-900 dark:data-[state=active]:bg-teal-950/40 dark:data-[state=active]:text-teal-100">
+                    <span aria-hidden="true">{option.icon}</span>
+                    <span>{option.disorder}</span>
+                    {countByDisorder(option.disorder) > 0 && <Badge variant="secondary" className="h-5 min-w-5 justify-center px-1.5 text-xs">{countByDisorder(option.disorder)}</Badge>}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+              {disorderOptions.map((selectedOption) => (
+                <TabsContent key={selectedOption.disorder} value={selectedOption.disorder} className="mt-3">
+                {disorderOptions.filter(option => option.disorder === selectedOption.disorder).map((option) => (
                 <Card key={option.disorder} className="overflow-hidden">
                   <div className="border-b border-teal-700/10 bg-teal-50/70 p-3 text-foreground dark:bg-teal-950/20 sm:p-4">
                     <div className="flex items-center gap-2 sm:gap-3">
@@ -1455,8 +1031,10 @@ function InterventionSession({ requested }: { requested: string }) {
                     ) : null}
                   </CardContent>
                 </Card>
+                ))}
+                </TabsContent>
               ))}
-            </div>
+            </Tabs>
           </div>
 
           <div className="rounded-xl border border-teal-700/20 bg-teal-50/60 p-4 dark:bg-teal-950/20" aria-live="polite">
@@ -1539,13 +1117,23 @@ function InterventionSession({ requested }: { requested: string }) {
       {showSuggestions && suggestedActivities.length > 0 && (
         <Card className="border-teal-700/20">
           <CardHeader className="p-4 sm:p-6">
-            <CardTitle className="flex items-center gap-2 text-lg sm:text-2xl">
-              <Target className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-              Atividades Sugeridas ({suggestedActivities.length})
-            </CardTitle>
-                <CardDescription className="text-xs sm:text-sm">
-                  Plano de Intervenção baseado nas demandas selecionadas
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <CardTitle className="flex items-center gap-2 text-lg sm:text-2xl">
+                  <Target className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                  Atividades Sugeridas ({suggestedActivities.length})
+                </CardTitle>
+                <CardDescription className="mt-2 text-sm">
+                  Plano baseado nas demandas selecionadas. Revise cada sugestão antes de utilizar clinicamente.
                 </CardDescription>
+              </div>
+              <Button variant="outline" size="sm" className="min-h-11 gap-2" onClick={() => {
+                const allExpanded = suggestedActivities.every(activity => expandedActivities.has(activity.id));
+                setExpandedActivities(allExpanded ? new Set() : new Set(suggestedActivities.map(activity => activity.id)));
+              }}>
+                {suggestedActivities.every(activity => expandedActivities.has(activity.id)) ? 'Recolher todas' : 'Expandir todas'}
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
             {suggestedActivities.map((activity, index) => {
@@ -1595,7 +1183,7 @@ function InterventionSession({ requested }: { requested: string }) {
                           <Target className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
                           Objetivo Terapêutico Geral
                         </h5>
-                        <p className="text-xs sm:text-sm text-muted-foreground">{activity.generalObjective}</p>
+                        <p className="text-sm leading-relaxed text-foreground/85">{activity.generalObjective}</p>
                       </div>
 
                       <div>
@@ -1603,19 +1191,19 @@ function InterventionSession({ requested }: { requested: string }) {
                           <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
                           Objetivo Específico
                         </h5>
-                        <p className="text-xs sm:text-sm text-muted-foreground">{activity.specificObjective}</p>
+                        <p className="text-sm leading-relaxed text-foreground/85">{activity.specificObjective}</p>
                       </div>
 
                       <Separator />
 
                       <div>
                         <h5 className="font-semibold text-xs sm:text-sm mb-2">Descrição da Atividade</h5>
-                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{activity.activityDescription}</p>
+                        <p className="text-sm leading-relaxed text-foreground/85">{activity.activityDescription}</p>
                       </div>
 
                       <div>
                         <h5 className="font-semibold text-xs sm:text-sm mb-2">Materiais Necessários</h5>
-                        <ul className="list-disc list-inside text-xs sm:text-sm text-muted-foreground space-y-1">
+                        <ul className="list-disc list-inside text-sm leading-relaxed text-foreground/85 space-y-1">
                           {activity.materials.map((material, i) => (
                             <li key={i}>{material}</li>
                           ))}
@@ -1627,7 +1215,7 @@ function InterventionSession({ requested }: { requested: string }) {
                           <AlertCircle className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
                           Critérios de Avaliação
                         </h5>
-                        <ul className="list-disc list-inside text-xs sm:text-sm text-muted-foreground space-y-1">
+                        <ul className="list-disc list-inside text-sm leading-relaxed text-foreground/85 space-y-1">
                           {activity.evaluationCriteria.map((criterion, i) => (
                             <li key={i}>{criterion}</li>
                           ))}
@@ -1793,6 +1381,7 @@ function InterventionSession({ requested }: { requested: string }) {
                     downloadPlanPDF(viewingPlan);
                     setViewingPlan(null);
                   }}
+                  disabled={isPdfGenerating}
                   className="w-full sm:w-auto text-xs sm:text-sm"
                 >
                   <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
