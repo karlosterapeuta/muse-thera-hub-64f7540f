@@ -94,7 +94,7 @@ def run_case(browser, width):
     assert generated_requests[0]['selectedItems'][0]['label'] == 'Pouca intenção comunicativa'
     assert 'patientName' not in generated_requests[0]
     page.get_by_role('button', name='Salvar plano').click()
-    expect(page.get_by_text('Plano salvo com sucesso!')).to_be_visible(timeout=15000)
+    expect(page.get_by_text('Plano salvo com sucesso!', exact=True)).to_be_visible(timeout=15000)
     assert len(plans_saved) == 1
     objectives = plans_saved[0]['general_objectives']
     assert objectives['selected_sub_demands']['TEA::Comunicação e Linguagem'] == ['Pouca intenção comunicativa']
