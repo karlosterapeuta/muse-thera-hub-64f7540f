@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Plus, Trash2, FileSearch, Loader2 } from "lucide-react";
 import { PtiSpecialtyCatalog, type PtiCatalogSuggestion } from "./PtiSpecialtyCatalog";
 import { PTI_MUSICOTHERAPY_REFERENCES } from "./ptiReferences";
@@ -49,7 +48,7 @@ function CidMultiSelect({value,onChange}:{value:string;onChange:(v:string)=>void
   return <div className="space-y-2 sm:col-span-2">
     <p className={labelClass}>Diagnóstico (CID) — múltipla seleção</p>
     <div className="flex flex-wrap gap-2" aria-label="CIDs selecionados">
-      {selected.map(code=><button key={code} type="button" className="rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary" onClick={()=>onChange(selected.filter(c=>c!==code).join("; "))} aria-label={`Remover CID ${code}`}>{code} ×</button>)}
+      {selected.map(code=><button key={code} type="button" className="min-h-11 rounded-full border border-primary/40 bg-primary/10 px-3 py-2 text-sm font-semibold text-primary focus-visible:ring-2 focus-visible:ring-primary" onClick={()=>onChange(selected.filter(c=>c!==code).join("; "))} aria-label={`Remover CID ${code}`}>{code} ×</button>)}
     </div>
     <div className="relative">
       <input className={fieldClass} aria-label="Buscar CID" value={search} onFocus={()=>setOpen(true)} onChange={e=>{setSearch(e.target.value);setOpen(true);}} placeholder="Buscar código ou diagnóstico (ex.: TEA, F84.0, 6A02)" />
@@ -88,7 +87,7 @@ function MedicationMultiSelect({value,onChange}:{value:string;onChange:(v:string
   return <div className="space-y-2 sm:col-span-2">
     <p className={labelClass}>Medicações atuais já prescritas</p>
     <div className="flex flex-wrap gap-2" aria-label="Medicações registradas">
-      {medications.map((med,i)=><button type="button" key={`${med}-${i}`} className="rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs text-primary" onClick={()=>onChange(medications.filter((_,j)=>j!==i).join("; "))} aria-label={`Remover ${med}`}>{med} ×</button>)}
+      {medications.map((med,i)=><button type="button" key={`${med}-${i}`} className="min-h-11 rounded-full border border-primary/40 bg-primary/10 px-3 py-2 text-sm text-primary focus-visible:ring-2 focus-visible:ring-primary" onClick={()=>onChange(medications.filter((_,j)=>j!==i).join("; "))} aria-label={`Remover ${med}`}>{med} ×</button>)}
     </div>
     <div className="flex flex-col gap-2 sm:flex-row">
       <select className={fieldClass+" flex-1"} aria-label="Selecionar medicamento" value={choice} onChange={e=>{setChoice(e.target.value);add(e.target.value);}}>
@@ -103,8 +102,8 @@ function MedicationMultiSelect({value,onChange}:{value:string;onChange:(v:string
 }
 export function SectionBar({title,detail,actions,children,id}:{title:string;detail?:string;actions?:React.ReactNode;children:React.ReactNode;id?:string}) {
   return <section id={id} className="scroll-mt-28 overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-teal-200 bg-teal-50/70 px-4 py-4 dark:border-teal-900 dark:bg-teal-950/40 sm:px-6">
-      <h2 className="border-l-4 border-teal-700 pl-3 text-base font-bold leading-snug text-teal-950 dark:text-teal-100 sm:text-lg">{title} {detail&&<span className="ml-2 inline-block rounded-full bg-teal-100 px-2.5 py-1 align-middle text-xs font-semibold text-teal-900 dark:bg-teal-900 dark:text-teal-100">{detail}</span>}</h2>
+    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-primary/20 bg-primary/5 px-4 py-4 sm:px-6">
+      <h2 className="border-l-4 border-primary pl-3 text-base font-bold leading-snug text-foreground sm:text-lg">{title} {detail&&<span className="ml-2 inline-block rounded-full bg-primary/10 px-2.5 py-1 align-middle text-xs font-semibold text-primary">{detail}</span>}</h2>
       {actions}
     </div>
     <div className="space-y-5 p-4 sm:p-6">{children}</div>
@@ -130,13 +129,12 @@ function GuidedField({index,value,onChange}:{index:number;value:string;onChange:
   </div>;
 }
 function Chips({title,options,values,onToggle}:{title:string;options:string[];values:string[];onToggle:(v:string)=>void}) {
-  return <div className="space-y-2"><p className={labelClass}>{title}</p><div className="flex flex-wrap gap-2">{Array.from(new Set([...options,...values])).map(v=><button key={v} type="button" onClick={()=>onToggle(v)} className={"rounded border px-3 py-1.5 text-xs "+(values.includes(v)?"border-primary bg-primary/15 text-primary":"border-border bg-card text-foreground hover:bg-muted/40")}>{values.includes(v)?"✓ ":""}{v}</button>)}</div></div>;
+  return <div className="space-y-2"><p className={labelClass}>{title}</p><div className="flex flex-wrap gap-2">{Array.from(new Set([...options,...values])).map(v=><button key={v} type="button" aria-pressed={values.includes(v)} onClick={()=>onToggle(v)} className={"min-h-11 rounded border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-primary "+(values.includes(v)?"border-primary bg-primary/15 text-primary":"border-border bg-card text-foreground hover:bg-muted/40")}>{values.includes(v)?"✓ ":""}{v}</button>)}</div></div>;
 }
 interface Props {
- content:PtiContent; update:(p:Partial<PtiContent>)=>void; importing:boolean; onImport:()=>void; professionalName:string;
+ content:PtiContent; update:(p:Partial<PtiContent>)=>void; importing:boolean; onImport:()=>void; professionalName:string; onNavigate:(path:string)=>void;
 }
-export function PtiScreenshotSections({content,update,importing,onImport,professionalName}:Props) {
-  const navigate = useNavigate();
+export function PtiScreenshotSections({content,update,importing,onImport,professionalName,onNavigate}:Props) {
   const [catalog,setCatalog]=useState(true);
   const [advanced,setAdvanced]=useState(false);
   const [behTemplate,setBehTemplate]=useState("");
@@ -163,8 +161,8 @@ export function PtiScreenshotSections({content,update,importing,onImport,profess
   return <div className="space-y-5">
     <nav aria-label="Acesso rápido às seções do PTI" className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
       <p className="mb-3 text-sm font-bold text-foreground">Ir para uma seção</p>
-      <div className="flex flex-wrap gap-2">
-        {[["pti-paciente","Paciente"],["pti-historico","História clínica"],["pti-objetivos","Objetivos e metas"],["pti-comportamentos","Comportamentos"],["pti-intervencao","Intervenção"],["pti-referencias","Referências"],["pti-devolutiva","Devolutiva"]].map(([id,label])=><a key={id} href={`#${id}`} className="inline-flex min-h-11 items-center rounded-full border border-teal-200 bg-teal-50 px-3.5 py-2 text-sm font-semibold text-teal-900 transition-colors hover:border-teal-600 hover:bg-teal-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 dark:border-teal-800 dark:bg-teal-950 dark:text-teal-100 dark:hover:bg-teal-900">{label}</a>)}
+      <div className="flex gap-2 overflow-x-auto pb-1 sm:flex-wrap">
+        {[["pti-paciente","Paciente"],["pti-historico","História clínica"],["pti-objetivos","Objetivos e metas"],["pti-comportamentos","Comportamentos"],["pti-intervencao","Intervenção"],["pti-referencias","Referências"],["pti-devolutiva","Devolutiva"]].map(([id,label])=><a key={id} href={`#${id}`} className="inline-flex min-h-11 shrink-0 items-center rounded-full border border-primary/20 bg-primary/5 px-3.5 py-2 text-sm font-semibold text-foreground transition-colors hover:border-primary hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">{label}</a>)}
       </div>
     </nav>
     <p className="rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm leading-relaxed text-foreground">Preencha os dados abaixo. Os objetivos do catálogo são sugestões editáveis. Antes de emitir o PDF, confira os dados e salve uma versão.</p>
@@ -207,7 +205,7 @@ export function PtiScreenshotSections({content,update,importing,onImport,profess
       <TextArea label="Síntese da história clínica — totalmente editável" rows={6} value={form.resumoClinico} onChange={v=>uf({resumoClinico:v})} placeholder="Montar a partir do que foi relatado e registrado. Nenhuma observação será inventada." />
     </SectionBar>
     <SectionBar id="pti-objetivos" title="Objetivos por área" detail="Musicoterapia"
-      actions={<div className="flex gap-2"><button type="button" className={buttonClass} onClick={()=>navigate("/evaluation")}>Abrir avaliação</button><button type="button" onClick={()=>newObj()} className={buttonClass}><Plus className="h-4 w-4" /> Objetivo</button></div>}>
+      actions={<div className="flex flex-wrap gap-2"><button type="button" className={buttonClass} onClick={()=>onNavigate("/evaluation")}>Abrir avaliação</button><button type="button" onClick={()=>newObj()} className={buttonClass}><Plus className="h-4 w-4" /> Objetivo</button></div>}>
       <button type="button" className="text-xs font-semibold text-primary underline" onClick={()=>setCatalog(v=>!v)}>{catalog?"Ocultar":"Exibir"} catálogo de objetivos clínicos</button>
       {catalog && <PtiSpecialtyCatalog selected={content.objetivosEspecificos.map(o=>o.descricao)} onAdd={newObj} />}
       <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">Objetivos incluídos ({content.objetivosEspecificos.length})</h3>
@@ -215,7 +213,7 @@ export function PtiScreenshotSections({content,update,importing,onImport,profess
       <div className="divide-y divide-border overflow-hidden rounded border border-border">
         {content.objetivosEspecificos.map((o,i)=><div key={o.id} className="space-y-3 bg-card p-3">
           <div className="flex items-center justify-between"><span className="text-xs font-bold uppercase tracking-wide text-primary">Objetivo {i+1} {o.area&&"• "+o.area}</span>
-            <button type="button" aria-label={`Excluir objetivo ${i+1}`} className="rounded p-1 text-red-600 hover:bg-red-50" onClick={()=>update({objetivosEspecificos:content.objetivosEspecificos.filter(x=>x.id!==o.id)})}><Trash2 className="h-4 w-4" /></button>
+            <button type="button" aria-label={`Excluir objetivo ${i+1}`} className="flex min-h-11 min-w-11 items-center justify-center rounded text-destructive hover:bg-destructive/10 focus-visible:ring-2 focus-visible:ring-destructive" onClick={()=>{if(window.confirm(`Remover objetivo ${i+1} deste PTI?`))update({objetivosEspecificos:content.objetivosEspecificos.filter(x=>x.id!==o.id)})}}><Trash2 className="h-4 w-4" /></button>
           </div>
           <div className="grid gap-3 lg:grid-cols-3">
             <TextArea label="Objetivo" value={o.descricao} onChange={v=>eo(o.id,{descricao:v})} rows={3} />
@@ -236,7 +234,7 @@ export function PtiScreenshotSections({content,update,importing,onImport,profess
         <button type="button" className={buttonClass} onClick={()=>update({metas:[...content.metas,{id:crypto.randomUUID(),descricao:"",linhaBase:"",indicador:"",percentual:"",prazo:"",criterio:""}]})}><Plus className="h-4 w-4" /> Meta</button>
       </div>
       {content.metas.map((m,i)=><div key={m.id} className="space-y-3 rounded border border-border bg-muted/40 p-3">
-        <div className="flex justify-between"><b className="text-xs text-primary">Meta {i+1}</b><button type="button" aria-label="Remover meta" className="text-red-600" onClick={()=>update({metas:content.metas.filter(x=>x.id!==m.id)})}><Trash2 className="h-4 w-4" /></button></div>
+        <div className="flex items-center justify-between"><b className="text-sm text-primary">Meta {i+1}</b><button type="button" aria-label={`Remover meta ${i+1}`} className="flex min-h-11 min-w-11 items-center justify-center rounded text-destructive hover:bg-destructive/10 focus-visible:ring-2 focus-visible:ring-destructive" onClick={()=>{if(window.confirm(`Remover meta ${i+1} deste PTI?`))update({metas:content.metas.filter(x=>x.id!==m.id)})}}><Trash2 className="h-4 w-4" /></button></div>
         <TextArea label="Descrição da meta" value={m.descricao} onChange={v=>eg(m.id,{descricao:v})} rows={2} />
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <TextInput label="Linha de base" value={m.linhaBase} onChange={v=>eg(m.id,{linhaBase:v})} />
@@ -256,7 +254,7 @@ export function PtiScreenshotSections({content,update,importing,onImport,profess
       {form.comportamentosAlvo.length===0 && <p className="text-xs text-muted-foreground">Descreva somente comportamentos observados ou relatados; não há preenchimento automático.</p>}
       {form.comportamentosAlvo.map((v,i)=><div key={i} className="flex items-start gap-2">
         <input className={fieldClass+" mt-0"} aria-label={`Comportamento ${i+1}`} value={v} onChange={e=>uf({comportamentosAlvo:form.comportamentosAlvo.map((x,j)=>j===i?e.target.value:x)})} placeholder="Descrição clínica contextualizada" />
-        <button type="button" className="p-2 text-red-600" aria-label="Remover comportamento" onClick={()=>uf({comportamentosAlvo:form.comportamentosAlvo.filter((_,j)=>i!==j)})}><Trash2 className="h-4 w-4" /></button>
+        <button type="button" className="flex min-h-11 min-w-11 items-center justify-center rounded text-destructive focus-visible:ring-2 focus-visible:ring-destructive" aria-label={`Remover comportamento ${i+1}`} onClick={()=>uf({comportamentosAlvo:form.comportamentosAlvo.filter((_,j)=>i!==j)})}><Trash2 className="h-4 w-4" /></button>
       </div>)}
     </SectionBar>
     <SectionBar id="pti-intervencao" title="Considerações e plano de intervenção" actions={<select aria-label="Modelo para considerações" className="max-w-44 rounded border border-primary/25 bg-primary/90 px-2 text-xs text-primary-foreground" value={textTemplate} onChange={e=>{

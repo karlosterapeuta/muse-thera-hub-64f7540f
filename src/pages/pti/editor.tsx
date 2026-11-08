@@ -34,6 +34,7 @@ import { imageUrlToBase64 } from "@/utils/imageToBase64";
 import { supabase } from "@/integrations/supabase/client";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
+type PtiSaveStatus = "idle" | "pending" | "saving" | "saved" | "error";
 
 export default function PtiEditor() {
   const navigate = useNavigate();
@@ -53,6 +54,7 @@ export default function PtiEditor() {
   const [status, setStatus] = useState("rascunho");
   const [content, setContent] = useState<PtiContent>(createDefaultPtiContent());
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [saveStatus, setSaveStatus] = useState<PtiSaveStatus>(isNew ? "idle" : "saved");
   const [downloading, setDownloading] = useState(false);
   const [importingClinical, setImportingClinical] = useState(false);
   const autoSaveRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -60,7 +62,10 @@ export default function PtiEditor() {
   // Serializa as gravações e impede duplicação de planos ao salvar pela primeira vez.
   const planIdRef = useRef<string | undefined>(isNew ? undefined : id);
   const saveQueueRef = useRef<Promise<void>>(Promise.resolve());
+  const queuedSaveCountRef = useRef(0);
   const patientLookupRef = useRef(0);
+  const editRevisionRef = useRef(0);
+  const hasPendingChangesRef = useRef(false);
 
   // Load existing plan
   useEffect(() => {
@@ -71,6 +76,7 @@ export default function PtiEditor() {
       setPatientId(existing.patient_id);
       setStatus(existing.status);
       setContent({ ...createDefaultPtiContent(), ...existing.content });
+      setSaveStatus("saved");
     }
   }, [existing]);
 
@@ -86,10 +92,17 @@ export default function PtiEditor() {
 
   const progress = computePtiProgress(content);
 
-  const update = useCallback((patch: Partial<PtiContent>) => {
+  const markPending = useCallback(() => {
     edited.current = true;
-    setContent((c) => ({ ...c, ...patch }));
+    editRevisionRef.current += 1;
+    hasPendingChangesRef.current = true;
+    setSaveStatus("pending");
   }, []);
+
+  const update = useCallback((patch: Partial<PtiContent>) => {
+    markPending();
+    setContent((c) => ({ ...c, ...patch }));
+  }, [markPending]);
 
   const doSave = useCallback(
     (silent = false): Promise<boolean> => {
@@ -114,18 +127,27 @@ export default function PtiEditor() {
         content,
         createVersion: !silent,
       };
+      const revision = editRevisionRef.current;
       const persist = async (): Promise<boolean> => {
+        setSaveStatus("saving");
         try {
           const savedId = await saveMutation.mutateAsync({
             ...snapshot,
             id: planIdRef.current,
           });
           if (!planIdRef.current) {
+            loadedRef.current = true;
             planIdRef.current = savedId;
             setPlanId(savedId);
             navigate(`/pti/${savedId}`, { replace: true });
           }
           setLastSaved(new Date());
+          if (editRevisionRef.current === revision) {
+            hasPendingChangesRef.current = false;
+            setSaveStatus("saved");
+          } else {
+            setSaveStatus("pending");
+          }
           if (!silent) toast.success("Plano salvo e versão registrada");
           return true;
         } catch (e: any) {
@@ -134,10 +156,14 @@ export default function PtiEditor() {
             setPlanId(e.savedPlanId);
           }
           if (!silent) toast.error(e.message || "Erro ao salvar");
+          setSaveStatus(editRevisionRef.current === revision ? "error" : "pending");
           return false;
         }
       };
-      const pending = saveQueueRef.current.then(persist, persist);
+      queuedSaveCountRef.current += 1;
+      const pending = saveQueueRef.current.then(persist, persist).finally(() => {
+        queuedSaveCountRef.current -= 1;
+      });
       saveQueueRef.current = pending.then(() => undefined, () => undefined);
       return pending;
     },
@@ -147,7 +173,7 @@ export default function PtiEditor() {
   // Auto-save
   useEffect(() => {
     if (!loadedRef.current && !isNew) return;
-    if (isNew && requested && !edited.current) return;
+    if (isNew && !edited.current) return;
     if (!content.identificacao.nome || !patientId) return;
     if (autoSaveRef.current) clearTimeout(autoSaveRef.current);
     autoSaveRef.current = setTimeout(() => doSave(true), 2500);
@@ -155,10 +181,46 @@ export default function PtiEditor() {
       if (autoSaveRef.current) clearTimeout(autoSaveRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [content, patientId, status]);
+  }, [content, patientId, status, professional?.id]);
+
+  useEffect(() => {
+    const warnUnsaved = (event: BeforeUnloadEvent) => {
+      if (!hasPendingChangesRef.current) return;
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    const guardNavigationLinks = (event: MouseEvent) => {
+      if (!hasPendingChangesRef.current || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const target = event.target instanceof Element ? event.target.closest("a[href]") : null;
+      if (!(target instanceof HTMLAnchorElement) || target.hasAttribute("download") || target.target === "_blank") return;
+      const href = target.getAttribute("href");
+      if (!href || href.startsWith("#")) return;
+      const destination = new URL(target.href, window.location.href);
+      if (destination.pathname === window.location.pathname && destination.search === window.location.search && destination.origin === window.location.origin) return;
+      if (!window.confirm("Existem alterações ainda não confirmadas no servidor. Deseja sair mesmo assim?")) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    };
+    window.addEventListener("beforeunload", warnUnsaved);
+    document.addEventListener("click", guardNavigationLinks, true);
+    return () => {
+      window.removeEventListener("beforeunload", warnUnsaved);
+      document.removeEventListener("click", guardNavigationLinks, true);
+    };
+  }, []);
+
+  const navigateSafely = (path: string) => {
+    if (hasPendingChangesRef.current && !window.confirm("Existem alterações ainda não confirmadas no servidor. Deseja sair mesmo assim?")) return;
+    navigate(path);
+  };
 
   const handleSelectPatient = (pid: string) => {
     if (pid === patientId) return;
+    if (queuedSaveCountRef.current > 0) {
+      toast.error("Aguarde a conclusão do salvamento antes de trocar de paciente.");
+      return;
+    }
     if (planIdRef.current) {
       toast.error("O paciente de um PTI já salvo não pode ser alterado. Crie um novo plano.");
       return;
@@ -169,6 +231,11 @@ export default function PtiEditor() {
     const lookupId = ++patientLookupRef.current;
     // Reiniciar qualquer conteúdo anterior antes de associar o novo paciente.
     const initial = createDefaultPtiContent();
+    editRevisionRef.current += 1;
+    hasPendingChangesRef.current = false;
+    edited.current = false;
+    setSaveStatus("idle");
+    setLastSaved(null);
     setContent({
       ...initial,
       identificacao: {
@@ -371,14 +438,16 @@ export default function PtiEditor() {
     onSelectPatient={handleSelectPatient}
     isPatientLocked={!!planIdRef.current}
     status={status}
-    onStatus={setStatus}
+    onStatus={(next) => { markPending(); setStatus(next); }}
     professionalName={professional?.name || ""}
     lastSaved={lastSaved}
+    saveStatus={saveStatus}
     saving={saveMutation.isPending}
     downloading={downloading}
     importingClinical={importingClinical}
     onImportClinical={() => { void importClinicalContext(); }}
     onSave={() => { void doSave(false); }}
     onDownload={() => { void handleDownloadPDF(); }}
+    onNavigate={navigateSafely}
   />;
 }

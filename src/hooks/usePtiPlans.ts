@@ -33,6 +33,36 @@ function normalizePlan(row: any): PtiPlan {
   return { ...row, content };
 }
 
+export interface PtiVersion {
+  id: string;
+  pti_id: string;
+  created_at: string;
+  content: PtiContent;
+}
+
+/** Read-only snapshots; each explicit save creates a version. */
+export function usePtiVersions(enabled = true) {
+  return useQuery({
+    queryKey: ["pti-versions"],
+    enabled,
+    queryFn: async (): Promise<PtiVersion[]> => {
+      const professionalId = await getProfessionalId();
+      if (!professionalId) throw new Error("Profissional não encontrado");
+      const { data, error } = await supabase.from("pti_versions")
+        .select("id, pti_id, created_at, content")
+        .eq("professional_id", professionalId)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data || []).map((row) => ({
+        id: row.id,
+        pti_id: row.pti_id,
+        created_at: row.created_at,
+        content: { ...createDefaultPtiContent(), ...((row.content || {}) as Partial<PtiContent>) },
+      }));
+    },
+  });
+}
+
 export function usePtiPlans() {
   return useQuery({
     queryKey: ["pti-plans"],
@@ -135,6 +165,7 @@ export function useSavePtiPlan() {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["pti-plans"] });
       queryClient.invalidateQueries({ queryKey: ["pti-plan"] });
+      queryClient.invalidateQueries({ queryKey: ["pti-versions"] });
     },
   });
 }

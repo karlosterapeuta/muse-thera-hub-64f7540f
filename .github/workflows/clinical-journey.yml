@@ -16,6 +16,7 @@ jobs:
           python-version: '3.12'
       - run: npm install --legacy-peer-deps --no-audit --no-fund
       - run: node tests/evaluation-scoring.cjs
+      - run: node tests/pti-improvements.cjs
       - run: npm run build
       - run: |
           python -m pip install playwright==1.55.0
