@@ -26,7 +26,7 @@ const blobToOptimizedDataUrl = (blob: Blob): Promise<string | null> =>
   });
 
 export const imageUrlToBase64 = async (url: string): Promise<string | null> => {
-  console.log('🖼️ Iniciando conversão de imagem para base64:', url);
+  // URLs de assinatura e carimbo podem conter tokens de acesso: não registrá-las.
   const controller = new AbortController();
   const timeoutId = window.setTimeout(() => controller.abort(), IMAGE_FETCH_TIMEOUT_MS);
   
@@ -45,21 +45,18 @@ export const imageUrlToBase64 = async (url: string): Promise<string | null> => {
     }
     
     const blob = await response.blob();
-    console.log('📦 Blob obtido:', blob.size, 'bytes, tipo:', blob.type);
 
     const result = await blobToOptimizedDataUrl(blob);
-    console.log('✅ Base64 otimizado gerado:', result?.length || 0);
     return result;
-  } catch (error) {
+  } catch {
     window.clearTimeout(timeoutId);
-    console.error('❌ Erro ao converter imagem para base64:', error);
+    console.warn('Não foi possível converter uma imagem para o documento.');
     
     // Fallback: tentar com Image element
     try {
-      console.log('🔄 Tentando método alternativo via Canvas...');
       return await imageUrlToBase64ViaCanvas(url);
-    } catch (fallbackError) {
-      console.error('❌ Fallback também falhou:', fallbackError);
+    } catch {
+      console.warn('Método alternativo de conversão de imagem indisponível.');
       return null;
     }
   }

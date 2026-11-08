@@ -10,7 +10,7 @@ import { ModernTabsNavigation } from "./components/ModernTabsNavigation";
 import { ModernActionButtons } from "./components/ModernActionButtons";
 import { AnamnesisValidationSummary } from "./components/AnamnesisValidationSummary";
 import { SendAnamnesisLinkDialog } from "./components/SendAnamnesisLinkDialog";
-import { useAnamnesisValidation } from "./hooks/useAnamnesisValidation";
+import { missingFinalizationFields, useAnamnesisValidation } from "./hooks/useAnamnesisValidation";
 import { generateProfessionalAnamnesePDF } from "@/utils/anamnesisePDFGenerator";
 import { imageUrlToBase64 } from "@/utils/imageToBase64";
 
@@ -93,6 +93,8 @@ export default function AnamnesisFormWrapper({
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [existingAnamnesisId, setExistingAnamnesisId] = useState<string | null>(editAnamnesisId || null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [saveState, setSaveState] = useState<"idle" | "pending" | "saving" | "saved" | "error">("idle");
+  const [pdfAssets, setPdfAssets] = useState<"checking" | "ready" | "missing" | "unknown">("checking");
   const [isExportingPDF, setIsExportingPDF] = useState(false);
   const [showValidation, setShowValidation] = useState(false);
   const [reviewStatus, setReviewStatus] = useState<"draft" | "finalized">("draft");
@@ -103,11 +105,110 @@ export default function AnamnesisFormWrapper({
   const [revisions, setRevisions] = useState<Array<{ id: string; changed_at: string; event: string; old_snapshot: Record<string, any> | null; new_snapshot: Record<string, any> }>>([]);
 
   const [activeAnamnesisTab, setActiveAnamnesisTab] = useState("personal");
+  // O snapshot é atualizado sincronicamente pelo formulário. A fila impede
+  // inserts duplicados e gravações simultâneas fora de ordem.
+  const formDataRef = useRef<Record<string, any>>({});
+  const existingIdRef = useRef<string | null>(editAnamnesisId || null);
+  const persistedReviewStatusRef = useRef<"draft" | "finalized">("draft");
+  const dirtyRef = useRef(false);
+  const editRevisionRef = useRef(0);
+  const saveQueueRef = useRef<Promise<boolean>>(Promise.resolve(true));
+  const pendingSavesRef = useRef(0);
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
   
   // Validation hook
   const validation = useAnamnesisValidation(formData);
+
+  const confirmLeave = () => {
+    if (pendingSavesRef.current > 0) {
+      toast({ title: "Salvamento em andamento", description: "Aguarde a confirmação antes de sair." });
+      return false;
+    }
+    return !dirtyRef.current || window.confirm("Existem alterações clínicas não salvas. Deseja sair e descartá-las?");
+  };
+
+  const goBack = () => {
+    if (!confirmLeave()) return;
+    if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    if (onBack) onBack();
+    else navigate("/processes");
+  };
+
+  const navigateToError = (section: number, field: string) => {
+    setActiveAnamnesisTab(section === 1 ? "personal" : section === 5 ? "musical" : "behavioral");
+    // A seção pode estar recolhida; informar a aba e deixar o alerta visível.
+    window.setTimeout(() => document.getElementById(field)?.focus(), 120);
+  };
+
+  useEffect(() => {
+    const warnOnLeave = (event: BeforeUnloadEvent) => {
+      if (!dirtyRef.current && pendingSavesRef.current === 0) return;
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", warnOnLeave);
+    return () => window.removeEventListener("beforeunload", warnOnLeave);
+  }, []);
+
+  useEffect(() => {
+    const warnOnInternalLink = (event: MouseEvent) => {
+      if (!dirtyRef.current && pendingSavesRef.current === 0) return;
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const link = target.closest("a[href]");
+      if (!link || link.getAttribute("target") === "_blank") return;
+      const url = new URL(link.getAttribute("href") || "", window.location.href);
+      if (url.origin !== window.location.origin || url.pathname === window.location.pathname && url.search === window.location.search) return;
+      if (pendingSavesRef.current > 0 || !window.confirm("Existem alterações clínicas não salvas. Deseja sair e descartá-las?")) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    };
+    document.addEventListener("click", warnOnInternalLink, true);
+    return () => document.removeEventListener("click", warnOnInternalLink, true);
+  }, []);
+
+  useEffect(() => {
+    if (!professionalId) return;
+    let active = true;
+    setPdfAssets("checking");
+    const checkPdfAssets = async () => {
+      try {
+        const { data: profile, error: profileError } = await supabase.from("professionals")
+          .select("digital_signature_url, digital_stamp_url").eq("user_id", professionalId).maybeSingle();
+        if (profileError || !profile) throw profileError || new Error("Perfil profissional não encontrado");
+        let hasSignature = Boolean(profile.digital_signature_url);
+        let hasStamp = Boolean(profile.digital_stamp_url);
+        if (!hasSignature || !hasStamp) {
+          const { data: images, error: listError } = await supabase.storage.from("digital-signatures")
+            .list(professionalId, { limit: 100, sortBy: { column: "created_at", order: "desc" } });
+          if (listError) throw listError;
+          hasSignature = hasSignature || Boolean(images?.some(image => image.name.startsWith("signature_") && image.name.endsWith(".png")));
+          hasStamp = hasStamp || Boolean(images?.some(image => image.name.startsWith("stamp_") && image.name.endsWith(".png")));
+        }
+        if (active) setPdfAssets(hasSignature && hasStamp ? "ready" : "missing");
+      } catch {
+        if (active) setPdfAssets("unknown");
+      }
+    };
+    void checkPdfAssets();
+    return () => { active = false; };
+  }, [professionalId]);
+
+  useEffect(() => {
+    if (!dirtyRef.current || reviewStatus !== "draft" || !selectedPatient || !professionalId) return;
+    if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    autoSaveTimerRef.current = setTimeout(() => {
+      autoSaveTimerRef.current = null;
+      void saveAnamnesis("draft", { silent: true });
+    }, 3000);
+    return () => {
+      if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+      autoSaveTimerRef.current = null;
+    };
+  }, [formData, reviewStatus, selectedPatient, professionalId]);
 
   const formatNameFromEmail = (email: string) => {
     const namePart = email.split('@')[0];
@@ -258,10 +359,15 @@ export default function AnamnesisFormWrapper({
       }
 
       if (anamnesisData) {
+        formDataRef.current = anamnesisData;
+        existingIdRef.current = anamnesisData.id;
+        persistedReviewStatusRef.current = anamnesisData.review_status === "finalized" ? "finalized" : "draft";
+        dirtyRef.current = false;
         setFormData(anamnesisData);
         setReviewStatus(anamnesisData.review_status === "finalized" ? "finalized" : "draft");
         setLastSavedAt(anamnesisData.updated_at || null);
         setExistingAnamnesisId(anamnesisData.id);
+        setSaveState("saved");
       }
     } catch (error) {
       console.error("Erro ao carregar anamnese:", error);
@@ -279,7 +385,6 @@ export default function AnamnesisFormWrapper({
   const filterDatabaseFields = (data: Record<string, any>, availableColumns: string[]) => {
     const filteredData: Record<string, any> = {};
     
-    console.log("🔄 Filtrando dados com colunas disponíveis:", availableColumns.length);
     
     Object.entries(data).forEach(([key, value]) => {
       const normalizedKey = key.toLowerCase();
@@ -291,8 +396,6 @@ export default function AnamnesisFormWrapper({
         } else {
           filteredData[normalizedKey] = value;
         }
-      } else if (!['id', 'patient_id', 'professional_id', 'created_at', 'updated_at'].includes(normalizedKey)) {
-        console.log(`⚠️ Campo ${normalizedKey} não está disponível na tabela, ignorando...`);
       }
     });
     
@@ -305,6 +408,17 @@ export default function AnamnesisFormWrapper({
   const changeSelectedPatient = (patientId: string) => {
     if (editPatientId) return;
     if (patientId === selectedPatient) return;
+    if (pendingSavesRef.current > 0) {
+      toast({ title: "Aguarde o salvamento", description: "Conclua o salvamento antes de trocar de paciente." });
+      return;
+    }
+    if (dirtyRef.current && !window.confirm("Há alterações clínicas não salvas. Deseja descartá-las e trocar de paciente?")) return;
+    if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    dirtyRef.current = false;
+    editRevisionRef.current += 1;
+    formDataRef.current = {};
+    existingIdRef.current = null;
+    persistedReviewStatusRef.current = "draft";
     setSelectedPatient(patientId);
     setFormData({});
     setExistingAnamnesisId(null);
@@ -314,14 +428,40 @@ export default function AnamnesisFormWrapper({
     setRevisions([]);
     setHistoryError("");
     setShowValidation(false);
+    setSaveState("idle");
   };
 
   const updateFormData = (newData: Record<string, any>) => {
+    formDataRef.current = newData;
+    dirtyRef.current = true;
+    editRevisionRef.current += 1;
+    setSaveState("pending");
     setFormData(newData);
   };
 
-  const saveAnamnesis = async (mode: "draft" | "finalized" = "draft") => {
-    if (!selectedPatient) {
+  const saveAnamnesis = (mode: "draft" | "finalized" = "draft", { silent = false }: { silent?: boolean } = {}): Promise<boolean> => {
+    // Capturar o estado no momento em que a operação alcançar a fila.
+    pendingSavesRef.current += 1;
+    const operation = saveQueueRef.current.catch(() => false).then(async () => {
+      const snapshot = { ...formDataRef.current };
+      const saveRevision = editRevisionRef.current;
+      const patientId = selectedPatient;
+      const currentId = existingIdRef.current;
+      // Exportar um PDF ou clicar em salvar não deve gerar revisões vazias.
+      if (currentId && !dirtyRef.current && persistedReviewStatusRef.current === mode) return true;
+      if (silent && !dirtyRef.current) return true;
+      return performSave(snapshot, saveRevision, patientId, currentId, mode, silent);
+    }).finally(() => { pendingSavesRef.current -= 1; });
+    saveQueueRef.current = operation;
+    return operation;
+  };
+
+  const performSave = async (
+    snapshot: Record<string, any>, saveRevision: number, patientId: string,
+    currentId: string | null, mode: "draft" | "finalized", silent: boolean
+  ): Promise<boolean> => {
+    if (!patientId) {
+      if (silent) return false;
       toast({
         title: "Atenção",
         description: "Por favor, selecione um paciente.",
@@ -331,14 +471,10 @@ export default function AnamnesisFormWrapper({
     }
 
     if (mode === "finalized") {
-      const requiredForReview = [
-        ["main_clinical_demand", "Demanda clínica principal"],
-        ["patient_musical_history", "História musical do paciente"],
-        ["therapeutic_goals", "Objetivos terapêuticos"],
-      ] as const;
-      const missing = requiredForReview.filter(([key]) => !String(formData[key] || "").trim()).map(([, label]) => label);
+      const missing = missingFinalizationFields(snapshot).map(({ label }) => label);
       if (missing.length) {
         setShowValidation(true);
+        setActiveAnamnesisTab("personal");
         toast({ title: "Anamnese incompleta para finalização", description: `Preencha: ${missing.join(", ")}. Você pode salvar como rascunho.`, variant: "destructive" });
         return false;
       }
@@ -355,16 +491,16 @@ export default function AnamnesisFormWrapper({
 
     try {
       setIsSubmitting(true);
+      setSaveState("saving");
       
       // SEMPRE garantir que temos as colunas disponíveis antes de prosseguir
-      console.log("💾 Iniciando salvamento - verificando colunas...");
       const availableColumns = await getAvailableColumns();
       
       if (mode === "finalized" && !["review_status", "finalized_at", "finalized_by"].every(key => availableColumns.includes(key))) {
         throw new Error("A migração de revisão da anamnese ainda não foi aplicada ao banco de dados.");
       }
-      const filteredData = filterDatabaseFields(formData, availableColumns);
-      if (formData.tea_functional_profile && Object.keys(formData.tea_functional_profile).some(key => String(formData.tea_functional_profile[key] ?? "").trim()) && !availableColumns.includes("tea_functional_profile")) {
+      const filteredData = filterDatabaseFields(snapshot, availableColumns);
+      if (snapshot.tea_functional_profile && Object.keys(snapshot.tea_functional_profile).some(key => String(snapshot.tea_functional_profile[key] ?? "").trim()) && !availableColumns.includes("tea_functional_profile")) {
         throw new Error("A migração dos campos funcionais TEA não foi aplicada ao banco.");
       }
       if (availableColumns.includes("review_status")) {
@@ -380,24 +516,22 @@ export default function AnamnesisFormWrapper({
       // Não registrar dados sensíveis da anamnese nos logs de produção.
       
       const anamnesisData: Record<string, any> = {
-        patient_id: selectedPatient,
+        patient_id: patientId,
         professional_id: professionalId,
         ...filteredData
       };
 
       let result;
       
-      if (existingAnamnesisId) {
-        console.log("🔄 Atualizando anamnese existente:", existingAnamnesisId);
+      if (currentId) {
         result = await supabase
           .from("anamnesis")
           .update(anamnesisData as any)
-          .eq("id", existingAnamnesisId)
-          .eq("patient_id", selectedPatient)
+          .eq("id", currentId)
+          .eq("patient_id", patientId)
           .eq("professional_id", professionalId)
           .select("id");
       } else {
-        console.log("➕ Criando nova anamnese");
         result = await supabase
           .from("anamnesis")
           .insert(anamnesisData)
@@ -407,22 +541,32 @@ export default function AnamnesisFormWrapper({
       if (result.error) throw result.error;
       if (!result.data?.length) throw new Error('Nenhum registro foi confirmado pelo banco. A anamnese não foi salva.');
 
-      if (!existingAnamnesisId && result.data && result.data.length > 0) {
+      if (!currentId && result.data && result.data.length > 0) {
+        existingIdRef.current = result.data[0].id;
         setExistingAnamnesisId(result.data[0].id);
       }
 
       setReviewStatus(mode);
+      persistedReviewStatusRef.current = mode;
       setLastSavedAt(new Date().toISOString());
-      setFormData(previous => ({ ...previous, review_status: mode, finalized_at: filteredData.finalized_at ?? null, finalized_by: filteredData.finalized_by ?? null }));
-      setShowValidation(false);
-      toast({
-        title: "Sucesso!",
-        description: mode === "finalized" ? "Anamnese finalizada e registrada no sistema." : "Rascunho salvo com sucesso no sistema.",
+      if (editRevisionRef.current === saveRevision) {
+        dirtyRef.current = false;
+        setSaveState("saved");
+      } else {
+        setSaveState("pending");
+      }
+      setFormData(previous => {
+        const next = { ...previous, review_status: mode, finalized_at: filteredData.finalized_at ?? null, finalized_by: filteredData.finalized_by ?? null };
+        formDataRef.current = next;
+        return next;
       });
+      setShowValidation(false);
+      if (!silent) toast({ title: "Salvamento confirmado", description: mode === "finalized" ? "Anamnese finalizada e registrada." : "Rascunho salvo com sucesso." });
       
       return true;
       
     } catch (error: any) {
+      setSaveState("error");
       // Não registrar dados clínicos no console: apenas metadados do erro.
       const dbCode = String(error?.code || "");
       console.error("Falha ao salvar anamnese:", { code: dbCode, message: error?.message, hint: error?.hint });
@@ -598,11 +742,11 @@ export default function AnamnesisFormWrapper({
       }
 
       const anamnesisDataForPDF = {
-        ...formData,
-        id: existingAnamnesisId,
+        ...formDataRef.current,
+        id: existingIdRef.current,
         patient_id: selectedPatient,
         professional_id: professionalId,
-        created_at: formData.created_at || new Date().toISOString(),
+        created_at: formDataRef.current.created_at || new Date().toISOString(),
         patient_name: patientDetails.name || patientName,
         patient_birth_date: patientDetails.birth_date,
         patient_age: patientDetails.age,
@@ -679,13 +823,13 @@ export default function AnamnesisFormWrapper({
   return (
     <div className="min-h-screen bg-background">
       <div className="w-full px-3 sm:px-5 py-5 space-y-5 max-w-6xl mx-auto">
-        <Card className="border border-teal-700/15 bg-card shadow-lg overflow-hidden rounded-2xl">
+        <Card className="border border-primary/15 bg-card shadow-sm overflow-hidden rounded-2xl">
           <ModernAnamnesisHeader editMode={!!editAnamnesisId} />
           
           <CardContent className="p-3 sm:p-6 lg:p-8">
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* Patient Selection */}
-              <div className="bg-card rounded-xl p-4 sm:p-6 border border-teal-700/15 shadow-sm space-y-4">
+              <div className="bg-card rounded-xl p-4 sm:p-6 border border-primary/15 shadow-sm space-y-4">
                 <PatientSelect
                   patients={patients}
                   selectedPatient={selectedPatient}
@@ -704,17 +848,20 @@ export default function AnamnesisFormWrapper({
                 )}
               </div>
               
-              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-teal-200 bg-teal-50 p-3 dark:border-teal-800 dark:bg-teal-950/30" role="status">
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4" role="status" aria-live="polite">
                 <div>
-                  <p className="font-semibold text-teal-950 dark:text-teal-100">Situação da anamnese: {reviewStatus === "finalized" ? "Finalizada" : "Rascunho"}</p>
-                  <p className="text-xs text-teal-900 dark:text-teal-200">
+                  <p className="font-semibold text-foreground">Situação da anamnese: {reviewStatus === "finalized" ? "Finalizada" : "Rascunho"}</p>
+                  <p className="text-sm text-muted-foreground">
                     {lastSavedAt ? `Último salvamento confirmado: ${new Date(lastSavedAt).toLocaleString("pt-BR")}` : "Nenhum salvamento confirmado nesta edição"}
                   </p>
-                  <p className="mt-1 text-xs text-teal-900 dark:text-teal-200">Finalizar exige demanda, história musical e objetivos terapêuticos. O rascunho aceita dados parciais.</p>
+                  <p className="mt-1 text-sm font-medium text-foreground">
+                    {saveState === "pending" ? "● Alterações ainda não salvas" : saveState === "saving" ? "Salvando com segurança..." : saveState === "saved" ? "✓ Dados salvos no sistema" : saveState === "error" ? "⚠ Falha de salvamento — os dados continuam no formulário" : "Selecione um paciente para começar"}
+                  </p>
+                  <p className="mt-1 text-sm text-muted-foreground">{reviewStatus === "draft" ? "Rascunhos são salvos automaticamente após 3 segundos sem digitação; você também pode salvar manualmente." : "Anamnese finalizada: alterações adicionais exigem salvamento manual."}</p>
                 </div>
                 <button type="button" disabled={isSubmitting || !selectedPatient}
                   onClick={() => void saveAnamnesis("finalized")}
-                  className="min-h-11 rounded-lg bg-teal-800 px-4 py-2 text-sm font-bold text-white hover:bg-teal-900 disabled:opacity-50">
+                  className="min-h-11 rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-50">
                   {isSubmitting ? "Salvando..." : "Finalizar anamnese"}
                 </button>
               </div>
@@ -728,7 +875,7 @@ export default function AnamnesisFormWrapper({
                   <button type="button" disabled={!existingAnamnesisId} onClick={() => {
                     setHistoryOpen(value => !value);
                     if (!historyOpen) void loadRevisionHistory();
-                  }} className="rounded-lg border border-teal-300 px-3 py-2 text-sm font-semibold text-teal-900 hover:bg-teal-50 disabled:opacity-50 dark:border-teal-700 dark:text-teal-100 dark:hover:bg-teal-950/40">
+                  }} className="min-h-11 rounded-lg border border-primary/30 px-3 py-2 text-sm font-semibold text-foreground hover:bg-primary/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50">
                     {historyOpen ? "Ocultar histórico" : "Consultar histórico"}
                   </button>
                 </div>
@@ -739,7 +886,7 @@ export default function AnamnesisFormWrapper({
                     ["therapeutic_goals", "Objetivos terapêuticos"],
                   ] as const).map(([key, label]) => {
                     const completed = Boolean(String(formData[key] || "").trim());
-                    return <li key={key} className={`rounded-lg border px-3 py-2 text-sm font-medium ${completed ? "border-teal-200 bg-teal-50 text-teal-950 dark:border-teal-800 dark:bg-teal-950/30 dark:text-teal-100" : "border-amber-200 bg-amber-50 text-amber-950 dark:border-amber-800 dark:bg-amber-950/20 dark:text-amber-100"}`}>
+                    return <li key={key} className={`rounded-lg border px-3 py-2 text-sm font-medium ${completed ? "border-primary/25 bg-primary/5 text-foreground" : "border-amber-300 bg-amber-50 text-amber-950 dark:border-amber-800 dark:bg-amber-950/20 dark:text-amber-100"}`}>
                       {completed ? "✓" : "○"} {label} {completed ? "preenchida" : "pendente"}
                     </li>;
                   })}
@@ -773,15 +920,20 @@ export default function AnamnesisFormWrapper({
                 )}
               </section>
 
+              <div className={`rounded-xl border px-4 py-3 text-sm ${pdfAssets === "missing" ? "border-amber-300 bg-amber-50 text-amber-950 dark:border-amber-800 dark:bg-amber-950/20 dark:text-amber-100" : "border-primary/20 bg-primary/5 text-foreground"}`} role="status">
+                <p className="font-semibold">Conferência dos documentos profissionais</p>
+                <p className="mt-1">{pdfAssets === "ready" ? "Assinatura e carimbo cadastrados. A integridade das imagens será conferida durante a exportação." : pdfAssets === "missing" ? "Assinatura ou carimbo não encontrado no cadastro. Confira a página Carimbo Digital antes de exportar." : pdfAssets === "checking" ? "Conferindo cadastro da assinatura e do carimbo..." : "Não foi possível conferir o cadastro agora. A exportação ainda verificará as imagens."}</p>
+              </div>
+
               {/* Form Content in Tabs */}
               <ModernTabsNavigation activeTab={activeAnamnesisTab} onTabChange={setActiveAnamnesisTab}>
-                <div className="bg-card rounded-xl p-4 sm:p-6 border border-teal-700/15 shadow-sm">
+                <div className="bg-card rounded-xl p-3 sm:p-6 border border-primary/15 shadow-sm">
                   <InitialEvaluationForm
                     activeTab={activeAnamnesisTab}
                     content={formData}
                     onChange={updateFormData}
                     fieldErrors={showValidation ? validation.fieldErrors : {}}
-                    getSectionErrors={validation.getSectionErrors}
+                    getSectionErrors={showValidation ? validation.getSectionErrors : () => []}
                   />
                 </div>
               </ModernTabsNavigation>
@@ -791,19 +943,19 @@ export default function AnamnesisFormWrapper({
                 <AnamnesisValidationSummary
                   isValid={validation.isValid}
                   errors={validation.errors}
+                  onNavigateToError={navigateToError}
                 />
               )}
 
               {/* Action Buttons */}
               <ModernActionButtons
                 onSave={() => { void saveAnamnesis(reviewStatus); }}
-                onCancel={() => onBack ? onBack() : navigate("/processes")}
+                onCancel={goBack}
                 onExportPDF={exportPDF}
                 isSaving={isSubmitting}
                 isExportingPDF={isExportingPDF}
                 showBack={!!onBack}
-                isValid={validation.isValid}
-                validationMessage={!validation.isValid && showValidation ? `${validation.errors.length} campo(s) obrigatório(s) pendente(s)` : undefined}
+                isValid={true}
               />
             </form>
           </CardContent>

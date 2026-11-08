@@ -47,17 +47,17 @@ export function PatientSelect({
 
   return (
     <div>
-      <Label htmlFor={controlId} className="font-bold text-gray-900 dark:text-white">{label}</Label>
+      <Label htmlFor={controlId} className="font-bold text-foreground">{label}</Label>
       <Select 
         value={selectedPatient || undefined} 
         onValueChange={onSelect}
         disabled={disabled || isLoading || !hasPatients}
       >
-        <SelectTrigger id={controlId} className="min-h-11 w-full bg-background text-foreground font-medium border-teal-600/30">
+        <SelectTrigger id={controlId} className="min-h-11 w-full bg-background text-foreground font-medium border-primary/30 focus:ring-primary">
           <SelectValue placeholder={getPlaceholderText()} />
         </SelectTrigger>
         <SelectContent 
-          className="z-[9999] bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-lg"
+          className="z-[9999] bg-popover text-popover-foreground border-border shadow-lg"
           position="popper"
           sideOffset={4}
         >

@@ -20,7 +20,7 @@ export function AnamnesisProgressBar({
             <Music className="w-4 h-4 text-primary" />
           </div>
           <span className="text-sm font-medium text-foreground">
-            Progresso da Anamnese
+            Cobertura do preenchimento
           </span>
         </div>
         <div className="flex items-center gap-2">
@@ -39,10 +39,11 @@ export function AnamnesisProgressBar({
           {progress < 30 && "Continue preenchendo..."}
           {progress >= 30 && progress < 70 && "Bom progresso!"}
           {progress >= 70 && progress < 100 && "Quase lá!"}
-          {progress === 100 && "Completo!"}
+          {progress === 100 && "Todos os itens considerados foram respondidos."}
         </span>
         <span className="text-xs font-medium text-primary">{Math.round(progress)}%</span>
       </div>
+      <p className="mt-2 text-xs text-muted-foreground">Indicador de preenchimento, não de conclusão ou validação clínica.</p>
     </div>
   );
 }

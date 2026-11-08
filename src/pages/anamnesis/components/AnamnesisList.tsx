@@ -106,12 +106,12 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
       </Button>
 
       {/* Header */}
-      <div className="flex flex-col gap-4 rounded-2xl border border-teal-800/20 bg-gradient-to-r from-[#0f302f] to-[#155e58] p-5 text-white shadow-lg sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 rounded-2xl border border-primary/20 bg-primary/10 p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Anamneses Salvas</h1>
-          <p className="text-teal-50/85">Gerencie todas as anamneses dos seus pacientes</p>
+          <h1 className="text-2xl font-bold text-foreground">Anamneses Salvas</h1>
+          <p className="text-muted-foreground">Gerencie todas as anamneses dos seus pacientes</p>
         </div>
-        <Button onClick={onCreateNew} className="flex items-center gap-2 bg-white text-teal-900 hover:bg-teal-50">
+        <Button onClick={onCreateNew} className="min-h-11 flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
           <Plus size={16} />
           Nova Anamnese
         </Button>
@@ -124,24 +124,24 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
           placeholder="Buscar por paciente ou demanda..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10 bg-card border-teal-700/20"
+          className="min-h-11 pl-10 bg-card border-primary/20"
         />
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="border-teal-700/15 shadow-sm">
+        <Card className="border-primary/15 shadow-sm">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Total de Anamneses</p>
                 <p className="text-2xl font-bold">{anamneses.length}</p>
               </div>
-              <FileText className="text-teal-700 dark:text-teal-300" size={24} />
+              <FileText className="text-primary" size={24} />
             </div>
           </CardContent>
         </Card>
-        <Card className="border-teal-700/15 shadow-sm">
+        <Card className="border-primary/15 shadow-sm">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -150,11 +150,11 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
                   {new Set(anamneses.map(a => a.patient_id)).size}
                 </p>
               </div>
-              <User className="text-emerald-700 dark:text-emerald-300" size={24} />
+              <User className="text-primary" size={24} />
             </div>
           </CardContent>
         </Card>
-        <Card className="border-teal-700/15 shadow-sm">
+        <Card className="border-primary/15 shadow-sm">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -168,7 +168,7 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
                   }).length}
                 </p>
               </div>
-              <Calendar className="text-teal-700 dark:text-teal-300" size={24} />
+              <Calendar className="text-primary" size={24} />
             </div>
           </CardContent>
         </Card>
@@ -199,7 +199,7 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredAnamneses.map((anamnesis) => (
-            <Card key={anamnesis.id} className="border-teal-700/15 hover:shadow-md transition-shadow">
+            <Card key={anamnesis.id} className="border-primary/15 hover:shadow-md transition-shadow">
               <CardHeader className="pb-3">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
@@ -209,7 +209,7 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
                         ID: {anamnesis.patient_id.slice(-8)}
                       </Badge>
                       {anamnesis.filled_by_guardian && (
-                        <Badge className="text-xs bg-teal-700 hover:bg-teal-800 text-white">
+                        <Badge className="text-xs bg-primary text-primary-foreground hover:bg-primary/90">
                           Preenchida pelo responsável
                         </Badge>
                       )}

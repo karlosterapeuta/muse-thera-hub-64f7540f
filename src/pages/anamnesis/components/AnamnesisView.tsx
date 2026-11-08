@@ -88,14 +88,13 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         .eq("professional_id", (await supabase.auth.getUser()).data.user?.id || "")
         .maybeSingle();
       if (linkedPatientError) console.warn("Não foi possível consultar os dados cadastrais do paciente:", linkedPatientError.message);
-      const patient = linkedPatient || {};
-      setPatientDetails(patient);
+      const patient = linkedPatient;
+      setPatientDetails(patient || {});
       setAnamnesisData({
         ...data,
-        patient_name: data.patient_name || patient.name || anamnesis.patient_name,
-        birth_date: data.birth_date || patient.birth_date,
-        legal_guardian: data.legal_guardian || patient.responsible,
-        gender: data.gender || (patient as Record<string, any>).gender,
+        patient_name: patient?.name || anamnesis.patient_name,
+        birth_date: patient?.birth_date,
+        legal_guardian: data.legal_guardian || patient?.responsible,
       });
       
     } catch (error) {
@@ -116,61 +115,11 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
       
       // Get complete professional data from the professionals table
       const { data: { user } } = await supabase.auth.getUser();
-      let professionalData = {
-        name: 'Profissional',
-        email: 'profissional@musetera.app',
-        specialty: '',
-        phone: '',
-        register: '',
-        license_number: '',
-        association: '',
-        stamp_photo_url: '',
-        avatar_url: '',
-        digital_stamp_url: '',
-        digital_signature_url: ''
-      };
-
-      if (user) {
-        // Try to fetch professional data from the professionals table
-        console.log("🔍 [AnamnesisView] Buscando profissional com user_id:", user.id);
-        
-        const { data: professional, error } = await supabase
-          .from('professionals')
-          .select('*')
-          .eq('user_id', user.id)
-          .maybeSingle();
-
-        console.log("📊 [AnamnesisView] Query profissional resultado:", {
-          profError: error?.message || null,
-          professionalData: professional ? {
-            id: professional.id,
-            name: professional.name,
-            stamp_photo_url: professional.stamp_photo_url,
-            avatar_url: professional.avatar_url,
-            digital_stamp_url: professional.digital_stamp_url,
-          } : null
-        });
-
-        if (professional && !error) {
-          professionalData = {
-            name: professional.name || formatNameFromEmail(user.email || ''),
-            email: professional.email || user.email || 'profissional@musetera.app',
-            specialty: professional.specialty || '',
-            phone: professional.phone || '',
-            register: professional.register || '',
-            license_number: professional.license_number || '',
-            association: professional.association || '',
-            stamp_photo_url: professional.stamp_photo_url || '',
-            avatar_url: professional.avatar_url || '',
-            digital_stamp_url: professional.digital_stamp_url || '',
-            digital_signature_url: professional.digital_signature_url || ''
-          };
-          console.log("✅ [AnamnesisView] Dados do profissional carregados com sucesso");
-        } else {
-          console.warn("⚠️ [AnamnesisView] Usando fallback para dados do profissional:", error?.message);
-          professionalData.name = formatNameFromEmail(user.email || '');
-          professionalData.email = user.email || 'profissional@musetera.app';
-        }
+      if (!user) throw new Error('Sua sessão expirou. Entre novamente no portal.');
+      const { data: professionalData, error: professionalError } = await supabase
+        .from('professionals').select('*').eq('user_id', user.id).maybeSingle();
+      if (professionalError || !professionalData) {
+        throw new Error('Perfil profissional não encontrado. Confira seu cadastro no Carimbo Digital.');
       }
 
       // Converter imagens para Base64
@@ -178,30 +127,19 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
       let digitalStampBase64: string | null = null;
       let digitalSignatureBase64: string | null = null;
 
-      console.log("🔍 [AnamnesisView] URLs de imagem antes da conversão:", {
-        stamp_photo_url: professionalData.stamp_photo_url,
-        avatar_url: professionalData.avatar_url,
-        digital_stamp_url: professionalData.digital_stamp_url
-      });
 
       if (professionalData.stamp_photo_url || professionalData.avatar_url) {
         try {
           const photoUrl = professionalData.stamp_photo_url || professionalData.avatar_url;
-          console.log("🖼️ [AnamnesisView] Convertendo foto do profissional para Base64...", photoUrl);
           professionalPhotoBase64 = await imageUrlToBase64(photoUrl);
-          console.log("✅ [AnamnesisView] Foto convertida:", professionalPhotoBase64 ? "OK" : "FALHOU");
         } catch (e) {
           console.warn("⚠️ [AnamnesisView] Não foi possível converter foto para Base64:", e);
         }
-      } else {
-        console.log("⚠️ [AnamnesisView] Nenhuma URL de foto encontrada para conversão");
       }
 
       if (professionalData.digital_stamp_url) {
         try {
-          console.log("🖼️ [AnamnesisView] Convertendo carimbo digital para Base64...", professionalData.digital_stamp_url);
           digitalStampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
-          console.log("✅ [AnamnesisView] Carimbo convertido:", digitalStampBase64 ? "OK" : "FALHOU");
         } catch (e) {
           console.warn("⚠️ [AnamnesisView] Não foi possível converter carimbo para Base64:", e);
         }
@@ -222,12 +160,36 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
           .from('patients')
           .select('*')
           .eq('id', anamnesis.patient_id)
-          .eq('user_id', user.id)
+          .eq('professional_id', user.id)
           .maybeSingle();
         if (!patientError && patient) patientDetails = patient;
       }
-      const fillMissing = (primary: unknown, fallback: unknown) =>
-        primary !== undefined && primary !== null && String(primary).trim() !== '' ? primary : fallback;
+      const fillMissing = (primary: unknown, fallback: unknown): string =>
+        String(primary !== undefined && primary !== null && String(primary).trim() !== '' ? primary : fallback ?? '');
+
+      // Os arquivos podem estar somente na pasta privada do Carimbo Digital.
+      const restoreOwnImage = async (prefix: 'signature_' | 'stamp_'): Promise<string | null> => {
+        const { data: files, error: listError } = await supabase.storage.from('digital-signatures')
+          .list(user.id, { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
+        if (listError) throw listError;
+        const latest = files?.filter(file => file.name.startsWith(prefix) && file.name.endsWith('.png'))
+          .sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''))[0];
+        if (!latest) return null;
+        const { data: fileData, error: fileError } = await supabase.storage.from('digital-signatures')
+          .download(`${user.id}/${latest.name}`);
+        if (fileError || !fileData) throw fileError || new Error('Imagem indisponível');
+        return new Promise(resolve => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : null);
+          reader.onerror = () => resolve(null);
+          reader.readAsDataURL(fileData);
+        });
+      };
+      if (!digitalSignatureBase64) digitalSignatureBase64 = await restoreOwnImage('signature_');
+      if (!digitalStampBase64) digitalStampBase64 = await restoreOwnImage('stamp_');
+      if (!digitalSignatureBase64 || !digitalStampBase64) {
+        throw new Error('Cadastre sua assinatura e carimbo digital antes de exportar um PDF profissional.');
+      }
 
       // Ensure we have the required created_at field and structure the data properly
       const formattedAnamnesisData = {

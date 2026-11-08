@@ -4,6 +4,8 @@ on:
     paths:
       - "src/pages/anamnesis/**"
       - "src/integrations/supabase/types.ts"
+      - "tests/anamnesis-safety.cjs"
+      - "tests/anamnesis_journey.py"
       - "supabase/migrations/*anamnesis*.sql"
       - ".github/workflows/anamnesis-save-validation.yml"
 jobs:
@@ -21,6 +23,8 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Build portal
         run: npm run build
+      - name: Verify anamnesis safety invariants
+        run: node tests/anamnesis-safety.cjs
       - name: Check migration/form schema coverage
         run: |
           node --input-type=module <<'JS'

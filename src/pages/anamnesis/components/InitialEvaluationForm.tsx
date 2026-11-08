@@ -264,11 +264,11 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
         isComplete={isSectionComplete(section3Fields)}
       >
         <div className="space-y-6">
-          <div className="rounded-xl border border-teal-200 bg-teal-50/60 p-4 dark:border-teal-800 dark:bg-teal-950/20">
-            <label htmlFor="common-medication-select" className="mb-2 block text-sm font-bold text-teal-950 dark:text-teal-100">
+          <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
+            <label htmlFor="common-medication-select" className="mb-2 block text-sm font-bold text-foreground">
               Selecionar medicamento informado pelo paciente ou responsável
             </label>
-            <p className="mb-3 text-xs leading-relaxed text-teal-900 dark:text-teal-200">
+            <p className="mb-3 text-sm leading-relaxed text-muted-foreground">
               Escolha um medicamento por vez. A seleção será adicionada ao campo abaixo; confirme nome, apresentação e uso com o responsável ou documento clínico. A lista não indica prescrição nem que todo paciente com TEA ou TDAH utilize medicação.
             </p>
             <select
@@ -282,7 +282,7 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
                 if (entries.some(item => item.toLocaleLowerCase("pt-BR") === medication.toLocaleLowerCase("pt-BR"))) return;
                 updateField("current_medication", existing ? `${existing}\n${medication}` : medication);
               }}
-              className="min-h-12 w-full rounded-lg border border-teal-300 bg-background px-3 py-2 text-base text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:border-teal-700"
+              className="min-h-12 w-full rounded-lg border border-primary/30 bg-background px-3 py-2 text-base text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <option value="">Selecione para adicionar à lista...</option>
               <optgroup label="TDAH — opções frequentemente utilizadas">
