@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { usePtiPlan } from "@/hooks/usePtiPlans";
 import { usePtiReavaliacoes, useSavePtiReavaliacao } from "@/hooks/usePtiReavaliacoes";
 import { PTI_CRITERIOS_EVOLUCAO } from "@/types/pti";
+import { getPtiBaselineValue, ptiScoreLabel } from "@/utils/ptiReevaluation";
 
 export default function PtiReavaliacao() {
   const { id } = useParams<{ id: string }>();
@@ -28,6 +29,19 @@ export default function PtiReavaliacao() {
   const [observacoes, setObservacoes] = useState("");
   const [report, setReport] = useState("");
   const [generating, setGenerating] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
+  useEffect(() => {
+    if (!hasUnsavedChanges) return;
+    const warn = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = ""; };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [hasUnsavedChanges]);
+
+  const leaveReevaluation = () => {
+    if (hasUnsavedChanges && !window.confirm("Esta reavaliação tem alterações não salvas. Deseja sair mesmo assim?")) return;
+    navigate(`/pti/${id}`);
+  };
 
   // baseline = last reavaliação snapshot, or original plan scores
   const baseline = useMemo<Record<string, number>>(() => {
@@ -39,7 +53,7 @@ export default function PtiReavaliacao() {
   useEffect(() => {
     if (plan) {
       const init = PTI_CRITERIOS_EVOLUCAO.reduce<Record<string, number>>((acc, k) => {
-        acc[k] = baseline[k] || plan.content.criteriosEvolucao?.[k] || 0;
+        acc[k] = getPtiBaselineValue(k, baseline, plan.content.criteriosEvolucao);
         return acc;
       }, {});
       setScores(init);
@@ -50,8 +64,8 @@ export default function PtiReavaliacao() {
     () =>
       PTI_CRITERIOS_EVOLUCAO.map((k) => ({
         area: k,
-        anterior: baseline[k] || 0,
-        atual: scores[k] || 0,
+        anterior: (baseline[k] ?? 0) > 0 ? baseline[k] : null,
+        atual: (scores[k] ?? 0) > 0 ? scores[k] : null,
       })),
     [baseline, scores],
   );
@@ -78,6 +92,7 @@ export default function PtiReavaliacao() {
         return;
       }
       setReport(data.report || "");
+      setHasUnsavedChanges(true);
       toast.success("Relatório de reavaliação gerado");
     } catch {
       toast.error("Erro ao gerar relatório");
@@ -95,6 +110,7 @@ export default function PtiReavaliacao() {
         report: { text: report },
       });
       toast.success("Reavaliação salva");
+      setHasUnsavedChanges(false);
       navigate(`/pti/${id}`);
     } catch {
       toast.error("Erro ao salvar reavaliação");
@@ -113,7 +129,7 @@ export default function PtiReavaliacao() {
     <div className="min-h-screen bg-background">
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate(`/pti/${id}`)}>
+          <Button variant="ghost" size="icon" aria-label="Voltar ao PTI" onClick={leaveReevaluation}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
@@ -131,18 +147,21 @@ export default function PtiReavaliacao() {
         <Card className="border-border/60">
           <CardContent className="p-4 space-y-4">
             <h3 className="text-sm font-semibold">Critérios de evolução atuais (1 a 5)</h3>
+            <p className="text-sm text-muted-foreground">O valor 0 significa “Não avaliado”. Ele não representa ausência de evolução nem pontuação clínica.</p>
             {PTI_CRITERIOS_EVOLUCAO.map((k) => (
               <div key={k} className="space-y-1.5">
                 <div className="flex justify-between text-sm">
                   <span>{k}</span>
                   <span className="text-muted-foreground">
-                    {baseline[k] || 0} → <span className="font-semibold text-foreground">{scores[k] || 0}</span>
+                    {ptiScoreLabel(baseline[k] ?? 0)} → <span className="font-semibold text-foreground">{ptiScoreLabel(scores[k] ?? 0)}</span>
                   </span>
                 </div>
                 <Slider
                   min={0} max={5} step={1}
+                  aria-label={`Pontuação atual em ${k}`}
+                  aria-valuetext={ptiScoreLabel(scores[k] ?? 0)}
                   value={[scores[k] || 0]}
-                  onValueChange={(v) => setScores((s) => ({ ...s, [k]: v[0] }))}
+                  onValueChange={(v) => { setScores((s) => ({ ...s, [k]: v[0] })); setHasUnsavedChanges(true); }}
                 />
               </div>
             ))}
@@ -152,7 +171,8 @@ export default function PtiReavaliacao() {
         {/* Comparison chart */}
         <Card className="border-border/60">
           <CardContent className="p-4">
-            <h3 className="text-sm font-semibold mb-3">Comparativo de evolução</h3>
+            <h3 className="text-sm font-semibold mb-2">Comparativo de evolução</h3>
+            <p className="mb-3 text-sm text-muted-foreground">Áreas não avaliadas ficam sem ponto no gráfico, em vez de aparecer como zero clínico.</p>
             <ResponsiveContainer width="100%" height={300}>
               <RadarChart data={chartData}>
                 <PolarGrid stroke="hsl(var(--border))" />
@@ -175,7 +195,7 @@ export default function PtiReavaliacao() {
               rows={4}
               placeholder="Descreva observações da evolução do paciente neste período..."
               value={observacoes}
-              onChange={(e) => setObservacoes(e.target.value)}
+              onChange={(e) => { setObservacoes(e.target.value); setHasUnsavedChanges(true); }}
             />
             <Button variant="outline" className="gap-2" onClick={handleGenerate} disabled={generating}>
               {generating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
@@ -190,13 +210,14 @@ export default function PtiReavaliacao() {
               <h3 className="text-sm font-semibold flex items-center gap-2">
                 <FileText className="h-4 w-4 text-primary" /> Relatório
               </h3>
-              <Textarea rows={14} value={report} onChange={(e) => setReport(e.target.value)} className="text-sm" />
+              <Textarea rows={14} value={report} onChange={(e) => { setReport(e.target.value); setHasUnsavedChanges(true); }} className="text-sm" />
             </CardContent>
           </Card>
         )}
 
         <div className="flex justify-end gap-2">
-          <Button variant="ghost" onClick={() => navigate(`/pti/${id}`)}>Cancelar</Button>
+          {hasUnsavedChanges && <span role="status" className="mr-auto self-center text-sm text-muted-foreground">Alterações ainda não salvas</span>}
+          <Button variant="ghost" onClick={leaveReevaluation}>Cancelar</Button>
           <Button className="gap-2" onClick={handleSave} disabled={saveMutation.isPending}>
             {saveMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             Salvar reavaliação

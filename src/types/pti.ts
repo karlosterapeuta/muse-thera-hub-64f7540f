@@ -275,8 +275,9 @@ export interface PtiPlan {
   updated_at: string;
 }
 
-// Progress: count of "filled" sections out of total
-export function computePtiProgress(c: PtiContent): number {
+// Legacy PTIs can contain detailed sections that are not shown in the new
+// continuous form. Keep their historical completeness signal intact.
+function computeLegacyPtiProgress(c: PtiContent): number {
   const checks: boolean[] = [
     !!c.identificacao.nome,
     !!c.queixaPrincipal,
@@ -298,4 +299,27 @@ export function computePtiProgress(c: PtiContent): number {
   ];
   const filled = checks.filter(Boolean).length;
   return Math.round((filled / checks.length) * 100);
+}
+
+/** Document completion only — never a measure of therapeutic progress. */
+export function getPtiCompletion(c: PtiContent) {
+  const form = { ...createDefaultPtiFormulario(), ...c.formulario };
+  const nonempty = (value?: string) => Boolean(value?.trim());
+  const items = [
+    { key: "patient", label: "Identificação do paciente", complete: nonempty(c.identificacao.nome) },
+    { key: "family", label: "Responsável ou familiares", complete: [c.identificacao.responsavel, form.nomeMae, form.nomePai].some(nonempty) },
+    { key: "context", label: "Demanda ou diagnóstico documentado", complete: [c.identificacao.diagnostico, c.identificacao.cid, c.queixaPrincipal].some(nonempty) },
+    { key: "history", label: "História clínica e observações", complete: [form.resumoClinico, form.relatosResponsaveis, form.desenvolvimentoAutonomia, form.comportamentoManejo, ...Object.values(c.historicoClinico)].some(nonempty) },
+    { key: "review", label: "Periodicidade de revisão", complete: nonempty(form.revisaoObjetivos) },
+    { key: "objectives", label: "Objetivos descritos", complete: c.objetivosEspecificos.some(o => nonempty(o.descricao)) },
+    { key: "goals", label: "Metas descritas", complete: c.metas.some(m => nonempty(m.descricao)) },
+    { key: "intervention", label: "Considerações ou plano de intervenção", complete: [form.consideracoes, c.objetivoGeral].some(nonempty) },
+  ];
+  const filled = items.filter(item => item.complete).length;
+  const currentPercent = Math.round(filled / items.length * 100);
+  return { items, filled, total: items.length, percent: Math.max(currentPercent, computeLegacyPtiProgress(c)) };
+}
+
+export function computePtiProgress(c: PtiContent): number {
+  return getPtiCompletion(c).percent;
 }
