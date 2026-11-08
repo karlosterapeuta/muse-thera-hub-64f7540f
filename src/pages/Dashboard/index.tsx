@@ -61,14 +61,14 @@ export default function Dashboard() {
 
         <PendingUsersPanel userId={identity.userId} />
 
-        {data.hasAnyError && <div role="alert" className="flex flex-col gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4 sm:flex-row sm:items-center sm:justify-between"><p className="flex items-start gap-2 text-sm font-medium"><AlertCircle className="h-5 w-5 shrink-0 text-destructive" aria-hidden="true" /> Alguns indicadores estão indisponíveis. Uma falha não será apresentada como ausência de registros.</p><Button type="button" variant="outline" className="min-h-11 gap-2" onClick={data.refresh}><RefreshCw className="h-4 w-4" aria-hidden="true" /> Tentar novamente</Button></div>}
+        {data.hasAnyError && <div role="alert" className="flex flex-col gap-3 rounded-xl border border-red-500/30 bg-red-500/5 p-4 sm:flex-row sm:items-center sm:justify-between"><p className="flex items-start gap-2 text-sm font-medium"><AlertCircle className="h-5 w-5 shrink-0 text-red-700 dark:text-red-300" aria-hidden="true" /> Alguns indicadores estão indisponíveis. Uma falha não será apresentada como ausência de registros.</p><Button type="button" variant="outline" className="min-h-11 gap-2" onClick={data.refresh}><RefreshCw className="h-4 w-4" aria-hidden="true" /> Tentar novamente</Button></div>}
 
         <section aria-label="Continuar atendimento">
           <Card className="border-teal-700/20 bg-gradient-to-r from-teal-50/80 to-emerald-50/40 shadow-sm dark:from-teal-950/40 dark:to-emerald-950/20">
             <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
               <div className="min-w-0 space-y-1">
                 <p className="flex items-center gap-2 text-sm font-semibold text-teal-800 dark:text-teal-200"><Stethoscope className="h-4 w-4" aria-hidden="true" /> Continue o atendimento</p>
-                {data.isError ? <p className="text-sm text-destructive" role="status">Agenda indisponível. Tente atualizar o painel.</p> : data.isLoading ? <Skeleton className="h-6 w-52" /> : highlighted ? <><p className="break-words text-lg font-bold text-foreground">{highlighted.patient_name}</p><p className="text-sm text-muted-foreground">{format(highlighted.dateForSort, "EEEE, dd 'de' MMMM", { locale: ptBR })} · {highlighted.formatted_time}</p></> : <p className="text-sm text-muted-foreground">Sem atendimento futuro registrado nesta semana. Você pode começar uma evolução ou consultar os pacientes.</p>}
+                {data.isError ? <p className="text-sm font-medium text-red-700 dark:text-red-300" role="status">Agenda indisponível. Tente atualizar o painel.</p> : data.isLoading ? <Skeleton className="h-6 w-52" /> : highlighted ? <><p className="break-words text-lg font-bold text-foreground">{highlighted.patient_name}</p><p className="text-sm text-muted-foreground">{format(highlighted.dateForSort, "EEEE, dd 'de' MMMM", { locale: ptBR })} · {highlighted.formatted_time}</p></> : <p className="text-sm text-muted-foreground">Sem atendimento futuro registrado nesta semana. Você pode começar uma evolução ou consultar os pacientes.</p>}
               </div>
               <div className="flex flex-col gap-2 sm:flex-row">
                 {highlighted && !data.isError && !data.isLoading ? <><Button className="min-h-11 gap-2 bg-teal-700 text-white hover:bg-teal-800" onClick={() => goToEvolution(highlighted.patient_id!)}>Registrar evolução <ArrowRight className="h-4 w-4" aria-hidden="true" /></Button><Button variant="outline" className="min-h-11" onClick={() => navigate(`/patients?patient_id=${encodeURIComponent(highlighted.patient_id!)}`)}>Ver ficha</Button></> : <Button variant="outline" className="min-h-11" onClick={() => navigate("/patients")}>Abrir pacientes</Button>}
@@ -97,7 +97,7 @@ export default function Dashboard() {
               <Button variant="ghost" size="sm" className="min-h-11 gap-1 text-teal-700 dark:text-teal-300" onClick={() => navigate("/patients")}>Pacientes <ArrowRight className="h-4 w-4" /></Button>
             </CardHeader>
             <CardContent className="space-y-3">
-              {data.isError ? <p className="rounded-xl border border-destructive/30 p-4 text-sm text-destructive" role="status">Não foi possível consultar os atendimentos. Atualize o painel para tentar novamente.</p> : data.isLoading ? <div role="status" aria-label="Carregando atendimentos" className="space-y-3"><Skeleton className="h-20 w-full" /><Skeleton className="h-20 w-full" /></div> : upcoming.length > 0 ? upcoming.map(session => (
+              {data.isError ? <p className="rounded-xl border border-red-500/30 p-4 text-sm font-medium text-red-700 dark:text-red-300" role="status">Não foi possível consultar os atendimentos. Atualize o painel para tentar novamente.</p> : data.isLoading ? <div role="status" aria-label="Carregando atendimentos" className="space-y-3"><Skeleton className="h-20 w-full" /><Skeleton className="h-20 w-full" /></div> : upcoming.length > 0 ? upcoming.map(session => (
                 <div key={session.id} className="flex flex-col gap-3 rounded-xl border border-border/70 bg-muted/20 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                   <div className="min-w-0">
                     <p className="break-words text-sm font-semibold text-foreground">{session.patient_name}</p>
@@ -114,7 +114,7 @@ export default function Dashboard() {
             <CardContent className="space-y-4">
               <div className="rounded-xl bg-teal-50/70 p-4 dark:bg-teal-950/30">
                 <p className="text-sm text-muted-foreground">Atendimentos registrados</p>
-                {data.isError ? <p className="mt-1 text-sm font-semibold text-destructive">Indisponível</p> : data.isLoading ? <Skeleton className="mt-2 h-9 w-14" /> : <p className="mt-1 text-3xl font-bold tabular-nums text-teal-800 dark:text-teal-200">{data.totalSessions}</p>}
+                {data.isError ? <p className="mt-1 text-sm font-semibold text-red-700 dark:text-red-300">Indisponível</p> : data.isLoading ? <Skeleton className="mt-2 h-9 w-14" /> : <p className="mt-1 text-3xl font-bold tabular-nums text-teal-800 dark:text-teal-200">{data.totalSessions}</p>}
               </div>
               <p className="text-sm leading-relaxed text-muted-foreground">Resumo baseado nos registros da semana do profissional autenticado. Nenhum dado demonstrativo é exibido.</p>
               <Button variant="outline" className="min-h-11 w-full gap-2" onClick={() => navigate("/intervention")}>Ver intervenções <ArrowRight className="h-4 w-4" /></Button>

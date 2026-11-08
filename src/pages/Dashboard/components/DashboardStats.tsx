@@ -37,7 +37,7 @@ export function DashboardStats({ totalPatients, totalReports, totalAnamnesis, to
               <p className="text-xs leading-relaxed text-muted-foreground">{stat.subtitle}</p>
             </div>
             {metricErrors?.[stat.key as keyof NonNullable<typeof metricErrors>] ? (
-              <span className="text-sm font-semibold text-destructive" role="status">Indisponível · tentar novamente</span>
+              <span className="text-sm font-semibold text-red-700 dark:text-red-300" role="status">Indisponível · tentar novamente</span>
             ) : (metricLoading ? metricLoading[stat.key as keyof typeof metricLoading] : isLoading) ? (
               <Skeleton className="h-9 w-14" aria-label={`Carregando ${stat.title.toLowerCase()}`} />
             ) : (

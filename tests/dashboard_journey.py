@@ -64,7 +64,11 @@ def run_case(browser, user_id, patient_id, name, width, broken=False):
             data = []
         if route.request.method == "HEAD":
             count = len(data)
-            return route.fulfill(status=200, body="", headers={"Content-Range": f"0-{max(0, count-1)}/{count}"})
+            return route.fulfill(status=200, body="", headers={
+                "Content-Range": f"0-{max(0, count-1)}/{count}",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Expose-Headers": "Content-Range",
+            })
         if "vnd.pgrst.object" in route.request.headers.get("accept", ""):
             return route.fulfill(json=data[0] if data else None)
         return route.fulfill(json=data)
@@ -80,6 +84,8 @@ def run_case(browser, user_id, patient_id, name, width, broken=False):
         assert page.get_by_text("Nenhum atendimento registrado para os próximos dias desta semana").count() == 0
     else:
         expect(page.get_by_text(name).first).to_be_visible(timeout=20000)
+        # A resposta sintética representa um paciente existente; nunca exibir zero.
+        expect(page.get_by_role("button", name="Abrir Pacientes").get_by_text("1", exact=True)).to_be_visible(timeout=20000)
         assert page.get_by_text("Beto Teste" if name == "Ana Teste" else "Ana Teste").count() == 0
         expect(page.get_by_text("Horário não informado").first).to_be_visible()
         if name == "Ana Teste":
