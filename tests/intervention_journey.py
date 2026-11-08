@@ -2,6 +2,7 @@
 import base64
 import json
 import os
+import subprocess
 import time
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -72,7 +73,7 @@ def run_case(browser, width):
             return route.fulfill(json=[{'id': USER, 'name': 'Musicoterapeuta Teste', 'status': 'active'}])
         return route.fulfill(json=[])
 
-    ctx = browser.new_context(service_workers='block', viewport={'width': width, 'height': 840})
+    ctx = browser.new_context(service_workers='block', viewport={'width': width, 'height': 840}, accept_downloads=True)
     ctx.route('**/*', backend)
     ctx.add_init_script("localStorage.setItem('sb-jztbkimlcrfndooyhohg-auth-token', " + json.dumps(json.dumps(session)) + ")")
     page = ctx.new_page()
@@ -84,6 +85,10 @@ def run_case(browser, width):
     page.get_by_text('Comunicação e Linguagem', exact=True).first.click()
     page.get_by_label('Pouca intenção comunicativa').check()
     expect(page.get_by_text('1 demandas selecionadas')).to_be_visible()
+    page.get_by_role('tab', name='TDAH').click()
+    expect(page.get_by_text('Comunicação e Linguagem', exact=True)).to_have_count(0)
+    page.get_by_role('tab', name='TEA').click()
+    expect(page.get_by_label('Pouca intenção comunicativa')).to_be_checked()
 
     page.get_by_role('button', name='3. Gerar Sugestões com IA').click()
     expect(page.get_by_role('alert').filter(has_text='O provedor de IA está indisponível')).to_be_visible(timeout=15000)
@@ -100,14 +105,31 @@ def run_case(browser, width):
     assert objectives['selected_sub_demands']['TEA::Comunicação e Linguagem'] == ['Pouca intenção comunicativa']
     assert len(plans_saved[0]['complementary_materials']['activities']) == 10
 
+    page.get_by_role('button', name='Expandir todas').click()
+    assert page.locator('button[aria-expanded="true"][aria-controls^="activity-"]').count() == 10
+    page.get_by_role('button', name='Recolher todas').click()
+
+    with page.expect_download(timeout=20000) as pdf_event:
+        page.get_by_role('button', name='Baixar PDF').first.click()
+    pdf_download = pdf_event.value
+    ARTIFACTS.mkdir(parents=True, exist_ok=True)
+    pdf_path = ARTIFACTS / f'intervencao-ficticia-{width}.pdf'
+    pdf_download.save_as(pdf_path)
+    extracted = subprocess.run(['pdftotext', '-layout', str(pdf_path), '-'], capture_output=True, text=True, check=True).stdout
+    assert 'Paciente Fictício' in extracted, 'Paciente não aparece no texto PDF'
+    assert 'ATIVIDADE 01' in extracted and 'ATIVIDADE 10' in extracted, 'Faltaram atividades no PDF'
+    assert 'Musicoterapeuta Teste' in extracted, 'Identificação profissional ausente'
+    info = subprocess.run(['pdfinfo', str(pdf_path)], capture_output=True, text=True, check=True).stdout
+    page_count = int(next(line.split(':', 1)[1] for line in info.splitlines() if line.startswith('Pages:')))
+    assert 1 < page_count < 12, f'Paginação não compactada: {page_count}'
+
     overflow = page.evaluate('({ total: document.documentElement.scrollWidth, viewport: innerWidth })')
     assert overflow['total'] <= overflow['viewport'] + 2, f'Rolagem horizontal: {overflow}'
     button_height = page.get_by_role('button', name='Baixar PDF').first.evaluate('el => el.getBoundingClientRect().height')
     assert button_height >= 44, f'Botão muito pequeno: {button_height}'
-    ARTIFACTS.mkdir(parents=True, exist_ok=True)
     page.screenshot(path=str(ARTIFACTS / f'intervencao-{width}.png'), full_page=True)
     ctx.close()
-    print(f'Intervenção fictícia: {width}px, fallback de erro e salvamento — OK')
+    print(f'Intervenção fictícia: {width}px, IA/seleções/salvamento/PDF pesquisável ({page_count} páginas) — OK')
 
 
 if __name__ == '__main__':
