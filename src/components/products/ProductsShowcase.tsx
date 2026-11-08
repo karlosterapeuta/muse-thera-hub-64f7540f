@@ -6,7 +6,7 @@ import { ProductAnnouncementCard } from './ProductAnnouncementCard';
 import { products } from '@/data/products-data';
 
 export function ProductsShowcase() {
-  const [isMinimized, setIsMinimized] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(true);
   const [isDismissed, setIsDismissed] = useState(() => {
     return localStorage.getItem('products-showcase-dismissed') === 'true';
   });
@@ -40,8 +40,10 @@ export function ProductsShowcase() {
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-muted-foreground hover:text-foreground"
+              className="min-h-11 min-w-11 text-muted-foreground hover:text-foreground"
               onClick={handleToggleMinimize}
+              aria-label={isMinimized ? "Expandir outros produtos" : "Recolher outros produtos"}
+              aria-expanded={!isMinimized}
             >
               {isMinimized ? (
                 <ChevronDown className="h-4 w-4" />
@@ -52,8 +54,9 @@ export function ProductsShowcase() {
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-muted-foreground hover:text-destructive"
+              className="min-h-11 min-w-11 text-muted-foreground hover:text-destructive"
               onClick={handleDismiss}
+              aria-label="Ocultar divulgação de outros produtos"
             >
               <X className="h-4 w-4" />
             </Button>

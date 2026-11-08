@@ -1,48 +1,36 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { DashboardData } from "../types/dashboardTypes";
-import { getCurrentUserId } from "../services/professionalService";
 import { getWeekSessions } from "../services/sessionsService";
 import { getWeekFinancialRecords, getFinancialSchedule } from "../services/financialService";
 import { createWeekStructure, organizeSessionsByDay, addFinancialDataToDays } from "../utils/weekDataProcessor";
 import { calculateStatistics } from "../utils/statisticsCalculator";
 import { usePatientsCount, useAnamnesisCount, useReportsCount, useInterventionsCount } from "@/hooks/useDashboardCounts";
+import { endOfWeek, format, startOfWeek } from "date-fns";
 
-export const useDashboardData = (): DashboardData => {
-  // Use individual hooks for counts to leverage React Query caching
-  const { data: totalPatients = 0, isLoading: isLoadingPatients } = usePatientsCount();
-  const { data: totalAnamnesis = 0, isLoading: isLoadingAnamnesis } = useAnamnesisCount();
-  const { data: totalReports = 0, isLoading: isLoadingReports } = useReportsCount();
-  const { data: totalInterventions = 0, isLoading: isLoadingInterventions } = useInterventionsCount();
+export const useDashboardData = (userId: string | null = null, identityReady = true): DashboardData => {
+  const patients = usePatientsCount(userId);
+  const anamnesis = useAnamnesisCount(userId);
+  const reports = useReportsCount(userId);
+  const interventions = useInterventionsCount(userId);
+  const weekKey = format(startOfWeek(new Date(), { weekStartsOn: 0 }), "yyyy-MM-dd");
 
-  const { data: dashboardData, isLoading: isLoadingDashboard } = useQuery({
-    queryKey: ["dashboard-data"],
+  const weekly = useQuery({
+    queryKey: ["dashboard-data", userId, weekKey],
+    enabled: Boolean(userId),
     queryFn: async () => {
-      console.log("🔄 Carregando dados do dashboard...");
-      
-      const professionalId = await getCurrentUserId();
-      if (!professionalId) {
-        throw new Error("Professional ID não encontrado");
-      }
+      if (!userId) throw new Error("Profissional não autenticado");
+      const startDate = startOfWeek(new Date(), { weekStartsOn: 0 });
+      const endDate = endOfWeek(startDate, { weekStartsOn: 0 });
 
-      // Create date range for this week
-      const today = new Date();
-      const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
-      startOfWeek.setHours(0, 0, 0, 0);
-      
-      const endOfWeek = new Date(startOfWeek);
-      endOfWeek.setDate(startOfWeek.getDate() + 6);
-      endOfWeek.setHours(23, 59, 59, 999);
-
-      // Execute queries in parallel
+      // Erro na consulta clínica nunca deve ser tratado como uma semana vazia.
       const [sessionsData, financialData, financialSchedule] = await Promise.all([
-        getWeekSessions(professionalId, startOfWeek, endOfWeek).catch(() => []),
-        getWeekFinancialRecords(professionalId, startOfWeek, endOfWeek).catch(() => []),
-        getFinancialSchedule(professionalId).catch(() => [])
+        getWeekSessions(userId, startDate, endDate),
+        getWeekFinancialRecords(userId, startDate, endDate).catch(() => []),
+        getFinancialSchedule(userId).catch(() => [])
       ]);
 
-      // Process the data
-      const weekStructure = createWeekStructure(startOfWeek);
+      const weekStructure = createWeekStructure(startDate);
       organizeSessionsByDay(weekStructure, sessionsData);
       addFinancialDataToDays(weekStructure, financialData);
       const statistics = calculateStatistics(sessionsData, financialData);
@@ -61,27 +49,38 @@ export const useDashboardData = (): DashboardData => {
     },
     retry: 1,
     staleTime: 3 * 60 * 1000, // 3 minutes
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
   });
 
-  const isLoading = isLoadingPatients || isLoadingAnamnesis || isLoadingReports || isLoadingInterventions || isLoadingDashboard;
+  const countQueries = { patients, anamnesis, interventions, reports };
+  const metricLoading = Object.fromEntries(Object.entries(countQueries).map(([name, query]) => [name, !identityReady || (!!userId && query.isPending)])) as DashboardData["metricLoading"];
+  const metricErrors = Object.fromEntries(Object.entries(countQueries).map(([name, query]) => [name, query.isError])) as DashboardData["metricErrors"];
+  const updatedAt = Math.max(weekly.dataUpdatedAt, ...Object.values(countQueries).map(query => query.dataUpdatedAt));
 
   return {
-    ...dashboardData,
-    totalPatients,
-    totalAnamnesis, 
-    totalReports,
-    totalInterventions,
-    isLoading,
-    // Fallback values
-    weekDays: dashboardData?.weekDays || [],
-    totalSessions: dashboardData?.totalSessions || 0,
-    totalRevenue: dashboardData?.totalRevenue || 0,
-    averagePerSession: dashboardData?.averagePerSession || 0,
-    upcomingSessions: dashboardData?.upcomingSessions || [],
-    monthlyChange: dashboardData?.monthlyChange || 0,
-    completionRate: dashboardData?.completionRate || 0,
-    sessionData: dashboardData?.sessionData || [],
-    financialSchedule: dashboardData?.financialSchedule || [],
+    totalPatients: patients.data ?? 0,
+    totalAnamnesis: anamnesis.data ?? 0,
+    totalReports: reports.data ?? 0,
+    totalInterventions: interventions.data ?? 0,
+    isLoading: !identityReady || (Boolean(userId) && weekly.isPending),
+    isError: weekly.isError,
+    hasAnyError: weekly.isError || Object.values(countQueries).some(query => query.isError),
+    isRefreshing: weekly.isFetching || Object.values(countQueries).some(query => query.isFetching),
+    updatedAt,
+    metricLoading,
+    metricErrors,
+    refresh: () => {
+      if (!userId) return;
+      void Promise.all([weekly.refetch(), ...Object.values(countQueries).map(query => query.refetch())]);
+    },
+    weekDays: weekly.data?.weekDays || [],
+    totalSessions: weekly.data?.totalSessions || 0,
+    totalRevenue: weekly.data?.totalRevenue || 0,
+    averagePerSession: weekly.data?.averagePerSession || 0,
+    upcomingSessions: weekly.data?.upcomingSessions || [],
+    monthlyChange: weekly.data?.monthlyChange || 0,
+    completionRate: weekly.data?.completionRate || 0,
+    sessionData: weekly.data?.sessionData || [],
+    financialSchedule: weekly.data?.financialSchedule || [],
   };
 };

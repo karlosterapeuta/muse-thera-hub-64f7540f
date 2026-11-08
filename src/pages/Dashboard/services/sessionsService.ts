@@ -15,7 +15,6 @@ export type SessionData = {
 export async function getWeekSessions(professionalId: string, startDate: Date, endDate: Date): Promise<SessionData[]> {
   console.log("🔍 Buscando sessões da semana...");
   console.log("📅 Período:", format(startDate, "yyyy-MM-dd"), "até", format(endDate, "yyyy-MM-dd"));
-  console.log("👤 Professional ID para busca de sessões:", professionalId);
   
   try {
     // Use the professionalId parameter directly (which should be user.id)
@@ -58,6 +57,6 @@ export async function getWeekSessions(professionalId: string, startDate: Date, e
 
   } catch (error) {
     console.error("❌ Erro inesperado ao buscar sessões:", error);
-    return [];
+    throw error;
   }
 }

@@ -41,7 +41,7 @@ export function organizeSessionsByDay(weekDays: DayData[], sessions: any[]): voi
   sessions.forEach((session, index) => {
     try {
       if (!session || !session.date) {
-        console.warn(`⚠️ Sessão ${index} sem data:`, session);
+        console.warn(`⚠️ Sessão ${index} sem data`);
         return;
       }
 
@@ -58,9 +58,10 @@ export function organizeSessionsByDay(weekDays: DayData[], sessions: any[]): voi
       if (dayIndex !== -1) {
         const sessionData: DashboardSession = {
           id: session.id || `session-${index}`,
+          patient_id: session.patient_id,
           date: sessionDate,
           patient_name: session.patients?.name || "Paciente não encontrado",
-          formatted_time: format(sessionDate, "HH:mm", { locale: ptBR }),
+          formatted_time: /[T\s]\d{2}:\d{2}/.test(session.date) ? format(sessionDate, "HH:mm", { locale: ptBR }) : "Horário não informado",
           formatted_date: format(sessionDate, "dd/MM", { locale: ptBR }),
           notes: session.notes || null,
           financial_amount: undefined
@@ -69,12 +70,12 @@ export function organizeSessionsByDay(weekDays: DayData[], sessions: any[]): voi
         weekDays[dayIndex].sessions.push(sessionData);
         weekDays[dayIndex].session_count++;
         
-        console.log(`📅 Sessão adicionada ao dia ${weekDays[dayIndex].day_name}: ${sessionData.patient_name}`);
+        console.log(`📅 Sessão adicionada ao dia ${weekDays[dayIndex].day_name}`);
       } else {
         console.log(`⚠️ Sessão fora do período da semana: ${session.date}`);
       }
     } catch (error) {
-      console.error(`❌ Erro ao processar sessão ${index}:`, session, error);
+      console.error(`❌ Erro ao processar sessão ${index}:`, error);
     }
   });
 
@@ -97,7 +98,7 @@ export function addFinancialDataToDays(weekDays: DayData[], financialRecords: an
   financialRecords.forEach((record, index) => {
     try {
       if (!record || !record.session_date) {
-        console.warn(`⚠️ Registro financeiro ${index} sem data:`, record);
+        console.warn(`⚠️ Registro financeiro ${index} sem data`);
         return;
       }
 
@@ -122,7 +123,7 @@ export function addFinancialDataToDays(weekDays: DayData[], financialRecords: an
         
         if (sessionIndex !== -1) {
           weekDays[dayIndex].sessions[sessionIndex].financial_amount = amount;
-          console.log(`💰 Valor R$ ${amount} adicionado à sessão de ${weekDays[dayIndex].sessions[sessionIndex].patient_name}`);
+          console.log("💰 Valor associado à sessão da semana");
         } else {
           console.log(`💰 Registro financeiro sem sessão correspondente: R$ ${amount} em ${format(recordDate, "dd/MM")}`);
         }
@@ -130,7 +131,7 @@ export function addFinancialDataToDays(weekDays: DayData[], financialRecords: an
         console.log(`⚠️ Registro financeiro fora do período da semana: ${record.session_date}`);
       }
     } catch (error) {
-      console.error(`❌ Erro ao processar registro financeiro ${index}:`, record, error);
+      console.error(`❌ Erro ao processar registro financeiro ${index}:`, error);
     }
   });
 

@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { FileText, UserCheck, ClipboardList, Target, ArrowUpRight } from "lucide-react";
 
 interface DashboardStatsProps {
@@ -8,15 +9,17 @@ interface DashboardStatsProps {
   totalAnamnesis: number;
   totalInterventions: number;
   isLoading: boolean;
+  metricLoading?: Record<"patients" | "anamnesis" | "interventions" | "reports", boolean>;
+  metricErrors?: Record<"patients" | "anamnesis" | "interventions" | "reports", boolean>;
 }
 
-export function DashboardStats({ totalPatients, totalReports, totalAnamnesis, totalInterventions, isLoading }: DashboardStatsProps) {
+export function DashboardStats({ totalPatients, totalReports, totalAnamnesis, totalInterventions, isLoading, metricLoading, metricErrors }: DashboardStatsProps) {
   const navigate = useNavigate();
   const stats = [
-    { title: "Pacientes", value: totalPatients, subtitle: "Cadastrados", icon: UserCheck, path: "/patients" },
-    { title: "Anamneses", value: totalAnamnesis, subtitle: "Registradas", icon: ClipboardList, path: "/anamnesis" },
-    { title: "Intervenções", value: totalInterventions, subtitle: "Criadas", icon: Target, path: "/intervention" },
-    { title: "Relatórios", value: totalReports, subtitle: "Gerados", icon: FileText, path: "/processes/musicoterapia" }
+    { key: "patients", title: "Pacientes", value: totalPatients, subtitle: "Cadastrados", icon: UserCheck, path: "/patients" },
+    { key: "anamnesis", title: "Anamneses", value: totalAnamnesis, subtitle: "Registradas", icon: ClipboardList, path: "/anamnesis" },
+    { key: "interventions", title: "Intervenções", value: totalInterventions, subtitle: "Criadas", icon: Target, path: "/intervention" },
+    { key: "reports", title: "Relatórios", value: totalReports, subtitle: "Gerados", icon: FileText, path: "/processes/musicoterapia" }
   ];
   return (
     <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
@@ -33,7 +36,13 @@ export function DashboardStats({ totalPatients, totalReports, totalAnamnesis, to
               <p className="text-sm font-semibold leading-snug text-foreground">{stat.title}</p>
               <p className="text-xs leading-relaxed text-muted-foreground">{stat.subtitle}</p>
             </div>
-            <span className="text-3xl font-bold tabular-nums tracking-tight text-teal-800 dark:text-teal-200" aria-live="polite">{isLoading ? "—" : stat.value}</span>
+            {metricErrors?.[stat.key as keyof NonNullable<typeof metricErrors>] ? (
+              <span className="text-sm font-semibold text-red-700 dark:text-red-300" role="status">Indisponível · tentar novamente</span>
+            ) : (metricLoading ? metricLoading[stat.key as keyof typeof metricLoading] : isLoading) ? (
+              <Skeleton className="h-9 w-14" aria-label={`Carregando ${stat.title.toLowerCase()}`} />
+            ) : (
+              <span className="text-3xl font-bold tabular-nums tracking-tight text-teal-800 dark:text-teal-200" aria-live="polite">{stat.value}</span>
+            )}
           </button>
         </Card>
       ))}
