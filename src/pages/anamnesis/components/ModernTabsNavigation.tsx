@@ -23,7 +23,6 @@ export function ModernTabsNavigation({
       label: "Dados Pessoais",
       mobileLabel: "Dados",
       icon: UserCircle,
-      gradient: "from-teal-700 to-teal-800",
       description: "Informações básicas do paciente",
     },
     {
@@ -31,7 +30,6 @@ export function ModernTabsNavigation({
       label: "Histórico Musical",
       mobileLabel: "Histórico",
       icon: AudioWaveform,
-      gradient: "from-emerald-600 to-teal-700",
       description: "Experiências e preferências musicais",
     },
     {
@@ -39,7 +37,6 @@ export function ModernTabsNavigation({
       label: "Avaliação Clínica",
       mobileLabel: "Avaliação",
       icon: Stethoscope,
-      gradient: "from-teal-600 to-teal-800",
       description: "Diagnósticos e tratamentos atuais",
     },
     {
@@ -47,7 +44,6 @@ export function ModernTabsNavigation({
       label: "Desenvolvimento",
       mobileLabel: "Desenv.",
       icon: Activity,
-      gradient: "from-emerald-700 to-teal-800",
       description: "Marcos do desenvolvimento",
     },
     {
@@ -55,7 +51,6 @@ export function ModernTabsNavigation({
       label: "Terapêutico e Comportamental",
       mobileLabel: "T.C.",
       icon: Brain,
-      gradient: "from-teal-700 to-emerald-800",
       description: "Aspectos comportamentais e sociais",
     },
   ];
@@ -64,6 +59,7 @@ export function ModernTabsNavigation({
     <div className="w-full">
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <div className="mb-5 md:mb-8">
+          <p className="mb-2 text-sm text-muted-foreground md:hidden">Deslize para navegar pelas 5 etapas da anamnese.</p>
           <TabsList aria-label="Seções da anamnese" className="flex w-full gap-2 overflow-x-auto p-2 md:grid md:grid-cols-5 md:overflow-visible h-auto rounded-2xl bg-muted/40 border border-border/60">
             {tabs.map((tab) => {
               const isActive = activeTab === tab.id;
@@ -75,16 +71,14 @@ export function ModernTabsNavigation({
                   aria-label={tab.label}
                   className={`shrink-0 min-w-[118px] sm:min-w-[132px] md:min-w-0 flex flex-col items-center justify-center gap-1.5 px-2 py-3 sm:px-3 sm:py-3.5 rounded-xl border-2 transition-all duration-300 ${
                     isActive
-                      ? "bg-card border-teal-600/60 shadow-lg text-foreground"
+                      ? "bg-card border-primary/60 shadow-sm text-foreground"
                       : "bg-transparent border-transparent text-muted-foreground hover:bg-card/60 hover:text-foreground"
-                  }`}
+                  } focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary`}
                 >
                   <div
-                    className={`p-2 sm:p-2.5 rounded-full bg-gradient-to-br ${tab.gradient} shadow-md transition-all duration-300 ${
-                      isActive ? "scale-110" : "opacity-80"
-                    }`}
+                    className={`p-2 sm:p-2.5 rounded-full transition-colors ${isActive ? "bg-primary" : "bg-primary/10"}`}
                   >
-                    <tab.icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                    <tab.icon className={`h-4 w-4 sm:h-5 sm:w-5 ${isActive ? "text-primary-foreground" : "text-primary"}`} />
                   </div>
 
                   <div className="text-center leading-tight">

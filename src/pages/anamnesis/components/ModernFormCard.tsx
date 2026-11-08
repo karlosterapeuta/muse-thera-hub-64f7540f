@@ -20,12 +20,12 @@ export function ModernFormCard({
   // Compatibilidade com chamadas existentes: a identidade visual passa a ser única.
   void gradient;
   return (
-    <Card className={`relative overflow-hidden rounded-xl border border-teal-700/20 bg-card shadow-sm transition-shadow hover:shadow-md ${className}`}>
+    <Card className={`relative overflow-hidden rounded-xl border border-primary/20 bg-card shadow-sm transition-shadow hover:shadow-md ${className}`}>
       <div className="relative z-10">
         <CardHeader className="pb-4">
           <CardTitle className="flex items-center gap-3 text-xl">
-            <div className="rounded-lg bg-teal-700 p-2">
-              <Icon className="h-5 w-5 text-white" />
+            <div className="rounded-lg bg-primary p-2">
+              <Icon className="h-5 w-5 text-primary-foreground" />
             </div>
             <span className="font-semibold text-foreground">
               {title}

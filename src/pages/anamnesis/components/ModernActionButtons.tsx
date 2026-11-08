@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Save, ArrowLeft, Download, Loader2, AlertCircle } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface ModernActionButtonsProps {
   onSave?: () => void;
@@ -64,11 +63,7 @@ export function ModernActionButtons({
               variant="secondary"
               onClick={onSave}
               disabled={isSaving}
-              className={cn(
-                "flex items-center gap-2 px-6 py-3 transition-all duration-200",
-                "bg-teal-700 hover:bg-teal-800",
-                "text-white"
-              )}
+              className="flex items-center gap-2 min-h-11 px-6 py-3 transition-colors bg-primary hover:bg-primary/90 text-primary-foreground focus-visible:ring-2 focus-visible:ring-primary"
             >
               {isSaving ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -84,10 +79,7 @@ export function ModernActionButtons({
               type="button"
               onClick={onExportPDF}
               disabled={isExportingPDF || isSaving}
-              className={cn(
-                "flex items-center gap-2 px-6 py-3 shadow-lg hover:shadow-xl transition-all duration-200",
-                "bg-teal-800 hover:bg-teal-900 text-white"
-              )}
+              className="flex items-center gap-2 min-h-11 px-6 py-3 border border-primary/30 bg-card text-foreground hover:bg-primary/10 transition-colors"
             >
               {isExportingPDF ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

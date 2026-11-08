@@ -85,7 +85,7 @@ export function AnamnesisValidationSummary({
           ))}
         </div>
         <p className="mt-3 text-sm text-muted-foreground">
-          Por favor, preencha os campos obrigatórios antes de salvar.
+          Preencha estes campos para finalizar. Você pode continuar salvando e exportando um rascunho parcial.
         </p>
       </AlertDescription>
     </Alert>

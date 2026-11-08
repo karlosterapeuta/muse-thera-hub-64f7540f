@@ -102,6 +102,9 @@ export type Database = {
       }
       anamnesis: {
         Row: {
+          review_status: string
+          finalized_at: string | null
+          finalized_by: string | null
           aba_therapy: boolean | null
           active_musical_listening: boolean | null
           active_sound_search: boolean | null
@@ -226,6 +229,9 @@ export type Database = {
           williams_syndrome: boolean | null
         }
         Insert: {
+          review_status?: string
+          finalized_at?: string | null
+          finalized_by?: string | null
           aba_therapy?: boolean | null
           active_musical_listening?: boolean | null
           active_sound_search?: boolean | null
@@ -350,6 +356,9 @@ export type Database = {
           williams_syndrome?: boolean | null
         }
         Update: {
+          review_status?: string
+          finalized_at?: string | null
+          finalized_by?: string | null
           aba_therapy?: boolean | null
           active_musical_listening?: boolean | null
           active_sound_search?: boolean | null

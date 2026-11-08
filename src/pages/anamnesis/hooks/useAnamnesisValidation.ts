@@ -14,8 +14,20 @@ interface ValidationResult {
   completionPercentage: number;
 }
 
-// Campos obrigatórios desativados: o profissional pode salvar/baixar mesmo com seções em branco.
-const requiredFields: Record<number, { field: string; label: string; sectionTitle: string }[]> = {};
+// Apenas a FINALIZAÇÃO exige estes três campos. Rascunhos e PDFs de rascunhos
+// continuam disponíveis mesmo quando o preenchimento está parcial.
+export const requiredFields: Record<number, { field: string; label: string; sectionTitle: string }[]> = {
+  1: [{ field: "main_clinical_demand", label: "Demanda clínica principal", sectionTitle: "Identificação e demanda" }],
+  5: [{ field: "patient_musical_history", label: "História musical do paciente", sectionTitle: "Histórico musical" }],
+  12: [{ field: "therapeutic_goals", label: "Objetivos terapêuticos", sectionTitle: "Plano terapêutico" }],
+};
+
+export const missingFinalizationFields = (formData: Record<string, any>) =>
+  Object.entries(requiredFields).flatMap(([section, fields]) =>
+    fields.filter(({ field }) => !String(formData[field] ?? "").trim()).map(item => ({
+      ...item, section: Number(section),
+    }))
+  );
 
 // Todos os campos para cálculo de progresso (não obrigatórios, mas contam para completude)
 const allTrackableFields = [
@@ -37,21 +49,9 @@ export function useAnamnesisValidation(formData: Record<string, any>) {
     const errors: ValidationError[] = [];
     const fieldErrors: Record<string, string> = {};
 
-    Object.entries(requiredFields).forEach(([sectionNum, fields]) => {
-      fields.forEach(({ field, label, sectionTitle }) => {
-        const value = formData[field];
-        const isEmpty = !value || (typeof value === "string" && value.trim() === "");
-        
-        if (isEmpty) {
-          errors.push({
-            field,
-            label,
-            section: parseInt(sectionNum),
-            sectionTitle
-          });
-          fieldErrors[field] = `${label} é obrigatório`;
-        }
-      });
+    missingFinalizationFields(formData).forEach(({ field, label, section, sectionTitle }) => {
+      errors.push({ field, label, section, sectionTitle });
+      fieldErrors[field] = `${label} é necessário para finalizar`;
     });
 
     // Cobertura dos campos textuais conhecidos e do perfil funcional TEA.
