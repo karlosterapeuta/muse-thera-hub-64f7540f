@@ -51,6 +51,7 @@ test('salvamento protege paciente e mantém a mesma anamnese ao atualizar', () =
   assert.match(wrapper, /}, 3000\)/);
   assert.match(wrapper, /reviewStatus !== "draft"/);
   assert.match(wrapper, /if \(editRevisionRef\.current === saveRevision\)/);
+  assert.match(wrapper, /currentId && !dirtyRef\.current && persistedReviewStatusRef\.current === mode/);
 });
 
 test('PDF mantém a assinatura e o carimbo, sem consultar paciente pela coluna errada', () => {

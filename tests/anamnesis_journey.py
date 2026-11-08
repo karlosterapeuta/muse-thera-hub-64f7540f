@@ -131,6 +131,7 @@ def run():
         # O PDF é gerado com dados sintéticos e inclui duas imagens profissionais.
         with page.expect_download(timeout=90000) as event:
             page.get_by_role("button", name="Exportar PDF").click()
+        assert len(requests) == 2, "Exportar novamente não deve criar uma revisão clínica vazia"
         with tempfile.TemporaryDirectory() as folder:
             pdf = Path(folder) / "anamnesis-synthetic.pdf"
             event.value.save_as(pdf)

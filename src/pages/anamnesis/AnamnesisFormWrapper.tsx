@@ -109,6 +109,7 @@ export default function AnamnesisFormWrapper({
   // inserts duplicados e gravações simultâneas fora de ordem.
   const formDataRef = useRef<Record<string, any>>({});
   const existingIdRef = useRef<string | null>(editAnamnesisId || null);
+  const persistedReviewStatusRef = useRef<"draft" | "finalized">("draft");
   const dirtyRef = useRef(false);
   const editRevisionRef = useRef(0);
   const saveQueueRef = useRef<Promise<boolean>>(Promise.resolve(true));
@@ -360,6 +361,7 @@ export default function AnamnesisFormWrapper({
       if (anamnesisData) {
         formDataRef.current = anamnesisData;
         existingIdRef.current = anamnesisData.id;
+        persistedReviewStatusRef.current = anamnesisData.review_status === "finalized" ? "finalized" : "draft";
         dirtyRef.current = false;
         setFormData(anamnesisData);
         setReviewStatus(anamnesisData.review_status === "finalized" ? "finalized" : "draft");
@@ -416,6 +418,7 @@ export default function AnamnesisFormWrapper({
     editRevisionRef.current += 1;
     formDataRef.current = {};
     existingIdRef.current = null;
+    persistedReviewStatusRef.current = "draft";
     setSelectedPatient(patientId);
     setFormData({});
     setExistingAnamnesisId(null);
@@ -444,6 +447,8 @@ export default function AnamnesisFormWrapper({
       const saveRevision = editRevisionRef.current;
       const patientId = selectedPatient;
       const currentId = existingIdRef.current;
+      // Exportar um PDF ou clicar em salvar não deve gerar revisões vazias.
+      if (currentId && !dirtyRef.current && persistedReviewStatusRef.current === mode) return true;
       if (silent && !dirtyRef.current) return true;
       return performSave(snapshot, saveRevision, patientId, currentId, mode, silent);
     }).finally(() => { pendingSavesRef.current -= 1; });
@@ -542,6 +547,7 @@ export default function AnamnesisFormWrapper({
       }
 
       setReviewStatus(mode);
+      persistedReviewStatusRef.current = mode;
       setLastSavedAt(new Date().toISOString());
       if (editRevisionRef.current === saveRevision) {
         dirtyRef.current = false;
