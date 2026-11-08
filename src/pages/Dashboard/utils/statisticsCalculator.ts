@@ -109,6 +109,5 @@ export function calculateStatistics(sessions: any[], financialRecords: any[]) {
     sessionData
   };
 
-  console.log("✅ Estatísticas calculadas:", result);
   return result;
 }

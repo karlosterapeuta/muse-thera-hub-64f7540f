@@ -1,6 +1,7 @@
 
 export type DashboardSession = {
   id: string;
+  patient_id?: string;
   date: Date;
   patient_name: string;
   formatted_time: string;
@@ -44,4 +45,11 @@ export type DashboardData = {
   totalInterventions: number;
   financialSchedule: FinancialAgendaItem[];
   isLoading: boolean;
+  isError: boolean;
+  hasAnyError: boolean;
+  isRefreshing: boolean;
+  updatedAt: number;
+  metricLoading: Record<"patients" | "anamnesis" | "interventions" | "reports", boolean>;
+  metricErrors: Record<"patients" | "anamnesis" | "interventions" | "reports", boolean>;
+  refresh: () => void;
 };

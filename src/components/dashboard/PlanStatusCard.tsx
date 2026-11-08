@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { useState } from "react";
 import { toast } from "sonner";
 
-export function PlanStatusCard() {
+export function PlanStatusCard({ userId }: { userId: string | null }) {
   const [renewOpen, setRenewOpen] = useState(false);
   const [processingPlan, setProcessingPlan] = useState<string | null>(null);
 
@@ -34,10 +34,10 @@ export function PlanStatusCard() {
   };
 
   const { data: planData, isLoading } = useQuery({
-    queryKey: ["user-plan-status"],
+    queryKey: ["user-plan-status", userId],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
+      if (!userId || !user || user.id !== userId) return null;
 
       const { data: profile } = await supabase
         .from("profiles")
@@ -69,6 +69,7 @@ export function PlanStatusCard() {
     },
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
+    enabled: Boolean(userId),
   });
 
 
@@ -159,7 +160,7 @@ export function PlanStatusCard() {
   if (!planData) return null;
 
   return (
-    <Card className="relative overflow-hidden border-0 shadow-2xl rounded-2xl bg-gradient-to-r from-teal-800 via-teal-700 to-emerald-700 dark:from-teal-900 dark:via-teal-800 dark:to-emerald-900">
+    <Card className="relative overflow-hidden rounded-2xl border border-teal-700/20 bg-gradient-to-r from-teal-800 via-teal-700 to-emerald-700 shadow-sm dark:from-teal-900 dark:via-teal-800 dark:to-emerald-900">
       {/* Decorative elements */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/20 blur-2xl" />
@@ -230,7 +231,7 @@ export function PlanStatusCard() {
                         <p className="font-semibold">{plan.title}</p>
                         <p className="text-sm text-muted-foreground">{plan.price} · Pix ou cartão</p>
                       </div>
-                      <Button type="button" disabled={processingPlan !== null} onClick={() => renew(plan.code)}>
+                      <Button className="min-h-11" type="button" disabled={processingPlan !== null} onClick={() => renew(plan.code)}>
                         {processingPlan === plan.code ? 'Aguarde…' : 'Escolher'}
                       </Button>
                     </div>

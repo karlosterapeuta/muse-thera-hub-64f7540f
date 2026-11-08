@@ -16,13 +16,13 @@ interface PendingUser {
   status: string;
 }
 
-export function PendingUsersPanel() {
+export function PendingUsersPanel({ userId }: { userId: string | null }) {
   const { data: isAdmin, isLoading: isAdminLoading } = useAdmin();
   const queryClient = useQueryClient();
   const [loadingUserId, setLoadingUserId] = useState<string | null>(null);
 
   const { data: pendingUsers, isLoading } = useQuery({
-    queryKey: ["pending-users"],
+    queryKey: ["pending-users", userId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
@@ -33,7 +33,7 @@ export function PendingUsersPanel() {
       if (error) throw error;
       return data as PendingUser[];
     },
-    enabled: isAdmin === true,
+    enabled: isAdmin === true && Boolean(userId),
     refetchInterval: 30000,
   });
 
@@ -142,7 +142,7 @@ export function PendingUsersPanel() {
               <Button
                 size="sm"
                 variant="outline"
-                className="border-red-500/30 text-red-600 hover:bg-red-500/10 hover:text-red-700 h-8 px-3"
+                className="min-h-11 border-red-500/30 px-3 text-red-600 hover:bg-red-500/10 hover:text-red-700"
                 onClick={() => handleReject(user.id, user.name)}
                 disabled={loadingUserId === user.id}
               >
@@ -151,7 +151,7 @@ export function PendingUsersPanel() {
               </Button>
               <Button
                 size="sm"
-                className="bg-emerald-600 hover:bg-emerald-700 text-white h-8 px-3"
+                className="min-h-11 bg-emerald-600 px-3 text-white hover:bg-emerald-700"
                 onClick={() => handleApprove(user.id, user.name)}
                 disabled={loadingUserId === user.id}
               >

@@ -1,20 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-export const usePatientsCount = () => {
+export const usePatientsCount = (userId: string | null) => {
   return useQuery({
-    queryKey: ["patients-count"],
+    queryKey: ["patients-count", userId],
     queryFn: async (): Promise<number> => {
-      const { data: { session } } = await supabase.auth.getSession();
-      const user = session?.user;
-      if (!user) {
+      if (!userId) {
         throw new Error("Usuário não encontrado");
       }
 
       const { count, error } = await supabase
         .from("patients")
         .select('*', { count: 'exact', head: true })
-        .eq('professional_id', user.id);
+        .eq('professional_id', userId);
 
       if (error) {       
         throw error;
@@ -23,25 +21,24 @@ export const usePatientsCount = () => {
       return count || 0;
     },
     retry: 1,
+    enabled: Boolean(userId),
     staleTime: 2 * 60 * 1000, // 2 minutes
     refetchOnWindowFocus: false,
   });
 };
 
-export const useAnamnesisCount = () => {
+export const useAnamnesisCount = (userId: string | null) => {
   return useQuery({
-    queryKey: ["anamnesis-count"],
+    queryKey: ["anamnesis-count", userId],
     queryFn: async (): Promise<number> => {
-      const { data: { session } } = await supabase.auth.getSession();
-      const user = session?.user;
-      if (!user) {
+      if (!userId) {
         throw new Error("Usuário não encontrado");
       }
 
       const { count, error } = await supabase
         .from("anamnesis")
         .select('*', { count: 'exact', head: true })
-        .eq('professional_id', user.id);
+        .eq('professional_id', userId);
 
       if (error) {
         throw error;
@@ -50,18 +47,17 @@ export const useAnamnesisCount = () => {
       return count || 0;
     },
     retry: 1,
+    enabled: Boolean(userId),
     staleTime: 2 * 60 * 1000, // 2 minutes
     refetchOnWindowFocus: false,
   });
 };
 
-export const useReportsCount = () => {
+export const useReportsCount = (userId: string | null) => {
   return useQuery({
-    queryKey: ["reports-count", "musicoterapia"],
+    queryKey: ["reports-count", "musicoterapia", userId],
     queryFn: async (): Promise<number> => {
-      const { data: { session } } = await supabase.auth.getSession();
-      const user = session?.user;
-      if (!user) {
+      if (!userId) {
         throw new Error("Usuário não encontrado");
       }
 
@@ -69,16 +65,14 @@ export const useReportsCount = () => {
       const { data: professional, error: profError } = await supabase
         .from("professionals")
         .select('id')
-        .eq('user_id', user.id)
-        .single();
+        .eq('user_id', userId)
+        .maybeSingle();
 
       if (profError) {
-        console.error("Erro ao buscar profissional:", profError);
-        return 0;
+        throw profError;
       }
 
       if (!professional) {
-        console.log("Nenhum profissional encontrado para user_id:", user.id);
         return 0;
       }
 
@@ -93,22 +87,20 @@ export const useReportsCount = () => {
         throw error;
       }
 
-      console.log("✅ Total de relatórios encontrados:", count);
       return count || 0;
     },
     retry: 1,
+    enabled: Boolean(userId),
     staleTime: 30 * 1000, // Reduzido para 30 segundos para forçar atualização
     refetchOnWindowFocus: true, // Ativado para recarregar ao focar na janela
   });
 };
 
-export const useInterventionsCount = () => {
+export const useInterventionsCount = (userId: string | null) => {
   return useQuery({
-    queryKey: ["interventions-count"],
+    queryKey: ["interventions-count", userId],
     queryFn: async (): Promise<number> => {
-      const { data: { session } } = await supabase.auth.getSession();
-      const user = session?.user;
-      if (!user) {
+      if (!userId) {
         throw new Error("Usuário não encontrado");
       }
 
@@ -116,16 +108,14 @@ export const useInterventionsCount = () => {
       const { data: professional, error: profError } = await supabase
         .from("professionals")
         .select('id')
-        .eq('user_id', user.id)
-        .single();
+        .eq('user_id', userId)
+        .maybeSingle();
 
       if (profError) {
-        console.error("Erro ao buscar profissional:", profError);
-        return 0;
+        throw profError;
       }
 
       if (!professional) {
-        console.log("Nenhum profissional encontrado para user_id:", user.id);
         return 0;
       }
 
@@ -139,10 +129,10 @@ export const useInterventionsCount = () => {
         throw error;
       }
 
-      console.log("✅ Total de intervenções encontradas:", count);
       return count || 0;
     },
     retry: 1,
+    enabled: Boolean(userId),
     staleTime: 2 * 60 * 1000, // 2 minutes
     refetchOnWindowFocus: false,
   });

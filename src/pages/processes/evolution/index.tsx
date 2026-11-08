@@ -17,11 +17,13 @@ import { EvolutionReportPreview } from "@/components/EvolutionReportPreview";
 import { supabase } from "@/integrations/supabase/client";
 import { generateStaticPDF } from "@/utils/staticPDFGenerator";
 import { useProfessionalData } from "@/hooks/useProfessionalData";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { imageUrlToBase64 } from "@/utils/imageToBase64";
 
 export default function EvolutionReport() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const patientIdFromDashboard = searchParams.get("patient_id");
   const {
     formData,
     selectedPatient,
@@ -57,6 +59,13 @@ export default function EvolutionReport() {
       
       if (error) throw error;
       setPatients(data || []);
+      // Pré-seleciona somente pacientes presentes na consulta autorizada.
+      const requestedPatient = (data || []).find(patient => patient.id === patientIdFromDashboard);
+      if (requestedPatient) {
+        setSelectedPatient(requestedPatient);
+        updateField("patient_id", requestedPatient.id);
+        updateField("patient_name", requestedPatient.name);
+      }
     } catch (error) {
       console.error('Erro ao carregar pacientes:', error);
       toast.error("Erro ao carregar pacientes");

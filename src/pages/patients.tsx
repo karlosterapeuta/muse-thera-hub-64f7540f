@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
@@ -73,9 +73,16 @@ export default function PatientsPage() {
   const isMobile = useIsMobile();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const patientIdFromDashboard = searchParams.get("patient_id");
   
   // Use React Query hooks
   const { data: patients = [], isLoading, error } = usePatientsData();
+  useEffect(() => {
+    if (!patientIdFromDashboard) return;
+    const target = patients.find(patient => patient.id === patientIdFromDashboard);
+    if (target) setSearchTerm(target.name);
+  }, [patientIdFromDashboard, patients]);
   const deletePatientMutation = useDeletePatient();
   const deleteAllPatientsMutation = useDeleteAllPatients();
   const queryClient = useQueryClient();
