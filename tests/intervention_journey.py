@@ -115,12 +115,14 @@ def run_case(browser, width):
     ARTIFACTS.mkdir(parents=True, exist_ok=True)
     pdf_path = ARTIFACTS / f'intervencao-ficticia-{width}.pdf'
     pdf_download.save_as(pdf_path)
-    extracted = subprocess.run(['pdftotext', '-layout', str(pdf_path), '-'], capture_output=True, text=True, check=True).stdout
+    pdf_details = json.loads(subprocess.run(
+        ['node', str(Path(__file__).with_name('inspect_intervention_pdf.cjs')), str(pdf_path)],
+        capture_output=True, text=True, check=True).stdout)
+    extracted = pdf_details['text']
     assert 'Paciente Fictício' in extracted, 'Paciente não aparece no texto PDF'
     assert 'ATIVIDADE 01' in extracted and 'ATIVIDADE 10' in extracted, 'Faltaram atividades no PDF'
     assert 'Musicoterapeuta Teste' in extracted, 'Identificação profissional ausente'
-    info = subprocess.run(['pdfinfo', str(pdf_path)], capture_output=True, text=True, check=True).stdout
-    page_count = int(next(line.split(':', 1)[1] for line in info.splitlines() if line.startswith('Pages:')))
+    page_count = pdf_details['pages']
     assert 1 < page_count < 12, f'Paginação não compactada: {page_count}'
 
     overflow = page.evaluate('({ total: document.documentElement.scrollWidth, viewport: innerWidth })')
