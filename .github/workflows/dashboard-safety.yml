@@ -20,6 +20,7 @@ jobs:
       - run: node tests/pti-improvements.cjs
       - run: node tests/musicoterapia-workflow.cjs
       - run: node tests/anamnesis-safety.cjs
+      - run: node tests/intervention-ai.cjs
       - run: npm run build
       - run: |
           python -m pip install playwright==1.55.0
@@ -28,9 +29,16 @@ jobs:
           npm run preview -- --host 127.0.0.1 --port 4173 --strictPort > /tmp/dashboard-preview.log 2>&1 &
           for i in {1..30}; do curl -fsS http://127.0.0.1:4173 >/dev/null && break; sleep 1; done
           python tests/dashboard_journey.py
+          python tests/intervention_journey.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: dashboard-synthetic-screenshots
           path: artifacts/dashboard/*.png
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: intervention-synthetic-screenshots
+          path: artifacts/intervention/*.png
           if-no-files-found: ignore
