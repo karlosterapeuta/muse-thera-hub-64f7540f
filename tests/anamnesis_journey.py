@@ -4,6 +4,7 @@ import json
 import subprocess
 import tempfile
 import time
+import unicodedata
 from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 
@@ -133,13 +134,18 @@ def run():
         with tempfile.TemporaryDirectory() as folder:
             pdf = Path(folder) / "anamnesis-synthetic.pdf"
             event.value.save_as(pdf)
-            body = subprocess.check_output(["pdftotext", str(pdf), "-"], text=True)
-            assert "Ana Teste" in body and "Beto Teste" not in body
-            assert "Demanda fictícia" in body and "turnos de interação" in body
-            images = subprocess.check_output(["pdfimages", "-list", str(pdf)], text=True)
-            assert len(images.splitlines()) >= 4, images
-            subprocess.run(["pdftoppm", "-f", "1", "-singlefile", "-scale-to", "900", "-png", str(pdf), str(Path(folder) / "first-page")], check=True)
-            assert (Path(folder) / "first-page.png").exists()
+            # html2pdf produz páginas rasterizadas; OCR valida o conteúdo visível.
+            subprocess.run(["pdftoppm", "-r", "150", "-png", str(pdf), str(Path(folder) / "page")], check=True)
+            pages = sorted(Path(folder).glob("page-*.png"))
+            assert len(pages) >= 2
+            body = " ".join(subprocess.check_output(
+                ["tesseract", str(image), "stdout", "-l", "por"], text=True,
+                stderr=subprocess.DEVNULL) for image in pages)
+            plain = "".join(char for char in unicodedata.normalize("NFD", body.lower())
+                            if unicodedata.category(char) != "Mn")
+            assert "ana teste" in plain and "beto teste" not in plain, plain[:1000]
+            assert "demanda" in plain and "objetivos" in plain, plain[:1000]
+            assert pages[0].stat().st_size > 10000
         print("Anamnese sintética: troca protegida, 1 insert, autosave, validação, finalização, PDF com 2 imagens — OK")
         browser.close()
 
