@@ -47,6 +47,26 @@ export function useMusicoterapiaReport() {
     }));
   }, []);
 
+  /** Clear the previous patient's clinical content while retaining the clinician identity. */
+  const resetReportData = useCallback(() => {
+    setReportData(previous => ({
+      templateId: 'musicoterapia',
+      selectedPatientId: '',
+      patientName: '',
+      patientAge: '',
+      patientBirthDate: '',
+      patientGuardian: '',
+      patientDiagnosis: '',
+      sessionDate: new Date().toISOString(),
+      fieldValues: {},
+      additionalObservations: '',
+      signature: '',
+      professionalName: previous.professionalName || professionalData?.name || '',
+      professionalRegistry: previous.professionalRegistry || professionalData?.register || professionalData?.license_number || '',
+      professionalSpecialty: 'Musicoterapia',
+    }));
+  }, [professionalData]);
+
   const generateWithAI = useCallback(async () => {
     setIsGeneratingWithAI(true);
     
@@ -245,6 +265,7 @@ export function useMusicoterapiaReport() {
   return {
     reportData,
     updateReportData,
+    resetReportData,
     generateWithAI,
     generateNarrative,
     isGeneratingWithAI,
