@@ -145,12 +145,16 @@ test('sem configuração de IA devolve 503 específico e sem paciente devolve 40
 
 test('interface informa erro da função, preserva dados, fornece PDF e apresenta seleção isolada', () => {
   const page = fs.readFileSync(path.join(root, 'src/pages/intervention/index.tsx'), 'utf8');
+  const pdf = fs.readFileSync(path.join(root, 'src/pages/intervention/utils/interventionPdf.ts'), 'utf8');
   assert.match(page, /selectedSubDemands\[`TEA::\$\{category.category\}`\]/);
   assert.match(page, /selectedSubDemands\[`DI::\$\{category.category\}`\]/);
   assert.match(page, /response\.json\(\)/);
   assert.match(page, /setGenerationError\(errorDescription\)/);
   assert.match(page, /selected_sub_demands: selectedSubDemands/);
-  assert.match(page, /escapePdfHtml\(activity\.activityDescription\)/);
-  assert.match(page, /signatureBase64 \? `<div/);
-  assert.match(page, /savePDFToStorage\(blob, opt\.filename, "intervention"\)/);
+  assert.match(page, /buildInterventionPdf\(\{ patientName, activities, planDate, professional \}\)/);
+  assert.match(pdf, /drawField\('Procedimento \/ descrição da atividade', activity\.activityDescription\)/);
+  assert.match(pdf, /input\.professional\.signatureDataUrl/);
+  assert.match(pdf, /input\.professional\.stampDataUrl/);
+  assert.match(page, /savePDFToStorage\(blob, filename, 'intervention'\)/);
+  assert.doesNotMatch(page, /html2pdf\.js/);
 });
