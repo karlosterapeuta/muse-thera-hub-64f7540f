@@ -42,7 +42,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { PatientSelect } from "@/pages/anamnesis/components/PatientSelect";
-import { therapyActivities, disorderOptions, teaDemandCategories, tdahDemandCategories, todDemandCategories, diDemandCategories } from "@/data/therapy-activities";
+import { disorderOptions, teaDemandCategories, tdahDemandCategories, todDemandCategories, diDemandCategories } from "@/data/therapy-activities";
 import { TherapyActivity, Disorder } from "@/types/therapy-activity";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -52,6 +52,11 @@ type Patient = {
   id: string;
   name: string;
 };
+
+// Conteúdo clínico e texto da IA são inseridos no HTML que dá origem ao PDF.
+const escapePdfHtml = (value: unknown): string => String(value ?? '').replace(/[&<>"']/g, char => ({
+  '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+}[char] || char));
 
 export default function InterventionForm() {
   const [params] = useSearchParams();
@@ -76,9 +81,31 @@ function InterventionSession({ requested }: { requested: string }) {
   const [userName, setUserName] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState<string>("");
+  const [generationError, setGenerationError] = useState<string>("");
+  const [generationWarning, setGenerationWarning] = useState<string>("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [isPdfGenerating, setIsPdfGenerating] = useState(false);
   const [savedPlans, setSavedPlans] = useState<any[]>([]);
   const [isLoadingSavedPlans, setIsLoadingSavedPlans] = useState(false);
+  const [savedPlansError, setSavedPlansError] = useState(false);
   const [viewingPlan, setViewingPlan] = useState<any | null>(null);
+
+  const selectedItems = Object.entries(selectedSubDemands).flatMap(([key, labels]) => {
+    const separator = key.indexOf('::');
+    if (separator < 0) return [];
+    const disorder = key.slice(0, separator);
+    const category = key.slice(separator + 2);
+    return labels.map(label => ({ disorder, category, label }));
+  });
+  const selectedCount = selectedItems.length + Object.values(selectedDemands).reduce((sum, values) => sum + values.length, 0);
+
+  const invalidateSuggestions = () => {
+    setSuggestedActivities([]);
+    setExpandedActivities(new Set());
+    setShowSuggestions(false);
+    setGenerationError("");
+    setGenerationWarning("");
+  };
 
   const formatNameFromEmail = (email: string) => {
     const namePart = email.split('@')[0];
@@ -143,6 +170,7 @@ function InterventionSession({ requested }: { requested: string }) {
   const fetchSavedPlans = async () => {
     try {
       setIsLoadingSavedPlans(true);
+      setSavedPlansError(false);
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
@@ -153,7 +181,7 @@ function InterventionSession({ requested }: { requested: string }) {
         .eq('user_id', user.id)
         .maybeSingle();
 
-      if (!professional?.id) return;
+      if (!professional?.id) { setSavedPlans([]); return; }
 
       // Buscar planos salvos - filtrar apenas os que têm activities (planos de intervenção)
       const { data: plans, error } = await supabase
@@ -162,6 +190,7 @@ function InterventionSession({ requested }: { requested: string }) {
           id,
           created_at,
           patient_id,
+          patient_full_name,
           status,
           general_objectives,
           complementary_materials
@@ -173,31 +202,31 @@ function InterventionSession({ requested }: { requested: string }) {
 
       if (error) throw error;
 
-      // Enriquecer com nomes dos pacientes
-      const enrichedPlans = await Promise.all(
-        (plans || []).map(async (plan) => {
-          const { data: patient } = await supabase
-            .from('patients')
-            .select('name')
-            .eq('id', plan.patient_id)
-            .single();
-          
-          return {
-            ...plan,
-            patient_name: patient?.name || 'Paciente não encontrado'
-          };
-        })
-      );
+      // Consulta única e restrita ao profissional; evita uma requisição por plano.
+      const patientIds = [...new Set((plans || []).map(plan => plan.patient_id).filter(Boolean))] as string[];
+      let patientNames = new Map<string, string>();
+      if (user && patientIds.length) {
+        const { data: ownedPatients, error: patientError } = await supabase.from('patients')
+          .select('id, name').eq('professional_id', user.id).in('id', patientIds);
+        if (patientError) throw patientError;
+        patientNames = new Map((ownedPatients || []).map(patient => [patient.id, patient.name]));
+      }
+      const enrichedPlans = (plans || []).map(plan => ({
+        ...plan,
+        patient_name: (plan.patient_id && patientNames.get(plan.patient_id)) || plan.patient_full_name || 'Paciente não encontrado',
+      }));
 
       setSavedPlans(enrichedPlans);
     } catch (error) {
       console.error("Erro ao carregar planos salvos:", error);
+      setSavedPlansError(true);
     } finally {
       setIsLoadingSavedPlans(false);
     }
   };
 
   const handleDemandToggle = (disorder: string, demand: string) => {
+    invalidateSuggestions();
     setSelectedDemands(prev => {
       const current = prev[disorder] || [];
       const updated = current.includes(demand)
@@ -211,16 +240,18 @@ function InterventionSession({ requested }: { requested: string }) {
     });
   };
 
-  const handleSubDemandToggle = (category: string, subDemandLabel: string) => {
+  const handleSubDemandToggle = (disorder: string, category: string, subDemandLabel: string) => {
+    invalidateSuggestions();
+    const key = `${disorder}::${category}`;
     setSelectedSubDemands(prev => {
-      const current = prev[category] || [];
+      const current = prev[key] || [];
       const updated = current.includes(subDemandLabel)
         ? current.filter(d => d !== subDemandLabel)
         : [...current, subDemandLabel];
       
       return {
         ...prev,
-        [category]: updated
+        [key]: updated
       };
     });
   };
@@ -242,13 +273,7 @@ function InterventionSession({ requested }: { requested: string }) {
       return;
     }
 
-    const selectedDisorders = Object.keys(selectedDemands).filter(
-      disorder => selectedDemands[disorder].length > 0
-    );
-
-    const hasSubDemands = Object.values(selectedSubDemands).some(arr => arr.length > 0);
-
-    if (selectedDisorders.length === 0 && !hasSubDemands) {
+    if (selectedCount === 0) {
       toast({
         variant: "destructive",
         title: "Selecione demandas",
@@ -258,6 +283,8 @@ function InterventionSession({ requested }: { requested: string }) {
     }
 
     setIsGenerating(true);
+    setGenerationError("");
+    setGenerationWarning("");
     setGenerationProgress("Consultando dados do paciente...");
 
     try {
@@ -270,18 +297,32 @@ function InterventionSession({ requested }: { requested: string }) {
 
       setGenerationProgress("Gerando atividades personalizadas com IA...");
 
-      // Chamar Edge Function
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Sua sessão expirou. Faça login novamente.");
+
+      // A função valida a associação entre o paciente e o profissional.
       const { data, error } = await supabase.functions.invoke('generate-therapy-activities', {
         body: {
-          patientName: patient.name,
+          patientId: patient.id,
           selectedDemands: selectedDemands,
-          selectedSubDemands: selectedSubDemands
+          selectedSubDemands: selectedSubDemands,
+          selectedItems,
         }
       });
 
       if (error) {
         console.error("Erro da Edge Function:", error);
-        throw error;
+        const response = (error as { context?: Response }).context;
+        let serverMessage = "";
+        if (response && typeof response.json === "function") {
+          try {
+            const details = await response.json();
+            if (typeof details?.error === 'string') serverMessage = details.error;
+          } catch { /* Sem resposta JSON do servidor */ }
+        }
+        throw new Error(serverMessage || (response?.status === 401 ? "Sua sessão expirou. Entre novamente." :
+          response?.status === 429 ? "Muitas solicitações à IA. Aguarde um pouco e tente novamente." :
+          "Não foi possível acessar o serviço de IA. Tente novamente."));
       }
 
       setGenerationProgress("Processando atividades...");
@@ -295,9 +336,18 @@ function InterventionSession({ requested }: { requested: string }) {
         throw new Error(`Esperado 10 atividades, recebido ${data.activities.length}`);
       }
 
+      if (data.activities.some((activity: TherapyActivity) => !activity.activityDescription ||
+        !Array.isArray(activity.materials) || !Array.isArray(activity.evaluationCriteria))) {
+        throw new Error("A IA retornou atividades incompletas. Tente gerar novamente.");
+      }
+
       // Atualizar estado
       setSuggestedActivities(data.activities);
       setShowSuggestions(true);
+      setExpandedActivities(new Set([data.activities[0].id]));
+      if (data.totalDemands > data.consideredDemands) {
+        setGenerationWarning(`Foram consideradas ${data.consideredDemands} das ${data.totalDemands} demandas selecionadas. Para outras demandas, gere um novo plano com uma seleção menor.`);
+      }
 
       toast({
         title: "✨ Atividades geradas com sucesso!",
@@ -307,20 +357,12 @@ function InterventionSession({ requested }: { requested: string }) {
     } catch (error: any) {
       console.error("Erro ao gerar atividades:", error);
       
-      let errorTitle = "Erro ao gerar atividades";
-      let errorDescription = "Não foi possível gerar as sugestões. Tente novamente.";
-
-      if (error.message?.includes("GOOGLE_AI_API_KEY")) {
-        errorTitle = "Configuração da API";
-        errorDescription = "Chave da API não configurada. Entre em contato com o suporte.";
-      } else if (error.message?.includes("Erro na API Gemini")) {
-        errorTitle = "Erro na API de IA";
-        errorDescription = "O serviço de IA está temporariamente indisponível.";
-      }
+      const errorDescription = error instanceof Error ? error.message : "Não foi possível gerar as sugestões. Tente novamente.";
+      setGenerationError(errorDescription);
 
       toast({
         variant: "destructive",
-        title: errorTitle,
+        title: "Erro ao gerar atividades",
         description: errorDescription,
       });
     } finally {
@@ -351,9 +393,13 @@ function InterventionSession({ requested }: { requested: string }) {
       return;
     }
 
+    if (isSaving) return;
+    setIsSaving(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Usuário não autenticado");
+      const selectedPatientData = patients.find(patient => patient.id === selectedPatient);
+      if (!selectedPatientData) throw new Error("Paciente indisponível para este profissional");
 
       // Buscar ou criar profissional
       let { data: professional, error: profError } = await supabase
@@ -385,9 +431,10 @@ function InterventionSession({ requested }: { requested: string }) {
         .from('treatment_plans')
         .insert({
           patient_id: selectedPatient,
+          patient_full_name: selectedPatientData.name,
           professional_id: professional.id,
           status: 'active',
-          general_objectives: { selected_demands: selectedDemands } as any,
+          general_objectives: { selected_demands: selectedDemands, selected_sub_demands: selectedSubDemands } as any,
           complementary_materials: { activities: suggestedActivities } as any,
         });
 
@@ -407,6 +454,8 @@ function InterventionSession({ requested }: { requested: string }) {
         title: "Erro ao salvar",
         description: error?.message || "Não foi possível salvar o plano.",
       });
+    } finally {
+      setIsSaving(false);
     }
   };
   const generatePDF = async () => {
@@ -419,6 +468,8 @@ function InterventionSession({ requested }: { requested: string }) {
       return;
     }
 
+    if (isPdfGenerating) return;
+    setIsPdfGenerating(true);
     try {
       // Convert professional images to Base64
       let signatureBase64: string | null = null;
@@ -443,41 +494,41 @@ function InterventionSession({ requested }: { requested: string }) {
       
       const activitiesHTML = suggestedActivities.map((activity, index) => `
         <div style="margin-bottom: 24px; page-break-inside: avoid;">
-          <div style="background: linear-gradient(to right, #2563EB, #1E40AF); color: white; padding: 12px 16px; border-radius: 8px 8px 0 0; font-weight: bold; font-size: 16px;">
-            Atividade ${index + 1}: ${activity.disorder}
+          <div style="background: linear-gradient(to right, #0F766E, #115E59); color: white; padding: 12px 16px; border-radius: 8px 8px 0 0; font-weight: bold; font-size: 16px;">
+            Atividade ${index + 1}: ${escapePdfHtml(activity.disorder)}
           </div>
           <div style="border: 2px solid #E5E7EB; border-top: none; padding: 16px; border-radius: 0 0 8px 8px;">
             <div style="margin-bottom: 12px;">
-              <strong style="color: #1F2937;">Transtorno:</strong> <span style="color: #4B5563;">${activity.disorder}</span> | 
-              <strong style="color: #1F2937;">Demanda:</strong> <span style="color: #4B5563;">${activity.demand}</span> | 
-              <strong style="color: #1F2937;">Especialidade:</strong> <span style="color: #4B5563;">${activity.specialty}</span>
+              <strong style="color: #1F2937;">Transtorno:</strong> <span style="color: #4B5563;">${escapePdfHtml(activity.disorder)}</span> |
+              <strong style="color: #1F2937;">Demanda:</strong> <span style="color: #4B5563;">${escapePdfHtml(activity.demand)}</span> |
+              <strong style="color: #1F2937;">Especialidade:</strong> <span style="color: #4B5563;">${escapePdfHtml(activity.specialty)}</span>
             </div>
             <div style="margin-bottom: 12px;">
               <strong style="color: #1F2937; display: block; margin-bottom: 4px;">Objetivo Terapêutico Geral:</strong>
-              <p style="color: #374151; margin: 0; line-height: 1.6;">${activity.generalObjective}</p>
+              <p style="color: #374151; margin: 0; line-height: 1.6;">${escapePdfHtml(activity.generalObjective)}</p>
             </div>
             <div style="margin-bottom: 12px;">
               <strong style="color: #1F2937; display: block; margin-bottom: 4px;">Objetivo Específico:</strong>
-              <p style="color: #374151; margin: 0; line-height: 1.6;">${activity.specificObjective}</p>
+              <p style="color: #374151; margin: 0; line-height: 1.6;">${escapePdfHtml(activity.specificObjective)}</p>
             </div>
             <div style="margin-bottom: 12px;">
               <strong style="color: #1F2937; display: block; margin-bottom: 4px;">Descrição da Atividade:</strong>
-              <p style="color: #374151; margin: 0; line-height: 1.6;">${activity.activityDescription}</p>
+              <p style="color: #374151; margin: 0; line-height: 1.6;">${escapePdfHtml(activity.activityDescription)}</p>
             </div>
             <div style="margin-bottom: 12px;">
               <strong style="color: #1F2937; display: block; margin-bottom: 4px;">Materiais Necessários:</strong>
               <ul style="color: #374151; margin: 4px 0; padding-left: 20px; line-height: 1.6;">
-                ${activity.materials.map(m => `<li>${m}</li>`).join('')}
+                ${(Array.isArray(activity.materials) ? activity.materials : []).map(m => `<li>${escapePdfHtml(m)}</li>`).join('')}
               </ul>
             </div>
             <div style="margin-bottom: 12px; display: flex; gap: 16px;">
-              <div><strong style="color: #1F2937;">Tempo:</strong> <span style="color: #4B5563;">${activity.estimatedTime}</span></div>
-              <div><strong style="color: #1F2937;">Complexidade:</strong> <span style="color: #4B5563;">${activity.complexityLevel}</span></div>
+              <div><strong style="color: #1F2937;">Tempo:</strong> <span style="color: #4B5563;">${escapePdfHtml(activity.estimatedTime)}</span></div>
+              <div><strong style="color: #1F2937;">Complexidade:</strong> <span style="color: #4B5563;">${escapePdfHtml(activity.complexityLevel)}</span></div>
             </div>
             <div>
               <strong style="color: #1F2937; display: block; margin-bottom: 4px;">Critérios de Avaliação:</strong>
               <ul style="color: #374151; margin: 4px 0; padding-left: 20px; line-height: 1.6;">
-                ${activity.evaluationCriteria.map(c => `<li>${c}</li>`).join('')}
+                ${(Array.isArray(activity.evaluationCriteria) ? activity.evaluationCriteria : []).map(c => `<li>${escapePdfHtml(c)}</li>`).join('')}
               </ul>
             </div>
           </div>
@@ -486,15 +537,15 @@ function InterventionSession({ requested }: { requested: string }) {
 
       element.innerHTML = `
         <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto;">
-          <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 3px solid #2563EB;">
-            <h1 style="color: #2563EB; font-size: 28px; font-weight: bold; margin-bottom: 12px;">
-              Plano Intervenção Individual (PII)
+          <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 3px solid #0F766E;">
+            <h1 style="color: #0F766E; font-size: 28px; font-weight: bold; margin-bottom: 12px;">
+              Plano de Intervenção (PI)
             </h1>
             <h2 style="color: #1F2937; font-size: 20px; margin-bottom: 8px;">
               Musicoterapia
             </h2>
             <p style="color: #6B7280; font-size: 16px; margin-bottom: 4px;">
-              <strong>Paciente:</strong> ${patient.name}
+              <strong>Paciente:</strong> ${escapePdfHtml(patient.name)}
             </p>
             <p style="color: #6B7280; font-size: 14px;">
               Data: ${format(new Date(), "PPP", { locale: ptBR })}
@@ -533,11 +584,11 @@ function InterventionSession({ requested }: { requested: string }) {
                       <!-- Professional Info -->
                       <div style="flex: 1;">
                         <h3 style="font-weight: bold; font-size: 18px; margin-bottom: 8px; color: #0f766e;">
-                          ${professionalData?.name || userName || 'Musicoterapeuta'}
+                          ${escapePdfHtml(professionalData?.name || userName || 'Musicoterapeuta')}
                         </h3>
                         ${professionalData?.specialty ? `
                           <div style="display: inline-block; padding: 4px 12px; border-radius: 9999px; font-size: 14px; font-weight: 500; background-color: #ccfbf1; color: #0f766e; border: 1px solid #99f6e4; margin-bottom: 12px;">
-                            🎵 ${professionalData.specialty}
+                            🎵 ${escapePdfHtml(professionalData.specialty)}
                           </div>
                         ` : ''}
                       </div>
@@ -548,32 +599,34 @@ function InterventionSession({ requested }: { requested: string }) {
                       ${professionalData?.register || professionalData?.license_number ? `
                         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                           <span>📋</span>
-                          <span>${professionalData.register || professionalData.license_number}</span>
+                          <span>${escapePdfHtml(professionalData.register || professionalData.license_number)}</span>
                         </div>
                       ` : ''}
                       ${professionalData?.email || userEmail ? `
                         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                           <span>📧</span>
-                          <span style="word-break: break-all;">${professionalData?.email || userEmail}</span>
+                          <span style="word-break: break-all;">${escapePdfHtml(professionalData?.email || userEmail)}</span>
                         </div>
                       ` : ''}
                       ${professionalData?.phone ? `
                         <div style="display: flex; align-items: center; gap: 8px;">
                           <span>📞</span>
-                          <span>${professionalData.phone}</span>
+                          <span>${escapePdfHtml(professionalData.phone)}</span>
                         </div>
                       ` : ''}
                     </div>
                   </div>
                   
-                  <!-- Verification Footer INSIDE card -->
+                  ${signatureBase64 ? `<div style="padding: 4px 20px 16px; text-align: center;"><img src="${signatureBase64}" alt="Assinatura cadastrada" style="max-width: 180px; max-height: 75px; object-fit: contain; margin: 0 auto;" /></div>` : ''}
+                  <!-- Identificação do profissional; não é assinatura criptográfica -->
                   <div style="border-top: 1px solid #99f6e4; background: linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa); padding: 12px 16px; text-align: center; font-size: 12px; font-weight: 500; color: #0f766e;">
-                    ✓ Assinatura Digital Verificada 🎵 Sistema MuseTera
+                    ${signatureBase64 ? 'Assinatura digital cadastrada' : 'Identificação profissional'} · Sistema MuseTera
                   </div>
                 </div>
 
                 <!-- Right Side: Circular Digital Stamp (Conditional) -->
                 <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                  ${stampBase64 ? `<img src="${stampBase64}" alt="Carimbo digital cadastrado" style="max-width: 180px; max-height: 95px; object-fit: contain; margin-bottom: 12px;" />` : ''}
                   ${(stampBase64 || photoBase64) ? `
                     <!-- Outer decorative dashed circle -->
                     <div style="position: relative; width: 280px; height: 280px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px dashed #99f6e4;">
@@ -590,7 +643,7 @@ function InterventionSession({ requested }: { requested: string }) {
                         
                         <!-- Professional Name -->
                         <div style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 4px; color: #0f766e;">
-                          ${professionalData?.name || userName || 'Musicoterapeuta'}
+                          ${escapePdfHtml(professionalData?.name || userName || 'Musicoterapeuta')}
                         </div>
                         
                         <!-- Decorative line -->
@@ -599,14 +652,14 @@ function InterventionSession({ requested }: { requested: string }) {
                         <!-- Specialty Badge -->
                         ${professionalData?.specialty ? `
                           <div style="padding: 4px 8px; border-radius: 9999px; font-size: 12px; font-weight: 500; margin-bottom: 4px; background-color: #0d9488; color: white;">
-                            🎵 ${professionalData.specialty}
+                            🎵 ${escapePdfHtml(professionalData.specialty)}
                           </div>
                         ` : ''}
                         
                         <!-- Registry -->
                         ${professionalData?.register || professionalData?.license_number ? `
                           <div style="font-size: 12px; font-weight: 500; color: #0f766e;">
-                            📋 ${professionalData.register || professionalData.license_number}
+                            📋 ${escapePdfHtml(professionalData.register || professionalData.license_number)}
                           </div>
                         ` : ''}
                       </div>
@@ -614,7 +667,7 @@ function InterventionSession({ requested }: { requested: string }) {
                     
                     <!-- MuseTera Verified Badge -->
                     <div style="margin-top: 16px; padding: 8px 16px; border-radius: 9999px; font-size: 12px; font-weight: bold; background: linear-gradient(135deg, #14b8a6, #06b6d4); color: white;">
-                      ✓ MuseTera Verified 🎵
+                      MuseTera · Identificação profissional
                     </div>
                   ` : `
                     <!-- Placeholder when no stamp -->
@@ -661,6 +714,8 @@ function InterventionSession({ requested }: { requested: string }) {
         title: "Erro ao gerar PDF",
         description: "Não foi possível gerar o PDF do plano.",
       });
+    } finally {
+      setIsPdfGenerating(false);
     }
   };
 
@@ -672,10 +727,16 @@ function InterventionSession({ requested }: { requested: string }) {
     }
 
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Usuário não autenticado");
+      const { data: professional, error: professionalError } = await supabase.from('professionals')
+        .select('id').eq('user_id', user.id).maybeSingle();
+      if (professionalError || !professional) throw new Error("Perfil profissional não encontrado");
       const { error } = await supabase
         .from('treatment_plans')
         .delete()
-        .eq('id', planId);
+        .eq('id', planId)
+        .eq('professional_id', professional.id);
 
       if (error) {
         console.error("Erro ao excluir:", error);
@@ -722,6 +783,7 @@ function InterventionSession({ requested }: { requested: string }) {
       // Convert professional images to Base64
       let photoBase64: string | null = null;
       let stampBase64: string | null = null;
+      let signatureBase64: string | null = null;
 
       if (professionalData?.stamp_photo_url) {
         photoBase64 = await imageUrlToBase64(professionalData.stamp_photo_url);
@@ -729,46 +791,49 @@ function InterventionSession({ requested }: { requested: string }) {
       if (professionalData?.digital_stamp_url) {
         stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
       }
+      if (professionalData?.digital_signature_url) {
+        signatureBase64 = await imageUrlToBase64(professionalData.digital_signature_url);
+      }
 
       const element = document.createElement('div');
       
       const activitiesHTML = activities.map((activity: any, index: number) => `
         <div style="margin-bottom: 24px; page-break-inside: avoid;">
-          <div style="background: linear-gradient(to right, #2563EB, #1E40AF); color: white; padding: 12px 16px; border-radius: 8px 8px 0 0; font-weight: bold; font-size: 16px;">
-            Atividade ${index + 1}: ${activity.disorder}
+          <div style="background: linear-gradient(to right, #0F766E, #115E59); color: white; padding: 12px 16px; border-radius: 8px 8px 0 0; font-weight: bold; font-size: 16px;">
+            Atividade ${index + 1}: ${escapePdfHtml(activity.disorder)}
           </div>
           <div style="border: 2px solid #E5E7EB; border-top: none; padding: 16px; border-radius: 0 0 8px 8px;">
             <div style="margin-bottom: 12px;">
-              <strong style="color: #1F2937;">Transtorno:</strong> <span style="color: #4B5563;">${activity.disorder}</span> | 
-              <strong style="color: #1F2937;">Demanda:</strong> <span style="color: #4B5563;">${activity.demand}</span> | 
-              <strong style="color: #1F2937;">Especialidade:</strong> <span style="color: #4B5563;">${activity.specialty}</span>
+              <strong style="color: #1F2937;">Transtorno:</strong> <span style="color: #4B5563;">${escapePdfHtml(activity.disorder)}</span> |
+              <strong style="color: #1F2937;">Demanda:</strong> <span style="color: #4B5563;">${escapePdfHtml(activity.demand)}</span> |
+              <strong style="color: #1F2937;">Especialidade:</strong> <span style="color: #4B5563;">${escapePdfHtml(activity.specialty)}</span>
             </div>
             <div style="margin-bottom: 12px;">
               <strong style="color: #1F2937; display: block; margin-bottom: 4px;">Objetivo Terapêutico Geral:</strong>
-              <p style="color: #374151; margin: 0; line-height: 1.6;">${activity.generalObjective}</p>
+              <p style="color: #374151; margin: 0; line-height: 1.6;">${escapePdfHtml(activity.generalObjective)}</p>
             </div>
             <div style="margin-bottom: 12px;">
               <strong style="color: #1F2937; display: block; margin-bottom: 4px;">Objetivo Específico:</strong>
-              <p style="color: #374151; margin: 0; line-height: 1.6;">${activity.specificObjective}</p>
+              <p style="color: #374151; margin: 0; line-height: 1.6;">${escapePdfHtml(activity.specificObjective)}</p>
             </div>
             <div style="margin-bottom: 12px;">
               <strong style="color: #1F2937; display: block; margin-bottom: 4px;">Descrição da Atividade:</strong>
-              <p style="color: #374151; margin: 0; line-height: 1.6;">${activity.activityDescription}</p>
+              <p style="color: #374151; margin: 0; line-height: 1.6;">${escapePdfHtml(activity.activityDescription)}</p>
             </div>
             <div style="margin-bottom: 12px;">
               <strong style="color: #1F2937; display: block; margin-bottom: 4px;">Materiais Necessários:</strong>
               <ul style="color: #374151; margin: 4px 0; padding-left: 20px; line-height: 1.6;">
-                ${activity.materials.map((m: string) => `<li>${m}</li>`).join('')}
+                ${(Array.isArray(activity.materials) ? activity.materials : []).map((m: string) => `<li>${escapePdfHtml(m)}</li>`).join('')}
               </ul>
             </div>
             <div style="margin-bottom: 12px; display: flex; gap: 16px;">
-              <div><strong style="color: #1F2937;">Tempo:</strong> <span style="color: #4B5563;">${activity.estimatedTime}</span></div>
-              <div><strong style="color: #1F2937;">Complexidade:</strong> <span style="color: #4B5563;">${activity.complexityLevel}</span></div>
+              <div><strong style="color: #1F2937;">Tempo:</strong> <span style="color: #4B5563;">${escapePdfHtml(activity.estimatedTime)}</span></div>
+              <div><strong style="color: #1F2937;">Complexidade:</strong> <span style="color: #4B5563;">${escapePdfHtml(activity.complexityLevel)}</span></div>
             </div>
             <div>
               <strong style="color: #1F2937; display: block; margin-bottom: 4px;">Critérios de Avaliação:</strong>
               <ul style="color: #374151; margin: 4px 0; padding-left: 20px; line-height: 1.6;">
-                ${activity.evaluationCriteria.map((c: string) => `<li>${c}</li>`).join('')}
+                ${(Array.isArray(activity.evaluationCriteria) ? activity.evaluationCriteria : []).map((c: string) => `<li>${escapePdfHtml(c)}</li>`).join('')}
               </ul>
             </div>
           </div>
@@ -777,15 +842,15 @@ function InterventionSession({ requested }: { requested: string }) {
 
       element.innerHTML = `
         <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto;">
-          <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 3px solid #2563EB;">
-              <h1 style="color: #2563EB; font-size: 28px; font-weight: bold; margin-bottom: 12px;">
+          <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 3px solid #0F766E;">
+              <h1 style="color: #0F766E; font-size: 28px; font-weight: bold; margin-bottom: 12px;">
                 Plano de Intervenção (PI)
               </h1>
             <h2 style="color: #1F2937; font-size: 20px; margin-bottom: 8px;">
               Musicoterapia
             </h2>
             <p style="color: #6B7280; font-size: 16px; margin-bottom: 4px;">
-              <strong>Paciente:</strong> ${plan.patient_name}
+              <strong>Paciente:</strong> ${escapePdfHtml(plan.patient_name)}
             </p>
             <p style="color: #6B7280; font-size: 14px;">
               Data: ${format(new Date(plan.created_at), "PPP", { locale: ptBR })}
@@ -824,11 +889,11 @@ function InterventionSession({ requested }: { requested: string }) {
                       <!-- Professional Name & Specialty -->
                       <div style="flex: 1;">
                         <h3 style="font-size: 18px; font-weight: bold; margin: 0 0 8px 0; color: #0d9488;">
-                          ${professionalData?.name || userName || 'Musicoterapeuta'}
+                          ${escapePdfHtml(professionalData?.name || userName || 'Musicoterapeuta')}
                         </h3>
                         ${professionalData?.specialty ? `
                           <div style="display: inline-block; padding: 4px 12px; border-radius: 9999px; font-size: 14px; font-weight: 500; background-color: #ccfbf1; color: #0f766e; border: 1px solid #99f6e4; margin-bottom: 12px;">
-                            🎵 ${professionalData.specialty}
+                            🎵 ${escapePdfHtml(professionalData.specialty)}
                           </div>
                         ` : ''}
                       </div>
@@ -839,32 +904,34 @@ function InterventionSession({ requested }: { requested: string }) {
                       ${professionalData?.register || professionalData?.license_number ? `
                         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                           <span>📋</span>
-                          <span>${professionalData.register || professionalData.license_number}</span>
+                          <span>${escapePdfHtml(professionalData.register || professionalData.license_number)}</span>
                         </div>
                       ` : ''}
                       ${professionalData?.email || userEmail ? `
                         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                           <span>📧</span>
-                          <span style="word-break: break-all;">${professionalData?.email || userEmail}</span>
+                          <span style="word-break: break-all;">${escapePdfHtml(professionalData?.email || userEmail)}</span>
                         </div>
                       ` : ''}
                       ${professionalData?.phone ? `
                         <div style="display: flex; align-items: center; gap: 8px;">
                           <span>📞</span>
-                          <span>${professionalData.phone}</span>
+                          <span>${escapePdfHtml(professionalData.phone)}</span>
                         </div>
                       ` : ''}
                     </div>
                   </div>
                   
-                  <!-- Verification Footer INSIDE card -->
+                  ${signatureBase64 ? `<div style="padding: 4px 20px 16px; text-align: center;"><img src="${signatureBase64}" alt="Assinatura cadastrada" style="max-width: 180px; max-height: 75px; object-fit: contain; margin: 0 auto;" /></div>` : ''}
+                  <!-- Identificação do profissional; não é assinatura criptográfica -->
                   <div style="border-top: 1px solid #99f6e4; background: linear-gradient(to right, #f0fdfa, #ecfeff, #f0fdfa); padding: 12px 16px; text-align: center; font-size: 12px; font-weight: 500; color: #0f766e;">
-                    ✓ Assinatura Digital Verificada 🎵 Sistema MuseTera
+                    ${signatureBase64 ? 'Assinatura digital cadastrada' : 'Identificação profissional'} · Sistema MuseTera
                   </div>
                 </div>
 
                 <!-- Right Side: Circular Digital Stamp (Conditional) -->
                 <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                  ${stampBase64 ? `<img src="${stampBase64}" alt="Carimbo digital cadastrado" style="max-width: 180px; max-height: 95px; object-fit: contain; margin-bottom: 12px;" />` : ''}
                   ${(stampBase64 || photoBase64) ? `
                     <!-- Outer decorative dashed circle -->
                     <div style="position: relative; width: 280px; height: 280px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px dashed #99f6e4;">
@@ -881,7 +948,7 @@ function InterventionSession({ requested }: { requested: string }) {
                         
                         <!-- Professional Name -->
                         <div style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 4px; color: #0f766e;">
-                          ${professionalData?.name || userName || 'Musicoterapeuta'}
+                          ${escapePdfHtml(professionalData?.name || userName || 'Musicoterapeuta')}
                         </div>
                         
                         <!-- Decorative line -->
@@ -890,14 +957,14 @@ function InterventionSession({ requested }: { requested: string }) {
                         <!-- Specialty Badge -->
                         ${professionalData?.specialty ? `
                           <div style="padding: 4px 8px; border-radius: 9999px; font-size: 12px; font-weight: 500; margin-bottom: 4px; background-color: #0d9488; color: white;">
-                            🎵 ${professionalData.specialty}
+                            🎵 ${escapePdfHtml(professionalData.specialty)}
                           </div>
                         ` : ''}
                         
                         <!-- Registry -->
                         ${professionalData?.register || professionalData?.license_number ? `
                           <div style="font-size: 12px; font-weight: 500; color: #0f766e;">
-                            📋 ${professionalData.register || professionalData.license_number}
+                            📋 ${escapePdfHtml(professionalData.register || professionalData.license_number)}
                           </div>
                         ` : ''}
                       </div>
@@ -905,7 +972,7 @@ function InterventionSession({ requested }: { requested: string }) {
                     
                     <!-- MuseTera Verified Badge -->
                     <div style="margin-top: 16px; padding: 8px 16px; border-radius: 9999px; font-size: 12px; font-weight: bold; background: linear-gradient(135deg, #14b8a6, #06b6d4); color: white;">
-                      ✓ MuseTera Verified 🎵
+                      MuseTera · Identificação profissional
                     </div>
                   ` : `
                     <!-- Placeholder when no stamp -->
@@ -922,7 +989,7 @@ function InterventionSession({ requested }: { requested: string }) {
 
       const opt = {
         margin: [15, 15, 15, 15],
-        filename: `PTI - ${plan.patient_name} - ${format(new Date(plan.created_at), "dd-MM-yyyy")}.pdf`,
+        filename: `PI - ${plan.patient_name} - ${format(new Date(plan.created_at), "dd-MM-yyyy")}.pdf`,
         pagebreak: { mode: 'avoid-all' },
         jsPDF: {
           unit: 'mm',
@@ -965,9 +1032,21 @@ function InterventionSession({ requested }: { requested: string }) {
   };
 
   return (
-    <div className="w-full px-0 py-2 sm:py-4 space-y-3 sm:space-y-4">
+    <main className="mx-auto w-full max-w-6xl space-y-5 px-3 py-4 sm:px-6 sm:py-6">
+      <header className="rounded-2xl border border-teal-700/20 bg-gradient-to-r from-teal-50 to-emerald-50/50 p-4 dark:from-teal-950/30 dark:to-background sm:p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-300">MuseTera · Prática clínica</p>
+            <h1 className="mt-1 flex items-center gap-2 text-2xl font-bold tracking-tight text-foreground sm:text-3xl"><Music2 className="h-7 w-7 text-teal-700 dark:text-teal-300" aria-hidden="true" /> Intervenção Musicoterapêutica</h1>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Monte um plano com 10 sugestões de atividades, revise os objetivos e registre com segurança.</p>
+          </div>
+          <Button variant="outline" className="min-h-11 shrink-0" onClick={() => document.getElementById('new-intervention')?.scrollIntoView({ behavior: 'smooth' })}>
+            Criar novo plano
+          </Button>
+        </div>
+      </header>
       {/* Saved Plans Section */}
-      <Card className="mx-1 sm:mx-2 border-primary/20">
+      <Card className="border-teal-700/20">
         <CardHeader className="p-4 sm:p-6">
           <CardTitle className="flex items-center gap-2 text-lg sm:text-2xl">
             <Music2 className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
@@ -982,6 +1061,11 @@ function InterventionSession({ requested }: { requested: string }) {
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-5 w-5 sm:h-6 sm:w-6 animate-spin text-primary" />
               <span className="ml-2 text-sm sm:text-base text-muted-foreground">Carregando planos...</span>
+            </div>
+          ) : savedPlansError ? (
+            <div role="alert" className="rounded-xl border border-red-500/30 bg-red-500/5 p-4 text-sm">
+              <p className="font-medium text-red-700 dark:text-red-300">Não foi possível consultar os planos salvos.</p>
+              <Button variant="outline" className="mt-3 min-h-11" onClick={fetchSavedPlans}>Tentar novamente</Button>
             </div>
           ) : savedPlans.length === 0 ? (
             <p className="text-muted-foreground text-center py-8 text-sm sm:text-base">
@@ -1007,25 +1091,24 @@ function InterventionSession({ requested }: { requested: string }) {
                           variant="outline"
                           size="sm"
                           onClick={() => setViewingPlan(plan)}
-                          className="flex-1 sm:flex-none text-xs sm:text-sm"
+                          className="min-h-11 flex-1 gap-2 sm:flex-none text-xs sm:text-sm"
                         >
-                          <Eye className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1" />
-                          <span className="hidden sm:inline">Visualizar</span>
+                          <Eye className="h-4 w-4" aria-hidden="true" /> Visualizar
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => downloadPlanPDF(plan)}
-                          className="flex-1 sm:flex-none text-xs sm:text-sm"
+                          className="min-h-11 flex-1 gap-2 sm:flex-none text-xs sm:text-sm"
                         >
-                          <Download className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1" />
-                          <span className="hidden sm:inline">PDF</span>
+                          <Download className="h-4 w-4" aria-hidden="true" /> PDF
                         </Button>
                         <Button
                           variant="destructive"
                           size="sm"
+                          aria-label={`Excluir plano de ${plan.patient_name}`}
                           onClick={(e) => deletePlan(plan.id, e)}
-                          className="text-xs sm:text-sm"
+                          className="min-h-11 min-w-11 text-xs sm:text-sm"
                         >
                           <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                         </Button>
@@ -1049,10 +1132,10 @@ function InterventionSession({ requested }: { requested: string }) {
       </Card>
 
       {/* Create New Plan Section */}
-      <Card className="mx-1 sm:mx-2 border-primary/20">
+      <Card id="new-intervention" className="scroll-mt-5 border-teal-700/20 shadow-sm">
         <CardHeader className="p-4 sm:p-6">
           <CardTitle className="text-lg sm:text-xl md:text-2xl">Criar Novo Plano de Intervenção</CardTitle>
-          <div className="bg-primary/5 border-2 border-primary/20 rounded-lg p-4 sm:p-6 mt-4">
+          <div className="bg-teal-50/70 dark:bg-teal-950/20 border border-teal-700/20 rounded-xl p-4 sm:p-5 mt-4">
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                 <Info className="w-5 h-5 text-primary" />
@@ -1094,7 +1177,7 @@ function InterventionSession({ requested }: { requested: string }) {
             <div className="space-y-3 sm:space-y-4">
               {disorderOptions.map((option) => (
                 <Card key={option.disorder} className="overflow-hidden">
-                  <div className={`bg-gradient-to-r ${option.color} p-3 sm:p-4 text-white`}>
+                  <div className="border-b border-teal-700/10 bg-teal-50/70 p-3 text-foreground dark:bg-teal-950/20 sm:p-4">
                     <div className="flex items-center gap-2 sm:gap-3">
                       <span className="text-2xl sm:text-3xl">{option.icon}</span>
                       <h4 className="font-semibold text-base sm:text-lg">{option.label}</h4>
@@ -1105,7 +1188,7 @@ function InterventionSession({ requested }: { requested: string }) {
                       // TEA com sub-demandas hierárquicas
                       <div className="space-y-2 sm:space-y-3">
                         {teaDemandCategories.map((category) => {
-                          const selectedCount = selectedSubDemands[category.category]?.length || 0;
+                          const selectedCount = selectedSubDemands[`TEA::${category.category}`]?.length || 0;
                           const totalCount = category.subDemands.length;
                           
                           return (
@@ -1149,8 +1232,8 @@ function InterventionSession({ requested }: { requested: string }) {
                                       >
                                         <Checkbox
                                           id={subDemand.id}
-                                          checked={selectedSubDemands[category.category]?.includes(subDemand.label) || false}
-                                          onCheckedChange={() => handleSubDemandToggle(category.category, subDemand.label)}
+                                          checked={selectedSubDemands[`TEA::${category.category}`]?.includes(subDemand.label) || false}
+                                          onCheckedChange={() => handleSubDemandToggle('TEA', category.category, subDemand.label)}
                                           className="mt-0.5"
                                         />
                                         <div className="flex-1 min-w-0">
@@ -1180,7 +1263,7 @@ function InterventionSession({ requested }: { requested: string }) {
                       <div className="space-y-2 sm:space-y-3">
                         {tdahDemandCategories.map((category) => {
                           const isExpanded = expandedCategories[category.category] || false;
-                          const selectedCount = selectedSubDemands[category.category]?.length || 0;
+                          const selectedCount = selectedSubDemands[`TDAH::${category.category}`]?.length || 0;
                           const totalCount = category.subDemands.length;
 
                           return (
@@ -1209,8 +1292,8 @@ function InterventionSession({ requested }: { requested: string }) {
                                       <div key={subDemand.id} className="flex items-start gap-2 sm:gap-3">
                                         <Checkbox
                                           id={subDemand.id}
-                                          checked={selectedSubDemands[category.category]?.includes(subDemand.label) || false}
-                                          onCheckedChange={() => handleSubDemandToggle(category.category, subDemand.label)}
+                                          checked={selectedSubDemands[`TDAH::${category.category}`]?.includes(subDemand.label) || false}
+                                          onCheckedChange={() => handleSubDemandToggle('TDAH', category.category, subDemand.label)}
                                         />
                                         <div className="flex-1 min-w-0">
                                           <Label
@@ -1239,7 +1322,7 @@ function InterventionSession({ requested }: { requested: string }) {
                       <div className="space-y-2 sm:space-y-3">
                         {todDemandCategories.map((category) => {
                           const isExpanded = expandedCategories[category.category] || false;
-                          const selectedCount = selectedSubDemands[category.category]?.length || 0;
+                          const selectedCount = selectedSubDemands[`TOD::${category.category}`]?.length || 0;
                           const totalCount = category.subDemands.length;
 
                           return (
@@ -1268,8 +1351,8 @@ function InterventionSession({ requested }: { requested: string }) {
                                       <div key={subDemand.id} className="flex items-start gap-2 sm:gap-3">
                                         <Checkbox
                                           id={subDemand.id}
-                                          checked={selectedSubDemands[category.category]?.includes(subDemand.label) || false}
-                                          onCheckedChange={() => handleSubDemandToggle(category.category, subDemand.label)}
+                                          checked={selectedSubDemands[`TOD::${category.category}`]?.includes(subDemand.label) || false}
+                                          onCheckedChange={() => handleSubDemandToggle('TOD', category.category, subDemand.label)}
                                         />
                                         <div className="flex-1 min-w-0">
                                           <Label
@@ -1298,7 +1381,7 @@ function InterventionSession({ requested }: { requested: string }) {
                       <div className="space-y-2 sm:space-y-3">
                         {diDemandCategories.map((category) => {
                           const isExpanded = expandedCategories[category.category] || false;
-                          const selectedCount = selectedSubDemands[category.category]?.length || 0;
+                          const selectedCount = selectedSubDemands[`DI::${category.category}`]?.length || 0;
                           const totalCount = category.subDemands.length;
 
                           return (
@@ -1327,8 +1410,8 @@ function InterventionSession({ requested }: { requested: string }) {
                                       <div key={subDemand.id} className="flex items-start gap-2 sm:gap-3">
                                         <Checkbox
                                           id={subDemand.id}
-                                          checked={selectedSubDemands[category.category]?.includes(subDemand.label) || false}
-                                          onCheckedChange={() => handleSubDemandToggle(category.category, subDemand.label)}
+                                          checked={selectedSubDemands[`DI::${category.category}`]?.includes(subDemand.label) || false}
+                                          onCheckedChange={() => handleSubDemandToggle('DI', category.category, subDemand.label)}
                                         />
                                         <div className="flex-1 min-w-0">
                                           <Label
@@ -1376,13 +1459,27 @@ function InterventionSession({ requested }: { requested: string }) {
             </div>
           </div>
 
+          <div className="rounded-xl border border-teal-700/20 bg-teal-50/60 p-4 dark:bg-teal-950/20" aria-live="polite">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h3 className="text-sm font-semibold text-foreground">Resumo da seleção</h3>
+              <Badge variant="secondary" className="text-sm">{selectedCount} demandas selecionadas</Badge>
+            </div>
+            {selectedCount ? (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {selectedItems.map(item => <Badge key={`${item.disorder}-${item.category}-${item.label}`} variant="outline" className="max-w-full whitespace-normal border-teal-700/30 bg-background py-1.5 text-left text-xs text-foreground">{item.disorder} · {item.label}</Badge>)}
+                {Object.entries(selectedDemands).flatMap(([disorder, labels]) => labels.map(label => <Badge key={`${disorder}-${label}`} variant="outline" className="border-teal-700/30 bg-background py-1.5 text-xs text-foreground">{disorder} · {label}</Badge>))}
+              </div>
+            ) : <p className="mt-2 text-sm text-muted-foreground">Marque ao menos uma demanda clínica acima.</p>}
+            {selectedCount > 10 && <p className="mt-3 text-sm font-medium text-amber-800 dark:text-amber-300">Para distribuir 10 atividades, serão priorizadas as 10 primeiras demandas. Você poderá criar outro plano para as demais.</p>}
+          </div>
+
           {/* Action Buttons */}
           <div className="flex flex-col gap-2 sm:gap-3">
             <Button 
               onClick={generateSuggestions} 
               size="lg" 
-              className="w-full"
-              disabled={isGenerating || !selectedPatient || (Object.keys(selectedDemands).filter(d => selectedDemands[d].length > 0).length === 0 && Object.values(selectedSubDemands).every(arr => arr.length === 0))}
+              className="min-h-12 w-full bg-teal-700 text-white hover:bg-teal-800"
+              disabled={isGenerating || !selectedPatient || selectedCount === 0}
             >
               {isGenerating ? (
                 <>
@@ -1403,23 +1500,29 @@ function InterventionSession({ requested }: { requested: string }) {
                   onClick={savePlan}
                   size="lg" 
                   variant="default"
-                  className="w-full"
+                  className="min-h-11 w-full"
+                  disabled={isSaving}
                 >
-                  <Save className="mr-2 h-5 w-5" />
-                  Salvar Plano
+                  {isSaving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Save className="mr-2 h-5 w-5" />}
+                  {isSaving ? 'Salvando plano...' : 'Salvar plano'}
                 </Button>
                 <Button 
                   onClick={generatePDF}
                   size="lg" 
                   variant="outline"
-                  className="w-full"
+                  className="min-h-11 w-full"
+                  disabled={isPdfGenerating}
                 >
-                  <Download className="mr-2 h-5 w-5" />
-                  Baixar PDF
+                  {isPdfGenerating ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Download className="mr-2 h-5 w-5" />}
+                  {isPdfGenerating ? 'Preparando PDF...' : 'Baixar PDF'}
                 </Button>
               </>
             )}
           </div>
+
+          {isGenerating && <p role="status" aria-live="polite" className="rounded-lg border border-teal-700/20 bg-teal-50 p-3 text-sm font-medium text-teal-900 dark:bg-teal-950/30 dark:text-teal-200">{generationProgress || 'Gerando sugestões com IA...'}</p>}
+          {generationError && <div role="alert" className="rounded-lg border border-red-500/30 bg-red-500/5 p-4 text-sm"><p className="font-semibold text-red-700 dark:text-red-300">Não foi possível gerar as atividades</p><p className="mt-1 text-foreground">{generationError}</p><p className="mt-2 text-muted-foreground">Confira sua conexão e tente novamente. Se o problema persistir, contate o suporte MuseTera.</p></div>}
+          {generationWarning && <p role="status" className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-900 dark:text-amber-200">{generationWarning}</p>}
 
           {/* Instructions */}
           {!showSuggestions && (
@@ -1434,7 +1537,7 @@ function InterventionSession({ requested }: { requested: string }) {
 
       {/* Suggested Activities */}
       {showSuggestions && suggestedActivities.length > 0 && (
-        <Card className="mx-1 sm:mx-2 border-primary/20">
+        <Card className="border-teal-700/20">
           <CardHeader className="p-4 sm:p-6">
             <CardTitle className="flex items-center gap-2 text-lg sm:text-2xl">
               <Target className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
@@ -1449,11 +1552,13 @@ function InterventionSession({ requested }: { requested: string }) {
               const isExpanded = expandedActivities.has(activity.id);
               return (
                 <Card key={activity.id} className="overflow-hidden">
-                  <div 
-                    className="bg-gradient-to-r from-primary to-primary/80 text-white p-3 sm:p-4 cursor-pointer hover:from-primary/90 hover:to-primary/70 transition-all"
+                  <button type="button"
+                    className="flex w-full cursor-pointer items-center bg-teal-700 p-3 text-left text-white transition-colors hover:bg-teal-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2 sm:p-4"
+                    aria-expanded={isExpanded}
+                    aria-controls={`activity-${index + 1}`}
                     onClick={() => toggleActivity(activity.id)}
                   >
-                    <div className="flex items-center justify-between gap-2">
+                    <div className="flex w-full items-center justify-between gap-2">
                       <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                         <span className="text-xl sm:text-2xl font-bold flex-shrink-0">#{index + 1}</span>
                         <div className="min-w-0 flex-1">
@@ -1468,10 +1573,10 @@ function InterventionSession({ requested }: { requested: string }) {
                         {isExpanded ? <ChevronUp className="h-4 w-4 sm:h-5 sm:w-5" /> : <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5" />}
                       </div>
                     </div>
-                  </div>
+                  </button>
                   
                   {isExpanded && (
-                    <CardContent className="pt-4 sm:pt-6 space-y-3 sm:space-y-4 p-3 sm:p-6">
+                    <CardContent id={`activity-${index + 1}`} className="pt-4 sm:pt-6 space-y-3 sm:space-y-4 p-3 sm:p-6">
                       <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
                         <Badge variant="outline" className="text-xs">{activity.specialty}</Badge>
                         <Badge className={`${getComplexityColor(activity.complexityLevel)} text-xs sm:hidden`}>
@@ -1698,6 +1803,6 @@ function InterventionSession({ requested }: { requested: string }) {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+    </main>
   );
 }
