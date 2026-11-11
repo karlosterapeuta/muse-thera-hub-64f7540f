@@ -66,5 +66,5 @@ test("jornada clínica, buscas e controles acessíveis existem", () => {
   assert.match(page, /Não foi possível carregar os pacientes/);
   const list = read("src/pages/components/patients/PatientList.tsx");
   assert.match(list, /aria-label=\{"Editar cadastro de "/);
-  assert.match(list, /min-h-11/);
+  assert.match(list, /h-11 w-11/);
 });
