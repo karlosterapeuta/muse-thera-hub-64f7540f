@@ -18,7 +18,8 @@ test("o estado de anamnese não interpreta mero registro como finalização", ()
   const hook = read("src/hooks/usePatientsData.ts");
   assert.match(hook, /review_status === "finalized"/);
   assert.match(hook, /review_status === "draft"/);
-  assert.match(hook, /"registered"\s*:\s*"none"/);
+  assert.match(hook, /"draft"\s*:\s*"registered"/);
+  assert.match(hook, /latestAnamnesis/);
   const patients = read("src/pages/patients.tsx");
   assert.match(patients, /Anamneses finalizadas/);
   assert.match(patients, /isLoading \|\| error \? "—"/);
