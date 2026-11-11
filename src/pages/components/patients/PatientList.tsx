@@ -1,5 +1,4 @@
 import { PatientCareMenu } from "./PatientCareMenu";
-import React from 'react';
 import {
   Table,
   TableBody,
