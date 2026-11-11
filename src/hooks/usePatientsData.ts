@@ -62,17 +62,19 @@ export const usePatientsData = () => {
       // anamnesis and legacy records without a review_status.
       const { data, error } = await supabase
         .from("patients")
-        .select("*, anamnesis!left(review_status)")
+        .select("*, anamnesis!left(review_status, created_at)")
         .eq("professional_id", userId)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
       return (data || []).map(patient => {
         const anamneses = Array.isArray(patient.anamnesis) ? patient.anamnesis : [];
+        const latestAnamnesis = [...anamneses].sort((a, b) =>
+          Date.parse(b.created_at || "") - Date.parse(a.created_at || ""))[0];
         const status: AnamnesisStatus =
-          anamneses.some(a => a.review_status === "finalized") ? "finalized" :
-          anamneses.some(a => a.review_status === "draft") ? "draft" :
-          anamneses.length > 0 ? "registered" : "none";
+          !latestAnamnesis ? "none" :
+          latestAnamnesis.review_status === "finalized" ? "finalized" :
+          latestAnamnesis.review_status === "draft" ? "draft" : "registered";
         return {
           ...patient,
           age: calculateAgeFromBirthDate(patient.birth_date),
