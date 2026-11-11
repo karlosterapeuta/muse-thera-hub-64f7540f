@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { User, Camera, Check, Save, Music, FileText, Mail, Phone, CheckCircle2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
+import { optimizePhotoForStorage } from '@/utils/optimizePhotoForStorage';
 import QRCode from 'qrcode';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -123,11 +124,12 @@ export default function DigitalStamp() {
         toast.error('Usuário não autenticado');
         return;
       }
-      // Upload para storage (folder must be auth.uid for RLS)
-      const fileName = `${user.id}/stamp_photo_${Date.now()}.png`;
+      // A foto será comprimida para reduzir significativamente o uso de Storage.
+      const optimizedPhoto = await optimizePhotoForStorage(file);
+      const fileName = `${user.id}/stamp_photo_${Date.now()}.jpg`;
       const { error: uploadError } = await supabase.storage
         .from('digital-signatures')
-        .upload(fileName, file, { contentType: file.type, upsert: true });
+        .upload(fileName, optimizedPhoto, { contentType: 'image/jpeg', upsert: false });
 
       if (uploadError) {
         console.error('Erro ao fazer upload da foto:', uploadError);
@@ -170,7 +172,7 @@ export default function DigitalStamp() {
     try {
       const canvas = await html2canvas(element, {
         backgroundColor: '#ffffff',
-        scale: 4,
+        scale: 2,
         useCORS: true,
         logging: false,
         allowTaint: true,
@@ -219,7 +221,7 @@ export default function DigitalStamp() {
         .from('digital-signatures')
         .upload(signatureFileName, signatureBlob, {
           contentType: 'image/png',
-          upsert: true,
+          upsert: false,
         });
 
       if (signatureUploadError) {
