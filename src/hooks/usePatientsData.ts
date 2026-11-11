@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
@@ -29,17 +29,17 @@ export const usePatientsData = () => {
   const queryClient = useQueryClient();
   const [userId, setUserId] = useState<string | null>(null);
   const [authReady, setAuthReady] = useState(false);
+  const lastOwnerId = useRef<string | null>(null);
 
   useEffect(() => {
     let active = true;
     const applySession = (nextId: string | null) => {
       if (!active) return;
-      setUserId(previous => {
-        if (previous && previous !== nextId) {
-          queryClient.removeQueries({ queryKey: PATIENTS_QUERY_KEY, exact: false });
-        }
-        return nextId;
-      });
+      if (lastOwnerId.current && lastOwnerId.current !== nextId) {
+        queryClient.removeQueries({ queryKey: PATIENTS_QUERY_KEY, exact: false });
+      }
+      lastOwnerId.current = nextId;
+      setUserId(nextId);
       setAuthReady(true);
     };
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
