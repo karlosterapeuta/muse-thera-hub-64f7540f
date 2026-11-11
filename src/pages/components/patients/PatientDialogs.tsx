@@ -57,6 +57,7 @@ interface AddPatientDialogProps {
 export function AddPatientDialog({ loadPatients, closeModal, onDirtyChange, onBusyChange }: AddPatientDialogProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPhotoUploading, setIsPhotoUploading] = useState(false);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -70,7 +71,7 @@ export function AddPatientDialog({ loadPatients, closeModal, onDirtyChange, onBu
   });
 
   useEffect(() => { onDirtyChange?.(form.formState.isDirty || photoUrl !== null); }, [form.formState.isDirty, photoUrl, onDirtyChange]);
-  useEffect(() => { onBusyChange?.(isSubmitting); }, [isSubmitting, onBusyChange]);
+  useEffect(() => { onBusyChange?.(isSubmitting || isPhotoUploading); }, [isSubmitting, isPhotoUploading, onBusyChange]);
 
   async function onSubmit(values: z.infer<typeof FormSchema>) {
     try {
@@ -129,7 +130,7 @@ export function AddPatientDialog({ loadPatients, closeModal, onDirtyChange, onBu
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <PatientPhotoUpload onPhotoUploaded={setPhotoUrl} currentPhotoUrl={photoUrl} />
+      <PatientPhotoUpload onPhotoUploaded={setPhotoUrl} currentPhotoUrl={photoUrl} onUploadingChange={setIsPhotoUploading} />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
@@ -209,10 +210,10 @@ export function AddPatientDialog({ loadPatients, closeModal, onDirtyChange, onBu
           <DialogFooter className="flex-col sm:flex-row gap-3 sm:gap-2 pt-2 sm:pt-4">
             <Button 
               type="submit" 
-              disabled={isSubmitting}
+              disabled={isSubmitting || isPhotoUploading}
               className="w-full sm:w-auto h-11 sm:h-12 px-6 sm:px-8 text-base rounded-xl"
             >
-              {isSubmitting ? "Criando..." : "Criar Paciente"}
+              {isPhotoUploading ? "Enviando foto..." : isSubmitting ? "Criando..." : "Criar Paciente"}
             </Button>
           </DialogFooter>
         </form>
@@ -232,6 +233,7 @@ interface EditPatientDialogProps {
 export function EditPatientDialog({ patient, loadPatients, closeModal, onDirtyChange, onBusyChange }: EditPatientDialogProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPhotoUploading, setIsPhotoUploading] = useState(false);
   const [photoUrl, setPhotoUrl] = useState<string | null>(patient.photo_url || null);
   
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -245,7 +247,7 @@ export function EditPatientDialog({ patient, loadPatients, closeModal, onDirtyCh
   });
 
   useEffect(() => { onDirtyChange?.(form.formState.isDirty || photoUrl !== (patient.photo_url || null)); }, [form.formState.isDirty, photoUrl, patient.photo_url, onDirtyChange]);
-  useEffect(() => { onBusyChange?.(isSubmitting); }, [isSubmitting, onBusyChange]);
+  useEffect(() => { onBusyChange?.(isSubmitting || isPhotoUploading); }, [isSubmitting, isPhotoUploading, onBusyChange]);
 
   async function onSubmit(values: z.infer<typeof FormSchema>) {
     try {
@@ -295,7 +297,7 @@ export function EditPatientDialog({ patient, loadPatients, closeModal, onDirtyCh
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <PatientPhotoUpload onPhotoUploaded={setPhotoUrl} currentPhotoUrl={photoUrl} />
+      <PatientPhotoUpload onPhotoUploaded={setPhotoUrl} currentPhotoUrl={photoUrl} onUploadingChange={setIsPhotoUploading} />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
@@ -375,10 +377,10 @@ export function EditPatientDialog({ patient, loadPatients, closeModal, onDirtyCh
           <DialogFooter className="flex-col sm:flex-row gap-3 sm:gap-2 pt-2 sm:pt-4">
             <Button 
               type="submit" 
-              disabled={isSubmitting}
+              disabled={isSubmitting || isPhotoUploading}
               className="w-full sm:w-auto h-11 sm:h-12 px-6 sm:px-8 text-base rounded-xl"
             >
-              {isSubmitting ? "Salvando..." : "Salvar Alterações"}
+              {isPhotoUploading ? "Enviando foto..." : isSubmitting ? "Salvando..." : "Salvar Alterações"}
             </Button>
           </DialogFooter>
         </form>
