@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
@@ -750,7 +750,15 @@ function EvaluationProgressCard({ items, patientId, onOpen }: {
 
 export default function PatientHistoryPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [params] = useSearchParams();
+  const requestedPatientId = params.get("patient_id");
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const { data: patientsForDeepLink = [] } = usePatientsData();
+  useEffect(() => {
+    if (!requestedPatientId) return;
+    const requestedPatient = patientsForDeepLink.find(p => p.id === requestedPatientId);
+    if (requestedPatient) setSelectedPatient(requestedPatient);
+  }, [requestedPatientId, patientsForDeepLink]);
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [periodFilter, setPeriodFilter] = useState<string>("all");
   const [recordSearch, setRecordSearch] = useState("");
