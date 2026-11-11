@@ -1,4 +1,5 @@
 import { PatientCareMenu } from "./PatientCareMenu";
+import { Link } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2, FileText, Loader2 } from "lucide-react";
@@ -150,9 +151,8 @@ export function PatientCard({ patient, onEdit, onDelete, onViewAnamnesis, onEdit
               )}
             </div>
           ) : (
-            <Button variant="outline" size="sm" className="min-h-11 px-4 rounded-xl font-semibold text-xs w-full sm:w-auto"
-              onClick={() => { window.location.assign("/anamnesis?patient_id=" + encodeURIComponent(patient.id)); }}>
-              Iniciar anamnese
+            <Button variant="outline" size="sm" asChild className="min-h-11 px-4 rounded-xl font-semibold text-xs w-full sm:w-auto">
+              <Link to={"/anamnesis?patient_id=" + encodeURIComponent(patient.id)}>Iniciar anamnese</Link>
             </Button>
           )}
         </div>
