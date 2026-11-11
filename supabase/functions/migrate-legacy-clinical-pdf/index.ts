@@ -9,6 +9,7 @@ const allowedKinds = new Set(["anamnesis", "evaluation", "report", "intervention
 const allowedOrigins = new Set([
   "https://portal.musetera.com.br",
   "https://c2771811.portal-musetera.pages.dev",
+  "https://708c4d34.portal-musetera.pages.dev",
   ...(Deno.env.get("R2_ALLOWED_ORIGINS") || "").split(",").map(x => x.trim()).filter(Boolean),
 ]);
 function headers(req: Request): Record<string, string> {
