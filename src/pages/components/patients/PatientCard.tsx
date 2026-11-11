@@ -2,7 +2,7 @@ import { PatientCareMenu } from "./PatientCareMenu";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, FileText, Loader2 } from "lucide-react";
+import { Pencil, Trash2, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { formatBirthDateForDisplay } from '@/utils/dateUtils';
 import {
