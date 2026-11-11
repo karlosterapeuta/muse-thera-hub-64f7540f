@@ -50,12 +50,12 @@ export function PatientPhotoUpload({ onPhotoUploaded, currentPhotoUrl, onUploadi
         title: "Sucesso",
         description: "Foto enviada com sucesso.",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error uploading photo:", error);
       toast({
         variant: "destructive",
         title: "Erro ao enviar a foto",
-        description: error?.message || "Verifique sua conexão e tente novamente.",
+        description: error instanceof Error ? error.message : "Verifique sua conexão e tente novamente.",
       });
     } finally {
       setIsUploading(false);
