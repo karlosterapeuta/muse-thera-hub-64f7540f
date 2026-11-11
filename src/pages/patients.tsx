@@ -49,16 +49,16 @@ export default function PatientsPage() {
   const { data: patients = [], isLoading, error, authReady, userId, refetch, isFetching } = usePatientsData();
   const deletePatientMutation = useDeletePatient();
   const appliedDeepLink = useRef(false);
+  const patientIdFromDashboard = searchParams.get("patient_id");
 
   useEffect(() => {
-    const requested = searchParams.get("patient_id");
-    if (!requested || appliedDeepLink.current) return;
-    const target = patients.find(patient => patient.id === requested);
+    if (!patientIdFromDashboard || appliedDeepLink.current) return;
+    const target = patients.find(patient => patient.id === patientIdFromDashboard);
     if (target) {
       setSearchTerm(target.name);
       appliedDeepLink.current = true;
     }
-  }, [patients, searchParams]);
+  }, [patients, patientIdFromDashboard]);
 
   useEffect(() => { setPage(1); }, [searchTerm, statusFilter, sortBy]);
 
