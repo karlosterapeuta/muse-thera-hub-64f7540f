@@ -167,7 +167,8 @@ def run():
         direct.close()
 
         # A interface mantém os controles utilizáveis em celular de 360 px.
-        mobile = ctx.new_page(viewport={"width": 360, "height": 760})
+        mobile = ctx.new_page()
+        mobile.set_viewport_size({"width": 360, "height": 760})
         mobile.goto(BASE + "/anamnesis?patient_id=" + B)
         expect(mobile.get_by_role("region", name="Dados cadastrados do paciente")).to_contain_text("Beto Teste")
         mobile.get_by_role("button", name="Próxima etapa").click()
