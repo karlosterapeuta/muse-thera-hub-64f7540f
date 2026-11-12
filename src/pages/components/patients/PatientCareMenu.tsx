@@ -8,9 +8,9 @@ export function PatientCareMenu({ patient }: { patient: { id: string; name: stri
   const destinations = [
     { label: "Ficha e histórico clínico", path: '/patient-history?patient_id=' + id },
     { label: "Anamnese", path: '/anamnesis?patient_id=' + id },
-    { label: "Avaliação MuseTera", path: '/evaluation?patient_id=' + id },
+    { label: "Avaliação", path: '/evaluation?patient_id=' + id },
     { label: "Evolução do paciente", path: '/evaluation/paciente/' + id },
-    { label: "Plano Terapêutico (PTI)", path: '/pti?patient_id=' + id },
+    { label: "Plano terapêutico (PTI)", path: '/pti?patient_id=' + id },
     { label: "Intervenção", path: '/intervention?patient_id=' + id },
   ];
   return (
