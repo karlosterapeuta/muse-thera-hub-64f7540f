@@ -198,8 +198,9 @@ export function createAnamnesisNativePdf(
     for (const [key,value] of extra) field(clinicalFieldLabel(key),format(value));
   }
 
-  // The last page contains only the registered professional's verified images.
-  space(59);
+  // Keep the complete professional identification and its images together.
+  // Starting a new page here is preferable to splitting the signature block.
+  space(120);
   title("RESPONSÁVEL PELO DOCUMENTO");
   field("Profissional",tidy(professional.name || professional.email));
   if (professional.specialty) field("Área",professional.specialty);
