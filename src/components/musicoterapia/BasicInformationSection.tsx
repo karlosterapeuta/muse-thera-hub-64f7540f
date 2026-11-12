@@ -27,11 +27,13 @@ interface BasicInformationSectionProps {
   isLoadingPatients?: boolean;
   onSelectPatient: (patientId: string) => void;
   anamnesisStatus: 'idle' | 'loading' | 'loaded' | 'empty' | 'error';
+  anamnesisSourceDate?: string | null;
+  patientsLoadError?: boolean;
 }
 
 export function BasicInformationSection({
   reportData, onUpdateData, professionalData, patients = [], isLoadingPatients = false,
-  onSelectPatient, anamnesisStatus
+  onSelectPatient, anamnesisStatus, anamnesisSourceDate, patientsLoadError = false
 }: BasicInformationSectionProps) {
   const handleFieldChange = (field: string, value: string) => {
     if (field.startsWith('fieldValues.')) {
@@ -75,16 +77,16 @@ export function BasicInformationSection({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Seleção do Paciente */}
         <div className="space-y-2">
-          <Label className="text-sm font-medium flex items-center space-x-2">
+          <Label htmlFor="musicoterapia-patient-select" className="text-sm font-medium flex items-center space-x-2">
             <User className="h-4 w-4" />
             <span>Paciente <span className="text-destructive">*</span></span>
           </Label>
           <Select 
-            value={reportData.selectedPatientId || 'manual'} 
+            value={reportData.selectedPatientId || undefined} 
             onValueChange={handlePatientSelect}
             disabled={isLoadingPatients}
           >
-            <SelectTrigger className="w-full">
+            <SelectTrigger id="musicoterapia-patient-select" aria-label="Paciente" className="min-h-11 w-full">
               <SelectValue placeholder={
                 isLoadingPatients 
                   ? "Carregando pacientes..." 
@@ -94,9 +96,6 @@ export function BasicInformationSection({
               } />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="manual">
-                📝 Novo paciente (entrada manual)
-              </SelectItem>
               {hasPatients && patients.map(patient => (
                 <SelectItem key={patient.id} value={patient.id}>
                   {patient.name}
@@ -104,6 +103,15 @@ export function BasicInformationSection({
               ))}
             </SelectContent>
           </Select>
+          {!isLoadingPatients && !hasPatients && (
+            <p className="text-sm text-muted-foreground">
+              Cadastre um paciente na <a href="/patients" className="font-semibold text-primary underline underline-offset-2">página Pacientes</a>
+              para salvar relatórios vinculados ao prontuário.
+            </p>
+          )}
+          {patientsLoadError && <p role="alert" className="text-sm text-destructive">
+            Não foi possível carregar a lista de pacientes. Atualize a página após conferir a conexão.
+          </p>}
         </div>
 
         {/* Nome do Paciente */}
@@ -249,6 +257,15 @@ export function BasicInformationSection({
             <span className="text-muted-foreground">
               Não há Anamnese cadastrada para este paciente. Preencha apenas as informações disponíveis.
             </span>
+          )}
+          {anamnesisStatus === 'loaded' && anamnesisSourceDate && (
+            <p className="mt-2 text-xs text-muted-foreground" role="status">
+              Origem das informações complementares: Anamnese atualizada em {
+                Number.isNaN(Date.parse(anamnesisSourceDate))
+                  ? 'data não disponível'
+                  : new Date(anamnesisSourceDate).toLocaleDateString('pt-BR')
+              }. Confirme a atualidade dos dados antes de emitir.
+            </p>
           )}
           {anamnesisStatus === 'error' && (
             <span className="flex gap-2 items-center text-amber-600 dark:text-amber-300">

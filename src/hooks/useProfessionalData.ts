@@ -1,7 +1,6 @@
-
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useMemo } from "react";
 
 export interface ProfessionalData {
   id: string;
@@ -18,68 +17,64 @@ export interface ProfessionalData {
   stamp_photo_url?: string;
 }
 
+/** Account-scoped profile cache; never reuse professional identity across logins. */
 export function useProfessionalData() {
+  const queryClient = useQueryClient();
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    let hasAuthEvent = false;
+    let lastOwner: string | null = null;
+    const apply = (id: string | null) => {
+      if (!active || lastOwner === id) return;
+      if (lastOwner) queryClient.removeQueries({ queryKey: ["professional-data"] });
+      lastOwner = id;
+      setUserId(id);
+    };
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      hasAuthEvent = true;
+      apply(session?.user?.id ?? null);
+    });
+    void supabase.auth.getSession().then(({ data }) => {
+      if (!hasAuthEvent) apply(data.session?.user?.id ?? null);
+    }).catch(() => { if (!hasAuthEvent) apply(null); });
+    return () => { active = false; subscription.unsubscribe(); };
+  }, [queryClient]);
+
   const queryResult = useQuery({
-    queryKey: ["professional-data"],
+    queryKey: ["professional-data", userId],
+    enabled: Boolean(userId),
     queryFn: async (): Promise<ProfessionalData | null> => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        const user = session?.user;
-        if (!user) {
-          console.log('Nenhum usuário logado encontrado');
-          return null;
-        }
-
-        let { data: professional, error } = await supabase
-          .from('professionals')
-          .select('*')
-          .eq('user_id', user.id)
-          .maybeSingle();
-
-        if (error) {
-          console.error('Error fetching professional data:', error);
-          throw error;
-        }
-
-        if (!professional) {
-          // Create professional profile if it doesn't exist
-          console.log('Criando perfil profissional...');
-          const { data: newProfile, error: insertError } = await supabase
-            .from('professionals')
-            .upsert({
-              user_id: user.id,
-              name: user.user_metadata?.full_name || user.email?.split('@')[0] || '',
-              register: '',
-              phone: '',
-              email: user.email || '',
-              specialty: 'Musicoterapeuta',
-              association: ''
-            })
-            .select()
-            .single();
-
-          if (insertError) {
-            console.error('Erro ao criar perfil:', insertError);
-            throw insertError;
-          }
-
-          professional = newProfile;
-        }
-
-        return professional;
-      } catch (error) {
-        console.error('Erro inesperado ao buscar dados profissionais:', error);
-        throw error;
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user || user.id !== userId) {
+        throw new Error("Sessão profissional alterada. Faça login novamente.");
       }
+      let { data: professional, error } = await supabase
+        .from("professionals").select("*").eq("user_id", user.id).maybeSingle();
+      if (error) throw error;
+      if (!professional) {
+        const { data: created, error: insertError } = await supabase
+          .from("professionals").upsert({
+            user_id: user.id,
+            name: user.user_metadata?.full_name || user.email?.split("@")[0] || "",
+            register: "",
+            phone: "",
+            email: user.email || "",
+            specialty: "Musicoterapeuta",
+            association: "",
+          }).select().single();
+        if (insertError) throw insertError;
+        professional = created;
+      }
+      return professional;
     },
     retry: 1,
-    staleTime: 5 * 60 * 1000, // 5 minutes (reduced for fresher data)
-    gcTime: 30 * 60 * 1000, // 30 minutes
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
     refetchOnWindowFocus: false,
-    refetchOnMount: "always", // Always fetch fresh data on mount
+    refetchOnMount: "always",
     refetchInterval: false,
   });
-
-  // Memoize the result to prevent unnecessary re-renders
-  return useMemo(() => queryResult, [queryResult.data, queryResult.isLoading, queryResult.error]);
+  return { ...queryResult, data: queryResult.data ?? null };
 }

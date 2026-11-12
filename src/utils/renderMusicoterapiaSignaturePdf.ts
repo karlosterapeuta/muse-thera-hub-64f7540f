@@ -12,6 +12,7 @@ interface SignatureDetails {
   phone?: unknown;
   portrait?: string | null;
   stamp?: string | null;
+  signature?: string | null;
 }
 
 export function renderMusicoterapiaSignaturePdf(
@@ -26,6 +27,12 @@ export function renderMusicoterapiaSignaturePdf(
   const email = safe(input.email);
   const phone = safe(input.phone);
   const portrait = input.portrait ? `<img src="${safe(input.portrait)}" alt="Imagem cadastrada do profissional" style="width:60px;height:60px;object-fit:contain;border-radius:8px;border:1px solid #d7e8e6;" />` : '';
+  const signature = input.signature ? `
+    <div style="margin-top:9px;">
+      <img src="${safe(input.signature)}" alt="Assinatura cadastrada pelo profissional"
+        style="display:block;max-width:220px;max-height:64px;object-fit:contain;"/>
+      <small style="font-size:8px;color:#64748b;">Assinatura cadastrada (imagem)</small>
+    </div>` : '';
   const stamp = input.stamp ? `
     <div style="flex-shrink:0;text-align:center;">
       <img src="${safe(input.stamp)}" alt="Carimbo cadastrado pelo profissional"
@@ -49,9 +56,10 @@ export function renderMusicoterapiaSignaturePdf(
         </div>
         ${stamp}
       </div>
+      ${signature}
       <p style="font-size:9px;line-height:1.5;color:#64748b;margin:11px 0 0;">
         Documento gerado no MuseTera. O carimbo e a identificação, quando presentes,
-        não substituem a verificação da assinatura do profissional.
+        são imagens cadastradas e não constituem assinatura criptográfica certificada.
       </p>
     </div>
   </section>`;

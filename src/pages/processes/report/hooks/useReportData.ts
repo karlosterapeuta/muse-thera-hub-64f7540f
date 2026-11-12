@@ -1,109 +1,99 @@
-
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 
-type Patient = {
+export type ReportPatient = {
   id: string;
   name: string;
-  birth_date?: string;
-  age?: number;
+  birth_date?: string | null;
+  age?: number | null;
   responsible?: string | null;
 };
+type ProfessionalContact = { name: string; phone: string; email: string };
+const EMPTY_PROFESSIONAL: ProfessionalContact = { name: "", phone: "", email: "" };
 
 export function useReportData() {
   const { toast } = useToast();
-  const [patients, setPatients] = useState<Patient[]>([]);
+  const [patients, setPatients] = useState<ReportPatient[]>([]);
   const [isLoadingPatients, setIsLoadingPatients] = useState(true);
-  const [userEmail, setUserEmail] = useState<string>("");
-  const [userName, setUserName] = useState<string>("");
+  const [patientsLoadError, setPatientsLoadError] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+  const [userName, setUserName] = useState("");
   const [userId, setUserId] = useState<string | null>(null);
-  const [professionalData, setProfessionalData] = useState({
-    name: "",
-    phone: "",
-    email: "",
-  });
-
-  const formatNameFromEmail = (email: string) => {
-    const namePart = email.split('@')[0];
-    return namePart
-      .split(/[._-]/)
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(' ');
-  };
-
-  const loadProfessionalData = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: professional, error } = await supabase
-        .from('professionals')
-        .select('name, phone, email')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (error) {
-        console.error('Error loading professional data:', error);
-        return;
-      }
-
-      if (professional) {
-        setProfessionalData({
-          name: professional.name || '',
-          phone: professional.phone || '',
-          email: professional.email || '',
-        });
-      }
-    } catch (error) {
-      console.error('Error loading professional data:', error);
-    }
-  };
+  const [professionalData, setProfessionalData] = useState<ProfessionalContact>(EMPTY_PROFESSIONAL);
 
   useEffect(() => {
-    async function fetchData() {
+    let disposed = false;
+    let generation = 0;
+    let currentAccount: string | null = null;
+    const reset = () => {
+      setPatients([]);
+      setUserEmail("");
+      setUserName("");
+      setUserId(null);
+      setProfessionalData(EMPTY_PROFESSIONAL);
+      setPatientsLoadError(false);
+    };
+    const load = async (sessionId: string | null) => {
+      const request = ++generation;
+      if (sessionId !== currentAccount) {
+        currentAccount = sessionId;
+        reset(); // Never show the previous account's patients during a session switch.
+      }
+      if (!sessionId) {
+        setIsLoadingPatients(false);
+        return;
+      }
+      setIsLoadingPatients(true);
+      setPatientsLoadError(false);
       try {
-        setIsLoadingPatients(true);
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error("Usuário não autenticado");
-
-        setUserEmail(user.email || "");
-        setUserName(formatNameFromEmail(user.email || ""));
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user || user.id !== sessionId) throw new Error("Sessão não confirmada");
+        const [patientResult, professionalResult] = await Promise.all([
+          supabase.from("patients")
+            .select("id, name, birth_date, age, responsible")
+            .eq("professional_id", user.id)
+            .order("name"),
+          supabase.from("professionals")
+            .select("name, phone, email")
+            .eq("user_id", user.id)
+            .maybeSingle(),
+        ]);
+        if (patientResult.error) throw patientResult.error;
+        if (professionalResult.error) throw professionalResult.error;
+        if (disposed || request !== generation) return;
         setUserId(user.id);
-
-        console.log("Buscando pacientes para usuário:", user.id);
-        
-        const { data, error } = await supabase
-          .from("patients")
-          .select("id, name, birth_date, age, responsible")
-          .eq("professional_id", user.id)
-          .order("name");
-
-        if (error) throw error;
-        
-        setPatients(data || []);
-      } catch (error) {
-        console.error("Erro ao carregar dados:", error);
+        setUserEmail(user.email || "");
+        setUserName((user.email || "").split("@")[0].replace(/[._-]/g, " "));
+        setPatients(patientResult.data || []);
+        setProfessionalData({
+          name: professionalResult.data?.name || "",
+          phone: professionalResult.data?.phone || "",
+          email: professionalResult.data?.email || "",
+        });
+      } catch {
+        if (disposed || request !== generation) return;
+        reset();
+        setPatientsLoadError(true);
         toast({
-          variant: "destructive",
-          title: "Erro ao carregar dados",
-          description: "Não foi possível carregar a lista de pacientes",
+          variant: "destructive", title: "Erro ao carregar dados",
+          description: "Não foi possível carregar os pacientes e o perfil profissional. Tente novamente.",
         });
       } finally {
-        setIsLoadingPatients(false);
+        if (!disposed && request === generation) setIsLoadingPatients(false);
       }
-    }
+    };
 
-    fetchData();
-    loadProfessionalData();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      // Schedule outside the auth callback to avoid awaiting Supabase calls in it.
+      queueMicrotask(() => { if (!disposed) void load(session?.user?.id ?? null); });
+    });
+    void supabase.auth.getSession().then(({ data }) => {
+      // INITIAL_SESSION may run first: reloading a stable account is harmless.
+      if (!disposed && generation === 0) void load(data.session?.user?.id ?? null);
+    }).catch(() => { if (!disposed && generation === 0) { reset(); setIsLoadingPatients(false); } });
+    return () => { disposed = true; generation++; subscription.unsubscribe(); };
   }, [toast]);
 
-  return {
-    patients,
-    isLoadingPatients,
-    userEmail,
-    userName,
-    userId,
-    professionalData,
-  };
+  return { patients, isLoadingPatients, patientsLoadError, userEmail, userName, userId, professionalData };
 }

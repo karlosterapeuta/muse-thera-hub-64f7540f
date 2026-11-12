@@ -18,6 +18,7 @@ jobs:
       - run: node tests/evaluation-scoring.cjs
       - run: node tests/pti-improvements.cjs
       - run: node tests/musicoterapia-workflow.cjs
+      - run: node --test tests/musicoterapia-four-phases.cjs
       - run: node tests/anamnesis-safety.cjs
       - run: node --test tests/anamnesis-patient-prefill.cjs
       - run: node --test tests/anamnesis-seven-improvements.cjs
@@ -31,3 +32,4 @@ jobs:
           for i in {1..30}; do curl -fsS http://127.0.0.1:4173 >/dev/null && break; sleep 1; done
           python tests/clinical_journey.py
           python tests/anamnesis_journey.py
+          python tests/musicoterapia_journey.py

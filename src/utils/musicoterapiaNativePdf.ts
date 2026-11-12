@@ -18,6 +18,7 @@ type Inputs = {
   logo?: string | null;
   photo?: string | null;
   stamp?: string | null;
+  signature?: string | null;
 };
 type ClinicalCount = { name: string; value: number; color: [number,number,number] };
 
@@ -484,7 +485,7 @@ export async function exportMusicoterapiaNativePdf(
   // apesar de o conteúdo começar em y+15 mm.
   const detailBottomOffset = 15 + Math.max(0, wrappedDetails.length - 1) * 4.3 + 2;
   const imageBottomOffset = (images.photo || images.stamp) ? 38 : 0;
-  const signatureHeight = Math.max(40, detailBottomOffset + 9, imageBottomOffset + 7);
+  const signatureHeight = Math.max(40, detailBottomOffset + 9, imageBottomOffset + 7) + (images.signature ? 36 : 0);
   // Reservar exatamente o espaço necessário, sem folga artificial.
   ensure(signatureHeight + 4);
   y += 2;
@@ -503,7 +504,13 @@ export async function exportMusicoterapiaNativePdf(
     lineY += 4.3;
   }
   setFace(7.1,false,MUTED);
-  pdf.text('Carimbo cadastrado, quando presente, não substitui a verificação da assinatura.',margin+5,y+signatureHeight-4);
+  pdf.text('Imagens cadastradas não constituem assinatura criptográfica certificada.',margin+5,y+signatureHeight-4);
+  if (images.signature) {
+    const signatureTop = y + signatureHeight - 31;
+    addImage(images.signature, margin + 5, signatureTop, 67, 18);
+    setFace(7.3,false,MUTED);
+    pdf.text('Assinatura cadastrada (imagem)', margin + 5, y + signatureHeight - 10);
+  }
   y += signatureHeight+1;
 
   const totalPages=pdf.internal.getNumberOfPages();

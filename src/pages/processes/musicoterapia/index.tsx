@@ -36,12 +36,14 @@ import { exportMusicoterapiaHtmlPdf } from '@/utils/musicoterapiaPdfExport';
 import { exportMusicoterapiaNativePdf } from '@/utils/musicoterapiaNativePdf';
 import { renderMusicoterapiaPdfVisuals, renderMusicoterapiaPdfHeaderArt } from '@/utils/musicoterapiaPdfVisuals';
 import { imageUrlToBase64 } from '@/utils/imageToBase64';
+import { resolveMusicoterapiaProfessionalAssets } from '@/utils/musicoterapiaProfessionalAssets';
 import { DeleteReportDialog } from '../reports/components/DeleteReportDialog';
 import { formatAgeString } from '@/utils/dateUtils';
 import { mapAnamnesisToMusicoterapia } from '@/utils/musicoterapiaAnamnesisMapping';
 import type { ReportData } from '@/data/musicoterapiaTemplate';
 
 type SaveState = 'idle' | 'pending' | 'saving' | 'saved' | 'error';
+const REPORT_PAGE_SIZE = 24;
 
 function downloadArchivedPdf(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
@@ -78,6 +80,11 @@ export default function MusicoterapiaPage() {
   const [reports, setReports] = useState<any[]>([]);
   const [isLoadingReports, setIsLoadingReports] = useState(false);
   const [reportsLoadError, setReportsLoadError] = useState(false);
+  const [loadingMoreReports, setLoadingMoreReports] = useState(false);
+  const [hasMoreReports, setHasMoreReports] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<'all' | 'rascunho' | 'finalizado'>('all');
+  const reportsRequestRef = React.useRef(0);
+  const sessionOwnerRef = React.useRef<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedReport, setSelectedReport] = useState<any>(null);
   const [showViewDialog, setShowViewDialog] = useState(false);
@@ -98,11 +105,12 @@ export default function MusicoterapiaPage() {
     professionalData
   } = useMusicoterapiaReport();
 
-  const { patients, isLoadingPatients, userId } = useReportData();
+  const { patients, isLoadingPatients, patientsLoadError, userId } = useReportData();
   const [professionalId, setProfessionalId] = useState<string | null>(null);
   const [anamnesisStatus, setAnamnesisStatus] = useState<'idle' | 'loading' | 'loaded' | 'empty' | 'error'>('idle');
   const anamnesisRequestRef = React.useRef(0);
   const autoSelectedQueryRef = React.useRef<string | null>(null);
+  const [anamnesisSourceDate, setAnamnesisSourceDate] = useState<string | null>(null);
 
   const markEdited = React.useCallback(() => {
     editRevisionRef.current += 1;
@@ -150,7 +158,43 @@ export default function MusicoterapiaPage() {
     };
   }, []);
 
+  // Purge all local clinical state when a session changes, including in-flight queries.
   React.useEffect(() => {
+    if (sessionOwnerRef.current === userId) return;
+    const previouslyAuthenticated = sessionOwnerRef.current !== null;
+    sessionOwnerRef.current = userId;
+    reportsRequestRef.current++;
+    setReports([]);
+    setHasMoreReports(false);
+    setSelectedReport(null);
+    setReportToDelete(null);
+    setShowViewDialog(false);
+    setShowDeleteDialog(false);
+    setProfessionalId(null);
+    if (previouslyAuthenticated) {
+      anamnesisRequestRef.current++;
+      autoSelectedQueryRef.current = null;
+      if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+      resetReportData();
+      // O hook de rascunho preserva a identidade ao trocar pacientes, mas
+      // em troca de conta o nome/registro anterior nunca pode permanecer.
+      updateReportData({ professionalName: '', professionalRegistry: '', professionalSpecialty: 'Musicoterapia' });
+      draftIdRef.current = null;
+      setDraftId(null);
+      setSourceReportId(null);
+      setSourceRootId(null);
+      setReportLogoUrl(null);
+      setAnamnesisStatus('idle');
+      setAnamnesisSourceDate(null);
+      hasUnsavedChangesRef.current = false;
+      setSaveState('idle');
+      setLastSaved(null);
+    }
+  }, [userId, resetReportData]);
+
+  React.useEffect(() => {
+    let active = true;
+    if (!userId) { setProfessionalId(null); return; }
     async function fetchProfessionalId() {
       if (userId) {
         try {
@@ -160,16 +204,15 @@ export default function MusicoterapiaPage() {
             .eq('user_id', userId)
             .single();
           
-          if (data && !error) {
-            setProfessionalId(data.id);
-          }
+          if (active && data && !error) setProfessionalId(data.id);
         } catch (error) {
           console.error('Erro ao buscar professional_id:', error);
         }
       }
     }
     
-    fetchProfessionalId();
+    void fetchProfessionalId();
+    return () => { active = false; };
   }, [userId]);
 
   // Ao trocar de paciente, limpar o rascunho clínico anterior antes de importar
@@ -183,6 +226,7 @@ export default function MusicoterapiaPage() {
     hasUnsavedChangesRef.current = false;
     setSaveState('idle');
     setLastSaved(null);
+    setAnamnesisSourceDate(null);
     draftIdRef.current = null;
     setDraftId(null);
     setSourceRootId(null);
@@ -239,6 +283,7 @@ export default function MusicoterapiaPage() {
       }
 
       const mapped = mapAnamnesisToMusicoterapia(data);
+      setAnamnesisSourceDate(data.updated_at || data.created_at || null);
       updateReportData((previous) => {
         if (previous.selectedPatientId !== patientId) return {};
         // Os valores já digitados enquanto a consulta estava em andamento
@@ -283,7 +328,8 @@ export default function MusicoterapiaPage() {
     photoBase64?: string | null, 
     stampBase64?: string | null,
     logoUrl?: string | null,
-    narrative?: { title: string; content: string }[] | null
+    narrative?: { title: string; content: string }[] | null,
+    signatureBase64?: string | null
   ) => {
     const fields = reportDataForPDF.fieldValues || {};
     const selectedGoals = getSelectedMusicoterapiaObjectives(fields.therapeutic_objective_ids);
@@ -694,7 +740,8 @@ export default function MusicoterapiaPage() {
           email: professionalData?.email,
           phone: professionalData?.phone,
           portrait: photoBase64,
-          stamp: stampBase64
+          stamp: stampBase64,
+          signature: signatureBase64
         }, escapeHtml)}
 
       </div>
@@ -832,9 +879,9 @@ export default function MusicoterapiaPage() {
       if (professionalData?.stamp_photo_url) {
         photoBase64 = await imageUrlToBase64(professionalData.stamp_photo_url);
       }
-      if (professionalData?.digital_stamp_url) {
-        stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
-      }
+      const professionalImages = await resolveMusicoterapiaProfessionalAssets(professionalData, userId);
+      stampBase64 = professionalImages.stamp;
+      const signatureBase64 = professionalImages.signature;
       // A logo personalizada também é convertida para imagem segura antes de incorporar ao PDF.
       const selectedLogoUrl = logoUrl ?? reportLogoUrl;
       const logoBase64 = selectedLogoUrl ? await imageUrlToBase64(selectedLogoUrl) : null;
@@ -848,12 +895,12 @@ export default function MusicoterapiaPage() {
         ? await exportMusicoterapiaNativePdf(
             currentReportData,
             professionalData,
-            { logo: logoBase64, photo: photoBase64, stamp: stampBase64 },
+            { logo: logoBase64, photo: photoBase64, stamp: stampBase64, signature: signatureBase64 },
             filename,
             narrative
           )
         : await exportMusicoterapiaHtmlPdf(
-            generatePDFContent(currentReportData, photoBase64, stampBase64, logoBase64, narrative),
+            generatePDFContent(currentReportData, photoBase64, stampBase64, logoBase64, narrative, signatureBase64),
             filename
           );
       if (archive && savedVersionId && professionalId) {
@@ -899,37 +946,43 @@ export default function MusicoterapiaPage() {
     }
   };
 
-  const loadReports = async () => {
+  const loadReports = async ({ append = false }: { append?: boolean } = {}) => {
     if (!professionalId) return;
-    
-    setIsLoadingReports(true);
+    const requestId = ++reportsRequestRef.current;
+    const offset = append ? reports.length : 0;
+    if (append) setLoadingMoreReports(true);
+    else setIsLoadingReports(true);
     setReportsLoadError(false);
     try {
+      // Load only one page of full clinical content instead of every report.
+      // The original R2 PDF is never downloaded during list navigation.
       const { data, error } = await supabase
         .from('reports')
-        .select(`
-          id,
-          patient_id,
-          type,
-          created_at,
-          content,
-          patient:patients(name)
-        `)
+        .select('id, patient_id, type, created_at, content, patient:patients(name)')
         .eq('professional_id', professionalId)
         .eq('type', 'musicoterapia')
-        .order('created_at', { ascending: false });
-
+        .order('created_at', { ascending: false })
+        .order('id', { ascending: false })
+        .range(offset, offset + REPORT_PAGE_SIZE - 1);
       if (error) throw error;
-      setReports(data || []);
+      if (requestId !== reportsRequestRef.current) return;
+      const batch = data || [];
+      setReports(previous => append
+        ? [...previous, ...batch.filter(item => !previous.some(existing => existing.id === item.id))]
+        : batch);
+      setHasMoreReports(batch.length === REPORT_PAGE_SIZE);
     } catch {
+      if (requestId !== reportsRequestRef.current) return;
       setReportsLoadError(true);
       toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Não foi possível carregar os relatórios.",
+        variant: 'destructive', title: 'Não foi possível carregar o histórico',
+        description: 'Seus relatórios e PDFs não foram alterados. Confira a conexão e tente novamente.',
       });
     } finally {
-      setIsLoadingReports(false);
+      if (requestId === reportsRequestRef.current) {
+        setIsLoadingReports(false);
+        setLoadingMoreReports(false);
+      }
     }
   };
 
@@ -948,6 +1001,7 @@ export default function MusicoterapiaPage() {
     setSaveState('idle');
     setLastSaved(null);
     setAnamnesisStatus('idle');
+    setAnamnesisSourceDate(null);
     setViewMode('create');
     setActiveTab('wizard');
   };
@@ -1048,11 +1102,11 @@ export default function MusicoterapiaPage() {
         ? await exportMusicoterapiaNativePdf(
             reportDataForPDF,
             professionalData,
-            { logo: savedLogoBase64, photo: photoBase64, stamp: stampBase64 },
+            { logo: savedLogoBase64, photo: photoBase64, stamp: stampBase64, signature: signatureBase64 },
             filename
           )
         : await exportMusicoterapiaHtmlPdf(
-            generatePDFContent(reportDataForPDF, photoBase64, stampBase64, savedLogoBase64),
+            generatePDFContent(reportDataForPDF, photoBase64, stampBase64, savedLogoBase64, null, signatureBase64),
             filename
           );
       toast({
@@ -1078,10 +1132,14 @@ export default function MusicoterapiaPage() {
     setReportToDelete(null);
   };
 
-  const filteredReports = reports.filter(report =>
-    report.patient?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    new Date(report.created_at).toLocaleDateString().includes(searchTerm)
-  );
+  const normalizedSearch = searchTerm.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+  const filteredReports = reports.filter(report => {
+    const patientName = String(report.patient?.name || report.content?.patient_info?.name || '')
+      .normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+    const date = report.created_at ? new Date(report.created_at).toLocaleDateString('pt-BR') : '';
+    return (statusFilter === 'all' || getMusicoterapiaReportStatus(report.content) === statusFilter) &&
+      (!normalizedSearch || patientName.includes(normalizedSearch) || date.includes(normalizedSearch));
+  });
   const groupedReports = groupMusicoterapiaReportHistory(filteredReports);
 
   useEffect(() => {
@@ -1099,7 +1157,13 @@ export default function MusicoterapiaPage() {
             <ArrowLeft className="h-4 w-4" />
             Voltar ao painel
           </Button>
-          <Button variant="outline" onClick={() => viewMode === 'create' ? (setViewMode('list'), void loadReports()) : startNewReport()}
+          <Button variant="outline" onClick={() => {
+              if (viewMode === 'create') {
+                if (!confirmDiscard()) return;
+                setViewMode('list');
+                void loadReports();
+              } else startNewReport();
+            }}
             className="min-h-11 gap-2 rounded-xl border-primary/25 bg-card font-semibold text-foreground hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary">
             {viewMode === 'create' ? <List className="h-4 w-4" /> : <Wand2 className="h-4 w-4" />}
             {viewMode === 'create' ? 'Ver relatórios salvos' : 'Criar novo relatório'}
@@ -1166,6 +1230,9 @@ export default function MusicoterapiaPage() {
                 logoUrl={reportLogoUrl}
                 onLogoChange={(value) => { markEdited(); setReportLogoUrl(value); }}
                 patients={patients}
+                isLoadingPatients={isLoadingPatients}
+                patientsLoadError={patientsLoadError}
+                anamnesisSourceDate={anamnesisSourceDate}
                 onSelectPatient={(patientId) => void selectPatientWithAnamnesis(patientId)}
                 anamnesisStatus={anamnesisStatus}
                 onSaveReport={() => { void handleSaveReport(); }}
@@ -1209,7 +1276,7 @@ export default function MusicoterapiaPage() {
                 <span>Relatórios de Musicoterapia Salvos</span>
               </CardTitle>
               <CardDescription>
-                Visualize, crie novas versões e gerencie seus relatórios salvos
+                Visualize, crie novas versões e consulte os documentos do seu histórico sem alterar os PDFs originais.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -1220,7 +1287,7 @@ export default function MusicoterapiaPage() {
                   <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                   <Input
                     id="musicoterapia-report-search"
-                    placeholder="Buscar por paciente ou data..."
+                    placeholder="Filtrar nome ou data dos registros carregados..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="h-12 rounded-xl pl-10 text-base"
@@ -1230,6 +1297,22 @@ export default function MusicoterapiaPage() {
               </div>
             </CardContent>
           </Card>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
+              Situação
+              <select aria-label="Filtrar histórico por situação" value={statusFilter}
+                onChange={event => setStatusFilter(event.target.value as typeof statusFilter)}
+                className="min-h-11 rounded-lg border border-input bg-background px-3 text-sm text-foreground">
+                <option value="all">Todas</option>
+                <option value="rascunho">Rascunhos</option>
+                <option value="finalizado">Finalizadas</option>
+              </select>
+            </label>
+            <p className="text-xs text-muted-foreground" role="status">
+              {filteredReports.length} registro(s) encontrados entre {reports.length} carregados
+            </p>
+          </div>
 
           {/* Reports List */}
           {isLoadingReports ? (
@@ -1350,6 +1433,19 @@ export default function MusicoterapiaPage() {
         </div>
       )}
 
+
+      {viewMode === 'list' && hasMoreReports && !isLoadingReports && (
+        <div className="flex flex-col items-center gap-2 rounded-xl border border-border bg-card p-4">
+          <Button className="min-h-11" variant="outline" disabled={loadingMoreReports}
+            onClick={() => void loadReports({ append: true })}>
+            {loadingMoreReports ? 'Carregando mais versões...' : 'Carregar mais relatórios'}
+          </Button>
+          <p className="text-xs text-muted-foreground">
+            {reports.length} versões carregadas. A busca e os filtros atuam sobre os registros já carregados.
+            Os demais registros permanecem no banco.
+          </p>
+        </div>
+      )}
 
       {/* Footer with Template Info */}
       <Card className="rounded-xl">

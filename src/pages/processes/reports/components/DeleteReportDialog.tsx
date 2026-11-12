@@ -1,16 +1,11 @@
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
+  AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useToast } from "@/components/ui/use-toast";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 interface DeleteReportDialogProps {
@@ -23,73 +18,75 @@ interface DeleteReportDialogProps {
 }
 
 export function DeleteReportDialog({
-  isOpen,
-  onClose,
-  reportId,
-  reportType,
-  patientName,
-  onDeleteSuccess,
+  isOpen, onClose, reportId, reportType, patientName, onDeleteSuccess,
 }: DeleteReportDialogProps) {
   const { toast } = useToast();
   const [isDeleting, setIsDeleting] = useState(false);
+  const [confirmation, setConfirmation] = useState("");
+
+  useEffect(() => {
+    if (!isOpen) setConfirmation("");
+  }, [isOpen]);
 
   const handleDelete = async () => {
+    if (isDeleting || confirmation !== "EXCLUIR") return;
+    setIsDeleting(true);
     try {
-      setIsDeleting(true);
-      
-      const { error } = await supabase
-        .from("reports")
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user) throw new Error("Sua sessão expirou. Faça login novamente.");
+      // The table belongs to professionals.id, not directly to auth.uid().
+      const { data: professional, error: profileError } = await supabase
+        .from("professionals").select("id").eq("user_id", user.id).maybeSingle();
+      if (profileError || !professional?.id) throw new Error("Profissional não autorizado.");
+
+      const { data: deleted, error } = await supabase.from("reports")
         .delete()
-        .eq("id", reportId);
+        .eq("id", reportId)
+        .eq("professional_id", professional.id)
+        .select("id")
+        .maybeSingle();
+      if (error) throw error;
+      if (!deleted?.id) throw new Error("Relatório não encontrado ou exclusão não autorizada.");
 
-      if (error) {
-        throw error;
-      }
-
-      toast({
-        title: "Relatório excluído",
-        description: "O relatório foi excluído com sucesso.",
-      });
-
+      toast({ title: "Relatório excluído", description: "A exclusão individual foi confirmada pelo banco." });
+      setConfirmation("");
       onDeleteSuccess();
       onClose();
     } catch (error) {
-      console.error("Erro ao excluir relatório:", error);
       toast({
         variant: "destructive",
-        title: "Erro ao excluir",
-        description: "Não foi possível excluir o relatório. Tente novamente.",
+        title: "Exclusão não realizada",
+        description: error instanceof Error ? error.message : "Verifique sua conexão e tente novamente.",
       });
+      // Keep the dialog open on failure; do not misreport a successful deletion.
     } finally {
       setIsDeleting(false);
     }
   };
 
-  return (
-    <AlertDialog open={isOpen} onOpenChange={onClose}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
-          <AlertDialogDescription>
-            Tem certeza que deseja excluir o relatório <strong>{reportType}</strong> do paciente <strong>{patientName}</strong>?
-            <br />
-            <br />
-            Esta ação não pode ser desfeita.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeleting}>
-            Cancelar
-          </AlertDialogCancel>
-          <AlertDialogAction
-            onClick={handleDelete}
-            disabled={isDeleting}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-          >
-            {isDeleting ? "Excluindo..." : "Excluir"}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
+  return <AlertDialog open={isOpen} onOpenChange={open => { if (!open && !isDeleting) onClose(); }}>
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>Confirmar exclusão de relatório</AlertDialogTitle>
+        <AlertDialogDescription>
+          Você está prestes a excluir o relatório {reportType} de {patientName}.
+          A exclusão poderá remover dados clínicos relacionados e não pode ser desfeita.
+          Confira a política de retenção e digite EXCLUIR para confirmar.
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <label htmlFor="confirm-report-deletion" className="text-sm font-semibold text-foreground">
+        Digite EXCLUIR
+        <Input id="confirm-report-deletion" autoComplete="off" className="mt-2 min-h-11"
+          value={confirmation} onChange={event => setConfirmation(event.target.value)}
+          disabled={isDeleting} />
+      </label>
+      <AlertDialogFooter>
+        <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
+        <Button type="button" variant="destructive" disabled={isDeleting || confirmation !== "EXCLUIR"}
+          onClick={() => void handleDelete()}>
+          {isDeleting ? "Excluindo..." : "Excluir permanentemente"}
+        </Button>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>;
 }
