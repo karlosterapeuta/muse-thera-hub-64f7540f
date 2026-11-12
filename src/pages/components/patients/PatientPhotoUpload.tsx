@@ -5,12 +5,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { usePatientPhotoUrl } from "@/hooks/usePatientPhotoUrl";
 
+const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
+const PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
+
 interface PatientPhotoUploadProps {
   onPhotoUploaded: (url: string) => void;
   currentPhotoUrl?: string | null;
+  onUploadingChange?: (uploading: boolean) => void;
 }
 
-export function PatientPhotoUpload({ onPhotoUploaded, currentPhotoUrl }: PatientPhotoUploadProps) {
+export function PatientPhotoUpload({ onPhotoUploaded, currentPhotoUrl, onUploadingChange }: PatientPhotoUploadProps) {
   const { toast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -19,13 +23,16 @@ export function PatientPhotoUpload({ onPhotoUploaded, currentPhotoUrl }: Patient
 
   const uploadPhoto = async (file: Blob | File) => {
     try {
+      if (!PHOTO_TYPES.includes(file.type as typeof PHOTO_TYPES[number])) throw new Error("Envie uma foto JPEG, PNG ou WebP.");
+      if (file.size > MAX_PHOTO_BYTES) throw new Error("A imagem deve ter no máximo 5 MB.");
       setIsUploading(true);
+      onUploadingChange?.(true);
 
       const { data: userData } = await supabase.auth.getUser();
       const userId = userData?.user?.id;
       if (!userId) throw new Error("Sessão expirada. Faça login novamente.");
 
-      const ext = file.type === "image/png" ? "png" : "jpg";
+      const ext = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg";
       const contentType = file.type || "image/jpeg";
       const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${ext}`;
       // Store inside the owner's folder so storage RLS scopes access per user
@@ -33,7 +40,7 @@ export function PatientPhotoUpload({ onPhotoUploaded, currentPhotoUrl }: Patient
 
       const { error: uploadError } = await supabase.storage
         .from("patients")
-        .upload(filePath, file, { contentType, upsert: true });
+        .upload(filePath, file, { contentType, upsert: false });
 
       if (uploadError) throw uploadError;
 
@@ -43,15 +50,16 @@ export function PatientPhotoUpload({ onPhotoUploaded, currentPhotoUrl }: Patient
         title: "Sucesso",
         description: "Foto enviada com sucesso.",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error uploading photo:", error);
       toast({
         variant: "destructive",
         title: "Erro ao enviar a foto",
-        description: error?.message || "Verifique sua conexão e tente novamente.",
+        description: error instanceof Error ? error.message : "Verifique sua conexão e tente novamente.",
       });
     } finally {
       setIsUploading(false);
+      onUploadingChange?.(false);
     }
   };
 
@@ -85,7 +93,8 @@ export function PatientPhotoUpload({ onPhotoUploaded, currentPhotoUrl }: Patient
           size="sm" 
           variant="outline" 
           onClick={() => cameraInputRef.current?.click()}
-          className="w-full sm:w-auto h-10 sm:h-9 text-sm rounded-lg"
+          disabled={isUploading}
+          className="w-full sm:w-auto min-h-11 text-sm rounded-lg"
         >
           <Camera className="h-4 w-4 mr-2" /> Tirar Foto
         </Button>
@@ -94,7 +103,8 @@ export function PatientPhotoUpload({ onPhotoUploaded, currentPhotoUrl }: Patient
           size="sm" 
           variant="outline" 
           onClick={() => fileInputRef.current?.click()}
-          className="w-full sm:w-auto h-10 sm:h-9 text-sm rounded-lg"
+          disabled={isUploading}
+          className="w-full sm:w-auto min-h-11 text-sm rounded-lg"
         >
           <Upload className="h-4 w-4 mr-2" /> Upload
         </Button>

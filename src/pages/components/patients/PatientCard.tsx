@@ -1,7 +1,8 @@
 import { PatientCareMenu } from "./PatientCareMenu";
+import { Link } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, FileText, Loader2 } from "lucide-react";
+import { Pencil, Trash2, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { formatBirthDateForDisplay } from '@/utils/dateUtils';
 import {
@@ -25,6 +26,7 @@ type Patient = {
   responsible: string | null;
   contact: string | null;
   has_anamnesis?: boolean;
+  anamnesis_status?: "none" | "draft" | "registered" | "finalized";
   photo_url?: string | null;
 };
 
@@ -47,20 +49,20 @@ export function PatientCard({ patient, onEdit, onDelete, onViewAnamnesis, onEdit
 
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="text-xl font-bold truncate text-foreground leading-tight">{patient.name}</h3>
+            <h3 title={patient.name} className="text-lg sm:text-xl font-bold truncate text-foreground leading-tight">{patient.name}</h3>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
               <span className="text-sm font-medium text-muted-foreground flex items-center gap-1">
                 {patient.age !== null ? `${patient.age} anos` : "Idade N/A"}
               </span>
-              {patient.has_anamnesis ? (
-                <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 px-2 py-0 text-[10px] uppercase font-bold tracking-widest">
-                  Completa
-                </Badge>
-              ) : (
-                <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/20 px-2 py-0 text-[10px] uppercase font-bold tracking-widest">
-                  Pendente
-                </Badge>
-              )}
+              <Badge variant="outline" className={patient.anamnesis_status === "finalized"
+                ? "border-primary/30 bg-primary/10 text-primary px-2 py-1 text-xs font-semibold"
+                : patient.anamnesis_status === "draft"
+                ? "border-amber-700/30 bg-amber-500/10 text-amber-800 dark:text-amber-200 px-2 py-1 text-xs font-semibold"
+                : "border-border bg-muted text-foreground px-2 py-1 text-xs font-semibold"}>
+                {patient.anamnesis_status === "finalized" ? "Finalizada" :
+                 patient.anamnesis_status === "draft" ? "Em preenchimento" :
+                 patient.anamnesis_status === "registered" || patient.has_anamnesis ? "Registrada" : "Não iniciada"}
+              </Badge>
             </div>
           </div>
         </div>
@@ -84,7 +86,8 @@ export function PatientCard({ patient, onEdit, onDelete, onViewAnamnesis, onEdit
             variant="ghost" 
             size="icon" 
             onClick={onEdit} 
-            className="h-10 w-10 rounded-xl hover:bg-primary/5 hover:text-primary transition-colors"
+            aria-label={"Editar cadastro de " + patient.name}
+             className="min-h-11 min-w-11 rounded-xl hover:bg-primary/5 hover:text-primary transition-colors"
           >
             <Pencil className="h-4 w-4" />
           </Button>
@@ -94,7 +97,8 @@ export function PatientCard({ patient, onEdit, onDelete, onViewAnamnesis, onEdit
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="h-10 w-10 rounded-xl hover:bg-destructive/5 hover:text-destructive transition-colors"
+                aria-label={"Excluir paciente " + patient.name}
+             className="min-h-11 min-w-11 rounded-xl hover:bg-destructive/5 hover:text-destructive transition-colors"
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -126,7 +130,7 @@ export function PatientCard({ patient, onEdit, onDelete, onViewAnamnesis, onEdit
                 variant="outline" 
                 size="sm" 
                 onClick={onViewAnamnesis} 
-                className="h-9 px-4 rounded-xl border-border/50 font-semibold shadow-sm text-xs bg-card"
+                className="min-h-11 px-4 rounded-xl border-border/50 font-semibold shadow-sm text-xs bg-card"
               >
                 Ficha
               </Button>
@@ -136,7 +140,7 @@ export function PatientCard({ patient, onEdit, onDelete, onViewAnamnesis, onEdit
                   size="sm" 
                   onClick={onEditAnamnesis} 
                   disabled={isLoadingAnamnesis}
-                  className="h-9 px-4 rounded-xl font-semibold shadow-sm text-xs bg-primary"
+                  className="min-h-11 px-4 rounded-xl font-semibold shadow-sm text-xs bg-primary"
                 >
                   {isLoadingAnamnesis ? (
                     <Loader2 className="h-3 w-3 animate-spin" />
@@ -147,13 +151,8 @@ export function PatientCard({ patient, onEdit, onDelete, onViewAnamnesis, onEdit
               )}
             </div>
           ) : (
-            <Button 
-              variant="secondary" 
-              size="sm" 
-              className="h-9 px-4 rounded-xl font-semibold text-xs w-full sm:w-auto"
-              disabled
-            >
-              Sem Anamnese
+            <Button variant="outline" size="sm" asChild className="min-h-11 px-4 rounded-xl font-semibold text-xs w-full sm:w-auto">
+              <Link to={"/anamnesis?patient_id=" + encodeURIComponent(patient.id)}>Iniciar anamnese</Link>
             </Button>
           )}
         </div>

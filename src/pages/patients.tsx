@@ -1,43 +1,10 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { Search, UserRoundPlus, Users, HeartPulse, ClipboardCheck, RefreshCw, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { 
-  Search, 
-  UserRoundPlus,
-  Users,
-  Sparkles,
-  Trash2,
-  HeartPulse
-} from "lucide-react";
-
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { PatientCareMenu } from "./components/patients/PatientCareMenu";
@@ -45,378 +12,272 @@ import { PatientList } from "./components/patients/PatientList";
 import { PatientCard } from "./components/patients/PatientCard";
 import { AddPatientDialog, EditPatientDialog } from "./components/patients/PatientDialogs";
 import { ViewAnamnesisDialog } from "./components/patients/ViewAnamnesisDialog";
-import { PATIENTS_QUERY_KEY, usePatientsData, useDeletePatient, useDeleteAllPatients, Patient } from "@/hooks/usePatientsData";
+import { PATIENTS_QUERY_KEY, usePatientsData, useDeletePatient, type Patient } from "@/hooks/usePatientsData";
 import { useQueryClient } from "@tanstack/react-query";
 
 type Anamnesis = {
   id: string;
-  created_at: string;
-  updated_at: string;
-  professional_id: string;
   patient_id: string;
-  legal_guardian?: string | null;
-  family_relationship?: string | null;
-  referral_professional?: string | null;
-  main_clinical_demand?: string | null;
-  [key: string]: any;
+  [key: string]: unknown;
 };
+
+const PAGE_SIZE = 20;
+type StatusFilter = "all" | "none" | "draft" | "registered" | "finalized";
+type SortBy = "recent" | "oldest" | "name";
+const normalize = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR");
 
 export default function PatientsPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [sortBy, setSortBy] = useState<SortBy>("recent");
+  const [page, setPage] = useState(1);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [addDirty, setAddDirty] = useState(false);
+  const [editDirty, setEditDirty] = useState(false);
+  const [addBusy, setAddBusy] = useState(false);
+  const [editBusy, setEditBusy] = useState(false);
   const [patientToEdit, setPatientToEdit] = useState<Patient | null>(null);
-  const [isViewAnamnesisOpen, setIsViewAnamnesisOpen] = useState(false);  
+  const [isViewAnamnesisOpen, setIsViewAnamnesisOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-  const [selectedAnamnesis, setSelectedAnamnesis] = useState<Anamnesis | null>(null);
   const [loadingAnamnesisPatientId, setLoadingAnamnesisPatientId] = useState<string | null>(null);
   const isMobile = useIsMobile();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const patientIdFromDashboard = searchParams.get("patient_id");
-  
-  // Use React Query hooks
-  const { data: patients = [], isLoading, error } = usePatientsData();
-  useEffect(() => {
-    if (!patientIdFromDashboard) return;
-    const target = patients.find(patient => patient.id === patientIdFromDashboard);
-    if (target) setSearchTerm(target.name);
-  }, [patientIdFromDashboard, patients]);
-  const deletePatientMutation = useDeletePatient();
-  const deleteAllPatientsMutation = useDeleteAllPatients();
   const queryClient = useQueryClient();
+  const [searchParams] = useSearchParams();
+  const { data: patients = [], isLoading, error, authReady, userId, refetch, isFetching } = usePatientsData();
+  const deletePatientMutation = useDeletePatient();
+  const appliedDeepLink = useRef(false);
+  const patientIdFromDashboard = searchParams.get("patient_id");
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
+  useEffect(() => {
+    if (!patientIdFromDashboard || appliedDeepLink.current) return;
+    const target = patients.find(patient => patient.id === patientIdFromDashboard);
+    if (target) {
+      setSearchTerm(target.name);
+      appliedDeepLink.current = true;
+    }
+  }, [patients, patientIdFromDashboard]);
+
+  useEffect(() => { setPage(1); }, [searchTerm, statusFilter, sortBy]);
+
+  const filteredPatients = useMemo(() => patients
+    .filter(patient => {
+      const term = normalize(searchTerm.trim());
+      const matchesName = !term || normalize(patient.name).includes(term) || normalize(patient.responsible || "").includes(term);
+      const status = patient.anamnesis_status || (patient.has_anamnesis ? "registered" : "none");
+      return matchesName && (statusFilter === "all" || status === statusFilter);
+    })
+    .sort((a, b) => sortBy === "name"
+      ? a.name.localeCompare(b.name, "pt-BR")
+      : sortBy === "oldest"
+      ? Date.parse(a.created_at) - Date.parse(b.created_at)
+      : Date.parse(b.created_at) - Date.parse(a.created_at)), [patients, searchTerm, statusFilter, sortBy]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredPatients.length / PAGE_SIZE));
+  const visiblePatients = filteredPatients.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const finalizedCount = patients.filter(p => p.anamnesis_status === "finalized").length;
+  const draftCount = patients.filter(p => p.anamnesis_status === "draft").length;
+
+  const reloadPatients = () => {
+    void queryClient.invalidateQueries({ queryKey: PATIENTS_QUERY_KEY });
+    void queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
   };
 
-  const filteredPatients = useMemo(() => 
-    patients.filter((patient) => {
-      const searchTermLower = searchTerm.toLowerCase();
-      return (
-        patient.name.toLowerCase().includes(searchTermLower) ||
-        (patient.responsible?.toLowerCase().includes(searchTermLower) ?? false)
-      );
-    }), 
-    [patients, searchTerm]
-  );
-
-  const handleDeleteAllPatients = () => {
-    deleteAllPatientsMutation.mutate();
+  const requestClose = (open: boolean, dirty: boolean, busy: boolean, setOpen: (value: boolean) => void, setDirty: (value: boolean) => void) => {
+    if (!open && busy) {
+      toast({ title: "Salvamento em andamento", description: "Aguarde o término do envio para fechar o formulário." });
+      return;
+    }
+    if (!open && dirty && !window.confirm("Existem alterações não salvas. Deseja descartá-las?")) return;
+    setOpen(open);
+    if (!open) setDirty(false);
   };
 
-  const handleDeletePatient = (patientId: string) => {
-    deletePatientMutation.mutate(patientId);
-  };
-
-  const loadPatients = () => {
-    queryClient.invalidateQueries({ queryKey: PATIENTS_QUERY_KEY });
-    queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
-  };
-
-  const handleEditClick = (patient: Patient) => {
+  const editPatient = (patient: Patient) => {
     setPatientToEdit(patient);
+    setEditDirty(false);
     setIsEditDialogOpen(true);
   };
 
-  const handleViewAnamnesis = (patient: Patient) => {
-    setSelectedPatient(patient);
-    setIsViewAnamnesisOpen(true);
-  };
-
-  const handleEditAnamnesis = async (patient: Patient) => {
+  const editAnamnesis = async (patient: Patient) => {
+    if (loadingAnamnesisPatientId) return;
     setLoadingAnamnesisPatientId(patient.id);
     try {
-      const { data, error } = await supabase
+      const { data, error: loadError } = await supabase
         .from("anamnesis")
         .select("id")
         .eq("patient_id", patient.id)
-        .order('created_at', { ascending: false })
+        .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
-
-      if (error) {
-        console.error("Erro ao carregar anamnese para edição:", error);
-        toast({
-          title: "Erro",
-          description: "Não foi possível carregar a anamnese para edição.",
-          variant: "destructive",
-        });
-        return;
-      }
-
+      if (loadError) throw loadError;
       if (!data) {
-        toast({
-          title: "Anamnese não encontrada",
-          description: "Este paciente não possui anamnese registrada.",
-          variant: "destructive",
-        });
+        navigate("/anamnesis?patient_id=" + encodeURIComponent(patient.id));
         return;
       }
-
-      navigate(`/anamnesis?patient_id=${patient.id}&anamnesis_id=${data.id}&mode=edit`);
-    } catch (error) {
-      console.error("Erro ao carregar anamnese para edição:", error);
-      toast({
-        title: "Erro",
-        description: "Ocorreu um erro inesperado. Tente novamente.",
-        variant: "destructive",
-      });
+      navigate("/anamnesis?patient_id=" + encodeURIComponent(patient.id) + "&anamnesis_id=" + encodeURIComponent(data.id) + "&mode=edit");
+    } catch {
+      toast({ title: "Falha ao abrir anamnese", description: "Confira a conexão e tente novamente.", variant: "destructive" });
     } finally {
       setLoadingAnamnesisPatientId(null);
     }
   };
 
-  const handleAnamnesisEdit = (anamnesis: Anamnesis) => {
+  const onAnamnesisEdit = (anamnesis: Anamnesis) => {
     setIsViewAnamnesisOpen(false);
-    navigate(`/anamnesis?patient_id=${anamnesis.patient_id}&anamnesis_id=${anamnesis.id}&mode=edit`);
+    navigate("/anamnesis?patient_id=" + encodeURIComponent(anamnesis.patient_id) + "&anamnesis_id=" + encodeURIComponent(anamnesis.id) + "&mode=edit");
   };
 
   return (
-    <div className="min-h-screen relative w-full overflow-x-hidden bg-gradient-to-br from-background via-teal-50/40 to-emerald-50/20 dark:via-teal-950/20 dark:to-background">
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto max-w-7xl space-y-5 px-3 py-5 sm:px-6 md:py-8">
+        <header className="flex flex-col justify-between gap-4 rounded-2xl border border-border bg-card p-4 shadow-sm sm:flex-row sm:items-center sm:p-6">
+          <div className="space-y-1.5">
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary">
+              <HeartPulse className="h-4 w-4" aria-hidden="true" /> Gestão clínica
+            </p>
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">Pacientes</h1>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              Cadastre, consulte e continue o atendimento com segurança.
+            </p>
+          </div>
+          <Button size="lg" className="min-h-11 gap-2" onClick={() => setIsAddDialogOpen(true)}>
+            <UserRoundPlus className="h-5 w-5" aria-hidden="true" /> Novo paciente
+          </Button>
+        </header>
 
-      {/* Ambient cosmic blobs */}
-      <div className="pointer-events-none absolute inset-0 -z-0 overflow-hidden">
-        <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
-        <div className="absolute top-1/3 -right-32 h-96 w-96 rounded-full bg-teal-400/5 blur-3xl" />
-        <div className="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-primary/5 blur-3xl" />
-      </div>
+        <section aria-label="Indicadores de pacientes" className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div className="flex items-center gap-3 rounded-xl border bg-card p-4">
+            <Users className="h-6 w-6 text-primary" aria-hidden="true" />
+            <div><p className="text-2xl font-bold text-foreground">{isLoading || error ? "—" : patients.length}</p><p className="text-sm text-muted-foreground">Pacientes cadastrados</p></div>
+          </div>
+          <div className="flex items-center gap-3 rounded-xl border bg-card p-4">
+            <ClipboardCheck className="h-6 w-6 text-primary" aria-hidden="true" />
+            <div><p className="text-2xl font-bold text-foreground">{isLoading || error ? "—" : finalizedCount}</p><p className="text-sm text-muted-foreground">Anamneses finalizadas</p></div>
+          </div>
+          <div className="flex items-center gap-3 rounded-xl border bg-card p-4">
+            <HeartPulse className="h-6 w-6 text-primary" aria-hidden="true" />
+            <div><p className="text-2xl font-bold text-foreground">{isLoading || error ? "—" : draftCount}</p><p className="text-sm text-muted-foreground">Em preenchimento</p></div>
+          </div>
+        </section>
 
-      <div className="relative z-10 container mx-auto py-4 md:py-6 space-y-5 md:space-y-6 max-w-7xl px-3 sm:px-6">
-        {/* Elegant Hero Header */}
-        <div className="relative overflow-hidden rounded-2xl border border-teal-700/15 bg-card shadow-sm">
-          <div className="absolute inset-0 bg-gradient-to-br from-teal-700/5 via-transparent to-emerald-500/5 pointer-events-none" />
-          <div className="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
-          <div className="relative flex flex-col md:flex-row md:items-end justify-between gap-4 p-4 md:p-6">
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-primary font-semibold tracking-[0.2em] uppercase text-xs">
-                <span className="inline-flex items-center justify-center h-6 w-6 rounded-lg bg-primary/15 text-primary">
-                  <HeartPulse className="h-3.5 w-3.5" />
-                </span>
-                Gestão de Atendimento
+        <section className="rounded-xl border bg-card p-3 sm:p-4" aria-label="Busca e filtros de pacientes">
+          <div className="grid gap-3 lg:grid-cols-[1fr_180px_160px_auto] lg:items-end">
+            <div className="space-y-1.5">
+              <label htmlFor="patient-search" className="text-sm font-medium">Pesquisar paciente ou responsável</label>
+              <div className="relative">
+                <Search className="pointer-events-none absolute left-3 top-3 h-5 w-5 text-muted-foreground" aria-hidden="true" />
+                <Input id="patient-search" type="search" value={searchTerm} onChange={event => setSearchTerm(event.target.value)}
+                  placeholder="Digite um nome..." className="min-h-11 pl-10 text-base" />
               </div>
-              <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight leading-none bg-gradient-to-br from-foreground via-foreground to-primary bg-clip-text text-transparent">
-                Pacientes
-              </h1>
-              <p className="text-muted-foreground text-sm md:text-base max-w-xl leading-relaxed">
-                Centralize o histórico, anamneses e informações vitais dos seus pacientes em um só lugar.
-              </p>
             </div>
-
-            <Button 
-              onClick={() => setIsAddDialogOpen(true)} 
-              size="lg"
-              className="bg-teal-700 hover:bg-teal-800 text-white shadow-sm transition-colors px-5 rounded-xl font-semibold"
-            >
-              <UserRoundPlus className="h-5 w-5 mr-2" />
-              Novo Paciente
+            <div className="space-y-1.5">
+              <label htmlFor="patient-status" className="text-sm font-medium">Situação da anamnese</label>
+              <select id="patient-status" value={statusFilter} onChange={event => setStatusFilter(event.target.value as StatusFilter)}
+                className="min-h-11 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <option value="all">Todas</option>
+                <option value="none">Não iniciada</option>
+                <option value="draft">Em preenchimento</option>
+                <option value="registered">Registrada (legado)</option>
+                <option value="finalized">Finalizada</option>
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <label htmlFor="patient-order" className="text-sm font-medium">Ordenar</label>
+              <select id="patient-order" value={sortBy} onChange={event => setSortBy(event.target.value as SortBy)}
+                className="min-h-11 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <option value="recent">Mais recentes</option>
+                <option value="oldest">Mais antigos</option>
+                <option value="name">Nome (A–Z)</option>
+              </select>
+            </div>
+            <Button variant="outline" className="min-h-11 gap-2" onClick={() => void refetch()} disabled={isFetching}>
+              <RefreshCw className={"h-4 w-4 " + (isFetching ? "animate-spin" : "")} aria-hidden="true" /> Atualizar
             </Button>
           </div>
-        </div>
+        </section>
 
-        {/* Stats & Search Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
-          <div className="lg:col-span-2 relative group">
-            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+        <section aria-label="Lista de pacientes" aria-live="polite">
+          {!authReady || isLoading ? (
+            <div className="rounded-2xl border bg-card p-12 text-center text-muted-foreground" role="status">Carregando pacientes...</div>
+          ) : !userId ? (
+            <div className="rounded-2xl border p-8 text-center text-foreground" role="alert">Sessão não identificada. Faça login novamente para consultar os pacientes.</div>
+          ) : error ? (
+            <div className="space-y-3 rounded-2xl border border-destructive/30 bg-card p-8 text-center" role="alert">
+              <AlertTriangle className="mx-auto h-7 w-7 text-destructive" aria-hidden="true" />
+              <h2 className="font-semibold">Não foi possível carregar os pacientes</h2>
+              <p className="text-sm text-muted-foreground">Os indicadores não foram zerados porque a consulta falhou. Confira a conexão e tente novamente.</p>
+              <Button variant="outline" className="min-h-11" onClick={() => void refetch()}>Tentar novamente</Button>
             </div>
-            <Input
-              type="search"
-              placeholder="Pesquisar por nome ou responsável..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="pl-12 py-6 bg-card border border-teal-700/15 shadow-sm rounded-xl text-base focus-visible:ring-2 focus-visible:ring-primary/30 transition-all placeholder:text-muted-foreground/60"
-            />
-          </div>
-          
-          <div className="flex items-center justify-between lg:justify-end gap-4 p-4 bg-card rounded-xl border border-teal-700/15 shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-primary/10 rounded-xl ring-1 ring-primary/20">
-                <Users className="h-5 w-5 text-primary" />
+          ) : visiblePatients.length > 0 ? (
+            isMobile ? (
+              <div className="grid gap-3">{visiblePatients.map(patient => (
+                <PatientCard key={patient.id} patient={patient} onEdit={() => editPatient(patient)}
+                  onDelete={() => deletePatientMutation.mutate(patient.id)}
+                  onViewAnamnesis={() => { setSelectedPatient(patient); setIsViewAnamnesisOpen(true); }}
+                  onEditAnamnesis={() => void editAnamnesis(patient)}
+                  isLoadingAnamnesis={loadingAnamnesisPatientId === patient.id} />
+              ))}</div>
+            ) : (
+              <div className="overflow-hidden rounded-2xl border bg-card">
+                <PatientList patients={visiblePatients} onEdit={editPatient} onDelete={patient => deletePatientMutation.mutate(patient.id)}
+                  onViewAnamnesis={patient => { setSelectedPatient(patient); setIsViewAnamnesisOpen(true); }}
+                  onEditAnamnesis={editAnamnesis} loadingAnamnesisPatientId={loadingAnamnesisPatientId} />
               </div>
-              <div>
-                <div className="text-2xl font-bold leading-none">{patients.length}</div>
-                <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mt-1">Total Ativos</div>
-              </div>
-            </div>
-            <div className="h-10 w-px bg-border/50 hidden sm:block" />
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-emerald-500/10 rounded-xl ring-1 ring-emerald-500/20">
-                <Sparkles className="h-5 w-5 text-emerald-500" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold leading-none">{patients.filter(p => p.has_anamnesis).length}</div>
-                <div className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mt-1">Anamneses</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        {/* Main Content Area */}
-        <div className="space-y-6">
-          {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-24 space-y-4">
-              <div className="relative">
-                <div className="h-16 w-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="h-8 w-8 bg-primary/10 rounded-full animate-pulse" />
-                </div>
-              </div>
-              <p className="text-muted-foreground font-medium animate-pulse">Sincronizando dados...</p>
-            </div>
+            )
           ) : (
-            <div className="animate-fadeIn">
-              {filteredPatients.length > 0 ? (
-                isMobile ? (
-                  <div className="grid grid-cols-1 gap-4">
-                    {filteredPatients.map((patient, index) => (
-                      <div 
-                        key={patient.id}
-                        className="animate-slideUp"
-                        style={{ animationDelay: `${index * 50}ms` }}
-                      >
-                        <PatientCard
-                          patient={patient}
-                          onEdit={() => handleEditClick(patient)}
-                          onDelete={() => handleDeletePatient(patient.id)}
-                          onViewAnamnesis={() => handleViewAnamnesis(patient)}
-                          onEditAnamnesis={() => handleEditAnamnesis(patient)}
-                          isLoadingAnamnesis={loadingAnamnesisPatientId === patient.id}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="bg-card rounded-2xl border border-teal-700/15 shadow-sm overflow-hidden">
-                    <PatientList
-                      patients={filteredPatients}
-                      onEdit={handleEditClick}
-                      onDelete={(patient) => handleDeletePatient(patient.id)}
-                      onViewAnamnesis={handleViewAnamnesis}
-                      onEditAnamnesis={handleEditAnamnesis}
-                      loadingAnamnesisPatientId={loadingAnamnesisPatientId}
-                    />
-                  </div>
-                )
-              ) : (
-                <div className="text-center py-32 bg-card border-2 border-dashed border-border/60 rounded-2xl shadow-sm">
-                  <div className="inline-flex p-6 bg-muted rounded-full mb-6">
-                    <Users className="h-12 w-12 text-muted-foreground" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-foreground mb-2">
-                    {searchTerm ? "Nenhum resultado encontrado" : "Sua lista está vazia"}
-                  </h3>
-                  <p className="text-muted-foreground text-lg max-w-sm mx-auto mb-8">
-                    {searchTerm 
-                      ? "Não encontramos pacientes com o termo pesquisado. Tente outro nome."
-                      : "Adicione seu primeiro paciente para começar a gerenciar seus atendimentos."}
-                  </p>
-                  {!searchTerm && (
-                    <Button 
-                      onClick={() => setIsAddDialogOpen(true)}
-                      variant="outline"
-                      className="rounded-xl px-8"
-                    >
-                      Cadastrar Paciente
-                    </Button>
-                  )}
-                </div>
-              )}
+            <div className="rounded-2xl border border-dashed bg-card p-10 text-center">
+              <Users className="mx-auto mb-3 h-9 w-9 text-muted-foreground" aria-hidden="true" />
+              <h2 className="text-lg font-semibold">{patients.length === 0 ? "Nenhum paciente cadastrado" : "Nenhum paciente encontrado"}</h2>
+              <p className="mt-2 text-sm text-muted-foreground">{patients.length === 0
+                ? "Cadastre o primeiro paciente para iniciar o acompanhamento."
+                : "Altere a pesquisa ou os filtros para encontrar outros registros."}</p>
+              {patients.length === 0 && <Button className="mt-4 min-h-11" onClick={() => setIsAddDialogOpen(true)}>Cadastrar paciente</Button>}
             </div>
           )}
-        </div>
+        </section>
 
-        {/* Danger Zone Section */}
-        {patients.length > 0 && (
-          <div className="pt-12 pb-6 flex justify-center">
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  className="text-muted-foreground hover:text-destructive hover:bg-destructive/5 transition-colors rounded-xl px-6"
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Limpar banco de pacientes
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent className="rounded-2xl border-none shadow-2xl">
-                <AlertDialogHeader>
-                  <AlertDialogTitle className="text-2xl font-bold text-destructive">Ação Irreversível</AlertDialogTitle>
-                  <AlertDialogDescription className="text-base">
-                    Você está prestes a excluir <strong>todos os {patients.length} pacientes</strong>. 
-                    Esta ação removerá permanentemente todos os registros, históricos e anamneses vinculados.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter className="gap-2 sm:gap-0">
-                  <AlertDialogCancel className="rounded-xl">Manter Registros</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={handleDeleteAllPatients}
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl"
-                  >
-                    Sim, excluir tudo
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
+        {!isLoading && !error && totalPages > 1 && (
+          <nav aria-label="Páginas de pacientes" className="flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-card p-3">
+            <p className="text-sm text-muted-foreground">{filteredPatients.length} resultados · Página {page} de {totalPages}</p>
+            <div className="flex gap-2">
+              <Button variant="outline" className="min-h-11" disabled={page <= 1} onClick={() => setPage(previous => Math.max(1, previous - 1))}>Anterior</Button>
+              <Button variant="outline" className="min-h-11" disabled={page >= totalPages} onClick={() => setPage(previous => Math.min(totalPages, previous + 1))}>Próxima</Button>
+            </div>
+          </nav>
         )}
 
-        {/* Modals com Style Clean */}
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <DialogContent className="w-[calc(100vw-1.5rem)] max-w-[95vw] sm:max-w-[540px] md:max-w-[640px] lg:max-w-[720px] rounded-3xl border-none shadow-2xl p-0 overflow-hidden">
-            <div className="bg-primary/5 p-4 sm:p-6 border-b border-primary/10">
-              <DialogTitle className="text-xl sm:text-2xl font-bold text-primary">Novo Paciente</DialogTitle>
-              <DialogDescription className="mt-1 text-sm sm:text-base">
-                Insira os dados básicos para iniciar o acompanhamento.
-              </DialogDescription>
-            </div>
-            <div className="p-4 sm:p-6 max-h-[80vh] sm:max-h-[85vh] overflow-y-auto custom-scrollbar">
-              <AddPatientDialog loadPatients={loadPatients} closeModal={() => setIsAddDialogOpen(false)}/>
-            </div>
+        <Dialog open={isAddDialogOpen} onOpenChange={open => requestClose(open, addDirty, addBusy, setIsAddDialogOpen, setAddDirty)}>
+          <DialogContent className="max-h-[90dvh] w-[calc(100vw-1rem)] overflow-y-auto rounded-xl p-4 sm:max-w-2xl sm:p-6">
+            <DialogTitle className="text-xl text-primary">Novo paciente</DialogTitle>
+            <DialogDescription>Preencha os dados básicos. Campos de responsável e contato podem ficar em branco quando não se aplicarem.</DialogDescription>
+            <AddPatientDialog loadPatients={reloadPatients} onDirtyChange={setAddDirty} onBusyChange={setAddBusy}
+              closeModal={() => { setAddDirty(false); setIsAddDialogOpen(false); }} />
           </DialogContent>
         </Dialog>
 
-        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="sm:max-w-[500px] rounded-3xl border-none shadow-2xl p-0 overflow-hidden">
-            <div className="bg-primary/5 p-6 border-b border-primary/10">
-              <DialogTitle className="text-2xl font-bold text-primary">Editar Perfil</DialogTitle>
-              <DialogDescription className="mt-1">
-                Mantenha os dados do seu paciente sempre atualizados.
-              </DialogDescription>
-            </div>
-            <div className="p-6">
-              {patientToEdit && (
-                <EditPatientDialog 
-                  patient={patientToEdit} 
-                  loadPatients={loadPatients} 
-                  closeModal={() => setIsEditDialogOpen(false)}
-                />
-              )}
-            </div>
+        <Dialog open={isEditDialogOpen} onOpenChange={open => requestClose(open, editDirty, editBusy, setIsEditDialogOpen, setEditDirty)}>
+          <DialogContent className="max-h-[90dvh] w-[calc(100vw-1rem)] overflow-y-auto rounded-xl p-4 sm:max-w-xl sm:p-6">
+            <DialogTitle className="text-xl text-primary">Editar cadastro</DialogTitle>
+            <DialogDescription>Revise os dados e confirme o salvamento.</DialogDescription>
+            {patientToEdit && <EditPatientDialog key={patientToEdit.id} patient={patientToEdit} loadPatients={reloadPatients}
+              onDirtyChange={setEditDirty} onBusyChange={setEditBusy}
+              closeModal={() => { setEditDirty(false); setIsEditDialogOpen(false); }} />}
           </DialogContent>
         </Dialog>
 
         <Dialog open={isViewAnamnesisOpen} onOpenChange={setIsViewAnamnesisOpen}>
-          <DialogContent className="sm:max-w-[850px] max-h-[90vh] rounded-3xl border-none shadow-2xl p-0 overflow-hidden flex flex-col">
-            <div className="bg-primary/5 p-6 border-b border-primary/10 flex-shrink-0">
-              <DialogTitle className="text-2xl font-bold text-primary">Ficha de Anamnese</DialogTitle>
-              <DialogDescription className="mt-1">
-                Histórico clínico e informações coletadas.
-              </DialogDescription>
-            </div>
-            <div className="p-6 overflow-y-auto custom-scrollbar">
-              {selectedPatient && (
-                <>
+          <DialogContent className="flex max-h-[90dvh] w-[calc(100vw-1rem)] flex-col overflow-hidden rounded-xl p-4 sm:max-w-4xl sm:p-6">
+            <DialogTitle className="text-xl text-primary">Ficha de anamnese</DialogTitle>
+            <DialogDescription>Informações registradas no acompanhamento.</DialogDescription>
+            <div className="min-h-0 space-y-3 overflow-y-auto">
+              {selectedPatient && <>
                 <PatientCareMenu patient={selectedPatient} />
-                <ViewAnamnesisDialog 
-                  patient={selectedPatient} 
-                  closeModal={() => setIsViewAnamnesisOpen(false)}
-                  onEdit={handleAnamnesisEdit}
-                />
-                </>
-              )}
+                <ViewAnamnesisDialog patient={selectedPatient} closeModal={() => setIsViewAnamnesisOpen(false)}
+                  onEdit={onAnamnesisEdit} />
+              </>}
             </div>
           </DialogContent>
         </Dialog>

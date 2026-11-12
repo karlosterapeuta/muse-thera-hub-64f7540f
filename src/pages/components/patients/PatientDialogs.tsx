@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -32,30 +32,32 @@ type Patient = {
 };
 
 const FormSchema = z.object({
-  name: z.string().min(2, {
-    message: "Nome deve ter pelo menos 2 caracteres.",
-  }),
-  birth_date: z.string().min(1, {
-    message: "Data de nascimento é obrigatória.",
-  }),
-  responsible: z.string().min(2, {
-    message: "Nome do responsável deve ter pelo menos 2 caracteres.",
-  }),
-  contact: z.string().min(10, {
-    message: "Número de contato deve ter pelo menos 10 caracteres.",
-  }).max(15, {
-    message: "Número de contato deve ter no máximo 15 caracteres.",
-  }),
+  name: z.string().trim().min(2, "Informe pelo menos 2 caracteres para o nome."),
+  birth_date: z.string().refine(value => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+    const date = new Date(value + "T12:00:00");
+    return !Number.isNaN(date.getTime()) &&
+      date.toISOString().slice(0, 10) === value &&
+      date.getTime() <= Date.now();
+  }, "Informe uma data de nascimento válida, que não esteja no futuro."),
+  responsible: z.string().trim(),
+  contact: z.string().trim().refine(value => {
+    const digits = value.replace(/\D/g, "");
+    return !value || (digits.length >= 10 && digits.length <= 11);
+  }, "Informe um telefone válido com DDD ou deixe em branco."),
 });
 
 interface AddPatientDialogProps {
   loadPatients: () => void;
   closeModal: () => void;
+  onDirtyChange?: (dirty: boolean) => void;
+  onBusyChange?: (busy: boolean) => void;
 }
 
-export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogProps) {
+export function AddPatientDialog({ loadPatients, closeModal, onDirtyChange, onBusyChange }: AddPatientDialogProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPhotoUploading, setIsPhotoUploading] = useState(false);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -67,6 +69,9 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
       contact: "",
     },
   });
+
+  useEffect(() => { onDirtyChange?.(form.formState.isDirty || photoUrl !== null); }, [form.formState.isDirty, photoUrl, onDirtyChange]);
+  useEffect(() => { onBusyChange?.(isSubmitting || isPhotoUploading); }, [isSubmitting, isPhotoUploading, onBusyChange]);
 
   async function onSubmit(values: z.infer<typeof FormSchema>) {
     try {
@@ -82,7 +87,6 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
         return;
       }
       
-      console.log("Data de nascimento fornecida:", values.birth_date);
 
       const { data, error } = await supabase
         .from("patients")
@@ -91,26 +95,27 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
             name: values.name,
             professional_id: user.id,
             birth_date: values.birth_date,
-            responsible: values.responsible,
-            contact: values.contact,
+            responsible: values.responsible || null,
+            contact: values.contact || null,
             photo_url: photoUrl
           },
         ])
-        .select();
+        .select("id")
+        .maybeSingle();
 
       if (error) {
         console.error("Erro ao criar paciente:", error);
         throw error;
       }
 
-      // Log the returned data to check what was actually saved
-      console.log("Dados retornados após inserção:", data);
+      if (!data) throw new Error("Não foi possível confirmar o cadastro.");
 
       toast({
         title: "Sucesso",
         description: "Paciente criado com sucesso",
       });
       loadPatients();
+      closeModal();
     } catch (error) {
       console.error("Erro ao criar paciente:", error);
       toast({
@@ -120,13 +125,12 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
       });
     } finally {
       setIsSubmitting(false);
-      closeModal();
     }
   }
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <PatientPhotoUpload onPhotoUploaded={setPhotoUrl} currentPhotoUrl={photoUrl} />
+      <PatientPhotoUpload onPhotoUploaded={setPhotoUrl} currentPhotoUrl={photoUrl} onUploadingChange={setIsPhotoUploading} />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
@@ -206,10 +210,10 @@ export function AddPatientDialog({ loadPatients, closeModal }: AddPatientDialogP
           <DialogFooter className="flex-col sm:flex-row gap-3 sm:gap-2 pt-2 sm:pt-4">
             <Button 
               type="submit" 
-              disabled={isSubmitting}
+              disabled={isSubmitting || isPhotoUploading}
               className="w-full sm:w-auto h-11 sm:h-12 px-6 sm:px-8 text-base rounded-xl"
             >
-              {isSubmitting ? "Criando..." : "Criar Paciente"}
+              {isPhotoUploading ? "Enviando foto..." : isSubmitting ? "Criando..." : "Criar Paciente"}
             </Button>
           </DialogFooter>
         </form>
@@ -222,32 +226,18 @@ interface EditPatientDialogProps {
   patient: Patient;
   loadPatients: () => void;
   closeModal: () => void;
+  onDirtyChange?: (dirty: boolean) => void;
+  onBusyChange?: (busy: boolean) => void;
 }
 
-export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPatientDialogProps) {
+export function EditPatientDialog({ patient, loadPatients, closeModal, onDirtyChange, onBusyChange }: EditPatientDialogProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPhotoUploading, setIsPhotoUploading] = useState(false);
   const [photoUrl, setPhotoUrl] = useState<string | null>(patient.photo_url || null);
   
-  const EditFormSchema = z.object({
-    name: z.string().min(2, {
-      message: "Nome deve ter pelo menos 2 caracteres.",
-    }),
-    birth_date: z.string().min(1, {
-      message: "Data de nascimento é obrigatória.",
-    }),
-    responsible: z.string().min(2, {
-      message: "Nome do responsável deve ter pelo menos 2 caracteres.",
-    }),
-    contact: z.string().min(10, {
-      message: "Número de contato deve ter pelo menos 10 caracteres.",
-    }).max(15, {
-      message: "Número de contato deve ter no máximo 15 caracteres.",
-    }),
-  });
-
-  const form = useForm<z.infer<typeof EditFormSchema>>({
-    resolver: zodResolver(EditFormSchema),
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
     defaultValues: {
       name: patient.name,
       birth_date: patient.birth_date || "",
@@ -256,38 +246,43 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
     },
   });
 
-  async function onSubmit(values: z.infer<typeof EditFormSchema>) {
+  useEffect(() => { onDirtyChange?.(form.formState.isDirty || photoUrl !== (patient.photo_url || null)); }, [form.formState.isDirty, photoUrl, patient.photo_url, onDirtyChange]);
+  useEffect(() => { onBusyChange?.(isSubmitting || isPhotoUploading); }, [isSubmitting, isPhotoUploading, onBusyChange]);
+
+  async function onSubmit(values: z.infer<typeof FormSchema>) {
     try {
       setIsSubmitting(true);
-      
-      console.log("Data de nascimento fornecida para edição:", values.birth_date);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada. Faça login novamente.");
       
       const { error, data } = await supabase
         .from("patients")
         .update({
           name: values.name,
           birth_date: values.birth_date,
-          responsible: values.responsible,
-          contact: values.contact,
+          responsible: values.responsible || null,
+          contact: values.contact || null,
           photo_url: photoUrl,
           updated_at: new Date().toISOString(),
         })
         .eq('id', patient.id)
-        .select();
+        .eq('professional_id', user.id)
+        .select('id')
+        .maybeSingle();
 
       if (error) {
         console.error("Erro ao atualizar paciente:", error);
         throw error;
       }
       
-      // Log the returned data to check what was actually saved
-      console.log("Dados retornados após atualização:", data);
+      if (!data) throw new Error("Paciente não encontrado ou acesso não autorizado.");
 
       toast({
         title: "Sucesso",
         description: "Paciente atualizado com sucesso",
       });
       loadPatients();
+      closeModal();
     } catch (error) {
       console.error("Erro ao atualizar paciente:", error);
       toast({
@@ -297,13 +292,12 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
       });
     } finally {
       setIsSubmitting(false);
-      closeModal();
     }
   }
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <PatientPhotoUpload onPhotoUploaded={setPhotoUrl} currentPhotoUrl={photoUrl} />
+      <PatientPhotoUpload onPhotoUploaded={setPhotoUrl} currentPhotoUrl={photoUrl} onUploadingChange={setIsPhotoUploading} />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
@@ -383,10 +377,10 @@ export function EditPatientDialog({ patient, loadPatients, closeModal }: EditPat
           <DialogFooter className="flex-col sm:flex-row gap-3 sm:gap-2 pt-2 sm:pt-4">
             <Button 
               type="submit" 
-              disabled={isSubmitting}
+              disabled={isSubmitting || isPhotoUploading}
               className="w-full sm:w-auto h-11 sm:h-12 px-6 sm:px-8 text-base rounded-xl"
             >
-              {isSubmitting ? "Salvando..." : "Salvar Alterações"}
+              {isPhotoUploading ? "Enviando foto..." : isSubmitting ? "Salvando..." : "Salvar Alterações"}
             </Button>
           </DialogFooter>
         </form>

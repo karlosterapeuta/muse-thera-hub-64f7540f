@@ -1,5 +1,4 @@
 import { PatientCareMenu } from "./PatientCareMenu";
-import React from 'react';
 import {
   Table,
   TableBody,
@@ -36,6 +35,7 @@ type Patient = {
   contact: string | null;
   age: number | null;
   has_anamnesis?: boolean;
+  anamnesis_status?: "none" | "draft" | "registered" | "finalized";
   photo_url?: string | null;
 };
 
@@ -58,7 +58,7 @@ export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEdi
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full overflow-x-auto">
       <Table>
         <TableHeader className="bg-muted/50 border-b border-border/50">
           <TableRow className="hover:bg-transparent">
@@ -100,15 +100,15 @@ export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEdi
                 {patient.responsible || <span className="opacity-40 font-normal">Não informado</span>}
               </TableCell>
               <TableCell className="py-4">
-                {patient.has_anamnesis ? (
-                  <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 px-3 py-1 font-semibold text-xs uppercase tracking-widest">
-                    Completa
-                  </Badge>
-                ) : (
-                  <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/20 px-3 py-1 font-semibold text-xs uppercase tracking-widest">
-                    Pendente
-                  </Badge>
-                )}
+                <Badge variant="outline" className={patient.anamnesis_status === "finalized"
+                  ? "border-primary/30 bg-primary/10 text-primary px-2 py-1 font-semibold text-xs"
+                  : patient.anamnesis_status === "draft"
+                  ? "border-amber-700/30 bg-amber-500/10 text-amber-800 dark:text-amber-200 px-2 py-1 font-semibold text-xs"
+                  : "border-border bg-muted text-foreground px-2 py-1 font-semibold text-xs"}>
+                  {patient.anamnesis_status === "finalized" ? "Finalizada" :
+                   patient.anamnesis_status === "draft" ? "Em preenchimento" :
+                   patient.anamnesis_status === "registered" || patient.has_anamnesis ? "Registrada" : "Não iniciada"}
+                </Badge>
               </TableCell>
               <TableCell className="py-4 text-right pr-6">
                 <div className="flex items-center justify-end gap-1">
@@ -118,8 +118,9 @@ export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEdi
                       variant="ghost"
                       size="icon"
                       onClick={() => onViewAnamnesis(patient)}
-                      className="h-9 w-9 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all"
+                      className="h-11 w-11 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all"
                       title="Ver Anamnese"
+                       aria-label={"Ver anamnese de " + patient.name}
                     >
                       <FileText className="h-4 w-4" />
                     </Button>
@@ -131,8 +132,9 @@ export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEdi
                       size="icon"
                       onClick={() => onEditAnamnesis(patient)}
                       disabled={loadingAnamnesisPatientId === patient.id}
-                      className="h-9 w-9 text-muted-foreground hover:text-emerald-600 hover:bg-emerald-500/5 rounded-lg transition-all"
+                      className="h-11 w-11 text-muted-foreground hover:text-emerald-600 hover:bg-emerald-500/5 rounded-lg transition-all"
                       title="Editar Anamnese"
+                       aria-label={"Editar anamnese de " + patient.name}
                     >
                       {loadingAnamnesisPatientId === patient.id ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -146,8 +148,9 @@ export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEdi
                     variant="ghost"
                     size="icon"
                     onClick={() => onEdit(patient)}
-                    className="h-9 w-9 text-muted-foreground hover:text-teal-700 dark:hover:text-teal-300 hover:bg-teal-500/5 rounded-lg transition-all"
+                    className="h-11 w-11 text-muted-foreground hover:text-teal-700 dark:hover:text-teal-300 hover:bg-teal-500/5 rounded-lg transition-all"
                     title="Editar Cadastro"
+                       aria-label={"Editar cadastro de " + patient.name}
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
@@ -157,8 +160,9 @@ export function PatientList({ patients, onEdit, onDelete, onViewAnamnesis, onEdi
                       <Button 
                         variant="ghost" 
                         size="icon"
-                        className="h-9 w-9 text-muted-foreground hover:text-destructive hover:bg-destructive/5 rounded-lg transition-all"
+                        className="h-11 w-11 text-muted-foreground hover:text-destructive hover:bg-destructive/5 rounded-lg transition-all"
                         title="Excluir Paciente"
+                       aria-label={"Excluir paciente " + patient.name}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
