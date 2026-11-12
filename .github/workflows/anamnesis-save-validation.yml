@@ -6,6 +6,9 @@ on:
       - "src/integrations/supabase/types.ts"
       - "tests/anamnesis-safety.cjs"
       - "tests/anamnesis-patient-prefill.cjs"
+      - "tests/anamnesis-seven-improvements.cjs"
+      - "src/utils/anamnesisNativePDF.ts"
+      - "src/utils/anamnesisePDFGenerator.ts"
       - "tests/anamnesis_journey.py"
       - "supabase/migrations/*anamnesis*.sql"
       - ".github/workflows/anamnesis-save-validation.yml"
@@ -28,6 +31,8 @@ jobs:
         run: node tests/anamnesis-safety.cjs
       - name: Verify prefill respects registered patient and existing clinical data
         run: node --test tests/anamnesis-patient-prefill.cjs
+      - name: Check safety, history, clinical indicators and searchable PDF
+        run: node --test tests/anamnesis-seven-improvements.cjs
       - name: Check migration/form schema coverage
         run: |
           node --input-type=module <<'JS'
