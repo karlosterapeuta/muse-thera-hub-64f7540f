@@ -20,13 +20,13 @@ export function AnamnesisProgressBar({
             <Music className="w-4 h-4 text-primary" />
           </div>
           <span className="text-sm font-medium text-foreground">
-            Cobertura do preenchimento
+            Cobertura dos dados informados
           </span>
         </div>
         <div className="flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-primary" />
           <span className="text-sm font-semibold text-primary">
-            {completedSections}/{totalSections} seções
+            {completedSections}/{totalSections} seções com registros
           </span>
         </div>
       </div>
@@ -39,11 +39,11 @@ export function AnamnesisProgressBar({
           {progress < 30 && "Continue preenchendo..."}
           {progress >= 30 && progress < 70 && "Bom progresso!"}
           {progress >= 70 && progress < 100 && "Quase lá!"}
-          {progress === 100 && "Todos os itens considerados foram respondidos."}
+          {progress === 100 && "Todos os campos acompanhados têm informações."}
         </span>
         <span className="text-xs font-medium text-primary">{Math.round(progress)}%</span>
       </div>
-      <p className="mt-2 text-xs text-muted-foreground">Indicador de preenchimento, não de conclusão ou validação clínica.</p>
+      <p className="mt-2 text-xs text-muted-foreground">Cobertura dos campos acompanhados — não equivale à conclusão clínica. A finalização depende de três critérios próprios.</p>
     </div>
   );
 }
