@@ -55,7 +55,7 @@ test("histórico apresenta alteração de campo sem expor JSON bruto", async () 
   const next = { ...old, current_medication:"Informada pelo responsável", review_status:"finalized", updated_at:"2026-11-12" };
   assert.deepEqual(changedClinicalFields(old,next),["current_medication","review_status"]);
   assert.equal(clinicalFieldLabel("current_medication"),"Medicações em uso");
-  assert.equal(formatClinicalRevisionValue({communication:"Comunicação não verbal"}),"Communication: Comunicação não verbal");
+  assert.equal(formatClinicalRevisionValue({communication:"Comunicação não verbal"}),"Comunicação: Comunicação não verbal");
 });
 
 test("PDF nativo preserva texto clínico, paginação A4 e campos adicionais", async () => {
