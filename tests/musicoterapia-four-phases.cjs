@@ -31,6 +31,11 @@ test('fase 1: trocas de tela e conta não perdem ou misturam registros', () => {
   assert.match(patients, /setPatients\(\[\]\)/);
   assert.match(patients, /request !== generation/);
   assert.doesNotMatch(patients, /console\.log\("Buscando pacientes/);
+  const profile = read('src/hooks/useProfessionalData.ts');
+  assert.match(profile, /queryKey: \["professional-data", userId\]/);
+  assert.match(profile, /user\.id !== userId/);
+  assert.match(profile, /removeQueries\(\{ queryKey: \["professional-data"\]/);
+  assert.match(page, /updateReportData\(\{ professionalName: '', professionalRegistry: ''/);
 });
 
 test('fase 1: exclusão exige palavra-chave, propriedade e confirmação de linha', () => {
