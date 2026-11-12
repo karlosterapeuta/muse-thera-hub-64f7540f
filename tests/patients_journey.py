@@ -102,7 +102,7 @@ def run_case(browser, user_id, name, width, test_write=False):
         page.get_by_role("dialog").get_by_placeholder("Nome do paciente").fill("Alteração Fictícia")
         page.get_by_role("button", name="Salvar Alterações").click()
         expect(page.get_by_role("dialog")).to_be_visible(timeout=15000)
-        page.get_by_role("dialog").get_by_placeholder("Nome do paciente").to_have_value("Alteração Fictícia")
+        expect(page.get_by_role("dialog").get_by_placeholder("Nome do paciente")).to_have_value("Alteração Fictícia")
         assert "create" in attempts and "update" in attempts
     overflow = page.evaluate("({ width: document.documentElement.scrollWidth, viewport: innerWidth })")
     assert overflow["width"] <= overflow["viewport"] + 2, f"Rolagem horizontal inesperada: {overflow}"
