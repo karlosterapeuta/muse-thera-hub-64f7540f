@@ -32,10 +32,16 @@ export default function AnamnesisManager() {
       setEditPatientId(patientId);
       setEditAnamnesisId(anamnesisId);
       setCurrentView('form');
-      // Clean URL parameters
-      const newUrl = window.location.pathname;
-      window.history.replaceState({}, '', newUrl);
+    } else if (patientId && !anamnesisId) {
+      // Abrir uma nova anamnese já vinculada ao paciente vindo da ficha.
+      setEditPatientId(patientId);
+      setEditAnamnesisId(null);
+      setCurrentView('form');
+    } else {
+      return;
     }
+    // Evitar que parâmetros antigos reabram o formulário ao voltar.
+    window.history.replaceState({}, '', window.location.pathname);
   }, []);
 
   const handleCreateNew = () => {
