@@ -78,6 +78,11 @@ export default function MusicoterapiaPage() {
   const [reports, setReports] = useState<any[]>([]);
   const [isLoadingReports, setIsLoadingReports] = useState(false);
   const [reportsLoadError, setReportsLoadError] = useState(false);
+  const [loadingMoreReports, setLoadingMoreReports] = useState(false);
+  const [hasMoreReports, setHasMoreReports] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<'all' | 'rascunho' | 'finalizado'>('all');
+  const reportsRequestRef = React.useRef(0);
+  const sessionOwnerRef = React.useRef<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedReport, setSelectedReport] = useState<any>(null);
   const [showViewDialog, setShowViewDialog] = useState(false);
@@ -98,11 +103,12 @@ export default function MusicoterapiaPage() {
     professionalData
   } = useMusicoterapiaReport();
 
-  const { patients, isLoadingPatients, userId } = useReportData();
+  const { patients, isLoadingPatients, patientsLoadError, userId } = useReportData();
   const [professionalId, setProfessionalId] = useState<string | null>(null);
   const [anamnesisStatus, setAnamnesisStatus] = useState<'idle' | 'loading' | 'loaded' | 'empty' | 'error'>('idle');
   const anamnesisRequestRef = React.useRef(0);
   const autoSelectedQueryRef = React.useRef<string | null>(null);
+  const [anamnesisSourceDate, setAnamnesisSourceDate] = useState<string | null>(null);
 
   const markEdited = React.useCallback(() => {
     editRevisionRef.current += 1;
@@ -150,7 +156,40 @@ export default function MusicoterapiaPage() {
     };
   }, []);
 
+  // Purge all local clinical state when a session changes, including in-flight queries.
   React.useEffect(() => {
+    if (sessionOwnerRef.current === userId) return;
+    const previouslyAuthenticated = sessionOwnerRef.current !== null;
+    sessionOwnerRef.current = userId;
+    reportsRequestRef.current++;
+    setReports([]);
+    setHasMoreReports(false);
+    setSelectedReport(null);
+    setReportToDelete(null);
+    setShowViewDialog(false);
+    setShowDeleteDialog(false);
+    setProfessionalId(null);
+    if (previouslyAuthenticated) {
+      anamnesisRequestRef.current++;
+      autoSelectedQueryRef.current = null;
+      if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+      resetReportData();
+      draftIdRef.current = null;
+      setDraftId(null);
+      setSourceReportId(null);
+      setSourceRootId(null);
+      setReportLogoUrl(null);
+      setAnamnesisStatus('idle');
+      setAnamnesisSourceDate(null);
+      hasUnsavedChangesRef.current = false;
+      setSaveState('idle');
+      setLastSaved(null);
+    }
+  }, [userId, resetReportData]);
+
+  React.useEffect(() => {
+    let active = true;
+    if (!userId) { setProfessionalId(null); return; }
     async function fetchProfessionalId() {
       if (userId) {
         try {
@@ -160,16 +199,15 @@ export default function MusicoterapiaPage() {
             .eq('user_id', userId)
             .single();
           
-          if (data && !error) {
-            setProfessionalId(data.id);
-          }
+          if (active && data && !error) setProfessionalId(data.id);
         } catch (error) {
           console.error('Erro ao buscar professional_id:', error);
         }
       }
     }
     
-    fetchProfessionalId();
+    void fetchProfessionalId();
+    return () => { active = false; };
   }, [userId]);
 
   // Ao trocar de paciente, limpar o rascunho clínico anterior antes de importar
@@ -183,6 +221,7 @@ export default function MusicoterapiaPage() {
     hasUnsavedChangesRef.current = false;
     setSaveState('idle');
     setLastSaved(null);
+    setAnamnesisSourceDate(null);
     draftIdRef.current = null;
     setDraftId(null);
     setSourceRootId(null);
@@ -239,6 +278,7 @@ export default function MusicoterapiaPage() {
       }
 
       const mapped = mapAnamnesisToMusicoterapia(data);
+      setAnamnesisSourceDate(data.updated_at || data.created_at || null);
       updateReportData((previous) => {
         if (previous.selectedPatientId !== patientId) return {};
         // Os valores já digitados enquanto a consulta estava em andamento
@@ -948,6 +988,7 @@ export default function MusicoterapiaPage() {
     setSaveState('idle');
     setLastSaved(null);
     setAnamnesisStatus('idle');
+    setAnamnesisSourceDate(null);
     setViewMode('create');
     setActiveTab('wizard');
   };
@@ -1078,10 +1119,14 @@ export default function MusicoterapiaPage() {
     setReportToDelete(null);
   };
 
-  const filteredReports = reports.filter(report =>
-    report.patient?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    new Date(report.created_at).toLocaleDateString().includes(searchTerm)
-  );
+  const normalizedSearch = searchTerm.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+  const filteredReports = reports.filter(report => {
+    const patientName = String(report.patient?.name || report.content?.patient_info?.name || '')
+      .normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+    const date = report.created_at ? new Date(report.created_at).toLocaleDateString('pt-BR') : '';
+    return (statusFilter === 'all' || getMusicoterapiaReportStatus(report.content) === statusFilter) &&
+      (!normalizedSearch || patientName.includes(normalizedSearch) || date.includes(normalizedSearch));
+  });
   const groupedReports = groupMusicoterapiaReportHistory(filteredReports);
 
   useEffect(() => {
@@ -1099,7 +1144,13 @@ export default function MusicoterapiaPage() {
             <ArrowLeft className="h-4 w-4" />
             Voltar ao painel
           </Button>
-          <Button variant="outline" onClick={() => viewMode === 'create' ? (setViewMode('list'), void loadReports()) : startNewReport()}
+          <Button variant="outline" onClick={() => {
+              if (viewMode === 'create') {
+                if (!confirmDiscard()) return;
+                setViewMode('list');
+                void loadReports();
+              } else startNewReport();
+            }}
             className="min-h-11 gap-2 rounded-xl border-primary/25 bg-card font-semibold text-foreground hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary">
             {viewMode === 'create' ? <List className="h-4 w-4" /> : <Wand2 className="h-4 w-4" />}
             {viewMode === 'create' ? 'Ver relatórios salvos' : 'Criar novo relatório'}
@@ -1166,6 +1217,9 @@ export default function MusicoterapiaPage() {
                 logoUrl={reportLogoUrl}
                 onLogoChange={(value) => { markEdited(); setReportLogoUrl(value); }}
                 patients={patients}
+                isLoadingPatients={isLoadingPatients}
+                patientsLoadError={patientsLoadError}
+                anamnesisSourceDate={anamnesisSourceDate}
                 onSelectPatient={(patientId) => void selectPatientWithAnamnesis(patientId)}
                 anamnesisStatus={anamnesisStatus}
                 onSaveReport={() => { void handleSaveReport(); }}
