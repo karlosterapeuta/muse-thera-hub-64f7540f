@@ -176,6 +176,9 @@ export default function MusicoterapiaPage() {
       autoSelectedQueryRef.current = null;
       if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
       resetReportData();
+      // O hook de rascunho preserva a identidade ao trocar pacientes, mas
+      // em troca de conta o nome/registro anterior nunca pode permanecer.
+      updateReportData({ professionalName: '', professionalRegistry: '', professionalSpecialty: 'Musicoterapia' });
       draftIdRef.current = null;
       setDraftId(null);
       setSourceReportId(null);
