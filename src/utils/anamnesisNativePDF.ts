@@ -158,6 +158,17 @@ export function createAnamnesisNativePdf(
     y+=3;
   };
   header();
+  // Foto do perfil profissional é opcional; sua ausência não altera
+  // a integridade dos registros clínicos ou das imagens obrigatórias.
+  if (images.photo) {
+    try {
+      const props = pdf.getImageProperties(images.photo);
+      const ratio = Math.min(22 / props.width, 22 / props.height);
+      pdf.addImage(images.photo, props.fileType, right - 22, 19, props.width * ratio, props.height * ratio);
+    } catch {
+      // O PDF continua utilizável caso a foto opcional não carregue.
+    }
+  }
   pdf.setTextColor(...green); pdf.setFont("helvetica","bold"); pdf.setFontSize(11);
   pdf.text("MUSETERA  |  DOCUMENTAÇÃO CLÍNICA",left,y); y+=10;
   pdf.setTextColor(...dark); pdf.setFontSize(18);
