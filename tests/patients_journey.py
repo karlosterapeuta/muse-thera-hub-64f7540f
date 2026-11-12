@@ -101,6 +101,7 @@ def run_case(browser, user_id, name, width, test_write=False):
         expect(page.get_by_role("dialog")).to_be_visible(timeout=15000)
         page.get_by_role("dialog").get_by_placeholder("Nome do paciente").fill("Alteração Fictícia")
         page.get_by_role("button", name="Salvar Alterações").click()
+        expect(page.get_by_text("Não foi possível atualizar o paciente").first).to_be_visible(timeout=15000)
         expect(page.get_by_role("dialog")).to_be_visible(timeout=15000)
         expect(page.get_by_role("dialog").get_by_placeholder("Nome do paciente")).to_have_value("Alteração Fictícia")
         assert "create" in attempts and "update" in attempts
