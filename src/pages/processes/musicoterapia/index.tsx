@@ -758,6 +758,11 @@ export default function MusicoterapiaPage() {
     // A versão final só é confirmada depois da validação e do arquivamento explícito.
     const revision = editRevisionRef.current;
     const patientId = reportData.selectedPatientId;
+    if (!patients.some(patient => patient.id === patientId)) {
+      if (!silent) toast({ variant: 'destructive', title: 'Paciente indisponível', description: 'Selecione um paciente autorizado antes de salvar.' });
+      return null;
+    }
+    const ownerId = userId;
     const content = {
       template_id: reportData.templateId,
       field_values: reportData.fieldValues,
@@ -787,6 +792,7 @@ export default function MusicoterapiaPage() {
       setIsSaving(true);
       setSaveState('saving');
       try {
+        if (!ownerId || sessionOwnerRef.current !== ownerId) throw new Error('Sessão alterada durante o salvamento.');
         let savedId = draftIdRef.current;
         if (savedId) {
           // Require both ownership and the original patient, even if RLS policies change.
@@ -795,6 +801,7 @@ export default function MusicoterapiaPage() {
             .eq('id', savedId)
             .eq('professional_id', professionalId)
             .eq('patient_id', patientId)
+            .contains('content', { document_status: 'rascunho' })
             .select('id').maybeSingle();
           if (error || !data) throw new Error('Não foi possível atualizar o rascunho com segurança.');
         } else {
@@ -805,6 +812,7 @@ export default function MusicoterapiaPage() {
           setDraftId(savedId);
         }
 
+        if (sessionOwnerRef.current !== ownerId) return savedId;
         setLastSaved(new Date());
         if (editRevisionRef.current === revision) {
           hasUnsavedChangesRef.current = false;
@@ -904,15 +912,22 @@ export default function MusicoterapiaPage() {
             filename
           );
       if (archive && savedVersionId && professionalId) {
+        if (editRevisionRef.current !== exportRevision || sessionOwnerRef.current !== userId) {
+          throw new Error('O formulário foi alterado durante a geração. Revise e gere novamente o PDF para arquivar os dados corretos.');
+        }
         const archived = await archiveClinicalPdfInR2({ pdf: blob, filename, kind: 'report', patientId: currentReportData.selectedPatientId });
         const { data: savedRow, error: lookupError } = await supabase.from('reports')
-          .select('content').eq('id', savedVersionId).eq('professional_id', professionalId).single();
+          .select('content').eq('id', savedVersionId).eq('professional_id', professionalId)
+          .eq('patient_id', currentReportData.selectedPatientId).single();
         if (lookupError || !savedRow) throw new Error('PDF arquivado, mas ainda não vinculado ao relatório.');
         const originalContent = savedRow.content && typeof savedRow.content === 'object' && !Array.isArray(savedRow.content)
           ? savedRow.content : {};
         const { data: updated, error: updateError } = await supabase.from('reports')
           .update({ content: { ...originalContent, document_status: 'finalizado', archived_pdf_document_id: archived.id } })
-          .eq('id', savedVersionId).eq('professional_id', professionalId).select('id').maybeSingle();
+          .eq('id', savedVersionId).eq('professional_id', professionalId)
+          .eq('patient_id', currentReportData.selectedPatientId)
+          .contains('content', { document_status: 'rascunho' })
+          .select('id').maybeSingle();
         if (updateError || !updated) throw new Error('PDF arquivado, mas ainda não vinculado ao relatório.');
         draftIdRef.current = null;
         setDraftId(null);
@@ -1011,7 +1026,10 @@ export default function MusicoterapiaPage() {
     if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
     anamnesisRequestRef.current += 1;
     setAnamnesisStatus('idle');
-    const resumeDraft = getMusicoterapiaReportStatus(report.content) === 'rascunho';
+    // Legacy records without an explicit draft flag are copied to a new version
+    // rather than being edited in place, preserving their original clinical record.
+    const resumeDraft = getMusicoterapiaReportStatus(report.content) === 'rascunho'
+      && report.content?.document_status === 'rascunho';
     draftIdRef.current = resumeDraft ? report.id : null;
     setDraftId(resumeDraft ? report.id : null);
     // Editing a finalized report starts a new independent version, never overwriting it.
@@ -1072,9 +1090,9 @@ export default function MusicoterapiaPage() {
         patientDiagnosis: fieldValues.patient_diagnosis || report.content?.patient_info?.diagnosis || '',
         patientBirthDate: fieldValues.patient_birth_date || report.content?.patient_info?.birth_date || '',
         patientGuardian: fieldValues.patient_guardian || report.content?.patient_info?.guardian || '',
-        professionalName: fieldValues.professional_name || professionalData?.name || '',
-        professionalRegistry: fieldValues.professional_registry || professionalData?.register || professionalData?.license_number || '',
-        professionalSpecialty: fieldValues.professional_specialty || professionalData?.specialty || 'Musicoterapia',
+        professionalName: report.content?.professional_info?.name || fieldValues.professional_name || professionalData?.name || '',
+        professionalRegistry: report.content?.professional_info?.registry || fieldValues.professional_registry || professionalData?.register || professionalData?.license_number || '',
+        professionalSpecialty: report.content?.professional_info?.specialty || fieldValues.professional_specialty || professionalData?.specialty || 'Musicoterapia',
         sessionDate: fieldValues.session_date || report.content?.session_date || '',
         // Preservar todos os campos do relatório salvo, inclusive os novos indicadores clínicos.
         fieldValues: { ...fieldValues },
@@ -1089,9 +1107,9 @@ export default function MusicoterapiaPage() {
       if (professionalData?.stamp_photo_url) {
         photoBase64 = await imageUrlToBase64(professionalData.stamp_photo_url);
       }
-      if (professionalData?.digital_stamp_url) {
-        stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
-      }
+      const professionalAssets = await resolveMusicoterapiaProfessionalAssets(professionalData, userId);
+      stampBase64 = professionalAssets.stamp;
+      const signatureBase64 = professionalAssets.signature;
       const savedLogoUrl = typeof report.content?.logo_url === 'string' ? report.content.logo_url : null;
       const savedLogoBase64 = savedLogoUrl ? await imageUrlToBase64(savedLogoUrl) : null;
 
@@ -1115,7 +1133,6 @@ export default function MusicoterapiaPage() {
       });
 
     } catch (error) {
-      console.error('Erro ao gerar PDF:', error);
       toast({
         variant: "destructive",
         title: "Erro ao gerar PDF",
@@ -1132,15 +1149,15 @@ export default function MusicoterapiaPage() {
     setReportToDelete(null);
   };
 
-  const normalizedSearch = searchTerm.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
-  const filteredReports = reports.filter(report => {
+  const normalizedSearch = React.useMemo(() => searchTerm.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(), [searchTerm]);
+  const filteredReports = React.useMemo(() => reports.filter(report => {
     const patientName = String(report.patient?.name || report.content?.patient_info?.name || '')
       .normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
     const date = report.created_at ? new Date(report.created_at).toLocaleDateString('pt-BR') : '';
     return (statusFilter === 'all' || getMusicoterapiaReportStatus(report.content) === statusFilter) &&
       (!normalizedSearch || patientName.includes(normalizedSearch) || date.includes(normalizedSearch));
-  });
-  const groupedReports = groupMusicoterapiaReportHistory(filteredReports);
+  }), [reports, normalizedSearch, statusFilter]);
+  const groupedReports = React.useMemo(() => groupMusicoterapiaReportHistory(filteredReports), [filteredReports]);
 
   useEffect(() => {
     if (professionalId) {
@@ -1336,10 +1353,10 @@ export default function MusicoterapiaPage() {
               <CardContent className="text-center py-8">
                 <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-semibold mb-2">
-                  {searchTerm ? 'Nenhum relatório encontrado' : 'Nenhum relatório salvo'}
+                  {searchTerm || statusFilter !== 'all' ? 'Nenhum relatório encontrado' : 'Nenhum relatório salvo'}
                 </h3>
                 <p className="text-muted-foreground">
-                  {searchTerm 
+                  {searchTerm || statusFilter !== 'all'
                     ? 'Tente ajustar os filtros de busca.'
                     : 'Comece criando seu primeiro relatório de musicoterapia.'}
                 </p>
