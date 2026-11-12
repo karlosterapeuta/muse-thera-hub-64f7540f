@@ -51,7 +51,7 @@ export const CollapsibleSection = forwardRef<CollapsibleSectionRef, CollapsibleS
       <CollapsibleTrigger asChild>
         <button
           className={cn(
-            "w-full flex items-center justify-between p-4 rounded-xl transition-all duration-300",
+            "w-full min-h-12 flex items-center justify-between gap-3 p-4 text-left rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-colors",
             "bg-card hover:bg-accent/50 border-2",
             hasErrors 
               ? "border-destructive/50 bg-destructive/5" 
@@ -113,7 +113,7 @@ export const CollapsibleSection = forwardRef<CollapsibleSectionRef, CollapsibleS
             )}
             {!hasErrors && isComplete && (
               <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full font-medium">
-                Completo
+                Com registros
               </span>
             )}
             <ChevronDown
@@ -128,7 +128,7 @@ export const CollapsibleSection = forwardRef<CollapsibleSectionRef, CollapsibleS
       <CollapsibleContent>
         <div
           className={cn(
-            "p-6 bg-card border-2 border-t-0 rounded-b-xl",
+            "p-4 sm:p-6 bg-card border-2 border-t-0 rounded-b-xl",
             hasErrors 
               ? "border-destructive/50" 
               : isComplete 
