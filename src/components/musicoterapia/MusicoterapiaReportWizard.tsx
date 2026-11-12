@@ -29,6 +29,9 @@ interface MusicoterapiaReportWizardProps {
   onGenerateWithAI: (keyPoints: string) => Promise<any>;
   isGeneratingWithAI: boolean;
   patients: any[];
+  isLoadingPatients?: boolean;
+  patientsLoadError?: boolean;
+  anamnesisSourceDate?: string | null;
   onSelectPatient: (patientId: string) => void;
   anamnesisStatus: 'idle' | 'loading' | 'loaded' | 'empty' | 'error';
   onSaveReport: () => void;
@@ -480,6 +483,9 @@ export function MusicoterapiaReportWizard({
   onGenerateWithAI, 
   isGeneratingWithAI,
   patients,
+  isLoadingPatients = false,
+  patientsLoadError = false,
+  anamnesisSourceDate = null,
   onSelectPatient,
   anamnesisStatus,
   onSaveReport,
@@ -497,6 +503,7 @@ export function MusicoterapiaReportWizard({
 
   const currentStepData = STEPS[currentStep];
   const progress = ((currentStep + 1) / STEPS.length) * 100;
+  // This measures navigation, not clinical completion.
 
   const handleFieldUpdate = useCallback((fieldId: string, value: any) => {
     onUpdateData(previous => ({ fieldValues: { ...previous.fieldValues, [fieldId]: value } }));
@@ -561,6 +568,9 @@ export function MusicoterapiaReportWizard({
     if (stepIndex === 0) {
       const missingFields = [];
       
+      if (!reportData.selectedPatientId) {
+        missingFields.push({ id: 'selected_patient', label: 'Selecione um paciente cadastrado' });
+      }
       if (!reportData.patientName?.trim()) {
         missingFields.push({ id: 'patient_name', label: 'Nome do Paciente' });
       }
@@ -616,6 +626,8 @@ export function MusicoterapiaReportWizard({
   };
 
   const validateCurrentStep = () => validateStep(currentStep);
+  const criticalSteps = [0, 1, 2, 3];
+  const fulfilledCritical = criticalSteps.filter(index => validateStep(index).length === 0).length;
 
   const canProceed = () => {
     // Aguardar a consulta à Anamnese antes de avançar para outras etapas.
@@ -638,6 +650,9 @@ export function MusicoterapiaReportWizard({
             patients={patients}
             onSelectPatient={onSelectPatient}
             anamnesisStatus={anamnesisStatus}
+            anamnesisSourceDate={anamnesisSourceDate}
+            isLoadingPatients={isLoadingPatients}
+            patientsLoadError={patientsLoadError}
           />
         </div>
       );
@@ -879,10 +894,10 @@ export function MusicoterapiaReportWizard({
               MUSETERA · DOCUMENTAÇÃO CLÍNICA
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-primary-foreground sm:text-3xl lg:text-4xl">
-              Relatório MuseTera TEA
+              Relatório de Musicoterapia
             </h1>
             <p className="max-w-2xl text-base leading-relaxed text-primary-foreground/90">
-              Documente o atendimento em nove etapas, registre respostas observáveis e revise o conteúdo antes de gerar o relatório clínico.
+              Registre objetivos, abordagens e respostas observadas em nove etapas, com revisão antes da emissão clínica.
             </p>
           </div>
           <div className="w-full rounded-xl border border-primary-foreground/30 bg-primary-foreground/10 p-4 lg:w-64">
@@ -893,7 +908,12 @@ export function MusicoterapiaReportWizard({
             <div className="h-2.5 overflow-hidden rounded-full bg-black/20" role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100} aria-label="Progresso das etapas do relatório">
               <div className="h-full rounded-full bg-primary-foreground transition-[width] duration-300 motion-reduce:transition-none" style={{ width: `${progress}%` }} />
             </div>
-            <p className="mt-3 text-xs leading-relaxed text-primary-foreground/90">Navegação do formulário · não indica conclusão clínica</p>
+            <p className="mt-3 text-xs leading-relaxed text-primary-foreground/90">
+              Navegação do formulário · não indica conclusão clínica
+            </p>
+            <p className="mt-1 text-xs font-medium text-primary-foreground">
+              Requisitos das etapas clínicas atendidos: {fulfilledCritical}/{criticalSteps.length}
+            </p>
           </div>
         </div>
       </header>
