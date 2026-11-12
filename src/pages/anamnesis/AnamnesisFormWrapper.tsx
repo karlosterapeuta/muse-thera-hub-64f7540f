@@ -4,6 +4,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { PatientSelect } from "./components/PatientSelect";
+import { PatientIdentitySummary } from "./components/PatientIdentitySummary";
+import { prefillAnamnesisFromPatient } from "./utils/patientPrefill";
+import type { RegisteredPatient } from "./utils/patientPrefill";
 import { InitialEvaluationForm } from "./components/InitialEvaluationForm";
 import { ModernAnamnesisHeader } from "./components/ModernAnamnesisHeader";
 import { ModernTabsNavigation } from "./components/ModernTabsNavigation";
@@ -14,10 +17,7 @@ import { missingFinalizationFields, useAnamnesisValidation } from "./hooks/useAn
 import { generateProfessionalAnamnesePDF } from "@/utils/anamnesisePDFGenerator";
 import { imageUrlToBase64 } from "@/utils/imageToBase64";
 
-type Patient = {
-  id: string;
-  name: string;
-};
+type Patient = RegisteredPatient;
 
 interface AnamnesisFormWrapperProps {
   editAnamnesisId?: string | null;
@@ -90,6 +90,7 @@ export default function AnamnesisFormWrapper({
   const [userEmail, setUserEmail] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
+  const [patientLoadError, setPatientLoadError] = useState<string | null>(null);
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [existingAnamnesisId, setExistingAnamnesisId] = useState<string | null>(editAnamnesisId || null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -285,6 +286,7 @@ export default function AnamnesisFormWrapper({
   const loadInitialData = async () => {
     try {
       setIsLoading(true);
+      setPatientLoadError(null);
       
       // Verificar colunas disponíveis primeiro e aguardar
       await getAvailableColumns();
@@ -306,11 +308,12 @@ export default function AnamnesisFormWrapper({
 
       const { data: patientsData, error: patientsError } = await supabase
         .from("patients")
-        .select("id, name")
+        .select("id, name, birth_date, responsible, contact, photo_url")
         .eq("professional_id", user.id)
         .order("name");
 
       if (patientsError) {
+        setPatientLoadError("Não foi possível carregar os pacientes. Confira a conexão e tente novamente.");
         console.error("Erro ao carregar pacientes:", patientsError);
         toast({
           title: "Erro",
@@ -320,9 +323,24 @@ export default function AnamnesisFormWrapper({
         return;
       }
 
-      setPatients(patientsData || []);
+      const registeredPatients: Patient[] = patientsData || [];
+      setPatients(registeredPatients);
+      // Acesso direto pela ficha: preencher somente os campos ligados ao cadastro,
+      // nunca uma anamnese clínica existente.
+      if (editPatientId && !editAnamnesisId && !dirtyRef.current) {
+        const preselected = registeredPatients.find(patient => patient.id === editPatientId);
+        if (preselected) {
+          const suggested = prefillAnamnesisFromPatient({}, preselected);
+          formDataRef.current = suggested;
+          setFormData(suggested);
+        } else {
+          setSelectedPatient("");
+          toast({ title: "Paciente não encontrado", description: "Verifique se o cadastro pertence à sua conta.", variant: "destructive" });
+        }
+      }
 
     } catch (error) {
+      setPatientLoadError("Não foi possível carregar os dados da Anamnese.");
       console.error("Erro ao carregar dados iniciais:", error);
       toast({
         title: "Erro",
@@ -406,8 +424,13 @@ export default function AnamnesisFormWrapper({
   };
 
   const changeSelectedPatient = (patientId: string) => {
-    if (editPatientId) return;
+    if (editAnamnesisId) return;
     if (patientId === selectedPatient) return;
+    const registeredPatient = patients.find(patient => patient.id === patientId);
+    if (!registeredPatient) {
+      toast({ title: "Paciente indisponível", description: "Selecione um paciente cadastrado na sua conta.", variant: "destructive" });
+      return;
+    }
     if (pendingSavesRef.current > 0) {
       toast({ title: "Aguarde o salvamento", description: "Conclua o salvamento antes de trocar de paciente." });
       return;
@@ -416,11 +439,12 @@ export default function AnamnesisFormWrapper({
     if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
     dirtyRef.current = false;
     editRevisionRef.current += 1;
-    formDataRef.current = {};
+    const prefilledData = prefillAnamnesisFromPatient({}, registeredPatient);
+    formDataRef.current = prefilledData;
     existingIdRef.current = null;
     persistedReviewStatusRef.current = "draft";
     setSelectedPatient(patientId);
-    setFormData({});
+    setFormData(prefilledData);
     setExistingAnamnesisId(null);
     setReviewStatus("draft");
     setLastSavedAt(null);
@@ -809,6 +833,8 @@ export default function AnamnesisFormWrapper({
     }
   };
 
+  const selectedPatientDetails = patients.find(patient => patient.id === selectedPatient);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
@@ -834,8 +860,16 @@ export default function AnamnesisFormWrapper({
                   patients={patients}
                   selectedPatient={selectedPatient}
                   onSelect={changeSelectedPatient}
-                  disabled={!!editPatientId}
+                  disabled={!!editAnamnesisId}
                 />
+                {patientLoadError && <p role="alert" className="text-sm text-destructive">{patientLoadError} <button type="button" className="underline font-semibold" onClick={() => void loadInitialData()}>Tentar novamente</button></p>}
+                {selectedPatientDetails && (
+                  <PatientIdentitySummary
+                    patient={selectedPatientDetails}
+                    legalGuardian={String(formData.legal_guardian ?? "")}
+                    onLegalGuardianChange={value => updateFormData({ ...formDataRef.current, legal_guardian: value })}
+                  />
+                )}
                 {professionalId && (
                   <div className="flex flex-col sm:flex-row sm:justify-end gap-2 border-t border-border pt-4">
                     <SendAnamnesisLinkDialog
