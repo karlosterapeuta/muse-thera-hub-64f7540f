@@ -36,6 +36,7 @@ import { exportMusicoterapiaHtmlPdf } from '@/utils/musicoterapiaPdfExport';
 import { exportMusicoterapiaNativePdf } from '@/utils/musicoterapiaNativePdf';
 import { renderMusicoterapiaPdfVisuals, renderMusicoterapiaPdfHeaderArt } from '@/utils/musicoterapiaPdfVisuals';
 import { imageUrlToBase64 } from '@/utils/imageToBase64';
+import { resolveMusicoterapiaProfessionalAssets } from '@/utils/musicoterapiaProfessionalAssets';
 import { DeleteReportDialog } from '../reports/components/DeleteReportDialog';
 import { formatAgeString } from '@/utils/dateUtils';
 import { mapAnamnesisToMusicoterapia } from '@/utils/musicoterapiaAnamnesisMapping';
@@ -323,7 +324,8 @@ export default function MusicoterapiaPage() {
     photoBase64?: string | null, 
     stampBase64?: string | null,
     logoUrl?: string | null,
-    narrative?: { title: string; content: string }[] | null
+    narrative?: { title: string; content: string }[] | null,
+    signatureBase64?: string | null
   ) => {
     const fields = reportDataForPDF.fieldValues || {};
     const selectedGoals = getSelectedMusicoterapiaObjectives(fields.therapeutic_objective_ids);
@@ -734,7 +736,8 @@ export default function MusicoterapiaPage() {
           email: professionalData?.email,
           phone: professionalData?.phone,
           portrait: photoBase64,
-          stamp: stampBase64
+          stamp: stampBase64,
+          signature: signatureBase64
         }, escapeHtml)}
 
       </div>
@@ -872,9 +875,9 @@ export default function MusicoterapiaPage() {
       if (professionalData?.stamp_photo_url) {
         photoBase64 = await imageUrlToBase64(professionalData.stamp_photo_url);
       }
-      if (professionalData?.digital_stamp_url) {
-        stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
-      }
+      const professionalImages = await resolveMusicoterapiaProfessionalAssets(professionalData, userId);
+      stampBase64 = professionalImages.stamp;
+      const signatureBase64 = professionalImages.signature;
       // A logo personalizada também é convertida para imagem segura antes de incorporar ao PDF.
       const selectedLogoUrl = logoUrl ?? reportLogoUrl;
       const logoBase64 = selectedLogoUrl ? await imageUrlToBase64(selectedLogoUrl) : null;
@@ -888,12 +891,12 @@ export default function MusicoterapiaPage() {
         ? await exportMusicoterapiaNativePdf(
             currentReportData,
             professionalData,
-            { logo: logoBase64, photo: photoBase64, stamp: stampBase64 },
+            { logo: logoBase64, photo: photoBase64, stamp: stampBase64, signature: signatureBase64 },
             filename,
             narrative
           )
         : await exportMusicoterapiaHtmlPdf(
-            generatePDFContent(currentReportData, photoBase64, stampBase64, logoBase64, narrative),
+            generatePDFContent(currentReportData, photoBase64, stampBase64, logoBase64, narrative, signatureBase64),
             filename
           );
       if (archive && savedVersionId && professionalId) {
@@ -1089,11 +1092,11 @@ export default function MusicoterapiaPage() {
         ? await exportMusicoterapiaNativePdf(
             reportDataForPDF,
             professionalData,
-            { logo: savedLogoBase64, photo: photoBase64, stamp: stampBase64 },
+            { logo: savedLogoBase64, photo: photoBase64, stamp: stampBase64, signature: signatureBase64 },
             filename
           )
         : await exportMusicoterapiaHtmlPdf(
-            generatePDFContent(reportDataForPDF, photoBase64, stampBase64, savedLogoBase64),
+            generatePDFContent(reportDataForPDF, photoBase64, stampBase64, savedLogoBase64, null, signatureBase64),
             filename
           );
       toast({
