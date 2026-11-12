@@ -19,6 +19,7 @@ jobs:
       - run: node tests/pti-improvements.cjs
       - run: node tests/musicoterapia-workflow.cjs
       - run: node tests/anamnesis-safety.cjs
+      - run: node --test tests/anamnesis-patient-prefill.cjs
       - run: npm run build
       - run: |
           python -m pip install playwright==1.55.0
