@@ -43,6 +43,7 @@ import { mapAnamnesisToMusicoterapia } from '@/utils/musicoterapiaAnamnesisMappi
 import type { ReportData } from '@/data/musicoterapiaTemplate';
 
 type SaveState = 'idle' | 'pending' | 'saving' | 'saved' | 'error';
+const REPORT_PAGE_SIZE = 24;
 
 function downloadArchivedPdf(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
@@ -942,37 +943,43 @@ export default function MusicoterapiaPage() {
     }
   };
 
-  const loadReports = async () => {
+  const loadReports = async ({ append = false }: { append?: boolean } = {}) => {
     if (!professionalId) return;
-    
-    setIsLoadingReports(true);
+    const requestId = ++reportsRequestRef.current;
+    const offset = append ? reports.length : 0;
+    if (append) setLoadingMoreReports(true);
+    else setIsLoadingReports(true);
     setReportsLoadError(false);
     try {
+      // Load only one page of full clinical content instead of every report.
+      // The original R2 PDF is never downloaded during list navigation.
       const { data, error } = await supabase
         .from('reports')
-        .select(`
-          id,
-          patient_id,
-          type,
-          created_at,
-          content,
-          patient:patients(name)
-        `)
+        .select('id, patient_id, type, created_at, content, patient:patients(name)')
         .eq('professional_id', professionalId)
         .eq('type', 'musicoterapia')
-        .order('created_at', { ascending: false });
-
+        .order('created_at', { ascending: false })
+        .order('id', { ascending: false })
+        .range(offset, offset + REPORT_PAGE_SIZE - 1);
       if (error) throw error;
-      setReports(data || []);
+      if (requestId !== reportsRequestRef.current) return;
+      const batch = data || [];
+      setReports(previous => append
+        ? [...previous, ...batch.filter(item => !previous.some(existing => existing.id === item.id))]
+        : batch);
+      setHasMoreReports(batch.length === REPORT_PAGE_SIZE);
     } catch {
+      if (requestId !== reportsRequestRef.current) return;
       setReportsLoadError(true);
       toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Não foi possível carregar os relatórios.",
+        variant: 'destructive', title: 'Não foi possível carregar o histórico',
+        description: 'Seus relatórios e PDFs não foram alterados. Confira a conexão e tente novamente.',
       });
     } finally {
-      setIsLoadingReports(false);
+      if (requestId === reportsRequestRef.current) {
+        setIsLoadingReports(false);
+        setLoadingMoreReports(false);
+      }
     }
   };
 
@@ -1266,7 +1273,7 @@ export default function MusicoterapiaPage() {
                 <span>Relatórios de Musicoterapia Salvos</span>
               </CardTitle>
               <CardDescription>
-                Visualize, crie novas versões e gerencie seus relatórios salvos
+                Visualize, crie novas versões e consulte os documentos do seu histórico sem alterar os PDFs originais.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -1277,7 +1284,7 @@ export default function MusicoterapiaPage() {
                   <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                   <Input
                     id="musicoterapia-report-search"
-                    placeholder="Buscar por paciente ou data..."
+                    placeholder="Filtrar nome ou data dos registros carregados..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="h-12 rounded-xl pl-10 text-base"
@@ -1287,6 +1294,22 @@ export default function MusicoterapiaPage() {
               </div>
             </CardContent>
           </Card>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
+              Situação
+              <select aria-label="Filtrar histórico por situação" value={statusFilter}
+                onChange={event => setStatusFilter(event.target.value as typeof statusFilter)}
+                className="min-h-11 rounded-lg border border-input bg-background px-3 text-sm text-foreground">
+                <option value="all">Todas</option>
+                <option value="rascunho">Rascunhos</option>
+                <option value="finalizado">Finalizadas</option>
+              </select>
+            </label>
+            <p className="text-xs text-muted-foreground" role="status">
+              {filteredReports.length} registro(s) encontrados entre {reports.length} carregados
+            </p>
+          </div>
 
           {/* Reports List */}
           {isLoadingReports ? (
@@ -1407,6 +1430,19 @@ export default function MusicoterapiaPage() {
         </div>
       )}
 
+
+      {viewMode === 'list' && hasMoreReports && !isLoadingReports && (
+        <div className="flex flex-col items-center gap-2 rounded-xl border border-border bg-card p-4">
+          <Button className="min-h-11" variant="outline" disabled={loadingMoreReports}
+            onClick={() => void loadReports({ append: true })}>
+            {loadingMoreReports ? 'Carregando mais versões...' : 'Carregar mais relatórios'}
+          </Button>
+          <p className="text-xs text-muted-foreground">
+            {reports.length} versões carregadas. A busca e os filtros atuam sobre os registros já carregados.
+            Os demais registros permanecem no banco.
+          </p>
+        </div>
+      )}
 
       {/* Footer with Template Info */}
       <Card className="rounded-xl">
