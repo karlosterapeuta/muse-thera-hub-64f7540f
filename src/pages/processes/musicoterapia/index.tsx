@@ -1026,7 +1026,10 @@ export default function MusicoterapiaPage() {
     if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
     anamnesisRequestRef.current += 1;
     setAnamnesisStatus('idle');
-    const resumeDraft = getMusicoterapiaReportStatus(report.content) === 'rascunho';
+    // Legacy records without an explicit draft flag are copied to a new version
+    // rather than being edited in place, preserving their original clinical record.
+    const resumeDraft = getMusicoterapiaReportStatus(report.content) === 'rascunho'
+      && report.content?.document_status === 'rascunho';
     draftIdRef.current = resumeDraft ? report.id : null;
     setDraftId(resumeDraft ? report.id : null);
     // Editing a finalized report starts a new independent version, never overwriting it.
