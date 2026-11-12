@@ -18,8 +18,8 @@ ANAMNESIS = "aaaaaaaa-aaaa-4aaa-aaaa-000000000024"
 user = {"id": USER, "email": "teste@example.invalid", "aud": "authenticated", "role": "authenticated",
         "app_metadata": {}, "user_metadata": {}}
 patients = [
-    {"id": A, "name": "Ana Teste", "age": 10, "birth_date": "2015-05-01", "responsible": "Responsável Teste", "contact": ""},
-    {"id": B, "name": "Beto Teste", "age": 8, "birth_date": "2017-05-01", "responsible": "Responsável Teste", "contact": ""},
+    {"id": A, "name": "Ana Teste", "age": 10, "birth_date": "2015-05-01", "responsible": "Responsável Teste", "contact": "(81) 99999-1111"},
+    {"id": B, "name": "Beto Teste", "age": 8, "birth_date": "2017-05-01", "responsible": "Responsável B", "contact": "(81) 99999-2222"},
 ]
 STAMP = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/TioAAAAASUVORK5CYII="
 professional = {"id": USER, "user_id": USER, "name": "Profissional Teste", "email": user["email"],
@@ -100,6 +100,9 @@ def run():
         page.get_by_role("button", name="Nova Anamnese").click()
         page.get_by_role("combobox", name="Paciente", exact=True).click()
         page.get_by_role("option", name="Ana Teste").click()
+        expect(page.get_by_role("region", name="Dados cadastrados do paciente")).to_contain_text("Ana Teste")
+        expect(page.get_by_role("region", name="Dados cadastrados do paciente")).to_contain_text("(81) 99999-1111")
+        expect(page.locator("#anamnesis-legal-guardian")).to_have_value("Responsável Teste")
         field = page.locator("#main_clinical_demand")
         field.fill("Demanda fictícia de comunicação em musicoterapia")
         expect(page.get_by_text("Alterações ainda não salvas")).to_be_visible()
@@ -114,6 +117,7 @@ def run():
         # Um único insert para o primeiro rascunho e atualizações para mudanças posteriores.
         expect(page.get_by_text("Dados salvos no sistema")).to_be_visible(timeout=12000)
         assert len(records) == 1 and requests[0][0] == "POST" and records[0]["patient_id"] == A
+        assert records[0]["legal_guardian"] == "Responsável Teste"
         page.get_by_role("button", name="Finalizar anamnese").click()
         expect(page.get_by_text("Anamnese incompleta para finalização")).to_be_visible()
         assert records[0].get("review_status") != "finalized"
@@ -147,7 +151,16 @@ def run():
             assert "ana teste" in plain and "beto teste" not in plain, plain[:1000]
             assert "demanda" in plain and "objetivos" in plain, plain[:1000]
             assert pages[0].stat().st_size > 10000
-        print("Anamnese sintética: troca protegida, 1 insert, autosave, validação, finalização, PDF com 2 imagens — OK")
+        # Navegação a partir da ficha do paciente abre novo formulário com
+        # identificação preenchida sem recuperar ou sobrescrever dados do outro.
+        direct = ctx.new_page()
+        direct.goto(BASE + "/anamnesis?patient_id=" + B)
+        expect(direct.get_by_role("combobox", name="Paciente", exact=True)).to_contain_text("Beto Teste")
+        expect(direct.get_by_role("region", name="Dados cadastrados do paciente")).to_contain_text("(81) 99999-2222")
+        expect(direct.locator("#anamnesis-legal-guardian")).to_have_value("Responsável B")
+        assert len(records) == 1, "Selecionar outro paciente não pode criar registro automaticamente"
+        direct.close()
+        print("Anamnese sintética: autopreenchimento, troca protegida, link direto, 1 insert, autosave, finalização e PDF — OK")
         browser.close()
 
 
