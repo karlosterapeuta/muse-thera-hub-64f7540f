@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+
 import { 
   Stethoscope, Pill, HeartPulse, Music, Volume2, Brain, 
   Baby, Heart, School, FileText, Users, Activity,
@@ -22,9 +22,10 @@ type FormProps = {
   fieldErrors?: Record<string, string>;
   getSectionErrors?: (sectionNumber: number) => ValidationError[];
   activeTab?: string;
+  completionPercentage?: number;
 };
 
-export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, getSectionErrors, activeTab = 'personal' }: FormProps) {
+export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, getSectionErrors, activeTab = 'personal', completionPercentage = 0 }: FormProps) {
   const updateField = (field: string, value: string | boolean) => {
     onChange({ ...content, [field]: value });
   };
@@ -59,45 +60,17 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
   const section10Fields = ["visual_contact", "peer_interaction", "irritability", "anxiety"];
   const section11Fields = ["school_enrollment", "school_adaptation", "extracurricular_activities"];
 
-  // Calculate progress
-  const calculateProgress = useMemo(() => {
-    const fields = [
-      ...section1Fields, ...section2Fields, ...section3Fields, ...section4Fields,
-      ...section5Fields, ...section6Fields, ...section7Fields, ...section8Fields,
-      ...section9Fields, ...section10Fields, ...section11Fields,
-      'therapeutic_goals', 'treatment_approach'
-    ];
-    const uniqueFields = [...new Set(fields)];
-    const filled = uniqueFields.filter(key => {
-      const value = content[key];
-      return typeof value === 'string' ? value.trim().length > 0 : value === true;
-    }).length;
-    return uniqueFields.length ? Math.round(100 * filled / uniqueFields.length) : 0;
-  }, [content]);
-
-  // Check section completion (>= 50% of fields filled)
-  const isSectionComplete = (fields: string[]): boolean => {
-    const filledCount = fields.filter(f => {
-      const val = content[f];
-      return val && val !== "" && val !== false;
-    }).length;
-    return filledCount >= Math.ceil(fields.length * 0.5);
-  };
-
-  // Section 2 uses a different rule: any diagnosis selected OR clinical details filled
-  const isSection2Complete = (fields: string[]): boolean => {
-    return fields.some(f => {
-      const val = content[f];
-      return val && val !== "" && val !== false;
-    });
-  };
-
+  // A seção possui registros, mas isso não implica que esteja clinicamente completa.
+  const isSectionComplete = (fields: string[]): boolean =>
+    fields.some(key => typeof content[key] === "string"
+      ? content[key].trim().length > 0 : content[key] === true);
+  const isSection2Complete = isSectionComplete;
 
   return (
     <div className="space-y-6">
       {/* Progress Bar */}
       <AnamnesisProgressBar 
-        progress={calculateProgress}
+        progress={completionPercentage}
         totalSections={12}
         completedSections={[
           isSectionComplete(section1Fields),
