@@ -1,35 +1,14 @@
-
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useAnamnesisData, useDeleteAnamnesis, AnamnesisItem } from "@/hooks/useAnamnesisData";
-import { 
-  Eye, 
-  Edit, 
-  Download, 
-  Trash2, 
-  Plus, 
-  Search,
-  Calendar,
-  User,
-  FileText,
-  ArrowLeft
-} from "lucide-react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { useAnamnesisData, useDeleteAnamnesis } from "@/hooks/useAnamnesisData";
+import type { AnamnesisItem, AnamnesisReviewStatus } from "@/hooks/useAnamnesisData";
+import { Eye, Edit, Plus, Search, FileText, ArrowLeft, MoreHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 interface AnamnesesListProps {
   onCreateNew: () => void;
@@ -37,273 +16,170 @@ interface AnamnesesListProps {
   onView: (anamnesis: AnamnesisItem) => void;
 }
 
+const PAGE_SIZE = 12;
+const normalize = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+const statusLabel: Record<AnamnesisReviewStatus, string> = {
+  draft: "Rascunho",
+  finalized: "Finalizada",
+  registered: "Registro legado",
+};
+const formatDate = (value: string) => {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "Data indisponível" : date.toLocaleDateString("pt-BR", {
+    day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit",
+  });
+};
+
 export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProps) {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  const { data: anamneses = [], isLoading, error } = useAnamnesisData();
+  const [filter, setFilter] = useState<"all" | AnamnesisReviewStatus>("all");
+  const [sort, setSort] = useState<"recent" | "name">("recent");
+  const [page, setPage] = useState(1);
+  const [deleteTarget, setDeleteTarget] = useState<AnamnesisItem | null>(null);
+  const [confirmation, setConfirmation] = useState("");
+  const { data: anamneses = [], isLoading, error, authReady, userId, refetch } = useAnamnesisData();
   const deleteAnamnesis = useDeleteAnamnesis();
 
-  const filteredAnamneses = useMemo(() => {
-    if (!searchTerm) return anamneses;
-    
-    return anamneses.filter(anamnesis =>
-      anamnesis.patient_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      anamnesis.main_clinical_demand?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [searchTerm, anamneses]);
+  useEffect(() => { setPage(1); }, [searchTerm, filter, sort]);
+  const filtered = useMemo(() => {
+    const q = normalize(searchTerm);
+    return anamneses.filter(item =>
+      (filter === "all" || item.review_status === filter) &&
+      (!q || normalize(item.patient_name ?? "").includes(q) ||
+        normalize(item.main_clinical_demand ?? "").includes(q))
+    ).sort((a, b) => sort === "name"
+      ? (a.patient_name ?? "").localeCompare(b.patient_name ?? "", "pt-BR")
+      : Date.parse(b.updated_at) - Date.parse(a.updated_at));
+  }, [anamneses, searchTerm, filter, sort]);
+  const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const visible = filtered.slice((Math.min(page, pages) - 1) * PAGE_SIZE, Math.min(page, pages) * PAGE_SIZE);
+  const finalized = anamneses.filter(item => item.review_status === "finalized").length;
+  const drafts = anamneses.filter(item => item.review_status === "draft").length;
 
-  const handleDelete = (anamnesisId: string) => {
-    deleteAnamnesis.mutate(anamnesisId);
+  const requestDelete = (item: AnamnesisItem) => {
+    setDeleteTarget(item);
+    setConfirmation("");
+  };
+  const confirmDelete = async () => {
+    if (!deleteTarget || confirmation !== "EXCLUIR") return;
+    try {
+      await deleteAnamnesis.mutateAsync(deleteTarget.id);
+      setDeleteTarget(null);
+      setConfirmation("");
+    } catch {
+      // Mutation displays error, and the dialog stays open for inspection.
+    }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <Card>
-        <CardContent className="p-8 text-center">
-          <div className="text-destructive mb-4">
-            <h3 className="text-lg font-semibold text-foreground">Erro ao carregar anamneses</h3>
-            <p className="text-sm text-muted-foreground mt-2">
-              {error.message || "Não foi possível carregar as anamneses."}
-            </p>
-          </div>
-          <Button onClick={() => window.location.reload()} variant="outline">
-            Tentar Novamente
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
+  if (isLoading) return <div className="flex min-h-64 items-center justify-center" role="status"><span className="text-muted-foreground">Carregando anamneses com segurança...</span></div>;
+  if (authReady && !userId) return (
+    <Card><CardContent className="p-8 text-center"><p className="text-foreground font-semibold">Faça login para visualizar suas anamneses.</p><Button className="mt-3" onClick={() => navigate("/login")}>Ir para o login</Button></CardContent></Card>
+  );
+  if (error) return (
+    <Card><CardContent className="p-8 text-center">
+      <h2 className="text-lg font-semibold text-destructive">Não foi possível carregar as anamneses</h2>
+      <p className="text-sm text-muted-foreground mt-2">Seus registros não foram excluídos. Confira a conexão e tente novamente.</p>
+      <Button className="mt-4" onClick={() => void refetch()}>Tentar novamente</Button>
+    </CardContent></Card>
+  );
 
   return (
-    <div className="space-y-6">
-      {/* Back button */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => navigate("/processes")}
-        className="gap-2 -ml-2"
-      >
-        <ArrowLeft size={16} />
-        Voltar
+    <div className="space-y-5">
+      <Button variant="ghost" onClick={() => navigate("/processes")} className="min-h-11 gap-2">
+        <ArrowLeft size={17} /> Voltar
       </Button>
-
-      {/* Header */}
-      <div className="flex flex-col gap-4 rounded-2xl border border-primary/20 bg-primary/10 p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Anamneses Salvas</h1>
-          <p className="text-muted-foreground">Gerencie todas as anamneses dos seus pacientes</p>
-        </div>
-        <Button onClick={onCreateNew} className="min-h-11 flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
-          <Plus size={16} />
-          Nova Anamnese
-        </Button>
+      <header className="flex flex-col gap-4 rounded-2xl border border-primary/20 bg-primary/5 p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div><h1 className="text-2xl font-bold text-foreground">Anamneses</h1>
+          <p className="text-sm text-muted-foreground">Histórico e acompanhamento musicoterapêutico dos pacientes cadastrados.</p></div>
+        <Button className="min-h-11 gap-2" onClick={onCreateNew}><Plus size={17} /> Nova Anamnese</Button>
+      </header>
+      <div className="grid grid-cols-3 gap-2 sm:gap-4" aria-label="Indicadores de anamneses">
+        {[
+          ["Total", anamneses.length],
+          ["Rascunhos", drafts],
+          ["Finalizadas", finalized],
+        ].map(([label, count]) => (
+          <Card key={label} className="border-primary/15"><CardContent className="p-3 sm:p-4">
+            <p className="text-xs sm:text-sm text-muted-foreground">{label}</p>
+            <p className="text-xl sm:text-2xl font-bold text-foreground tabular-nums">{count}</p>
+          </CardContent></Card>
+        ))}
       </div>
-
-      {/* Search */}
-      <div className="relative w-full max-w-lg">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
-        <Input
-          placeholder="Buscar por paciente ou demanda..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="min-h-11 pl-10 bg-card border-primary/20"
-        />
+      <div className="grid gap-3 rounded-xl border border-border p-3 sm:grid-cols-[minmax(0,1fr)_auto_auto]">
+        <label className="relative">
+          <span className="block pb-1 text-sm font-semibold text-foreground">Pesquisar</span>
+          <Search size={17} className="pointer-events-none absolute bottom-3 left-3 text-muted-foreground" />
+          <Input className="min-h-11 pl-10" placeholder="Nome ou demanda clínica" value={searchTerm}
+            onChange={event => setSearchTerm(event.target.value)} />
+        </label>
+        <label className="text-sm font-semibold text-foreground">Situação
+          <select aria-label="Filtrar por situação" className="mt-1 block min-h-11 w-full min-w-[140px] rounded-md border border-input bg-background px-3 text-base text-foreground" value={filter} onChange={event => setFilter(event.target.value as typeof filter)}>
+            <option value="all">Todas</option><option value="draft">Rascunhos</option>
+            <option value="finalized">Finalizadas</option><option value="registered">Registros legados</option>
+          </select>
+        </label>
+        <label className="text-sm font-semibold text-foreground">Ordenar
+          <select aria-label="Ordenação" className="mt-1 block min-h-11 w-full rounded-md border border-input bg-background px-3 text-base text-foreground" value={sort} onChange={event => setSort(event.target.value as typeof sort)}>
+            <option value="recent">Atualização recente</option><option value="name">Nome do paciente</option>
+          </select>
+        </label>
       </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="border-primary/15 shadow-sm">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Total de Anamneses</p>
-                <p className="text-2xl font-bold">{anamneses.length}</p>
-              </div>
-              <FileText className="text-primary" size={24} />
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-primary/15 shadow-sm">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Pacientes Únicos</p>
-                <p className="text-2xl font-bold">
-                  {new Set(anamneses.map(a => a.patient_id)).size}
-                </p>
-              </div>
-              <User className="text-primary" size={24} />
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-primary/15 shadow-sm">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Esta Semana</p>
-                <p className="text-2xl font-bold">
-                  {anamneses.filter(a => {
-                    const created = new Date(a.created_at);
-                    const weekAgo = new Date();
-                    weekAgo.setDate(weekAgo.getDate() - 7);
-                    return created >= weekAgo;
-                  }).length}
-                </p>
-              </div>
-              <Calendar className="text-primary" size={24} />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Anamneses List */}
-      {filteredAnamneses.length === 0 ? (
-        <Card>
-          <CardContent className="p-8 text-center">
-            <FileText className="mx-auto mb-4 text-muted-foreground" size={48} />
-            <h3 className="text-lg font-semibold text-foreground mb-2">
-              {anamneses.length === 0 ? "Nenhuma anamnese encontrada" : "Nenhuma anamnese corresponde à busca"}
-            </h3>
-            <p className="text-muted-foreground mb-4">
-              {anamneses.length === 0 
-                ? "Comece criando sua primeira anamnese clicando no botão acima."
-                : "Tente ajustar os termos de busca para encontrar a anamnese desejada."
-              }
-            </p>
-            {anamneses.length === 0 && (
-              <Button onClick={onCreateNew} variant="outline">
-                <Plus size={16} className="mr-2" />
-                Criar Primeira Anamnese
-              </Button>
-            )}
-          </CardContent>
-        </Card>
+      {filtered.length === 0 ? (
+        <Card><CardContent className="p-8 text-center">
+          <FileText size={36} className="mx-auto text-muted-foreground" />
+          <h2 className="mt-3 text-lg font-semibold text-foreground">{anamneses.length ? "Nenhuma anamnese encontrada nesta busca" : "Nenhuma anamnese registrada"}</h2>
+          <p className="mt-2 text-sm text-muted-foreground">{anamneses.length ? "Ajuste o termo ou os filtros." : "Comece criando uma anamnese para um paciente cadastrado."}</p>
+          {!anamneses.length && <Button className="mt-4" onClick={onCreateNew}>Criar anamnese</Button>}
+        </CardContent></Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredAnamneses.map((anamnesis) => (
-            <Card key={anamnesis.id} className="border-primary/15 hover:shadow-md transition-shadow">
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <CardTitle className="text-lg">{anamnesis.patient_name}</CardTitle>
-                    <div className="flex items-center gap-2 mt-1 flex-wrap">
-                      <Badge variant="secondary" className="text-xs">
-                        ID: {anamnesis.patient_id.slice(-8)}
-                      </Badge>
-                      {anamnesis.filled_by_guardian && (
-                        <Badge className="text-xs bg-primary text-primary-foreground hover:bg-primary/90">
-                          Preenchida pelo responsável
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="space-y-3">
-                  {anamnesis.main_clinical_demand && (
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Demanda Principal:</p>
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {anamnesis.main_clinical_demand}
-                      </p>
-                    </div>
-                  )}
-                  
-                  <div className="text-xs text-muted-foreground space-y-1">
-                    <div className="flex items-center gap-1">
-                      <Calendar size={12} />
-                      Criada: {formatDate(anamnesis.created_at)}
-                    </div>
-                    {anamnesis.updated_at !== anamnesis.created_at && (
-                      <div className="flex items-center gap-1">
-                        <Calendar size={12} />
-                        Atualizada: {formatDate(anamnesis.updated_at)}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex justify-between gap-2 pt-2">
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => onView(anamnesis)}
-                        className="flex items-center gap-1"
-                      >
-                        <Eye size={14} />
-                        Ver
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => onEdit(anamnesis.id, anamnesis.patient_id)}
-                        className="flex items-center gap-1"
-                      >
-                        <Edit size={14} />
-                        Editar
-                      </Button>
-                    </div>
-                    
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                          disabled={deleteAnamnesis.isPending}
-                        >
-                          {deleteAnamnesis.isPending ? (
-                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                          ) : (
-                            <Trash2 size={14} />
-                          )}
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Excluir Anamnese</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Tem certeza que deseja excluir a anamnese de <strong>{anamnesis.patient_name}</strong>? 
-                            Esta ação não pode ser desfeita.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleDelete(anamnesis.id)}
-                            className="bg-destructive hover:bg-destructive/90"
-                          >
-                            Excluir
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {visible.map(item => <Card key={item.id} className="min-w-0 border-primary/15">
+            <CardHeader className="pb-2"><div className="flex items-start justify-between gap-2">
+              <CardTitle className="break-words text-base">{item.patient_name || "Paciente cadastrado"}</CardTitle>
+              <Badge variant={item.review_status === "finalized" ? "default" : "secondary"}>{statusLabel[item.review_status]}</Badge>
+            </div></CardHeader>
+            <CardContent className="space-y-3">
+              {item.filled_by_guardian && <p className="text-xs text-primary font-medium">Informações preenchidas pelo responsável</p>}
+              <p className="line-clamp-2 text-sm text-muted-foreground">{item.main_clinical_demand || "Demanda clínica ainda não registrada"}</p>
+              <p className="text-xs text-muted-foreground">Atualizada: {formatDate(item.updated_at)}</p>
+              <div className="flex flex-wrap items-center gap-2">
+                <Button className="min-h-11 gap-1" variant="outline" size="sm" onClick={() => onView(item)}><Eye size={16} /> Ver</Button>
+                <Button className="min-h-11 gap-1" variant="outline" size="sm" onClick={() => onEdit(item.id, item.patient_id)}><Edit size={16} /> Editar</Button>
+                <DropdownMenu><DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="ml-auto min-h-11 min-w-11" aria-label={`Mais ações para ${item.patient_name || "paciente"}`}><MoreHorizontal size={20}/></Button>
+                </DropdownMenuTrigger><DropdownMenuContent align="end">
+                  <DropdownMenuItem className="text-destructive focus:text-destructive" onSelect={() => requestDelete(item)}>Excluir registro...</DropdownMenuItem>
+                </DropdownMenuContent></DropdownMenu>
+              </div>
+            </CardContent>
+          </Card>)}
         </div>
       )}
+      {filtered.length > PAGE_SIZE && <nav className="flex items-center justify-between gap-3" aria-label="Paginação das anamneses">
+        <Button variant="outline" disabled={page <= 1} onClick={() => setPage(v => Math.max(1, v - 1))}>Anterior</Button>
+        <p className="text-sm text-muted-foreground">Página {Math.min(page, pages)} de {pages} · {filtered.length} registros</p>
+        <Button variant="outline" disabled={page >= pages} onClick={() => setPage(v => Math.min(pages, v + 1))}>Próxima</Button>
+      </nav>}
+      <AlertDialog open={Boolean(deleteTarget)} onOpenChange={open => { if (!open && !deleteAnamnesis.isPending) { setDeleteTarget(null); setConfirmation(""); } }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Exclusão permanente de anamnese</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação poderá remover um registro clínico e seus dados vinculados. Confirme que verificou a política de retenção de documentos e que tem autorização para excluir a anamnese de {deleteTarget?.patient_name || "este paciente"}.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <label htmlFor="confirm-delete-anamnesis" className="text-sm font-semibold text-foreground">Digite EXCLUIR para confirmar
+            <Input id="confirm-delete-anamnesis" className="mt-1 min-h-11" autoComplete="off" value={confirmation}
+              onChange={event => setConfirmation(event.target.value)} />
+          </label>
+          <AlertDialogFooter><AlertDialogCancel disabled={deleteAnamnesis.isPending}>Cancelar</AlertDialogCancel>
+            <Button variant="destructive" disabled={confirmation !== "EXCLUIR" || deleteAnamnesis.isPending} onClick={() => void confirmDelete()}>
+              {deleteAnamnesis.isPending ? "Excluindo..." : "Excluir permanentemente"}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { PatientSelect } from "./components/PatientSelect";
+import { ClinicalRevisionHistory } from "./components/ClinicalRevisionHistory";
 import { PatientIdentitySummary } from "./components/PatientIdentitySummary";
 import { prefillAnamnesisFromPatient } from "./utils/patientPrefill";
 import type { RegisteredPatient } from "./utils/patientPrefill";
@@ -140,7 +141,11 @@ export default function AnamnesisFormWrapper({
   const navigateToError = (section: number, field: string) => {
     setActiveAnamnesisTab(section === 1 ? "personal" : section === 5 ? "musical" : "behavioral");
     // A seção pode estar recolhida; informar a aba e deixar o alerta visível.
-    window.setTimeout(() => document.getElementById(field)?.focus(), 120);
+    window.setTimeout(() => {
+      const input = document.getElementById(field);
+      input?.scrollIntoView({ behavior: "smooth", block: "center" });
+      input?.focus({ preventScroll: true });
+    }, 350);
   };
 
   useEffect(() => {
@@ -225,14 +230,6 @@ export default function AnamnesisFormWrapper({
   const getAvailableColumns = async (): Promise<string[]> => {
     if (columnCheckCache) return columnCheckCache;
 
-    const { data, error } = await supabase.from("anamnesis").select("*").limit(1);
-    if (error) throw new Error(`Falha ao consultar o esquema da anamnese: ${error.message}`);
-
-    if (data && data.length > 0) {
-      columnCheckCache = Object.keys(data[0]);
-      return columnCheckCache;
-    }
-
     // Quando não há linhas visíveis, PostgREST ainda valida o nome das colunas.
     // Verificações em lotes evitam enviar campos inexistentes e perder registros.
     const candidates = basicDatabaseFields.filter(key =>
@@ -288,9 +285,7 @@ export default function AnamnesisFormWrapper({
       setIsLoading(true);
       setPatientLoadError(null);
       
-      // Verificar colunas disponíveis primeiro e aguardar
-      await getAvailableColumns();
-      
+      // As colunas só são conferidas ao salvar: a abertura não consulta prontuários.
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast({
@@ -631,13 +626,6 @@ export default function AnamnesisFormWrapper({
     }
   };
 
-  const clinicalRevisionKeys = [
-    "main_clinical_demand", "diagnosis_details", "cid_code", "clinical_details",
-    "current_medication", "patient_musical_history", "musical_behavior_description",
-    "discomfort_sounds", "calming_sounds", "therapeutic_goals", "treatment_approach",
-    "tea_functional_profile", "review_status"
-  ];
-
   const exportPDF = async () => {
     if (!selectedPatient || !formData) {
       toast({
@@ -926,31 +914,7 @@ export default function AnamnesisFormWrapper({
                   })}
                 </ul>
                 {historyOpen && (
-                  <div className="mt-4 space-y-3 border-t border-border pt-4">
-                    <h3 className="font-semibold text-foreground">Últimas alterações registradas</h3>
-                    {historyLoading && <p className="text-sm text-muted-foreground">Carregando histórico...</p>}
-                    {historyError && <p role="alert" className="text-sm text-destructive">{historyError}</p>}
-                    {!historyLoading && !historyError && revisions.length === 0 && <p className="text-sm text-muted-foreground">Nenhuma revisão disponível.</p>}
-                    {!historyLoading && !historyError && revisions.map(revision => {
-                      const changed = clinicalRevisionKeys.filter(key => JSON.stringify(revision.old_snapshot?.[key] ?? null) !== JSON.stringify(revision.new_snapshot?.[key] ?? null));
-                      return (
-                        <details key={revision.id} className="rounded-lg border border-border bg-muted/20 p-3">
-                          <summary className="cursor-pointer text-sm font-semibold text-foreground">
-                            {new Date(revision.changed_at).toLocaleString("pt-BR")} · {revision.event === "created" ? "Criação" : "Atualização"} · {changed.length} campo(s) clínico(s) modificado(s)
-                          </summary>
-                          <div className="mt-3 space-y-2">
-                            {changed.length ? changed.map(key => (
-                              <div key={key} className="break-words rounded-md bg-background p-2 text-xs text-foreground">
-                                <p className="mb-1 font-bold">{key.replace(/_/g, " ")}</p>
-                                <p><strong>Anterior:</strong> {JSON.stringify(revision.old_snapshot?.[key] ?? "Não informado")}</p>
-                                <p><strong>Atual:</strong> {JSON.stringify(revision.new_snapshot?.[key] ?? "Não informado")}</p>
-                              </div>
-                            )) : <p className="text-xs text-muted-foreground">Alteração administrativa ou em outro campo.</p>}
-                          </div>
-                        </details>
-                      );
-                    })}
-                  </div>
+                  <ClinicalRevisionHistory revisions={revisions} loading={historyLoading} error={historyError} />
                 )}
               </section>
 
@@ -960,10 +924,16 @@ export default function AnamnesisFormWrapper({
               </div>
 
               {/* Form Content in Tabs */}
-              <ModernTabsNavigation activeTab={activeAnamnesisTab} onTabChange={setActiveAnamnesisTab}>
+              <ModernTabsNavigation activeTab={activeAnamnesisTab} onTabChange={setActiveAnamnesisTab}
+                pendingTabs={{
+                  personal: validation.errors.filter(e => e.section === 1).length,
+                  musical: validation.errors.filter(e => e.section === 5).length,
+                  behavioral: validation.errors.filter(e => e.section === 12).length,
+                }}>
                 <div className="bg-card rounded-xl p-3 sm:p-6 border border-primary/15 shadow-sm">
                   <InitialEvaluationForm
                     activeTab={activeAnamnesisTab}
+                    completionPercentage={validation.completionPercentage}
                     content={formData}
                     onChange={updateFormData}
                     fieldErrors={showValidation ? validation.fieldErrors : {}}
