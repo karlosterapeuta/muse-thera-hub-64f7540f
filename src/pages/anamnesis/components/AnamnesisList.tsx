@@ -92,7 +92,7 @@ export function AnamnesisList({ onCreateNew, onEdit, onView }: AnamnesesListProp
       <header className="flex flex-col gap-4 rounded-2xl border border-primary/20 bg-primary/5 p-5 sm:flex-row sm:items-center sm:justify-between">
         <div><h1 className="text-2xl font-bold text-foreground">Anamneses</h1>
           <p className="text-sm text-muted-foreground">Histórico e acompanhamento musicoterapêutico dos pacientes cadastrados.</p></div>
-        <Button className="min-h-11 gap-2" onClick={onCreateNew}><Plus size={17} /> Nova anamnese</Button>
+        <Button className="min-h-11 gap-2" onClick={onCreateNew}><Plus size={17} /> Nova Anamnese</Button>
       </header>
       <div className="grid grid-cols-3 gap-2 sm:gap-4" aria-label="Indicadores de anamneses">
         {[
