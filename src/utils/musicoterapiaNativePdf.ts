@@ -170,7 +170,8 @@ export async function exportMusicoterapiaNativePdf(
   const headingX = images.logo ? 50 : margin + 9;
   if (images.logo) addImage(images.logo, margin + 7, y + 5, 28, 17);
   setFace(8, true, GREEN);
-  pdf.text(brandName || 'DOCUMENTACAO CLINICA', headingX, y + 8);
+  const brandLines: string[] = pdf.splitTextToSize(brandName || 'DOCUMENTACAO CLINICA', Math.max(52, right - headingX - 8)).slice(0, 2);
+  pdf.text(brandLines, headingX, y + (brandLines.length > 1 ? 5.8 : 8));
   setFace(17.5, true, [19,78,74]);
   pdf.text('Relatório de Musicoterapia', headingX, y + 17);
   setFace(9, false, MUTED);
