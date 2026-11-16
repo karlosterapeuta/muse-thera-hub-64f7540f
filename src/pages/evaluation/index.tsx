@@ -548,6 +548,15 @@ function EvaluationForm({ requested }: { requested: string }) {
 
   const handleDownloadSavedEvaluation = async (evaluation: SavedEvaluation) => {
     const loadingToast = toast.loading("Gerando PDF da avaliação salva...");
+    const savedPatient = patients.find(patient => patient.id === evaluation.patient_id);
+    const patientName = evaluation.patient_name || savedPatient?.name || "Paciente";
+    const patientBirthDate = evaluation.patient_birth_date || savedPatient?.birth_date || undefined;
+    const patientAge = calculateAgeFromBirthDate(patientBirthDate) ?? evaluation.patient_age ?? savedPatient?.age ?? undefined;
+    const evaluationDateForPdf = new Date(evaluation.date || evaluation.created_at);
+    if (Number.isNaN(evaluationDateForPdf.getTime())) {
+      toast.error("A avaliação salva possui uma data inválida. Verifique o registro antes de exportar.", { id: loadingToast });
+      return;
+    }
     
     try {
       // Converter URLs para Base64
@@ -568,12 +577,15 @@ function EvaluationForm({ requested }: { requested: string }) {
         photoBase64 = await imageUrlToBase64(photoUrl);
       }
 
+      // Use the persisted assessment snapshot, never the currently selected patient.
       const savedOverallScore: any = evaluation.content?.overallScore || {};
+      const scorePercentage = Number(savedOverallScore.percentage);
+      const safePercentage = Number.isFinite(scorePercentage) ? Math.min(100, Math.max(0, scorePercentage)) : 0;
       const fullOverallScore = {
         raw: savedOverallScore.raw || 0,
         max: savedOverallScore.max || 100,
-        percentage: savedOverallScore.percentage || 0,
-        completionPercentage: savedOverallScore.completionPercentage || savedOverallScore.percentage || 0,
+        percentage: safePercentage,
+        completionPercentage: savedOverallScore.completionPercentage ?? safePercentage,
         evaluatedDomains: savedOverallScore.evaluatedDomains || evaluation.content?.domainScores?.length || 0,
         totalDomains: savedOverallScore.totalDomains || evaluationDomains.length,
         evaluatedParameters: savedOverallScore.evaluatedParameters || 0,
@@ -583,7 +595,7 @@ function EvaluationForm({ requested }: { requested: string }) {
       const pdfContent = (
         <div id="saved-evaluation-pdf-content" style={{ display: 'block' }}>
           <EnhancedMuseteraReportPDF
-            patientName={selectedPatientData?.name || 'Paciente'}
+            patientName={patientName}
             professionalData={professionalData}
             categoryData={[]}
             pieData={[
@@ -598,7 +610,7 @@ function EvaluationForm({ requested }: { requested: string }) {
             selectedParameters={evaluation.content?.selections || {}}
             overallScore={fullOverallScore}
             evaluationDomains={evaluationDomains}
-            evaluationDate={new Date(evaluation.date)}
+            evaluationDate={evaluationDateForPdf}
             digitalSignatureUrl={signatureBase64 || undefined}
             digitalStampUrl={stampBase64 || undefined}
             professionalEmail={professionalData?.email || undefined}
@@ -606,8 +618,8 @@ function EvaluationForm({ requested }: { requested: string }) {
             professionalSpecialty={professionalData?.specialty || undefined}
             professionalPhotoUrl={photoBase64 || undefined}
             patientData={{
-              age: calculateAgeFromBirthDate(selectedPatientData?.birth_date) ?? selectedPatientData?.age ?? undefined,
-              birthDate: selectedPatientData?.birth_date || undefined
+              age: patientAge,
+              birthDate: patientBirthDate
             }}
           />
         </div>
@@ -621,7 +633,7 @@ function EvaluationForm({ requested }: { requested: string }) {
 
       const opt = {
         margin: [8, 8],
-        filename: `avaliacao-${selectedPatientData?.name || 'paciente'}-${format(new Date(evaluation.date), 'yyyy-MM-dd')}.pdf`,
+        filename: `avaliacao-${patientName.replace(/[^\p{L}\p{N}_-]+/gu, '_')}-${format(evaluationDateForPdf, 'yyyy-MM-dd')}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
           scale: 1.8,
@@ -640,8 +652,7 @@ function EvaluationForm({ requested }: { requested: string }) {
       };
 
       const pdfInst1 = html2pdf().set(opt).from(root);
-      await pdfInst1.save();
-      try { const blob = await pdfInst1.outputPdf('blob'); await savePDFToStorage(blob, opt.filename, "evaluation"); } catch(e) { console.warn(e); }
+      await pdfInst1.save(); // Download only; do not re-render or overwrite saved clinical documents.
       
       } finally {
         cleanup();
@@ -649,8 +660,8 @@ function EvaluationForm({ requested }: { requested: string }) {
       
       toast.success("PDF da avaliação baixado com sucesso!", { id: loadingToast });
     } catch (error) {
-      console.error("Erro ao gerar PDF:", error);
-      toast.error("Erro ao gerar PDF. Por favor, tente novamente.", { id: loadingToast });
+      console.error("Falha na exportação da avaliação salva:", error instanceof Error ? error.message : 'erro desconhecido');
+      toast.error("Não foi possível gerar o PDF da avaliação salva. Verifique os dados do registro e tente novamente.", { id: loadingToast });
     }
   };
 
