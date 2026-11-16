@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Eye, Zap, Download, FileText, Loader2, Upload, Image, X, Save, CheckCircle, Info, ChevronRight, Archive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -21,6 +22,7 @@ interface FinalReviewSectionProps {
   onSaveReport: () => void;
   logoUrl: string | null;
   onLogoChange: (logoUrl: string | null) => void;
+  onBrandNameChange: (name: string) => void;
   onExportPDF: (logoUrl?: string | null, archive?: boolean) => Promise<void>;
   isExporting: boolean;
   isSaving: boolean;
@@ -32,6 +34,7 @@ export function FinalReviewSection({
   onSaveReport,
   logoUrl,
   onLogoChange,
+  onBrandNameChange,
   onExportPDF,
   isExporting,
   isSaving,
@@ -510,6 +513,23 @@ export function FinalReviewSection({
               </>
             )}
           </div>
+        </div>
+
+        <div className="rounded-2xl border border-border/70 bg-card p-4 sm:p-5 space-y-3">
+          <div>
+            <h3 className="text-sm sm:text-base font-semibold text-foreground">Sua identidade no PDF</h3>
+            <p className="mt-1 text-xs text-muted-foreground">Opcional: informe o nome da clínica, consultório ou marca. Ele aparecerá no cabeçalho, junto à logo enviada, se houver.</p>
+          </div>
+          <label htmlFor="musicoterapia-pdf-brand-name" className="text-xs font-medium text-foreground">Nome ou marca</label>
+          <Input
+            id="musicoterapia-pdf-brand-name"
+            value={typeof reportData.fieldValues?.pdf_brand_name === 'string' ? reportData.fieldValues.pdf_brand_name : ''}
+            onChange={event => onBrandNameChange(event.target.value.slice(0, 80))}
+            maxLength={80}
+            placeholder="Ex.: Clínica Musical"
+            autoComplete="organization"
+          />
+          <p className="text-xs text-muted-foreground">Se ficar vazio, o PDF mostrará apenas “Documentação clínica”. O crédito MuseTera fica discreto no rodapé.</p>
         </div>
 
         {/* Visualizar */}
