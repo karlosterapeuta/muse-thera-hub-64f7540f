@@ -64,6 +64,8 @@ export async function exportMusicoterapiaNativePdf(
   });
 
   const fields: Record<string, any> = report.fieldValues || {};
+  // Personalização editorial pertence ao relatório, não substitui o registro do profissional.
+  const brandName = typeof fields.pdf_brand_name === 'string' ? clean(fields.pdf_brand_name).slice(0, 80) : '';
   const margin = 14;
   const right = 196;
   const usable = right - margin;
@@ -168,7 +170,7 @@ export async function exportMusicoterapiaNativePdf(
   const headingX = images.logo ? 50 : margin + 9;
   if (images.logo) addImage(images.logo, margin + 7, y + 5, 28, 17);
   setFace(8, true, GREEN);
-  pdf.text('MUSETERA  /  DOCUMENTACAO CLINICA', headingX, y + 8);
+  pdf.text(brandName || 'DOCUMENTACAO CLINICA', headingX, y + 8);
   setFace(17.5, true, [19,78,74]);
   pdf.text('Relatório de Musicoterapia', headingX, y + 17);
   setFace(9, false, MUTED);
@@ -519,8 +521,10 @@ export async function exportMusicoterapiaNativePdf(
     pdf.setDrawColor(197,216,214);
     pdf.setLineWidth(0.22);
     pdf.line(margin,283,right,283);
-    setFace(7.7,false,MUTED);
-    pdf.text('MUSETERA  |  Relatório de Musicoterapia  |  Documento confidencial',margin,289);
+    setFace(7.1,false,MUTED);
+    pdf.text('Relatório de Musicoterapia  |  Documento confidencial',margin,288);
+    setFace(6.3,false,[139,151,157]);
+    pdf.text('Gerado com MuseTera',margin,292);
     pdf.text('Página '+page+' de '+totalPages,right,289,{align:'right'});
   }
   const blob=pdf.output('blob') as Blob;
