@@ -1072,9 +1072,9 @@ export default function MusicoterapiaPage() {
         patientDiagnosis: fieldValues.patient_diagnosis || report.content?.patient_info?.diagnosis || '',
         patientBirthDate: fieldValues.patient_birth_date || report.content?.patient_info?.birth_date || '',
         patientGuardian: fieldValues.patient_guardian || report.content?.patient_info?.guardian || '',
-        professionalName: fieldValues.professional_name || professionalData?.name || '',
-        professionalRegistry: fieldValues.professional_registry || professionalData?.register || professionalData?.license_number || '',
-        professionalSpecialty: fieldValues.professional_specialty || professionalData?.specialty || 'Musicoterapia',
+        professionalName: report.content?.professional_info?.name || fieldValues.professional_name || professionalData?.name || '',
+        professionalRegistry: report.content?.professional_info?.registry || fieldValues.professional_registry || professionalData?.register || professionalData?.license_number || '',
+        professionalSpecialty: report.content?.professional_info?.specialty || fieldValues.professional_specialty || professionalData?.specialty || 'Musicoterapia',
         sessionDate: fieldValues.session_date || report.content?.session_date || '',
         // Preservar todos os campos do relatório salvo, inclusive os novos indicadores clínicos.
         fieldValues: { ...fieldValues },
@@ -1089,14 +1089,18 @@ export default function MusicoterapiaPage() {
       if (professionalData?.stamp_photo_url) {
         photoBase64 = await imageUrlToBase64(professionalData.stamp_photo_url);
       }
-      if (professionalData?.digital_stamp_url) {
-        stampBase64 = await imageUrlToBase64(professionalData.digital_stamp_url);
-      }
+      // The saved PDF generators require signatureBase64. Retrieve both assets
+      // from the authenticated professional, as in the new-report export flow.
+      const professionalImages = await resolveMusicoterapiaProfessionalAssets(professionalData, userId);
+      stampBase64 = professionalImages.stamp;
+      const signatureBase64 = professionalImages.signature;
       const savedLogoUrl = typeof report.content?.logo_url === 'string' ? report.content.logo_url : null;
       const savedLogoBase64 = savedLogoUrl ? await imageUrlToBase64(savedLogoUrl) : null;
 
       // Mesmo template e paginação usados no relatório recém-gerado.
-      const filename = `Relatorio_Musicoterapia_${(reportDataForPDF.patientName || 'paciente').replace(/[^\p{L}\p{N}_-]+/gu, '_')}_${new Date(report.created_at).toISOString().split('T')[0]}.pdf`;
+      const savedDate = new Date(report.created_at || report.content?.session_date || Date.now());
+      const datePart = Number.isNaN(savedDate.getTime()) ? 'data-nao-informada' : savedDate.toISOString().split('T')[0];
+      const filename = `Relatorio_Musicoterapia_${(reportDataForPDF.patientName || 'paciente').replace(/[^\p{L}\p{N}_-]+/gu, '_')}_${datePart}.pdf`;
       const isStructuredReport = getSelectedMusicoterapiaApproaches(fieldValues.musicoterapia_approach_ids).length > 0;
       const blob = isStructuredReport
         ? await exportMusicoterapiaNativePdf(
@@ -1115,11 +1119,11 @@ export default function MusicoterapiaPage() {
       });
 
     } catch (error) {
-      console.error('Erro ao gerar PDF:', error);
+      // Do not print the underlying clinical record or report contents in logs.
       toast({
         variant: "destructive",
         title: "Erro ao gerar PDF",
-        description: "Ocorreu um erro inesperado.",
+        description: error instanceof Error ? error.message : "Não foi possível obter o documento. Tente novamente.",
       });
     } finally {
       setIsExporting(false);
