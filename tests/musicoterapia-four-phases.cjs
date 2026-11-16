@@ -164,7 +164,7 @@ test('personalização opcional: cabeçalho sem MuseTera e crédito discreto no 
   const review = read('src/components/musicoterapia/FinalReviewSection.tsx');
   const wizard = read('src/components/musicoterapia/MusicoterapiaReportWizard.tsx');
   assert.match(native, /fields\.pdf_brand_name/);
-  assert.match(native, /pdf\.text\(brandName \|\| 'DOCUMENTACAO CLINICA'/);
+  assert.match(native, /const brandLines: string\[\] = pdf\.splitTextToSize\(brandName \|\| 'DOCUMENTACAO CLINICA'/);
   assert.doesNotMatch(native, /pdf\.text\('MUSETERA  \/  DOCUMENTACAO CLINICA'/);
   assert.match(native, /Gerado com MuseTera/);
   assert.match(legacy, /Gerado com MuseTera/);
