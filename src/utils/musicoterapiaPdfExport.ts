@@ -153,7 +153,10 @@ export async function exportMusicoterapiaHtmlPdf(
       pdf.setFont('helvetica', 'normal');
       pdf.setFontSize(7.5);
       pdf.setTextColor(90, 109, 122);
-      pdf.text('MUSETERA  |  Relatório de Musicoterapia  |  Documento confidencial', 12, 289);
+      pdf.text('Relatório de Musicoterapia  |  Documento confidencial', 12, 288);
+      pdf.setFontSize(6.3);
+      pdf.setTextColor(139, 151, 157);
+      pdf.text('Gerado com MuseTera', 12, 292);
       pdf.text(`Página ${page} de ${pages}`, 198, 289, { align: 'right' });
     }
     const blob = pdf.output('blob') as Blob;

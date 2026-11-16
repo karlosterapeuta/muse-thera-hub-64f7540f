@@ -155,3 +155,22 @@ test('regressão: PDFs de relatórios salvos têm assinatura declarada e preserv
   assert.match(savedHandler, /getPrivateClinicalPdf\(archivedId\)/);
   assert.doesNotMatch(savedHandler, /\.update\(|\.delete\(|\.insert\(/);
 });
+
+
+test('personalização opcional: cabeçalho sem MuseTera e crédito discreto no rodapé', () => {
+  const native = read('src/utils/musicoterapiaNativePdf.ts');
+  const legacy = read('src/utils/musicoterapiaPdfExport.ts');
+  const page = read('src/pages/processes/musicoterapia/index.tsx');
+  const review = read('src/components/musicoterapia/FinalReviewSection.tsx');
+  const wizard = read('src/components/musicoterapia/MusicoterapiaReportWizard.tsx');
+  assert.match(native, /fields\.pdf_brand_name/);
+  assert.match(native, /const brandLines: string\[\] = pdf\.splitTextToSize\(brandName \|\| 'DOCUMENTACAO CLINICA'/);
+  assert.doesNotMatch(native, /pdf\.text\('MUSETERA  \/  DOCUMENTACAO CLINICA'/);
+  assert.match(native, /Gerado com MuseTera/);
+  assert.match(legacy, /Gerado com MuseTera/);
+  assert.doesNotMatch(legacy, /pdf\.text\('MUSETERA  \|/);
+  assert.match(page, /fields\.pdf_brand_name\.trim\(\)/);
+  assert.match(review, /Sua identidade no PDF/);
+  assert.match(review, /onBrandNameChange\(event\.target\.value\.slice\(0, 80\)\)/);
+  assert.match(wizard, /handleFieldUpdate\('pdf_brand_name', name\)/);
+});

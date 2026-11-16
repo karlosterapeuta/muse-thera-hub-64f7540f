@@ -666,6 +666,7 @@ export function MusicoterapiaReportWizard({
             reportData={reportData}
             logoUrl={logoUrl}
             onLogoChange={onLogoChange}
+            onBrandNameChange={(name) => handleFieldUpdate('pdf_brand_name', name)}
             onExportPDF={onExportPDF}
             isExporting={isExporting}
             onSaveReport={onSaveReport}

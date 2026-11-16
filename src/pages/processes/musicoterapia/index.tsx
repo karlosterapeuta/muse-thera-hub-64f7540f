@@ -380,7 +380,7 @@ export default function MusicoterapiaPage() {
         <header class="pdf-masthead pdf-keep">
           <div class="pdf-masthead-copy">
             ${logoUrl ? `<img class="pdf-document-logo" src="${escapeHtml(logoUrl)}" alt="Logotipo profissional" />` : ''}
-            <span class="pdf-kicker">MUSETERA  /  DOCUMENTAÇÃO CLÍNICA</span>
+            <span class="pdf-kicker">${escapeHtml(typeof fields.pdf_brand_name === 'string' && fields.pdf_brand_name.trim() ? fields.pdf_brand_name.trim().slice(0, 80) : 'DOCUMENTAÇÃO CLÍNICA')}</span>
             <h1>Relatório de Musicoterapia</h1>
             <p>Acompanhamento musicoterapêutico individualizado</p>
           </div>
