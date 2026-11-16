@@ -139,3 +139,19 @@ test('PDF A4 com assinatura é texto extraível e usa dados totalmente fictício
   assert.match(text,/Página 1 de/);
   await pdf.destroy();
 });
+
+
+test('regressão: PDFs de relatórios salvos têm assinatura declarada e preservam dados históricos', () => {
+  const page = read('src/pages/processes/musicoterapia/index.tsx');
+  const savedHandler = page.split('const handleDownloadReportPDF = async (report: any) => {')[1]
+    ?.split('const handleDeleteSuccess =')[0];
+  assert.ok(savedHandler, 'rotina de download de relatório salvo deve existir');
+  assert.match(savedHandler, /const signatureBase64 = professionalImages\.signature;/);
+  assert.match(savedHandler, /stampBase64 = professionalImages\.stamp;/);
+  assert.match(savedHandler, /signature: signatureBase64/);
+  assert.match(savedHandler, /generatePDFContent\(reportDataForPDF, photoBase64, stampBase64, savedLogoBase64, null, signatureBase64\)/);
+  assert.match(savedHandler, /report\.content\?\.professional_info\?\.name/);
+  assert.match(savedHandler, /Number\.isNaN\(savedDate\.getTime\(\)\)/);
+  assert.match(savedHandler, /getPrivateClinicalPdf\(archivedId\)/);
+  assert.doesNotMatch(savedHandler, /\.update\(|\.delete\(|\.insert\(/);
+});
