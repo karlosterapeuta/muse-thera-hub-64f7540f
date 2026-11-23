@@ -26,35 +26,35 @@ export function ModernTabsNavigation({
       label: "Dados Pessoais",
       mobileLabel: "Dados",
       icon: UserCircle,
-      description: "Informações básicas do paciente",
-    },
-    {
-      id: "musical",
-      label: "Histórico Musical",
-      mobileLabel: "Histórico",
-      icon: AudioWaveform,
-      description: "Experiências e preferências musicais",
+      description: "Identificação e demanda clínica principal",
     },
     {
       id: "clinical",
       label: "Avaliação Clínica",
-      mobileLabel: "Avaliação",
+      mobileLabel: "Clínica",
       icon: Stethoscope,
-      description: "Diagnósticos e tratamentos atuais",
+      description: "Histórico clínico, medicações e acompanhamentos",
+    },
+    {
+      id: "musical",
+      label: "Histórico Musical",
+      mobileLabel: "Musical",
+      icon: AudioWaveform,
+      description: "Experiências, preferências e identidade sonora",
     },
     {
       id: "development",
       label: "Desenvolvimento",
       mobileLabel: "Desenv.",
       icon: Activity,
-      description: "Marcos do desenvolvimento",
+      description: "Marcos motores, linguagem e aprendizagem",
     },
     {
       id: "behavioral",
       label: "Terapêutico e Comportamental",
       mobileLabel: "T.C.",
       icon: Brain,
-      description: "Aspectos comportamentais e sociais",
+      description: "Comportamento, participação e plano terapêutico",
     },
   ];
 
@@ -68,7 +68,7 @@ export function ModernTabsNavigation({
     <div className="w-full">
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <div className="mb-5 md:mb-8">
-          <p className="mb-2 text-sm text-muted-foreground md:hidden">Deslize para navegar pelas 5 etapas da anamnese.</p>
+          <p className="mb-2 text-sm text-muted-foreground md:hidden">Etapas da avaliação · deslize para navegar</p>
           <TabsList aria-label="Seções da anamnese" className="flex w-full gap-2 overflow-x-auto p-2 md:grid md:grid-cols-5 md:overflow-visible h-auto rounded-2xl bg-muted/40 border border-border/60">
             {tabs.map((tab) => {
               const isActive = activeTab === tab.id;
@@ -113,7 +113,7 @@ export function ModernTabsNavigation({
         </div>
 
         <div className="animate-fade-in">{children}</div>
-        <nav aria-label="Navegação entre as etapas" className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-muted/20 p-3">
+        <nav aria-label="Navegação entre as etapas" className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card p-3 sm:p-4">
           <Button type="button" variant="outline" className="min-h-11 gap-2"
             disabled={activeIndex === 0} onClick={() => navigateStep(-1)}>
             <ChevronLeft className="h-4 w-4" /> Etapa anterior
