@@ -23,7 +23,7 @@ export function ModernCheckboxCard({
   return (
     <div
       className={cn(
-        "group relative flex items-start gap-3 p-4 rounded-xl border-2 transition-all duration-300 cursor-pointer",
+        "group relative flex items-start gap-3 p-4 rounded-xl border-2 transition-all duration-200 cursor-default",
         "hover:shadow-md hover:border-primary/50 hover:bg-accent/30",
         checked
           ? "border-primary bg-primary/5 shadow-sm"
@@ -34,6 +34,7 @@ export function ModernCheckboxCard({
         id={id}
         checked={checked}
         onCheckedChange={(value) => onChange(value as boolean)}
+        aria-describedby={description ? `${id}-description` : undefined}
         className={cn(
           "mt-0.5 h-5 w-5 rounded-md transition-all",
           "data-[state=checked]:bg-primary data-[state=checked]:border-primary"
@@ -60,11 +61,11 @@ export function ModernCheckboxCard({
           </Label>
         </div>
         {description && (
-          <p className="text-xs text-muted-foreground mt-1">{description}</p>
+          <p id={`${id}-description`} className="text-xs leading-relaxed text-muted-foreground mt-1">{description}</p>
         )}
       </div>
       {checked && (
-        <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary animate-pulse" />
+        <div aria-hidden="true" className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary" />
       )}
     </div>
   );
