@@ -161,7 +161,7 @@ def run():
         assert len(records) == 1, "Selecionar outro paciente não pode criar registro automaticamente"
         # A navegação acessível por etapas mantém dados já digitados.
         direct.get_by_role("button", name="Próxima etapa").click()
-        expect(direct.get_by_role("tab", name="Histórico Musical")).to_have_attribute("data-state", "active")
+        expect(direct.get_by_role("tab", name="Avaliação Clínica")).to_have_attribute("data-state", "active")
         direct.get_by_role("button", name="Etapa anterior").click()
         expect(direct.get_by_role("tab", name="Dados Pessoais")).to_have_attribute("data-state", "active")
         direct.close()
@@ -172,7 +172,7 @@ def run():
         mobile.goto(BASE + "/anamnesis?patient_id=" + B)
         expect(mobile.get_by_role("region", name="Dados cadastrados do paciente")).to_contain_text("Beto Teste")
         mobile.get_by_role("button", name="Próxima etapa").click()
-        expect(mobile.get_by_role("tab", name="Histórico Musical")).to_have_attribute("data-state", "active")
+        expect(mobile.get_by_role("tab", name="Avaliação Clínica")).to_have_attribute("data-state", "active")
         assert mobile.evaluate("document.documentElement.scrollWidth <= innerWidth + 2"), "Página não pode transbordar horizontalmente no celular"
         mobile.close()
         print("Anamnese sintética: autopreenchimento, troca protegida, navegação responsiva, 1 insert, autosave, finalização e PDF — OK")

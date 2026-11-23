@@ -138,14 +138,27 @@ export default function AnamnesisFormWrapper({
     else navigate("/processes");
   };
 
+  // Mapeamento único das 12 seções para as cinco etapas visíveis do formulário.
+  // Manter alinhado com os activeTab usados em InitialEvaluationForm.
+  const sectionTabMap: Record<number, string> = {
+    1: "personal",
+    2: "clinical", 3: "clinical", 4: "clinical",
+    5: "musical", 6: "musical", 7: "musical", 8: "musical",
+    9: "development",
+    10: "behavioral", 11: "behavioral", 12: "behavioral",
+  };
+
   const navigateToError = (section: number, field: string) => {
-    setActiveAnamnesisTab(section === 1 ? "personal" : section === 5 ? "musical" : "behavioral");
-    // A seção pode estar recolhida; informar a aba e deixar o alerta visível.
+    const targetTab = sectionTabMap[section];
+    if (targetTab) setActiveAnamnesisTab(targetTab);
+    // A seção com pendência é expandida automaticamente pelo CollapsibleSection.
+    // Aguardar a troca de aba e a renderização antes de levar o foco ao campo.
     window.setTimeout(() => {
       const input = document.getElementById(field);
-      input?.scrollIntoView({ behavior: "smooth", block: "center" });
-      input?.focus({ preventScroll: true });
-    }, 350);
+      if (!input) return;
+      input.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (input instanceof HTMLElement) input.focus({ preventScroll: true });
+    }, 250);
   };
 
   useEffect(() => {
@@ -490,10 +503,12 @@ export default function AnamnesisFormWrapper({
     }
 
     if (mode === "finalized") {
-      const missing = missingFinalizationFields(snapshot).map(({ label }) => label);
-      if (missing.length) {
+      const missingFields = missingFinalizationFields(snapshot);
+      const missing = missingFields.map(({ label }) => label);
+      if (missingFields.length) {
         setShowValidation(true);
-        setActiveAnamnesisTab("personal");
+        const firstMissingSection = missingFields[0].section;
+        setActiveAnamnesisTab(sectionTabMap[firstMissingSection] || "personal");
         toast({ title: "Anamnese incompleta para finalização", description: `Preencha: ${missing.join(", ")}. Você pode salvar como rascunho.`, variant: "destructive" });
         return false;
       }
@@ -842,8 +857,12 @@ export default function AnamnesisFormWrapper({
           
           <CardContent className="p-3 sm:p-6 lg:p-8">
             <form onSubmit={handleSubmit} className="space-y-8">
-              {/* Patient Selection */}
-              <div className="bg-card rounded-xl p-4 sm:p-6 border border-primary/15 shadow-sm space-y-4">
+              {/* Seleção e identificação do paciente */}
+              <section aria-label="Paciente da anamnese" className="rounded-xl border border-border bg-card p-4 shadow-sm sm:p-5 space-y-4">
+                <div>
+                  <h2 className="text-sm font-semibold text-foreground">Paciente e identificação</h2>
+                  <p className="mt-1 text-xs text-muted-foreground">Selecione o cadastro que será vinculado a esta avaliação.</p>
+                </div>
                 <PatientSelect
                   patients={patients}
                   selectedPatient={selectedPatient}
@@ -868,9 +887,9 @@ export default function AnamnesisFormWrapper({
                     />
                   </div>
                 )}
-              </div>
+              </section>
               
-              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4" role="status" aria-live="polite">
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/15 bg-muted/20 p-4" role="status" aria-live="polite">
                 <div>
                   <p className="font-semibold text-foreground">Situação da anamnese: {reviewStatus === "finalized" ? "Finalizada" : "Rascunho"}</p>
                   <p className="text-sm text-muted-foreground">
@@ -887,6 +906,34 @@ export default function AnamnesisFormWrapper({
                   {isSubmitting ? "Salvando..." : "Finalizar anamnese"}
                 </button>
               </div>
+
+              {/* Form Content in Tabs */}
+              <ModernTabsNavigation activeTab={activeAnamnesisTab} onTabChange={setActiveAnamnesisTab}
+                pendingTabs={validation.errors.reduce((counts, error) => {
+                  const tab = sectionTabMap[error.section];
+                  if (tab) counts[tab] = (counts[tab] || 0) + 1;
+                  return counts;
+                }, {} as Record<string, number>)}>
+                <div className="bg-card rounded-xl p-3 sm:p-6 border border-primary/15 shadow-sm">
+                  <InitialEvaluationForm
+                    activeTab={activeAnamnesisTab}
+                    completionPercentage={validation.completionPercentage}
+                    content={formData}
+                    onChange={updateFormData}
+                    fieldErrors={showValidation ? validation.fieldErrors : {}}
+                    getSectionErrors={showValidation ? validation.getSectionErrors : () => []}
+                  />
+                </div>
+              </ModernTabsNavigation>
+
+              {/* Validation Summary */}
+              {showValidation && !validation.isValid && (
+                <AnamnesisValidationSummary
+                  isValid={validation.isValid}
+                  errors={validation.errors}
+                  onNavigateToError={navigateToError}
+                />
+              )}
 
               <section className="rounded-xl border border-border bg-card p-4" aria-label="Pendências e histórico de alterações">
                 <div className="flex flex-wrap items-center justify-between gap-3">
@@ -922,34 +969,6 @@ export default function AnamnesisFormWrapper({
                 <p className="font-semibold">Conferência dos documentos profissionais</p>
                 <p className="mt-1">{pdfAssets === "ready" ? "Assinatura e carimbo cadastrados. A integridade das imagens será conferida durante a exportação." : pdfAssets === "missing" ? "Assinatura ou carimbo não encontrado no cadastro. Confira a página Carimbo Digital antes de exportar." : pdfAssets === "checking" ? "Conferindo cadastro da assinatura e do carimbo..." : "Não foi possível conferir o cadastro agora. A exportação ainda verificará as imagens."}</p>
               </div>
-
-              {/* Form Content in Tabs */}
-              <ModernTabsNavigation activeTab={activeAnamnesisTab} onTabChange={setActiveAnamnesisTab}
-                pendingTabs={{
-                  personal: validation.errors.filter(e => e.section === 1).length,
-                  musical: validation.errors.filter(e => e.section === 5).length,
-                  behavioral: validation.errors.filter(e => e.section === 12).length,
-                }}>
-                <div className="bg-card rounded-xl p-3 sm:p-6 border border-primary/15 shadow-sm">
-                  <InitialEvaluationForm
-                    activeTab={activeAnamnesisTab}
-                    completionPercentage={validation.completionPercentage}
-                    content={formData}
-                    onChange={updateFormData}
-                    fieldErrors={showValidation ? validation.fieldErrors : {}}
-                    getSectionErrors={showValidation ? validation.getSectionErrors : () => []}
-                  />
-                </div>
-              </ModernTabsNavigation>
-
-              {/* Validation Summary */}
-              {showValidation && !validation.isValid && (
-                <AnamnesisValidationSummary
-                  isValid={validation.isValid}
-                  errors={validation.errors}
-                  onNavigateToError={navigateToError}
-                />
-              )}
 
               {/* Action Buttons */}
               <ModernActionButtons
