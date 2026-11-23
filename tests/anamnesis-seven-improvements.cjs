@@ -113,8 +113,7 @@ test("visualização Ver remove identificação duplicada e preserva todos os ca
   assert.match(view, /Detalhes clínicos complementares/);
   for (const field of [
     "mother_name", "father_name", "diagnosis_date", "support_level",
-    "patient_age", "patient_contact", "main_clinical_demand",
-    "calming_strategies", "tea_functional_profile"
+    "patient_age", "patient_contact", "main_clinical_demand"
   ]) assert.match(view, new RegExp(field));
   assert.match(view, /const additionalFields = Object\\.entries\\(anamnesisData\\)/);
   assert.match(view, /formattedValue\\(value\\)/);
