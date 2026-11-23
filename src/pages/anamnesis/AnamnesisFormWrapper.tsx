@@ -503,10 +503,12 @@ export default function AnamnesisFormWrapper({
     }
 
     if (mode === "finalized") {
-      const missing = missingFinalizationFields(snapshot).map(({ label }) => label);
-      if (missing.length) {
+      const missingFields = missingFinalizationFields(snapshot);
+      const missing = missingFields.map(({ label }) => label);
+      if (missingFields.length) {
         setShowValidation(true);
-        setActiveAnamnesisTab("personal");
+        const firstMissingSection = missingFields[0].section;
+        setActiveAnamnesisTab(sectionTabMap[firstMissingSection] || "personal");
         toast({ title: "Anamnese incompleta para finalização", description: `Preencha: ${missing.join(", ")}. Você pode salvar como rascunho.`, variant: "destructive" });
         return false;
       }
