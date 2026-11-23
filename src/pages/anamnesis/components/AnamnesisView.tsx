@@ -356,7 +356,7 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
   const displayName = (key: string) => key
     .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
     .replace(/_/g, " ")
-    .replace(/\\b\\w/g, character => character.toUpperCase());
+    .replace(/\b\w/g, character => character.toUpperCase());
   const isPresent = (value: unknown) => {
     if (value === null || value === undefined) return false;
     if (typeof value === "string") return value.trim() !== "";
