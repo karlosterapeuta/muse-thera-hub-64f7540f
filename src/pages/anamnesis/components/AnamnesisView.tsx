@@ -445,7 +445,7 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
     'rett_syndrome', 'angelman_syndrome', 'alzheimer', 'parkinson',
     'depression', 'bipolar_disorder',
   ]);
-  const systemKeys = new Set(['id', 'patient_id', 'professional_id', 'created_at', 'updated_at', 'user_id']);
+  const systemKeys = new Set(['id', 'patient_id', 'professional_id', 'created_at', 'updated_at', 'user_id', 'review_status', 'finalized_at', 'finalized_by']);
   const additionalFields = Object.entries(anamnesisData).filter(([key, value]) =>
     !alreadyShown.has(key) && !systemKeys.has(key) && isPresent(value)
   );
