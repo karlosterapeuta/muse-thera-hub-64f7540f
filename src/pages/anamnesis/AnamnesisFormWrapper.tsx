@@ -905,6 +905,34 @@ export default function AnamnesisFormWrapper({
                 </button>
               </div>
 
+              {/* Form Content in Tabs */}
+              <ModernTabsNavigation activeTab={activeAnamnesisTab} onTabChange={setActiveAnamnesisTab}
+                pendingTabs={validation.errors.reduce((counts, error) => {
+                  const tab = sectionTabMap[error.section];
+                  if (tab) counts[tab] = (counts[tab] || 0) + 1;
+                  return counts;
+                }, {} as Record<string, number>)}>
+                <div className="bg-card rounded-xl p-3 sm:p-6 border border-primary/15 shadow-sm">
+                  <InitialEvaluationForm
+                    activeTab={activeAnamnesisTab}
+                    completionPercentage={validation.completionPercentage}
+                    content={formData}
+                    onChange={updateFormData}
+                    fieldErrors={showValidation ? validation.fieldErrors : {}}
+                    getSectionErrors={showValidation ? validation.getSectionErrors : () => []}
+                  />
+                </div>
+              </ModernTabsNavigation>
+
+              {/* Validation Summary */}
+              {showValidation && !validation.isValid && (
+                <AnamnesisValidationSummary
+                  isValid={validation.isValid}
+                  errors={validation.errors}
+                  onNavigateToError={navigateToError}
+                />
+              )}
+
               <section className="rounded-xl border border-border bg-card p-4" aria-label="Pendências e histórico de alterações">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
@@ -939,34 +967,6 @@ export default function AnamnesisFormWrapper({
                 <p className="font-semibold">Conferência dos documentos profissionais</p>
                 <p className="mt-1">{pdfAssets === "ready" ? "Assinatura e carimbo cadastrados. A integridade das imagens será conferida durante a exportação." : pdfAssets === "missing" ? "Assinatura ou carimbo não encontrado no cadastro. Confira a página Carimbo Digital antes de exportar." : pdfAssets === "checking" ? "Conferindo cadastro da assinatura e do carimbo..." : "Não foi possível conferir o cadastro agora. A exportação ainda verificará as imagens."}</p>
               </div>
-
-              {/* Form Content in Tabs */}
-              <ModernTabsNavigation activeTab={activeAnamnesisTab} onTabChange={setActiveAnamnesisTab}
-                pendingTabs={validation.errors.reduce((counts, error) => {
-                  const tab = sectionTabMap[error.section];
-                  if (tab) counts[tab] = (counts[tab] || 0) + 1;
-                  return counts;
-                }, {} as Record<string, number>)}>
-                <div className="bg-card rounded-xl p-3 sm:p-6 border border-primary/15 shadow-sm">
-                  <InitialEvaluationForm
-                    activeTab={activeAnamnesisTab}
-                    completionPercentage={validation.completionPercentage}
-                    content={formData}
-                    onChange={updateFormData}
-                    fieldErrors={showValidation ? validation.fieldErrors : {}}
-                    getSectionErrors={showValidation ? validation.getSectionErrors : () => []}
-                  />
-                </div>
-              </ModernTabsNavigation>
-
-              {/* Validation Summary */}
-              {showValidation && !validation.isValid && (
-                <AnamnesisValidationSummary
-                  isValid={validation.isValid}
-                  errors={validation.errors}
-                  onNavigateToError={navigateToError}
-                />
-              )}
 
               {/* Action Buttons */}
               <ModernActionButtons
