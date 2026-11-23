@@ -35,7 +35,7 @@ export function AnamnesisProgressBar({
       </div>
       <Progress value={safeProgress} className="h-2.5 bg-muted" aria-label={`Progresso: ${safeProgress}%`} />
       <p className="mt-2 text-xs text-muted-foreground">
-        O indicador representa a presença de informações, não uma avaliação da qualidade clínica. A finalização possui critérios próprios.
+        O indicador mostra a presença de informações e não equivale à conclusão clínica. A finalização possui critérios próprios.
       </p>
       <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground" aria-live="polite">
         <CheckCircle2 className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
