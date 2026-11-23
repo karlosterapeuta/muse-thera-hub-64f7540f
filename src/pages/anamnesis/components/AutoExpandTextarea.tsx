@@ -72,7 +72,7 @@ export function AutoExpandTextarea({
           aria-invalid={showError}
           aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
           className={cn(
-            "w-full px-4 py-3 rounded-xl border-2 transition-all duration-300 resize-none",
+            "w-full px-4 py-3 pb-8 rounded-xl border-2 transition-all duration-200 resize-none",
             "bg-card text-foreground placeholder:text-muted-foreground",
             "hover:border-primary/50",
             "outline-none",
