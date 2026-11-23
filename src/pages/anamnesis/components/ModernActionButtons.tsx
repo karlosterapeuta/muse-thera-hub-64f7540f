@@ -32,14 +32,14 @@ export function ModernActionButtons({
         </div>
       )}
       
-      <div className="flex flex-col sm:flex-row justify-end gap-4 pt-8 border-t border-border">
-        <div className="flex flex-col sm:flex-row gap-4">
+      <div className="sticky bottom-0 z-20 -mx-3 flex flex-col gap-3 border-t border-border bg-background/95 px-3 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/85 sm:static sm:mx-0 sm:flex-row sm:justify-end sm:gap-4 sm:bg-transparent sm:px-0 sm:pt-6 sm:backdrop-blur-0">
+        <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
           {showBack && onCancel && (
             <Button
               type="button"
               variant="outline"
               onClick={onCancel}
-              className="flex items-center gap-2 px-6 py-3 hover:bg-accent transition-all duration-200"
+              className="min-h-11 flex items-center justify-center gap-2 px-5 hover:bg-accent transition-all duration-200"
             >
               <ArrowLeft className="h-4 w-4" />
               Voltar
@@ -51,7 +51,7 @@ export function ModernActionButtons({
               type="button"
               variant="outline"
               onClick={onCancel}
-              className="px-6 py-3 hover:bg-accent transition-all duration-200"
+              className="min-h-11 px-5 hover:bg-accent transition-all duration-200"
             >
               Cancelar
             </Button>
@@ -63,7 +63,7 @@ export function ModernActionButtons({
               variant="secondary"
               onClick={onSave}
               disabled={isSaving}
-              className="flex items-center gap-2 min-h-11 px-6 py-3 transition-colors bg-primary hover:bg-primary/90 text-primary-foreground focus-visible:ring-2 focus-visible:ring-primary"
+              className="min-h-11 flex items-center justify-center gap-2 px-5 transition-colors bg-primary hover:bg-primary/90 text-primary-foreground focus-visible:ring-2 focus-visible:ring-primary"
             >
               {isSaving ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -79,7 +79,7 @@ export function ModernActionButtons({
               type="button"
               onClick={onExportPDF}
               disabled={isExportingPDF || isSaving}
-              className="flex items-center gap-2 min-h-11 px-6 py-3 border border-primary/30 bg-card text-foreground hover:bg-primary/10 transition-colors"
+              className="min-h-11 flex items-center justify-center gap-2 px-5 border border-primary/30 bg-card text-foreground hover:bg-primary/10 transition-colors"
             >
               {isExportingPDF ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
