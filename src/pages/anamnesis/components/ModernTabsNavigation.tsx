@@ -77,7 +77,8 @@ export function ModernTabsNavigation({
                 <TabsTrigger
                   key={tab.id}
                   value={tab.id}
-                  aria-label={tab.label}
+                  aria-label={pendingTabs[tab.id] ? `${tab.label}, ${pendingTabs[tab.id]} pendências` : tab.label}
+                  aria-current={isActive ? "step" : undefined}
                   className={`shrink-0 min-w-[118px] sm:min-w-[132px] md:min-w-0 flex flex-col items-center justify-center gap-1.5 px-2 py-3 sm:px-3 sm:py-3.5 rounded-xl border-2 transition-all duration-300 ${
                     isActive
                       ? "bg-card border-primary/60 shadow-sm text-foreground"
@@ -101,7 +102,7 @@ export function ModernTabsNavigation({
                       {tab.description}
                     </div>
                     {pendingTabs[tab.id] > 0 && (
-                      <span className="mt-1 block text-xs font-semibold text-destructive">
+                      <span role="status" className="mt-1 block text-xs font-semibold text-destructive">
                         {pendingTabs[tab.id]} pendência{pendingTabs[tab.id] > 1 ? "s" : ""}
                       </span>
                     )}
@@ -118,7 +119,7 @@ export function ModernTabsNavigation({
             disabled={activeIndex === 0} onClick={() => navigateStep(-1)}>
             <ChevronLeft className="h-4 w-4" /> Etapa anterior
           </Button>
-          <span className="text-sm text-muted-foreground">Etapa {activeIndex + 1} de {tabs.length}</span>
+          <span className="text-sm font-medium text-muted-foreground" aria-live="polite">Etapa {activeIndex + 1} de {tabs.length}</span>
           <Button type="button" variant="outline" className="min-h-11 gap-2"
             disabled={activeIndex === tabs.length - 1} onClick={() => navigateStep(1)}>
             Próxima etapa <ChevronRight className="h-4 w-4" />
