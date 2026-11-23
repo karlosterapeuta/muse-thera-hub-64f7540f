@@ -38,7 +38,9 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
   };
 
   const getStringValue = (fieldName: string): string => {
-    return content[fieldName] || "";
+    const value = content[fieldName];
+    if (value === null || value === undefined) return "";
+    return typeof value === "string" ? value : String(value);
   };
 
   const section1Fields = ["referral_professional", "main_clinical_demand", "diagnosis_details", "cid_code"];
@@ -62,8 +64,13 @@ export function InitialEvaluationForm({ content, onChange, fieldErrors = {}, get
 
   // A seção possui registros, mas isso não implica que esteja clinicamente completa.
   const isSectionComplete = (fields: string[]): boolean =>
-    fields.some(key => typeof content[key] === "string"
-      ? content[key].trim().length > 0 : content[key] === true);
+    fields.some(key => {
+      const value = content[key];
+      if (typeof value === "string") return value.trim().length > 0;
+      if (Array.isArray(value)) return value.length > 0;
+      if (value && typeof value === "object") return Object.keys(value).length > 0;
+      return value === true || (typeof value === "number" && Number.isFinite(value));
+    });
   const isSection2Complete = isSectionComplete;
 
   return (
