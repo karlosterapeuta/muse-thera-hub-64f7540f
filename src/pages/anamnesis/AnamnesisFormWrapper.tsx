@@ -138,14 +138,27 @@ export default function AnamnesisFormWrapper({
     else navigate("/processes");
   };
 
+  // Mapeamento único das 12 seções para as cinco etapas visíveis do formulário.
+  // Manter alinhado com os activeTab usados em InitialEvaluationForm.
+  const sectionTabMap: Record<number, string> = {
+    1: "personal",
+    2: "clinical", 3: "clinical", 4: "clinical",
+    5: "musical", 6: "musical", 7: "musical", 8: "musical",
+    9: "development",
+    10: "behavioral", 11: "behavioral", 12: "behavioral",
+  };
+
   const navigateToError = (section: number, field: string) => {
-    setActiveAnamnesisTab(section === 1 ? "personal" : section === 5 ? "musical" : "behavioral");
-    // A seção pode estar recolhida; informar a aba e deixar o alerta visível.
+    const targetTab = sectionTabMap[section];
+    if (targetTab) setActiveAnamnesisTab(targetTab);
+    // A seção com pendência é expandida automaticamente pelo CollapsibleSection.
+    // Aguardar a troca de aba e a renderização antes de levar o foco ao campo.
     window.setTimeout(() => {
       const input = document.getElementById(field);
-      input?.scrollIntoView({ behavior: "smooth", block: "center" });
-      input?.focus({ preventScroll: true });
-    }, 350);
+      if (!input) return;
+      input.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (input instanceof HTMLElement) input.focus({ preventScroll: true });
+    }, 250);
   };
 
   useEffect(() => {
@@ -925,11 +938,11 @@ export default function AnamnesisFormWrapper({
 
               {/* Form Content in Tabs */}
               <ModernTabsNavigation activeTab={activeAnamnesisTab} onTabChange={setActiveAnamnesisTab}
-                pendingTabs={{
-                  personal: validation.errors.filter(e => e.section === 1).length,
-                  musical: validation.errors.filter(e => e.section === 5).length,
-                  behavioral: validation.errors.filter(e => e.section === 12).length,
-                }}>
+                pendingTabs={validation.errors.reduce((counts, error) => {
+                  const tab = sectionTabMap[error.section];
+                  if (tab) counts[tab] = (counts[tab] || 0) + 1;
+                  return counts;
+                }, {} as Record<string, number>)}>
                 <div className="bg-card rounded-xl p-3 sm:p-6 border border-primary/15 shadow-sm">
                   <InitialEvaluationForm
                     activeTab={activeAnamnesisTab}
