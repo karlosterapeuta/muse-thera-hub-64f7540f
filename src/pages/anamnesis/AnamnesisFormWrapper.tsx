@@ -855,8 +855,12 @@ export default function AnamnesisFormWrapper({
           
           <CardContent className="p-3 sm:p-6 lg:p-8">
             <form onSubmit={handleSubmit} className="space-y-8">
-              {/* Patient Selection */}
-              <div className="bg-card rounded-xl p-4 sm:p-6 border border-primary/15 shadow-sm space-y-4">
+              {/* Seleção e identificação do paciente */}
+              <section aria-label="Paciente da anamnese" className="rounded-xl border border-border bg-card p-4 shadow-sm sm:p-5 space-y-4">
+                <div>
+                  <h2 className="text-sm font-semibold text-foreground">Paciente e identificação</h2>
+                  <p className="mt-1 text-xs text-muted-foreground">Selecione o cadastro que será vinculado a esta avaliação.</p>
+                </div>
                 <PatientSelect
                   patients={patients}
                   selectedPatient={selectedPatient}
@@ -881,9 +885,9 @@ export default function AnamnesisFormWrapper({
                     />
                   </div>
                 )}
-              </div>
+              </section>
               
-              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4" role="status" aria-live="polite">
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/15 bg-muted/20 p-4" role="status" aria-live="polite">
                 <div>
                   <p className="font-semibold text-foreground">Situação da anamnese: {reviewStatus === "finalized" ? "Finalizada" : "Rascunho"}</p>
                   <p className="text-sm text-muted-foreground">
