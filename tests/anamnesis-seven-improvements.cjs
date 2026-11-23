@@ -44,6 +44,14 @@ test("indicadores, abas e histórico não confundem preenchimento com finalizaç
   assert.match(progress, /não equivale à conclusão clínica/);
   assert.match(nav, /Próxima etapa/);
   assert.match(nav, /pendingTabs/);
+  assert.match(wrapper, /const sectionTabMap: Record<number, string>/);
+  assert.match(wrapper, /1: "personal",\s*2: "clinical", 3: "clinical", 4: "clinical"/);
+  assert.match(wrapper, /5: "musical", 6: "musical", 7: "musical", 8: "musical"/);
+  assert.match(wrapper, /9: "development"/);
+  assert.match(wrapper, /10: "behavioral", 11: "behavioral", 12: "behavioral"/);
+  assert.match(wrapper, /const targetTab = sectionTabMap\[section\]/);
+  assert.match(wrapper, /validation\.errors\.reduce\(\(counts, error\)/);
+  assert.ok(nav.indexOf('id: "clinical"') < nav.indexOf('id: "musical"'), "A ordem das abas deve acompanhar o fluxo clínico");
   assert.doesNotMatch(form, /Math\.ceil\(fields\.length \* 0\.5\)/);
   assert.match(wrapper, /<ClinicalRevisionHistory/);
 });
