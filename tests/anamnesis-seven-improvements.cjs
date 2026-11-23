@@ -52,7 +52,10 @@ test("indicadores, abas e histórico não confundem preenchimento com finalizaç
   assert.match(wrapper, /const targetTab = sectionTabMap\[section\]/);
   assert.match(wrapper, /setActiveAnamnesisTab\(sectionTabMap\[firstMissingSection\] \|\| "personal"\)/);
   assert.match(wrapper, /validation\.errors\.reduce\(\(counts, error\)/);
+  assert.doesNotMatch(wrapper, /setActiveAnamnesisTab\("personal"\);/, "A finalização não deve sempre retornar à primeira aba");
   assert.ok(nav.indexOf('id: "clinical"') < nav.indexOf('id: "musical"'), "A ordem das abas deve acompanhar o fluxo clínico");
+  assert.match(read("src/pages/anamnesis/components/AnamnesisValidationSummary.tsx"), /aria-live="assertive"/);
+  assert.match(read("src/pages/anamnesis/components/AutoExpandTextarea.tsx"), /aria-describedby=/);
   assert.doesNotMatch(form, /Math\.ceil\(fields\.length \* 0\.5\)/);
   assert.match(wrapper, /<ClinicalRevisionHistory/);
 });
