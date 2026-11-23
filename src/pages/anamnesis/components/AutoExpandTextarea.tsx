@@ -68,6 +68,9 @@ export function AutoExpandTextarea({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
+          required={required}
+          aria-invalid={showError}
+          aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
           className={cn(
             "w-full px-4 py-3 rounded-xl border-2 transition-all duration-300 resize-none",
             "bg-card text-foreground placeholder:text-muted-foreground",
@@ -91,13 +94,13 @@ export function AutoExpandTextarea({
         )}
       </div>
       {error && (
-        <p className="text-xs text-destructive flex items-center gap-1">
+        <p id={`${id}-error`} role="alert" className="text-xs text-destructive flex items-center gap-1">
           <span className="inline-block w-1 h-1 rounded-full bg-destructive"></span>
           {error}
         </p>
       )}
       {hint && !error && (
-        <p className="text-xs text-muted-foreground italic">{hint}</p>
+        <p id={`${id}-hint`} className="text-xs text-muted-foreground">{hint}</p>
       )}
     </div>
   );
@@ -112,6 +115,7 @@ interface ModernTextInputProps {
   icon?: LucideIcon;
   required?: boolean;
   type?: "text" | "email" | "tel";
+  hint?: string;
 }
 
 export function ModernTextInput({
@@ -123,6 +127,7 @@ export function ModernTextInput({
   icon: Icon,
   required = false,
   type = "text",
+  hint,
 }: ModernTextInputProps) {
   return (
     <div className="space-y-2">
@@ -140,6 +145,8 @@ export function ModernTextInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
+        required={required}
+        aria-describedby={hint ? `${id}-hint` : undefined}
         className={cn(
           "w-full px-4 py-3 rounded-xl border-2 transition-all duration-300",
           "bg-card text-foreground placeholder:text-muted-foreground",
@@ -148,6 +155,7 @@ export function ModernTextInput({
           "outline-none"
         )}
       />
+      {hint && <p id={`${id}-hint`} className="text-xs text-muted-foreground">{hint}</p>}
     </div>
   );
 }
