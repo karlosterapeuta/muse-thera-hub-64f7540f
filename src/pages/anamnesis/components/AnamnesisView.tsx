@@ -92,9 +92,14 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
       setPatientDetails(patient || {});
       setAnamnesisData({
         ...data,
-        patient_name: patient?.name || anamnesis.patient_name,
-        birth_date: patient?.birth_date,
-        legal_guardian: data.legal_guardian || patient?.responsible,
+        patient_name: data.patient_name || patient?.name || anamnesis.patient_name,
+        birth_date: data.birth_date || patient?.birth_date,
+        patient_age: data.patient_age ?? patient?.age,
+        patient_contact: data.patient_contact || patient?.contact,
+        mother_name: data.mother_name || patient?.mother_name,
+        father_name: data.father_name || patient?.father_name,
+        legal_guardian: data.legal_guardian || patient?.responsible || patient?.legal_guardian,
+        family_relationship: data.family_relationship || patient?.family_relationship,
       });
       
     } catch (error) {
@@ -238,13 +243,11 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
       .join(' ');
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString?: string | null) => {
+    if (!dateString || Number.isNaN(new Date(dateString).getTime())) return "Não informado";
     return new Date(dateString).toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
     });
   };
 
@@ -270,9 +273,11 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
       'family_musical_history', 'patient_musical_history', 'therapeutic_goals', 'treatment_approach'
     ];
     
-    const completedTextFields = textFields.filter(field => 
-      anamnesisData[field] && anamnesisData[field].trim() !== ''
-    ).length;
+    const completedTextFields = textFields.filter(field => {
+      const value = anamnesisData[field];
+      return value !== null && value !== undefined &&
+        (typeof value === "string" ? value.trim() !== "" : Array.isArray(value) ? value.length > 0 : true);
+    }).length;
 
     return {
       totalBooleanFields,
@@ -311,7 +316,9 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         <div className="space-y-4">
           {fields.map(field => {
             const value = anamnesisData[field.key];
-            const isEmpty = !value || value.trim() === '';
+            const isEmpty = value === null || value === undefined ||
+              (typeof value === "string" && value.trim() === "") ||
+              (Array.isArray(value) && value.length === 0);
             
             return (
               <div key={field.key}>
@@ -320,7 +327,7 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
                   {isEmpty ? (
                     <p className="text-sm text-muted-foreground italic">Campo disponível para preenchimento</p>
                   ) : (
-                    <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{value}</p>
+                    <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap break-words">{formattedValue(value)}</p>
                   )}
                 </div>
               </div>
@@ -347,18 +354,31 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
     return String(value ?? '');
   };
   const displayName = (key: string) => key
-    .replace(/_/g, ' ')
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replace(/_/g, " ")
     .replace(/\\b\\w/g, character => character.toUpperCase());
-  const isPresent = (value: unknown) => value !== null && value !== undefined && String(value).trim() !== '';
+  const isPresent = (value: unknown) => {
+    if (value === null || value === undefined) return false;
+    if (typeof value === "string") return value.trim() !== "";
+    if (Array.isArray(value)) return value.length > 0;
+    if (typeof value === "object") return Object.keys(value as Record<string, unknown>).length > 0;
+    return true;
+  };
 
   const identificationFields = [
     { key: 'patient_name', label: 'Paciente' },
     { key: 'birth_date', label: 'Data de nascimento' },
+    { key: 'patient_age', label: 'Idade cadastrada' },
+    { key: 'mother_name', label: 'Nome da mãe' },
+    { key: 'father_name', label: 'Nome do pai' },
     { key: 'legal_guardian', label: 'Responsável legal' },
     { key: 'family_relationship', label: 'Parentesco' },
+    { key: 'patient_contact', label: 'Contato do responsável' },
     { key: 'referral_professional', label: 'Profissional que encaminhou' },
-    { key: 'cid_code', label: 'CID-10/11' },
-    { key: 'diagnosis_details', label: 'Diagnóstico' },
+    { key: 'cid_code', label: 'CID-10/11 informado' },
+    { key: 'diagnosis_details', label: 'Diagnóstico informado' },
+    { key: 'diagnosis_date', label: 'Data do diagnóstico' },
+    { key: 'support_level', label: 'Nível de suporte informado' },
     { key: 'main_clinical_demand', label: 'Demanda clínica principal' },
   ];
   // Use recorded values only. The list may already contain the clinical demand
@@ -372,7 +392,11 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
       : field.key === 'main_clinical_demand'
         ? (recordedValue(anamnesisData.main_clinical_demand) ||
            recordedValue(anamnesis.main_clinical_demand))
-        : anamnesisData[field.key],
+        : field.key === 'patient_contact'
+          ? (anamnesisData.patient_contact || patientDetails.contact || patientDetails.phone || '')
+          : field.key === 'patient_age'
+            ? (anamnesisData.patient_age ?? patientDetails.age ?? '')
+            : anamnesisData[field.key],
   }));
   const missingIdentificationValue = (key: string): string => {
     if (key === 'diagnosis_details') {
@@ -389,6 +413,7 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
   const alreadyShown = new Set([
     ...identificationFields.map(field => field.key),
     'clinical_details', 'pregnancy_sound_experiences', 'mother_movements_songs',
+    'mother_name', 'father_name', 'diagnosis_date', 'support_level', 'patient_age', 'patient_contact',
     'childhood_sound_environment', 'parents_sound_reactions', 'typical_house_sounds',
     'night_body_sounds', 'family_musical_history', 'patient_musical_history',
     'school_enrollment', 'school_adaptation', 'extracurricular_activities',
@@ -545,62 +570,9 @@ export function AnamnesisView({ anamnesis, onBack, onEdit }: AnamnesisViewProps)
         </Card>
       </div>
 
-      {/* Identificação e Encaminhamento */}
-      {(anamnesisData.legal_guardian || anamnesisData.family_relationship ||
-        anamnesisData.referral_professional || anamnesisData.main_clinical_demand ||
-        anamnesisData.diagnosis_details || anamnesisData.cid_code ||
-        anamnesisData.clinical_details) && (
-        <ModernFormCard title="Identificação e Encaminhamento" icon={User} gradient="from-teal-700 to-emerald-700">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {anamnesisData.legal_guardian && (
-              <div>
-                <p className="text-sm font-semibold text-muted-foreground">Responsável Legal</p>
-                <p className="font-medium text-foreground">{anamnesisData.legal_guardian}</p>
-              </div>
-            )}
-            {anamnesisData.family_relationship && (
-              <div>
-                <p className="text-sm font-semibold text-muted-foreground">Parentesco</p>
-                <p className="font-medium text-foreground">{anamnesisData.family_relationship}</p>
-              </div>
-            )}
-            {anamnesisData.referral_professional && (
-              <div>
-                <p className="text-sm font-semibold text-muted-foreground">Profissional que Encaminhou</p>
-                <p className="font-medium text-foreground">{anamnesisData.referral_professional}</p>
-              </div>
-            )}
-            {anamnesisData.cid_code && (
-              <div>
-                <p className="text-sm font-semibold text-muted-foreground">CID-10/11</p>
-                <p className="font-medium text-foreground">{anamnesisData.cid_code}</p>
-              </div>
-            )}
-            {anamnesisData.main_clinical_demand && (
-              <div className="md:col-span-2">
-                <p className="text-sm font-semibold text-muted-foreground">Demanda Clínica Principal</p>
-                <div className="bg-muted/40 p-3 rounded-lg border border-border/70 mt-1">
-                  <p className="text-foreground leading-relaxed whitespace-pre-wrap">{anamnesisData.main_clinical_demand}</p>
-                </div>
-              </div>
-            )}
-            {anamnesisData.diagnosis_details && (
-              <div className="md:col-span-2">
-                <p className="text-sm font-semibold text-muted-foreground">Diagnóstico(s) Existente(s)</p>
-                <div className="bg-muted/40 p-3 rounded-lg border border-border/70 mt-1">
-                  <p className="text-foreground leading-relaxed whitespace-pre-wrap">{anamnesisData.diagnosis_details}</p>
-                </div>
-              </div>
-            )}
-            {anamnesisData.clinical_details && (
-              <div className="md:col-span-2">
-                <p className="text-sm font-semibold text-muted-foreground">Detalhes Clínicos Adicionais</p>
-                <div className="bg-muted/40 p-3 rounded-lg border border-border/70 mt-1">
-                  <p className="text-foreground leading-relaxed whitespace-pre-wrap">{anamnesisData.clinical_details}</p>
-                </div>
-              </div>
-            )}
-          </div>
+      {isPresent(anamnesisData.clinical_details) && (
+        <ModernFormCard title="Detalhes clínicos complementares" icon={Stethoscope} gradient="from-teal-700 to-emerald-700">
+          <p className="text-sm leading-relaxed text-foreground whitespace-pre-wrap break-words">{formattedValue(anamnesisData.clinical_details)}</p>
         </ModernFormCard>
       )}
 
