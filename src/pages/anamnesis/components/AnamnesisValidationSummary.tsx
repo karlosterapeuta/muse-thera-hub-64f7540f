@@ -23,7 +23,7 @@ export function AnamnesisValidationSummary({
 }: AnamnesisValidationSummaryProps) {
   if (isValid) {
     return (
-      <Alert className="border-primary/50 bg-primary/5">
+      <Alert role="status" aria-live="polite" aria-atomic="true" className="border-primary/50 bg-primary/5">
         <CheckCircle2 className="h-5 w-5 text-primary" />
         <AlertTitle className="text-primary font-semibold">
           Formulário Completo
@@ -48,7 +48,7 @@ export function AnamnesisValidationSummary({
   }, {} as Record<number, { sectionTitle: string; fields: ValidationError[] }>);
 
   return (
-    <Alert variant="destructive" className="border-destructive/50 bg-destructive/5">
+    <Alert variant="destructive" role="alert" aria-live="assertive" aria-atomic="true" className="border-destructive/50 bg-destructive/5">
       <AlertCircle className="h-5 w-5" />
       <AlertTitle className="font-semibold">
         Campos Obrigatórios Pendentes ({errors.length})
