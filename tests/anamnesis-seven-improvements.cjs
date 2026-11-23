@@ -50,6 +50,7 @@ test("indicadores, abas e histórico não confundem preenchimento com finalizaç
   assert.match(wrapper, /9: "development"/);
   assert.match(wrapper, /10: "behavioral", 11: "behavioral", 12: "behavioral"/);
   assert.match(wrapper, /const targetTab = sectionTabMap\[section\]/);
+  assert.match(wrapper, /setActiveAnamnesisTab\(sectionTabMap\[firstMissingSection\] \|\| "personal"\)/);
   assert.match(wrapper, /validation\.errors\.reduce\(\(counts, error\)/);
   assert.ok(nav.indexOf('id: "clinical"') < nav.indexOf('id: "musical"'), "A ordem das abas deve acompanhar o fluxo clínico");
   assert.doesNotMatch(form, /Math\.ceil\(fields\.length \* 0\.5\)/);
