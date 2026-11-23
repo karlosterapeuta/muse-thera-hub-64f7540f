@@ -1,5 +1,5 @@
 import { Progress } from "@/components/ui/progress";
-import { CheckCircle2, Music } from "lucide-react";
+import { CheckCircle2, ClipboardList } from "lucide-react";
 
 interface AnamnesisProgressBarProps {
   progress: number;
@@ -7,43 +7,40 @@ interface AnamnesisProgressBarProps {
   completedSections: number;
 }
 
-export function AnamnesisProgressBar({ 
-  progress, 
-  totalSections, 
-  completedSections 
+export function AnamnesisProgressBar({
+  progress,
+  totalSections,
+  completedSections
 }: AnamnesisProgressBarProps) {
+  const safeProgress = Math.min(100, Math.max(0, Math.round(progress)));
   return (
-    <div className="bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 rounded-xl p-4 mb-6 border border-primary/20">
-      <div className="flex items-center justify-between mb-3">
+    <section
+      aria-label="Progresso de preenchimento da anamnese"
+      className="mb-6 rounded-xl border border-border bg-card p-4 sm:p-5"
+    >
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-            <Music className="w-4 h-4 text-primary" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <ClipboardList className="h-4 w-4" aria-hidden="true" />
           </div>
-          <span className="text-sm font-medium text-foreground">
-            Cobertura dos dados informados
-          </span>
+          <div>
+            <p className="text-sm font-semibold text-foreground">Progresso do preenchimento</p>
+            <p className="text-xs text-muted-foreground">Cobertura dos campos acompanhados</p>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-primary" />
-          <span className="text-sm font-semibold text-primary">
-            {completedSections}/{totalSections} seções com registros
-          </span>
+        <div className="text-right">
+          <p className="text-sm font-bold tabular-nums text-primary">{safeProgress}%</p>
+          <p className="text-xs text-muted-foreground">{completedSections} de {totalSections} seções com registros</p>
         </div>
       </div>
-      <Progress 
-        value={progress} 
-        className="h-3 bg-muted"
-      />
-      <div className="flex justify-between mt-2">
-        <span className="text-xs text-muted-foreground">
-          {progress < 30 && "Continue preenchendo..."}
-          {progress >= 30 && progress < 70 && "Bom progresso!"}
-          {progress >= 70 && progress < 100 && "Quase lá!"}
-          {progress === 100 && "Todos os campos acompanhados têm informações."}
-        </span>
-        <span className="text-xs font-medium text-primary">{Math.round(progress)}%</span>
+      <Progress value={safeProgress} className="h-2.5 bg-muted" aria-label={`Progresso: ${safeProgress}%`} />
+      <p className="mt-2 text-xs text-muted-foreground">
+        O indicador representa a presença de informações, não uma avaliação da qualidade clínica. A finalização possui critérios próprios.
+      </p>
+      <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground" aria-live="polite">
+        <CheckCircle2 className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
+        {safeProgress === 100 ? "Todos os campos acompanhados possuem registros." : safeProgress === 0 ? "O preenchimento ainda não foi iniciado." : "Você pode salvar como rascunho e continuar depois."}
       </div>
-      <p className="mt-2 text-xs text-muted-foreground">Cobertura dos campos acompanhados — não equivale à conclusão clínica. A finalização depende de três critérios próprios.</p>
-    </div>
+    </section>
   );
 }
