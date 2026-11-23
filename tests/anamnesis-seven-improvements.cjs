@@ -105,3 +105,18 @@ test("gerador exige assinatura e carimbo e não usa rasterização da página",(
   assert.match(native,/if \(!images\.signature \|\| !images\.stamp\)/);
   assert.doesNotMatch(native,/\.from\("patients"\)\.delete\(/);
 });
+
+test("visualização Ver remove identificação duplicada e preserva todos os campos salvos", () => {
+  const view = read("src/pages/anamnesis/components/AnamnesisView.tsx");
+  assert.equal((view.match(/Identificação do paciente/g) || []).length, 1);
+  assert.doesNotMatch(view, /Identificação e Encaminhamento/);
+  assert.match(view, /Detalhes clínicos complementares/);
+  for (const field of [
+    "mother_name", "father_name", "diagnosis_date", "support_level",
+    "patient_age", "patient_contact", "main_clinical_demand",
+    "calming_strategies", "tea_functional_profile"
+  ]) assert.match(view, new RegExp(field));
+  assert.match(view, /const additionalFields = Object\\.entries\\(anamnesisData\\)/);
+  assert.match(view, /formattedValue\\(value\\)/);
+  assert.match(view, /Number\\.isNaN\\(new Date\\(dateString\\)\\.getTime\\(\\)\\)/);
+});
