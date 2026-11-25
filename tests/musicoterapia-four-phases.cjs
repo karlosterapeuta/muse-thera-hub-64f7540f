@@ -153,7 +153,10 @@ test('regressão: PDFs de relatórios salvos têm assinatura declarada e preserv
   assert.match(savedHandler, /report\.content\?\.professional_info\?\.name/);
   assert.match(savedHandler, /Number\.isNaN\(savedDate\.getTime\(\)\)/);
   assert.match(savedHandler, /getPrivateClinicalPdf\(archivedId\)/);
-  assert.doesNotMatch(savedHandler, /\.update\(|\.delete\(|\.insert\(/);
+  assert.match(savedHandler, /\.update\(\{ content: \{ \.\.\.originalContent, document_status: 'finalizado', archived_pdf_document_id: archived\.id \} \}\)/);
+  assert.match(savedHandler, /\.eq\('id', savedVersionId\)\.eq\('professional_id', professionalId\)/);
+  assert.match(savedHandler, /\.eq\('patient_id', currentReportData\.selectedPatientId\)/);
+  assert.match(savedHandler, /\.contains\('content', \{ document_status: 'rascunho' \}\)/);
 });
 
 
@@ -169,7 +172,7 @@ test('personalização opcional: cabeçalho sem MuseTera e crédito discreto no 
   assert.match(native, /Gerado com MuseTera/);
   assert.match(legacy, /Gerado com MuseTera/);
   assert.doesNotMatch(legacy, /pdf\.text\('MUSETERA  \|/);
-  assert.match(page, /fields\.pdf_brand_name\.trim\(\)/);
+  assert.match(page, /typeof fields\.pdf_brand_name === 'string' && fields\.pdf_brand_name\.trim\(\)/);
   assert.match(review, /Sua identidade no PDF/);
   assert.match(review, /onBrandNameChange\(event\.target\.value\.slice\(0, 80\)\)/);
   assert.match(wizard, /handleFieldUpdate\('pdf_brand_name', name\)/);
