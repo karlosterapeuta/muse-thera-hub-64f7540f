@@ -67,7 +67,9 @@ serve(async (req) => {
     const terminal = {
       rejected: 'failed',
       cancelled: 'cancelled',
-      refunded: 'refunded',
+      // Keep the provider status in mp_payment_status; the DB CHECK constraint
+      // intentionally stores refunded attempts under the terminal "failed" state.
+      refunded: 'failed',
     } as Record<string, string>;
     const terminalStatus = terminal[paymentStatus];
     if (terminalStatus) {
