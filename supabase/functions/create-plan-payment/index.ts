@@ -50,10 +50,48 @@ serve(async (req) => {
     if (profileError || !profile) return json({ error: "Perfil não encontrado." }, 404);
     if (!profile.expires_at) return json({ error: "Sua conta possui plano ilimitado." }, 400);
 
-    const { data: recent } = await db.from("plan_renewals").select("id")
+    const { data: recent } = await db.from("plan_renewals")
+      .select("id, mp_payment_id, mp_payment_status, created_at")
       .eq("user_id", user.id).eq("status", "pending")
-      .limit(1).maybeSingle();
-    if (recent) return json({ error: "Você já possui uma renovação aguardando pagamento. Aguarde a confirmação ou tente novamente em alguns minutos." }, 409);
+      .order("created_at", { ascending: false }).limit(1).maybeSingle();
+
+    if (recent) {
+      let currentStatus = String(recent.mp_payment_status || "pending").toLowerCase();
+      if (recent.mp_payment_id) {
+        const statusResponse = await fetch(`https://api.mercadopago.com/v1/payments/${encodeURIComponent(recent.mp_payment_id)}`, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+        if (!statusResponse.ok) {
+          return json({ error: "Estamos confirmando o status da tentativa anterior. Aguarde alguns instantes e tente novamente." }, 409);
+        }
+        const currentPayment = await statusResponse.json();
+        currentStatus = String(currentPayment.status || currentStatus).toLowerCase();
+        const terminalStatuses = ["rejected", "cancelled", "refunded"];
+        if (terminalStatuses.includes(currentStatus)) {
+          await db.from("plan_renewals").update({
+            status: currentStatus === "cancelled" ? "cancelled" : currentStatus === "refunded" ? "refunded" : "failed",
+            mp_payment_status: currentStatus,
+          }).eq("id", recent.id).eq("status", "pending");
+        } else {
+          return json({
+            error: currentStatus === "approved"
+              ? "Seu pagamento foi aprovado e está sendo confirmado. Atualize a página em instantes."
+              : "Já existe um pagamento em andamento. Finalize o Pix ou aguarde a análise antes de iniciar outra cobrança.",
+            pending: true,
+            paymentStatus: currentStatus,
+          }, 409);
+        }
+      } else {
+        const ageMs = Date.now() - new Date(recent.created_at).getTime();
+        if (ageMs < 15 * 60 * 1000) {
+          return json({ error: "Sua solicitação anterior ainda está sendo preparada. Aguarde até 15 minutos antes de tentar novamente." }, 409);
+        }
+        await db.from("plan_renewals").update({
+          status: "failed",
+          mp_payment_status: "creation_timeout",
+        }).eq("id", recent.id).eq("status", "pending").is("mp_payment_id", null);
+      }
+    }
 
     const { data: renewal, error: insertError } = await db.from("plan_renewals")
       .insert({ user_id: user.id, plan_code: body.planCode, duration_days: plan.days, amount_cents: plan.cents })
