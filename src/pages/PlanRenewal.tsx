@@ -85,7 +85,7 @@ export default function PlanRenewalPage() {
   const expiresAt = userData?.profile.expires_at ? new Date(userData.profile.expires_at) : null;
   const daysRemaining = expiresAt ? Math.ceil((expiresAt.getTime() - Date.now()) / 86400000) : null;
   const isUnlimited = Boolean(userData && !userData.profile.expires_at);
-  const hasPendingRenewal = Boolean(userData?.renewals.some((renewal) => renewal.status === "pending"));
+  const hasPendingRenewal = Boolean(userData?.renewals.some((renewal) => renewal.status === "pending" && ["pending", "in_process", "authorized"].includes(String(renewal.mp_payment_status || "pending").toLowerCase())));
 
   useEffect(() => {
     if (!selected || !userData?.user.email || !publicKey) return;
@@ -217,7 +217,7 @@ export default function PlanRenewalPage() {
                   <h2 className="text-lg font-bold">Escolha seu período de renovação</h2>
                   <p className="text-sm text-muted-foreground">O novo prazo é acrescentado ao vencimento atual, preservando os dias restantes.</p>
                 </div>
-                {hasPendingRenewal && <Alert className="border-amber-500/40"><Clock3 className="h-4 w-4 text-amber-600" /><AlertDescription>Já existe uma solicitação de renovação aguardando confirmação nesta conta. Para evitar cobranças duplicadas, uma nova cobrança ficará indisponível até a regularização da solicitação pendente. Se necessário, fale com o suporte MuseTera.</AlertDescription></Alert>}
+                {hasPendingRenewal && <Alert className="border-amber-500/40"><Clock3 className="h-4 w-4 text-amber-600" /><AlertDescription>Existe um pagamento em andamento nesta conta. Para evitar cobranças duplicadas, finalize o Pix ou aguarde a análise do Mercado Pago. Se o pagamento já foi recusado ou cancelado, atualize esta página para liberar uma nova tentativa.</AlertDescription></Alert>}{userData.renewals.some((renewal) => ["failed", "cancelled", "refunded"].includes(renewal.status) || ["rejected", "cancelled", "refunded"].includes(String(renewal.mp_payment_status || "").toLowerCase())) && !hasPendingRenewal && <Alert className="border-emerald-500/30"><CheckCircle2 className="h-4 w-4 text-emerald-600" /><AlertDescription>A tentativa anterior não foi concluída. Você já pode escolher um plano e tentar novamente com Pix ou cartão.</AlertDescription></Alert>}
                 <div className="grid gap-3 md:grid-cols-3">
                   {plans.map((plan) => (
                     <button key={plan.code} type="button" disabled={hasPendingRenewal} onClick={() => void choosePlan(plan.code)} className={`relative rounded-xl border p-4 text-left transition-all hover:border-teal-600 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 disabled:cursor-not-allowed disabled:opacity-50 ${selectedPlan === plan.code ? "border-teal-700 bg-teal-50/70 ring-2 ring-teal-700 dark:bg-teal-950/30" : "border-border bg-card"}`}>
