@@ -52,7 +52,6 @@ serve(async (req) => {
 
     const { data: recent } = await db.from("plan_renewals").select("id")
       .eq("user_id", user.id).eq("status", "pending")
-      .gte("created_at", new Date(Date.now() - 10 * 60 * 1000).toISOString())
       .limit(1).maybeSingle();
     if (recent) return json({ error: "Você já possui uma renovação aguardando pagamento. Aguarde a confirmação ou tente novamente em alguns minutos." }, 409);
 
