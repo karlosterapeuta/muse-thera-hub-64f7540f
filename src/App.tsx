@@ -20,6 +20,7 @@ import NotFound from "./pages/NotFound";
 
 // Lazy: demais páginas (code-splitting por rota)
 const Dashboard = lazy(() => import("./pages/Dashboard"));
+const PlanRenewalPage = lazy(() => import("./pages/PlanRenewal"));
 const Professional = lazy(() => import("./pages/Professional"));
 const Patients = lazy(() => import("./pages/patients"));
 const Anamnesis = lazy(() => import("./pages/anamnesis"));
@@ -177,6 +178,7 @@ const App = () => {
           <Route path="/" element={<Layout />}>
             <Route index element={<Navigate to="/login" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
+            <Route path="plano" element={<PlanRenewalPage />} />
             <Route path="captacao" element={<CaptacaoModule />} />
             <Route path="professional" element={<Professional />} />
             <Route path="patients" element={<Patients />} />
