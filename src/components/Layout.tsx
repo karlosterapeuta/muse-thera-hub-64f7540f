@@ -132,12 +132,23 @@ function LayoutContent({ children }: LayoutProps) {
 
         const isExpired = profile?.expires_at ? new Date(profile.expires_at) < new Date() : false;
         
-        if (profile?.status !== 'active' || isExpired) {
+        if (profile?.status !== 'active') {
           await supabase.auth.signOut();
           navigate('/login');
           toast({
             title: "Acesso bloqueado",
             description: "Sua conta está desativada. Entre em contato com o administrador.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        // Usuários com plano vencido mantêm acesso somente à página de renovação.
+        if (isExpired && location.pathname !== '/plano') {
+          navigate('/plano');
+          toast({
+            title: "Seu plano venceu",
+            description: "Renove sua assinatura para recuperar o acesso às ferramentas do MuseTera.",
             variant: "destructive",
           });
         }
