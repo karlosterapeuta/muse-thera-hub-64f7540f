@@ -1664,6 +1664,51 @@ export type Database = {
         }
         Relationships: []
       }
+      plan_renewals: {
+        Row: {
+          amount_cents: number
+          applied_at: string | null
+          created_at: string
+          duration_days: number
+          id: string
+          mp_payment_id: string | null
+          mp_payment_status: string | null
+          mp_preference_id: string | null
+          paid_at: string | null
+          plan_code: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount_cents: number
+          applied_at?: string | null
+          created_at?: string
+          duration_days: number
+          id?: string
+          mp_payment_id?: string | null
+          mp_payment_status?: string | null
+          mp_preference_id?: string | null
+          paid_at?: string | null
+          plan_code: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount_cents?: number
+          applied_at?: string | null
+          created_at?: string
+          duration_days?: number
+          id?: string
+          mp_payment_id?: string | null
+          mp_payment_status?: string | null
+          mp_preference_id?: string | null
+          paid_at?: string | null
+          plan_code?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
