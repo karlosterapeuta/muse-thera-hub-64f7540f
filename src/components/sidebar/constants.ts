@@ -24,12 +24,14 @@ import {
   History,
   Music2,
   Magnet,
+  CreditCard,
 } from "lucide-react";
 
 export const mainMenuItems = [
   { icon: BarChart2, text: "📊 Dashboard", path: "/dashboard", gradient: "from-blue-500 to-purple-600" },
   
   { icon: UserCircle, text: "🎵 Perfil Profissional", path: "/professional", gradient: "from-green-500 to-teal-600" },
+  { icon: CreditCard, text: "💳 Meu plano e renovação", path: "/plano", gradient: "from-teal-600 to-emerald-700", isNew: true },
   { icon: Stamp, text: "📝 Carimbo Digital", path: "/digital-stamp", gradient: "from-teal-500 to-cyan-600", isNew: true },
   { icon: Users, text: "👥 Pacientes", path: "/patients", gradient: "from-pink-500 to-rose-600" },
   { icon: History, text: "📂 Histórico do Paciente", path: "/patient-history", gradient: "from-indigo-500 to-violet-600" },
