@@ -68,10 +68,16 @@ serve(async (req) => {
         currentStatus = String(currentPayment.status || currentStatus).toLowerCase();
         const terminalStatuses = ["rejected", "cancelled", "refunded"];
         if (terminalStatuses.includes(currentStatus)) {
-          await db.from("plan_renewals").update({
-            status: currentStatus === "cancelled" ? "cancelled" : currentStatus === "refunded" ? "refunded" : "failed",
+          const { error: closeError } = await db.from("plan_renewals").update({
+            // The production CHECK constraint allows failed/cancelled but not refunded.
+            // Preserve the provider's exact status separately for audit/history.
+            status: currentStatus === "cancelled" ? "cancelled" : "failed",
             mp_payment_status: currentStatus,
           }).eq("id", recent.id).eq("status", "pending");
+          if (closeError) {
+            console.error("Could not close terminal renewal:", closeError.message);
+            return json({ error: "Não foi possível liberar a nova tentativa com segurança. Tente novamente em instantes." }, 503);
+          }
         } else {
           return json({
             error: currentStatus === "approved"
