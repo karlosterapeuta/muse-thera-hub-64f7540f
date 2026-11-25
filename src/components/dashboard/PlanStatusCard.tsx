@@ -8,29 +8,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 export function PlanStatusCard({ userId }: { userId: string | null }) {
   const [renewOpen, setRenewOpen] = useState(false);
   const [processingPlan, setProcessingPlan] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const renew = async (planCode: string) => {
     setProcessingPlan(planCode);
-    try {
-      const { data, error } = await supabase.functions.invoke('create-plan-renewal', {
-        body: { planCode },
-      });
-      if (error || !data?.checkoutUrl) throw new Error(data?.error || 'Não foi possível iniciar o pagamento.');
-      const checkoutUrl = new URL(data.checkoutUrl);
-      if (checkoutUrl.protocol !== 'https:' || !['mercadopago.com.br', 'www.mercadopago.com.br', 'mercadopago.com', 'www.mercadopago.com'].includes(checkoutUrl.hostname)) {
-        throw new Error('Endereço de pagamento inválido');
-      }
-      window.location.assign(checkoutUrl.toString());
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Falha ao iniciar renovação.');
-    } finally {
-      setProcessingPlan(null);
-    }
+    navigate("/plano");
   };
 
   const { data: planData, isLoading } = useQuery({
