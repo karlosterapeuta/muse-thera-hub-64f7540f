@@ -85,7 +85,7 @@ export default function PlanRenewalPage() {
   const expiresAt = userData?.profile.expires_at ? new Date(userData.profile.expires_at) : null;
   const daysRemaining = expiresAt ? Math.ceil((expiresAt.getTime() - Date.now()) / 86400000) : null;
   const isUnlimited = Boolean(userData && !userData.profile.expires_at);
-  const hasPendingRenewal = Boolean(userData?.renewals.some((renewal) => renewal.status === "pending"));
+  const hasPendingRenewal = Boolean(userData?.renewals.some((renewal) => renewal.status === "pending" && ["pending", "in_process", "authorized"].includes(String(renewal.mp_payment_status || "pending").toLowerCase())));
 
   useEffect(() => {
     if (!selected || !userData?.user.email || !publicKey) return;
@@ -213,25 +213,16 @@ export default function PlanRenewalPage() {
               <Alert><Infinity className="h-4 w-4" /><AlertDescription>Sua conta possui acesso ilimitado. Não é necessário renovar.</AlertDescription></Alert>
             ) : (
               <div className="space-y-5">
-                <div className="rounded-xl border-2 border-teal-600/30 bg-teal-50/70 p-4 dark:bg-teal-950/20">
-                  <div className="flex items-center gap-2 text-teal-800 dark:text-teal-200">
-                    <CreditCard className="h-5 w-5" />
-                    <h2 className="text-lg font-extrabold">1. Escolha um plano para renovar</h2>
-                  </div>
-                  <p className="mt-1 text-sm font-medium text-foreground">Clique em uma das opções abaixo. Depois que você selecionar o plano, o formulário para pagar com Pix ou cartão aparecerá nesta página.</p>
-                  <p className="mt-1 text-xs text-muted-foreground">Seu prazo atual será preservado: os novos dias serão acrescentados ao vencimento vigente.</p>
+                <div>
+                  <h2 className="text-lg font-bold">Escolha seu período de renovação</h2>
+                  <p className="text-sm text-muted-foreground">O novo prazo é acrescentado ao vencimento atual, preservando os dias restantes.</p>
                 </div>
-                {hasPendingRenewal && <Alert className="border-amber-500/40"><Clock3 className="h-4 w-4 text-amber-600" /><AlertDescription>Já existe uma solicitação de renovação aguardando confirmação nesta conta. Para evitar cobranças duplicadas, uma nova cobrança ficará indisponível até a regularização da solicitação pendente. Se necessário, fale com o suporte MuseTera.</AlertDescription></Alert>}
+                {hasPendingRenewal && <Alert className="border-amber-500/40"><Clock3 className="h-4 w-4 text-amber-600" /><AlertDescription>Existe um pagamento em andamento nesta conta. Para evitar cobranças duplicadas, finalize o Pix ou aguarde a análise do Mercado Pago. Se o pagamento já foi recusado ou cancelado, atualize esta página para liberar uma nova tentativa.</AlertDescription></Alert>}{userData.renewals.some((renewal) => ["failed", "cancelled", "refunded"].includes(renewal.status) || ["rejected", "cancelled", "refunded"].includes(String(renewal.mp_payment_status || "").toLowerCase())) && !hasPendingRenewal && <Alert className="border-emerald-500/30"><CheckCircle2 className="h-4 w-4 text-emerald-600" /><AlertDescription>A tentativa anterior não foi concluída. Você já pode escolher um plano e tentar novamente com Pix ou cartão.</AlertDescription></Alert>}
                 <div className="grid gap-3 md:grid-cols-3">
                   {plans.map((plan) => (
-                    <button key={plan.code} type="button" disabled={hasPendingRenewal} aria-pressed={selectedPlan === plan.code} onClick={() => void choosePlan(plan.code)} className={`relative flex min-h-48 flex-col rounded-xl border-2 p-4 text-left transition-all hover:-translate-y-0.5 hover:border-teal-600 hover:shadow-lg focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-teal-600/30 disabled:cursor-not-allowed disabled:opacity-50 ${selectedPlan === plan.code ? "border-teal-700 bg-teal-50 ring-2 ring-teal-700 shadow-md dark:bg-teal-950/40" : "border-border bg-card"}`}>
-                      {plan.featured && <span className="absolute -top-2.5 right-3 rounded-full bg-teal-700 px-2.5 py-1 text-[10px] font-bold text-white">MAIS ESCOLHIDO</span>}
-                      <div className="flex w-full items-center justify-between gap-2"><p className="text-base font-extrabold">{plan.title}</p><span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${selectedPlan === plan.code ? "border-teal-700 bg-teal-700 text-white" : "border-muted-foreground/50"}`}>{selectedPlan === plan.code && <CheckCircle2 className="h-4 w-4" />}</span></div>
-                      <p className="mt-3 text-3xl font-extrabold tracking-tight">{plan.price}</p>
-                      <p className="mt-1 text-xs text-muted-foreground">{plan.detail}</p>
-                      <span className={`mt-auto flex w-full items-center justify-center gap-2 rounded-lg px-3 py-3 text-sm font-extrabold ${selectedPlan === plan.code ? "bg-teal-800 text-white" : "bg-teal-700 text-white"}`}>
-                        {selectedPlan === plan.code ? <><CheckCircle2 className="h-4 w-4" /> Plano selecionado</> : <>CLIQUE AQUI PARA RENOVAR <span aria-hidden="true">→</span></>}
-                      </span>
+                    <button key={plan.code} type="button" disabled={hasPendingRenewal} onClick={() => void choosePlan(plan.code)} className={`relative rounded-xl border p-4 text-left transition-all hover:border-teal-600 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 disabled:cursor-not-allowed disabled:opacity-50 ${selectedPlan === plan.code ? "border-teal-700 bg-teal-50/70 ring-2 ring-teal-700 dark:bg-teal-950/30" : "border-border bg-card"}`}>
+                      {plan.featured && <span className="absolute -top-2.5 right-3 rounded-full bg-teal-700 px-2.5 py-1 text-[10px] font-bold text-white">SEMESTRAL</span>}
+                      <p className="font-semibold">{plan.title}</p><p className="mt-2 text-2xl font-extrabold tracking-tight">{plan.price}</p><p className="mt-1 text-xs text-muted-foreground">{plan.detail}</p>
                     </button>
                   ))}
                 </div>
