@@ -42,6 +42,6 @@ test('a alteração não adiciona exclusões de documentos e mantém pagamento i
     assert.doesNotMatch(read(name), /supabase\.storage[\s\S]{0,100}\.remove\(/);
   }
   assert.match(read('src/components/dashboard/PlanStatusCard.tsx'), /navigate\(["']\/plano["']\)/);
-  assert.match(read('src/App.tsx'), /path=["']\/plano["']/);
+  assert.match(read('src/App.tsx'), /<Route path=["']plano["'] element={<PlanRenewalPage \/>} \/>/);
   assert.match(read('src/pages/PlanRenewal.tsx'), /create-plan-payment/);
 });
