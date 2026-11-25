@@ -115,7 +115,7 @@ test("visualização Ver remove identificação duplicada e preserva todos os ca
     "mother_name", "father_name", "diagnosis_date", "support_level",
     "patient_age", "patient_contact", "main_clinical_demand"
   ]) assert.match(view, new RegExp(field));
-  assert.match(view, /const additionalFields = Object\\.entries\\(anamnesisData\\)/);
-  assert.match(view, /formattedValue\\(value\\)/);
-  assert.match(view, /Number\\.isNaN\\(new Date\\(dateString\\)\\.getTime\\(\\)\\)/);
+  assert.match(view, /const additionalFields = Object\.entries\(anamnesisData\)/);
+  assert.match(view, /formattedValue\(value\)/);
+  assert.match(view, /Number\.isNaN\(new Date\(dateString\)\.getTime\(\)\)/);
 });
