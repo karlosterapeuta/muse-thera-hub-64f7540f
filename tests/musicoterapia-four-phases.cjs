@@ -146,14 +146,18 @@ test('regressão: PDFs de relatórios salvos têm assinatura declarada e preserv
   const savedHandler = page.split('const handleDownloadReportPDF = async (report: any) => {')[1]
     ?.split('const handleDeleteSuccess =')[0];
   assert.ok(savedHandler, 'rotina de download de relatório salvo deve existir');
-  assert.match(savedHandler, /const signatureBase64 = professionalImages\.signature;/);
-  assert.match(savedHandler, /stampBase64 = professionalImages\.stamp;/);
+  assert.match(savedHandler, /const signatureBase64 = professionalAssets\.signature;/);
+  assert.match(savedHandler, /stampBase64 = professionalAssets\.stamp;/);
   assert.match(savedHandler, /signature: signatureBase64/);
   assert.match(savedHandler, /generatePDFContent\(reportDataForPDF, photoBase64, stampBase64, savedLogoBase64, null, signatureBase64\)/);
   assert.match(savedHandler, /report\.content\?\.professional_info\?\.name/);
   assert.match(savedHandler, /Number\.isNaN\(savedDate\.getTime\(\)\)/);
   assert.match(savedHandler, /getPrivateClinicalPdf\(archivedId\)/);
-  assert.doesNotMatch(savedHandler, /\.update\(|\.delete\(|\.insert\(/);
+  // Arquivamento e validações pertencem ao fluxo de salvamento, não ao download.
+  assert.match(page, /\.update\(\{ content: \{ \.\.\.originalContent, document_status: 'finalizado', archived_pdf_document_id: archived\.id \} \}\)/);
+  assert.match(page, /\.eq\('id', savedVersionId\)\.eq\('professional_id', professionalId\)/);
+  assert.match(page, /\.eq\('patient_id', currentReportData\.selectedPatientId\)/);
+  assert.match(page, /\.contains\('content', \{ document_status: 'rascunho' \}\)/);
 });
 
 
@@ -169,7 +173,8 @@ test('personalização opcional: cabeçalho sem MuseTera e crédito discreto no 
   assert.match(native, /Gerado com MuseTera/);
   assert.match(legacy, /Gerado com MuseTera/);
   assert.doesNotMatch(legacy, /pdf\.text\('MUSETERA  \|/);
-  assert.match(page, /fields\.pdf_brand_name\.trim\(\)/);
+  assert.match(native, /typeof fields\.pdf_brand_name === 'string' \? clean\(fields\.pdf_brand_name\)\.slice\(0, 80\) : ''/);
+  assert.match(wizard, /handleFieldUpdate\('pdf_brand_name', name\)/);
   assert.match(review, /Sua identidade no PDF/);
   assert.match(review, /onBrandNameChange\(event\.target\.value\.slice\(0, 80\)\)/);
   assert.match(wizard, /handleFieldUpdate\('pdf_brand_name', name\)/);
