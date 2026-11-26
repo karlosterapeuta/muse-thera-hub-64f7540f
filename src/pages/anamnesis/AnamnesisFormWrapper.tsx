@@ -78,7 +78,8 @@ const basicDatabaseFields = [
 const optionalDatabaseFields: string[] = [];
 
 // Cache para colunas verificadas
-let columnCheckCache: string[] | null = null;
+const SCHEMA_CACHE_TTL_MS = 60_000;
+let columnCheckCache: { userId: string; fields: string[]; checkedAt: number } | null = null;
 
 export default function AnamnesisFormWrapper({ 
   editAnamnesisId, 
@@ -240,8 +241,13 @@ export default function AnamnesisFormWrapper({
   // Testar a existência das colunas por metadados da consulta, sem ler pacientes.
   // Uma anamnese vazia ou inacessível por RLS não deve ser interpretada como
   // evidência de que todas as colunas presumidas existem no Supabase.
-  const getAvailableColumns = async (): Promise<string[]> => {
-    if (columnCheckCache) return columnCheckCache;
+  const getAvailableColumns = async (forceRefresh = false): Promise<string[]> => {
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) throw new Error("Sessão do profissional indisponível. Entre novamente antes de salvar a anamnese.");
+    if (!forceRefresh && columnCheckCache?.userId === user.id
+      && Date.now() - columnCheckCache.checkedAt < SCHEMA_CACHE_TTL_MS) {
+      return columnCheckCache.fields;
+    }
 
     // Quando não há linhas visíveis, PostgREST ainda valida o nome das colunas.
     // Verificações em lotes evitam enviar campos inexistentes e perder registros.
@@ -279,7 +285,7 @@ export default function AnamnesisFormWrapper({
     for (let i = 0; i < candidates.length; i += 12) {
       await probe(candidates.slice(i, i + 12));
     }
-    columnCheckCache = existing;
+    columnCheckCache = { userId: user.id, fields: existing, checkedAt: Date.now() };
     return existing;
   };
 
@@ -528,7 +534,7 @@ export default function AnamnesisFormWrapper({
       setSaveState("saving");
       
       // SEMPRE garantir que temos as colunas disponíveis antes de prosseguir
-      const availableColumns = await getAvailableColumns();
+      const availableColumns = await getAvailableColumns(true);
       
       if (mode === "finalized" && !["review_status", "finalized_at", "finalized_by"].every(key => availableColumns.includes(key))) {
         throw new Error("A migração de revisão da anamnese ainda não foi aplicada ao banco de dados.");
