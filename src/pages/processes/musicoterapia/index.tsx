@@ -1114,7 +1114,11 @@ export default function MusicoterapiaPage() {
       const savedLogoBase64 = savedLogoUrl ? await imageUrlToBase64(savedLogoUrl) : null;
 
       // Mesmo template e paginação usados no relatório recém-gerado.
-      const filename = `Relatorio_Musicoterapia_${(reportDataForPDF.patientName || 'paciente').replace(/[^\p{L}\p{N}_-]+/gu, '_')}_${new Date(report.created_at).toISOString().split('T')[0]}.pdf`;
+      const savedDate = new Date(report.created_at);
+      const filenameDate = Number.isNaN(savedDate.getTime())
+        ? 'data-indisponivel'
+        : savedDate.toISOString().split('T')[0];
+      const filename = `Relatorio_Musicoterapia_${(reportDataForPDF.patientName || 'paciente').replace(/[^\\p{L}\\p{N}_-]+/gu, '_')}_${filenameDate}.pdf`;
       const isStructuredReport = getSelectedMusicoterapiaApproaches(fieldValues.musicoterapia_approach_ids).length > 0;
       const blob = isStructuredReport
         ? await exportMusicoterapiaNativePdf(
