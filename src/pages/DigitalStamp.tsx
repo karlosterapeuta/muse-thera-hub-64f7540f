@@ -236,7 +236,7 @@ export default function DigitalStamp() {
         .from('digital-signatures')
         .upload(stampFileName, stampBlob, {
           contentType: 'image/png',
-          upsert: true,
+          upsert: false,
         });
 
       if (stampUploadError) {
