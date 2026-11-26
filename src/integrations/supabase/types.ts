@@ -361,6 +361,7 @@ export type Database = {
           review_status?: string
           finalized_at?: string | null
           finalized_by?: string | null
+          tea_functional_profile?: Json
           aba_therapy?: boolean | null
           active_musical_listening?: boolean | null
           active_sound_search?: boolean | null
