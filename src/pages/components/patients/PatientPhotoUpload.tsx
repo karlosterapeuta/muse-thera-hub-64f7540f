@@ -4,6 +4,7 @@ import { Camera, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { usePatientPhotoUrl } from "@/hooks/usePatientPhotoUrl";
+import { optimizePhotoForStorage } from "@/utils/optimizePhotoForStorage";
 
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
 const PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
@@ -32,15 +33,16 @@ export function PatientPhotoUpload({ onPhotoUploaded, currentPhotoUrl, onUploadi
       const userId = userData?.user?.id;
       if (!userId) throw new Error("Sessão expirada. Faça login novamente.");
 
-      const ext = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg";
-      const contentType = file.type || "image/jpeg";
+      const optimizedPhoto = await optimizePhotoForStorage(file);
+      const ext = "jpg";
+      const contentType = "image/jpeg";
       const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${ext}`;
       // Store inside the owner's folder so storage RLS scopes access per user
       const filePath = `${userId}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from("patients")
-        .upload(filePath, file, { contentType, upsert: false });
+        .upload(filePath, optimizedPhoto, { contentType, upsert: false });
 
       if (uploadError) throw uploadError;
 
