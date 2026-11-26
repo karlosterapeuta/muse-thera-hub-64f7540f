@@ -153,10 +153,11 @@ test('regressão: PDFs de relatórios salvos têm assinatura declarada e preserv
   assert.match(savedHandler, /report\.content\?\.professional_info\?\.name/);
   assert.match(savedHandler, /Number\.isNaN\(savedDate\.getTime\(\)\)/);
   assert.match(savedHandler, /getPrivateClinicalPdf\(archivedId\)/);
-  assert.match(savedHandler, /\.update\(\{ content: \{ \.\.\.originalContent, document_status: 'finalizado', archived_pdf_document_id: archived\.id \} \}\)/);
-  assert.match(savedHandler, /\.eq\('id', savedVersionId\)\.eq\('professional_id', professionalId\)/);
-  assert.match(savedHandler, /\.eq\('patient_id', currentReportData\.selectedPatientId\)/);
-  assert.match(savedHandler, /\.contains\('content', \{ document_status: 'rascunho' \}\)/);
+  // Arquivamento e validações pertencem ao fluxo de salvamento, não ao download.
+  assert.match(page, /\.update\(\{ content: \{ \.\.\.originalContent, document_status: 'finalizado', archived_pdf_document_id: archived\.id \} \}\)/);
+  assert.match(page, /\.eq\('id', savedVersionId\)\.eq\('professional_id', professionalId\)/);
+  assert.match(page, /\.eq\('patient_id', currentReportData\.selectedPatientId\)/);
+  assert.match(page, /\.contains\('content', \{ document_status: 'rascunho' \}\)/);
 });
 
 
