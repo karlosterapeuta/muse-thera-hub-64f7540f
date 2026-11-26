@@ -147,7 +147,7 @@ test('regressão: PDFs de relatórios salvos têm assinatura declarada e preserv
     ?.split('const handleDeleteSuccess =')[0];
   assert.ok(savedHandler, 'rotina de download de relatório salvo deve existir');
   assert.match(savedHandler, /const signatureBase64 = professionalAssets\.signature;/);
-  assert.match(savedHandler, /stampBase64 = professionalImages\.stamp;/);
+  assert.match(savedHandler, /stampBase64 = professionalAssets\.stamp;/);
   assert.match(savedHandler, /signature: signatureBase64/);
   assert.match(savedHandler, /generatePDFContent\(reportDataForPDF, photoBase64, stampBase64, savedLogoBase64, null, signatureBase64\)/);
   assert.match(savedHandler, /report\.content\?\.professional_info\?\.name/);
