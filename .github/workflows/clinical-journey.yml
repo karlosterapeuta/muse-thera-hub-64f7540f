@@ -25,7 +25,7 @@ jobs:
       - run: npm run build
       - run: |
           python -m pip install playwright==1.55.0
-          python -m playwright install --with-deps chromium
+          python -m playwright install chromium
           sudo apt-get install -y poppler-utils tesseract-ocr-por
       - run: |
           npm run preview -- --host 127.0.0.1 --port 4173 --strictPort > /tmp/portal-preview.log 2>&1 &

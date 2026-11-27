@@ -14,7 +14,7 @@ async function validSignature(req: Request, paymentId: string, secret: string): 
   // Keep the original value in the manifest: it is part of the signed payload.
   // Do not reject old, correctly signed notifications: Mercado Pago retries
   // delivery, and the payment lookup + idempotent DB operation protect replay.
-  if (!ts || !/^\\d+$/.test(ts) || !v1 || !/^[a-f0-9]{64}$/i.test(v1) || !requestId) {
+  if (!ts || !/^\d+$/.test(ts) || !v1 || !/^[a-f0-9]{64}$/i.test(v1) || !requestId) {
     return false;
   }
 
