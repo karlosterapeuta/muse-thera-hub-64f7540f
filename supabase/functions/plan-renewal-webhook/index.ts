@@ -6,18 +6,36 @@ const unauthorized = () => new Response('Unauthorized', { status: 401 });
 async function validSignature(req: Request, paymentId: string, secret: string): Promise<boolean> {
   const signature = req.headers.get('x-signature') || '';
   const requestId = req.headers.get('x-request-id') || '';
-  const ts = signature.match(/(?:^|,)ts=([^,]+)/)?.[1];
-  const v1 = signature.match(/(?:^|,)v1=([a-f0-9]+)/i)?.[1];
-  if (!ts || !v1 || !requestId || !/^\d+$/.test(ts)) return false;
-  if (Math.abs(Date.now() - Number(ts)) > 10 * 60 * 1000) return false;
+  const parts = signature.split(',').map((part) => part.trim());
+  const ts = parts.find((part) => part.startsWith('ts='))?.slice(3);
+  const v1 = parts.find((part) => part.startsWith('v1='))?.slice(3);
+
+  // Mercado Pago examples use both seconds and milliseconds for ts.
+  // Keep the original value in the manifest: it is part of the signed payload.
+  // Do not reject old, correctly signed notifications: Mercado Pago retries
+  // delivery, and the payment lookup + idempotent DB operation protect replay.
+  if (!ts || !/^\\d+$/.test(ts) || !v1 || !/^[a-f0-9]{64}$/i.test(v1) || !requestId) {
+    return false;
+  }
+
   const manifest = `id:${paymentId.toLowerCase()};request-id:${requestId};ts:${ts};`;
-  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret),
-    { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
-  const mac = new Uint8Array(await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(manifest)));
+  const key = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign'],
+  );
+  const mac = new Uint8Array(
+    await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(manifest)),
+  );
   const calculated = Array.from(mac).map((b) => b.toString(16).padStart(2, '0')).join('');
   if (v1.length !== calculated.length) return false;
+
   let mismatch = 0;
-  for (let i = 0; i < v1.length; i++) mismatch |= v1.charCodeAt(i) ^ calculated.charCodeAt(i);
+  for (let i = 0; i < v1.length; i++) {
+    mismatch |= v1.toLowerCase().charCodeAt(i) ^ calculated.charCodeAt(i);
+  }
   return mismatch === 0;
 }
 
@@ -29,10 +47,13 @@ serve(async (req) => {
   try {
     const body = await req.json();
     if (body.type !== 'payment' || !body.data?.id) return new Response('Ignored', { status: 200 });
+
     const id = String(body.data.id);
     const urlId = new URL(req.url).searchParams.get('data.id');
-    if (urlId && urlId !== id) return unauthorized();
-    if (!(await validSignature(req, urlId || id, secret))) return unauthorized();
+    // The URL query value is mandatory: Mercado Pago's signature manifest is
+    // defined using data.id from the URL, not an ID copied from the JSON body.
+    if (!urlId || urlId !== id) return unauthorized();
+    if (!(await validSignature(req, urlId, secret))) return unauthorized();
 
     // Never trust the webhook body as proof of payment: retrieve the payment
     // using our private access token, then match the internal order and amount.
