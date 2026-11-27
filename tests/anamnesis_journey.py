@@ -119,7 +119,7 @@ def run():
         assert len(records) == 1 and requests[0][0] == "POST" and records[0]["patient_id"] == A
         assert records[0]["legal_guardian"] == "Responsável Teste"
         page.get_by_role("button", name="Finalizar anamnese").click()
-        expect(page.get_by_text("Anamnese incompleta para finalização")).to_be_visible()
+        expect(page.get_by_text("Anamnese incompleta para finalização", exact=True)).to_be_visible()
         assert records[0].get("review_status") != "finalized"
 
         page.get_by_role("tab", name="Histórico Musical").click()
