@@ -31,7 +31,7 @@ function LayoutContent({ children }: LayoutProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isPending, setIsPending] = useState(false);
-  const { toggleSidebar, setOpenMobile, isMobile } = useSidebar();
+  const { setOpenMobile, isMobile } = useSidebar();
   const isDashboard = location.pathname === '/dashboard';
   const lastTrackedPath = useRef<string>("");
 
@@ -39,18 +39,6 @@ function LayoutContent({ children }: LayoutProps) {
   useEffect(() => {
     if (isMobile) setOpenMobile(false);
   }, [isMobile, setOpenMobile, location.pathname]);
-
-  // Atalho de teclado Ctrl+B / Cmd+B para toggle do sidebar
-  useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
-        e.preventDefault();
-        toggleSidebar();
-      }
-    };
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [toggleSidebar]);
 
   // Track page views
   useEffect(() => {
@@ -176,16 +164,8 @@ function LayoutContent({ children }: LayoutProps) {
         <UserExpirationWarning />
         
         {/* Universal Header com design moderno */}
-        <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-card/60 backdrop-blur-xl shadow-2xl" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-          {/* Cosmic gradient overlay */}
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-teal-500/5" />
-          {/* Top gradient line */}
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
-          {/* Ambient blobs */}
-          <div className="pointer-events-none absolute -top-16 -left-16 h-48 w-48 rounded-full bg-primary/10 blur-3xl" />
-          <div className="pointer-events-none absolute -top-16 right-1/4 h-48 w-48 rounded-full bg-teal-500/10 blur-3xl" />
-
-          <div className="relative flex min-h-14 items-center justify-between gap-2 px-2 py-2 sm:min-h-16 sm:gap-3 sm:px-4 lg:h-20 lg:gap-6 lg:px-8">
+        <header className="sticky top-0 z-50 w-full border-b border-border bg-card" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+          <div className="relative flex min-h-14 items-center justify-between gap-2 px-2 py-2 sm:min-h-16 sm:gap-3 sm:px-4 lg:min-h-16 lg:gap-6 lg:px-8">
             {/* Left: Trigger + Logo + Breadcrumbs */}
             <div className="flex min-w-0 flex-1 items-center gap-1 sm:gap-3 lg:gap-4">
               <SidebarTrigger className="h-10 w-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-teal-700 to-teal-800 text-white hover:opacity-90 hover:scale-105 shadow-lg transition-all duration-200" />
@@ -210,8 +190,6 @@ function LayoutContent({ children }: LayoutProps) {
             </div>
           </div>
           
-          {/* Shadow bottom */}
-          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
         </header>
         
         {/* Conteúdo principal */}
