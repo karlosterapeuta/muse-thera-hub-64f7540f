@@ -33,8 +33,87 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await authClient.auth.getUser(authorization.slice(7));
     if (authError || !user?.email) return json({ error: "Sessão inválida." }, 401);
 
+    const db = createClient(supabaseUrl, serviceKey);
     const body = await req.json();
     if (body?.action === "config") return json({ publicKey });
+
+    if (body?.action === "resume" || body?.action === "cancel-pending") {
+      const { data: recent, error: recentError } = await db.from("plan_renewals")
+        .select("id, plan_code, amount_cents, mp_payment_id, mp_payment_status, created_at")
+        .eq("user_id", user.id).eq("status", "pending")
+        .order("created_at", { ascending: false }).limit(1).maybeSingle();
+      if (recentError) return json({ error: "Não foi possível consultar sua tentativa anterior." }, 503);
+      if (!recent) return json({ ok: true, noPending: true });
+
+      if (!recent.mp_payment_id) {
+        const ageMs = Date.now() - new Date(recent.created_at).getTime();
+        if (ageMs < 15 * 60 * 1000) {
+          return json({ error: "Sua solicitação anterior ainda está sendo preparada. Aguarde até 15 minutos." }, 409);
+        }
+        const { error } = await db.from("plan_renewals").update({
+          status: "failed", mp_payment_status: "creation_timeout",
+        }).eq("id", recent.id).eq("status", "pending").is("mp_payment_id", null);
+        if (error) return json({ error: "Não foi possível liberar a tentativa anterior." }, 503);
+        return json({ ok: true, terminal: true, status: "creation_timeout" });
+      }
+
+      const lookup = await fetch(`https://api.mercadopago.com/v1/payments/${encodeURIComponent(recent.mp_payment_id)}`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      if (!lookup.ok) return json({ error: "Não conseguimos confirmar o status do pagamento anterior. Tente novamente em instantes." }, 409);
+      let currentPayment = await lookup.json();
+      let currentStatus = String(currentPayment.status || "").toLowerCase();
+
+      if (currentStatus === "approved") {
+        return json({ error: "Este pagamento já foi aprovado. Seu plano será atualizado após a confirmação do servidor.", approved: true }, 409);
+      }
+
+      const terminalStatuses = ["rejected", "cancelled", "refunded"];
+      if (terminalStatuses.includes(currentStatus)) {
+        const { error } = await db.from("plan_renewals").update({
+          status: currentStatus === "cancelled" ? "cancelled" : "failed",
+          mp_payment_status: currentStatus,
+        }).eq("id", recent.id).eq("status", "pending");
+        if (error) return json({ error: "Não foi possível atualizar a tentativa anterior." }, 503);
+        return json({ ok: true, terminal: true, status: currentStatus });
+      }
+
+      if (body.action === "cancel-pending") {
+        if (!["pending", "in_process", "authorized"].includes(currentStatus)) {
+          return json({ error: "O pagamento mudou de situação. Atualize a página antes de continuar." }, 409);
+        }
+        const cancelResponse = await fetch(`https://api.mercadopago.com/v1/payments/${encodeURIComponent(recent.mp_payment_id)}`, {
+          method: "PUT",
+          headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "cancelled" }),
+        });
+        const cancelledPayment = await cancelResponse.json();
+        if (!cancelResponse.ok || String(cancelledPayment.status || "").toLowerCase() !== "cancelled") {
+          return json({ error: "O Mercado Pago não confirmou o cancelamento. Nenhuma nova cobrança foi criada." }, 409);
+        }
+        const { error } = await db.from("plan_renewals").update({
+          status: "cancelled", mp_payment_status: "cancelled",
+        }).eq("id", recent.id).eq("status", "pending");
+        if (error) return json({ error: "O pagamento foi cancelado no Mercado Pago, mas não conseguimos atualizar o histórico. Atualize a página antes de tentar novamente." }, 503);
+        return json({ ok: true, cancelled: true });
+      }
+
+      return json({
+        ok: true,
+        renewal: { id: recent.id, planCode: recent.plan_code, amountCents: recent.amount_cents },
+        payment: {
+          id: String(currentPayment.id),
+          status: currentStatus,
+          statusDetail: String(currentPayment.status_detail || ""),
+          paymentMethodId: String(currentPayment.payment_method_id || ""),
+          pointOfInteraction: currentPayment.point_of_interaction?.transaction_data ? {
+            qrCode: currentPayment.point_of_interaction.transaction_data.qr_code || null,
+            qrCodeBase64: currentPayment.point_of_interaction.transaction_data.qr_code_base64 || null,
+            ticketUrl: currentPayment.point_of_interaction.transaction_data.ticket_url || null,
+          } : null,
+        },
+      });
+    }
     if (typeof body?.planCode !== "string" || !(body.planCode in plans)) return json({ error: "Plano inválido." }, 400);
     const plan = plans[body.planCode as keyof typeof plans];
     const form = body.paymentData;
@@ -45,7 +124,6 @@ serve(async (req) => {
     const installments = Number(form.installments || 1);
     if (!Number.isInteger(installments) || installments < 1 || installments > 24) return json({ error: "Quantidade de parcelas inválida." }, 400);
 
-    const db = createClient(supabaseUrl, serviceKey);
     const { data: profile, error: profileError } = await db.from("profiles").select("expires_at").eq("id", user.id).single();
     if (profileError || !profile) return json({ error: "Perfil não encontrado." }, 404);
     if (!profile.expires_at) return json({ error: "Sua conta possui plano ilimitado." }, 400);
