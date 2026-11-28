@@ -73,7 +73,7 @@ export default function PlanRenewalPage() {
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       if (authError || !user) throw new Error("Faça login para consultar seu plano.");
       const [{ data: profile, error }, { data: renewals, error: renewalError }] = await Promise.all([
-        supabase.from("profiles").select("created_at, expires_at, plan_start_date, status").eq("id", user.id).single(),
+        supabase.from("profiles").select("created_at, expires_at, plan_start_date, status, is_unlimited").eq("id", user.id).single(),
         supabase.from("plan_renewals").select("id, plan_code, amount_cents, status, created_at, paid_at, mp_payment_id, mp_payment_status").eq("user_id", user.id).order("created_at", { ascending: false }).limit(10),
       ]);
       if (error) throw error;
@@ -85,7 +85,7 @@ export default function PlanRenewalPage() {
 
   const expiresAt = userData?.profile.expires_at ? new Date(userData.profile.expires_at) : null;
   const daysRemaining = expiresAt ? Math.ceil((expiresAt.getTime() - Date.now()) / 86400000) : null;
-  const isUnlimited = Boolean(userData && !userData.profile.expires_at);
+  const isUnlimited = Boolean(userData?.profile.is_unlimited);
   const pendingRenewal = userData?.renewals.find((renewal) => renewal.status === "pending" && ["pending", "in_process", "authorized"].includes(String(renewal.mp_payment_status || "pending").toLowerCase())) || null;
   const hasPendingRenewal = Boolean(pendingRenewal);
 
@@ -237,8 +237,8 @@ export default function PlanRenewalPage() {
         <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")} aria-label="Voltar ao painel"><ArrowLeft className="h-5 w-5" /></Button>
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-300">MuseTera · Assinatura</p>
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Meu plano e renovação</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Consulte sua assinatura e renove com Pix ou cartão sem sair do portal.</p>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{userData?.profile.status === "pending" ? "Escolha seu plano" : "Meu plano e renovação"}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">{userData?.profile.status === "pending" ? "Conclua o pagamento para liberar automaticamente as funcionalidades do MuseTera." : "Consulte sua assinatura e renove com Pix ou cartão sem sair do portal."}</p>
         </div>
       </div>
 
@@ -248,13 +248,13 @@ export default function PlanRenewalPage() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2"><CalendarClock className="h-5 w-5" /><span className="font-semibold">Situação da assinatura</span></div>
               <Badge className={isUnlimited ? "bg-white/20 text-white" : daysRemaining !== null && daysRemaining <= 0 ? "bg-red-100 text-red-800" : "bg-white/20 text-white"}>
-                {isUnlimited ? "Ilimitado" : daysRemaining !== null && daysRemaining <= 0 ? "Expirado" : "Ativo"}
+                {isUnlimited ? "Ilimitado" : userData.profile.status === "pending" ? "Aguardando pagamento" : daysRemaining !== null && daysRemaining <= 0 ? "Expirado" : "Ativo"}
               </Badge>
             </div>
             <div className="mt-4 grid gap-4 sm:grid-cols-3">
               <div><p className="text-xs text-white/70">Adesão</p><p className="mt-1 font-semibold">{formatDate(userData.profile.plan_start_date || userData.profile.created_at)}</p></div>
-              <div><p className="text-xs text-white/70">Vencimento</p><p className="mt-1 font-semibold">{expiresAt ? formatDate(expiresAt) : "Sem vencimento"}</p></div>
-              <div><p className="text-xs text-white/70">Prazo restante</p><p className="mt-1 font-semibold">{isUnlimited ? "Ilimitado" : daysRemaining !== null && daysRemaining > 0 ? `${daysRemaining} dias` : "Plano vencido"}</p></div>
+              <div><p className="text-xs text-white/70">Vencimento</p><p className="mt-1 font-semibold">{expiresAt ? formatDate(expiresAt) : isUnlimited ? "Sem vencimento" : "Após ativação"}</p></div>
+              <div><p className="text-xs text-white/70">Prazo restante</p><p className="mt-1 font-semibold">{isUnlimited ? "Ilimitado" : userData.profile.status === "pending" ? "Aguardando pagamento" : daysRemaining !== null && daysRemaining > 0 ? `${daysRemaining} dias` : "Plano vencido"}</p></div>
             </div>
           </div>
           <CardContent className="p-5 sm:p-6">
@@ -265,7 +265,7 @@ export default function PlanRenewalPage() {
                 <div className="rounded-xl border-2 border-teal-600/30 bg-teal-50/70 p-4 dark:bg-teal-950/20">
                   <div className="flex items-center gap-2 text-teal-800 dark:text-teal-200">
                     <CreditCard className="h-5 w-5" />
-                    <h2 className="text-lg font-extrabold">1. Escolha um plano para renovar</h2>
+                    <h2 className="text-lg font-extrabold">1. {userData.profile.status === "pending" ? "Escolha seu plano para ativar a conta" : "Escolha um plano para renovar"}</h2>
                   </div>
                   <p className="mt-1 text-sm font-medium text-foreground">Clique em uma das opções abaixo. Depois que você selecionar o plano, o formulário para pagar com Pix ou cartão aparecerá nesta página.</p>
                   <p className="mt-1 text-xs text-muted-foreground">Seu prazo atual será preservado: os novos dias serão acrescentados ao vencimento vigente.</p>
@@ -279,7 +279,7 @@ export default function PlanRenewalPage() {
                       <p className="mt-3 text-3xl font-extrabold tracking-tight">{plan.price}</p>
                       <p className="mt-1 text-xs text-muted-foreground">{plan.detail}</p>
                       <span className={`mt-auto flex w-full items-center justify-center gap-2 rounded-lg px-3 py-3 text-sm font-extrabold ${selectedPlan === plan.code ? "bg-teal-800 text-white" : "bg-teal-700 text-white"}`}>
-                        {selectedPlan === plan.code ? <><CheckCircle2 className="h-4 w-4" /> Plano selecionado</> : <>CLIQUE AQUI PARA RENOVAR <span aria-hidden="true">→</span></>}
+                        {selectedPlan === plan.code ? <><CheckCircle2 className="h-4 w-4" /> Plano selecionado</> : <>{userData.profile.status === "pending" ? "ESCOLHER ESTE PLANO" : "CLIQUE AQUI PARA RENOVAR"} <span aria-hidden="true">→</span></>}
                       </span>
                     </button>
                   ))}
