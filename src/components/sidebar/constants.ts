@@ -1,74 +1,59 @@
-
 import {
   BarChart2,
   Users,
   UserCircle,
   DollarSign,
   ListChecks,
-  Stethoscope,
-  Brain,
-  Activity,
-  Piano,
-  Bell,
-  Music,
-  Grid3X3,
   Waves,
   UsersRound,
-  Key,
-  ClipboardList,
   Stamp,
   Database,
   LayoutDashboard,
   Bot,
   FolderOpen,
   History,
-  Music2,
-  Magnet,
   CreditCard,
+  ClipboardList,
+  Briefcase,
+  BookOpen,
 } from "lucide-react";
 
 export const mainMenuItems = [
-  { icon: BarChart2, text: "📊 Dashboard", path: "/dashboard", gradient: "from-blue-500 to-purple-600" },
-  
-  { icon: UserCircle, text: "🎵 Perfil Profissional", path: "/professional", gradient: "from-green-500 to-teal-600" },
-  { icon: CreditCard, text: "💳 Meu plano e renovação", path: "/plano", gradient: "from-teal-600 to-emerald-700", isNew: true },
-  { icon: Stamp, text: "📝 Carimbo Digital", path: "/digital-stamp", gradient: "from-teal-500 to-cyan-600", isNew: true },
-  { icon: Users, text: "👥 Pacientes", path: "/patients", gradient: "from-pink-500 to-rose-600" },
-  { icon: History, text: "📂 Histórico do Paciente", path: "/patient-history", gradient: "from-indigo-500 to-violet-600" },
+  { icon: BarChart2, text: "Dashboard", path: "/dashboard", gradient: "from-emerald-600 to-green-700" },
+  { icon: UserCircle, text: "Perfil profissional", path: "/professional", gradient: "from-emerald-600 to-green-700" },
+  { icon: CreditCard, text: "Meu plano", path: "/plano", gradient: "from-emerald-600 to-green-700" },
 ];
 
 export const clinicalMenuItems = [
-  { icon: ClipboardList, text: "⭐ Processos Musicoterapia", path: "/processes", gradient: "from-purple-600 via-pink-600 to-red-600", isNew: true },
-  { icon: ListChecks, text: "📋 Atividades", path: "/activities", gradient: "from-emerald-500 to-green-600", isNew: true },
+  { icon: Users, text: "Pacientes", path: "/patients", gradient: "from-emerald-600 to-green-700" },
+  { icon: ClipboardList, text: "Processos musicoterapêuticos", path: "/processes", gradient: "from-emerald-600 to-green-700" },
+  { icon: History, text: "Histórico do paciente", path: "/patient-history", gradient: "from-emerald-600 to-green-700" },
 ];
 
-export const musicalGamesMenuItems: any[] = [];
-
 export const toolsMenuItems = [
-  { icon: Bot, text: "🤖 Assistente IA", path: "/ai-assistant", gradient: "from-violet-500 to-purple-600", isNew: true },
-  { icon: Waves, text: "🧠 Frequências Binaurais", path: "/binaural-frequencies", gradient: "from-green-500 to-emerald-600" },
-  { icon: Magnet, text: "💼 Vagas", path: "/vagas", gradient: "from-cyan-500 to-blue-600", isNew: true },
+  { icon: ListChecks, text: "Atividades terapêuticas", path: "/activities", gradient: "from-emerald-600 to-green-700" },
+  { icon: Waves, text: "Frequências binaurais", path: "/binaural-frequencies", gradient: "from-emerald-600 to-green-700" },
+  { icon: Bot, text: "Assistente IA", path: "/ai-assistant", gradient: "from-emerald-600 to-green-700" },
 ];
 
 export const managementMenuItems = [
-  { icon: DollarSign, text: "💰 Gestão Financeira", path: "/finance", gradient: "from-yellow-500 to-orange-600", isNew: true },
+  { icon: DollarSign, text: "Gestão financeira", path: "/finance", gradient: "from-emerald-600 to-green-700" },
+  { icon: Stamp, text: "Carimbo digital", path: "/digital-stamp", gradient: "from-emerald-600 to-green-700" },
+  { icon: Briefcase, text: "Vagas", path: "/vagas", gradient: "from-emerald-600 to-green-700", isNew: true },
+  { icon: FolderOpen, text: "Recursos", path: "/resources", gradient: "from-emerald-600 to-green-700" },
+  { icon: BookOpen, text: "Cursos", path: "/courses", gradient: "from-emerald-600 to-green-700" },
 ];
 
-export const resourcesMenuItems = [
-  { icon: FolderOpen, text: "📁 Recursos", path: "/resources", gradient: "from-amber-500 to-orange-600", isNew: true },
-];
+export const resourcesMenuItems = [];
 
 export const getAdminMenuItems = (userEmail: string | null, isAdmin: boolean | undefined) => {
   const isAdminEmail = userEmail === "musicoterapeutakarlos@gmail.com";
-  
-  const adminMenuItems = [];
-  if (isAdminEmail || isAdmin === true) {
-    adminMenuItems.push(
-      { icon: LayoutDashboard, text: "🎬 Creator Dashboard", path: "/creator-dashboard", gradient: "from-orange-500 to-amber-600", isNew: true },
-      { icon: UsersRound, text: "👤 Gestão de Usuários", path: "/users", gradient: "from-slate-500 to-gray-600" },
-      { icon: Magnet, text: "💼 Vagas Admin", path: "/vagas/admin", gradient: "from-cyan-600 to-blue-700", isNew: true },
-      { icon: Database, text: "💾 Backup de Dados", path: "/backup", gradient: "from-slate-500 to-zinc-600", isNew: true }
-    );
-  }
-  return adminMenuItems;
+  if (!isAdminEmail && isAdmin !== true) return [];
+
+  return [
+    { icon: LayoutDashboard, text: "Creator Dashboard", path: "/creator-dashboard", gradient: "from-emerald-600 to-green-700" },
+    { icon: UsersRound, text: "Gestão de usuários", path: "/users", gradient: "from-emerald-600 to-green-700" },
+    { icon: Briefcase, text: "Vagas — administração", path: "/vagas/admin", gradient: "from-emerald-600 to-green-700" },
+    { icon: Database, text: "Backup de dados", path: "/backup", gradient: "from-emerald-600 to-green-700" },
+  ];
 };
