@@ -81,6 +81,8 @@ export default function PlanRenewalPage() {
       return { user, profile, renewals: renewals || [] };
     },
     staleTime: 30_000,
+    // While a first payment is pending, keep checking until the webhook activates the profile.
+    refetchInterval: (query) => query.state.data?.profile.status === "pending" ? 5_000 : false,
   });
 
   const expiresAt = userData?.profile.expires_at ? new Date(userData.profile.expires_at) : null;
