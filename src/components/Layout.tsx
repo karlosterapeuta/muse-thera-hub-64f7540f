@@ -95,7 +95,7 @@ function LayoutContent({ children }: LayoutProps) {
         // Check profile status - use maybeSingle to handle transient RLS timing issues
         const { data: profile, error } = await supabase
           .from('profiles')
-          .select('status, expires_at')
+          .select('status, expires_at, is_unlimited')
           .eq('id', session.user.id)
           .maybeSingle();
         
@@ -112,15 +112,19 @@ function LayoutContent({ children }: LayoutProps) {
 
         // Handle pending approval
         if (profile?.status === 'pending') {
-          setIsPending(true);
-          return;
+          // Pending accounts may access only the plan/payment page.
+          const isPlanPage = location.pathname === '/plano';
+          setIsPending(!isPlanPage);
+          if (!isPlanPage) return;
+        } else {
+          setIsPending(false);
         }
 
-        setIsPending(false);
-
-        const isExpired = profile?.expires_at ? new Date(profile.expires_at) < new Date() : false;
+        const isExpired = !profile?.is_unlimited && profile?.expires_at
+          ? new Date(profile.expires_at) < new Date()
+          : false;
         
-        if (profile?.status !== 'active') {
+        if (profile?.status !== 'active' && profile?.status !== 'pending') {
           await supabase.auth.signOut();
           navigate('/login');
           toast({

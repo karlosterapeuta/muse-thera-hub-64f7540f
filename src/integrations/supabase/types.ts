@@ -1718,6 +1718,7 @@ export type Database = {
           created_at: string
           expires_at: string | null
           id: string
+          is_unlimited: boolean
           name: string | null
           plan_start_date: string | null
           status: string
@@ -1728,6 +1729,7 @@ export type Database = {
           created_at?: string
           expires_at?: string | null
           id: string
+          is_unlimited?: boolean
           name?: string | null
           plan_start_date?: string | null
           status?: string
@@ -1738,6 +1740,7 @@ export type Database = {
           created_at?: string
           expires_at?: string | null
           id?: string
+          is_unlimited?: boolean
           name?: string | null
           plan_start_date?: string | null
           status?: string
