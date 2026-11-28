@@ -14,7 +14,7 @@ import {
   History,
   CreditCard,
   ClipboardList,
-  BriefcaseBusiness,
+  Briefcase,
   BookOpen,
 } from "lucide-react";
 
@@ -39,7 +39,7 @@ export const toolsMenuItems = [
 export const managementMenuItems = [
   { icon: DollarSign, text: "Gestão financeira", path: "/finance", gradient: "from-emerald-600 to-green-700" },
   { icon: Stamp, text: "Carimbo digital", path: "/digital-stamp", gradient: "from-emerald-600 to-green-700" },
-  { icon: BriefcaseBusiness, text: "Vagas", path: "/vagas", gradient: "from-emerald-600 to-green-700", isNew: true },
+  { icon: Briefcase, text: "Vagas", path: "/vagas", gradient: "from-emerald-600 to-green-700", isNew: true },
   { icon: FolderOpen, text: "Recursos", path: "/resources", gradient: "from-emerald-600 to-green-700" },
   { icon: BookOpen, text: "Cursos", path: "/courses", gradient: "from-emerald-600 to-green-700" },
 ];
@@ -53,7 +53,7 @@ export const getAdminMenuItems = (userEmail: string | null, isAdmin: boolean | u
   return [
     { icon: LayoutDashboard, text: "Creator Dashboard", path: "/creator-dashboard", gradient: "from-emerald-600 to-green-700" },
     { icon: UsersRound, text: "Gestão de usuários", path: "/users", gradient: "from-emerald-600 to-green-700" },
-    { icon: BriefcaseBusiness, text: "Vagas — administração", path: "/vagas/admin", gradient: "from-emerald-600 to-green-700" },
+    { icon: Briefcase, text: "Vagas — administração", path: "/vagas/admin", gradient: "from-emerald-600 to-green-700" },
     { icon: Database, text: "Backup de dados", path: "/backup", gradient: "from-emerald-600 to-green-700" },
   ];
 };
