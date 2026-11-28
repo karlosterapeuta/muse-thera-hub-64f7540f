@@ -152,8 +152,8 @@ export default function PlanRenewalPage() {
     };
   }, [selected, publicKey, userData?.user.email, queryClient]);
 
-  const resumePendingPayment = useCallback(async () => {
-    if (!pendingRenewal || resumingPayment) return;
+  const resumePendingPayment = useCallback(async (): Promise<PaymentResponse | null> => {
+    if (!pendingRenewal || resumingPayment) return null;
     setResumingPayment(true);
     try {
       const { data, error } = await supabase.functions.invoke("create-plan-payment", { body: { action: "resume" } });
@@ -161,13 +161,15 @@ export default function PlanRenewalPage() {
       if (data?.terminal) {
         await queryClient.invalidateQueries({ queryKey: ["plan-renewal-page-profile"] });
         toast.info("A tentativa anterior foi encerrada. Agora você pode escolher um plano.");
-        return;
+        return null;
       }
       setSelectedPlan(null);
       setPayment(data.payment as PaymentResponse);
       toast.success(data.payment?.paymentMethodId === "pix" ? "Seu Pix anterior foi recuperado." : "Status do pagamento anterior atualizado.");
+      return data.payment as PaymentResponse;
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Não foi possível recuperar o pagamento.");
+      return null;
     } finally {
       setResumingPayment(false);
     }
@@ -175,14 +177,17 @@ export default function PlanRenewalPage() {
 
   const choosePlan = useCallback(async (code: PlanCode) => {
     if (pendingRenewal) {
-      if (pendingRenewal.plan_code === code) {
-        await resumePendingPayment();
-        return;
+      const samePlan = pendingRenewal.plan_code === code;
+      if (samePlan) {
+        const resumed = await resumePendingPayment();
+        if (!resumed || resumed.paymentMethodId === "pix" || resumed.status === "approved") return;
       }
       const previousLabel = pendingRenewal.plan_code === "30d" ? "30 dias" : pendingRenewal.plan_code === "6m" ? "6 meses" : "12 meses";
       const nextLabel = plans.find((plan) => plan.code === code)?.title || code;
       const confirmed = window.confirm(
-        `Existe um pagamento de ${previousLabel} ainda pendente. Para escolher ${nextLabel}, será necessário cancelar a cobrança anterior no Mercado Pago. Se ela já tiver sido aprovada, não será possível continuar. Deseja cancelar e escolher outro plano?`
+        samePlan
+          ? `O pagamento anterior por cartão está em análise e não pode ser retomado como uma nova tentativa. Para pagar novamente o plano ${nextLabel}, será necessário cancelar a tentativa anterior no Mercado Pago. Deseja cancelar e iniciar outra cobrança?`
+          : `Existe um pagamento de ${previousLabel} ainda pendente. Para escolher ${nextLabel}, será necessário cancelar a cobrança anterior no Mercado Pago. Se ela já tiver sido aprovada, não será possível continuar. Deseja cancelar e escolher outro plano?`
       );
       if (!confirmed) return;
       const { data, error } = await supabase.functions.invoke("create-plan-payment", { body: { action: "cancel-pending" } });
