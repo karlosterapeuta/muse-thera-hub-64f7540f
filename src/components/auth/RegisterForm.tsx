@@ -88,7 +88,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
             </div>
             <h1 className="text-2xl font-bold text-emerald-950">Cadastro realizado!</h1>
             <p className="text-base leading-relaxed text-slate-700">
-              Sua conta foi criada com sucesso. O administrador precisa liberar seu acesso antes que você possa utilizar o sistema.
+              Sua conta foi criada com sucesso! Agora entre no MuseTera, escolha um plano e conclua o pagamento. As funcionalidades serão liberadas automaticamente após a confirmação.
             </p>
             <button
               type="button"
@@ -115,7 +115,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
       <div className="w-full min-w-0 rounded-[24px] border border-emerald-950/10 bg-white p-5 text-slate-900 shadow-[0_24px_70px_-34px_rgba(6,78,59,0.38)] sm:p-8">
         <div className="mb-6">
           <h2 className="text-xl font-bold text-slate-900">Criar minha conta</h2>
-          <p className="mt-1 text-sm text-slate-600">Preencha os dados para começar.</p>
+          <p className="mt-1 text-sm text-slate-600">Crie sua conta e depois escolha seu plano para ativar o acesso.</p>
         </div>
         <form onSubmit={handleRegister} className="space-y-5" aria-busy={isLoading}>
           {formError && (
