@@ -124,9 +124,11 @@ serve(async (req) => {
     const installments = Number(form.installments || 1);
     if (!Number.isInteger(installments) || installments < 1 || installments > 24) return json({ error: "Quantidade de parcelas inválida." }, 400);
 
-    const { data: profile, error: profileError } = await db.from("profiles").select("expires_at").eq("id", user.id).single();
+    const { data: profile, error: profileError } = await db.from("profiles").select("expires_at, is_unlimited, status").eq("id", user.id).single();
     if (profileError || !profile) return json({ error: "Perfil não encontrado." }, 404);
-    if (!profile.expires_at) return json({ error: "Sua conta possui plano ilimitado." }, 400);
+    if (profile.is_unlimited === true) return json({ error: "Sua conta possui acesso ilimitado e não precisa de uma nova assinatura." }, 400);
+    if (profile.status === "inactive") return json({ error: "Sua conta está desativada. Entre em contato com o suporte." }, 403);
+    if (!["pending", "active"].includes(String(profile.status))) return json({ error: "Sua conta não está apta a contratar um plano." }, 403);
 
     const { data: recent } = await db.from("plan_renewals")
       .select("id, mp_payment_id, mp_payment_status, created_at")
