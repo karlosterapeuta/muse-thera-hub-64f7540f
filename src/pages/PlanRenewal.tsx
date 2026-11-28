@@ -62,6 +62,7 @@ export default function PlanRenewalPage() {
   const [publicKey, setPublicKey] = useState<string | null>(null);
   const [brickLoading, setBrickLoading] = useState(false);
   const [payment, setPayment] = useState<PaymentResponse | null>(null);
+  const [resumingPayment, setResumingPayment] = useState(false);
   const [copied, setCopied] = useState(false);
   const brickRef = useRef<BrickController | null>(null);
   const selected = useMemo(() => plans.find((plan) => plan.code === selectedPlan) || null, [selectedPlan]);
@@ -73,7 +74,7 @@ export default function PlanRenewalPage() {
       if (authError || !user) throw new Error("Faça login para consultar seu plano.");
       const [{ data: profile, error }, { data: renewals, error: renewalError }] = await Promise.all([
         supabase.from("profiles").select("created_at, expires_at, plan_start_date, status").eq("id", user.id).single(),
-        supabase.from("plan_renewals").select("id, plan_code, amount_cents, status, created_at, paid_at, mp_payment_status").eq("user_id", user.id).order("created_at", { ascending: false }).limit(10),
+        supabase.from("plan_renewals").select("id, plan_code, amount_cents, status, created_at, paid_at, mp_payment_id, mp_payment_status").eq("user_id", user.id).order("created_at", { ascending: false }).limit(10),
       ]);
       if (error) throw error;
       if (renewalError) throw renewalError;
@@ -85,7 +86,8 @@ export default function PlanRenewalPage() {
   const expiresAt = userData?.profile.expires_at ? new Date(userData.profile.expires_at) : null;
   const daysRemaining = expiresAt ? Math.ceil((expiresAt.getTime() - Date.now()) / 86400000) : null;
   const isUnlimited = Boolean(userData && !userData.profile.expires_at);
-  const hasPendingRenewal = Boolean(userData?.renewals.some((renewal) => renewal.status === "pending" && ["pending", "in_process", "authorized"].includes(String(renewal.mp_payment_status || "pending").toLowerCase())));
+  const pendingRenewal = userData?.renewals.find((renewal) => renewal.status === "pending" && ["pending", "in_process", "authorized"].includes(String(renewal.mp_payment_status || "pending").toLowerCase())) || null;
+  const hasPendingRenewal = Boolean(pendingRenewal);
 
   useEffect(() => {
     if (!selected || !userData?.user.email || !publicKey) return;
@@ -150,7 +152,54 @@ export default function PlanRenewalPage() {
     };
   }, [selected, publicKey, userData?.user.email, queryClient]);
 
+  const resumePendingPayment = useCallback(async (): Promise<PaymentResponse | null> => {
+    if (!pendingRenewal || resumingPayment) return null;
+    setResumingPayment(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-plan-payment", { body: { action: "resume" } });
+      if (error || data?.error) throw new Error(data?.error || "Não foi possível recuperar o pagamento.");
+      if (data?.terminal) {
+        await queryClient.invalidateQueries({ queryKey: ["plan-renewal-page-profile"] });
+        toast.info("A tentativa anterior foi encerrada. Agora você pode escolher um plano.");
+        return null;
+      }
+      setSelectedPlan(null);
+      setPayment(data.payment as PaymentResponse);
+      toast.success(data.payment?.paymentMethodId === "pix" ? "Seu Pix anterior foi recuperado." : "Status do pagamento anterior atualizado.");
+      return data.payment as PaymentResponse;
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível recuperar o pagamento.");
+      return null;
+    } finally {
+      setResumingPayment(false);
+    }
+  }, [pendingRenewal, resumingPayment, queryClient]);
+
   const choosePlan = useCallback(async (code: PlanCode) => {
+    if (pendingRenewal) {
+      const samePlan = pendingRenewal.plan_code === code;
+      if (samePlan) {
+        const resumed = await resumePendingPayment();
+        if (!resumed || resumed.paymentMethodId === "pix" || resumed.status === "approved") return;
+      }
+      const previousLabel = pendingRenewal.plan_code === "30d" ? "30 dias" : pendingRenewal.plan_code === "6m" ? "6 meses" : "12 meses";
+      const nextLabel = plans.find((plan) => plan.code === code)?.title || code;
+      const confirmed = window.confirm(
+        samePlan
+          ? `O pagamento anterior por cartão está em análise e não pode ser retomado como uma nova tentativa. Para pagar novamente o plano ${nextLabel}, será necessário cancelar a tentativa anterior no Mercado Pago. Deseja cancelar e iniciar outra cobrança?`
+          : `Existe um pagamento de ${previousLabel} ainda pendente. Para escolher ${nextLabel}, será necessário cancelar a cobrança anterior no Mercado Pago. Se ela já tiver sido aprovada, não será possível continuar. Deseja cancelar e escolher outro plano?`
+      );
+      if (!confirmed) return;
+      const { data, error } = await supabase.functions.invoke("create-plan-payment", { body: { action: "cancel-pending" } });
+      if (error || data?.error) {
+        toast.error(data?.error || "Não foi possível cancelar a tentativa anterior.");
+        await queryClient.invalidateQueries({ queryKey: ["plan-renewal-page-profile"] });
+        return;
+      }
+      await queryClient.invalidateQueries({ queryKey: ["plan-renewal-page-profile"] });
+      setPayment(null);
+      toast.success("Cobrança anterior cancelada. Você já pode escolher o novo plano.");
+    }
     setSelectedPlan(code);
     setPayment(null);
     if (!publicKey) {
@@ -161,7 +210,7 @@ export default function PlanRenewalPage() {
       }
       setPublicKey(data.publicKey);
     }
-  }, [publicKey]);
+  }, [pendingRenewal, resumePendingPayment, publicKey, queryClient]);
 
   const copyPix = async () => {
     const code = payment?.pointOfInteraction?.qrCode;
@@ -221,10 +270,10 @@ export default function PlanRenewalPage() {
                   <p className="mt-1 text-sm font-medium text-foreground">Clique em uma das opções abaixo. Depois que você selecionar o plano, o formulário para pagar com Pix ou cartão aparecerá nesta página.</p>
                   <p className="mt-1 text-xs text-muted-foreground">Seu prazo atual será preservado: os novos dias serão acrescentados ao vencimento vigente.</p>
                 </div>
-                {hasPendingRenewal && <Alert className="border-amber-500/40"><Clock3 className="h-4 w-4 text-amber-600" /><AlertDescription>Existe um pagamento em andamento nesta conta. Para evitar cobranças duplicadas, finalize o Pix ou aguarde a análise do Mercado Pago. Se o pagamento já foi recusado ou cancelado, atualize esta página para liberar uma nova tentativa.</AlertDescription></Alert>}{userData.renewals.some((renewal) => ["failed", "cancelled", "refunded"].includes(renewal.status) || ["rejected", "cancelled", "refunded"].includes(String(renewal.mp_payment_status || "").toLowerCase())) && !hasPendingRenewal && <Alert className="border-emerald-500/30"><CheckCircle2 className="h-4 w-4 text-emerald-600" /><AlertDescription>A tentativa anterior não foi concluída. Você já pode escolher um plano e tentar novamente com Pix ou cartão.</AlertDescription></Alert>}
+                {hasPendingRenewal && <Alert className="border-amber-500/40"><Clock3 className="h-4 w-4 text-amber-600" /><AlertDescription><div className="space-y-2"><p>Existe uma tentativa de pagamento de {pendingRenewal.plan_code === "30d" ? "30 dias" : pendingRenewal.plan_code === "6m" ? "6 meses" : "12 meses"} ainda em aberto. Você pode recuperar o Pix anterior ou escolher outro plano; nesse caso, a cobrança pendente será cancelada primeiro para evitar duplicidade.</p><Button type="button" size="sm" variant="outline" onClick={() => void resumePendingPayment()} disabled={resumingPayment}>{resumingPayment ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Consultando pagamento…</> : <><Wallet className="mr-2 h-4 w-4" /> Continuar pagamento anterior</>}</Button></div></AlertDescription></Alert>}{userData.renewals.some((renewal) => ["failed", "cancelled", "refunded"].includes(renewal.status) || ["rejected", "cancelled", "refunded"].includes(String(renewal.mp_payment_status || "").toLowerCase())) && !hasPendingRenewal && <Alert className="border-emerald-500/30"><CheckCircle2 className="h-4 w-4 text-emerald-600" /><AlertDescription>A tentativa anterior não foi concluída. Você já pode escolher um plano e tentar novamente com Pix ou cartão.</AlertDescription></Alert>}
                 <div className="grid gap-3 md:grid-cols-3">
                   {plans.map((plan) => (
-                    <button key={plan.code} type="button" disabled={hasPendingRenewal} aria-pressed={selectedPlan === plan.code} onClick={() => void choosePlan(plan.code)} className={`relative flex min-h-48 flex-col rounded-xl border-2 p-4 text-left transition-all hover:-translate-y-0.5 hover:border-teal-600 hover:shadow-lg focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-teal-600/30 disabled:cursor-not-allowed disabled:opacity-50 ${selectedPlan === plan.code ? "border-teal-700 bg-teal-50 ring-2 ring-teal-700 shadow-md dark:bg-teal-950/40" : "border-border bg-card"}`}>
+                    <button key={plan.code} type="button" aria-pressed={selectedPlan === plan.code} onClick={() => void choosePlan(plan.code)} className={`relative flex min-h-48 flex-col rounded-xl border-2 p-4 text-left transition-all hover:-translate-y-0.5 hover:border-teal-600 hover:shadow-lg focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-teal-600/30 disabled:cursor-not-allowed disabled:opacity-50 ${selectedPlan === plan.code ? "border-teal-700 bg-teal-50 ring-2 ring-teal-700 shadow-md dark:bg-teal-950/40" : "border-border bg-card"}`}>
                       {plan.featured && <span className="absolute -top-2.5 right-3 rounded-full bg-teal-700 px-2.5 py-1 text-[10px] font-bold text-white">MAIS ESCOLHIDO</span>}
                       <div className="flex w-full items-center justify-between gap-2"><p className="text-base font-extrabold">{plan.title}</p><span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${selectedPlan === plan.code ? "border-teal-700 bg-teal-700 text-white" : "border-muted-foreground/50"}`}>{selectedPlan === plan.code && <CheckCircle2 className="h-4 w-4" />}</span></div>
                       <p className="mt-3 text-3xl font-extrabold tracking-tight">{plan.price}</p>
@@ -235,6 +284,24 @@ export default function PlanRenewalPage() {
                     </button>
                   ))}
                 </div>
+                {payment && !selected && (
+                  <div className="rounded-xl border border-amber-500/30 bg-amber-50/50 p-4 dark:bg-amber-950/10">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div><p className="font-semibold">Pagamento anterior · {payment.paymentMethodId === "pix" ? "Pix" : "Cartão"}</p><p className="text-sm text-muted-foreground">Status: {statusLabel(payment.status)}</p></div>
+                      <Badge variant={payment.status === "approved" ? "default" : "secondary"}>{statusLabel(payment.status)}</Badge>
+                    </div>
+                    {(payment.status === "pending" || payment.status === "in_process") && payment.paymentMethodId === "pix" && (
+                      <div className="mt-3 space-y-3 rounded-lg border bg-background p-3">
+                        <p className="font-semibold">Continue o pagamento usando este mesmo Pix</p>
+                        {payment.pointOfInteraction?.qrCodeBase64 && <img alt="QR Code Pix para pagamento" className="mx-auto h-52 w-52" src={`data:image/png;base64,${payment.pointOfInteraction.qrCodeBase64}`} />}
+                        {payment.pointOfInteraction?.qrCode && <Button className="w-full" onClick={() => void copyPix()}><Wallet className="mr-2 h-4 w-4" />{copied ? "Código copiado" : "Copiar código Pix"}</Button>}
+                        {payment.pointOfInteraction?.ticketUrl && <a className="inline-flex items-center gap-1 text-sm text-teal-700 underline" href={payment.pointOfInteraction.ticketUrl} target="_blank" rel="noreferrer">Abrir instruções Pix <ExternalLink className="h-3 w-3" /></a>}
+                      </div>
+                    )}
+                    {payment.status === "approved" && <Alert className="mt-3 border-emerald-500/40"><CheckCircle2 className="h-4 w-4 text-emerald-600" /><AlertDescription>Pagamento aprovado. Aguarde a confirmação automática do seu plano.</AlertDescription></Alert>}
+                    {payment.paymentMethodId !== "pix" && ["pending", "in_process", "authorized"].includes(payment.status) && <p className="mt-2 text-sm text-muted-foreground">O pagamento com cartão está em análise. Você pode aguardar ou selecionar outro plano; a tentativa anterior será cancelada somente após confirmação do Mercado Pago.</p>}
+                  </div>
+                )}
                 {selected && (
                   <div className="rounded-xl border border-teal-700/20 bg-muted/20 p-4">
                     <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
